@@ -9,6 +9,8 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -201,16 +203,15 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "22")
+    (version "24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://arthur.barton.de/pub/ngircd/ngircd-"
+              (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "17k3g9qd9d010czk5846qxvzkmw4fihv8l6m2a2287crbxm3xhd4"))
-              (patches (search-patches "ngircd-no-dns-in-tests.patch"
-                                       "ngircd-handle-zombies.patch"))))
+                "020h9d1awyxqr0l42x1fhs47q7cmm17fdxzjish8p2kq23ma0gqp"))
+              (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
@@ -234,34 +235,34 @@ dictionaries.  HexChat can be extended with multiple addons.")
                '("--with-pam")
                '()))
        #:phases
-       ;; Necessary for the test suite.
-       (alist-cons-after
-        'configure 'post-configure
-        (lambda _
-          (substitute* "src/ngircd/Makefile"
-            (("/bin/sh") (which "sh")))
-          ;; The default getpid.sh does a sloppy grep over 'ps -ax' output,
-          ;; which fails arbitrarily.
-          (with-output-to-file "src/testsuite/getpid.sh"
-            (lambda ()
-              (display
-               (string-append
-                "#!" (which "sh") "\n"
-                "ps -C \"$1\" -o pid=\n"))))
-          ;; Our variant of getpid.sh does not work for interpreter names if a
-          ;; shebang script is run directly as "./foo", so patch cases where
-          ;; the test suite relies on this.
-          (substitute* "src/testsuite/start-server.sh"
-            ;; It runs 'getpid.sh sh' to test if it works at all.  Run it on
-            ;; 'make' instead.
-            (("getpid.sh sh") "getpid.sh make")))
-        %standard-phases)))
-    (home-page "http://ngircd.barton.de/")
+       (modify-phases %standard-phases
+         ;; Necessary for the test suite.
+         (add-after 'configure 'post-configure
+           (lambda _
+             (substitute* "src/ngircd/Makefile"
+               (("/bin/sh") (which "sh")))
+             ;; The default getpid.sh does a sloppy grep over 'ps -ax' output,
+             ;; which fails arbitrarily.
+             (with-output-to-file "src/testsuite/getpid.sh"
+               (lambda ()
+                 (display
+                  (string-append
+                   "#!" (which "sh") "\n"
+                   "ps -C \"$1\" -o pid=\n"))))
+             ;; Our variant of getpid.sh does not match interpreter names
+             ;; when the script's shebang is invoked directly as "./foo".
+             ;; Patch cases where the test suite relies on this.
+             (substitute* "src/testsuite/start-server.sh"
+               ;; It runs 'getpid.sh sh' to test if it works at all.  Run it on
+               ;; 'make' instead.
+               (("getpid.sh sh") "getpid.sh make")))))))
+    (home-page "https://ngircd.barton.de/")
     (synopsis "Lightweight Internet Relay Chat server for small networks")
     (description
-     "ngIRCd is a lightweight Internet Relay Chat server for small or private
-networks.  It is easy to configure, can cope with dynamic IP addresses, and
-supports IPv6, SSL-protected connections as well as PAM for authentication.")
+     "ngIRCd is a lightweight @dfn{Internet Relay Chat} (IRC) server for small
+or private networks.  It is easy to configure, can cope with dynamic IP
+addresses, and supports IPv6, SSL-protected connections, as well as PAM for
+authentication.")
     (license license:gpl2+)))
 
 (define-public pidgin
@@ -398,12 +399,23 @@ compromised.")
                 "1jia6kq6bp8yxfj02d5vj9vqb4pylqcldspyjj6iz82kkka2a0ig"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; tries to download GoogleTest with wget
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "tar" "xf"
+                             (assoc-ref inputs "googletest-source"))))))
        #:configure-flags '("--enable-python"
                            "--enable-perl"
-                           "--enable-cyrus")))
+                           "--enable-cyrus"
+                           ,(string-append "--with-gtest="
+                                          "googletest-release-"
+                                          (package-version googletest)
+                                          "/googletest"))
+       #:test-target "test"))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("googletest-source" ,(package-source googletest))
+       ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)))
     (inputs
@@ -1328,5 +1340,37 @@ are both supported).")
 using ncurses and libmesode, inspired by Irssi.")
         (home-page "http://www.profanity.im")
         (license license:gpl3+)))
+
+(define-public libircclient
+  (package
+    (name "libircclient")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libircclient/libircclient/"
+                           version "/libircclient-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r60i76jh4drjh2jgp5sx71chagqllmkaq49zv67nrhqwvp9ghw1"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir="
+                            (assoc-ref %outputs "out") "/lib")
+             "--enable-shared"
+             "--enable-ipv6"
+             "--enable-openssl")
+       ;; no test suite
+       #:tests? #f))
+    (home-page "https://www.ulduzsoft.com/libircclient/")
+    (synopsis "Library implementing the client IRC protocol")
+    (description "Libircclient is a library which implements the client IRC
+protocol.  It is designed to be small, fast, portable and compatible with the
+RFC standards as well as non-standard but popular features.  It can be used for
+building the IRC clients and bots.")
+    (license license:lgpl3+)))
 
 ;;; messaging.scm ends here

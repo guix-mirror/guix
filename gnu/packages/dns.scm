@@ -294,8 +294,10 @@ asynchronous fashion.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'omit-example-configurations
-                              (lambda _ (substitute* "Makefile.in"
-                                          ((" (etc|var)") "")))))
+                              (lambda _
+                                (substitute* "Makefile.in"
+                                  ((" (etc|var)") ""))
+                                #t)))
        #:configure-flags (list "--sysconfdir=/etc"      "--localstatedir=/var"
                                "--enable-shared"        "--disable-static"
                                "--enable-messages"      "--enable-ctrl"
@@ -334,7 +336,8 @@ Extensions} (DNSSEC).")
                     (("contrib/dnstap ") ""))
                   (with-directory-excursion "src/contrib"
                     (for-each delete-file-recursively
-                              (list "dnstap" "lmdb")))))))
+                              (list "dnstap" "lmdb")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -354,7 +357,8 @@ Extensions} (DNSSEC).")
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
-             (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))))
+             (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

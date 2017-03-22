@@ -41,7 +41,7 @@
 (define-public greenisland
   (package
     (name "greenisland")
-    (version "0.8.1")
+    (version "0.9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -50,7 +50,7 @@
                     "greenisland-" version ".tar.xz"))
               (sha256
                (base32
-                "1c9rlq7fqrsd5nb37anjvnp9xspqjz1kc0fvydv5xdy3abg8mw40"))))
+                "1flmha31hmii6m2mdvmn1q5dc0fhnvgc4lp1b4wgkz20y7x4f1fm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -100,6 +100,7 @@
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              #t))

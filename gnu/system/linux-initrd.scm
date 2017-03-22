@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -43,6 +43,7 @@
   #:use-module (srfi srfi-26)
   #:export (expression->initrd
             raw-initrd
+            file-system-packages
             base-initrd))
 
 
@@ -198,6 +199,26 @@ to it are lost."
                         #:qemu-guest-networking? #$qemu-networking?
                         #:volatile-root? '#$volatile-root?)))
      #:name "raw-initrd")))
+
+(define* (file-system-packages file-systems #:key (volatile-root? #f))
+  "Return the list of statically-linked, stripped packages to check
+FILE-SYSTEMS."
+  `(,@(if (find (lambda (fs)
+                  (string-prefix? "ext" (file-system-type fs)))
+                file-systems)
+          (list e2fsck/static)
+          '())
+    ,@(if (find (lambda (fs)
+                  (string-suffix? "fat" (file-system-type fs)))
+                file-systems)
+          (list fatfsck/static)
+          '())
+    ,@(if (find (file-system-type-predicate "btrfs") file-systems)
+          (list btrfs-progs/static)
+          '())
+    ,@(if volatile-root?
+          (list unionfs-fuse/static)
+          '())))
 
 (define* (base-initrd file-systems
                       #:key

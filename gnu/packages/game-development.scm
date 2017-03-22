@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
 ;;;
@@ -94,6 +94,55 @@
      "Bullet is a physics engine library usable for collision detection.  It
 is used in some video games and movies.")
     (license license:zlib)))
+
+(define-public deutex
+  (package
+   (name "deutex")
+   (version "4.4.902")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://github.com/Doom-Utils/" name
+                                "/archive/v" version ".tar.gz"))
+            (file-name (string-append name "-" version ".tar.gz"))
+            (sha256
+             (base32
+              "0rwz1yzgd539x4h25kzhar4q02xyxjwfrcpz4m8ixi312a82p7cn"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:tests? #f ; no check target
+      #:phases
+      (modify-phases %standard-phases
+        ;; The provided configure script takes a restricted number of arguments.
+        (replace 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (zero? (system* "./configure" "--prefix"
+                                   (assoc-ref %outputs "out")))))
+        ;; "make install" is broken for this package.
+        ;; Notably, the binaries overrwrite one another upon installation as
+        ;; they are all installed to the "bin" file in the output directory,
+        ;; and the manual page fails to install because the directory for the
+        ;; manual page is not created.
+        (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (share (string-append out "/share")))
+                     (install-file "deusf" bin)
+                     (install-file "deutex" bin)
+                     (install-file "deutex.6" (string-append share "/man/man6")))
+                   #t)))))
+   (home-page "https://github.com/Doom-Utils/deutex")
+   (synopsis "WAD file composer for Doom and related games")
+   (description
+    "DeuTex is a wad composer for Doom, Heretic, Hexen and Strife. It can be
+used to extract the lumps of a wad and save them as individual files.
+Conversely, it can also build a wad from separate files.  When extracting a
+lump to a file, it does not just copy the raw data, it converts it to an
+appropriate format (such as PPM for graphics, Sun audio for samples, etc.).
+Conversely, when it reads files for inclusion in pwads, it does the necessary
+conversions (for example, from PPM to Doom picture format).  In addition,
+DeuTex has functions such as merging wads, etc.")
+   (license license:gpl2+)))
 
 (define-public gzochi
   (package

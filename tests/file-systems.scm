@@ -20,8 +20,10 @@
   #:use-module (guix store)
   #:use-module (guix modules)
   #:use-module (gnu system file-systems)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
-  #:use-module (rnrs bytevectors))
+  #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 match))
 
 ;; Test the (gnu system file-systems) module.
 
@@ -79,5 +81,13 @@
   ;; config.
   (not (member '(guix config)
                (source-module-closure '((gnu system file-systems))))))
+
+(test-equal "does not pull (gnu packages …)"
+  ;; Same story: (gnu packages …) should not be pulled.
+  #f
+  (find (match-lambda
+          (('gnu 'packages _ ..1) #t)
+          (_ #f))
+        (source-module-closure '((gnu system file-systems)))))
 
 (test-end)

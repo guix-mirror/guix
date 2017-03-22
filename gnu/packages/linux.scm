@@ -2222,8 +2222,6 @@ in a digital read-out.")
 
        ;; Documentation.
        ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
-       ("libxslt" ,libxslt)
-       ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("xmlto" ,xmlto)
        ("asciidoc" ,asciidoc)))
@@ -2801,7 +2799,6 @@ and copy/paste text in the console and in xterm.")
                      ("xmlto" ,xmlto)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
-                     ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
                      ;; For tests.
                      ("which" ,which)))

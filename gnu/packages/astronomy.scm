@@ -143,6 +143,7 @@ programs for the manipulation and analysis of astronomical data.")
         #:phases (modify-phases %standard-phases
                    (add-before 'check 'set-offscreen-display
                      (lambda _
+                       ;; make Qt render "offscreen", required for tests
                        (setenv "QT_QPA_PLATFORM" "offscreen")
                        (setenv "HOME" "/tmp")
                        #t)))))

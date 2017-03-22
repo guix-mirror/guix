@@ -3658,7 +3658,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.22.0.1")
+    (version "3.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3667,7 +3667,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0l1b3llkdlqq0bcjx1cadba67l2zb4zfykdaprpjbjbr6gkbc1f5"))))
+                "19klldnbnknpq6ikz9x93861ywcyg0pg9ngijvw66ncbnb7lx912"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)

@@ -137,7 +137,6 @@ based command language.")
                ;; without them the tests fail.
                (zero? (system* "chmod" "-R" "u+w" "../test")))))))
       (native-inputs `(("gcc" ,gcc-5)
-                       ("libxslt" ,libxslt)
                        ("asciidoc" ,asciidoc)
                        ("ruby" ,ruby)))
       (inputs `(("gcc:lib" ,gcc-5 "lib")

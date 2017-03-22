@@ -626,11 +626,7 @@ used to validate and fix HTML data.")
         %standard-phases)))
     ;; All of the below are used to generate the documentation
     ;; (Should they be propagated inputs of asciidoc ??)
-    (native-inputs `(("asciidoc" ,asciidoc)
-                     ("libxml2" ,libxml2)
-                     ("docbook-xml" ,docbook-xml)
-                     ("docbook-xsl" ,docbook-xsl)
-                     ("libxslt" ,libxslt)))
+    (native-inputs `(("asciidoc" ,asciidoc)))
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
@@ -4479,11 +4475,7 @@ exploit attempts.")
          "0pf91nc0xcykahc3x7ww525c9czm8zpg80nxl8n2mrzc4ilgvass"))))
     (build-system python-build-system)
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml)
-       ("libxml2" ,libxml2)             ;for xmllint
-       ("libxslt" ,libxslt)))           ;for xsltproc
+     `(("asciidoc" ,asciidoc)))
     (inputs
      `(("python-colorama" ,python-colorama)
        ("python-cssutils" ,python-cssutils)

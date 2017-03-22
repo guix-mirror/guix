@@ -1749,14 +1749,14 @@ standard library.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.31")
+    (version "1.4.32")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
+         "19s1pql9pq85h1qzsdwgyb8a3k1qgkvh33b02m8kfqhizz8rzf64"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: "ImportError: 'test' module incorrectly imported from
@@ -3144,14 +3144,14 @@ augment the changelog, but it can be used for other documents, too.")
 (define-public python-feedgenerator
   (package
     (name "python-feedgenerator")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "feedgenerator" version))
        (sha256
         (base32
-         "0mkimp1fpdan4p3882vzcws4l594k71ich4g0wq97jbra7p602n0"))
+         "01mirwkm7xfx539hmvj7g9da1j51gw5lsx74dr0glizskjm5vq2s"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5873,6 +5873,9 @@ of the structure, dynamics, and functions of complex networks.")
     (arguments
      ;; TODO: Package missing test dependencies.
      '(#:tests? #f))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)
+       ("python-requests" ,python-requests)))
     (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
@@ -6491,14 +6494,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "2.6.7")
+    (version "2.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "1h055llfd0ps0ig7qb3v1j9068xv90dc9s7xkhkgz9zg8r4g5sys"))))
+         "0cqfhr1km2s5d8jm6hbwgkrrj9hvkjf2gab3s2axlrw1clgaij0a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6858,17 +6861,14 @@ and MAC network addresses.")
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.10.5")
+    (version "1.10.8")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/w/wrapt/wrapt-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "wrapt" version))
         (sha256
           (base32
-            "0cq8rlpzkxzk48b50yrfhzn1d1hrq4gjcdqlrgq4v5palgiv9jwr"))))
+            "0wrcm1mydvfivbkzz0h81ygzdchnscshi6xvy5n3r21r9s0px8af"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
@@ -8247,15 +8247,14 @@ security policies on Python objects.")
 (define-public python-zope-component
   (package
     (name "python-zope-component")
-    (version "4.2.2")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.component/zope.component-" version ".tar.gz"))
+       (uri (pypi-uri "zope.component" version))
        (sha256
         (base32
-         "06pqr8m5jv12xjyy5b59hh9anl61cxkzhw9mka33r3nxalmi2b18"))))
+         "1hlvzwj1kcfz1qms1dzhwsshpsf38z9clmyksb1gh41n8k3kchdv"))))
     (build-system python-build-system)
     (arguments
      ;; Skip tests due to circular dependency with python-zope-security.
@@ -8497,14 +8496,14 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.8.4")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "0bkhs4dx9s6g7fpb969hygq56hyz4ncfamlynw72s0n6nqfbd1w5"))))
+         "1liiiydgkg37i46a418aw19fyf6z3ds51wdwwpyjbs12x0phhf4a"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/foutaise/texttable/")
@@ -8542,13 +8541,13 @@ WebSocket usage in Python programs.")
 (define-public python-atomicwrites
   (package
     (name "python-atomicwrites")
-    (version "1.1.0")
+    (version "1.1.5")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "atomicwrites" version))
              (sha256
               (base32
-               "1s01dci8arsl9d9vr5nz1fk9znldp1z3l4yl43f0c27z12b8yxl0"))))
+               "11bm90fwm2avvf4f3ib8g925w7jr4m11vcsinn1bi6ns4bm32214"))))
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
@@ -10053,14 +10052,14 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
         (base32
-         "0k4hshvrwsh8yagydyxgmd0pjm29lwdxkngcq9fzfzkmpsxrmkva"))))
+         "0p60z2gwfcal30y2w8gprflchp1kcg9qblc5rn782p4wxl90wjbh"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -11163,17 +11162,14 @@ are optionally backed by a C extension built on librdkafka.")
 (define-public python-wcwidth
  (package
   (name "python-wcwidth")
-  (version "0.1.6")
+  (version "0.1.7")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/"
-             "c2/d1/7689293086a8d5320025080cde0e3155b94ae0a7496fb89a3fbaa92c354a/"
-             "wcwidth-" version ".tar.gz"))
+      (uri (pypi-uri "wcwidth" version))
       (sha256
         (base32
-          "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw"))))
+          "0pn6dflzm609m4r3i8ik5ni9ijjbb5fa3vg1n7hn6vkd49r77wrx"))))
   (build-system python-build-system)
   (home-page "https://github.com/jquast/wcwidth")
   (synopsis "Measure number of terminal column cells of wide-character codes")
@@ -12542,13 +12538,13 @@ English stemmer.")
 (define-public python-sphinx-cloud-sptheme
   (package
     (name "python-sphinx-cloud-sptheme")
-    (version "1.7.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cloud_sptheme" version))
               (sha256
                (base32
-                "0zm9ap4p5dzln8f1m2immadaxv2xpg8jg4w53y52rhfl7pdb58vy"))))
+                "1dniqb6a39yh786f86c4jn666rwnyi1jvzn4616zhcchb7sfdshd"))))
     (build-system python-build-system)
     ;; FIXME: The 'pypi' release archive does not contain tests.
     (arguments '(#:tests? #f))
@@ -13671,3 +13667,212 @@ users' sessions over extended periods of time.")
 
 (define-public python2-flask-login
   (package-with-python2 python-flask-login))
+
+(define-public python-astroid
+  (package
+    (name "python-astroid")
+    (version "1.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/PyCQA/astroid/archive/astroid-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0j0wgy54d13a470vm4b9rdjk99n1hmdxpf34x9k3pbmi9w9b566z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
+       ("python-six" ,python-six)
+       ("python-wrapt" ,python-wrapt)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "-m" "unittest" "discover"
+                                    "-p" "unittest*.py")))))))
+    (home-page "https://github.com/PyCQA/astroid")
+    (synopsis "Common base representation of python source code for pylint and
+other projects")
+    (description "@code{python-astroid} provides a common base representation
+of python source code for projects such as pychecker, pyreverse, pylint, etc.
+
+It provides a compatible representation which comes from the _ast module.  It
+rebuilds the tree generated by the builtin _ast module by recursively walking
+down the AST and building an extended ast.  The new node classes have
+additional methods and attributes for different usages.  They include some
+support for static inference and local name scopes.  Furthermore, astroid
+builds partial trees by inspecting living objects.")
+   (license license:lgpl2.1+)))
+
+(define-public python2-astroid
+  (package-with-python2 python-astroid))
+
+(define-public python-isort
+  (package
+    (name "python-isort")
+    (version "4.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/timothycrosley/isort/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zsrgkb0krn5476yncy5dd56k7dk34zqb4bnlvwy44ixgilyjmfh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/timothycrosley/isort")
+    (synopsis "Python utility/library to sort python imports")
+    (description "@code{python-isort} is a python utility/library to sort
+imports alphabetically, and automatically separated into sections.  It
+provides a command line utility, a python library and plugins for various
+editors.")
+    (license license:expat)))
+
+(define-public python2-isort
+  (package-with-python2 python-isort))
+
+(define-public python2-backports-functools-lru-cache
+  (package
+    (name "python2-backports-functools-lru-cache")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       ;; only the pypi tarballs contain the necessary metadata
+       (uri (pypi-uri "backports.functools_lru_cache" version))
+       (sha256
+        (base32
+         "158ysf2hb0q4p4695abfiym9x1ywg0dgh8a3apd7gqaaxjy22jj4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools-scm" ,python2-setuptools-scm)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/jaraco/backports.functools_lru_cache")
+    (synopsis "Backport of functools.lru_cache from Python 3.3")
+    (description "@code{python2-backports-functools-lru-cache} is a backport
+of @code{functools.lru_cache} from python 3.3.")
+    (license license:expat)))
+
+(define-public python-configparser
+  (package
+    (name "python-configparser")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://bitbucket.org/ambv/configparser/get/"
+             version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0waq40as14abwzbb321hfz4vr1fi363nscy32ga14qvfygrg96wa"))))
+    (build-system python-build-system)
+    (home-page "http://docs.python.org/py3k/library/configparser.html")
+    (synopsis "Backport of configparser from python 3.5")
+    (description "@code{python-configparser} is a backport of
+@code{configparser} from Python 3.5 so that it can be used directly
+in other versions.")
+    (license license:expat)))
+
+(define-public python2-configparser
+  (package-with-python2 python-configparser))
+
+(define-public python2-coverage-test-runner
+  (package
+    (name "python2-coverage-test-runner")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/"
+             "coverage-test-runner/snapshot/coverage-test-runner-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0y1m7z3dl63kmhcmydl1mwg0hacnf6ghrx9dah17j9iasssfa3g7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "./testrun")))))))
+    (propagated-inputs
+     `(("python2-coverage" ,python2-coverage)))
+    (home-page "https://liw.fi/coverage-test-runner/")
+    (synopsis "Python module for running unit tests")
+    (description "@code{CoverageTestRunner} is a python module for running
+unit tests and failing them if the unit test module does not excercise all
+statements in the module it tests.")
+    (license license:gpl3+)))
+
+(define-public python-pylint
+  (package
+    (name "python-pylint")
+    (version "1.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/PyCQA/pylint/archive/pylint-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "08pmgflmq2zrzrn9nkfadzwa5vybz46wvwxhrsd2mjlcgsh4rzbm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-tox" ,python-tox)))
+    (propagated-inputs
+     `(("python-astroid" ,python-astroid)
+       ("python-isort" ,python-isort)
+       ("python-mccabe" ,python-mccabe)
+       ("python-six" ,python-six)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    ;; Somehow, tests for python2-pylint
+                    ;; fail if run from the build directory
+                    (let ((work "/tmp/work"))
+                      (mkdir-p work)
+                      (setenv "PYTHONPATH"
+                              (string-append (getenv "PYTHONPATH") ":" work))
+                      (copy-recursively "." work)
+                      (with-directory-excursion "/tmp"
+                        (zero? (system* "python" "-m" "unittest" "discover"
+                                        "-s" (string-append work "/pylint/test")
+                                        "-p" "*test_*.py")))))))))
+    (home-page "https://github.com/PyCQA/pylint")
+    (synopsis "Python source code analyzer which looks for coding standard
+errors")
+    (description "Pylint is a Python source code analyzer which looks
+for programming errors, helps enforcing a coding standard and sniffs
+for some code smells (as defined in Martin Fowler's Refactoring book).
+
+Pylint has many rules enabled by default, way too much to silence them
+all on a minimally sized program.  It's highly configurable and handle
+pragmas to control it from within your code.  Additionally, it is
+possible to write plugins to add your own checks.")
+    (license license:gpl2+)))
+
+(define-public python2-pylint
+  (let ((pylint (package-with-python2 python-pylint)))
+    (package (inherit pylint)
+             (propagated-inputs
+              `(("python2-backports-functools-lru-cache"
+                 ,python2-backports-functools-lru-cache)
+                ("python2-configparser" ,python2-configparser)
+                ,@(package-propagated-inputs pylint))))))

@@ -778,7 +778,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
-  %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
@@ -964,7 +963,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
-  %D%/packages/patches/vim-CVE-2017-5953.patch			\
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\

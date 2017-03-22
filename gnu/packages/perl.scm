@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1367,6 +1368,26 @@ standard, like the program described in \"A Random Word Generator For
 Pronounceable Passwords\".  This code is a re-engineering of the program
 contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
+    (license (package-license perl))))
+
+(define-public perl-crypt-rc4
+  (package
+    (name "perl-crypt-rc4")
+    (version "2.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/S/SI/SIFUKURT/Crypt-RC4-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1sp099cws0q225h6j4y68hmfd1lnv5877gihjs40f8n2ddf45i2y"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Crypt-RC4")
+    (synopsis "Perl implementation of the RC4 encryption algorithm")
+    (description "A pure Perl implementation of the RC4 algorithm.")
     (license (package-license perl))))
 
 (define-public perl-cwd-guard
@@ -5155,6 +5176,29 @@ subroutine, which you can call with a value to be tested against.")
     (description "Object::Signature is an abstract base class that you can
 inherit from in order to allow your objects to generate unique cryptographic
 signatures.")
+    (license (package-license perl))))
+
+(define-public perl-ole-storage-lite
+  (package
+    (name "perl-ole-storage-lite")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMCNAMARA/OLE-Storage_Lite-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "179cxwqxb0f9dpx8954nvwjmggxxi5ndnang41yav1dx6mf0abp7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/OLE-Storage_Lite")
+    (synopsis "Read and write OLE storage files")
+    (description "This module allows you to read and write
+an OLE-Structured file.  @dfn{OLE} (Object Linking and Embedding) is a
+technology to store hierarchical information such as links to other
+documents within a single file.")
     (license (package-license perl))))
 
 (define-public perl-package-anon

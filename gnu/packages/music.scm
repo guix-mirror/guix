@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2827,3 +2828,55 @@ collections and wantlists, inventory, and orders.")
 conversions between time and pulses, tempo map handling and more.  The only dependencies
 are a C compiler and glib.  Full API documentation and examples are included.")
     (license license:bsd-2)))
+
+(define-public lmms
+  (package
+    (name "lmms")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/LMMS/lmms/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1g76z7ha3hd53vbqaq9n1qg6s3lw8zzaw51iny6y2bz0j1xqwcsr"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append
+                     "-Wl,-rpath=\""
+                     (assoc-ref outputs "out") "/lib/lmms"
+                     ":"
+                     (assoc-ref outputs "out") "/lib/lmms/ladspa"
+                     "\"")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("qt" ,qt-4)
+       ("fltk" ,fltk)
+       ("libogg" ,libogg)
+       ("libsamplerate" ,libsamplerate)
+       ("fluidsynth" ,fluidsynth)
+       ("libvorbis" ,libvorbis)
+       ("alsa-lib" ,alsa-lib)
+       ("portaudio" ,portaudio)
+       ("ladspa" ,ladspa)
+       ("libsndfile1" ,libsndfile)
+       ("libxft" ,libxft)
+       ("freetype2" ,freetype)
+       ("fftw3f" ,fftwf)))
+    (home-page "https://lmms.io/")
+    (synopsis "Music composition tool")
+    (description "LMMS is a digital audio workstation.  It includes tools for sequencing
+melodies and beats and for mixing and arranging songs.  LMMS includes instruments based on
+audio samples and various soft sythesizers.  It can receive input from a MIDI keyboard.")
+    (license license:gpl2+)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,9 +36,13 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/libots/libots/"
-                           name "-" version "/" name "-" version
-                           ".tar.gz"))
+       ;; libots seems to have left sourceforge and taken their release
+       ;; tarballs with them
+       (uri (list (string-append "mirror://debian/pool/main/o/ots/ots_"
+                                 version ".orig.tar.gz")
+                  (string-append "mirror://sourceforge/libots/libots/"
+                                 name "-" version "/" name "-" version
+                                 ".tar.gz")))
        (sha256
         (base32 "0dz1ccd7ymzk4swz1aly4im0k3pascnshmgg1whd2rk14li8v47a"))
        (patches (search-patches "ots-no-include-missing-file.patch"))))
@@ -48,17 +53,18 @@
      ;; before libots-1.la has been built.
      '(#:parallel-build? #f
 
-       #:phases (alist-cons-after
-                 'configure 'set-shared-lib-extension
-                 (lambda _
-                   ;; For some reason, the 'libtool' script (from Libtool
-                   ;; 1.5.2, Debian variant) sets 'shrext_cmds' instead of
-                   ;; 'shrext' for the shared library file name extension.
-                   ;; This leads to the creation of 'libots-1' instead of
-                   ;; 'libots-1.so'.  Fix that.
-                   (substitute* "libtool"
-                     (("shrext_cmds") "shrext")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'set-shared-lib-extension
+           (lambda _
+             ;; For some reason, the 'libtool' script (from Libtool
+             ;; 1.5.2, Debian variant) sets 'shrext_cmds' instead of
+             ;; 'shrext' for the shared library file name extension.
+             ;; This leads to the creation of 'libots-1' instead of
+             ;; 'libots-1.so'.  Fix that.
+             (substitute* "libtool"
+               (("shrext_cmds") "shrext"))
+             #t)))))
     (inputs
       `(("glib" ,glib)
         ("popt" ,popt)

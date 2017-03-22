@@ -221,7 +221,8 @@ GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 nobase_dist_guilemodule_DATA =                  \
   $(MODULES) $(AUX_FILES) $(EXAMPLES)            \
   $(MISC_DISTRO_FILES)
-nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
+nobase_nodist_guilemodule_DATA = guix/config.scm
+nobase_nodist_guileobject_DATA = $(GOBJECTS)
 
 # Do we need to provide our own non-broken (srfi srfi-37) module?
 if INSTALL_SRFI_37
@@ -456,14 +457,14 @@ SUFFIXES = .go
 # files.  See
 # <http://lists.gnu.org/archive/html/guile-devel/2010-07/msg00125.html>
 # for details.
-guix_install_go_files = install-nobase_nodist_guilemoduleDATA
+guix_install_go_files = install-nobase_nodist_guileobjectDATA
 $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 
 # The above trick doesn't work for 'config.go' because both 'config.scm' and
-# 'config.go' are listed in $(nobase_nodist_guilemodule_DATA).  Thus, give it
+# 'config.go' are listed in $(nobase_nodist_guileobject_DATA).  Thus, give it
 # special treatment.
 install-data-hook: set-bootstrap-executable-permissions
-	touch "$(DESTDIR)$(guilemoduledir)/guix/config.go"
+	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
 
 SUBDIRS = po/guix po/packages
