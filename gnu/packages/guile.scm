@@ -261,6 +261,9 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
 
+(define-public guile-next
+  (deprecated-package "guile-next" guile-2.2))
+
 (define (guile-variant-package-name prefix)
   (lambda (name)
     "Return NAME with PREFIX instead of \"guile-\", when applicable."
