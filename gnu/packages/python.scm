@@ -4805,7 +4805,7 @@ etc.  The core of this module is a decorator factory.")
 (define-public python-drmaa
   (package
     (name "python-drmaa")
-    (version "0.7.6")
+    (version "0.7.7")
     (source
      (origin
        (method url-fetch)
@@ -4813,7 +4813,7 @@ etc.  The core of this module is a decorator factory.")
              "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
              version ".tar.gz"))
        (sha256
-        (base32 "0bzl9f9g34dlhwf09i3fdv7dqqzf2iq0w7d6c2bafx1nlap8qfbh"))))
+        (base32 "0xzqriqyvk5b8hszbavsyxd29wm3sxirm8zvvdm73rs2iq7w4hkx"))))
     (build-system python-build-system)
     ;; The test suite requires libdrmaa which is provided by the cluster
     ;; environment.  At runtime the environment variable DRMAA_LIBRARY_PATH
