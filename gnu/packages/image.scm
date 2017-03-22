@@ -679,7 +679,8 @@ supplies a generic doubly-linked list and some string functions.")
              (base32
               "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
             (patches (search-patches "freeimage-CVE-2015-0852.patch"
-                                     "freeimage-CVE-2016-5684.patch"))))
+                                     "freeimage-CVE-2016-5684.patch"
+                                     "freeimage-fix-build-with-gcc-5.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
