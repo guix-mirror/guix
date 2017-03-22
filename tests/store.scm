@@ -384,8 +384,8 @@
             (guard (c ((nix-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
    (cond-expand
-     (guile-2.0 "garbage: ?lambda: λ")
-     (else      "garbage: �lambda: λ"))))
+     (guile-2.2 "garbage: �lambda: λ")
+     (else      "garbage: ?lambda: λ"))))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
