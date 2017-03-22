@@ -1460,7 +1460,9 @@ multiple sequence alignments.")
                (setenv "HOME" "/tmp")
                (and (zero? (system* "make" "-C" "pysam_data"))
                     (zero? (system* "make" "-C" "cbcf_data"))
-                    (zero? (system* "nosetests" "-v")))))))))
+                    (zero? (system* "nosetests" "-v"
+                                    "--processes"
+                                    (number->string (parallel-job-count)))))))))))
     (propagated-inputs
      `(("htslib"            ,htslib))) ; Included from installed header files.
     (inputs
