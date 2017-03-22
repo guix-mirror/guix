@@ -33,6 +33,7 @@
   #:use-module ((guix records) #:select (recutils->alist))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix pk-crypto)
+  #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
   #:use-module (guix zlib)
   #:use-module (web uri)
   #:use-module (web client)
@@ -99,6 +100,10 @@
 
 ;; Wait until the two servers are ready.
 (wait-until-ready 6789)
+
+;; Initialize the public/private key SRFI-39 parameters.
+(%public-key (read-file-sexp %public-key-file))
+(%private-key (read-file-sexp %private-key-file))
 
 
 (test-begin "publish")

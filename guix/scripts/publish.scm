@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +52,10 @@
   #:use-module (guix scripts)
   #:use-module ((guix utils) #:select (compressed-file?))
   #:use-module ((guix build utils) #:select (dump-port))
-  #:export (guix-publish))
+  #:export (%public-key
+            %private-key
+
+            guix-publish))
 
 (define (show-help)
   (format #t (_ "Usage: guix publish [OPTION]...
@@ -154,6 +157,9 @@ compression disabled~%"))
 (define %default-options
   `((port . 8080)
 
+    (public-key-file . ,%public-key-file)
+    (private-key-file . ,%private-key-file)
+
     ;; Default to fast & low compression.
     (compression . ,(if (zlib-available?)
                         %default-gzip-compression
@@ -162,18 +168,11 @@ compression disabled~%"))
     (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
 
-(define (lazy-read-file-sexp file)
-  "Return a promise to read the canonical sexp from FILE."
-  (delay
-    (call-with-input-file file
-      (compose string->canonical-sexp
-               read-string))))
-
+;; The key pair used to sign narinfos.
 (define %private-key
-  (lazy-read-file-sexp %private-key-file))
-
+  (make-parameter #f))
 (define %public-key
-  (lazy-read-file-sexp %public-key-file))
+  (make-parameter #f))
 
 (define %nix-cache-info
   `(("StoreDir" . ,%store-directory)
@@ -186,10 +185,10 @@ compression disabled~%"))
 
 (define (signed-string s)
   "Sign the hash of the string S with the daemon's key."
-  (let* ((public-key (force %public-key))
+  (let* ((public-key (%public-key))
          (hash (bytevector->hash-data (sha256 (string->utf8 s))
                                       #:key-type (key-type public-key))))
-    (signature-sexp hash (force %private-key) public-key)))
+    (signature-sexp hash (%private-key) public-key)))
 
 (define base64-encode-string
   (compose base64-encode string->utf8))
@@ -279,7 +278,7 @@ appropriate duration."
                         `((cache-control (max-age . ,ttl)))
                         '()))
                 (cut display
-                  (narinfo-string store store-path (force %private-key)
+                  (narinfo-string store store-path (%private-key)
                                   #:compression compression)
                   <>)))))
 
@@ -566,11 +565,12 @@ blocking."
                                            (sockaddr:addr addr)
                                            port)))
            (socket  (open-server-socket address))
-           (repl-port (assoc-ref opts 'repl)))
-      ;; Read the key right away so that (1) we fail early on if we can't
-      ;; access them, and (2) we can then drop privileges.
-      (force %private-key)
-      (force %public-key)
+           (repl-port (assoc-ref opts 'repl))
+
+           ;; Read the key right away so that (1) we fail early on if we can't
+           ;; access them, and (2) we can then drop privileges.
+           (public-key  (read-file-sexp (assoc-ref opts 'public-key-file)))
+           (private-key (read-file-sexp (assoc-ref opts 'private-key-file))))
 
       (when user
         ;; Now that we've read the key material and opened the socket, we can
@@ -580,13 +580,16 @@ blocking."
       (when (zero? (getuid))
         (warning (_ "server running as root; \
 consider using the '--user' option!~%")))
-      (format #t (_ "publishing ~a on ~a, port ~d~%")
-              %store-directory
-              (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
-              (sockaddr:port address))
-      (when repl-port
-        (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
-      (with-store store
-        (run-publish-server socket store
-                            #:compression compression
-                            #:narinfo-ttl ttl)))))
+
+      (parameterize ((%public-key public-key)
+                     (%private-key private-key))
+        (format #t (_ "publishing ~a on ~a, port ~d~%")
+                %store-directory
+                (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
+                (sockaddr:port address))
+        (when repl-port
+          (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
+        (with-store store
+          (run-publish-server socket store
+                              #:compression compression
+                              #:narinfo-ttl ttl))))))
