@@ -238,11 +238,12 @@ rustc-bootstrap and cargo-bootstrap packages.")
              #t))
          (add-after 'unpack 'patch-tests
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/tools/tidy/src/main.rs"
-               (("^.*cargo.*::check.*$") ""))
-             (substitute* "src/libstd/process.rs"
-               (("\"/bin/sh\"") (string-append "\"" (assoc-ref inputs "bash") "/bin/sh\"")))
-             #t))
+             (let ((bash (assoc-ref inputs "bash")))
+               (substitute* "src/tools/tidy/src/main.rs"
+                 (("^.*cargo.*::check.*$") ""))
+               (substitute* "src/libstd/process.rs"
+                 (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+               #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
