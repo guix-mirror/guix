@@ -651,7 +651,7 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.068")
+    (version "2.074")
     (source
      (origin
        (method url-fetch)
@@ -659,11 +659,11 @@ compression library.")
                            "IO-Compress-" version ".tar.gz"))
        (sha256
         (base32
-         "0dy0apjp7j9dfkzfjspjd3z9gh26srx5vac72g59bkkz1jf8s1gs"))))
+         "1wlpy2026djfmq0bjync531yq6s695jf7bcnpvjphrasi776igdl"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.068
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.068
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.074
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.074
     (home-page "http://search.cpan.org/dist/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
