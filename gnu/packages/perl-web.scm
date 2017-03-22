@@ -26,7 +26,7 @@
 (define-public perl-mojolicious
   (package
     (name "perl-mojolicious")
-    (version "7.10")
+    (version "7.29")
     (source
      (origin
        (method url-fetch)
@@ -34,7 +34,7 @@
                            version ".tar.gz"))
        (sha256
         (base32
-         "0811f3wajgf71y02dr2khqnaswjh582pcvhv93k101qpg61syihn"))))
+         "1kmyb9axqbklyvr3l4d6mxnb0r97s9hzn7jpzksgckklp1ic8sqh"))))
     (build-system perl-build-system)
     (home-page "http://mojolicious.org/")
     (synopsis "Real-time web framework")
