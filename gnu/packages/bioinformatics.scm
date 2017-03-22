@@ -1430,7 +1430,11 @@ multiple sequence alignments.")
                '(delete-file-recursively "htslib"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-flags
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1442,23 +1446,21 @@ multiple sequence alignments.")
              (setenv "LDFLAGS" "-lncurses")
              (setenv "CFLAGS" "-D_CURSES_LIB=1")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Add first subdirectory of "build" directory to PYTHONPATH.
              (setenv "PYTHONPATH"
                      (string-append
                       (getenv "PYTHONPATH")
-                      ":" (assoc-ref outputs "out")
-                      "/lib/python"
-                      (string-take (string-take-right
-                                    (assoc-ref inputs "python") 5) 3)
-                      "/site-packages"))
+                      ":" (getcwd) "/build/"
+                      (car (scandir "build"
+                                    (compose not (cut string-prefix? "." <>))))))
              ;; Step out of source dir so python does not import from CWD.
-             (chdir "tests")
-             (setenv "HOME" "/tmp")
-             (and (zero? (system* "make" "-C" "pysam_data"))
-                  (zero? (system* "make" "-C" "cbcf_data"))
-                  (zero? (system* "nosetests" "-v"))))))))
+             (with-directory-excursion "tests"
+               (setenv "HOME" "/tmp")
+               (and (zero? (system* "make" "-C" "pysam_data"))
+                    (zero? (system* "make" "-C" "cbcf_data"))
+                    (zero? (system* "nosetests" "-v")))))))))
     (propagated-inputs
      `(("htslib"            ,htslib))) ; Included from installed header files.
     (inputs
