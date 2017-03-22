@@ -229,11 +229,13 @@ rustc-bootstrap and cargo-bootstrap packages.")
                (("/usr/bin/env") (which "env")))
              ;; Avoid curl as a build dependency.
              (substitute* "configure"
-               (("probe_need CFG_CURL curl") ""))))
+               (("probe_need CFG_CURL curl") ""))
+             #t))
          (add-after 'unpack 'set-env
            (lambda _
              (setenv "SHELL" (which "sh"))
-             (setenv "CONFIG_SHELL" (which "sh"))))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             #t))
          (add-after 'unpack 'patch-tests
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/tools/tidy/src/main.rs"
@@ -275,7 +277,8 @@ rustc-bootstrap and cargo-bootstrap packages.")
                ;; Let gcc find ld and libc startup files.
                (wrap-program (string-append out "/bin/rustc")
                  `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
-                 `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))))))))
+                 `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
+               #t))))))
     ;; rustc invokes gcc, so we need to set its search paths accordingly.
     (native-search-paths (package-native-search-paths gcc))
     (synopsis "Compiler for the Rust progamming language")
