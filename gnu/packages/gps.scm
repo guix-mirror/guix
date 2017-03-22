@@ -50,7 +50,10 @@
     (arguments
      `(#:configure-flags
        '("--with-zlib=system"
-         "CXXFLAGS=-std=gnu++11")
+         ;; XXX Use -fPIC to work around build problems with Qt, GCC 5, and
+         ;; recent binutils:
+         ;; https://codereview.qt-project.org/#/c/111787/
+         "CXXFLAGS=-std=gnu++11 -fPIC")
        #:phases
        (modify-phases %standard-phases
         (add-before 'configure 'pre-configure
