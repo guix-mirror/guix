@@ -232,6 +232,36 @@ References: ~%"
     (list (assoc-ref info "Compression")
           (dirname (assoc-ref info "URL")))))
 
+(test-equal "custom nar path"
+  ;; Serve nars at /foo/bar/chbouib instead of /nar.
+  (list `(("StorePath" . ,%item)
+          ("URL" . ,(string-append "foo/bar/chbouib/" (basename %item)))
+          ("Compression" . "none"))
+        200
+        404)
+  (let ((thread (with-separate-output-ports
+                 (call-with-new-thread
+                  (lambda ()
+                    (guix-publish "--port=6798" "-C0"
+                                  "--nar-path=///foo/bar//chbouib/"))))))
+    (wait-until-ready 6798)
+    (let* ((base    "http://localhost:6798/")
+           (part    (store-path-hash-part %item))
+           (url     (string-append base part ".narinfo"))
+           (nar-url (string-append base "foo/bar/chbouib/"
+                                   (basename %item)))
+           (body    (http-get-port url)))
+      (list (filter (lambda (item)
+                      (match item
+                        (("Compression" . _) #t)
+                        (("StorePath" . _)  #t)
+                        (("URL" . _) #t)
+                        (_ #f)))
+                    (recutils->alist body))
+            (response-code (http-get nar-url))
+            (response-code
+             (http-get (string-append base "nar/" (basename %item))))))))
+
 (test-equal "/nar/ with properly encoded '+' sign"
   "Congrats!"
   (let ((item (add-text-to-store %store "fake-gtk+" "Congrats!")))

@@ -204,16 +204,17 @@ compression disabled~%"))
   (compose base64-encode string->utf8))
 
 (define* (narinfo-string store store-path key
-                         #:key (compression %no-compression))
+                         #:key (compression %no-compression)
+                         (nar-path "nar"))
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
-narinfo is signed with KEY."
+narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
   (let* ((path-info  (query-path-info store store-path))
          (compression (if (compressed-file? store-path)
                           %no-compression
                           compression))
          (url        (encode-and-join-uri-path
-                      `("nar"
+                      `(,@(split-and-decode-uri-path nar-path)
                         ,@(match compression
                             (($ <compression> 'none)
                              '())
@@ -275,11 +276,12 @@ References: ~a~%"
                       %nix-cache-info))))
 
 (define* (render-narinfo store request hash
-                         #:key ttl (compression %no-compression))
+                         #:key ttl (compression %no-compression)
+                         (nar-path "nar"))
   "Render metadata for the store path corresponding to HASH.  If TTL is true,
 advertise it as the maximum validity period (in seconds) via the
 'Cache-Control' header.  This allows 'guix substitute' to cache it for an
-appropriate duration."
+appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
         (not-found request)
@@ -289,6 +291,7 @@ appropriate duration."
                         '()))
                 (cut display
                   (narinfo-string store store-path (%private-key)
+                                  #:nar-path nar-path
                                   #:compression compression)
                   <>)))))
 
@@ -478,7 +481,12 @@ blocking."
 (define* (make-request-handler store
                                #:key
                                narinfo-ttl
+                               (nar-path "nar")
                                (compression %no-compression))
+  (define nar-path?
+    (let ((expected (split-and-decode-uri-path nar-path)))
+      (cut equal? expected <>)))
+
   (lambda (request body)
     (format #t "~a ~a~%"
             (request-method request)
@@ -494,19 +502,23 @@ blocking."
            ;; NARINFO-TTL.
            (render-narinfo store request hash
                            #:ttl narinfo-ttl
+                           #:nar-path nar-path
                            #:compression compression))
+          ;; /nar/file/NAME/sha256/HASH
+          (("file" name "sha256" hash)
+           (guard (c ((invalid-base32-character? c)
+                      (not-found request)))
+             (let ((hash (nix-base32-string->bytevector hash)))
+               (render-content-addressed-file store request
+                                              name 'sha256 hash))))
 
           ;; Use different URLs depending on the compression type.  This
           ;; guarantees that /nar URLs remain valid even when 'guix publish'
           ;; is restarted with different compression parameters.
 
-          ;; /nar/<store-item>
-          (("nar" store-item)
-           (render-nar store request store-item
-                       #:compression %no-compression))
           ;; /nar/gzip/<store-item>
-          (("nar" "gzip" store-item)
-           (if (zlib-available?)
+          ((components ... "gzip" store-item)
+           (if (and (nar-path? components) (zlib-available?))
                (render-nar store request store-item
                            #:compression
                            (match compression
@@ -516,19 +528,21 @@ blocking."
                               %default-gzip-compression)))
                (not-found request)))
 
-          ;; /nar/file/NAME/sha256/HASH
-          (("file" name "sha256" hash)
-           (guard (c ((invalid-base32-character? c)
-                      (not-found request)))
-             (let ((hash (nix-base32-string->bytevector hash)))
-               (render-content-addressed-file store request
-                                              name 'sha256 hash))))
-          (_ (not-found request)))
+          ;; /nar/<store-item>
+          ((components ... store-item)
+           (if (nar-path? components)
+               (render-nar store request store-item
+                           #:compression %no-compression)
+               (not-found request)))
+
+          (x (not-found request)))
         (not-found request))))
 
 (define* (run-publish-server socket store
-                             #:key (compression %no-compression) narinfo-ttl)
+                             #:key (compression %no-compression)
+                             (nar-path "nar") narinfo-ttl)
   (run-server (make-request-handler store
+                                    #:nar-path nar-path
                                     #:narinfo-ttl narinfo-ttl
                                     #:compression compression)
               concurrent-http-server
