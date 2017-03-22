@@ -6523,6 +6523,14 @@ This allows the user's Guix to keep substitute information in cache for
 guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
 
+@item --nar-path=@var{path}
+Use @var{path} as the prefix for the URLs of ``nar'' files
+(@pxref{Invoking guix archive, normalized archives}).
+
+By default, nars are served at a URL such as
+@code{/nar/gzip/@dots{}-coreutils-8.25}.  This option allows you to
+change the @code{/nar} part to @var{path}.
+
 @item --public-key=@var{file}
 @itemx --private-key=@var{file}
 Use the specific @var{file}s as the public/private key pair used to sign

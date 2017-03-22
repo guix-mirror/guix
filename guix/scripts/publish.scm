@@ -72,6 +72,8 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
   (display (_ "
+      --nar-path=PATH    use PATH as the prefix for nar URLs"))
+  (display (_ "
       --public-key=FILE  use FILE as the public key for signatures"))
   (display (_ "
       --private-key=FILE use FILE as the private key for signatures"))
@@ -152,6 +154,9 @@ compression disabled~%"))
                       (leave (_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
                                 result))))
+        (option '("nar-path") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'nar-path arg result)))
         (option '("public-key") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'public-key-file arg result)))
@@ -166,6 +171,9 @@ compression disabled~%"))
 
 (define %default-options
   `((port . 8080)
+
+    ;; By default, serve nars under "/nar".
+    (nar-path . "nar")
 
     (public-key-file . ,%public-key-file)
     (private-key-file . ,%private-key-file)
@@ -589,6 +597,7 @@ blocking."
                                            (sockaddr:addr addr)
                                            port)))
            (socket  (open-server-socket address))
+           (nar-path  (assoc-ref opts 'nar-path))
            (repl-port (assoc-ref opts 'repl))
 
            ;; Read the key right away so that (1) we fail early on if we can't
@@ -615,5 +624,6 @@ consider using the '--user' option!~%")))
           (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
         (with-store store
           (run-publish-server socket store
+                              #:nar-path nar-path
                               #:compression compression
                               #:narinfo-ttl ttl))))))
