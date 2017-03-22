@@ -1,6 +1,6 @@
 ;;;; test-driver.scm - Guile test driver for Automake testsuite harness
 
-(define script-version "2016-04-03.12") ;UTC
+(define script-version "2017-03-22.13") ;UTC
 
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -59,7 +59,7 @@ The '--test-name', '--log-file' and '--trs-file' options are mandatory.\n"))
       (begin
         (format port "~A:~%" field)
         (pretty-print value port #:per-line-prefix "+ "))
-      (format port "~A: ~A~%" field value)))
+      (format port "~A: ~S~%" field value)))
 
 (define* (result->string symbol #:key colorize?)
   "Return SYMBOL as an upper case string.  Use colors when COLORIZE is #t."
@@ -85,10 +85,10 @@ current output port is supposed to be redirected to a '.log' file."
     ;; Procedure called at the start of an individual test case, before the
     ;; test expression (and expected value) are evaluated.
     (let ((result (cute assq-ref (test-result-alist runner) <>)))
-      (test-display "test-name" (result 'test-name))
-      (test-display "location"
-                    (string-append (result 'source-file) ":"
-                                   (number->string (result 'source-line))))
+      (format #t "test-name: ~A~%" (result 'test-name))
+      (format #t "location: ~A~%"
+              (string-append (result 'source-file) ":"
+                             (number->string (result 'source-line))))
       (test-display "source" (result 'source-form) #:pretty? #t)))
 
   (define (test-on-test-end-gnu runner)
@@ -99,10 +99,9 @@ current output port is supposed to be redirected to a '.log' file."
            (result  (cut assq-ref results <>)))
       (unless brief?
         ;; Display the result of each test case on the console.
-        (test-display
-         (result->string (test-result-kind runner) #:colorize? color?)
-         (string-append test-name " - " (test-runner-test-name runner))
-         out-port))
+        (format out-port "~A: ~A - ~A~%"
+                (result->string (test-result-kind runner) #:colorize? color?)
+                test-name (test-runner-test-name runner)))
       (when (result? 'expected-value)
         (test-display "expected-value" (result 'expected-value)))
       (when (result? 'expected-error)
@@ -111,12 +110,11 @@ current output port is supposed to be redirected to a '.log' file."
         (test-display "actual-value" (result 'actual-value)))
       (when (result? 'actual-error)
         (test-display "actual-error" (result 'actual-error) #:pretty? #t))
-      (test-display "result" (result->string (result 'result-kind)))
+      (format #t "result: ~a~%" (result->string (result 'result-kind)))
       (newline)
-      (test-display ":test-result"
-                    (string-append (result->string (test-result-kind runner))
-                                   " " (test-runner-test-name runner))
-                    trs-port)))
+      (format trs-port ":test-result: ~A ~A~%"
+              (result->string (test-result-kind runner))
+              (test-runner-test-name runner))))
 
   (define (test-on-group-end-gnu runner)
     ;; Procedure called by a 'test-end', including at the end of a test-group.
@@ -125,21 +123,18 @@ current output port is supposed to be redirected to a '.log' file."
           (skip (or (positive? (test-runner-skip-count runner))
                     (positive? (test-runner-xfail-count runner)))))
       ;; XXX: The global results need some refinements for XPASS.
-      (test-display ":global-test-result"
-                    (if fail "FAIL" (if skip "SKIP" "PASS"))
-                    trs-port)
-      (test-display ":recheck"
-                    (if fail "yes" "no")
-                    trs-port)
-      (test-display ":copy-in-global-log"
-                    (if (or fail skip) "yes" "no")
-                    trs-port)
+      (format trs-port ":global-test-result: ~A~%"
+              (if fail "FAIL" (if skip "SKIP" "PASS")))
+      (format trs-port ":recheck: ~A~%"
+              (if fail "yes" "no"))
+      (format trs-port ":copy-in-global-log: ~A~%"
+              (if (or fail skip) "yes" "no"))
       (when brief?
         ;; Display the global test group result on the console.
-        (test-display (result->string (if fail 'fail (if skip 'skip 'pass))
-                                      #:colorize? color?)
-                      test-name
-                      out-port))
+        (format out-port "~A: ~A~%"
+                (result->string (if fail 'fail (if skip 'skip 'pass))
+                                #:colorize? color?)
+                test-name))
       #f))
 
   (let ((runner (test-runner-null)))
