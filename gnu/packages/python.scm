@@ -1735,14 +1735,14 @@ standard library.")
 (define-public python-pafy
   (package
     (name "python-pafy")
-    (version "0.5.2")
+    (version "0.5.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pafy" version))
        (sha256
         (base32
-         "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
+         "1a7dxi95m1043rxx1r5x3ngb66nwlq6aqcasyqqjzmmmjps4zrim"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Currently pafy can not find itself in the tests
