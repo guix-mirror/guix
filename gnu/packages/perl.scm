@@ -6528,7 +6528,7 @@ files, as well as to verify that there are no missing or unknown files.")
 (define-public perl-test-exception
   (package
     (name "perl-test-exception")
-    (version "0.36")
+    (version "0.43")
     (source
      (origin
        (method url-fetch)
@@ -6536,7 +6536,7 @@ files, as well as to verify that there are no missing or unknown files.")
                            "Test-Exception-" version ".tar.gz"))
        (sha256
         (base32
-         "1zpwimspbq11wjrli481qk17aabzxab15cnnryflx45nzn3za2xk"))))
+         "0cxm7s4bg0xpxa6l6996a6iq3brr4j7p4hssnkc6dxv4fzq16sqm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
