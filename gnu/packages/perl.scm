@@ -5405,7 +5405,7 @@ checking parameters easier.")
 (define-public perl-params-validate
   (package
     (name "perl-params-validate")
-    (version "1.17")
+    (version "1.26")
     (source
      (origin
        (method url-fetch)
@@ -5413,7 +5413,7 @@ checking parameters easier.")
                            "Params-Validate-" version ".tar.gz"))
        (sha256
         (base32
-         "1wh23i9kkma6493c0q1kvy6wmahd6spg6xm3xbp2ar1iy1xhks5l"))))
+         "1vbj78qd46ip09i06dsbb62jfwpzp4bg7yi617v98nvim77w66l2"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
