@@ -3002,6 +3002,34 @@ of arbitrary depth and to delete an entire directory subtree from the
 file system.")
     (license (package-license perl))))
 
+(define-public perl-file-pushd
+  (package
+    (name "perl-file-pushd")
+    (version "1.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/File-pushd-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "02rlqvyy7gly3dsqwaa81aisyy9c791b8xvwzczcbgmcwgzkgaxm"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/File-pushd")
+    (synopsis
+     "Change directory temporarily for a limited scope")
+    (description "@code{File::pushd} does a temporary @code{chdir} that is
+easily and automatically reverted, similar to @code{pushd} in some Unix
+command shells.  It works by creating an object that caches the original
+working directory.  When the object is destroyed, the destructor calls
+@code{chdir} to revert to the original working directory.  By storing the
+object in a lexical variable with a limited scope, this happens automatically
+at the end of the scope.")
+    (license asl2.0)))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
