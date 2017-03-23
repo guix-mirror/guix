@@ -794,7 +794,8 @@ projects, from individuals to large-scale enterprise operations.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))))
+               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))
+             (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
     (home-page "http://www.gnu.org/software/rcs/")
