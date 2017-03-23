@@ -860,44 +860,28 @@ and XMP metadata of images in various formats.")
 (define-public devil
   (package
     (name "devil")
-    (version "1.7.8")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/openil/"
                                   "DevIL-" version ".tar.gz"))
               (sha256
                (base32
-                "1zd850nn7nvkkhasrv7kn17kzgslr5ry933v6db62s4lr0zzlbv8"))
-              ;; Backported from upstream:
-              ;; https://github.com/DentonW/DevIL/commit/724194d7a9a91221a564579f64bdd6f0abd64219.patch
-              (patches (search-patches "devil-fix-libpng.patch"
-                                       "devil-CVE-2009-3994.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Fix old lcms include directives and lib flags.
-               '(substitute* '("configure" "src-IL/src/il_profiles.c")
-                  (("-llcms") "-llcms2")
-                  (("lcms/lcms\\.h") "lcms2/lcms2.h")
-                  (("lcms\\.h") "lcms2.h")))))
-    (build-system gnu-build-system)
+                "02dpzvi493r09c9hfjnk54nladl3qw55iqkkg18g12fxwwz9fx80"))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("--enable-ILUT=yes") ; build utility library
+     '(;; XXX: Not supported in the released CMakeLists.txt.
+       ;; Enable this for > 1.8.0.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Fix hard-coded /bin/bash reference.
-             (substitute* '("test/Makefile")
-               (("TESTS_ENVIRONMENT = /bin/bash")
-                (string-append "TESTS_ENVIRONMENT = "
-                               (assoc-ref inputs "bash")
-                               "/bin/bash")))
-             #t)))))
+         (add-before 'configure 'change-directory
+           (lambda _ (chdir "DevIL") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmng" ,libmng)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)

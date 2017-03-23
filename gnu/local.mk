@@ -526,8 +526,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
-  %D%/packages/patches/devil-CVE-2009-3994.patch		\
-  %D%/packages/patches/devil-fix-libpng.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/doc++-include-directives.patch		\
