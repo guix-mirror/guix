@@ -5257,7 +5257,7 @@ instance, not by name.")
 (define-public perl-package-deprecationmanager
   (package
     (name "perl-package-deprecationmanager")
-    (version "0.13")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -5265,7 +5265,7 @@ instance, not by name.")
                            "Package-DeprecationManager-" version ".tar.gz"))
        (sha256
         (base32
-         "0fkvq3xxwc3l5hg64dr9sj3l12dl59i44cg407qx9sd6r51j3qfi"))))
+         "0jv8svfh1c1q4vxlkf8vjfbdq3n2sj3nx5llv1qrhp1b93d3lx0x"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
