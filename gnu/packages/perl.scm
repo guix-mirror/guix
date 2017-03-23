@@ -8083,15 +8083,16 @@ system---most of the @code{Module::Build} code is pure-Perl.")
 (define-public perl-parse-cpan-meta
   (package
     (name "perl-parse-cpan-meta")
-    (version "1.4414")
+    (version "2.150010")
     (source
      (origin
        (method url-fetch)
+       ;; This module is now known as CPAN::Meta on CPAN.
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
-                           "Parse-CPAN-Meta-" version ".tar.gz"))
+                           "CPAN-Meta-" version ".tar.gz"))
        (sha256
         (base32
-         "06ya2rg599qanqb1fxiyrd489mvmdgzbw4ph23hwjwpv9lahhxnd"))))
+         "1mm3dfw3ffyzb2ikpqn9l6zyqrxijb4vyywmbx2l21ryqwp0zy74"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)))
