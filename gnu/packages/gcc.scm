@@ -519,16 +519,16 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-4.9 "gfortran" '("fortran")
               %generic-search-paths))
 
+(define-public gfortran-5
+  (custom-gcc gcc-5 "gfortran" '("fortran")
+              %generic-search-paths))
+
 (define-public gfortran
   ;; Note: Update this when GCC changes!  We cannot use
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
   ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
   ;; report two gfortran@5 that are in fact identical.
   gfortran-5)
-
-(define-public gfortran-5
-  (custom-gcc gcc-5 "gfortran" '("fortran")
-              %generic-search-paths))
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")
