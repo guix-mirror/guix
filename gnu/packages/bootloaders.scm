@@ -240,7 +240,7 @@ menu to select one of the installed operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex-2.6.1))) ; A bug in flex prevents building with flex-2.6.3.
     (arguments
      `(#:make-flags
        (list "CC=gcc"
