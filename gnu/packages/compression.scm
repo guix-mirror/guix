@@ -596,7 +596,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.068")
+    (version "2.074")
     (source
      (origin
        (method url-fetch)
@@ -604,7 +604,7 @@ decompression of some loosely related file formats used by Microsoft.")
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
         (base32
-         "16hl58xppckldz05zdyid1l5gpaykzwvkq682h3rc3nilbhgjqqg"))))
+         "0b5jwqf15zr787acnx8sfyy2zavdd7gfkd98n1dgy8fs6r8yb8a4"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
@@ -616,7 +616,7 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.068")
+    (version "2.074")
     (source
      (origin
        (method url-fetch)
@@ -624,7 +624,7 @@ compression library.")
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
         (base32
-         "06q7n87g26nn5gv4z2p31ca32f6zk124hqxc25rfgkjd3qi5798i"))))
+         "08bpx9v6i40n54rdcj6invlj294z20amrl8wvwf9b83aldwdwsd3"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -651,7 +651,7 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.068")
+    (version "2.074")
     (source
      (origin
        (method url-fetch)
@@ -659,11 +659,11 @@ compression library.")
                            "IO-Compress-" version ".tar.gz"))
        (sha256
         (base32
-         "0dy0apjp7j9dfkzfjspjd3z9gh26srx5vac72g59bkkz1jf8s1gs"))))
+         "1wlpy2026djfmq0bjync531yq6s695jf7bcnpvjphrasi776igdl"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.068
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.068
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.074
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.074
     (home-page "http://search.cpan.org/dist/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and

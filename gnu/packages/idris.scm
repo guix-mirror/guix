@@ -31,7 +31,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "0.99")
+    (version "0.99.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -39,7 +39,7 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "1sd4vy5rx0mp32xj99qijhknkgw4d2rxvz6wiy3pym6kaqmc497i"))))
+                "12kw452arnl5ldip2x749j5np3l40bv7asqdv9w0f60j45hii40r"))))
     (build-system haskell-build-system)
     (inputs
      `(("gmp" ,gmp)
@@ -53,6 +53,7 @@
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cheapskate" ,ghc-cheapskate)
+       ("ghc-code-page" ,ghc-code-page)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)

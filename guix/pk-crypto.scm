@@ -23,11 +23,13 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:export (canonical-sexp?
             error-source
             error-string
             string->canonical-sexp
             canonical-sexp->string
+            read-file-sexp
             number->canonical-sexp
             canonical-sexp-car
             canonical-sexp-cdr
@@ -142,6 +144,12 @@ thrown along with 'gcry-error'."
           (if (zero? size)
               (loop (* len 2))
               (pointer->string buf size "ISO-8859-1")))))))
+
+(define (read-file-sexp file)
+  "Return the canonical sexp read from FILE."
+  (call-with-input-file file
+    (compose string->canonical-sexp
+             read-string)))
 
 (define canonical-sexp-car
   (let* ((ptr  (libgcrypt-func "gcry_sexp_car"))

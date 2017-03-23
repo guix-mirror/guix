@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +52,10 @@
   #:use-module (guix scripts)
   #:use-module ((guix utils) #:select (compressed-file?))
   #:use-module ((guix build utils) #:select (dump-port))
-  #:export (guix-publish))
+  #:export (%public-key
+            %private-key
+
+            guix-publish))
 
 (define (show-help)
   (format #t (_ "Usage: guix publish [OPTION]...
@@ -68,6 +71,12 @@ Publish ~a over HTTP.\n") %store-directory)
                          compress archives at LEVEL"))
   (display (_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
+  (display (_ "
+      --nar-path=PATH    use PATH as the prefix for nar URLs"))
+  (display (_ "
+      --public-key=FILE  use FILE as the public key for signatures"))
+  (display (_ "
+      --private-key=FILE use FILE as the private key for signatures"))
   (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
@@ -145,6 +154,15 @@ compression disabled~%"))
                       (leave (_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
                                 result))))
+        (option '("nar-path") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'nar-path arg result)))
+        (option '("public-key") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'public-key-file arg result)))
+        (option '("private-key" "secret-key") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'private-key-file arg result)))
         (option '(#\r "repl") #f #t
                 (lambda (opt name arg result)
                   ;; If port unspecified, use default Guile REPL port.
@@ -154,6 +172,12 @@ compression disabled~%"))
 (define %default-options
   `((port . 8080)
 
+    ;; By default, serve nars under "/nar".
+    (nar-path . "nar")
+
+    (public-key-file . ,%public-key-file)
+    (private-key-file . ,%private-key-file)
+
     ;; Default to fast & low compression.
     (compression . ,(if (zlib-available?)
                         %default-gzip-compression
@@ -162,18 +186,11 @@ compression disabled~%"))
     (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
 
-(define (lazy-read-file-sexp file)
-  "Return a promise to read the canonical sexp from FILE."
-  (delay
-    (call-with-input-file file
-      (compose string->canonical-sexp
-               read-string))))
-
+;; The key pair used to sign narinfos.
 (define %private-key
-  (lazy-read-file-sexp %private-key-file))
-
+  (make-parameter #f))
 (define %public-key
-  (lazy-read-file-sexp %public-key-file))
+  (make-parameter #f))
 
 (define %nix-cache-info
   `(("StoreDir" . ,%store-directory)
@@ -186,25 +203,26 @@ compression disabled~%"))
 
 (define (signed-string s)
   "Sign the hash of the string S with the daemon's key."
-  (let* ((public-key (force %public-key))
+  (let* ((public-key (%public-key))
          (hash (bytevector->hash-data (sha256 (string->utf8 s))
                                       #:key-type (key-type public-key))))
-    (signature-sexp hash (force %private-key) public-key)))
+    (signature-sexp hash (%private-key) public-key)))
 
 (define base64-encode-string
   (compose base64-encode string->utf8))
 
 (define* (narinfo-string store store-path key
-                         #:key (compression %no-compression))
+                         #:key (compression %no-compression)
+                         (nar-path "nar"))
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
-narinfo is signed with KEY."
+narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
   (let* ((path-info  (query-path-info store store-path))
          (compression (if (compressed-file? store-path)
                           %no-compression
                           compression))
          (url        (encode-and-join-uri-path
-                      `("nar"
+                      `(,@(split-and-decode-uri-path nar-path)
                         ,@(match compression
                             (($ <compression> 'none)
                              '())
@@ -266,11 +284,12 @@ References: ~a~%"
                       %nix-cache-info))))
 
 (define* (render-narinfo store request hash
-                         #:key ttl (compression %no-compression))
+                         #:key ttl (compression %no-compression)
+                         (nar-path "nar"))
   "Render metadata for the store path corresponding to HASH.  If TTL is true,
 advertise it as the maximum validity period (in seconds) via the
 'Cache-Control' header.  This allows 'guix substitute' to cache it for an
-appropriate duration."
+appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
         (not-found request)
@@ -279,7 +298,8 @@ appropriate duration."
                         `((cache-control (max-age . ,ttl)))
                         '()))
                 (cut display
-                  (narinfo-string store store-path (force %private-key)
+                  (narinfo-string store store-path (%private-key)
+                                  #:nar-path nar-path
                                   #:compression compression)
                   <>)))))
 
@@ -469,7 +489,12 @@ blocking."
 (define* (make-request-handler store
                                #:key
                                narinfo-ttl
+                               (nar-path "nar")
                                (compression %no-compression))
+  (define nar-path?
+    (let ((expected (split-and-decode-uri-path nar-path)))
+      (cut equal? expected <>)))
+
   (lambda (request body)
     (format #t "~a ~a~%"
             (request-method request)
@@ -485,19 +510,23 @@ blocking."
            ;; NARINFO-TTL.
            (render-narinfo store request hash
                            #:ttl narinfo-ttl
+                           #:nar-path nar-path
                            #:compression compression))
+          ;; /nar/file/NAME/sha256/HASH
+          (("file" name "sha256" hash)
+           (guard (c ((invalid-base32-character? c)
+                      (not-found request)))
+             (let ((hash (nix-base32-string->bytevector hash)))
+               (render-content-addressed-file store request
+                                              name 'sha256 hash))))
 
           ;; Use different URLs depending on the compression type.  This
           ;; guarantees that /nar URLs remain valid even when 'guix publish'
           ;; is restarted with different compression parameters.
 
-          ;; /nar/<store-item>
-          (("nar" store-item)
-           (render-nar store request store-item
-                       #:compression %no-compression))
           ;; /nar/gzip/<store-item>
-          (("nar" "gzip" store-item)
-           (if (zlib-available?)
+          ((components ... "gzip" store-item)
+           (if (and (nar-path? components) (zlib-available?))
                (render-nar store request store-item
                            #:compression
                            (match compression
@@ -507,19 +536,21 @@ blocking."
                               %default-gzip-compression)))
                (not-found request)))
 
-          ;; /nar/file/NAME/sha256/HASH
-          (("file" name "sha256" hash)
-           (guard (c ((invalid-base32-character? c)
-                      (not-found request)))
-             (let ((hash (nix-base32-string->bytevector hash)))
-               (render-content-addressed-file store request
-                                              name 'sha256 hash))))
-          (_ (not-found request)))
+          ;; /nar/<store-item>
+          ((components ... store-item)
+           (if (nar-path? components)
+               (render-nar store request store-item
+                           #:compression %no-compression)
+               (not-found request)))
+
+          (x (not-found request)))
         (not-found request))))
 
 (define* (run-publish-server socket store
-                             #:key (compression %no-compression) narinfo-ttl)
+                             #:key (compression %no-compression)
+                             (nar-path "nar") narinfo-ttl)
   (run-server (make-request-handler store
+                                    #:nar-path nar-path
                                     #:narinfo-ttl narinfo-ttl
                                     #:compression compression)
               concurrent-http-server
@@ -566,11 +597,13 @@ blocking."
                                            (sockaddr:addr addr)
                                            port)))
            (socket  (open-server-socket address))
-           (repl-port (assoc-ref opts 'repl)))
-      ;; Read the key right away so that (1) we fail early on if we can't
-      ;; access them, and (2) we can then drop privileges.
-      (force %private-key)
-      (force %public-key)
+           (nar-path  (assoc-ref opts 'nar-path))
+           (repl-port (assoc-ref opts 'repl))
+
+           ;; Read the key right away so that (1) we fail early on if we can't
+           ;; access them, and (2) we can then drop privileges.
+           (public-key  (read-file-sexp (assoc-ref opts 'public-key-file)))
+           (private-key (read-file-sexp (assoc-ref opts 'private-key-file))))
 
       (when user
         ;; Now that we've read the key material and opened the socket, we can
@@ -580,13 +613,17 @@ blocking."
       (when (zero? (getuid))
         (warning (_ "server running as root; \
 consider using the '--user' option!~%")))
-      (format #t (_ "publishing ~a on ~a, port ~d~%")
-              %store-directory
-              (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
-              (sockaddr:port address))
-      (when repl-port
-        (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
-      (with-store store
-        (run-publish-server socket store
-                            #:compression compression
-                            #:narinfo-ttl ttl)))))
+
+      (parameterize ((%public-key public-key)
+                     (%private-key private-key))
+        (format #t (_ "publishing ~a on ~a, port ~d~%")
+                %store-directory
+                (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
+                (sockaddr:port address))
+        (when repl-port
+          (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
+        (with-store store
+          (run-publish-server socket store
+                              #:nar-path nar-path
+                              #:compression compression
+                              #:narinfo-ttl ttl))))))

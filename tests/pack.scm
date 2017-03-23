@@ -50,6 +50,7 @@
 
 (test-begin "pack")
 
+(unless (network-reachable?) (test-skip 1))
 (test-assertm "self-contained-tarball"
   (mlet* %store-monad
       ((profile (profile-derivation (packages->manifest

@@ -36,6 +36,7 @@
               ":pserver:anonymous@cvs.savannah.gnu.org:/sources/libffcall")
              (module "ffcall")
              (revision "2015-01-15")))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "1lwdskc2w4rr98x9flr2726lmj4190l16r0izg7gqxy50801wwgd"))))

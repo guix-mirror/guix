@@ -33,6 +33,7 @@
   #:use-module ((guix records) #:select (recutils->alist))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix pk-crypto)
+  #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
   #:use-module (guix zlib)
   #:use-module (web uri)
   #:use-module (web client)
@@ -99,6 +100,10 @@
 
 ;; Wait until the two servers are ready.
 (wait-until-ready 6789)
+
+;; Initialize the public/private key SRFI-39 parameters.
+(%public-key (read-file-sexp %public-key-file))
+(%private-key (read-file-sexp %private-key-file))
 
 
 (test-begin "publish")
@@ -226,6 +231,36 @@ References: ~%"
          (info (recutils->alist body)))
     (list (assoc-ref info "Compression")
           (dirname (assoc-ref info "URL")))))
+
+(test-equal "custom nar path"
+  ;; Serve nars at /foo/bar/chbouib instead of /nar.
+  (list `(("StorePath" . ,%item)
+          ("URL" . ,(string-append "foo/bar/chbouib/" (basename %item)))
+          ("Compression" . "none"))
+        200
+        404)
+  (let ((thread (with-separate-output-ports
+                 (call-with-new-thread
+                  (lambda ()
+                    (guix-publish "--port=6798" "-C0"
+                                  "--nar-path=///foo/bar//chbouib/"))))))
+    (wait-until-ready 6798)
+    (let* ((base    "http://localhost:6798/")
+           (part    (store-path-hash-part %item))
+           (url     (string-append base part ".narinfo"))
+           (nar-url (string-append base "foo/bar/chbouib/"
+                                   (basename %item)))
+           (body    (http-get-port url)))
+      (list (filter (lambda (item)
+                      (match item
+                        (("Compression" . _) #t)
+                        (("StorePath" . _)  #t)
+                        (("URL" . _) #t)
+                        (_ #f)))
+                    (recutils->alist body))
+            (response-code (http-get nar-url))
+            (response-code
+             (http-get (string-append base "nar/" (basename %item))))))))
 
 (test-equal "/nar/ with properly encoded '+' sign"
   "Congrats!"

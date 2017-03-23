@@ -1725,14 +1725,14 @@ standard library.")
 (define-public python-pafy
   (package
     (name "python-pafy")
-    (version "0.5.2")
+    (version "0.5.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pafy" version))
        (sha256
         (base32
-         "1ckvrypyvb7jbqlgwdz0y337ajagjv7dgxyns326nqwypn1wpq0i"))))
+         "1a7dxi95m1043rxx1r5x3ngb66nwlq6aqcasyqqjzmmmjps4zrim"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Currently pafy can not find itself in the tests
@@ -4372,14 +4372,14 @@ both of which are installed automatically if you install this library.")
 (define-public python-sqlalchemy-utils
   (package
     (name "python-sqlalchemy-utils")
-    (version "0.32.11")
+    (version "0.32.13")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "SQLAlchemy-Utils" version))
         (sha256
          (base32
-          "1wghyvk73cmq3iqyg3fczw128fv2pan2v76m0xg1bw05h8fhvnk3"))))
+          "0vsib7gidjamzsz6w4s5pdhxzxsrkghjnm4sqwk94igjrl3i5ixj"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Many tests require a running database server.
@@ -4796,7 +4796,7 @@ etc.  The core of this module is a decorator factory.")
 (define-public python-drmaa
   (package
     (name "python-drmaa")
-    (version "0.7.6")
+    (version "0.7.7")
     (source
      (origin
        (method url-fetch)
@@ -4804,7 +4804,7 @@ etc.  The core of this module is a decorator factory.")
              "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
              version ".tar.gz"))
        (sha256
-        (base32 "0bzl9f9g34dlhwf09i3fdv7dqqzf2iq0w7d6c2bafx1nlap8qfbh"))))
+        (base32 "0xzqriqyvk5b8hszbavsyxd29wm3sxirm8zvvdm73rs2iq7w4hkx"))))
     (build-system python-build-system)
     ;; The test suite requires libdrmaa which is provided by the cluster
     ;; environment.  At runtime the environment variable DRMAA_LIBRARY_PATH
@@ -5666,14 +5666,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.5.1")
+    (version "4.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "1qgmhw65ncsgccjhslgkkszif47q6gvxwqv4mim17agxd81p951w"))))
+         "0glaw1vyxnbp03fni7h5496n6iib0n5iim4gax1n0ngscs9s075j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6742,7 +6742,7 @@ provided that can be used to do various manipulations with LilyPond files.")
 (define-public python-appdirs
   (package
     (name "python-appdirs")
-    (version "1.4.0")
+    (version "1.4.3")
     (source
       (origin
         (method url-fetch)
@@ -6752,7 +6752,7 @@ provided that can be used to do various manipulations with LilyPond files.")
                ".tar.gz"))
         (sha256
           (base32
-            "1iddva7v3fq0aqzsahkazxr7vpw28mqcrsy818z4wyiqnkplbhlg"))))
+            "14id6wxi12lgyw0mg3bcfnf888ad07jz9yj46gfzhn186z8rcn4y"))))
     (build-system python-build-system)
     (home-page "http://github.com/ActiveState/appdirs")
     (synopsis
@@ -7126,13 +7126,13 @@ implementations of ASN.1-based codecs and protocols.")
 (define-public python-ipaddress
   (package
     (name "python-ipaddress")
-    (version "1.0.16")
+    (version "1.0.18")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ipaddress" version))
               (sha256
                (base32
-                "1c3imabdrw8nfksgjjflzg7h4ynjckqacb188rf541m74arq4cas"))))
+                "1q8klj9d84cmxgz66073x1j35cplr3r77vx1znhxiwl5w74391ax"))))
     (build-system python-build-system)
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
@@ -8994,14 +8994,14 @@ Python at your fingertips, in Lisp form.")
 (define-public python-rauth
   (package
     (name "python-rauth")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rauth" version))
         (sha256
          (base32
-          "00pq7zw429hhza9c0qzxiqp77m653jv09z92nralnmzwdf6pzicf"))))
+          "02kv8w8l98ky223avyq7vw7x1f2ya9chrm59r77ylq45qb0xnk2j"))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"))
@@ -9090,14 +9090,14 @@ otherwise matches 3.2’s API.")
 (define-public python2-futures
   (package
     (name "python2-futures")
-    (version "3.0.3")
+    (version "3.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "futures" version))
         (sha256
          (base32
-          "1vcb34dqhzkhbq1957vdjszhhm5y3j9ba88dgwhqx2zynhmk9qig"))))
+          "1pw1z4329xvlabdpwqa6b7v2fxf7hl64m4cgr22ckbym8m8m4hh5"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (home-page "https://github.com/agronholm/pythonfutures")
@@ -12294,13 +12294,13 @@ failures.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "1abld5p4a6n5zjnyw5mi2pv37gqalcybv2brjr2y6l9l2p8v9mja"))))
+                "0bh6j0l8iapjnsgg3bs6q075cnzjl6zw1vlgqyv3qrygm2cxypkn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

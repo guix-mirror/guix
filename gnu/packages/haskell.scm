@@ -9,6 +9,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -561,6 +562,27 @@ package.")
     (description "Provides default instances for types from the dlist
 package.")
     (license license:bsd-3)))
+
+(define-public ghc-code-page
+  (package
+  (name "ghc-code-page")
+  (version "0.1.3")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://hackage.haskell.org/package/code-page/code-page-"
+           version ".tar.gz"))
+      (sha256
+       (base32
+        "1491frk4jx6dlhifky9dvcxbsbcfssrz979a5hp5zn061rh8cp76"))))
+  (build-system haskell-build-system)
+  (home-page "https://github.com/RyanGlScott/code-page")
+  (synopsis "Windows code page library for Haskell")
+  (description "A cross-platform library with functions for adjusting
+code pages on Windows.  On all other operating systems, the library does
+nothing.")
+  (license license:bsd-3)))
 
 (define-public ghc-haddock-library
   (package

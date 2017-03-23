@@ -732,6 +732,7 @@ simulator.")
                 (uri (git-reference
                        (url "https://github.com/puppeh/binutils-vc4.git")
                        (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "1kdrz6fki55lm15rwwamn74fnqpy0zlafsida2zymk76n3656c63"))))
