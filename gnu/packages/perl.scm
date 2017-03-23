@@ -7538,7 +7538,7 @@ rounded or exact terms.")
 (define-public perl-time-duration-parse
   (package
     (name "perl-time-duration-parse")
-    (version "0.11")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -7546,7 +7546,7 @@ rounded or exact terms.")
                            "Time-Duration-Parse-" version ".tar.gz"))
        (sha256
         (base32
-         "1yk4cqkldwzkfy9y9ngqrj7p7sbsrsfa26mrm8f70z5n5m8q31x0"))))
+         "0affdzhsiy7dr6dzj2p6m9lynmjh53k31bprfsfa21pz8551hjj1"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-time-duration" ,perl-time-duration)))
