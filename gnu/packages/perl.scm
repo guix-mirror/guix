@@ -2311,7 +2311,7 @@ hierarchy the overloads are declared and where the code implementing it is.")
 (define-public perl-devel-partialdump
   (package
     (name "perl-devel-partialdump")
-    (version "0.17")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
@@ -2319,7 +2319,7 @@ hierarchy the overloads are declared and where the code implementing it is.")
                            "Devel-PartialDump-" version ".tar.gz"))
        (sha256
         (base32
-         "0nr3qa68x4yp219kd17j1ks9c95qc9agfvz7ddnpn8p78f3kgwfn"))))
+         "0i1khiyi4h4h8vfwn7xip5c53z2hb2rk6407f3csvrdsiibvy53q"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
