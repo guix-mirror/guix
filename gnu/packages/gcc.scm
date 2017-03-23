@@ -401,7 +401,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
-;;       the gcc-toolchain-* definitions accordingly.
+;;       the gcc-toolchain-* definitions and the gfortran definition
+;;       accordingly.
 (define-public gcc gcc-5)
 
 (define-public (make-libstdc++ gcc)
@@ -521,9 +522,9 @@ as the 'native-search-paths' field."
 (define-public gfortran
   ;; Note: Update this when GCC changes!  We cannot use
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
-  ;; that is not 'eq?' with GFORTRAN-4.9, and thus 'fold-packages' would
-  ;; report two gfortran@4.9 that are in fact identical.
-  gfortran-4.9)
+  ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
+  ;; report two gfortran@5 that are in fact identical.
+  gfortran-5)
 
 (define-public gfortran-5
   (custom-gcc gcc-5 "gfortran" '("fortran")
