@@ -8035,7 +8035,7 @@ representation.")
 (define-public perl-cpan-meta-yaml
   (package
     (name "perl-cpan-meta-yaml")
-    (version "0.012")
+    (version "0.018")
     (source
      (origin
        (method url-fetch)
@@ -8043,7 +8043,7 @@ representation.")
                            "CPAN-Meta-YAML-" version ".tar.gz"))
        (sha256
         (base32
-         "0a0d62w8d81kkas4j1h48znk0f0vrpibl31gvz9r8hm77dbqqwkw"))))
+         "150jh9l7baddl2587m23qs2l0pb395qsx9bhsgdsnn6y9k4zgjik"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f))                    ;Tests require Test::More >= 0.99
