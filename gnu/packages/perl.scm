@@ -8105,7 +8105,7 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
 (define-public perl-scalar-list-utils
   (package
     (name "perl-scalar-list-utils")
-    (version "1.41")
+    (version "1.47")
     (source
      (origin
        (method url-fetch)
@@ -8113,7 +8113,7 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
                            "Scalar-List-Utils-" version ".tar.gz"))
        (sha256
         (base32
-         "04l1q4hps9n8b1hk9kpgpc1cryim7pl9sfdyb7fz5nq4gmz307j7"))))
+         "1qgg6zxqwziva5j1k5gjks4xmhmgklm551ni3zb74sd9f9rk90y4"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Scalar-List-Utils")
     (synopsis "Common Scalar and List utility subroutines")
