@@ -224,12 +224,9 @@ rustc-bootstrap and cargo-bootstrap packages.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-configure
            (lambda _
-             ;; Detect target CPU correctly.
              (substitute* "configure"
-               (("/usr/bin/env") (which "env")))
-             ;; Avoid curl as a build dependency.
-             (substitute* "configure"
-               (("probe_need CFG_CURL curl") ""))
+               (("/usr/bin/env") (which "env")) ; Detect target CPU correctly.
+               (("probe_need CFG_CURL curl") "")) ; Avoid curl as a build dependency.
              #t))
          (add-after 'unpack 'set-env
            (lambda _
