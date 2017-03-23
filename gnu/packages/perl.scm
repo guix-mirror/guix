@@ -6027,7 +6027,7 @@ can see them.")
 (define-public perl-sub-name
   (package
     (name "perl-sub-name")
-    (version "0.12")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -6035,7 +6035,7 @@ can see them.")
                            "Sub-Name-" version ".tar.gz"))
        (sha256
         (base32
-         "1sdlc8pv7vyyc48gzh70hbwzn0hzwl3zbcy2dkmfw8vjzgya5i06"))))
+         "05viq8scqk29g964fsfvls2rhvlb8myz3jblwh5c2ivhw3gfjcmx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-devel-checkbin" ,perl-devel-checkbin)))
