@@ -6420,7 +6420,7 @@ using @code{Test::Class}.")
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
-    (version "0.16")
+    (version "0.22")
     (source
      (origin
        (method url-fetch)
@@ -6428,13 +6428,15 @@ using @code{Test::Class}.")
                            "Test-CleanNamespaces-" version ".tar.gz"))
        (sha256
         (base32
-         "1ynrds515gcq954z34zm03rgcx0dskiaz7qj0k7k5gmrjj1kfycp"))))
+         "1jma95agqqy7iwdcl6jbg1waqz7mjqng4l046lpknhfxjhcj4al6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)
+     `(("perl-file-pushd" ,perl-file-pushd)
+       ("perl-test-requires" ,perl-test-requires)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-warnings" ,perl-test-warnings)
-       ("perl-test-tester" ,perl-test-tester)))
+       ("perl-test-tester" ,perl-test-tester)
+       ("perl-test-needs" ,perl-test-needs)))
     (propagated-inputs
      `(("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-package-stash" ,perl-package-stash)
