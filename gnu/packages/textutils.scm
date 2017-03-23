@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -232,7 +233,8 @@ input bits thoroughly but are not suitable for cryptography.")
                                   "/ustr-" version ".tar.bz2"))
               (sha256
                (base32
-                "1i623ygdj7rkizj7985q9d6vj5amwg686aqb5j3ixpkqkyp6xbrx"))))
+                "1i623ygdj7rkizj7985q9d6vj5amwg686aqb5j3ixpkqkyp6xbrx"))
+              (patches (search-patches "ustr-fix-build-with-gcc-5.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

@@ -961,6 +961,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-initialize-symlink-flag.patch	\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
+  %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
