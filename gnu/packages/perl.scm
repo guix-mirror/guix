@@ -8013,7 +8013,7 @@ methods for interrogating that data.")
 (define-public perl-cpan-meta-requirements
   (package
     (name "perl-cpan-meta-requirements")
-    (version "2.131")
+    (version "2.140")
     (source
      (origin
        (method url-fetch)
@@ -8021,7 +8021,7 @@ methods for interrogating that data.")
                            "CPAN-Meta-Requirements-" version ".tar.gz"))
        (sha256
         (base32
-         "12p5s7w3cwcrbpcrxzanvpr0syswhwlqzbaki6m044c45jix2fss"))))
+         "1a8zflgaayycmn3zvd3n64yypa4jyl1va0h51wpr5w46irg69608"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/CPAN-Meta-Requirements")
     (synopsis "Set of version requirements for a CPAN dist")
