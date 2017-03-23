@@ -1307,7 +1307,7 @@ the caller.")
 (define-public perl-cpan-meta-check
   (package
     (name "perl-cpan-meta-check")
-    (version "0.009")
+    (version "0.011")
     (source
      (origin
        (method url-fetch)
@@ -1315,7 +1315,7 @@ the caller.")
                            "CPAN-Meta-Check-" version ".tar.gz"))
        (sha256
         (base32
-         "0qbk5dwvhd78qgq5x6nim2n0l78pylvlklpbrm56w9yss6pl6bgb"))))
+         "0nxi0xhhd3dwhgri3l8z8gpz2ibvhm5k7jjls8xmnlh0v84p04kh"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-test-deep" ,perl-test-deep)))
     (propagated-inputs `(("perl-cpan-meta" ,perl-cpan-meta)))
