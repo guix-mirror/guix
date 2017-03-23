@@ -6551,9 +6551,9 @@ primarily for debugging a running @command{guix publish} server.
 @end table
 
 Enabling @command{guix publish} on a GuixSD system is a one-liner: just
-add a call to @code{guix-publish-service} in the @code{services} field
-of the @code{operating-system} declaration (@pxref{guix-publish-service,
-@code{guix-publish-service}}).
+instantiate a @code{guix-publish-service-type} service in the @code{services} field
+of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
+@code{guix-publish-service-type}}).
 
 If you are instead running Guix on a ``foreign distro'', follow these
 instructions:”
@@ -9007,16 +9007,33 @@ uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
 This service is not part of @var{%base-services}.
 @end deffn
 
-@anchor{guix-publish-service}
-@deffn {Scheme Procedure} guix-publish-service [#:guix @var{guix}] @
-           [#:port 80] [#:host "localhost"]
-Return a service that runs @command{guix publish} listening on @var{host}
-and @var{port} (@pxref{Invoking guix publish}).
+@anchor{guix-publish-service-type}
+@deffn {Scheme Variable} guix-publish-service-type @var{config}
+This is the service type for @command{guix publish} (@pxref{Invoking
+guix publish}).  @var{config} must be a @code{guix-configuration}
+object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
+
+@deftp {Data Type} guix-publish-configuration
+Data type representing the configuration of the @code{guix publish}
+service.
+
+@table @asis
+@item @code{guix} (default: @code{guix})
+The Guix package to use.
+
+@item @code{port} (default: @code{80})
+The TCP port to listen for connections.
+
+@item @code{host} (default: @code{"localhost"})
+The host (and thus, network interface) to listen to.  Use
+@code{"0.0.0.0"} to listen on all the network interfaces.
+@end table
+@end deftp
 
 @anchor{rngd-service}
 @deffn {Scheme Procedure} rngd-service [#:rng-tools @var{rng-tools}] @

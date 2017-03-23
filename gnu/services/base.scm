@@ -124,6 +124,9 @@
             guix-service-type
             guix-publish-configuration
             guix-publish-configuration?
+            guix-publish-configuration-guix
+            guix-publish-configuration-port
+            guix-publish-configuration-host
             guix-publish-service
             guix-publish-service-type
 
@@ -1475,6 +1478,7 @@ and @var{port} (@pxref{Invoking guix publish}).
 This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start."
+  ;; Deprecated.
   (service guix-publish-service-type
            (guix-publish-configuration (guix guix) (port port) (host host))))
 
