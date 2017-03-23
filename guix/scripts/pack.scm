@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,7 @@
         (compressor "lzip"  "lz"
                     #~(#+(file-append lzip "/bin/lzip") "-9"))
         (compressor "xz"    "xz"
-                    #~(#+(file-append xz "/bin/xz") "-e"))
+                    #~(#+(file-append xz "/bin/xz") "-e -T0"))
         (compressor "bzip2" "bz2"
                     #~(#+(file-append bzip2 "/bin/bzip2") "-9"))))
 
