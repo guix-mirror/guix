@@ -6755,10 +6755,7 @@ provided that can be used to do various manipulations with LilyPond files.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/a/appdirs/appdirs-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "appdirs" version))
         (sha256
           (base32
             "14id6wxi12lgyw0mg3bcfnf888ad07jz9yj46gfzhn186z8rcn4y"))))
