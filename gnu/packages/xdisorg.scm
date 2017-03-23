@@ -723,7 +723,7 @@ compact configuration syntax.")
                  (lambda _
                    (format #t
                            "[Desktop Entry]~@
-                           Name=rxvt-unicode~@
+                           Name=rxvt-unicode (client)~@
                            Comment=Rxvt clone with XFT and unicode support~@
                            Exec=~a/bin/urxvtc~@
                            TryExec=~@*~a/bin/urxvtc~@
