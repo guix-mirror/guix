@@ -7081,7 +7081,7 @@ warning based code.")
 (define-public perl-test-warnings
   (package
     (name "perl-test-warnings")
-    (version "0.020")
+    (version "0.026")
     (source
      (origin
        (method url-fetch)
@@ -7089,7 +7089,7 @@ warning based code.")
                            "Test-Warnings-" version ".tar.gz"))
        (sha256
         (base32
-         "1x262kybrdnbiiw53m1axp4zyh4lsfb9mm2shmpm8lwf7sp30isi"))))
+         "024srkwjckp15dxkni9lb1hc8bg4xwc52zz0iich8rv1nnqnhaxf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-Warnings")
     (synopsis "Test for warnings and the lack of them")
