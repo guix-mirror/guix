@@ -9032,6 +9032,15 @@ The TCP port to listen for connections.
 @item @code{host} (default: @code{"localhost"})
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
+
+@item @code{compression-level} (default: @code{3})
+The gzip compression level at which substitutes are compressed.  Use
+@code{0} to disable compression altogether, and @code{9} to get the best
+compression ratio at the expense of increased CPU usage.
+
+@item @code{nar-path} (default: @code{"nar"})
+The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
+publish, @code{--nar-path}}, for details.
 @end table
 @end deftp
 
