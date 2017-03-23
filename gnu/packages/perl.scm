@@ -6973,14 +6973,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302062")
+    (version "1.302078")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1sjny65iwnin35lvc203pb07gyx9wrp3gmn6lfrjsbmi986hcab7"))))
+                "05acl24kmz3dgr2nayy162yaf0kz92h1j5vkiavyv6mdh2lz6ixb"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
