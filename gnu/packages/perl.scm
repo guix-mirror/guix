@@ -973,7 +973,7 @@ loaded class.")
 (define-public perl-class-load
   (package
     (name "perl-class-load")
-    (version "0.22")
+    (version "0.23")
     (source
      (origin
        (method url-fetch)
@@ -981,7 +981,7 @@ loaded class.")
                            "Class-Load-" version ".tar.gz"))
        (sha256
         (base32
-         "049i285yj8hwgzj7nncjbs2bhxvpdk88wmx1d0nh0rdmh5hdnlmy"))))
+         "13xjfh4fadq4pkq7fcj42b26544jl7gqdg2y3imnra9fwxwsbg7j"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
