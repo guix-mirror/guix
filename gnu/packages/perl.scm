@@ -6761,6 +6761,34 @@ functions, along with automatically turning on strict and warning and gives a
 bit more fine-grained control over test suites.")
     (license (package-license perl))))
 
+(define-public perl-test-needs
+  (package
+    (name "perl-test-needs")
+    (version "0.002005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/Test-Needs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "16gkgpmr9hvkz382iaqd3500269lk2d44fqaw3dsrvc66nc36kss"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Test-Needs")
+    (synopsis
+     "Skip tests when modules not available")
+    (description "@code{Test::Needs} allows you to skip test scripts if
+modules are not available.  The requested modules will be loaded, and
+optionally have their versions checked.  If the module is missing, the test
+script will be skipped.  Modules that are found but fail to compile will exit
+with an error rather than skip.
+
+If used in a subtest, the remainder of the subtest will be skipped.")
+    (license (package-license perl))))
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
