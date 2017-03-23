@@ -380,7 +380,7 @@ parent.")
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
-    (version "0.13")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -388,7 +388,7 @@ parent.")
                            "B-Hooks-EndOfScope-" version ".tar.gz"))
        (sha256
         (base32
-         "1f5d0lbkwf23dfjn60g6fynmjhy5rxdyxcpdfb07srm73qpg2zpi"))))
+         "0b70vbpabsy9ia366k330cz1zbdyb1pwhb0l7j28pmpih045iwwh"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
