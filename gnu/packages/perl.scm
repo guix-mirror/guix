@@ -4346,7 +4346,7 @@ handling of Perl modules, which are normally handled at compile time.")
 (define-public perl-module-runtime-conflicts
   (package
     (name "perl-module-runtime-conflicts")
-    (version "0.001")
+    (version "0.003")
     (source
      (origin
        (method url-fetch)
@@ -4354,7 +4354,7 @@ handling of Perl modules, which are normally handled at compile time.")
                            "Module-Runtime-Conflicts-" version ".tar.gz"))
        (sha256
         (base32
-         "0pz23ch78lbpn4kdbm04icgsmbr7jvmxwq1p5m4x2pap8qwd0wqg"))))
+         "0x9qfg4pq70v1rl9dfk775fmca7ia308m24vfy8zww4c0dsxqz3h"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
