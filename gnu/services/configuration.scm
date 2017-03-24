@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
             configuration-field-default-value-thunk
             configuration-field-documentation
             serialize-configuration
+            define-maybe
             define-configuration
             validate-configuration
             generate-documentation
@@ -85,16 +87,32 @@
                    (configuration-field-name field) val))))
             fields))
 
+(define (id ctx part . parts)
+  (let ((part (syntax->datum part)))
+    (datum->syntax
+     ctx
+     (match parts
+       (() part)
+       (parts (symbol-append part
+                             (syntax->datum (apply id ctx parts))))))))
+
+(define-syntax define-maybe
+  (lambda (x)
+    (syntax-case x ()
+      ((_ stem)
+       (with-syntax
+           ((stem?                (id #'stem #'stem #'?))
+            (maybe-stem?          (id #'stem #'maybe- #'stem #'?))
+            (serialize-stem       (id #'stem #'serialize- #'stem))
+            (serialize-maybe-stem (id #'stem #'serialize-maybe- #'stem)))
+         #'(begin
+             (define (maybe-stem? val)
+               (or (eq? val 'disabled) (stem? val)))
+             (define (serialize-maybe-stem field-name val)
+               (when (stem? val) (serialize-stem field-name val)))))))))
+
 (define-syntax define-configuration
   (lambda (stx)
-    (define (id ctx part . parts)
-      (let ((part (syntax->datum part)))
-        (datum->syntax
-         ctx
-         (match parts
-           (() part)
-           (parts (symbol-append part
-                                 (syntax->datum (apply id ctx parts))))))))
     (syntax-case stx ()
       ((_ stem (field (field-type def) doc) ...)
        (with-syntax (((field-getter ...)
