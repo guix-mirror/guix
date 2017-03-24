@@ -1464,6 +1464,25 @@ allows easily move between them.")
 strings.")
     (license license:gpl3+)))
 
+(define-public emacs-symon
+  (package
+    (name "emacs-symon")
+    (version "20170224.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://melpa.org/packages/symon-"
+                           version ".el"))
+       (sha256
+        (base32
+         "109jd7yjhdrrf5jqpqyv543nb28g7065z58bji9pvxanzi4zl2iz"))))
+    (build-system emacs-build-system)
+    (home-page "http://hins11.yu-yake.com/")
+    (synopsis "Tiny graphical system monitor")
+    (description
+     "Tiny graphical system monitor for the Emacs minibuffer when idle.")
+    (license license:gpl2+)))
+
 (define-public emacs-sx
   (package
     (name "emacs-sx")
