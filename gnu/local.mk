@@ -10,6 +10,7 @@
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+# Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -422,6 +423,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
   %D%/services/herd.scm				\
+  %D%/services/pm.scm				\
   %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
