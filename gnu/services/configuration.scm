@@ -87,14 +87,9 @@
                    (configuration-field-name field) val))))
             fields))
 
-(define (id ctx part . parts)
-  (let ((part (syntax->datum part)))
-    (datum->syntax
-     ctx
-     (match parts
-       (() part)
-       (parts (symbol-append part
-                             (syntax->datum (apply id ctx parts))))))))
+(define-syntax-rule (id ctx parts ...)
+  "Assemble PARTS into a raw (unhygienic)  identifier."
+  (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
 
 (define-syntax define-maybe
   (lambda (x)
