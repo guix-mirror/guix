@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -99,14 +99,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.5.3")
+    (version "4.5.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "1jif95684swssqwp9v3i2r08cn3r2iddf6ly68db4wmvl5ac8vgh"))))
+               "004lzl059bc2wvkmivxiy96y87l4ajjw16qvkqcdhf86z2dg0w5c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -122,16 +122,17 @@ anywhere.")
                        ;; XXX: heimdal not packaged.
                        "--bundled-libraries=com_err"
                        (string-append "--prefix=" out)
-		       "--sysconfdir=/etc"
+                       "--sysconfdir=/etc"
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
                        (string-append "--with-privatelibdir=" libdir))))))
-	 (add-before 'install 'disable-etc-samba-directory-creation
+         (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
                (("bld\\.INSTALL_DIRS\\(\"\",[[:blank:]]{1,}\"\\$\\{CONFIGDIR\\}[[:blank:]]{1,}")
-                "bld.INSTALL_DIRS(\"\", \"")))))
+                "bld.INSTALL_DIRS(\"\", \""))
+             #t)))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
        ;; So disable tests until there's a workaround.
