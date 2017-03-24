@@ -171,14 +171,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.8")
+    (version "2.1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c3ihyb0jd8mhvi7gg2mr5w1zl2habx6jlkbyxzyckad2q8lkl92"))))
+                "0qhhf4ib9k65sri2ky115iya6j7dgg0dsdi1r03j4cm3i35x9aph"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -198,7 +198,7 @@ Desktops into Active Directory environments using the winbind daemon.")
                                (string-append "--prefix=" out)))))))))
     (inputs
      `(("python" ,python-2)))
-    (home-page "http://talloc.samba.org")
+    (home-page "https://talloc.samba.org")
     (synopsis "Hierarchical, reference counted memory pool system")
     (description
      "Talloc is a hierarchical, reference counted memory pool system with
