@@ -3491,7 +3491,7 @@ Light is the successor of lightscript.")
                (setenv "TLP_BIN" (string-append out "/bin"))
                (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
-               (setenv "TLP_CONF" (string-append out "/etc/tlp"))
+               (setenv "TLP_CONF" "/etc/tlp")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man")))))
