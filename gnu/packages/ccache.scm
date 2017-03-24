@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.3.3")
+    (version "3.3.4")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1v04ky2mhvx8gnqfbs9x2vvf4i9mzph4fwdg72s9xyhwv92sf0iv"))))
+        "0ks0vk408mdppfbk8v38p46fqx3p30r9a9cwiia43373i7rmpw94"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for test.sh
                      ("which" ,(@ (gnu packages base) which))))
