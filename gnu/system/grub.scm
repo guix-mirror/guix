@@ -183,8 +183,6 @@ system string---e.g., \"x86_64-linux\"."
     (if (string-match "^(x86_64|i[3-6]86)-" system)
         "
   # Leave 'gfxmode' to 'auto'.
-  insmod vbe
-  insmod vga
   insmod video_bochs
   insmod video_cirrus
   insmod gfxterm
@@ -195,6 +193,10 @@ system string---e.g., \"x86_64-linux\"."
     # which isn't convenient.
     insmod efi_gop
     insmod efi_uga
+  else
+    # These are specific to non-EFI Intel machines.
+    insmod vbe
+    insmod vga
   fi
 
   terminal_output gfxterm
