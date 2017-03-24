@@ -1132,44 +1132,41 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
 
 (define-public dovecot-trees
-  (let ((commit "006059c8a47d68f14f73c09743e45b9a73014dbf")
-        (revision "1"))
-    (package
-      (name "dovecot-trees")
-      (version (string-append "2.0.0-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://0xacab.org/riseuplabs/trees.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0ax90bzc66x179wi1m7ywqwa8nssyhjngs7ij109hqqxg5ymfp73"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("automake" ,automake)
-         ("autoconf" ,autoconf)
-         ("libtool" ,libtool)
-         ("dovecot" ,dovecot)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libsodium" ,libsodium)))
-      (arguments
-       `(#:tests? #f ;No tests exist.
-         #:configure-flags (list (string-append "--with-dovecot="
-                                                (assoc-ref %build-inputs "dovecot")
-                                                "/lib/dovecot"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'autogen
-             (lambda _
-               (zero? (system* "./autogen.sh")))))))
-      (home-page "https://0xacab.org/riseuplabs/trees")
-      (synopsis "NaCL-based Dovecot email storage encryption plugin")
-      (description
-       "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
+  (package
+    (name "dovecot-trees")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://0xacab.org/riseuplabs/trees/repository/"
+                           "archive.tar.gz?ref=v" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("dovecot" ,dovecot)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (arguments
+     `(#:tests? #f ;No tests exist.
+       #:configure-flags (list (string-append "--with-dovecot="
+                                              (assoc-ref %build-inputs "dovecot")
+                                              "/lib/dovecot"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (home-page "https://0xacab.org/riseuplabs/trees")
+    (synopsis "NaCL-based Dovecot email storage encryption plugin")
+    (description
+     "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
 Dovecot encryption plugin.  This plugin adds individually encrypted mail
 storage to the Dovecot IMAP server.  It is inspired by Posteo's scrambler
 which uses OpenSSL and RSA keypairs.  TREES works in a similar way, but uses
@@ -1185,7 +1182,7 @@ How it works:
 using lidsodium sealed boxes.
 @item New mail is encrypted as it arrives using the Curve25519 public key.
 @end enumerate\n")
-      (license agpl3))))
+    (license agpl3)))
 
 (define-public dovecot-libsodium-plugin
   (let ((commit "044de73c01c35385df0105f6b387bec5d5317ce7")
