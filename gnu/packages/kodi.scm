@@ -302,7 +302,7 @@ generator library for C++.")
                           (zero? (system* "autoreconf" "-vif"))))
                       dirs))))
          (add-after 'bootstrap-bundled-software 'patch-stuff
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Prevent the build scripts from calling autoreconf in the
              ;; build stage.  Otherwise, it would undo the bootstrapping
              ;; and shebang patching that we worked so hard for.
@@ -315,6 +315,11 @@ generator library for C++.")
                ;; unpacked in the build phase. This is our best opportunity
                ;; to make them writable before the build process starts.
                (("autoreconf -vif") "chmod -R u+w ."))
+
+             (substitute* "xbmc/linux/LinuxTimezone.cpp"
+               (("/usr/share/zoneinfo")
+                (string-append (assoc-ref inputs "tzdata")
+                               "/share/zoneinfo")))
 
              ;; Let's disable some tests that are known not to work here.
              ;; Doing this later while in the cmake "../build" directory
@@ -416,6 +421,7 @@ generator library for C++.")
        ("sqlite" ,sqlite)
        ("taglib" ,taglib)
        ("tinyxml" ,tinyxml)
+       ("tzdata" ,tzdata)
        ("util-linux" ,util-linux)
        ("zip" ,zip)
        ("zlib" ,zlib)))
