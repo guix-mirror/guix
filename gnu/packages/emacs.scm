@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1079,6 +1080,26 @@ an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
+
+(define-public emacs-aggressive-indent
+  (package
+    (name "emacs-aggressive-indent")
+    (version "1.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/"
+                                  "aggressive-indent-" version ".el"))
+              (sha256
+               (base32
+                "0jnzccl50x0wapprgwxinp99pwwa6j43q6msn4gv437j7swy8wnj"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/aggressive-indent.html")
+    (synopsis "Minor mode to aggressively keep your code always indented")
+    (description
+     "@code{aggressive-indent-mode} is a minor mode that keeps your code
+always indented.  It reindents after every change, making it more reliable
+than @code{electric-indent-mode}.")
+    (license license:gpl2+)))
 
 (define-public emacs-ag
   (package
