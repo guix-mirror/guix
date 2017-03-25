@@ -5135,8 +5135,8 @@ draggable titlebars and borders.")
     (inherit xorg-server)
     (name "xorg-server-xwayland")
     (inputs
-     `(("libepoxy" ,libepoxy)
-       ("wayland" ,wayland)
+     `(("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ,@(package-inputs xorg-server)))
     (arguments
      (substitute-keyword-arguments (package-arguments xorg-server)
