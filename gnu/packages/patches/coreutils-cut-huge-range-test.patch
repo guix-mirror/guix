@@ -1,0 +1,22 @@
+This patch fixes 100% reproducible test failures on arm-linux-gnueabihf in our
+the build environment chroot, as reported at <https://bugs.gnu.org/26253>.
+It is a followup to this upstream patch:
+
+   commit 28803c8a3144d5d4363cdbd148bbe067af1a67c2
+   Author: Pádraig Brady <P@draigBrady.com>
+   Date:   Fri Mar 3 00:25:54 2017 -0800
+
+       tests: avoid a spurious failure on older debian
+
+... which appeared to be insufficient.
+
+--- a/tests/misc/cut-huge-range.sh
++++ b/tests/misc/cut-huge-range.sh
+@@ -22,6 +22,7 @@ getlimits_
+ 
+ vm=$(get_min_ulimit_v_ cut -b1 /dev/null) \
+   || skip_ "this shell lacks ulimit support"
++vm=$(($vm + $(getconf PAGESIZE))) # avoid spurious failures
+ 
+ # sed script to subtract one from the input.
+ # Each input line should consist of a positive decimal number.

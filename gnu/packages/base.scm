@@ -307,9 +307,17 @@ used to apply commands with arbitrarily long arguments.")
     ;; copy of help2man.  However, don't pass it when cross-compiling since
     ;; that would lead it to try to run programs to get their '--help' output
     ;; for help2man.
-    (if (%current-target-system)
-        '()
-        `(("perl" ,perl))))
+    `(,@(if (%current-target-system)
+            '()
+            `(("perl" ,perl)))
+
+      ;; Apply this patch only on ARM to avoid a full rebuild.
+      ;; TODO: Move to 'patches' in the next update cycle.
+      ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                      (%current-system)))
+            `(("cut-test.patch"
+               ,(search-patch "coreutils-cut-huge-range-test.patch")))
+            '())))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
@@ -328,7 +336,22 @@ used to apply commands with arbitrarily long arguments.")
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/sh" bash)))))
-                %standard-phases)))
+
+                ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                                (%current-system)))
+                      '((alist-cons-before
+                         'build 'patch-cut-test
+                         (lambda* (#:key inputs native-inputs
+                                   #:allow-other-keys)
+                           (let ((patch (or (assoc-ref inputs
+                                                       "cut-test.patch")
+                                            (assoc-ref native-inputs
+                                                       "cut-test.patch"))))
+                             (zero?
+                              (system* "patch" "-p1" "--force"
+                                       "--input" patch))))
+                         %standard-phases))
+                      '(%standard-phases)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
