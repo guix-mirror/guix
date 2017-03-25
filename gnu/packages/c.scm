@@ -159,6 +159,7 @@ standard.")
      "PCC is a portable C compiler.  The project goal is to write a C99
 compiler while still keeping it small, simple, fast and understandable.")
     (home-page "http://pcc.ludd.ltu.se")
+    (supported-systems (delete "aarch64-linux" %supported-systems))
     ;; PCC incorporates code under various BSD licenses; for new code bsd-2 is
     ;; preferred.  See http://pcc.ludd.ltu.se/licenses/ for more details.
     (license (list license:bsd-2 license:bsd-3))))
