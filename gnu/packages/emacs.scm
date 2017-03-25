@@ -3423,6 +3423,26 @@ go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
     (license license:gpl2+)))
 
+(define-public emacs-monroe
+  (package
+    (name "emacs-monroe")
+    (version "20170220.540")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://melpa.org/packages/monroe-"
+                            version ".el"))
+        (sha256
+          (base32
+            "06p0qdhg4arwij1qpiiiwsd0m1bbl1qwd20ij2bmhryrvrcpswq3"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.github.com/sanel/monroe")
+    (synopsis "Clojure nREPL client for Emacs")
+    (description
+      "Monroe is a nREPL client for Emacs, focused on simplicity and easy
+distribution, primarily targeting Clojure users")
+    (license license:gpl3+)))
+
 (define-public emacs-writegood-mode
   (package
     (name "emacs-writegood-mode")
