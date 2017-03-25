@@ -1417,6 +1417,25 @@ code written in the D programming language.  This mode is currently known to
 work with Emacs 24 and 25.")
     (license license:gpl2+)))
 
+(define-public emacs-keyfreq
+  (package
+    (name "emacs-keyfreq")
+    (version "20160516.716")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://melpa.org/packages/keyfreq-"
+               version ".el"))
+        (sha256
+          (base32
+            "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dacap/keyfreq")
+    (synopsis "Track Emacs command frequencies")
+    (description "@code{emacs-keyfeq} tracks and shows how many times you used
+a command.")
+    (license license:gpl3+)))
+
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
