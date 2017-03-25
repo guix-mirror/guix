@@ -8259,4 +8259,40 @@ converting between Haskell values and JSON.
 JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
     (license license:bsd-3)))
 
+(define-public shellcheck
+  (package
+    (name "shellcheck")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/koalaman/shellcheck/archive/"
+                           "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "14r84fcn28rin339avlvca5g0kz832f01x8dpmwb5ql8mbc4rlxr"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-json" ,ghc-json)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page "https://github.com/koalaman/shellcheck")
+    (synopsis "Static analysis for shell scripts")
+    (description "@code{shellcheck} provides static analysis for
+@command{bash} and @command{sh} shell scripts.
+It gives warnings and suggestions in order to:
+
+@enumerate
+@item Point out and clarify typical beginner's syntax issues that cause
+a shell to give cryptic error messages.
+@item Point out and clarify typical intermediate level semantic problems
+that cause a shell to behave strangely and counter-intuitively.
+@item Point out subtle caveats, corner cases and pitfalls that may cause an
+advanced user's otherwise working script to fail under future circumstances.
+@end enumerate")
+    (license license:gpl3+)))
+
 ;;; haskell.scm ends here
