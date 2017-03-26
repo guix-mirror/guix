@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,7 +161,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
                           (wrap-program file
                             `("PERL5LIB" ":" prefix (,path))))
                         (find-files bin "\\.*$"))
-              #t))))))
+              #t)))
+         (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each make-file-writable
+                       (find-files (string-append (assoc-ref outputs "out")
+                                                  "/share/man")
+                                   ".*\\.gz$"))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl-module-build" ,perl-module-build)
