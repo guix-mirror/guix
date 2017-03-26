@@ -457,18 +457,16 @@ etc.")
 (define-public aseprite
   (package
     (name "aseprite")
-    (version "1.1.1")
-    ;; The release tarball isn't good enough because it's missing some
-    ;; necessary code that is only in git submodules.
+    (version "1.1.13")
+    ;; TODO: Unbundle third party software.
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/aseprite/aseprite.git")
-                    (commit "v1.1.1")
-                    (recursive? #t)))
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/aseprite/aseprite"
+                                  "/releases/download/v" version
+                                  "/Aseprite-v" version "-Source.zip"))
               (sha256
                (base32
-                "1yr0l3bc68lyrffrzxgw98zznv8yz5ldl98lyvp6s5grny4s4jyk"))))
+                "0sm5vrrinpj423cpnlrczknjnykrn6q8c5qn2fmg5v22cv70dwzl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
