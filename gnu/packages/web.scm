@@ -3928,7 +3928,7 @@ developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)))
+       ("gperf" ,gperf-3.0)))
     (inputs
      `(("libwapcaplet" ,libwapcaplet)))
     (propagated-inputs
