@@ -13914,3 +13914,29 @@ possible to write plugins to add your own checks.")
                  ,python2-backports-functools-lru-cache)
                 ("python2-configparser" ,python2-configparser)
                 ,@(package-propagated-inputs pylint))))))
+
+(define-public python-paramunittest
+  (package
+    (name "python-paramunittest")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ParamUnittest" version))
+       (sha256
+        (base32
+         "0kp793hws5xv1wvycxq7jw2pwy36f35k39jg8hx5qikij5a0jid1"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/rik0/ParamUnittest")
+    (synopsis
+     "Simple extension to have parametrized unit tests")
+    (description
+     "This package allows to create parametrized unit-tests that work with the standard
+unittest package.  A parametrized test case is automatically converted to multiple test
+cases.  Since they are TestCase subclasses, they work with other test suites that
+recognize TestCases.")
+    (license license:bsd-2)))
+
+(define-public python2-python-paramunittest
+  (package-with-python2 python-paramunittest))
