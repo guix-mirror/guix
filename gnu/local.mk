@@ -712,6 +712,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-invalid-read.patch		\
   %D%/packages/patches/libtiff-null-dereference.patch		\
   %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
+  %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\

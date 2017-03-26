@@ -31,6 +31,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -379,16 +380,19 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.0.10")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
                 "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
-                "1_0_10" "/libtorrent-rasterbar-" version ".tar.gz"))
+                (string-join (string-split version #\.) "_")
+                "/libtorrent-rasterbar-" version ".tar.gz"))
+              (patches
+               (search-patches "libtorrent-rasterbar-boost-compat.patch"))
               (sha256
                (base32
-                "0gjcr892hzmcngvpw5bycjci4dk49v763lsnpvbwsjmim2ncwrd8"))))
+                "16im9qsmfrmmkhfjpij9739nqpn4s6wgc9cikdxbcyshfhimzra5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
