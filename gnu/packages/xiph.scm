@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
             libvorbis
             libtheora
             speex
+            speexdsp
             ao
             flac
             libkate
@@ -148,6 +150,26 @@ stereo encoding, and voice activity detection.")
     ;; 'src/getopt.c' is under LGPLv2+
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define speexdsp
+  (package
+    (name "speexdsp")
+    (version "1.2rc3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.xiph.org/releases/speex/"
+                                  "speexdsp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wcjyrnwlkayb20zdhp48y260rfyzg925qpjpljd5x9r01h8irja"))))
+    (build-system gnu-build-system)
+    (home-page "https://speex.org/")
+    (synopsis "Speex processing library")
+    (description
+     "SpeexDSP is a @dfn{DSP} (Digital Signal Processing) library based on
+work from the @code{speex} codec.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define ao
   (package
