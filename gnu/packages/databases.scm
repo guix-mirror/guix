@@ -1349,7 +1349,15 @@ trees (LSM), for sustained throughput under random insert workloads.")
      `(("python" ,python-2)))
     (inputs `(("postgresql" ,postgresql)))
     (arguments
-     `(#:tests? #f)) ; # FAIL:  1
+     `(#:tests? #f   ; # FAIL:  1
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-sed-command
+           (lambda _
+             ;; Newer sed versions error out if double brackets are not used.
+             (substitute* "configure"
+               (("\\[:space:\\]") "[[:space:]]"))
+             #t)))))
     (synopsis "C++ connector for PostgreSQL")
     (description
      "Libpqxx is a C++ library to enable user programs to communicate with the
