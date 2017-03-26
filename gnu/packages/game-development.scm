@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
@@ -457,7 +457,7 @@ etc.")
 (define-public aseprite
   (package
     (name "aseprite")
-    (version "1.1.13")
+    (version "1.1.7") ; After 1.1.7 the source is no longer distributed under the GPL.
     ;; TODO: Unbundle third party software.
     (source (origin
               (method url-fetch/zipbomb)
@@ -466,7 +466,7 @@ etc.")
                                   "/Aseprite-v" version "-Source.zip"))
               (sha256
                (base32
-                "0sm5vrrinpj423cpnlrczknjnykrn6q8c5qn2fmg5v22cv70dwzl"))))
+                "1plss4i1lfxcznv9p0pip1bkhj7ipw7jlhsh5avd6dzw079l4nvv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
