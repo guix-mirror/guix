@@ -13940,3 +13940,31 @@ recognize TestCases.")
 
 (define-public python2-python-paramunittest
   (package-with-python2 python-paramunittest))
+
+(define-public python-mando
+  (package
+  (name "python-mando")
+  (version "0.5")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "mando" version))
+      (sha256
+        (base32
+          "0q05h66439gqdmlk4jqm6xrwrzfdgs4mwk70barxhr2y83qbbdc0"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-rst2ansi" ,python-rst2ansi)))
+  (native-inputs
+   `(("python-sphinx" ,python-sphinx-1.5.3)
+     ("python-paramunittest" ,python-paramunittest)))
+  (home-page "https://mando.readthedocs.org/")
+  (synopsis
+    "Wrapper around argparse, allowing creation of complete CLI applications")
+  (description
+    "This package is a wrapper around argparse, allowing you to write complete CLI
+ applications in seconds while maintaining all the flexibility.")
+  (license license:expat)))
+
+(define-public python2-mando
+  (package-with-python2 python-mando))
