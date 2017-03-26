@@ -1843,6 +1843,24 @@ and many external plugins.")
                                line)))
              #t)))))))
 
+;; This package is used by Sphinx version 1.5.2 and up
+(define-public python-pytest-3.0.7
+  (package
+    (inherit python-pytest-2.9.2)
+    (name "python-pytest")
+    (version "3.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest" version))
+       (sha256
+        (base32
+         "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-hypothesis" ,python-hypothesis)))))
+
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
