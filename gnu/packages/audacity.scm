@@ -52,8 +52,8 @@
     (inputs
      ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree
      ;; versions shipping with Audacity are used for now.
-     `(("wxwidgets" ,wxwidgets)
-       ("gtk" ,gtk+)
+     `(("wxwidgets" ,wxwidgets-gtk2)
+       ("gtk" ,gtk+-2)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("expat" ,expat)
