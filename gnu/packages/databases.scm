@@ -344,7 +344,12 @@ mapping from string keys to string values.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
-                       #t))))))
+                       #t))))
+       ;; On aarch64 the test suite runs out of memory and fails.
+       ,@(if (string-prefix? "aarch64-linux"
+                             (or (%current-target-system) (%current-system)))
+           '(#:tests? #f)
+           '())))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
