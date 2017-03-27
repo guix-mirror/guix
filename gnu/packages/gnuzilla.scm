@@ -69,6 +69,7 @@
              (sha256
               (base32
                "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))
+             (patches (search-patches "mozjs17-aarch64-support.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Fix incompatibility with Perl 5.22+.
@@ -83,6 +84,9 @@
         ;;   mkdir -p "system_wrapper_js/"
         #:parallel-build? #f
         #:phases
+         (alist-cons-after 'unpack 'delete-timedout-test
+           ;; This test times out on slower hardware.
+           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js"))
           (alist-cons-before
            'configure 'chdir
            (lambda _
@@ -95,8 +99,12 @@
                 (setenv "SHELL" (which "sh"))
                 (setenv "CONFIG_SHELL" (which "sh"))
                 (zero? (system*
-                        "./configure" (string-append "--prefix=" out)))))
-            %standard-phases))))
+                        "./configure" (string-append "--prefix=" out)
+                                      ,@(if (string=? "aarch64-linux"
+                                                      (%current-system))
+                                          '("--host=aarch64-unknown-linux-gnu")
+                                          '())))))
+            %standard-phases)))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey")
     (synopsis "Mozilla javascript engine")
