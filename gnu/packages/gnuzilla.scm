@@ -85,31 +85,30 @@
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-      `(;; XXX: parallel build fails, lacking:
-        ;;   mkdir -p "system_wrapper_js/"
-        #:parallel-build? #f
-        #:phases
-         (alist-cons-after 'unpack 'delete-timedout-test
+     `(;; XXX: parallel build fails, lacking:
+       ;;   mkdir -p "system_wrapper_js/"
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-timedout-test
            ;; This test times out on slower hardware.
-           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js"))
-          (alist-cons-before
-           'configure 'chdir
+           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
+         (add-before 'configure 'chdir
            (lambda _
-             (chdir "js/src"))
-           (alist-replace
-            'configure
-            ;; configure fails if it is followed by SHELL and CONFIG_SHELL
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (setenv "SHELL" (which "sh"))
-                (setenv "CONFIG_SHELL" (which "sh"))
-                (zero? (system*
-                        "./configure" (string-append "--prefix=" out)
-                                      ,@(if (string=? "aarch64-linux"
-                                                      (%current-system))
-                                          '("--host=aarch64-unknown-linux-gnu")
-                                          '())))))
-            %standard-phases)))))
+             (chdir "js/src")
+             #t))
+         (replace 'configure
+           ;; configure fails if it is followed by SHELL and CONFIG_SHELL
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (system*
+                       "./configure" (string-append "--prefix=" out)
+                                     ,@(if (string=? "aarch64-linux"
+                                                     (%current-system))
+                                         '("--host=aarch64-unknown-linux-gnu")
+                                         '())))))))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey")
     (synopsis "Mozilla javascript engine")
