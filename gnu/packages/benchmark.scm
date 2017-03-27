@@ -64,13 +64,26 @@
              (let ((out (assoc-ref outputs "out")))
                (zero? (system* "./configure"
                                (string-append "--prefix=" out))))))
-         (add-after
-          'install 'wrap-python-scripts
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (wrap-program (string-append out "/bin/fiologparser_hist.py")
-                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
-              #t))))))
+         ;; The main `fio` executable is fairly small and self contained.
+         ;; Moving the auxiliary python and gnuplot scripts to a separate
+         ;; output saves almost 400 MiB on the closure.
+         (add-after 'install 'move-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((oldbin (string-append (assoc-ref outputs "out") "/bin"))
+                   (newbin (string-append (assoc-ref outputs "utils") "/bin")))
+               (mkdir-p newbin)
+               (for-each (lambda (file)
+                           (let ((src (string-append oldbin "/" file))
+                                 (dst (string-append newbin "/" file)))
+                             (link src dst)
+                             (delete-file src)))
+                         '("fio2gnuplot" "fio_latency2csv.py"
+                           "fiologparser_hist.py" "fiologparser.py"))
+               ;; Make sure numpy et.al is found.
+               (wrap-program (string-append newbin "/fiologparser_hist.py")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (outputs '("out" "utils"))
     (inputs
      `(("libaio" ,libaio)
        ("gnuplot" ,gnuplot)
