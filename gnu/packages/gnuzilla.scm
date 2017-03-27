@@ -77,8 +77,13 @@
                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("perl" ,perl)
-        ("python" ,python-2)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-17.0.pc
+    (inputs
+     `(("zlib" ,zlib)))
     (arguments
       `(;; XXX: parallel build fails, lacking:
         ;;   mkdir -p "system_wrapper_js/"
