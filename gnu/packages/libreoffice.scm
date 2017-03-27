@@ -71,20 +71,20 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.9.1")
+    (version "0.12.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://kohei.us/files/ixion/src/libixion-"
                           version ".tar.xz"))
       (sha256 (base32
-               "18g3nk29ljiqbyi0ml49j2x3f3xrqckdm9i66sw5fxnj7hb5rqvp"))))
+               "1bnsqbxpbijwbg42rrqq6mz06wvcxjpl0gjdzwyilkmv6s400i4b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
      (inputs
       `(("mdds" ,mdds)
-        ("python" ,python-2))) ; looks for python.pc, not python3.pc
+        ("python" ,python)))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
