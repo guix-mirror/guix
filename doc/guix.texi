@@ -6879,7 +6879,7 @@ and Linux-Libre kernel.
 
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
-currently in an experimental stage, with limited support.  See
+currently in an experimental stage, with limited support.
 @xref{Contributing}, for how to help!
 
 @item mips64el-linux
