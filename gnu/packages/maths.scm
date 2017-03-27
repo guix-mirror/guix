@@ -270,8 +270,14 @@ semiconductors.")
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f))
-    (home-page "http://www.gnu.org/software/gsl/")
+     `(#:parallel-tests? #f
+       ;; Currently there are numerous tests that fail on "exotic"
+       ;; architectures such as aarch64 and ppc64le.
+       ,@(if (string-prefix? "aarch64-linux"
+                             (or (%current-target-system) (%current-system)))
+           '(#:tests? #f)
+           '())))
+    (home-page "https://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
      "The GNU Scientific Library is a library for numerical analysis in C
