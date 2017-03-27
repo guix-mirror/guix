@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
@@ -135,37 +136,24 @@ in C/C++.")
                '(substitute* '("js/src/config/milestone.pl")
                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
-     `(;; XXX: parallel build fails, lacking:
-       ;;   mkdir -p "system_wrapper_js/"
-       #:parallel-build? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-timedout-test
-           ;; This test times out on slower hardware
-           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
-         (replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (chdir "js/src")
-              ;; configure fails if it is follwed by SHELL and CONFIG_SHELL
-              (setenv "SHELL" (which "sh"))
-              (setenv "CONFIG_SHELL" (which "sh"))
-              (zero? (system* "./configure"
-                              (string-append "--prefix=" out)
-                              "--with-system-nspr"
-                              "--enable-system-ffi"
-                              "--enable-threadsafe"
-                              ,@(if (string=? "aarch64-linux"
-                                              (%current-system))
-                                  '("--host=aarch64-unknown-linux-gnu")
-                                  '())))))))))
-    (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
-    (propagated-inputs
-     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-24.pc
+      (substitute-keyword-arguments (package-arguments mozjs)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'configure
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((out (assoc-ref outputs "out")))
+                  ;; configure fails if it is followed by SHELL and CONFIG_SHELL
+                  (setenv "SHELL" (which "sh"))
+                  (setenv "CONFIG_SHELL" (which "sh"))
+                  (zero? (system* "./configure"
+                                  (string-append "--prefix=" out)
+                                  "--with-system-nspr"
+                                  "--enable-system-ffi"
+                                  "--enable-threadsafe"
+                                  ,@(if (string=? "aarch64-linux"
+                                                  (%current-system))
+                                      '("--host=aarch64-unknown-linux-gnu")
+                                      '()))))))))))
     (inputs
      `(("libffi" ,libffi)
        ("zlib" ,zlib)))))
