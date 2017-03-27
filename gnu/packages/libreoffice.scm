@@ -349,22 +349,31 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.3")
+    (version "0.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0mghaqzj0qqza8z1gzprw62702adlww4kgdzynj5qpxxc9m2f4py"))))
+               "0y60vi1plyq69fqbcjnc0v8mvcjqjsl1ry6rmb3bq3q7j8a2fm6z"))
+      (patches (search-patches "libetonyek-build-with-mdds-1.2.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-mdds=1.2")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoreconf
+                              (lambda _ (system* "autoreconf"))))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
        ("glm" ,glm)
        ("gperf" ,gperf)
+       ("liblangtag" ,liblangtag)
        ("mdds" ,mdds)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf) ; due to patch
+       ("automake" ,automake)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
