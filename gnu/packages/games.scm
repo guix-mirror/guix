@@ -3163,23 +3163,21 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "8.3j")
+    (version "9.4c")
+    ;; When updating this package, be sure to update the "hyperrogue-data"
+    ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://www.roguetemple.com/z/hyper/"
-                    name "-83j.zip"))
+                    name (string-join (string-split version #\.) "")
+                    "-src.tgz"))
               (sha256
                (base32
-                "1ag95d84m4j0rqyn9hj7655znixw2j57bpf93nk14nfy02xz1g6p"))
-              (modules '((guix build utils)))
-              ;; Remove .exe and .dll files.
-              (snippet
-               '(for-each delete-file (find-files "." "\\.(exe|dll)$")))))
+                "1ri5fllnhqjm3dlnl1xbb9mlv79iigc940vbvcnk0v5k6p58pavq"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
-       #:make-flags '("-Csrc")
+     `(#:tests? #f ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3190,21 +3188,24 @@ throwing people around in pseudo-randomly generated buildings.")
          ;; Fix font and music paths.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (dejavu-dir (string-append
-                                (assoc-ref inputs "font-dejavu")
-                                "/share/fonts/truetype"))
-                   (dejavu-font "DejaVuSans-Bold.ttf")
-                   (music-file "hyperrogue-music.txt"))
-               (with-directory-excursion "src"
-                 (substitute* "graph.cpp"
-                   ((dejavu-font)
-                    (string-append dejavu-dir "/" dejavu-font))
-                   (((string-append "\\./" music-file))
-                    (string-append out "/share/hyperrogue/" music-file)))
-                 (substitute* music-file
-                   (("\\*/")
-                    (string-append out "/share/hyperrogue/")))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (share-dir (string-append out "/share/hyperrogue"))
+                    (dejavu-dir (string-append
+                                 (assoc-ref inputs "font-dejavu")
+                                 "/share/fonts/truetype"))
+                    (dejavu-font "DejaVuSans-Bold.ttf")
+                    (music-file "hyperrogue-music.txt"))
+               (substitute* "graph.cpp"
+                 ((dejavu-font)
+                  (string-append dejavu-dir "/" dejavu-font)))
+               (substitute* "sound.cpp"
+                 (((string-append "\\./" music-file))
+                  (string-append share-dir "/" music-file))
+                 (("sounds/")
+                  (string-append share-dir "/sounds/")))
+               (substitute* music-file
+                 (("\\*/")
+                  (string-append share-dir "/sounds/"))))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3212,14 +3213,43 @@ throwing people around in pseudo-randomly generated buildings.")
                     (bin (string-append out "/bin"))
                     (share-dir (string-append out "/share/hyperrogue")))
                (mkdir-p bin)
-               (copy-file "src/hyper" (string-append bin "/hyperrogue"))
-               (mkdir-p share-dir)
-               (copy-file "src/hyperrogue-music.txt"
-                          (string-append share-dir "/hyperrogue-music.txt"))
-               (for-each (lambda (file)
-                           (copy-file file (string-append share-dir "/" file)))
-                         (find-files "." "\\.ogg$")))
-             #t)))))
+               (copy-file "hyper" (string-append bin "/hyperrogue"))
+               (install-file "hyperrogue-music.txt" share-dir))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (assoc-ref inputs "hyperrogue-data"))
+                    (out (assoc-ref outputs "out"))
+                    (sounds (string-append out "/share/hyperrogue/sounds"))
+                    (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+               (and
+                ;; Extract media license information into sounds directory.
+                (zero?
+                 (system* unzip "-j" data
+                          (string-append
+                           "hyperrogue"
+                           (string-join (string-split ,version #\.) "")
+                           "-win/sounds/credits.txt") "-d" sounds))
+                ;; Extract sounds and music into sounds directory.
+                (zero?
+                 (system* "unzip" "-j" data
+                          (string-append
+                           "hyperrogue"
+                           (string-join (string-split ,version #\.) "")
+                           "-win/*.ogg") "-d" sounds)))))))))
+    (native-inputs
+     `(("hyperrogue-data"
+        ,(origin
+           (method url-fetch)
+           (uri
+            (string-append
+             "http://www.roguetemple.com/z/hyper/" name
+             (string-join (string-split version #\.) "")
+             "-win.zip"))
+           (sha256
+            (base32
+             "1cyyrsnrixygg3zyz97hpsm6jzwbhydiwk3kl0lm7qjnw2nzkhhh"))))
+       ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
        ("glew" ,glew)
@@ -3240,10 +3270,12 @@ are home to particular creatures and may be subject to own rules of \"physics\".
 
 While it can use ASCII characters to display the world the classical rogue
 symbols, the game needs graphics to render the non-euclidean world.")
-    (license (list license:bsd-3         ; src/glew.c, src/mtrand.*
-                   license:cc-by-sa3.0   ; *.ogg
-                   license:public-domain ; src/direntx.*
-                   license:zlib          ; src/savepng.*
+    (license (list license:bsd-3         ; glew.c, mtrand.*
+                   license:cc-by-sa3.0   ; music
+                   license:cc-by-sa4.0   ; sounds
+                   license:cc0
+                   license:public-domain ; direntx.*, some sounds
+                   license:zlib          ; savepng.*
                    license:gpl2+))))     ; remaining files
 
 (define-public kobodeluxe
