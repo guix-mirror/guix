@@ -96,20 +96,21 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.9.2")
+    (version "0.12.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://kohei.us/files/" name "/src/lib"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "170racjz7s7yxza722hxsqc12788w57qnp6x6j2692pzp3qzjjfx"))))
+               "171bmqa9hkk4xygz20qda5900rs4kq9fgl424ldkxlj4d733dffi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
      (inputs
       `(("ixion" ,ixion)
         ("mdds" ,mdds)
+        ("python" ,python)
         ("zlib" ,zlib)))
     (home-page "https://gitlab.com/orcus/orcus")
     (synopsis "File import filter library for spreadsheet documents")
