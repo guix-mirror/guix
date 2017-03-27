@@ -601,6 +601,29 @@ text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
 spreadsheet documents.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
 
+(define-public libstaroffice
+  (package
+    (name "libstaroffice")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
+                           version "/libstaroffice-" version ".tar.xz"))
+       (sha256 (base32
+                "1ii2wi3wr5npyz9gby1bjk8r4wyflpfpc6gx7mmqkhsc9c8frpmy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/fosnola/libstaroffice")
+    (synopsis "Provides LibreOffice support for old StarOffice documents")
+    (description "@code{libstaroffice} is an import filter for the document formats
+from the old StarOffice (.sdc, .sdw, ...).")
+    (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
 (define-public libwps
   (package
     (name "libwps")
