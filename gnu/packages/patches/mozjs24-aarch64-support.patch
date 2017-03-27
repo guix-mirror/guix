@@ -1,0 +1,21 @@
+This patch is sourced from Debian's mozjs24 patch set.
+
+Description: Add arm64 support
+Author: Andreas Schwab <schwab@suse.de>
+Origin: vendor, https://build.opensuse.org/package/view_file/openSUSE:Factory/mozjs17/mozjs-aarch64-support.patch
+Forwarded: no
+Last-Update: 2014-01-03
+
+Index: b/mfbt/double-conversion/utils.h
+===================================================================
+--- a/mfbt/double-conversion/utils.h
++++ b/mfbt/double-conversion/utils.h
+@@ -58,7 +58,7 @@
+     defined(__mips__) || defined(__powerpc__) || \
+     defined(__sparc__) || defined(__sparc) || defined(__s390__) || \
+     defined(__SH4__) || defined(__alpha__) || \
+-    defined(_MIPS_ARCH_MIPS32R2)
++    defined(_MIPS_ARCH_MIPS32R2) || defined(__aarch64__)
+ #define DOUBLE_CONVERSION_CORRECT_DOUBLE_OPERATIONS 1
+ #elif defined(_M_IX86) || defined(__i386__) || defined(__i386)
+ #if defined(_WIN32)

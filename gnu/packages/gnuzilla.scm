@@ -117,16 +117,20 @@ in C/C++.")
                (base32
                 "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))
               (modules '((guix build utils)))
+              (patches (search-patches "mozjs24-aarch64-support.patch"))
               (snippet
                ;; Fix incompatibility with Perl 5.22+.
                '(substitute* '("js/src/config/milestone.pl")
                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
-     '(;; XXX: parallel build fails, lacking:
+     `(;; XXX: parallel build fails, lacking:
        ;;   mkdir -p "system_wrapper_js/"
        #:parallel-build? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'delete-timedout-test
+           ;; This test times out on slower hardware
+           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
          (replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
@@ -139,7 +143,11 @@ in C/C++.")
                               (string-append "--prefix=" out)
                               "--with-system-nspr"
                               "--enable-system-ffi"
-                              "--enable-threadsafe"))))))))
+                              "--enable-threadsafe"
+                              ,@(if (string=? "aarch64-linux"
+                                              (%current-system))
+                                  '("--host=aarch64-unknown-linux-gnu")
+                                  '())))))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
