@@ -292,12 +292,11 @@ libssh library.")
                              (string-append "." "/configure")
                              flags))))))))
     (home-page "http://www.agroman.net/corkscrew")
-    (synopsis "Tunneling SSH through HTTP proxies")
+    (synopsis "SSH tunneling through HTTP(S) proxies")
     (description
-     "Corkscrew allows creating TCP tunnels through HTTP proxies.  WARNING:
-At the moment only plain text authentication is supported, should you require
-to use it with your HTTP proxy.  Digest based authentication may be supported
-in future and NTLM based authentication is most likey never be supported.")
+     "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
+Proxy authentication is only supported through the plain-text HTTP basic
+authentication scheme.")
     (license license:gpl2+)))
 
 (define-public mosh
