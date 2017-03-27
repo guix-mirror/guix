@@ -2056,6 +2056,7 @@ country-specific regulations for the wireless spectrum.")
                            "https://github.com/groeck/lm-sensors/archive/V"
                            (string-join (string-split version #\.) "-")
                            ".tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
