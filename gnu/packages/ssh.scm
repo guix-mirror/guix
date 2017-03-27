@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -290,7 +291,13 @@ libssh library.")
                (setenv "CONFIG_SHELL" bash)
                (zero? (apply system* bash
                              (string-append "." "/configure")
-                             flags))))))))
+                             flags)))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/corkscrew")))
+               (install-file "README" doc)
+               #t))))))
     (home-page "http://www.agroman.net/corkscrew")
     (synopsis "SSH tunneling through HTTP(S) proxies")
     (description
