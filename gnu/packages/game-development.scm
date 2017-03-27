@@ -713,7 +713,7 @@ to create fully featured games and multimedia programs in the python language.")
        ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-ttf)))))
     (synopsis "Bitmap paint program")
     (description "GrafX2 is a bitmap paint program inspired by the Amiga
-programs ​Deluxe Paint and Brilliance.  Specializing in 256-color drawing, it
+programs Deluxe Paint and Brilliance.  Specializing in 256-color drawing, it
 includes a very large number of tools and effects that make it particularly
 suitable for pixel art, game graphics, and generally any detailed graphics
 painted with a mouse.")
