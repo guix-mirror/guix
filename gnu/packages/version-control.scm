@@ -342,13 +342,25 @@ everything from small to very large projects with speed and efficiency.")
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
              #t))
+         (add-after 'unpack 'apply-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; XXX: For some reason adding the patch in 'patches', which
+             ;; leads to a new tarball with all timestamps reset and ordering
+             ;; by name (slightly different file order compared to the
+             ;; original tarball) leads to an obscure Python error while
+             ;; running 'generate.py':
+             ;;   'Module' object has no attribute 'callbacks'
+             ;; Thus, apply the patch here, which minimizes disruption.
+             (let ((patch (assoc-ref inputs "patch")))
+               (zero? (system* "patch" "-p1" "--force" "--input" patch)))))
          ;; Run checks more verbosely.
          (replace 'check
            (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
     (inputs
      `(("libssh2" ,libssh2)
        ("libcurl" ,curl)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("patch" ,(search-patch "libgit2-use-after-free.patch"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs

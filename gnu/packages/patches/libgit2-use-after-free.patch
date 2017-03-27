@@ -1,0 +1,24 @@
+This patch is taken from <https://github.com/libgit2/libgit2/pull/4122>;
+we need it to fix the use-after-free error in 'git_commit_extract_signature'
+reported at <https://github.com/libgit2/libgit2/issues/4118>.
+
+From ade0d9c658fdfc68d8046935f6908f033fe7a529 Mon Sep 17 00:00:00 2001
+From: Patrick Steinhardt <ps@pks.im>
+Date: Mon, 13 Feb 2017 13:46:17 +0100
+Subject: [PATCH 3/3] commit: avoid possible use-after-free
+
+diff --git a/src/commit.c b/src/commit.c
+index 89a4db1..05b70a9 100644
+--- a/src/commit.c
++++ b/src/commit.c
+@@ -766,8 +766,9 @@ int git_commit_extract_signature(git_buf *signature, git_buf *signed_data, git_r
+ 		if (git_buf_oom(signature))
+ 			goto oom;
+ 
++		error = git_buf_puts(signed_data, eol+1);
+ 		git_odb_object_free(obj);
+-		return git_buf_puts(signed_data, eol+1);
++		return error;
+ 	}
+ 
+ 	giterr_set(GITERR_OBJECT, "this commit is not signed");
