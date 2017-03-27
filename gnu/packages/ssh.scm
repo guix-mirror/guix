@@ -263,8 +263,11 @@ libssh library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.agroman.net/corkscrew/corkscrew-"
-                           version ".tar.gz"))
+       ;; The agroman.net domain name expired on 2017-03-23, and the original
+       ;; "http://www.agroman.net/corkscrew/corkscrew-2.0.tar.gz" now returns
+       ;; bogus HTML.  Perhaps it will yet return.  Until then, use a mirror.
+       (uri (string-append "https://downloads.openwrt.org/sources/"
+                           "corkscrew-" version ".tar.gz"))
        (sha256 (base32
                 "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
     (build-system gnu-build-system)
