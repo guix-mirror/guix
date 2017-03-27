@@ -769,15 +769,15 @@ and to return information on pronunciations, meanings and synonyms.")
     (method url-fetch)
     (uri
       (string-append
-        "http://dev-www.libreoffice.org/src/"
-        "1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz"))
+       "http://dev-www.libreoffice.org/src/"
+       "86b1daaa438f5a7bea9a52d7b9799ac0-xmlsec1-1.2.23.tar.gz"))
     (sha256 (base32
-              "0jnxxygg6z5zi6za94dvxmg1bfar1wh8p5xa2bzbha0qcn2m02ir"))))
+             "17qfw5crkqn4v6xbkjxrjvcccfc00dy053892wrwv54qdk8n7m21"))))
 
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.1.6.2")
+    (version "5.3.1.2")
     (source
      (origin
       (method url-fetch)
@@ -786,7 +786,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "150xb76pc3889gfy4jrnq8sidymm1aihkm5pzy8b1fdy51zip804"))))
+               "1zsl0z0i8pw532x2lmwd64ms6igibkkjhwf01zmm2kpnr9ycsijp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -829,6 +829,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libmwaw" ,libmwaw)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
+       ("libstaroffice" ,libstaroffice)
        ("libvisio" ,libvisio)
        ("libwpg" ,libwpg)
        ("libwps" ,libwps)
@@ -836,6 +837,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
        ("libxt" ,libxt)
+       ("libzmf" ,libzmf)
        ("lpsolve" ,lpsolve)
        ("mdds" ,mdds)
        ("mythes" ,mythes)
@@ -868,15 +870,14 @@ and to return information on pronunciations, meanings and synonyms.")
                  (substitute*
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
-                         "solenv/gbuild/platform/unxgcc.mk"
-                         "external/libxmlsec/xmlsec1-oldlibtool.patch")
+                         "solenv/gbuild/platform/unxgcc.mk")
                    (("/bin/sh") (which "bash")))
                  (mkdir "external/tarballs")
                  (symlink
                    xmlsec
                    (string-append "external/tarballs/"
-                     "1f24ab1d39f4a51faf22244c94a6203f-"
-                     "xmlsec1-1.2.14.tar.gz"))
+                                  "86b1daaa438f5a7bea9a52d7b9799ac0-"
+                                  "xmlsec1-1.2.23.tar.gz"))
                  ;; The following is required for building xmlsec from the
                  ;; unpatched external tarball; since "configure" starts with
                  ;; "/bin/sh", it needs to be executed by a command invoking
