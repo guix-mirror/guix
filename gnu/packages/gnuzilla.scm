@@ -179,11 +179,9 @@ in C/C++.")
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
-       #:phases (alist-cons-before
-                 'configure 'chdir
-                 (lambda _
-                   (chdir "nspr"))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'chdir
+                    (lambda _ (chdir "nspr") #t)))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
