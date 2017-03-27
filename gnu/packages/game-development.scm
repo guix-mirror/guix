@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -676,3 +676,46 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame
   (package-with-python2 python-pygame))
+
+(define-public grafx2
+  (package
+    (name "grafx2")
+    (version "2.4")
+    (source (origin
+              (method url-fetch)
+              ;; XXX: There is no URL that contains the version. :(
+              (uri "http://pulkomandy.tk/projects/GrafX2/downloads/21")
+              (sha256
+               (base32
+                "0svsy6rqmdj11b400c242i2ixihyz0hds0dgicqz6g6dcgmcl62q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (add-before 'build 'change-to-src-directory
+           (lambda _
+             (chdir "src")
+             #t)))
+       #:make-flags
+       ;; SDL header files are referenced without the preceeding "SDL/".
+       (list (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL")
+             (string-append "prefix="
+                            (assoc-ref %outputs "out")))
+       #:tests? #f)) ; no check target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("lua" ,lua-5.1)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-ttf)))))
+    (synopsis "Bitmap paint program")
+    (description "GrafX2 is a bitmap paint program inspired by the Amiga
+programs ​Deluxe Paint and Brilliance.  Specializing in 256-color drawing, it
+includes a very large number of tools and effects that make it particularly
+suitable for pixel art, game graphics, and generally any detailed graphics
+painted with a mouse.")
+    (home-page "http://pulkomandy.tk/projects/GrafX2")
+    (license license:gpl2))) ; GPLv2 only
