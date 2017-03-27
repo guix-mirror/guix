@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -628,6 +629,35 @@ spreadsheet documents.")
     (description "Libwps is a library for importing files in the Microsoft
 Works word processor file format.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
+(define-public libzmf
+  (package
+   (name "libzmf")
+   (version "0.0.1")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/libzmf/libzmf-"
+                          version ".tar.xz"))
+      (sha256 (base32
+               "0yp5l1b90xim506zmr3ljkn3qkvbc7qk3dnwq1snxdpr57m37xga"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("boost" ,boost)
+      ("icu4c" ,icu4c)
+      ("libpng" ,libpng)
+      ("librevenge" ,librevenge)
+      ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libzmf")
+    (synopsis "Parses file format of Zoner Callisto/Draw documents")
+    (description "Libzmf is a library that parses the file format of Zoner
+Callisto/Draw documents.  Currently it only understands documents created by
+Zoner Draw version 4 and 5.")
+    (license mpl2.0)))
 
 (define-public hunspell
   (package
