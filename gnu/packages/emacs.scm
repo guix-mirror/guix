@@ -3427,17 +3427,18 @@ used for reverse direction.")
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
-    (version "20170220.540")
+    (version "0.3.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://melpa.org/packages/monroe-"
-                            version ".el"))
+        (uri (string-append "https://github.com/sanel/monroe/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "06p0qdhg4arwij1qpiiiwsd0m1bbl1qwd20ij2bmhryrvrcpswq3"))))
+            "0icdx8shkd951phlnmcq1vqaxp1l667q5rjscskc5r22aylakh4w"))))
     (build-system emacs-build-system)
-    (home-page "http://www.github.com/sanel/monroe")
+    (home-page "https://github.com/sanel/monroe")
     (synopsis "Clojure nREPL client for Emacs")
     (description
       "Monroe is a nREPL client for Emacs, focused on simplicity and easy
