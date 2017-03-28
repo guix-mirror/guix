@@ -3102,6 +3102,22 @@ sources.")
     (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-sphinx))))))
 
+(define-public python-sphinx-1.5.3
+  (package
+    (inherit python-sphinx)
+    (name "python-sphinx")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Sphinx" version))
+       (sha256
+        (base32
+         "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest-3.0.7)
+       ,@(package-native-inputs python-sphinx)))))
+
 (define-public python2-sphinx
   (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
     (package
