@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,7 +115,16 @@
                         ;; udev-populated /dev/disk/by-id directory but udev may
                         ;; be unavailable at the time we run this.
                         (if (bytevector? source)
-                            (or (find-partition-by-luks-uuid source)
+                            (or (let loop ((tries-left 10))
+                                  (and (positive? tries-left)
+                                       (or (find-partition-by-luks-uuid source)
+                                           ;; If the underlying partition is
+                                           ;; not found, try again after
+                                           ;; waiting a second, up to ten
+                                           ;; times.  FIXME: This should be
+                                           ;; dealt with in a more robust way.
+                                           (begin (sleep 1)
+                                                  (loop (- tries-left 1))))))
                                 (error "LUKS partition not found" source))
                             source)
 
