@@ -336,7 +336,7 @@ dependencies."
               (cran->guix-package (next state) repo))
 
             ;; predicate
-            (compose not done?)
+            (negate done?)
 
             ;; generator: update the queue
             (lambda (state)
