@@ -1487,17 +1487,18 @@ strings.")
 (define-public emacs-symon
   (package
     (name "emacs-symon")
-    (version "20170224.33")
+    (version "20160630")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://melpa.org/packages/symon-"
-                           version ".el"))
+       (uri (string-append "https://github.com/zk-phi/symon/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "109jd7yjhdrrf5jqpqyv543nb28g7065z58bji9pvxanzi4zl2iz"))))
+         "0h4jcgdnq98wc9rj72nwyazq8498yg55jfljiij5qwbn1xf1g5zz"))))
     (build-system emacs-build-system)
-    (home-page "http://hins11.yu-yake.com/")
+    (home-page "https://github.com/zk-phi/symon")
     (synopsis "Tiny graphical system monitor")
     (description
      "Tiny graphical system monitor for the Emacs minibuffer when idle.")
