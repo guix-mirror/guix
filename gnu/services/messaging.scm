@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,27 +50,11 @@
 ;;;
 ;;; Code:
 
-(define-syntax-rule (id ctx parts ...)
-  "Assemble PARTS into a raw (unhygienic) identifier."
-  (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
-
-(define-syntax define-maybe
-  (lambda (x)
-    (syntax-case x ()
-      ((_ stem)
-       (with-syntax
-           ((stem?                (id #'stem #'stem #'?))
-            (maybe-stem?          (id #'stem #'maybe- #'stem #'?))
-            (serialize-stem       (id #'stem #'serialize- #'stem))
-            (serialize-maybe-stem (id #'stem #'serialize-maybe- #'stem)))
-         #'(begin
-             (define (maybe-stem? val)
-               (or (eq? val 'disabled) (stem? val)))
-             (define (serialize-maybe-stem field-name val)
-               (when (stem? val) (serialize-stem field-name val)))))))))
-
 (define-syntax define-all-configurations
   (lambda (stx)
+    (define-syntax-rule (id ctx parts ...)
+      "Assemble PARTS into a raw (unhygienic) identifier."
+      (datum->syntax ctx (symbol-append (syntax->datum parts) ...)))
     (define (make-pred arg)
       (lambda (field target)
         (and (memq (syntax->datum target) `(common ,arg)) field)))

@@ -8234,4 +8234,65 @@ handler built in.")
 handled safely, this is what you're left with.")
     (license license:isc)))
 
+(define-public ghc-json
+  (package
+    (name "ghc-json")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/json/"
+                           "json-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18l5027vc68hnnxrxlnyl59vkkg95a92m1zzms0dqiby2r6pxdcn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-text" ,ghc-text)
+       ("ghc-parsec" ,ghc-parsec)))
+    (home-page "http://hackage.haskell.org/package/json")
+    (synopsis "Serializes Haskell data to and from JSON")
+    (description "This package provides a parser and pretty printer for
+converting between Haskell values and JSON.
+JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
+    (license license:bsd-3)))
+
+(define-public shellcheck
+  (package
+    (name "shellcheck")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/koalaman/shellcheck/archive/"
+                           "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "14r84fcn28rin339avlvca5g0kz832f01x8dpmwb5ql8mbc4rlxr"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-json" ,ghc-json)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page "https://github.com/koalaman/shellcheck")
+    (synopsis "Static analysis for shell scripts")
+    (description "@code{shellcheck} provides static analysis for
+@command{bash} and @command{sh} shell scripts.
+It gives warnings and suggestions in order to:
+
+@enumerate
+@item Point out and clarify typical beginner's syntax issues that cause
+a shell to give cryptic error messages.
+@item Point out and clarify typical intermediate level semantic problems
+that cause a shell to behave strangely and counter-intuitively.
+@item Point out subtle caveats, corner cases and pitfalls that may cause an
+advanced user's otherwise working script to fail under future circumstances.
+@end enumerate")
+    (license license:gpl3+)))
+
 ;;; haskell.scm ends here

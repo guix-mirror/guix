@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,6 +167,13 @@
                                    (synopsis ""))))
                         (check-synopsis-style pkg)))
                     "synopsis should not be empty")))
+
+(test-assert "synopsis: valid Texinfo markup"
+  (->bool
+   (string-contains
+    (with-warnings
+      (check-synopsis-style (dummy-package "x" (synopsis "Bad $@ texinfo"))))
+    "Texinfo markup in synopsis is invalid")))
 
 (test-assert "synopsis: does not start with an upper-case letter"
   (->bool

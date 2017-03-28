@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -271,8 +272,11 @@ libssh library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.agroman.net/corkscrew/corkscrew-"
-                           version ".tar.gz"))
+       ;; The agroman.net domain name expired on 2017-03-23, and the original
+       ;; "http://www.agroman.net/corkscrew/corkscrew-2.0.tar.gz" now returns
+       ;; bogus HTML.  Perhaps it will yet return.  Until then, use a mirror.
+       (uri (string-append "https://downloads.openwrt.org/sources/"
+                           "corkscrew-" version ".tar.gz"))
        (sha256 (base32
                 "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
     (build-system gnu-build-system)
@@ -295,26 +299,31 @@ libssh library.")
                (setenv "CONFIG_SHELL" bash)
                (zero? (apply system* bash
                              (string-append "." "/configure")
-                             flags))))))))
+                             flags)))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/corkscrew")))
+               (install-file "README" doc)
+               #t))))))
     (home-page "http://www.agroman.net/corkscrew")
-    (synopsis "Tunneling SSH through HTTP proxies")
+    (synopsis "SSH tunneling through HTTP(S) proxies")
     (description
-     "Corkscrew allows creating TCP tunnels through HTTP proxies.  WARNING:
-At the moment only plain text authentication is supported, should you require
-to use it with your HTTP proxy.  Digest based authentication may be supported
-in future and NTLM based authentication is most likey never be supported.")
+     "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
+Proxy authentication is only supported through the plain-text HTTP basic
+authentication scheme.")
     (license license:gpl2+)))
 
 (define-public mosh
   (package
     (name "mosh")
-    (version "1.2.6")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mosh.org/mosh-" version ".tar.gz"))
               (sha256
                (base32
-                "118fhpm754wpklf1blnlq5xbvrxqml6rdfs3b07wg666zkxvg0ky"))))
+                "0xikz40q873g9ihvz3x6bwkcb9hb8kcnp5wpcmb72pg5c7s143ij"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

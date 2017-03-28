@@ -124,6 +124,11 @@
             guix-service-type
             guix-publish-configuration
             guix-publish-configuration?
+            guix-publish-configuration-guix
+            guix-publish-configuration-port
+            guix-publish-configuration-host
+            guix-publish-configuration-compression-level
+            guix-publish-configuration-nar-path
             guix-publish-service
             guix-publish-service-type
 
@@ -1435,11 +1440,15 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (port    guix-publish-configuration-port        ;number
            (default 80))
   (host    guix-publish-configuration-host        ;string
-           (default "localhost")))
+           (default "localhost"))
+  (compression-level guix-publish-compression-level ;integer
+                     (default 3))
+  (nar-path    guix-publish-nar-path              ;string
+               (default "nar")))
 
 (define guix-publish-shepherd-service
   (match-lambda
-    (($ <guix-publish-configuration> guix port host)
+    (($ <guix-publish-configuration> guix port host compression nar-path)
      (list (shepherd-service
             (provision '(guix-publish))
             (requirement '(guix-daemon))
@@ -1447,6 +1456,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                       (list #$(file-append guix "/bin/guix")
                             "publish" "-u" "guix-publish"
                             "-p" #$(number->string port)
+                            "-C" #$(number->string compression)
+                            (string-append "--nar-path=" #$nar-path)
                             (string-append "--listen=" #$host))))
             (stop #~(make-kill-destructor)))))))
 
@@ -1475,6 +1486,7 @@ and @var{port} (@pxref{Invoking guix publish}).
 This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start."
+  ;; Deprecated.
   (service guix-publish-service-type
            (guix-publish-configuration (guix guix) (port port) (host host))))
 

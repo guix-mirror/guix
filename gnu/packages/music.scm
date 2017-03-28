@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -236,14 +236,14 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.0.14")
+    (version "2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/denemo/denemo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1a7g38695g7jjypx25qp0dx0asrh72xwdj0mdhmb9pfyzlppq0wh"))))
+                "0hggf8c4xcrjcxd5m00r788r7jg7g8ff54w2idfaqpj5j2ix3299"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

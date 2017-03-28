@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -1342,15 +1342,13 @@ Python 3.3+.")
   ;; spaces in indentation" with Python 3.
   (package
     (name "python2-dogtail")
-    (version "0.8.2")
+    (version "0.9.9")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "https://fedorahosted.org/released/dogtail/dogtail-"
-                   version ".tar.gz"))
+             (uri (pypi-uri "dogtail" version))
              (sha256
               (base32
-               "1yc4cg7ip87z15gyd4wy2vzbywrjc52a3m8r8gqy2b50d65llcg1"))))
+               "0p5wfssvzr9w0bvhllzbbd8fnp4cca2qxcpcsc33dchrmh5n552x"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
@@ -6746,10 +6744,7 @@ provided that can be used to do various manipulations with LilyPond files.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/a/appdirs/appdirs-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "appdirs" version))
         (sha256
           (base32
             "14id6wxi12lgyw0mg3bcfnf888ad07jz9yj46gfzhn186z8rcn4y"))))

@@ -348,8 +348,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10.4")
-(define %linux-libre-hash "0cmz4y8pb3sdag32bsrn7vg1i8v9rymfspg85ipkbamm53c7v54g")
+(define %linux-libre-version "4.10.5")
+(define %linux-libre-hash "0qxanna5a82vyh5yb3mv8vvx5i9kdzmq2p6q7xp1fy88x9gj11xb")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -358,14 +358,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.16"
-                    "0n7y7h7ps4l1pr9d0m75hkw41jnfyw301r343dsaznwc0lpq3ch7"
+  (make-linux-libre "4.9.17"
+                    "1543b159s6v5z9l2bskw9rd6v8d98da8sppd34lz7nin6nk00cpk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.55"
-                    "1m4h3wi4j573hny1yfi9qwkiicx2bx3gwy52zpr8bhxpyqz0d2dl"
+  (make-linux-libre "4.4.56"
+                    "16fa4rf6vdyakvjis2ahvzdw87znsqgxd84458y86z2szwbaym7n"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2054,6 +2054,7 @@ country-specific regulations for the wireless spectrum.")
                            "https://github.com/groeck/lm-sensors/archive/V"
                            (string-join (string-split version #\.) "-")
                            ".tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
@@ -3155,14 +3156,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "148")
+    (version "149")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "1d5g09ndfsnl56vyhb5xw0zxspnh0f937biw3agqhdfbvw40j9jr"))
+                "08hd8bl9rgss990icb69srarrfwcg8k7py979ak753j92ybbkhdm"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3489,7 +3490,7 @@ Light is the successor of lightscript.")
                (setenv "TLP_BIN" (string-append out "/bin"))
                (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
-               (setenv "TLP_CONF" (string-append out "/etc/tlp"))
+               (setenv "TLP_CONF" "/etc/tlp")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man")))))

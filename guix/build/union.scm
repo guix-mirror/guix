@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,9 +74,12 @@ identical, #f otherwise."
                                   (loop)))))))))))))
 
 (define* (union-build output inputs
-                      #:key (log-port (current-error-port)))
-  "Build in the OUTPUT directory a symlink tree that is the union of all
-the INPUTS."
+                      #:key (log-port (current-error-port))
+                      (create-all-directories? #f))
+  "Build in the OUTPUT directory a symlink tree that is the union of all the
+INPUTS.  As a special case, if CREATE-ALL-DIRECTORIES?, creates the
+subdirectories in the output directory to make sure the caller can modify them
+later."
 
   (define (symlink* input output)
     (format log-port "`~a' ~~> `~a'~%" input output)
@@ -104,8 +108,11 @@ the INPUTS."
   (define (union output inputs)
     (match inputs
       ((input)
-       ;; There's only one input, so just make a link.
-       (symlink* input output))
+       ;; There's only one input, so just make a link unless
+       ;; create-all-directories?.
+       (if (and create-all-directories? (file-is-directory? input))
+           (union-of-directories output inputs)
+           (symlink* input output)))
       (_
        (call-with-values (lambda () (partition file-is-directory? inputs))
          (match-lambda*

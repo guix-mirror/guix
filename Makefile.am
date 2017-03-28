@@ -129,7 +129,6 @@ MODULES =					\
   guix/import/cabal.scm				\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
-  guix/import/stackage.scm			\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
@@ -168,15 +167,16 @@ if HAVE_GUILE_JSON
 
 MODULES +=					\
   guix/docker.scm	   			\
+  guix/import/cpan.scm				\
+  guix/import/crate.scm				\
+  guix/import/gem.scm				\
   guix/import/github.scm   			\
   guix/import/json.scm				\
-  guix/import/crate.scm				\
-  guix/scripts/import/crate.scm			\
   guix/import/pypi.scm				\
-  guix/scripts/import/pypi.scm			\
-  guix/import/cpan.scm				\
+  guix/import/stackage.scm			\
+  guix/scripts/import/crate.scm			\
   guix/scripts/import/gem.scm			\
-  guix/import/gem.scm
+  guix/scripts/import/pypi.scm
 
 endif
 

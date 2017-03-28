@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -279,7 +280,7 @@ by the authority given in @code{ca}.")
 
    (key
     (string "/etc/openvpn/client.key")
-    "The key of the machine the daemon is running on. It must be the whose
+    "The key of the machine the daemon is running on. It must be the key whose
 certificate is @code{cert}.")
 
    (comp-lzo?

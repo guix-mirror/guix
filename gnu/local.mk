@@ -12,6 +12,7 @@
 # Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+# Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -424,6 +425,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
   %D%/services/herd.scm				\
+  %D%/services/pm.scm				\
   %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
@@ -464,6 +466,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/install.scm				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
+  %D%/tests/networking.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/web.scm
 
@@ -685,6 +688,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
+  %D%/packages/patches/libgit2-use-after-free.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\

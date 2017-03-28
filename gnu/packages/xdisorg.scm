@@ -472,7 +472,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "4.4.61")
+    (version "4.4.62")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -481,7 +481,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14jksv05xyydbpb9v8k3jgq7sl72bh356iapymg02vwg519i1d5k"))))
+                "08lnbsl9ialqik1ris6piz1g0fgq4r3767ycr4nziphw3kz89vr1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -723,7 +723,7 @@ compact configuration syntax.")
                  (lambda _
                    (format #t
                            "[Desktop Entry]~@
-                           Name=rxvt-unicode~@
+                           Name=rxvt-unicode (client)~@
                            Comment=Rxvt clone with XFT and unicode support~@
                            Exec=~a/bin/urxvtc~@
                            TryExec=~@*~a/bin/urxvtc~@

@@ -33,7 +33,8 @@ Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
-Copyright @copyright{} 2017 Carlo Zancanaro
+Copyright @copyright{} 2017 Carlo Zancanaro@*
+Copyright @copyright{} 2017 Thomas Danckaert
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -216,6 +217,7 @@ Services
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
+* Power management Services::   The TLP tool.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -6551,9 +6553,9 @@ primarily for debugging a running @command{guix publish} server.
 @end table
 
 Enabling @command{guix publish} on a GuixSD system is a one-liner: just
-add a call to @code{guix-publish-service} in the @code{services} field
-of the @code{operating-system} declaration (@pxref{guix-publish-service,
-@code{guix-publish-service}}).
+instantiate a @code{guix-publish-service-type} service in the @code{services} field
+of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
+@code{guix-publish-service-type}}).
 
 If you are instead running Guix on a ``foreign distro'', follow these
 instructions:”
@@ -8456,6 +8458,7 @@ declaration.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
+* Power management Services::   The TLP tool.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -9012,16 +9015,42 @@ uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
 This service is not part of @var{%base-services}.
 @end deffn
 
-@anchor{guix-publish-service}
-@deffn {Scheme Procedure} guix-publish-service [#:guix @var{guix}] @
-           [#:port 80] [#:host "localhost"]
-Return a service that runs @command{guix publish} listening on @var{host}
-and @var{port} (@pxref{Invoking guix publish}).
+@anchor{guix-publish-service-type}
+@deffn {Scheme Variable} guix-publish-service-type @var{config}
+This is the service type for @command{guix publish} (@pxref{Invoking
+guix publish}).  @var{config} must be a @code{guix-configuration}
+object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
+
+@deftp {Data Type} guix-publish-configuration
+Data type representing the configuration of the @code{guix publish}
+service.
+
+@table @asis
+@item @code{guix} (default: @code{guix})
+The Guix package to use.
+
+@item @code{port} (default: @code{80})
+The TCP port to listen for connections.
+
+@item @code{host} (default: @code{"localhost"})
+The host (and thus, network interface) to listen to.  Use
+@code{"0.0.0.0"} to listen on all the network interfaces.
+
+@item @code{compression-level} (default: @code{3})
+The gzip compression level at which substitutes are compressed.  Use
+@code{0} to disable compression altogether, and @code{9} to get the best
+compression ratio at the expense of increased CPU usage.
+
+@item @code{nar-path} (default: @code{"nar"})
+The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
+publish, @code{--nar-path}}, for details.
+@end table
+@end deftp
 
 @anchor{rngd-service}
 @deffn {Scheme Procedure} rngd-service [#:rng-tools @var{rng-tools}] @
@@ -9376,6 +9405,99 @@ make an initial adjustment of more than 1,000 seconds.
 @defvr {Scheme Variable} %ntp-servers
 List of host names used as the default NTP servers.
 @end defvr
+
+@cindex inetd
+@deffn {Scheme variable} inetd-service-type
+This service runs the @command{inetd} (@pxref{inetd invocation,,,
+inetutils, GNU Inetutils}) daemon.  @command{inetd} listens for
+connections on internet sockets, and lazily starts the specified server
+program when a connection is made on one of these sockets.
+
+The value of this service is an @code{inetd-configuration} object.  The
+following example configures the @command{inetd} daemon to provide the
+built-in @command{echo} service, as well as an smtp service which
+forwards smtp traffic over ssh to a server @code{smtp-server} behind a
+gateway @code{hostname}:
+
+@example
+(service
+ inetd-service-type
+ (inetd-configuration
+  (entries (list
+            (inetd-entry
+             (name "echo")
+             (socket-type 'stream)
+             (protocol "tcp")
+             (wait? #f)
+             (user "root"))
+            (inetd-entry
+             (node "127.0.0.1")
+             (name "smtp")
+             (socket-type 'stream)
+             (protocol "tcp")
+             (wait? #f)
+             (user "root")
+             (program (file-append openssh "/bin/ssh"))
+             (arguments
+              '("ssh" "-qT" "-i" "/path/to/ssh_key"
+                "-W" "smtp-server:25" "user@@hostname")))))
+@end example
+
+See below for more details about @code{inetd-configuration}.
+@end deffn
+
+@deftp {Data Type} inetd-configuration
+Data type representing the configuration of @command{inetd}.
+
+@table @asis
+@item @code{program} (default: @code{(file-append inetutils "/libexec/inetd")})
+The @command{inetd} executable to use.
+
+@item @code{entries} (default: @code{'()})
+A list of @command{inetd} service entries.  Each entry should be created
+by the @code{inetd-entry} constructor.
+@end table
+@end deftp
+
+@deftp {Data Type} inetd-entry
+Data type representing an entry in the @command{inetd} configuration.
+Each entry corresponds to a socket where @command{inetd} will listen for
+requests.
+
+@table @asis
+@item @code{node} (default: @code{#f})
+Optional string, a comma-separated list of local addresses
+@command{inetd} should use when listening for this service.
+@xref{Configuration file,,, inetutils, GNU Inetutils} for a complete
+description of all options.
+@item @code{name}
+A string, the name must correspond to an entry in @code{/etc/services}.
+@item @code{socket-type}
+One of @code{'stream}, @code{'dgram}, @code{'raw}, @code{'rdm} or
+@code{'seqpacket}.
+@item @code{protocol}
+A string, must correspond to an entry in @code{/etc/protocols}.
+@item @code{wait?} (default: @code{#t})
+Whether @command{inetd} should wait for the server to exit before
+listening to new service requests.
+@item @code{user}
+A string containing the user (and, optionally, group) name of the user
+as whom the server should run.  The group name can be specified in a
+suffix, separated by a colon or period, i.e. @code{"user"},
+@code{"user:group"} or @code{"user.group"}.
+@item @code{program} (default: @code{"internal"})
+The server program which will serve the requests, or @code{"internal"}
+if @command{inetd} should use a built-in service.
+@item @code{arguments} (default: @code{'()})
+A list strings or file-like objects, which are the server program's
+arguments, starting with the zeroth argument, i.e. the name of the
+program itself.  For @command{inetd}'s internal services, this entry
+must be @code{'()} or @code{'("internal")}.
+@end table
+
+@xref{Configuration file,,, inetutils, GNU Inetutils} for a more
+detailed discussion of each configuration field.
+@end deftp
 
 @cindex Tor
 @deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
@@ -13090,19 +13212,19 @@ Both can be run simultaneously.
 
 Available @code{openvpn-client-configuration} fields are:
 
-@deftypevr @code{openvpn-client-configuration} parameter package openvpn
+@deftypevr {@code{openvpn-client-configuration} parameter} package openvpn
 The OpenVPN package.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter string pid-file
+@deftypevr {@code{openvpn-client-configuration} parameter} string pid-file
 The OpenVPN pid file.
 
 Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter proto proto
+@deftypevr {@code{openvpn-client-configuration} parameter} proto proto
 The protocol (UDP or TCP) used to open a channel between clients and
 servers.
 
@@ -13110,21 +13232,21 @@ Defaults to @samp{udp}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter dev dev
+@deftypevr {@code{openvpn-client-configuration} parameter} dev dev
 The device type used to represent the VPN connection.
 
 Defaults to @samp{tun}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter string ca
+@deftypevr {@code{openvpn-client-configuration} parameter} string ca
 The certificate authority to check connections against.
 
 Defaults to @samp{"/etc/openvpn/ca.crt"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter string cert
+@deftypevr {@code{openvpn-client-configuration} parameter} string cert
 The certificate of the machine the daemon is running on.  It should be
 signed by the authority given in @code{ca}.
 
@@ -13132,7 +13254,7 @@ Defaults to @samp{"/etc/openvpn/client.crt"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter string key
+@deftypevr {@code{openvpn-client-configuration} parameter} string key
 The key of the machine the daemon is running on.  It must be the key whose
 certificate is @code{cert}.
 
@@ -13140,21 +13262,21 @@ Defaults to @samp{"/etc/openvpn/client.key"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter boolean comp-lzo?
+@deftypevr {@code{openvpn-client-configuration} parameter} boolean comp-lzo?
 Whether to use the lzo compression algorithm.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter boolean persist-key?
+@deftypevr {@code{openvpn-client-configuration} parameter} boolean persist-key?
 Don't re-read key files across SIGUSR1 or --ping-restart.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter boolean persist-tun?
+@deftypevr {@code{openvpn-client-configuration} parameter} boolean persist-tun?
 Don't close and reopen TUN/TAP device or run up/down scripts across
 SIGUSR1 or --ping-restart restarts.
 
@@ -13162,14 +13284,14 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter number verbosity
+@deftypevr {@code{openvpn-client-configuration} parameter} number verbosity
 Verbosity level.
 
 Defaults to @samp{3}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter tls-auth-client tls-auth
+@deftypevr {@code{openvpn-client-configuration} parameter} tls-auth-client tls-auth
 Add an additional layer of HMAC authentication on top of the TLS control
 channel to protect against DoS attacks.
 
@@ -13177,42 +13299,42 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter key-usage verify-key-usage?
+@deftypevr {@code{openvpn-client-configuration} parameter} key-usage verify-key-usage?
 Whether to check the server certificate has server usage extension.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter bind bind?
+@deftypevr {@code{openvpn-client-configuration} parameter} bind bind?
 Bind to a specific local port number.
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter resolv-retry resolv-retry?
+@deftypevr {@code{openvpn-client-configuration} parameter} resolv-retry resolv-retry?
 Retry resolving server address.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-client-configuration} parameter openvpn-remote-list remote
+@deftypevr {@code{openvpn-client-configuration} parameter} openvpn-remote-list remote
 A list of remote servers to connect to.
 
 Defaults to @samp{()}.
 
 Available @code{openvpn-remote-configuration} fields are:
 
-@deftypevr @code{openvpn-remote-configuration} parameter string name
+@deftypevr {@code{openvpn-remote-configuration} parameter} string name
 Server name.
 
 Defaults to @samp{"my-server"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-remote-configuration} parameter number port
+@deftypevr {@code{openvpn-remote-configuration} parameter} number port
 Port number the server listens to.
 
 Defaults to @samp{1194}.
@@ -13226,19 +13348,19 @@ Defaults to @samp{1194}.
 
 Available @code{openvpn-server-configuration} fields are:
 
-@deftypevr @code{openvpn-server-configuration} parameter package openvpn
+@deftypevr {@code{openvpn-server-configuration} parameter} package openvpn
 The OpenVPN package.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string pid-file
+@deftypevr {@code{openvpn-server-configuration} parameter} string pid-file
 The OpenVPN pid file.
 
 Defaults to @samp{"/var/run/openvpn/openvpn.pid"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter proto proto
+@deftypevr {@code{openvpn-server-configuration} parameter} proto proto
 The protocol (UDP or TCP) used to open a channel between clients and
 servers.
 
@@ -13246,21 +13368,21 @@ Defaults to @samp{udp}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter dev dev
+@deftypevr {@code{openvpn-server-configuration} parameter} dev dev
 The device type used to represent the VPN connection.
 
 Defaults to @samp{tun}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string ca
+@deftypevr {@code{openvpn-server-configuration} parameter} string ca
 The certificate authority to check connections against.
 
 Defaults to @samp{"/etc/openvpn/ca.crt"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string cert
+@deftypevr {@code{openvpn-server-configuration} parameter} string cert
 The certificate of the machine the daemon is running on.  It should be
 signed by the authority given in @code{ca}.
 
@@ -13268,7 +13390,7 @@ Defaults to @samp{"/etc/openvpn/client.crt"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string key
+@deftypevr {@code{openvpn-server-configuration} parameter} string key
 The key of the machine the daemon is running on.  It must be the key whose
 certificate is @code{cert}.
 
@@ -13276,21 +13398,21 @@ Defaults to @samp{"/etc/openvpn/client.key"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter boolean comp-lzo?
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean comp-lzo?
 Whether to use the lzo compression algorithm.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter boolean persist-key?
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean persist-key?
 Don't re-read key files across SIGUSR1 or --ping-restart.
 
 Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter boolean persist-tun?
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean persist-tun?
 Don't close and reopen TUN/TAP device or run up/down scripts across
 SIGUSR1 or --ping-restart restarts.
 
@@ -13298,14 +13420,14 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter number verbosity
+@deftypevr {@code{openvpn-server-configuration} parameter} number verbosity
 Verbosity level.
 
 Defaults to @samp{3}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter tls-auth-server tls-auth
+@deftypevr {@code{openvpn-server-configuration} parameter} tls-auth-server tls-auth
 Add an additional layer of HMAC authentication on top of the TLS control
 channel to protect against DoS attacks.
 
@@ -13313,56 +13435,56 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter number port
+@deftypevr {@code{openvpn-server-configuration} parameter} number port
 Specifies the port number on which the server listens.
 
 Defaults to @samp{1194}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter ip-mask server
+@deftypevr {@code{openvpn-server-configuration} parameter} ip-mask server
 An ip and mask specifying the subnet inside the virtual network.
 
 Defaults to @samp{"10.8.0.0 255.255.255.0"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter cidr6 server-ipv6
+@deftypevr {@code{openvpn-server-configuration} parameter} cidr6 server-ipv6
 A CIDR notation specifying the IPv6 subnet inside the virtual network.
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string dh
+@deftypevr {@code{openvpn-server-configuration} parameter} string dh
 The Diffie-Hellman parameters file.
 
 Defaults to @samp{"/etc/openvpn/dh2048.pem"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string ifconfig-pool-persist
+@deftypevr {@code{openvpn-server-configuration} parameter} string ifconfig-pool-persist
 The file that records client IPs.
 
 Defaults to @samp{"/etc/openvpn/ipp.txt"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter gateway redirect-gateway?
+@deftypevr {@code{openvpn-server-configuration} parameter} gateway redirect-gateway?
 When true, the server will act as a gateway for its clients.
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter boolean client-to-client?
+@deftypevr {@code{openvpn-server-configuration} parameter} boolean client-to-client?
 When true, clients are alowed to talk to each other inside the VPN.
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter keepalive keepalive
+@deftypevr {@code{openvpn-server-configuration} parameter} keepalive keepalive
 Causes ping-like messages to be sent back and forth over the link so
 that each side knows when the other side has gone down.  @code{keepalive}
 requires a pair.  The first element is the period of the ping sending,
@@ -13371,14 +13493,14 @@ down.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter number max-clients
+@deftypevr {@code{openvpn-server-configuration} parameter} number max-clients
 The maximum number of clients.
 
 Defaults to @samp{100}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter string status
+@deftypevr {@code{openvpn-server-configuration} parameter} string status
 The status file.  This file shows a small report on current connection.
 It is trunkated and rewritten every minute.
 
@@ -13386,28 +13508,28 @@ Defaults to @samp{"/var/run/openvpn/status"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-server-configuration} parameter openvpn-ccd-list client-config-dir
+@deftypevr {@code{openvpn-server-configuration} parameter} openvpn-ccd-list client-config-dir
 The list of configuration for some clients.
 
 Defaults to @samp{()}.
 
 Available @code{openvpn-ccd-configuration} fields are:
 
-@deftypevr @code{openvpn-ccd-configuration} parameter string name
+@deftypevr {@code{openvpn-ccd-configuration} parameter} string name
 Client name.
 
 Defaults to @samp{"client"}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask iroute
+@deftypevr {@code{openvpn-ccd-configuration} parameter} ip-mask iroute
 Client own network
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr @code{openvpn-ccd-configuration} parameter ip-mask ifconfig-push
+@deftypevr {@code{openvpn-ccd-configuration} parameter} ip-mask ifconfig-push
 Client VPN IP.
 
 Defaults to @samp{#f}.
@@ -13686,6 +13808,509 @@ cuirass as in @command{guix build} command.
 The Cuirass package to use.
 @end table
 @end deftp
+
+@node Power management Services
+@subsubsection Power management Services
+
+@cindex power management with TLP
+The @code{(gnu services pm)} module provides a Guix service definition
+for the Linux power management tool TLP.
+
+TLP enables various powersaving modes in userspace and kernel.
+Contrary to @code{upower-service}, it is not a passive,
+monitoring tool, as it will apply custom settings each time a new power
+source is detected.  More information can be found at
+@uref{http://linrunner.de/en/tlp/tlp.html, TLP home page}.
+
+@deffn {Scheme Variable} tlp-service-type
+The service type for the TLP tool.  Its value should be a valid
+TLP configuration (see below).  For example:
+@example
+(service tlp-service-type (tlp-configuration))
+@end example
+@end deffn
+
+By default TLP does not need much configuration but most TLP parameters
+can be tweaked using @code{tlp-configuration}.
+
+Each parameter definition is preceded by its type; for example,
+@samp{boolean foo} indicates that the @code{foo} parameter
+should be specified as a boolean.  Types starting with
+@code{maybe-} denote parameters that won't show up in TLP config file
+when their value is @code{'disabled}.
+
+@c The following documentation was initially generated by
+@c (generate-tlp-documentation) in (gnu services pm).  Manually maintained
+@c documentation is better, so we shouldn't hesitate to edit below as
+@c needed.  However if the change you want to make to this documentation
+@c can be done in an automated way, it's probably easier to change
+@c (generate-documentation) than to make it below and have to deal with
+@c the churn as TLP updates.
+
+Available @code{tlp-configuration} fields are:
+
+@deftypevr {@code{tlp-configuration} parameter} package tlp
+The TLP package.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean tlp-enable?
+Set to true if you wish to enable TLP.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string tlp-default-mode
+Default mode when no power supply can be detected.  Alternatives are AC
+and BAT.
+
+Defaults to @samp{"AC"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer disk-idle-secs-on-ac
+Number of seconds Linux kernel has to wait after the disk goes idle,
+before syncing on AC.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer disk-idle-secs-on-bat
+Same as @code{disk-idle-ac} but on BAT mode.
+
+Defaults to @samp{2}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer max-lost-work-secs-on-ac
+Dirty pages flushing periodicity, expressed in seconds.
+
+Defaults to @samp{15}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer max-lost-work-secs-on-bat
+Same as @code{max-lost-work-secs-on-ac} but on BAT mode.
+
+Defaults to @samp{60}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list cpu-scaling-governor-on-ac
+CPU frequency scaling governor on AC mode.  With intel_pstate driver,
+alternatives are powersave and performance.  With acpi-cpufreq driver,
+alternatives are ondemand, powersave, performance and conservative.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list cpu-scaling-governor-on-bat
+Same as @code{cpu-scaling-governor-on-ac} but on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-scaling-min-freq-on-ac
+Set the min available frequency for the scaling governor on AC.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-scaling-max-freq-on-ac
+Set the max available frequency for the scaling governor on AC.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-scaling-min-freq-on-bat
+Set the min available frequency for the scaling governor on BAT.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-scaling-max-freq-on-bat
+Set the max available frequency for the scaling governor on BAT.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-min-perf-on-ac
+Limit the min P-state to control the power dissipation of the CPU, in AC
+mode.  Values are stated as a percentage of the available performance.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-max-perf-on-ac
+Limit the max P-state to control the power dissipation of the CPU, in AC
+mode.  Values are stated as a percentage of the available performance.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-min-perf-on-bat
+Same as @code{cpu-min-perf-on-ac} on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-non-negative-integer cpu-max-perf-on-bat
+Same as @code{cpu-max-perf-on-ac} on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-boolean cpu-boost-on-ac?
+Enable CPU turbo boost feature on AC mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-boolean cpu-boost-on-bat?
+Same as @code{cpu-boost-on-ac?} on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean sched-powersave-on-ac?
+Allow Linux kernel to minimize the number of CPU cores/hyper-threads
+used under light load conditions.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean sched-powersave-on-bat?
+Same as @code{sched-powersave-on-ac?} but on BAT mode.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean nmi-watchdog?
+Enable Linux kernel NMI watchdog.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-string phc-controls
+For Linux kernels with PHC patch applied, change CPU voltages.  An
+example value would be @samp{"F:V F:V F:V F:V"}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string energy-perf-policy-on-ac
+Set CPU performance versus energy saving policy on AC.  Alternatives are
+performance, normal, powersave.
+
+Defaults to @samp{"performance"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string energy-perf-policy-on-bat
+Same as @code{energy-perf-policy-ac} but on BAT mode.
+
+Defaults to @samp{"powersave"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} space-separated-string-list disks-devices
+Hard disk devices.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} space-separated-string-list disk-apm-level-on-ac
+Hard disk advanced power management level.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} space-separated-string-list disk-apm-level-on-bat
+Same as @code{disk-apm-bat} but on BAT mode.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list disk-spindown-timeout-on-ac
+Hard disk spin down timeout.  One value has to be specified for each
+declared hard disk.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list disk-spindown-timeout-on-bat
+Same as @code{disk-spindown-timeout-on-ac} but on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list disk-iosched
+Select IO scheduler for disk devices.  One value has to be specified for
+each declared hard disk.  Example alternatives are cfq, deadline and
+noop.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string sata-linkpwr-on-ac
+SATA aggressive link power management (ALPM) level.  Alternatives are
+min_power, medium_power, max_performance.
+
+Defaults to @samp{"max_performance"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string sata-linkpwr-on-bat
+Same as @code{sata-linkpwr-ac} but on BAT mode.
+
+Defaults to @samp{"min_power"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-string sata-linkpwr-blacklist
+Exclude specified SATA host devices for link power management.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-on-off-boolean ahci-runtime-pm-on-ac?
+Enable Runtime Power Management for AHCI controller and disks on AC
+mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-on-off-boolean ahci-runtime-pm-on-bat?
+Same as @code{ahci-runtime-pm-on-ac} on BAT mode.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer ahci-runtime-pm-timeout
+Seconds of inactivity before disk is suspended.
+
+Defaults to @samp{15}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string pcie-aspm-on-ac
+PCI Express Active State Power Management level.  Alternatives are
+default, performance, powersave.
+
+Defaults to @samp{"performance"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string pcie-aspm-on-bat
+Same as @code{pcie-aspm-ac} but on BAT mode.
+
+Defaults to @samp{"powersave"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-power-profile-on-ac
+Radeon graphics clock speed level.  Alternatives are low, mid, high,
+auto, default.
+
+Defaults to @samp{"high"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-power-profile-on-bat
+Same as @code{radeon-power-ac} but on BAT mode.
+
+Defaults to @samp{"low"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-dpm-state-on-ac
+Radeon dynamic power management method (DPM).  Alternatives are battery,
+performance.
+
+Defaults to @samp{"performance"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-dpm-state-on-bat
+Same as @code{radeon-dpm-state-ac} but on BAT mode.
+
+Defaults to @samp{"battery"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-dpm-perf-level-on-ac
+Radeon DPM performance level.  Alternatives are auto, low, high.
+
+Defaults to @samp{"auto"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string radeon-dpm-perf-level-on-bat
+Same as @code{radeon-dpm-perf-ac} but on BAT mode.
+
+Defaults to @samp{"auto"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} on-off-boolean wifi-pwr-on-ac?
+Wifi power saving mode.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} on-off-boolean wifi-pwr-on-bat?
+Same as @code{wifi-power-ac?} but on BAT mode.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} y-n-boolean wol-disable?
+Disable wake on LAN.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer sound-power-save-on-ac
+Timeout duration in seconds before activating audio power saving on
+Intel HDA and AC97 devices.  A value of 0 disables power saving.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} non-negative-integer sound-power-save-on-bat
+Same as @code{sound-powersave-ac} but on BAT mode.
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} y-n-boolean sound-power-save-controller?
+Disable controller in powersaving mode on Intel HDA devices.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean bay-poweroff-on-bat?
+Enable optical drive in UltraBay/MediaBay on BAT mode.  Drive can be
+powered on again by releasing (and reinserting) the eject lever or by
+pressing the disc eject button on newer models.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string bay-device
+Name of the optical drive device to power off.
+
+Defaults to @samp{"sr0"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string runtime-pm-on-ac
+Runtime Power Management for PCI(e) bus devices.  Alternatives are on
+and auto.
+
+Defaults to @samp{"on"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} string runtime-pm-on-bat
+Same as @code{runtime-pm-ac} but on BAT mode.
+
+Defaults to @samp{"auto"}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean runtime-pm-all?
+Runtime Power Management for all PCI(e) bus devices, except blacklisted
+ones.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list runtime-pm-blacklist
+Exclude specified PCI(e) devices adresses from Runtime Power Management.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} space-separated-string-list runtime-pm-driver-blacklist
+Exclude PCI(e) devices assigned to the specified drivers from Runtime
+Power Management.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean usb-autosuspend?
+Enable USB autosuspend feature.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-string usb-blacklist
+Exclude specified devices from USB autosuspend.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean usb-blacklist-wwan?
+Exclude WWAN devices from USB autosuspend.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-string usb-whitelist
+Include specified devices into USB autosuspend, even if they are already
+excluded by the driver or via @code{usb-blacklist-wwan?}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} maybe-boolean usb-autosuspend-disable-on-shutdown?
+Enable USB autosuspend before shutdown.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{tlp-configuration} parameter} boolean restore-device-state-on-startup?
+Restore radio device state (bluetooth, wifi, wwan) from previous
+shutdown on system startup.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services

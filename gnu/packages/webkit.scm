@@ -35,6 +35,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -45,7 +46,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ruby)
-  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -53,14 +53,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.14.5")
+    (version "2.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "17rnjs7yl198bkghzcc2cgh30sb5i03irb6wag3xchwv7b1z3a1w"))))
+                "1p3w23n5bq30xg4qg0i9lmrk13vgck2l4wh8gmzwxwqfj7c738sy"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -102,12 +102,12 @@
      `(("at-spi2-core" ,at-spi2-core)
        ("enchant" ,enchant)
        ("geoclue" ,geoclue)
-       ("gnutls" ,gnutls)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+-2" ,gtk+-2)
        ("harfbuzz" ,harfbuzz)
        ("hyphen" ,hyphen)
        ("icu4c" ,icu4c)
+       ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg)
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)

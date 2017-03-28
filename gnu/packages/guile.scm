@@ -1025,7 +1025,7 @@ Guile's foreign function interface.")
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
                   ,@%gnu-build-system-modules)
-
+       #:tests? #f ; test suite is non-deterministic :(
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-haunt
                     (lambda* (#:key outputs #:allow-other-keys)

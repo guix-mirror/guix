@@ -46,9 +46,14 @@ configure Git to automatically sign commits, run:
   git config commit.gpgsign true
   git config user.signingkey CABBA6EA1DC0FF33
 
-You can prevent yourself from accidentally pushing unsigned commits to Savannah
-by using the pre-push Git hook called 'pre-push'. It's located at
-'etc/git/pre-push'.
+You can prevent yourself from accidentally pushing unsigned commits to
+Savannah by using the pre-push Git hook called located at ‘etc/git/pre-push’:
+
+  cp etc/git/pre-push .git/hooks/pre-push
+
+When pushing a commit on behalf of somebody else, please add a Signed-off-by
+line at the end of the commit log message (e.g. with ‘git am --signoff’).
+This improves tracking of who did what.
 
 For anything else, please post to guix-patches@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply

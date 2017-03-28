@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1080,6 +1081,26 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-aggressive-indent
+  (package
+    (name "emacs-aggressive-indent")
+    (version "1.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/"
+                                  "aggressive-indent-" version ".el"))
+              (sha256
+               (base32
+                "0jnzccl50x0wapprgwxinp99pwwa6j43q6msn4gv437j7swy8wnj"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/aggressive-indent.html")
+    (synopsis "Minor mode to aggressively keep your code always indented")
+    (description
+     "@code{aggressive-indent-mode} is a minor mode that keeps your code
+always indented.  It reindents after every change, making it more reliable
+than @code{electric-indent-mode}.")
+    (license license:gpl2+)))
+
 (define-public emacs-ag
   (package
     (name "emacs-ag")
@@ -1396,6 +1417,25 @@ code written in the D programming language.  This mode is currently known to
 work with Emacs 24 and 25.")
     (license license:gpl2+)))
 
+(define-public emacs-keyfreq
+  (package
+    (name "emacs-keyfreq")
+    (version "20160516.716")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://melpa.org/packages/keyfreq-"
+               version ".el"))
+        (sha256
+          (base32
+            "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dacap/keyfreq")
+    (synopsis "Track Emacs command frequencies")
+    (description "@code{emacs-keyfeq} tracks and shows how many times you used
+a command.")
+    (license license:gpl3+)))
+
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
@@ -1442,6 +1482,25 @@ allows easily move between them.")
     (description "This package provides an Emacs library for manipulating
 strings.")
     (license license:gpl3+)))
+
+(define-public emacs-symon
+  (package
+    (name "emacs-symon")
+    (version "20170224.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://melpa.org/packages/symon-"
+                           version ".el"))
+       (sha256
+        (base32
+         "109jd7yjhdrrf5jqpqyv543nb28g7065z58bji9pvxanzi4zl2iz"))))
+    (build-system emacs-build-system)
+    (home-page "http://hins11.yu-yake.com/")
+    (synopsis "Tiny graphical system monitor")
+    (description
+     "Tiny graphical system monitor for the Emacs minibuffer when idle.")
+    (license license:gpl2+)))
 
 (define-public emacs-sx
   (package
@@ -3363,6 +3422,26 @@ the point of the most recent edit in the current Emacs buffer.  When repeated,
 go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
     (license license:gpl2+)))
+
+(define-public emacs-monroe
+  (package
+    (name "emacs-monroe")
+    (version "20170220.540")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://melpa.org/packages/monroe-"
+                            version ".el"))
+        (sha256
+          (base32
+            "06p0qdhg4arwij1qpiiiwsd0m1bbl1qwd20ij2bmhryrvrcpswq3"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.github.com/sanel/monroe")
+    (synopsis "Clojure nREPL client for Emacs")
+    (description
+      "Monroe is a nREPL client for Emacs, focused on simplicity and easy
+distribution, primarily targeting Clojure users")
+    (license license:gpl3+)))
 
 (define-public emacs-writegood-mode
   (package
