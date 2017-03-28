@@ -136,7 +136,7 @@ encrypted with a GnuPG key.  Secrets consist of an arbitrary number of
 key/value pairs, making Shroud suitable for more than just password storage.
 For copying and pasting secrets into web browsers and other graphical
 applications, there is xclip integration." )
-    (home-page "http://dthompson.us/pages/software/shroud.html")
+    (home-page "https://dthompson.us/projects/shroud.html")
     (license license:gpl3+)))
 
 (define-public yapet
