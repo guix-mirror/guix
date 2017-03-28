@@ -108,7 +108,7 @@ algorithms AES or Twofish.")
     (version "0.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://files.dthompson.us/shroud/shroud-"
+              (uri (string-append "https://files.dthompson.us/shroud/shroud-"
                                   version ".tar.gz"))
               (sha256
                (base32
