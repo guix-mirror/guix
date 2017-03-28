@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3089,7 +3090,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "1.4.1")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/skeeto/elfeed/archive/"
@@ -3097,7 +3098,7 @@ If you want to mark a folder manually as a project just create an empty
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i75r8x9ypbfjlnym04h16ikcrlks86p7wsgawrx7mh1lk4inp89"))))
+                "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
