@@ -4009,3 +4009,24 @@ modern look.  It implements a new HTML back-end for exporting org-mode docs as
 HTML compatible with Twitter Bootstrap.  By default, HTML is exported with
 jQuery and Bootstrap resources included via osscdn.")
     (license license:gpl3+)))
+
+(define-public emacs-highlight-sexp
+  (package
+    (name "emacs-highlight-sexp")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/daimrod/highlight-sexp/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jwx87qkln1rg9wmv4qkgkml935fh2pkgrg5x4ca6n5dgb4q6rj1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/daimrod/highlight-sexp")
+    (synopsis "Minor mode that highlights the s-exp at the current position")
+    (description
+     "This Emacs package highlights the s-exp at the current position.")
+    (license license:gpl3+)))
