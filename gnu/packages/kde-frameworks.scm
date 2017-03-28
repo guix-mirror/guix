@@ -103,7 +103,7 @@ common build settings used in software produced by the KDE community.")
 (define-public phonon
   (package
     (name "phonon")
-    (version "4.9.0")
+    (version "4.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -112,7 +112,7 @@ common build settings used in software produced by the KDE community.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1q5hvsk4sfcb91625wcmldy7kgjmfpmpmkgzi6mxkqdd307v8x5v"))))
+                "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
