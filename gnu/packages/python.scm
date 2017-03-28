@@ -14804,3 +14804,24 @@ information.")
 
 (define-public python2-packaging
   (package-with-python2 python-packaging))
+
+(define-public python-sql
+  (package
+    (name "python-sql")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-sql" version))
+       (sha256
+        (base32
+         "0p6kaqj02vz0habmdx37zjk6hjxdfm8aw737zs059vvpr70ird87"))))
+    (build-system python-build-system)
+    (home-page "https://python-sql.tryton.org/")
+    (synopsis "Library to write SQL queries in a pythonic way")
+    (description "@code{python-sql} is a library to write SQL queries, that
+transforms idiomatic python function calls to well-formed SQL queries.")
+    (license license:bsd-3)))
+
+(define-public python2-sql
+  (package-with-python2 python-sql))
