@@ -1,0 +1,57 @@
+From 3f6155389abc8e2b3dafc5eefa1ce0c929b007fa Mon Sep 17 00:00:00 2001
+From: Jan Grulich <jgrulich@redhat.com>
+Date: Mon, 3 Apr 2017 14:13:54 +0200
+Subject: One more attempt to fix unit test for active connections
+
+---
+ src/activeconnection.cpp | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/src/activeconnection.cpp b/src/activeconnection.cpp
+index 05582fa..3a8e6b2 100644
+--- a/src/activeconnection.cpp
++++ b/src/activeconnection.cpp
+@@ -79,11 +79,13 @@ NetworkManager::ActiveConnection::ActiveConnection(const QString &path, QObject
+     connect(&d->iface, &OrgFreedesktopNetworkManagerConnectionActiveInterface::PropertiesChanged, d, &ActiveConnectionPrivate::propertiesChanged);
+ #endif
+ 
++#ifndef NMQT_STATIC
+     /*
+      * Workaround: Re-check connection state before we watch changes in case it gets changed too quickly
+      * BUG:352326
+      */
+     d->recheckProperties();
++#endif
+ }
+ 
+ NetworkManager::ActiveConnection::ActiveConnection(ActiveConnectionPrivate &dd, QObject *parent)
+@@ -91,18 +93,26 @@ NetworkManager::ActiveConnection::ActiveConnection(ActiveConnectionPrivate &dd,
+ {
+     Q_D(ActiveConnection);
+ 
++#ifndef NMQT_STATIC
+ #if NM_CHECK_VERSION(1, 4, 0)
+     QDBusConnection::systemBus().connect(NetworkManagerPrivate::DBUS_SERVICE, d->path, NetworkManagerPrivate::FDO_DBUS_PROPERTIES,
+                                          QLatin1String("PropertiesChanged"), d, SLOT(dbusPropertiesChanged(QString,QVariantMap,QStringList)));
+ #else
+     connect(&d->iface, &OrgFreedesktopNetworkManagerConnectionActiveInterface::PropertiesChanged, d, &ActiveConnectionPrivate::propertiesChanged);
+ #endif
++#endif
++
++#ifdef NMQT_STATIC
++    connect(&d->iface, &OrgFreedesktopNetworkManagerConnectionActiveInterface::PropertiesChanged, d, &ActiveConnectionPrivate::propertiesChanged);
++#endif
+ 
++#ifndef NMQT_STATIC
+     /*
+      * Workaround: Re-check connection state before we watch changes in case it gets changed too quickly
+      * BUG:352326
+      */
+     d->recheckProperties();
++#endif
+ }
+ 
+ NetworkManager::ActiveConnection::~ActiveConnection()
+-- 
+cgit v0.11.2
+
