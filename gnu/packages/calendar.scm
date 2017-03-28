@@ -113,7 +113,7 @@ data units.")
             (zero? (system* "py.test" "tests")))))))
     (native-inputs
       ;; XXX Uses tmpdir_factory, introduced in pytest 2.8.
-     `(("python-pytest" ,python-pytest-2.9.2)
+     `(("python-pytest" ,python-pytest-3.0)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-setuptools-scm" ,python-setuptools-scm)
        ;; Required for tests

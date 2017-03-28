@@ -1818,19 +1818,18 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
-;; This package is used by Borg until we can upgrade all our Python packages to
-;; use a more recent pytest.
-(define-public python-pytest-2.9.2
+;; Some packages require a newer pytest.
+(define-public python-pytest-3.0
   (package
     (inherit python-pytest)
     (name "python-pytest")
-    (version "2.9.2")
+    (version "3.0.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest" version))
               (sha256
                (base32
-                "1n6igbc1b138wx1q5gca4pqw1j6nsyicfxds5n0b5989kaxqmh8j"))))
+                "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1841,25 +1840,20 @@ and many external plugins.")
                 (string-append "@pytest.mark.skip"
                                "(reason=\"Assumes that /usr exists.\")\n    "
                                line)))
-             #t)))))))
-
-;; This package is used by Sphinx version 1.5.2 and up
-(define-public python-pytest-3.0.7
-  (package
-    (inherit python-pytest-2.9.2)
-    (name "python-pytest")
-    (version "3.0.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest" version))
-       (sha256
-        (base32
-         "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
+             #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
-       ("python-hypothesis" ,python-hypothesis)))))
+       ("python-hypothesis" ,python-hypothesis)))
+    (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
+
+(define-public python2-pytest-3.0
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-3.0))))
+    (package (inherit base)
+      (native-inputs
+        `(("python2-enum34" ,python2-enum34)
+          ,@(package-native-inputs base))))))
 
 (define-public python-pytest-cov
   (package
@@ -3115,7 +3109,7 @@ sources.")
         (base32
          "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0.7)
+     `(("python-pytest" ,python-pytest-3.0)
        ,@(package-native-inputs python-sphinx)))))
 
 (define-public python2-sphinx
@@ -7315,7 +7309,7 @@ responses, rather than doing any computation.")
        ("python-pyasn1" ,python-pyasn1)
        ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-pytz" ,python-pytz)
-       ("python-pytest" ,python-pytest-2.9.2)))
+       ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
     (description
