@@ -3985,3 +3985,27 @@ memoizing functions.")
  an idle timer to highlight all occurences in the buffer of the word under
  the point.")
     (license license:gpl3+)))
+
+(define-public emacs-ox-twbs
+  (package
+    (name "emacs-ox-twbs")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/marsmining/ox-twbs/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zaq8dczq5wijjk36114k2x3hfrqig3lyx6djril6wyk67vczyqs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/marsmining/ox-twbs")
+    (synopsis "Export org-mode docs as HTML compatible with Twitter Bootstrap")
+    (description
+     "This Emacs package outputs your org-mode docs with a simple, clean and
+modern look.  It implements a new HTML back-end for exporting org-mode docs as
+HTML compatible with Twitter Bootstrap.  By default, HTML is exported with
+jQuery and Bootstrap resources included via osscdn.")
+    (license license:gpl3+)))
