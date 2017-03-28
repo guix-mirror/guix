@@ -241,10 +241,8 @@ and 'guix publish', something like
 (define* (ftp-fetch uri file #:key timeout)
   "Fetch data from URI and write it to FILE.  Return FILE on success.  Bail
 out if the connection could not be established in less than TIMEOUT seconds."
-  (let* ((userinfo (string-split (uri-userinfo uri) #\:))
-         (conn (match userinfo
-                 (("")
-                  (ftp-open (uri-host uri) #:timeout timeout))
+  (let* ((conn (match (and=> (uri-userinfo uri)
+                             (cut string-split <> #\:))
                  (((? string? user))
                   (ftp-open (uri-host uri) #:timeout timeout
                                            #:username user))
