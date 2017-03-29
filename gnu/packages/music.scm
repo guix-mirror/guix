@@ -2114,7 +2114,6 @@ websites such as Libre.fm.")
     ;; TODO: Install optional plugins and dependencies.
     (inputs
      `(("python-discogs-client" ,python-discogs-client)
-       ("python-enum34" ,python-enum34)
        ("python-jellyfish" ,python-jellyfish)
        ("python-munkres" ,python-munkres)
        ("python-musicbrainzngs" ,python-musicbrainzngs)
