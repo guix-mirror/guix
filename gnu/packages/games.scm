@@ -468,17 +468,15 @@ fight Morgoth, the Lord of Darkness.")
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
-     '(#:tests? #f                      ;no check target
+     '(#:tests? #f                      ; no check target
        #:phases
-       (alist-delete
-        'configure
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (zero? (system* "make" "install"
-                           (string-append "PREFIX="
-                                          (assoc-ref outputs "out")))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (zero? (system* "make" "install"
+                            (string-append "PREFIX="
+                                           (assoc-ref outputs "out")))))))))
     (home-page "http://pingus.seul.org/welcome.html")
     (synopsis "Lemmings clone")
     (description
@@ -525,16 +523,16 @@ a C library, so they can easily be integrated into other programs.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; This old `configure' script doesn't support
-                        ;; variables passed as arguments.
-                        (let ((out (assoc-ref outputs "out")))
-                          (setenv "CONFIG_SHELL" (which "bash"))
-                          (zero?
-                           (system* "./configure"
-                                    (string-append "--prefix=" out)))))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old ‘configure’ script doesn't support
+             ;; variables passed as arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)))))))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
@@ -608,7 +606,10 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
                 "04f1aa8gfz30qkgv7chjz5n1s8v5hbqs01h2113cq1ylm3isd5sp"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-delete 'configure (alist-delete 'check %standard-phases))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (delete 'check))               ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (home-page "http://www.gnu.org/software/freedink/")
     (synopsis "Game data for GNU Freedink")
@@ -688,29 +689,29 @@ Portable Game Notation.")
     (arguments
      `(#:tests? #f
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
 
-          (substitute* "Imakefile"
-            (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
-             (string-append "XPMINCLUDE = -I" (assoc-ref %build-inputs "libxpm")
-                            "/include/X11")))
+             (substitute* "Imakefile"
+               (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
+                (string-append "XPMINCLUDE = -I"
+                               (assoc-ref %build-inputs "libxpm")
+                               "/include/X11")))
 
-          (substitute* "Imakefile"
-            (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
+             (substitute* "Imakefile"
+               (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
 
-          ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
+             ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
 
-          (zero? (system* "xmkmf" "-a"
-                          (string-append "-DProjectRoot="
-                                         (assoc-ref outputs "out")))))
-        (alist-replace 'install
-                       (lambda* (#:key outputs #:allow-other-keys)
-                         (and
-                          (zero? (system* "make" "install.man"))
-                          (zero? (system* "make" "install"))))
-                       %standard-phases))))
+             (zero? (system* "xmkmf" "-a"
+                             (string-append "-DProjectRoot="
+                                            (assoc-ref outputs "out"))))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (and
+             (zero? (system* "make" "install.man"))
+             (zero? (system* "make" "install"))))))))
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
               ("libxpm" ,libxpm)))
@@ -776,25 +777,25 @@ are primarily in English, however some in other languages are provided.")
                 "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'fix-build-env
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile"
-                       (("INSTALL_DIR = /usr/local/lib")
-                        (string-append "INSTALL_DIR = " out "/lib")))
-                     ;; The Makefile assumes these directories exist.
-                     (mkdir-p (string-append out "/lib"))
-                     (mkdir-p (string-append out "/include"))))
-                 (alist-replace
-                  'unpack
-                  (lambda* (#:key source #:allow-other-keys)
-                    (and (zero? (system* "unzip" source))
-                         ;; The actual source is buried a few directories deep.
-                         (chdir (string-append "irrlicht-" ,version "/source/Irrlicht/"))))
-                  ;; No configure script
-                  (alist-delete 'configure %standard-phases)))
-       #:tests? #f ; no check target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-env
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("INSTALL_DIR = /usr/local/lib")
+                  (string-append "INSTALL_DIR = " out "/lib")))
+               ;; The Makefile assumes these directories exist.
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/include")))))
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (and (zero? (system* "unzip" source))
+                  ;; The actual source is buried a few directories deep.
+                  (chdir (string-append "irrlicht-" ,version
+                                        "/source/Irrlicht/")))))
+         (delete 'configure))           ; no configure script
+       #:tests? #f                      ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
      `(("unzip" ,unzip)))
@@ -979,21 +980,21 @@ in different ways.")
    (arguments
     '(#:tests? #f ; no check target
       #:phases
-      (alist-replace
-       'install
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let* ((out (assoc-ref outputs "out"))
-                (inc (string-append out "/include"))
-                (lib (string-append out "/lib")))
-           (mkdir-p inc)
-           (for-each
-            (lambda (file)
-              (install-file file inc))
-            '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
-           (mkdir-p lib)
-           (install-file "libglkterm.a" lib))
-         #t)
-       (alist-delete 'configure %standard-phases))))
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (inc (string-append out "/include"))
+                   (lib (string-append out "/lib")))
+              (mkdir-p inc)
+              (for-each
+               (lambda (file)
+                 (install-file file inc))
+               '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
+              (mkdir-p lib)
+              (install-file "libglkterm.a" lib))
+            #t))
+        (delete 'configure))))          ; no configure script
    (home-page "http://www.eblong.com/zarf/glk/")
    (synopsis "Curses Implementation of the Glk API")
    (description
@@ -1019,22 +1020,22 @@ using the @code{curses.h} library for screen control.")
    (build-system gnu-build-system)
    (inputs `(("glk" ,glkterm)))
    (arguments
-    '(#:tests? #f ; no check target
+    '(#:tests? #f                       ; no check target
       #:make-flags
       (let* ((glk (assoc-ref %build-inputs "glk")))
         (list (string-append "GLKINCLUDEDIR=" glk "/include")
               (string-append "GLKLIBDIR=" glk "/lib")
               (string-append "GLKMAKEFILE=" "Make.glkterm")))
       #:phases
-      (alist-replace
-       'install
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let* ((out (assoc-ref outputs "out"))
-                (bin (string-append out "/bin")))
-           (mkdir-p bin)
-           (install-file "glulxe" bin))
-         #t)
-       (alist-delete 'configure %standard-phases))))
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (mkdir-p bin)
+              (install-file "glulxe" bin))
+            #t))
+        (delete 'configure))))          ; no configure script
    (home-page "http://www.eblong.com/zarf/glulx/")
    (synopsis "Interpreter for Glulx VM")
    (description
@@ -1097,16 +1098,15 @@ either by Infocom or created using the Inform compiler.")
     (arguments
      '(#:tests? #f ; no tests
        #:phases
-       (alist-replace
-        'configure
-        (lambda _
-          (substitute* "qb/qb.libs.sh"
-            (("/bin/true") (which "true")))
-          (zero? (system*
-                  "./configure"
-                  (string-append "--prefix=" %output)
-                  (string-append "--global-config-dir=" %output "/etc"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "qb/qb.libs.sh"
+               (("/bin/true") (which "true")))
+             (zero? (system*
+                     "./configure"
+                     (string-append "--prefix=" %output)
+                     (string-append "--global-config-dir=" %output "/etc"))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
