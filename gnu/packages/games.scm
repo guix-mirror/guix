@@ -3266,10 +3266,11 @@ monsters -- rogue-like but for the fact that it is played on the hyperbolic
 plane and not in euclidean space.
 
 In HyperRogue, the player can move through different parts of the world, which
-are home to particular creatures and may be subject to own rules of \"physics\".
+are home to particular creatures and may be subject to their own rules of
+\"physics\".
 
-While it can use ASCII characters to display the world the classical rogue
-symbols, the game needs graphics to render the non-euclidean world.")
+While the game can use ASCII characters to display the the classical rogue
+symbols, it still needs graphics to render the non-euclidean world.")
     (license (list license:bsd-3         ; glew.c, mtrand.*
                    license:cc-by-sa3.0   ; music
                    license:cc-by-sa4.0   ; sounds
