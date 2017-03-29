@@ -444,7 +444,7 @@ more.")
                  "0592s2s8ampqmqwilc4fvcild6rb9gy79di6vxv5kcdmv23abkgx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
-                     ("gperf" ,gperf)))
+                     ("gperf" ,gperf-3.0)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
