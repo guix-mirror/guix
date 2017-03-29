@@ -4917,7 +4917,7 @@ cluster without needing to write any wrapper code yourself.")
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
              #t))
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
