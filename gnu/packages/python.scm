@@ -1461,21 +1461,15 @@ bug tracker.")
 (define-public python-enum34
   (package
     (name "python-enum34")
-    (version "1.1.0")
+    (version "1.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "enum34" version))
       (sha256
        (base32
-        "0yx1m4564wxgbm4glb3457hi16xihd9w63rv13y2przkdir9dfgp"))))
+        "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (alist-replace
-        'check
-        (lambda _ (zero? (system* "python" "enum/test_enum.py")))
-        %standard-phases)))
     (home-page "https://pypi.python.org/pypi/enum34")
     (synopsis "Backported Python 3.4 Enum")
     (description
