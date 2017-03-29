@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
@@ -2131,21 +2131,29 @@ of tools for manipulating and accessing your music.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "0.90.86")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://milkytracker.titandemo.org/files/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/milkytracker/"
+                                  "MilkyTracker/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v9vp8vi24lkagfpr92c128whvakwgrm9pq2zf6ijpl5sh7014zb"))))
-    (build-system gnu-build-system)
+                "1p1jd4h274jvcvl05l01v9bj19zhq4sjag92v1zawyi93ib85abz"))
+              (modules '((guix build utils)))
+              ;; Remove non-FSDG compliant sample songs.
+              (snippet
+               '(begin
+                  (delete-file-recursively "resources/music")
+                  (substitute* "CMakeLists.txt"
+                    (("add_subdirectory\\(resources/music\\)") ""))))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:make-flags '("CXXFLAGS=-lasound")))
+     '(#:tests? #f)) ; no check target
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
-       ("sdl" ,sdl)
+       ("sdl" ,sdl2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
