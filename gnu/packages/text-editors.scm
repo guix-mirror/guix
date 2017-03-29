@@ -99,21 +99,10 @@ based command language.")
                (commit commit)))
          (sha256
           (base32
-           "19qs99l8r9p1vi5pxxx9an22fvi7xx40qw3jh2cnh2mbacawvdyb"))
-         (modules '((guix build utils)))
-         (snippet
-          ;; Kakoune uses 'gzip' to compress its manpages. Make sure
-          ;; timestamps are not preserved for reproducibility.
-          '(begin
-             (substitute* "src/Makefile"
-               (("gzip -f") "gzip -f --no-name"))
-             #t))))
+           "19qs99l8r9p1vi5pxxx9an22fvi7xx40qw3jh2cnh2mbacawvdyb"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            ;; Boost is compiled with the older ABI, so we can't use
-                            ;; the new ABI if we want to link againt it.
-                            "CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0")
+       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-source
@@ -136,11 +125,9 @@ based command language.")
                ;; Out git downloader doesn't give us write permissions, but
                ;; without them the tests fail.
                (zero? (system* "chmod" "-R" "u+w" "../test")))))))
-      (native-inputs `(("gcc" ,gcc-5)
-                       ("asciidoc" ,asciidoc)
+      (native-inputs `(("asciidoc" ,asciidoc)
                        ("ruby" ,ruby)))
-      (inputs `(("gcc:lib" ,gcc-5 "lib")
-                ("ncurses" ,ncurses)
+      (inputs `(("ncurses" ,ncurses)
                 ("boost" ,boost)))
       (synopsis "Vim-inspired code editor")
       (description
