@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -79,11 +79,6 @@
                #t))))))
     (outputs '("out"
                "tk"))                             ; for the Tcl/Tk GUI
-
-    ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
-    ;; (Specifically the 'DEFAULTPATH' string literal is what we want to
-    ;; prevent from being chunked so that grafting can "see" it and patch it.)
-    (native-inputs `(("gcc@6" ,gcc-6)))
 
     (inputs `(("tk" ,tk)
               ("tcl" ,tcl)))
