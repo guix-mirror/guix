@@ -72,7 +72,7 @@
      "GNU Hello prints the message \"Hello, world!\" and then exits.  It
 serves as an example of standard GNU coding practices.  As such, it supports
 command-line arguments, multiple languages, and so on.")
-    (home-page "http://www.gnu.org/software/hello/")
+    (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
 
 (define-public grep
@@ -113,7 +113,7 @@ however the output can be greatly customized to include, for example, line
 numbers.  GNU grep offers many extensions over the standard utility,
 including, for example, recursive directory searching.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/grep/")))
+   (home-page "https://www.gnu.org/software/grep/")))
 
 (define-public sed
   (package
@@ -149,7 +149,7 @@ editing commands to the stream and prints its output to standard output.  It
 is often used for substituting text patterns in a stream.  The GNU
 implementation offers several extensions over the standard utility.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/sed/")))
+   (home-page "https://www.gnu.org/software/sed/")))
 
 (define-public tar
   (package
@@ -191,7 +191,7 @@ directory structure and file information such as permissions and
 creation/modification dates.  GNU tar offers many extensions over the
 standard utility.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/tar/")))
+   (home-page "https://www.gnu.org/software/tar/")))
 
 (define-public patch
   (package
@@ -215,7 +215,7 @@ files depending on the contents of the diff file.  It accepts several
 different diff formats.  It may also be used to revert previously applied
 differences.")
    (license gpl3+)
-   (home-page "http://savannah.gnu.org/projects/patch/")))
+   (home-page "https://savannah.gnu.org/projects/patch/")))
 
 (define-public diffutils
   (package
@@ -237,7 +237,7 @@ differ, while \"cmp\" shows the offsets and line numbers where they differ.
 \"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an
 interactive means to merge two files.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/diffutils/")))
+   (home-page "https://www.gnu.org/software/diffutils/")))
 
 (define-public findutils
   (package
@@ -272,7 +272,7 @@ recursively searches for files in a directory according to given criteria and
 are included: \"updatedb\" updates the file name database and \"xargs\" may be
 used to apply commands with arbitrarily long arguments.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/findutils/")))
+   (home-page "https://www.gnu.org/software/findutils/")))
 
 (define-public coreutils
   (package
@@ -327,7 +327,7 @@ expected in a POSIX system.  These provide the basic file, shell and text
 manipulation functions of the GNU system.  Most of these tools offer extended
 functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/coreutils/")))
+   (home-page "https://www.gnu.org/software/coreutils/")))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
@@ -373,7 +373,7 @@ generated from its source.  It has powerful dependency resolution and the
 ability to determine when files have to be regenerated after their sources
 change.  GNU make offers many powerful extensions over the standard utility.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/make/")))
+   (home-page "https://www.gnu.org/software/make/")))
 
 (define-public binutils
   (package
@@ -421,7 +421,7 @@ the strings in a binary file, and utilities for working with archives.  The
 \"bfd\" library for working with executable and object formats is also
 included.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/binutils/")))
+   (home-page "https://www.gnu.org/software/binutils/")))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
@@ -493,7 +493,7 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
      "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
 missing '-rpath' flags, and to detect any misuse of libraries outside of the
 store.")
-    (home-page "http://www.gnu.org/software/guix/")
+    (home-page "https://www.gnu.org/software/guix//")
     (license gpl3+)))
 
 (export make-ld-wrapper)
@@ -673,7 +673,7 @@ printf, exit...
 The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
    (license lgpl2.0+)
-   (home-page "http://www.gnu.org/software/libc/")))
+   (home-page "https://www.gnu.org/software/libc/")))
 
 (define-public glibc/hurd
   ;; The Hurd's libc variant.
@@ -1033,7 +1033,7 @@ and daylight-saving rules.")
      "libiconv provides an implementation of the iconv function for systems
 that lack it.  iconv is used to convert between character encodings in a
 program.  It supports a wide variety of different encodings.")
-    (home-page "http://www.gnu.org/software/libiconv/")
+    (home-page "https://www.gnu.org/software/libiconv/")
     (license lgpl3+)))
 
 (define* (libiconv-if-needed #:optional (target (%current-target-system)))

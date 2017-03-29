@@ -53,4 +53,4 @@ several different styles such as GNU, BSD or K&R.  It has some flexibility to
 deal with incomplete or malformed syntax.  GNU indent offers several
 extensions over the standard utility.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/indent/")))
+   (home-page "https://www.gnu.org/software/indent/")))

@@ -36,7 +36,7 @@
        (sha256
         (base32 "0l6swjy8fjrqw89ghc1vvakg21jmpfkpsw92yssrzkg3rg8vkrry"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/marst")
+    (home-page "https://www.gnu.org/software/marst/")
     (synopsis "Algol-to-C translator")
     (description
      "GNU MARST is an Algol-to-C translator.  The package consists of the

@@ -180,7 +180,7 @@ allows command-line editing, unlimited command history, shell functions and
 aliases, and job control while still allowing most sh scripts to be run
 without modification.")
      (license gpl3+)
-     (home-page "http://www.gnu.org/software/bash/"))))
+     (home-page "https://www.gnu.org/software/bash/"))))
 
 (define-public bash-minimal
   ;; A stripped-down Bash for non-interactive use.

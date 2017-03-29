@@ -181,7 +181,7 @@
                       #t))))))
        #:allowed-references ()
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/linux-libre")
+    (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
@@ -333,7 +333,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                                "INSTALL_MOD_STRIP=1"
                                "modules_install"))))))
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/linux-libre/")
+    (home-page "https://www.gnu.org/software/linux-libre//")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.

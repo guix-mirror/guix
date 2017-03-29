@@ -149,7 +149,7 @@ command line tool for interacting with libtocc.")
         (base32
          "1frdmgrmb509fxbdpsxxw3lvvwv7xm1pavqrqgm4jg698iix6xfw"))))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/bool")
+    (home-page "https://www.gnu.org/software/bool/")
     (synopsis "Finding text and HTML files that match boolean expressions")
     (description
      "GNU Bool is a utility to perform text searches on files using Boolean

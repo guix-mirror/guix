@@ -94,7 +94,7 @@
                             "tests/gps-ref/psmandup.ps")
                (("#! */bin/sh") (string-append
                                  "#!" (which "sh")))))))))
-    (home-page "http://www.gnu.org/software/a2ps")
+    (home-page "https://www.gnu.org/software/a2ps/")
     (synopsis "Any file to PostScript, including pretty-printing")
     (description
      "GNU a2ps converts almost anything to a PostScript file, ready for
@@ -120,7 +120,7 @@ special cases, such as pretty-printing \"--help\" output.")
     (arguments
      ;; Must define DIFF_CMD for tests to pass
      '(#:configure-flags '("CPPFLAGS=-DDIFF_CMD=\\\"diff\\\"")))
-    (home-page "http://www.gnu.org/software/trueprint")
+    (home-page "https://www.gnu.org/software/trueprint/")
     (synopsis "Pretty-print C sources and other plain text to PostScript")
     (description
      "GNU Trueprint translates C source code files as PostScript files.
@@ -141,7 +141,7 @@ indentation counting, function and file indices and more.")
        (base32
         "1fy0ymvzrrvs889zanxcaxjfcxarm2d3k43c9frmbl1ld7dblmkd"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/enscript")
+    (home-page "https://www.gnu.org/software/enscript/")
     (synopsis "Generating PostScript, including pretty-printing")
     (description
      "GNU Enscript is a program to convert ASCII text files to PostScript,
@@ -215,7 +215,7 @@ to @code{IOStreams}.")
                                   "tests/test.tcl.html")
                      (("#! */bin/sh") "#!/bin/sh")))
                  %standard-phases)))
-    (home-page "http://www.gnu.org/software/src-highlite")
+    (home-page "https://www.gnu.org/software/src-highlite/")
     (synopsis "Produce a document with syntax highlighting from a source file")
     (description
      "GNU source-highlight reads in a source code file and produces an output

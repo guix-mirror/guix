@@ -144,5 +144,5 @@ function may be in both short (e.g., \"-h\") and long (\"--help\")
 formats, as specified by the GNU coding standards.  Additionally, the
 output of the standard options \"--help\" and \"--version\" is generated
 automatically.")
-    (home-page "http://www.gnu.org/software/gengetopt/gengetopt.html")
+    (home-page "https://www.gnu.org/software/gengetopt/gengetopt.html")
     (license gpl3+)))

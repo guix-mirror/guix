@@ -133,7 +133,7 @@ either single machines or networked clusters.")
                 "1smwz4x5qa4js0zf1w3asq6z7mh20zlgwbh2bk5dczw6xrk22yyr"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/gdbm/")
+    (home-page "http://www.gnu.org.ua/software/gdbm")
     (synopsis
      "Hash library of database functions compatible with traditional dbm")
     (description
@@ -511,7 +511,7 @@ databases created with Recutils carry all of the expected features such as
 unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
     (license license:gpl3+)
-    (home-page "http://www.gnu.org/software/recutils/")))
+    (home-page "https://www.gnu.org/software/recutils/")))
 
 (define-public rocksdb
   (package

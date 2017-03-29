@@ -34,7 +34,7 @@
               (base32
                "1av11zkfirbixn05hyq4xvilin0ncddfjqzc4zd9pviyp506rdci"))))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/gcal")
+    (home-page "https://www.gnu.org/software/gcal/")
     (synopsis "Calculating and printing a wide variety of calendars")
     (description
      "Gcal is a program to calculate and print calendars on the

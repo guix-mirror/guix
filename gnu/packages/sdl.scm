@@ -423,7 +423,7 @@ directory.")
     (description "Guile-SDL is a set of bindings to the Simple DirectMedia
 Layer (SDL).  With them, Guile programmers can have easy access to graphics,
 sound and device input (keyboards, joysticks, mice, etc.).")
-    (home-page "http://gnu.org/s/guile-sdl")
+    (home-page "https://www.gnu.org/software/guile-sdl/")
     (license gpl3+)))
 
 (define-public guile-sdl2

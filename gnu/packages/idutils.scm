@@ -38,7 +38,7 @@
              (patches (search-patches "diffutils-gets-undeclared.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://www.gnu.org/software/idutils/")
+    (home-page "https://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description
      "The GNU idutils package includes tools to create an index of textual

@@ -57,7 +57,7 @@
     ;; Needed to have cflow-mode.el installed.
     (native-inputs `(("emacs" ,emacs-minimal)))
 
-    (home-page "http://www.gnu.org/software/cflow/")
+    (home-page "https://www.gnu.org/software/cflow/")
     (synopsis "Create a graph of control flow within a program")
     (description
      "GNU cflow analyzes C source files and produces a graph charting the
@@ -81,7 +81,7 @@ a major mode for Emacs for examining the flowcharts that it produces.")
     (native-inputs
      `(("texinfo" ,texinfo)
        ("autogen" ,autogen)))
-    (home-page "http://www.gnu.org/software/complexity/")
+    (home-page "https://www.gnu.org/software/complexity/")
     (synopsis "Analyze complexity of C functions")
     (description
      "GNU complexity provides tools for finding procedures that are
@@ -123,7 +123,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
               (install-file (string-append data "/gtags.el") lisp)
               (delete-file (string-append data "/gtags.el"))
               #t))))))
-    (home-page "http://www.gnu.org/software/global/")
+    (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
      "GLOBAL is a source code tagging system that functions in the same way

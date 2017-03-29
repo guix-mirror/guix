@@ -654,7 +654,7 @@ standards.")
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
                     "mozicon128.png" "default256.png")))))))))
-    (home-page "http://www.gnu.org/software/gnuzilla/")
+    (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
      "IceCat is the GNU version of the Firefox browser.  It is entirely free

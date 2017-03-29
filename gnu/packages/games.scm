@@ -267,7 +267,7 @@ scriptable with Guile.")
         "0a9bsl2nbnb138lq0h14jfc5xvz7hpb2bcsj4mjn6g1hcsl4ik0y"))))
     (arguments `(#:tests? #f)) ;; No check target.
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/gnushogi/")
+    (home-page "https://www.gnu.org/software/gnushogi/")
     (synopsis "The game of Shogi (Japanese chess)")
     (description  "GNU Shogi is a program that plays the game Shogi (Japanese
 Chess).  It is similar to standard chess but this variant is far more complicated.")
@@ -333,7 +333,7 @@ Chess).  It is similar to standard chess but this variant is far more complicate
     (inputs
      `(("libxaw" ,libxaw)
        ("libxt" ,libxt)))
-    (home-page "http://www.gnu.org/software/gnushogi/")
+    (home-page "https://www.gnu.org/software/gnushogi/")
     (synopsis "User interface for gnushogi")
     (description  "A graphical user interface for the package @code{gnushogi}.")
     ;; Contains a copy of GPLv3 but the licence notices simply
@@ -501,7 +501,7 @@ level's exit.  The game is presented in a 2D side view.")
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/talkfilters")
+    (home-page "https://www.gnu.org/software/talkfilters/")
     (synopsis "Convert English text to humorous dialects")
     (description "The GNU Talk Filters are programs that convert English text
 into stereotyped or otherwise humorous dialects.  The filters are provided as
@@ -555,7 +555,7 @@ asynchronously and at a user-defined speed.")
         (base32
          "1vw2w3jwnmn44d5vsw47f8y70xvxcsz9m5msq9fgqlzjch15qhiw"))))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/chess")
+    (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
@@ -584,7 +584,7 @@ interface or via an external visual interface such as GNU XBoard.")
               ("sdl-gfx" ,sdl-gfx)
               ("fontconfig" ,fontconfig)
               ("check" ,check)))
-    (home-page "http://www.gnu.org/software/freedink/")
+    (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Twisted adventures of young pig farmer Dink Smallwood")
     (description
      "GNU FreeDink is a free and portable re-implementation of the engine
@@ -611,7 +611,7 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
          (delete 'configure)            ; no configure script
          (delete 'check))               ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
-    (home-page "http://www.gnu.org/software/freedink/")
+    (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Game data for GNU Freedink")
     (description
      "This package contains the game data of GNU Freedink.")
@@ -665,7 +665,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
     (native-inputs
      `(("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://www.gnu.org/software/xboard")
+    (home-page "https://www.gnu.org/software/xboard/")
     (synopsis "Graphical user interface for chess programs")
     (description "GNU XBoard is a graphical board for all varieties of chess,
 including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
@@ -752,7 +752,7 @@ destroy, the better your score.  The person with the highest score wins.")
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/gtypist/")
+    (home-page "https://www.gnu.org/software/gtypist/")
     (synopsis "Typing tutor")
     (description
      "GNU Typist is a universal typing tutor.  It can be used to learn and
@@ -1158,7 +1158,7 @@ it is also possible to play GNU Go with 3rd party graphical interfaces or
 even in Emacs.  It supports the standard game storage format (SGF, Smart
 Game Format) and inter-process communication format (GMP, Go Modem
 Protocol).")
-    (home-page "http://www.gnu.org/software/gnugo/")
+    (home-page "https://www.gnu.org/software/gnugo/")
     (license license:gpl3+)))
 
 (define-public extremetuxracer

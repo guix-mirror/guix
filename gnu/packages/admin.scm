@@ -232,7 +232,7 @@ application (for console or X terminals) and requires ncurses.")
                           (("\"/bin/sh\"")
                            (string-append "\"" bash "/bin/sh\"")))
                         #t))))))
-    (home-page "http://www.gnu.org/software/pies/")
+    (home-page "https://www.gnu.org/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
      "GNU pies is a program that supervises the invocation and execution of
@@ -261,7 +261,7 @@ re-executing them as necessary.")
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
     (native-inputs `(("netstat" ,net-tools))) ;for tests
-    (home-page "http://www.gnu.org/software/inetutils/")
+    (home-page "https://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
      "Inetutils is a collection of common network programs, such as an ftp
@@ -462,7 +462,7 @@ would need and has several interesting built-in capabilities.")
     (arguments '(#:configure-flags '("alive_cv_nice_ping=yes")))
     (inputs `(("guile" ,guile-2.0)
               ("inetutils" ,inetutils)))
-    (home-page "http://www.gnu.org/software/alive/")
+    (home-page "https://www.gnu.org/software/alive/")
     (synopsis "Autologin and keep-alive daemon")
     (description
      "GNU Alive sends periodic pings to a server, generally to keep a
@@ -780,7 +780,7 @@ over ssh connections.")
                       (zero? (system* "make" "install-info")))))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("util-linux" ,util-linux))) ; for 'cal'
-    (home-page "http://www.gnu.org/software/rottlog/")
+    (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
      "GNU Rot[t]log is a program for managing log files.  It is used to
@@ -1214,7 +1214,7 @@ environment variable is set and output is to tty.")
 
                      #t))
                  %standard-phases)))
-    (home-page "http://www.gnu.org/software/direvent/")
+    (home-page "https://www.gnu.org/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,

@@ -87,7 +87,7 @@ commands, letting you easily recall, edit and re-enter past commands.  It
 features both Emacs-like and vi-like keybindings, making its usage
 comfortable for anyone.")
       (license gpl3+)
-      (home-page "http://savannah.gnu.org/projects/readline/"))))
+      (home-page "https://savannah.gnu.org/projects/readline/"))))
 
 (define-public readline-6.2
   (package (inherit readline)

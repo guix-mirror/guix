@@ -189,7 +189,7 @@
             (variable "INFOPATH")
             (files '("share/info")))))
 
-    (home-page "http://www.gnu.org/software/emacs/")
+    (home-page "https://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description
      "GNU Emacs is an extensible and highly customizable text editor.  It is
@@ -990,7 +990,7 @@ can control one of the supported external players.  Thus, it supports
 whatever formats are supported by your music player.  It also
 supports tagging and playlist management, all behind a clean and
 light user interface.")
-    (home-page "http://www.gnu.org/software/emms/")
+    (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-mpv
@@ -1181,7 +1181,7 @@ as a library for other Emacs packages.")
     (arguments `(#:emacs ,emacs))
     (native-inputs
      `(("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/auctex/")
+    (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
      "AUCTeX is a comprehensive customizable integrated environment for

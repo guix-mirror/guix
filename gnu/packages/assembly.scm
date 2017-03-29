@@ -119,5 +119,5 @@ debugging information in STABS, DWARF 2, and CodeView 8 formats.")
 run-time.  Thus, it is useful in creating Just-In-Time compilers.  It
 abstracts over the target CPU by exposing a standardized RISC instruction set
 to the clients.")
-    (home-page "http://www.gnu.org/software/lightning/")
+    (home-page "https://www.gnu.org/software/lightning/")
     (license license:gpl3+)))

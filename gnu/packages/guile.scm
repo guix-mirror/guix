@@ -131,7 +131,7 @@ official extension language of the GNU system.  It is an implementation of
 the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
-   (home-page "http://www.gnu.org/software/guile/")
+   (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl2.0+)))
 
 (define-public guile-2.0
@@ -207,7 +207,7 @@ official extension language of the GNU system.  It is an implementation of
 the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
-   (home-page "http://www.gnu.org/software/guile/")
+   (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
 (define-public guile-2.0/fixed
@@ -537,7 +537,7 @@ library.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.0)))
-    (home-page "http://www.gnu.org/software/mcron/")
+    (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
      "GNU Mcron is a complete replacement for Vixie cron.  It is used to run

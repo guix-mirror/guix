@@ -69,7 +69,7 @@
        ("zlib" ,zlib)
        ;; ("wordnet" ,wordnet) ;FIXME: link failure
        ("libltdl" ,libltdl)))
-    (home-page "http://www.gnu.org/software/dico/")
+    (home-page "https://www.gnu.org/software/dico/")
     (synopsis "Implementation of DICT server (RFC 2229)")
     (description
      "GNU Dico implements a flexible dictionary server and client according to

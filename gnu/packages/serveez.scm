@@ -47,7 +47,7 @@
                        (find-files "test" "^t[0-9]{3}$")
                      (("/bin/sh") (which "sh"))))
                  %standard-phases)))
-    (home-page "http://www.gnu.org/software/serveez/")
+    (home-page "https://www.gnu.org/software/serveez/")
     (synopsis "Framework for implementing IP-based servers")
     (description
      "GNU Serveez is a server framework providing the routines necessary to

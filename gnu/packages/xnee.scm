@@ -50,7 +50,7 @@
        ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/xnee/")
+    (home-page "https://www.gnu.org/software/xnee/")
     (synopsis "Record, replay and distribute user actions under X11")
     (description
      "GNU Xnee is a program that can record, replay and distribute user

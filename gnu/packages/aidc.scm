@@ -45,7 +45,7 @@ from text strings.  It supports a variety of encoding standards and sizing
 measurements.  Barcodes can be output in PostScript or Encapsulated PostScript
 formats.")
     (license license:gpl3+)
-    (home-page "http://www.gnu.org/software/barcode/")))
+    (home-page "https://www.gnu.org/software/barcode/")))
 
 (define-public qrencode
   (package

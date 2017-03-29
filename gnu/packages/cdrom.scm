@@ -127,7 +127,7 @@ extraction from CDs.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("libcdio" ,libcdio)))
-    (home-page "http://www.gnu.org/software/libcdio/")
+    (home-page "https://www.gnu.org/software/libcdio/")
     (synopsis "Jitter- and error-tolerant CD audio extraction")
     (description
      "libcdio-paranoia is an implementation of CD paranoia libraries based on
@@ -519,5 +519,5 @@ the conversion of the proprietary CCD format to the CUE format, which
 is well-supported by free software.  These files are commonly
 distributed with CD images and are used to describe how tracks are
 laid out on the image.")
-    (home-page "http://www.gnu.org/software/ccd2cue")
+    (home-page "https://www.gnu.org/software/ccd2cue/")
     (license gpl3+)))

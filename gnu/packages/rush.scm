@@ -35,7 +35,7 @@
               (base32
                "1vxdb81ify4xcyygh86250pi50krb16dkj42i5ii4ns3araiwckz"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/rush/")
+    (home-page "https://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")
     (description
      "GNU Rush is a restricted user shell, for systems on which users are to

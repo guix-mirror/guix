@@ -204,7 +204,7 @@ typical extension is \".gz\".  Unlike the \"zip\" format, it compresses a single
 file; as a result, it is often used in conjunction with \"tar\", resulting in
 \".tar.gz\" or \".tgz\", etc.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/gzip/")))
+   (home-page "https://www.gnu.org/software/gzip/")))
 
 (define-public bzip2
   (let ((build-shared-lib
@@ -500,7 +500,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
            (substitute* "tests/shar-1.ok"
              (((which "sh")) "/bin/sh")))
          %standard-phases)))
-    (home-page "http://www.gnu.org/software/sharutils/")
+    (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description
      "GNU sharutils is a package for creating and manipulating shell

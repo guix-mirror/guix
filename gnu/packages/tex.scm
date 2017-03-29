@@ -640,7 +640,7 @@ develop documents with LaTeX, in a single application.")
     (native-inputs
      `(("texlive" ,texlive)
        ("automake" ,automake)))
-    (home-page "http://www.gnu.org/software/teximpatient")
+    (home-page "https://www.gnu.org/software/teximpatient/")
     (synopsis "Book on TeX, plain TeX and Eplain")
     (description "@i{TeX for the Impatient} is a ~350 page book on TeX,
 plain TeX, and Eplain, originally written by Paul Abrahams, Kathryn Hargreaves,

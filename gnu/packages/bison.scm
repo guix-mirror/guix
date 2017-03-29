@@ -44,7 +44,7 @@
                      ("m4" ,m4)))
     (inputs `(("flex" ,flex)))
     (propagated-inputs `(("m4" ,m4)))
-    (home-page "http://www.gnu.org/software/bison/")
+    (home-page "https://www.gnu.org/software/bison/")
     (synopsis "Parser generator")
     (description
      "GNU Bison is a general-purpose parser generator.  It can build a

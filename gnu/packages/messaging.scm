@@ -1233,7 +1233,7 @@ support, and more.")
 the Readline library to handle input, so it features convenient navigation of
 text as well as tab-completion of buddy names, commands and English words.  It
 is also scriptable and extensible via Guile.")
-    (home-page "https://www.gnu.org/software/freetalk")
+    (home-page "https://www.gnu.org/software/freetalk/")
     (license license:gpl3+)))
 
 (define-public libmesode

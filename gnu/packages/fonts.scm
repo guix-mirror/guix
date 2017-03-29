@@ -300,7 +300,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (native-inputs `(("fontforge" ,(package (inherit fontforge)
                                      (inputs `(("python-2" ,python-2)
                                      ,@(package-inputs fontforge)))))))
-    (home-page "http://www.gnu.org/software/freefont/")
+    (home-page "https://www.gnu.org/software/freefont/")
     (synopsis "Unicode-encoded outline fonts")
     (description
      "The GNU Freefont project aims to provide a set of free outline

@@ -49,5 +49,5 @@
     "GNU libunistring is a library providing functions to manipulate
 Unicode strings and for manipulating C strings according to the Unicode
 standard.")
-   (home-page "http://www.gnu.org/software/libunistring/")
+   (home-page "https://www.gnu.org/software/libunistring/")
    (license lgpl3+)))

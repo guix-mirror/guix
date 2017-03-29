@@ -37,7 +37,7 @@
         "03iqcki1lakkck1akdyvljjapgqda3l0rh38id7jhrac9kcxqgg2"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/pem/")
+    (home-page "https://www.gnu.org/software/pem/")
     (synopsis "Personal expenses manager")
     (description
      "GNU Pem is a simple tool for tracking personal income and

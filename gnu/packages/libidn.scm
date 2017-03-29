@@ -47,7 +47,7 @@ Java libraries.")
    ;; The C code is dual-licensed gpl2+ lgpl3+, the manual is fdl1.3+,
    ;; the command line tool is gpl3+.
    (license (list gpl2+ gpl3+ lgpl3+ fdl1.3+))
-   (home-page "http://www.gnu.org/software/libidn/")))
+   (home-page "https://www.gnu.org/software/libidn/")))
 
 (define-public libidn2
   (package

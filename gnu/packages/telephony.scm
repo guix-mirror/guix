@@ -70,7 +70,7 @@ communications via sockets, and various methods for data handling, such as
 serialization and XML parsing.  It includes the uCommon C++ library, a smaller
 reimplementation.")
    (license license:gpl2+) ; plus runtime exception
-   (home-page "http://www.gnu.org/software/commoncpp")))
+   (home-page "https://www.gnu.org/software/commoncpp/")))
 
 (define-public ucommon
   (package
@@ -90,7 +90,7 @@ to facilitate using C++ design patterns even for very deeply embedded
 applications, such as for systems using uclibc along with posix threading
 support.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/commoncpp")
+   (home-page "https://www.gnu.org/software/commoncpp/")
    (properties '((ftp-directory . "/gnu/commoncpp")))))
 
 (define-public ccrtp
@@ -114,7 +114,7 @@ personal client applications.  It is flexible in its design, allowing it to
 function as a framework for the framework, rather than just being a
 packet-manipulation library.")
    (license license:gpl2+) ; plus runtime exception
-   (home-page "http://www.gnu.org/software/ccrtp")))
+   (home-page "https://www.gnu.org/software/ccrtp/")))
 
 
 (define-public osip
@@ -133,7 +133,7 @@ packet-manipulation library.")
 used to provide multimedia and telecom software developers with an interface
 to initiate and control SIP sessions.")
    (license license:lgpl2.1+)
-   (home-page "http://www.gnu.org/software/osip")))
+   (home-page "https://www.gnu.org/software/osip/")))
 
 
 (define-public exosip
@@ -200,7 +200,7 @@ there is no central point for media intercept or capture and thus it can be
 used to construct a secure telephone system that operates over the public
 internet.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/sipwitch")))
+   (home-page "https://www.gnu.org/software/sipwitch/")))
 
 (define-public libsrtp
   (package

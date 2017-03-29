@@ -36,7 +36,7 @@
         "0gnnm8iqcl52m8iha3sxrzrl9mcyhg7lfrhhqgdn4zj00ji14wbn"))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f))
-    (home-page "http://www.gnu.org/software/gperf/")
+    (home-page "https://www.gnu.org/software/gperf/")
     (synopsis "Perfect hash function generator")
     (description
      "gperf is a perfect hash function generator.  For a given list of

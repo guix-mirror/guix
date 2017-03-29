@@ -1757,7 +1757,7 @@ allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
     ;; prevents us from using pulseaudio
     (inputs `(("ncurses" ,ncurses)
               ("alsa" ,alsa-lib)))
-    (home-page "http://www.gnu.org/software/cursynth")
+    (home-page "https://www.gnu.org/software/cursynth/")
     (synopsis "Polyphonic and MIDI subtractive music synthesizer using curses")
     (description "GNU cursynth is a polyphonic synthesizer that runs
 graphically in the terminal.  It is built on a full-featured subtractive

@@ -183,7 +183,7 @@
     ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
     (supported-systems (delete "mips64el-linux" %supported-systems))
 
-    (home-page "http://www.gnu.org/software/mit-scheme/")
+    (home-page "https://www.gnu.org/software/mit-scheme/")
     (synopsis "A Scheme implementation with integrated editor and debugger")
     (description
      "GNU/MIT Scheme is an implementation of the Scheme programming

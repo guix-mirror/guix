@@ -96,7 +96,7 @@
      `(("flex" ,flex)
        ("bison" ,bison)))
     (arguments `(#:tests? #f))
-    (home-page "http://www.gnu.org/software/hurd/microkernel/mach/mig/gnu_mig.html")
+    (home-page "https://www.gnu.org/software/hurd/microkernel/mach/mig/gnu_mig.html")
     (synopsis "Mach 3.0 interface generator for the Hurd")
     (description
      "GNU MIG is the GNU distribution of the Mach 3.0 interface generator
@@ -145,7 +145,7 @@ communication.")
                            "ac_cv_search_clnt_create=no")
 
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/hurd/hurd.html")
+    (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd headers")
     (description
      "This package provides C headers of the GNU Hurd, used to build the GNU C
@@ -179,7 +179,7 @@ Library and other user programs.")
            (lambda _
              (zero? (system* "make" "-Clibihash" "libihash.a")))
            %standard-phases)))))
-    (home-page "http://www.gnu.org/software/hurd/hurd.html")
+    (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description
      "This package provides libihash, needed to build the GNU C

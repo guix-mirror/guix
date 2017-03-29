@@ -48,7 +48,7 @@
                            (system* "./configure"
                                     (string-append "--prefix=" out)))))
                       %standard-phases)))
-    (home-page "http://www.gnu.org/software/time/")
+    (home-page "https://www.gnu.org/software/time/")
     (synopsis "Run a command, then display its resource usage")
     (description
      "Time is a command that displays information about the resources that a

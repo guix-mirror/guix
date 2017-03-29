@@ -173,7 +173,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
        (base32
         "0rfpapadka2023qhy8294ca5awxpb8d4904js6kv7piby5ax8siq"))))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/autoconf-archive")
+    (home-page "https://www.gnu.org/software/autoconf-archive/")
     (synopsis "Collection of freely reusable Autoconf macros")
     (description
      "Autoconf Archive is a collection of over 450 new macros for Autoconf,
@@ -275,7 +275,7 @@ output is indexed in many ways to simplify browsing.")
                                                       args)))))
                                 (find-files dir ".*"))))
                   %standard-phases))))
-    (home-page "http://www.gnu.org/software/automake/")
+    (home-page "https://www.gnu.org/software/automake/")
     (synopsis "Making GNU standards-compliant Makefiles")
     (description
      "Automake the part of the GNU build system for producing
@@ -334,7 +334,7 @@ Makefile, simplifying the entire process for the developer.")
 presenting a single consistent, portable interface that hides the usual
 complexity of working with shared libraries across platforms.")
     (license gpl3+)
-    (home-page "http://www.gnu.org/software/libtool/")))
+    (home-page "https://www.gnu.org/software/libtool/")))
 
 (define-public libltdl
   ;; This is a libltdl package separate from the libtool package.  This is

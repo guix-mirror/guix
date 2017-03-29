@@ -63,7 +63,7 @@
         "0869cp6jx7cajgv6cnddsh3vc7bimmdkdjn80y1jpb4iss7plvsg"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/libtasn1/")
+    (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
      "GNU libtasn1 is a library implementing the ASN.1 notation.  It is used

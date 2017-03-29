@@ -51,7 +51,7 @@
             (variable "INFOPATH")
             (files '("share/info")))))
 
-    (home-page "http://www.gnu.org/software/texinfo/")
+    (home-page "https://www.gnu.org/software/texinfo/")
     (synopsis "The GNU documentation format")
     (description
      "Texinfo is the official documentation format of the GNU project.  It

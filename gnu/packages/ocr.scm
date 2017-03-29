@@ -38,7 +38,7 @@
                "1m2dblgvvjs48rsglfdwq0ib9zk8h9n34xsh67ibrg0g0ffbw477"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
-    (home-page "http://www.gnu.org/software/ocrad/")
+    (home-page "https://www.gnu.org/software/ocrad/")
     (synopsis "Optical character recognition based on feature extraction")
     (description
      "GNU Ocrad is an optical character recognition program based on a

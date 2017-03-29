@@ -57,7 +57,7 @@
 formatted output based on formatting commands contained within the text.  It
 is usually the formatter of \"man\" documentation pages.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/groff/")))
+   (home-page "https://www.gnu.org/software/groff/")))
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit

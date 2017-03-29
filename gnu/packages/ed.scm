@@ -46,7 +46,7 @@
                      (lambda _
                        (substitute* "testsuite/check.sh"
                          (("/bin/sh") (which "sh"))))))))
-    (home-page "http://www.gnu.org/software/ed/")
+    (home-page "https://www.gnu.org/software/ed/")
     (synopsis "Line-oriented text editor")
     (description
      "Ed is a line-oriented text editor: rather than offering an overview of
