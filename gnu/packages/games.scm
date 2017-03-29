@@ -1041,7 +1041,7 @@ using the @code{curses.h} library for screen control.")
     "Glulx is a 32-bit portable virtual machine intended for writing and
 playing interactive fiction.  It was designed by Andrew Plotkin to relieve
 some of the restrictions in the venerable Z-machine format.  This is the
-reference interpreter, using Glk API.")
+reference interpreter, using the Glk API.")
    (license license:expat)))
 
 (define-public fizmo
