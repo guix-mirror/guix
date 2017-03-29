@@ -1001,7 +1001,7 @@ in different ways.")
 primarily designed for interactive fiction, but it should be suitable for many
 interactive text utilities, particularly those based on a command line.
 This is an implementation of the Glk library which runs in a terminal window,
-using the curses.h library for screen control.")
+using the @code{curses.h} library for screen control.")
    (license (license:fsf-free "file://README"))))
 
 (define-public glulxe
