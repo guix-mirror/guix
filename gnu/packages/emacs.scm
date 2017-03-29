@@ -3963,6 +3963,27 @@ abbreviation and automatically expand it into function templates.")
 memoizing functions.")
    (license license:unlicense)))
 
+(define-public emacs-linum-relative
+  (package
+    (name "emacs-linum-relative")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/coldnew/linum-relative/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s4frvr27866lw1rn3jal9wj5rkz9fx4yiszqv7w06azsdgsqksv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/coldnew/linum-relative")
+    (synopsis "Relative line numbering for Emacs")
+    (description "@code{emacs-linum-relative} displays the relative line
+number on the left margin in Emacs.")
+    (license license:gpl2+)))
+
 (define-public emacs-idle-highlight
   (package
     (name "emacs-idle-highlight")
