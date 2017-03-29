@@ -34,7 +34,8 @@ Copyright @copyright{} 2017 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
-Copyright @copyright{} 2017 Thomas Danckaert
+Copyright @copyright{} 2017 Thomas Danckaert@*
+Copyright @copyright{} 2017 humanitiesNerd
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2879,7 +2880,8 @@ unavailable to the build process, possibly leading to a build failure.
 
 Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).  You can easily jump back to the
+tool (@pxref{Invoking guix build}), troubleshooting any build failures
+you encounter (@pxref{Debugging Build Failures}).  You can easily jump back to the
 package definition using the @command{guix edit} command
 (@pxref{Invoking guix edit}).
 @xref{Packaging Guidelines}, for
@@ -4832,6 +4834,7 @@ described in the subsections below.
 * Common Build Options::        Build options for most commands.
 * Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
+* Debugging Build Failures::    Real life packaging experience
 @end menu
 
 @node Common Build Options
@@ -4857,6 +4860,8 @@ the command-line tools.
 Keep the build tree of failed builds.  Thus, if a build fails, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
+@xref{Debugging Build Failures}, for tips and tricks on how to debug
+build issues.
 
 @item --keep-going
 @itemx -k
@@ -5243,6 +5248,82 @@ https://hydra.gnu.org/log/@dots{}-gdb-7.10
 
 You can freely access a huge library of build logs!
 @end table
+
+@node Debugging Build Failures
+@subsection Debugging Build Failures
+
+@cindex build failures, debugging
+When defining a new package (@pxref{Defining Packages}), you will
+probably find yourself spending some time debugging and tweaking the
+build until it succeeds.  To do that, you need to operate the build
+commands yourself in an environment as close as possible to the one the
+build daemon uses.
+
+To that end, the first thing to do is to use the @option{--keep-failed}
+or @option{-K} option of @command{guix build}, which will keep the
+failed build tree in @file{/tmp} or whatever directory you specified as
+@code{TMPDIR} (@pxref{Invoking guix build, @code{--keep-failed}}).
+
+From there on, you can @command{cd} to the failed build tree and source
+the @file{environment-variables} file, which contains all the
+environment variable definitions that were in place when the build
+failed.  So let's say you're debugging a build failure in package
+@code{foo}; a typical session would look like this:
+
+@example
+$ guix build foo -K
+@dots{} @i{build fails}
+$ cd /tmp/guix-build-foo.drv-0
+$ source ./environment-variables
+$ cd foo-1.2
+@end example
+
+Now, you can invoke commands as if you were the daemon (almost) and
+troubleshoot your build process.
+
+Sometimes it happens that, for example, a package's tests pass when you
+run them manually but they fail when the daemon runs them.  This can
+happen because the daemon runs builds in containers where, unlike in our
+environment above, network access is missing, @file{/bin/sh} does not
+exist, etc. (@pxref{Build Environment Setup}).
+
+In such cases, you may need to run inspect the build process from within
+a container similar to the one the build daemon creates:
+
+@example
+$ guix build -K foo
+@dots{}
+$ cd /tmp/guix-build-foo.drv-0
+$ guix environment -C foo --ad-hoc strace gdb
+[env]# source ./environment-variables
+[env]# cd foo-1.2
+@end example
+
+Here, @command{guix environment -C} creates a container and spawns a new
+shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
+strace gdb} part adds the @command{strace} and @command{gdb} commands to
+the container, which would may find handy while debugging.
+
+To get closer to a container like that used by the build daemon, we can
+remove @file{/bin/sh}:
+
+@example
+[env]# rm /bin/sh
+@end example
+
+(Don't worry, this is harmless: this is all happening in the throw-away
+container created by @command{guix environment}.)
+
+The @command{strace} command is probably not in the search path, but we
+can run:
+
+@example
+[env]# $GUIX_ENVIRONMENT/bin/strace -f -o log make check
+@end example
+
+In this way, not only you will have reproduced the environment variables
+the daemon uses, you will also be running the build process in a container
+similar to the one the daemon uses.
 
 
 @node Invoking guix edit
