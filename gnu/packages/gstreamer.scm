@@ -85,7 +85,7 @@
                             "testsuite/exec_opcodes_sys.c")
                (("if \\(error\\) return 1;")
                 "if (error) return 77;")))))))
-    (home-page "http://code.entropywave.com/orc/")
+    (home-page "http://gstreamer.freedesktop.org/modules/orc.html")
     (synopsis "Oil runtime compiler")
     (description
      "Orc is a just-in-time compiler implemented as a library and set of
