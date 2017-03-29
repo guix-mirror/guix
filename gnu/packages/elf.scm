@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,15 +31,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.167")
+    (version "0.168")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://fedorahosted.org/releases/e/l/elfutils/"
-                    version "/elfutils-" version ".tar.bz2"))
+              (uri (string-append "https://sourceware.org/elfutils/ftp/"
+                                  version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "0lv5fz2h7j9362l5apbg9jff7309ni385d3325ckavrbqj3h0c1z"))
+                "0xn2fbgda1i703csfs35frvm7l068ybmay4ssrykqdx17f4hg3dq"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
@@ -56,7 +56,7 @@
 
     (native-inputs `(("m4" ,m4)))
     (inputs `(("zlib" ,zlib)))
-    (home-page "https://fedorahosted.org/elfutils/")
+    (home-page "https://sourceware.org/elfutils/")
     (synopsis "Linker and ELF manipulation tools")
     (description
      "This package provides command-line tools to manipulate binaries in the
