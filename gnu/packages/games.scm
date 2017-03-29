@@ -26,6 +26,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -982,14 +983,16 @@ in different ways.")
        'install
        (lambda* (#:key outputs #:allow-other-keys)
          (let* ((out (assoc-ref outputs "out"))
-                (inc (string-append out "/include")))
+                (inc (string-append out "/include"))
+                (lib (string-append out "/lib")))
            (mkdir-p inc)
            (for-each
             (lambda (file)
-              (copy-file file (string-append inc "/" file)))
+              (install-file file inc))
             '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
-           (mkdir (string-append out "/lib"))
-           (copy-file "libglkterm.a" (string-append out "/lib/libglkterm.a"))))
+           (mkdir-p lib)
+           (install-file "libglkterm.a" lib))
+         #t)
        (alist-delete 'configure %standard-phases))))
    (home-page "http://www.eblong.com/zarf/glk/")
    (synopsis "Curses Implementation of the Glk API")
@@ -1026,9 +1029,11 @@ using the curses.h library for screen control.")
       (alist-replace
        'install
        (lambda* (#:key outputs #:allow-other-keys)
-         (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+         (let* ((out (assoc-ref outputs "out"))
+                (bin (string-append out "/bin")))
            (mkdir-p bin)
-           (copy-file "glulxe" (string-append bin "/glulxe"))))
+           (install-file "glulxe" bin))
+         #t)
        (alist-delete 'configure %standard-phases))))
    (home-page "http://www.eblong.com/zarf/glulx/")
    (synopsis "Interpreter for Glulx VM")
