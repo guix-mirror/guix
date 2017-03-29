@@ -1096,17 +1096,21 @@ either by Infocom or created using the Inform compiler.")
         (base32 "1xar0wagcz50clwwkvjg4zq9m1sjqw47vw3xx44pisdj94g21m5y"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
-             (substitute* "qb/qb.libs.sh"
-               (("/bin/true") (which "true")))
-             (zero? (system*
-                     "./configure"
-                     (string-append "--prefix=" %output)
-                     (string-append "--global-config-dir=" %output "/etc"))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (substitute* "qb/qb.libs.sh"
+                 (("/bin/true") (which "true")))
+               ;; The configure script does not yet accept the extra arguments
+               ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
+               (zero? (system*
+                       "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--global-config-dir=" etc)))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
