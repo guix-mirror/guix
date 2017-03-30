@@ -520,8 +520,9 @@ indicates that PATH is unavailable at CACHE-URL."
 (define (narinfo-request cache-url path)
   "Return an HTTP request for the narinfo of PATH at CACHE-URL."
   (let ((url (string-append cache-url "/" (store-path-hash-part path)
-                            ".narinfo")))
-    (build-request (string->uri url) #:method 'GET)))
+                            ".narinfo"))
+        (headers '((User-Agent . "GNU Guile"))))
+    (build-request (string->uri url) #:method 'GET #:headers headers)))
 
 (define* (http-multiple-get base-uri proc seed requests
                             #:key port (verify-certificate? #t))
