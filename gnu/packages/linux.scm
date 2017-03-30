@@ -2283,8 +2283,10 @@ thanks to the use of namespaces.")
                       (list (string-append "binprefix=" out)
                             (string-append "manprefix=" out)
                             "CC=gcc"))
-       #:phases (alist-delete 'configure %standard-phases)
-       #:tests? #f))  ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
+       #:tests? #f))                    ; no test suite
     (home-page "https://sourceforge.net/projects/hdparm/")
     (synopsis "View and tune ATA disk drive parameters")
     (description
