@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -1688,7 +1688,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.11")
+    (version "3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1696,19 +1696,20 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04q2cn8c83f6z6wn1scla1ilrpi5ssjc64987hvmwfvwvb82bvkp"))))
+                "1vxas21h5mf41cb6y7f7x07858ags7qg45lkf74rc0slqbic3l1h"))
+              (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f))
-       ;; FIXME: 10 test failures. Some require newer pytest (> 2.9.2).
-       ;; Others need more work. Un-comment the below to run the tests.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       ;; Some tests need write access to $HOME.
-       ;;       (setenv "HOME" "/tmp")
-       ;;       (zero? (system* "py.test" "-v")))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Tests look for installed package
+             (add-installed-pythonpath inputs outputs)
+             ;; Some tests need write access to $HOME.
+             (setenv "HOME" "/tmp")
+             (zero? (system* "py.test" "-v")))))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
