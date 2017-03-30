@@ -286,6 +286,8 @@ generator library for C++.")
                             (assoc-ref %build-inputs "libdvdnav-bootstrapped"))
              (string-append "-Dlibdvdcss_URL="
                             (assoc-ref %build-inputs "libdvdcss-bootstrapped"))
+             (string-append "-DSYSTEM_LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %build-inputs "curl") "/lib")
              "-DENABLE_NONFREE=OFF")
        #:phases
        (modify-phases %standard-phases
@@ -331,10 +333,6 @@ generator library for C++.")
                 "TEST_F(TestSystemInfo, DISABLED_GetOsName)")
                (("TEST_F\\(TestSystemInfo, GetOsVersion\\)")
                 "TEST_F(TestSystemInfo, DISABLED_GetOsVersion)"))
-             ;; FIXME: Why are these failing.
-             (substitute* "xbmc/network/test/TestWebServer.cpp"
-               (("TEST_F\\(TestWebServer, Can")
-                "TEST_F(TestWebServer, DISABLED_Can"))
              #t))
          (add-before 'build 'set-build-environment
            (lambda _
@@ -344,14 +342,7 @@ generator library for C++.")
              #t))
          (add-before 'check 'build-kodi-test
            (lambda _
-             (zero? (system* "make" "kodi-test"))))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (curl (string-append (assoc-ref inputs "curl") "/lib")))
-               (wrap-program (string-append out "/bin/kodi")
-                 `("LD_LIBRARY_PATH" suffix (,curl)))
-               #t))))))
+             (zero? (system* "make" "kodi-test")))))))
     ;; TODO: Add dependencies for:
     ;; - nfs
     ;; - cec
