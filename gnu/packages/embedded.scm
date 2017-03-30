@@ -412,7 +412,7 @@ with a layered architecture of JTAG interface and TAP support.")
          ,@(package-arguments xbinutils)))
       (native-inputs
        `(("bison" ,bison)
-         ("flex" ,flex)
+         ("flex" ,flex-2.6.1) ; needed because of yywrap error
          ("texinfo" ,texinfo)
          ("dejagnu" ,dejagnu)
          ,@(package-native-inputs xbinutils))))))
