@@ -239,8 +239,8 @@ generator library for C++.")
 (define-public kodi
   ;; We package the git version because the current released
   ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "b35147e2bec41ce332b9788f4a6ac94d2e5999e3")
-        (revision "0"))
+  (let ((commit "ec5d53da72868ad37df8bc005452a6daaa20f20b")
+        (revision "1"))
   (package
     (name "kodi")
     (version (string-append "18.0_alpha-" revision "-" (string-take commit 7)))
@@ -252,7 +252,7 @@ generator library for C++.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rhb9rcz5h8mky8mx6idzybnpgjh2lxcjkh16z1x6fr4pis2jcbj"))
+                "05f0bip0w784ya72plw3p2bism5m501q07si2xbmg03vhqsagjl5"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
@@ -401,13 +401,13 @@ generator library for C++.")
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
-       ("libyajl" ,libyajl)
        ("lzo" ,lzo)
        ("mysql" ,mysql)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-2)
+       ("rapidjson" ,rapidjson)
        ("samba" ,samba)
        ("sqlite" ,sqlite)
        ("taglib" ,taglib)
