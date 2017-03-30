@@ -906,6 +906,7 @@ add_library( rapidjson INTERFACE IMPORTED )"))
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
              ;; using the bundled version of withershins.
+             ;; Also add pthread for fixing a linker error.
              (substitute* "source/build/CMakeLists.txt"
                (("withershins" line)
                 (string-append line "\n"
@@ -914,6 +915,7 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                                (assoc-ref inputs "libiberty")
                                "/lib/libiberty.a\n"
                                "dl\n"
+                               "pthread\n"
                                "z\n")))
              #t)))))
     (inputs
