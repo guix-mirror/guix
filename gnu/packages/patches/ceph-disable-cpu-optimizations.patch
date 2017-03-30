@@ -14,16 +14,16 @@ x86_64 systems. Also don't add anything for i686.
  #
  # SIMD_COMPILE_FLAGS
  #
-@@ -41,7 +37,7 @@
+@@ -56,7 +53,7 @@
    if(HAVE_ARM_NEON)
      set(SIMD_COMPILE_FLAGS "${SIMD_COMPILE_FLAGS} -mfpu=neon")
    endif()
 -elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "i386|i686|amd64|x86_64|AMD64")
 +elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "amd64|x86_64|AMD64")
-   set(HAVE_INTEL 1) 
+   set(HAVE_INTEL 1)
    CHECK_C_COMPILER_FLAG(-msse HAVE_INTEL_SSE)
    if(HAVE_INTEL_SSE)
-@@ -55,20 +51,4 @@
+@@ -70,20 +67,4 @@
    if(HAVE_INTEL_SSE3)
      set(SIMD_COMPILE_FLAGS "${SIMD_COMPILE_FLAGS} -msse3")
    endif()
