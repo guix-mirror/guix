@@ -123,7 +123,7 @@
 (define-public freedoom
   (package
    (name "freedoom")
-   (version "0.11.1")
+   (version "0.11.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/" name "/" name
@@ -131,7 +131,7 @@
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "060dqppd9fi079yw6c82klsjaslcabq6xan67wf9hs0cy39i0kpv"))))
+              "0b9k61f97spivi75f76zwwg8a3bgc6iil2hidqfj8s50lhqggwbb"))))
    (build-system gnu-build-system)
    (arguments
     '(#:make-flags `(,(string-append "prefix=" (assoc-ref %outputs "out")))
