@@ -4463,7 +4463,7 @@ exploit attempts.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "0.9.1")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
@@ -4472,7 +4472,7 @@ exploit attempts.")
                            "qutebrowser-" version ".tar.gz"))
        (sha256
         (base32
-         "0pf91nc0xcykahc3x7ww525c9czm8zpg80nxl8n2mrzc4ilgvass"))))
+         "05qryn56w2pbqhir4pl99idx7apx2xqw9f8wmbrhj59b1xgr3x2p"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
