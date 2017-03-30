@@ -35,6 +35,7 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
   #:export (dovecot-service
             dovecot-service-type
             dovecot-configuration
@@ -56,6 +57,8 @@
             opensmtpd-configuration?
             opensmtpd-service-type
             %default-opensmtpd-config-file
+
+            mail-aliases-service-type
 
             exim-configuration
             exim-configuration?
@@ -1659,6 +1662,31 @@ accept from local for any relay
                              (compose list opensmtpd-configuration-package))
           (service-extension shepherd-root-service-type
                              opensmtpd-shepherd-service)))))
+
+
+;;;
+;;; mail aliases.
+;;;
+
+(define (mail-aliases-etc aliases)
+  `(("aliases" ,(plain-file "aliases"
+                            ;; Ideally we'd use a format string like
+                            ;; "~:{~a: ~{~a~^,~}\n~}", but it gives a
+                            ;; warning that I can't figure out how to fix,
+                            ;; so we'll just use string-join below instead.
+                            (format #f "~:{~a: ~a\n~}"
+                                    (map (match-lambda
+                                           ((alias addresses ...)
+                                            (list alias (string-join addresses ","))))
+                                         aliases))))))
+
+(define mail-aliases-service-type
+  (service-type
+   (name 'mail-aliases)
+   (extensions
+    (list (service-extension etc-service-type mail-aliases-etc)))
+   (compose concatenate)
+   (extend append)))
 
 
 ;;;
