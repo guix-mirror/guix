@@ -2286,10 +2286,18 @@ thanks to the use of namespaces.")
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
     (home-page "https://sourceforge.net/projects/hdparm/")
-    (synopsis "Tune hard disk parameters for high performance")
+    (synopsis "View and tune ATA disk drive parameters")
     (description
-     "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
-is for enabling irq-unmasking and IDE multiple-mode.")
+     "@command{hdparm} is a command-line utility to control ATA controllers and
+disk drives.  It can increase performance and/or reliability by careful tuning
+of hardware settings like power and acoustic management, DMA modes, and caching.
+It can also display detailed device information, or be used as a simple
+performance benchmarking tool.
+
+@command{hdparm} provides a command line interface to various Linux kernel
+interfaces provided by the SATA/ATA/SAS @code{libata} subsystem, and the older
+IDE driver subsystem.  Many external USB drive enclosures with @dfn{SCSI-ATA
+Command Translation} (SAT) are also supported.")
     (license (license:non-copyleft "file://LICENSE.TXT"))))
 
 (define-public rfkill
