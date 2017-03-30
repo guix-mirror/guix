@@ -2133,7 +2133,19 @@ data and settings.")
         (base32
          "0rah9ja4m0rl5mldd6vag9rwrivw1zrqxssfq8qx64m7961fp68k"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; there are no tests
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-missing-includes
+           (lambda _
+             (substitute* "src/executioninformation.hpp"
+               (("#define EXECUTIONINFORMATION_HPP" line)
+                (string-append line "\n#include <random>")))
+             (substitute* "src/plasma/fasta.hpp"
+               (("#define FASTA_HPP" line)
+                (string-append line "\n#include <random>")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)))
