@@ -1703,8 +1703,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "0")
-        (commit "969514aa7224217bc3c1a4c5312a9469ac5f13d5"))
+  (let ((revision "1")
+        (commit "96dfb3bdba39a37cf6aefb18e335118a6115f963"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1714,17 +1714,14 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "079l8y6pjkmahb4k6dfqh3hk34pg540rrl29aixyvv86w9bdfjil"))
+                  "0v73251kmh1vs7gp3jh4pk4rikl4d8illwi0gnhwa55ij1mn9apl"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))
-
-         ;; Test suite is not parallel-safe: the tests open same-named repos.
-         #:parallel-tests? #f))
+                        (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
