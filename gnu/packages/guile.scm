@@ -1520,7 +1520,7 @@ is no support for parsing block and inline level HTML.")
            (install-file "README.md" doc)
            #t))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://github.com/TaylanUB/scheme-bytestructures")
     (synopsis "Structured access to bytevector contents for Guile")
     (description
@@ -1727,7 +1727,7 @@ is not available for Guile 2.0.")
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,guile-2.0)
+       `(("guile" ,guile-2.2)
          ("libgit2" ,libgit2)))
       (propagated-inputs
        `(("guile-bytestructures" ,guile-bytestructures)))
