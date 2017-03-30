@@ -1,0 +1,36 @@
+Work around two test suite failures on ARM:
+
+  https://github.com/ruby-concurrency/concurrent-ruby/issues/547
+
+The regexps here assume addresses like "0x1234" but on ARM (32-bit)
+we get something like "0x-7db1e810" (notice the dash).
+
+diff --git a/spec/concurrent/edge/future_spec.rb b/spec/concurrent/edge/future_spec.rb
+index a48fd29..4344d7e 100644
+--- b/spec/concurrent/edge/future_spec.rb
++++ a/spec/concurrent/edge/future_spec.rb
+@@ -322,9 +322,9 @@
+       four  = three.delay.then(&:succ)
+ 
+       # meaningful to_s and inspect defined for Future and Promise
+-      expect(head.to_s).to match /<#Concurrent::Edge::Future:0x[\da-f]+ pending>/
++      expect(head.to_s).to match /<#Concurrent::Edge::Future:0x-?[\da-f]+ pending>/
+       expect(head.inspect).to(
+-          match(/<#Concurrent::Edge::Future:0x[\da-f]+ pending blocks:\[<#Concurrent::Edge::ThenPromise:0x[\da-f]+ pending>\]>/))
++          match(/<#Concurrent::Edge::Future:0x-?[\da-f]+ pending blocks:\[<#Concurrent::Edge::ThenPromise:0x-?[\da-f]+ pending>\]>/))
+ 
+       # evaluates only up to three, four is left unevaluated
+       expect(three.value!).to eq 3
+diff --git a/spec/concurrent/map_spec.rb b/spec/concurrent/map_spec.rb
+index 13fd5b7..1c82ebe 100644
+--- b/spec/concurrent/map_spec.rb
++++ a/spec/concurrent/map_spec.rb
+@@ -827,7 +827,7 @@
+     end
+ 
+     it '#inspect' do
+-      regexp = /\A#<Concurrent::Map:0x[0-9a-f]+ entries=[0-9]+ default_proc=.*>\Z/i
++      regexp = /\A#<Concurrent::Map:0x-?[0-9a-f]+ entries=[0-9]+ default_proc=.*>\Z/i
+       expect(Concurrent::Map.new.inspect).to match(regexp)
+       expect((Concurrent::Map.new {}).inspect).to match(regexp)
+       map = Concurrent::Map.new

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -4102,7 +4102,8 @@ call.")
          "1x3g2admp14ykwfxidsicqbhlfsnxh9wyc806np4i15hws4if1d8"))
        ;; Exclude failing test reported at
        ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
-       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"))))
+       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"
+                                "ruby-concurrent-test-arm.patch"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
