@@ -14370,8 +14370,28 @@ This is the list of IP addresses and ports and possibly socket file
 names to listen to (@pxref{Server Settings, @code{listen} directive,,
 dico, GNU Dico Manual}).
 
+@item @code{handlers} (default: @var{'()})
+List of @code{<dicod-handler>} objects denoting handlers (module instances).
+
 @item @code{databases} (default: @var{(list %dicod-database:gcide)})
 List of @code{<dicod-database>} objects denoting dictionaries to be served.
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-handler
+Data type representing a dictionary handler (module instance).
+
+@table @asis
+@item @code{name}
+Name of the handler (module instance).
+
+@item @code{module} (default: @var{#f})
+Name of the dicod module of the handler (instance).  If it is @code{#f},
+the module has the same name as the handler.
+(@pxref{Modules,,, dico, GNU Dico Manual}).
+
+@item @code{options}
+List of strings or gexps representing the arguments for the module handler
 @end table
 @end deftp
 
@@ -14382,13 +14402,17 @@ Data type representing a dictionary database.
 @item @code{name}
 Name of the database, will be used in DICT commands.
 
-@item @code{module}
-Name of the dicod module used by this database
-(@pxref{Modules,,, dico, GNU Dico Manual}).
+@item @code{handler}
+Name of the dicod handler (module instance) used by this database
+(@pxref{Handlers,,, dico, GNU Dico Manual}).
+
+@item @code{complex?} (default: @var{#f})
+Whether the database configuration complex.  The complex configuration
+will need a corresponding @code{<dicod-handler>} object, otherwise not.
 
 @item @code{options}
-List of strings or gexps representing the arguments for the module handler
-(@pxref{Handlers,,, dico, GNU Dico Manual}).
+List of strings or gexps representing the arguments for the database
+(@pxref{Databases,,, dico, GNU Dico Manual}).
 @end table
 @end deftp
 
@@ -14396,6 +14420,24 @@ List of strings or gexps representing the arguments for the module handler
 A @code{<dicod-database>} object serving the GNU Collaborative International
 Dictonary of English using the @code{gcide} package.
 @end defvr
+
+The following is an example @code{dicod-service} configuration.
+
+@example
+(dicod-service #:config
+  (dicod-configuration
+   (handlers (list (dicod-handler
+                    (name "wordnet")
+                    (module "dictorg")
+                    (options
+                     (list #~(string-append "dbdir=" #$wordnet))))))
+   (databases (list (dicod-database
+                     (name "wordnet")
+                     (complex? #t)
+                     (handler "wordnet")
+                     (options '("database=wn")))
+                    %dicod-database:gcide))))
+@end example
 
 @subsubsection Version Control
 

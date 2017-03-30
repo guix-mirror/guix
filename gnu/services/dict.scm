@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:export (dicod-service
             dicod-service-type
             dicod-configuration
+            dicod-handler
             dicod-database
             %dicod-database:gcide))
 
@@ -46,21 +48,30 @@
   (dico        dicod-configuration-dico       (default dico))
   (interfaces  dicod-configuration-interfaces     ;list of strings
                (default '("localhost")))
-  (databases   dicod-configuration-databases
-               ;; list of <dicod-database>
+  (handlers    dicod-configuration-handlers       ;list of <dicod-handler>
+               (default '()))
+  (databases   dicod-configuration-databases      ;list of <dicod-database>
                (default (list %dicod-database:gcide))))
+
+(define-record-type* <dicod-handler>
+  dicod-handler make-dicod-handler
+  dicod-handler?
+  (name        dicod-handler-name)
+  (module      dicod-handler-module          (default #f))
+  (options     dicod-handler-options         (default '())))
 
 (define-record-type* <dicod-database>
   dicod-database make-dicod-database
   dicod-database?
   (name        dicod-database-name)
-  (module      dicod-database-module)
+  (handler     dicod-database-handler)
+  (complex?    dicod-database-complex?       (default #f))
   (options     dicod-database-options        (default '())))
 
 (define %dicod-database:gcide
   (dicod-database
    (name "gcide")
-   (module "gcide")
+   (handler "gcide")
    (options (list #~(string-append "dbdir=" #$gcide "/share/gcide")
                   "idxdir=/var/run/dicod"))))
 
@@ -76,22 +87,47 @@
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define (dicod-configuration-file config)
+  (define handler->text
+    (match-lambda
+      (($ <dicod-handler> name #f '())
+       `("
+load-module " ,name ";"))
+      (($ <dicod-handler> name #f options)
+       (handler->text (dicod-handler
+                       (name name)
+                       (module name)
+                       (options options))))
+      (($ <dicod-handler> name module options)
+       `("
+load-module " ,name " {
+   command \"" ,module (string-join (list ,@options) " " 'prefix) "\";
+}\n"))))
+
   (define database->text
     (match-lambda
-      (($ <dicod-database> name module options)
+      (($ <dicod-database> name handler #f options)
+       (append
+        (handler->text (dicod-handler
+                        (name handler)))
+        (database->text (dicod-database
+                         (name name)
+                         (handler handler)
+                         (complex? #t)
+                         (options options)))))
+      (($ <dicod-database> name handler complex? options)
        `("
-load-module " ,module ";
 database {
    name \"" ,name "\";
-   handler \"" ,module
+   handler \"" ,handler
    (string-join (list ,@options) " " 'prefix) "\";
 }\n"))))
 
   (define configuration->text
     (match-lambda
-      (($ <dicod-configuration> dico (interfaces ...) databases)
+      (($ <dicod-configuration> dico (interfaces ...) handlers databases)
        (append `("listen ("
                  ,(string-join interfaces ", ") ");\n")
+               (append-map handler->text handlers)
                (append-map database->text databases)))))
 
   (apply mixed-text-file "dicod.conf" (configuration->text config)))
