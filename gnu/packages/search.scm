@@ -194,13 +194,13 @@ interfaces, or a C API.")
     (version "0.26")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://fedorahosted.org/releases/m/l/"
-                                  "mlocate/mlocate-" version ".tar.xz"))
+              (uri (string-append "http://releases.pagure.org/mlocate/"
+                                  "mlocate-" version ".tar.xz"))
               (sha256
                (base32
                 "0gi6y52gkakhhlnzy0p6izc36nqhyfx5830qirhvk3qrzrwxyqrh"))))
     (build-system gnu-build-system)
-    (home-page "https://fedorahosted.org/mlocate/")
+    (home-page "https://pagure.io/mlocate")
     (synopsis "Locate files on the file system")
     (description
      "mlocate is a locate/updatedb implementation.  The 'm' stands for
