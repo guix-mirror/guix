@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages gcc))
 
 (define-public hugs
   (package
@@ -68,6 +70,8 @@
                      (("/bin/cp") (which "cp"))))
                   %standard-phases)
        #:tests? #f)) ; no test target
+    ;; FIXME: Fails to build with GCC 5.
+    (native-inputs `(("gcc" ,gcc-4.9)))
     (home-page "https://www.haskell.org/hugs/")
     (synopsis "Functional programming system based on Haskell 98")
     (description
