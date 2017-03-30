@@ -3150,7 +3150,10 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
        ("python-screed" ,python-screed)
-       ("python-bz2file" ,python-bz2file)))
+       ("python-bz2file" ,python-bz2file)
+       ;; Tests fail when gcc-5 is used for compilation.  Use gcc-4.9 at least
+       ;; until the next version of khmer (likely 2.1) is released.
+       ("gcc" ,gcc-4.9)))
     (home-page "https://khmer.readthedocs.org/")
     (synopsis "K-mer counting, filtering and graph traversal library")
     (description "The khmer software is a set of command-line tools for
