@@ -305,11 +305,14 @@ valid."
                      ;; Build everything, including replacements.
                      (let ((all (fold-packages
                                  (lambda (package result)
-                                   (if (package-replacement package)
-                                       (cons* package
-                                              (package-replacement package)
-                                              result)
-                                       (cons package result)))
+                                   (cond ((package-replacement package)
+                                          (cons* package
+                                                 (package-replacement package)
+                                                 result))
+                                         ((package-superseded package)
+                                          result) ;don't build it
+                                         (else
+                                          (cons package result))))
                                  '()))
                            (job (lambda (package)
                                   (package->job store package
