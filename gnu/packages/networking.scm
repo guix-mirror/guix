@@ -76,7 +76,7 @@
                (base32
                 "1xsiivjjyhqcs6dyjcshrnxlgypvyfzacjz7gcjgl88xiw9lylri"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/macchanger")
+    (home-page "https://www.gnu.org/software/macchanger/")
     (synopsis "Viewing and manipulating MAC addresses of network interfaces")
     (description "GNU MAC Changer is a utility for viewing and changing MAC
 addresses of networking devices.  New addresses may be set explicitly or

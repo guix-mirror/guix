@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
@@ -54,6 +54,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -70,6 +71,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -79,8 +81,10 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -187,7 +191,7 @@ defconfig.  Return the appropiate make target if applicable, otherwise return
                       #t))))))
        #:allowed-references ()
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/linux-libre")
+    (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
@@ -339,7 +343,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                                "INSTALL_MOD_STRIP=1"
                                "modules_install"))))))
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/linux-libre/")
+    (home-page "https://www.gnu.org/software/linux-libre//")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
@@ -348,8 +352,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10.5")
-(define %linux-libre-hash "0qxanna5a82vyh5yb3mv8vvx5i9kdzmq2p6q7xp1fy88x9gj11xb")
+(define %linux-libre-version "4.10.7")
+(define %linux-libre-hash "0cjhnq67h3kk2dx0kd3nw0f1lbxvc8jr8n5khb9bh07913ag2pyq")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -358,14 +362,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.17"
-                    "1543b159s6v5z9l2bskw9rd6v8d98da8sppd34lz7nin6nk00cpk"
+  (make-linux-libre "4.9.19"
+                    "19x6hasx7pvrjj08vy8mhylx1s63j3dwxzgqh4k18jwzjfkv3p3g"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.56"
-                    "16fa4rf6vdyakvjis2ahvzdw87znsqgxd84458y86z2szwbaym7n"
+  (make-linux-libre "4.4.58"
+                    "1q5y26r65wkhcav7qq3x9mvz54dgcvcw2a5scpgya61b3kpnahb2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2581,6 +2585,67 @@ arrays when needed.")
         '("out"))))                               ;refer only self
     (synopsis "Statically-linked 'mdadm' command for use in an initrd")))
 
+(define-public multipath-tools
+  (package
+    (name "multipath-tools")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://git.opensvc.com/?p=multipath-tools/"
+                                  ".git;a=snapshot;h=" version ";sf=tgz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12smwmljrkl2afc06dghd2253rqnfawvzr818a2xpxr06f44f9qy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled valgrind headers.
+                  (delete-file-recursively "third-party")
+                  (substitute* '("multipathd/main.c"
+                                 "libmultipath/debug.c")
+                    (("#include \"../third-party/")
+                     "#include \""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; No tests.
+       #:make-flags (list (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-CC
+           (lambda _
+             (setenv "CC" "gcc")
+             #t)))))
+    (native-inputs
+     `(("valgrind" ,valgrind)))
+    (inputs
+     `(("ceph:lib" ,ceph "lib")
+       ("libaio" ,libaio)
+       ("liburcu" ,liburcu)
+       ("lvm2" ,lvm2)
+       ("readline" ,readline)
+       ("udev" ,eudev)))
+    (home-page "http://christophe.varoqui.free.fr/")
+    (synopsis "Access block devices through multiple paths")
+    (description
+     "This package provides the following binaries to drive the
+Linux Device Mapper multipathing driver:
+@enumerate
+@item @command{multipath} - Device mapper target autoconfig.
+@item @command{multipathd} - Multipath daemon.
+@item @command{mpathpersist} - Manages SCSI persistent reservations on
+@code{dm} multipath devices.
+@item @command{kpartx} - Create device maps from partition tables.
+@end enumerate")
+    (license (list license:gpl2+             ; Main distribution.
+                   license:lgpl2.0+))))      ; libmpathcmd/mpath_cmd.h
+
 (define-public libaio
   (package
     (name "libaio")
@@ -2964,6 +3029,74 @@ from userspace.")
 commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
 The package provides additional NTFS tools.")
     (license license:gpl2+)))
+
+(define-public rdma-core
+  (package
+    (name "rdma-core")
+    (version "13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/linux-rdma/rdma-core"
+                                  "/releases/download/v" version "/rdma-core-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15qdfqkia22vab1dh41s88vgi70yifi40ar5s4x7a456rpbhy8z5"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       ;; Upstream uses the "ninja" build system and encourage distros
+       ;; to do the same for consistency. They also recommend using the
+       ;; "Release" build type.
+       #:configure-flags (list "-GNinja"
+                               ;; Defaults to "lib64" on 64-bit archs.
+                               (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out") "/lib")
+                               "-DCMAKE_BUILD_TYPE=Release")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (zero? (system* "ninja"
+                             "-j" (number->string (parallel-job-count))))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "ninja" "install")))))))
+    (native-inputs
+     `(("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("libnl" ,libnl)
+       ("udev" ,eudev)))
+    (home-page "https://github.com/linux-rdma/rdma-core")
+    (synopsis "Utilities and libraries for working with RDMA devices")
+    (description
+     "This package provides userspace components for the InfiniBand
+subsystem of the Linux kernel.  Specifically it contains userspace
+libraries for the following device nodes:
+
+@enumerate
+@item @file{/dev/infiniband/uverbsX} (@code{libibverbs})
+@item @file{/dev/infiniband/rdma_cm} (@code{librdmacm})
+@item @file{/dev/infiniband/umadX} (@code{libibumad})
+@end enumerate
+
+The following service daemons are also provided:
+@enumerate
+@item @code{srp_daemon} (for the @code{ib_srp} kernel module)
+@item @code{iwpmd} (for iWARP kernel providers)
+@item @code{ibacm} (for InfiniBand communication management assistant)
+@end enumerate")
+    ;; All library code is dual licensed under GPL2 and a custom MIT
+    ;; variant. The package also includes some components covered by
+    ;; other licenses. Consult COPYING.md for full details.
+    (license
+     (list license:gpl2
+           (license:x11-style "See COPYING.BSD_MIT in the distribution")
+           license:bsd-2             ; Files referring to COPYING.BSD_FB
+           license:cc0               ; most files in ccan/
+           license:bsd-3))))         ; providers/hfi1verbs are dual GPL2/BSD-3
 
 (define-public rng-tools
   (package

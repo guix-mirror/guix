@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
@@ -1766,7 +1766,7 @@ allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
     ;; prevents us from using pulseaudio
     (inputs `(("ncurses" ,ncurses)
               ("alsa" ,alsa-lib)))
-    (home-page "http://www.gnu.org/software/cursynth")
+    (home-page "https://www.gnu.org/software/cursynth/")
     (synopsis "Polyphonic and MIDI subtractive music synthesizer using curses")
     (description "GNU cursynth is a polyphonic synthesizer that runs
 graphically in the terminal.  It is built on a full-featured subtractive
@@ -2123,7 +2123,6 @@ websites such as Libre.fm.")
     ;; TODO: Install optional plugins and dependencies.
     (inputs
      `(("python-discogs-client" ,python-discogs-client)
-       ("python-enum34" ,python-enum34)
        ("python-jellyfish" ,python-jellyfish)
        ("python-munkres" ,python-munkres)
        ("python-musicbrainzngs" ,python-musicbrainzngs)
@@ -2141,21 +2140,29 @@ of tools for manipulating and accessing your music.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "0.90.86")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://milkytracker.titandemo.org/files/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/milkytracker/"
+                                  "MilkyTracker/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v9vp8vi24lkagfpr92c128whvakwgrm9pq2zf6ijpl5sh7014zb"))))
-    (build-system gnu-build-system)
+                "1p1jd4h274jvcvl05l01v9bj19zhq4sjag92v1zawyi93ib85abz"))
+              (modules '((guix build utils)))
+              ;; Remove non-FSDG compliant sample songs.
+              (snippet
+               '(begin
+                  (delete-file-recursively "resources/music")
+                  (substitute* "CMakeLists.txt"
+                    (("add_subdirectory\\(resources/music\\)") ""))))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:make-flags '("CXXFLAGS=-lasound")))
+     '(#:tests? #f)) ; no check target
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
-       ("sdl" ,sdl)
+       ("sdl" ,sdl2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2171,7 +2178,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20160521")
+    (version "20160913")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2180,12 +2187,12 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c6r24wm3rldm4j8cskl9xnixj3rwi3lnrhckw5gv43wpy6h4jcz"))
+                "1sc813qi4gl6mf7xp8rrarvyigzhxv3qdrryqsy42yxsb2jcwbrw"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
                `(substitute* "schism/version.c"
-                  (("Schism Tracker build %s %s.*$")
+                  (("Schism Tracker built %s %s.*$")
                    (string-append "Schism Tracker version " ,version "\");"))))))
     (build-system gnu-build-system)
     (arguments

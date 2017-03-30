@@ -78,7 +78,7 @@
                    `(("bash" ,bash))
                    '())))
 
-   (home-page "http://www.gnu.org/software/gawk/")
+   (home-page "https://www.gnu.org/software/gawk/")
    (synopsis "Text scanning and processing language")
    (description
     "Gawk is the GNU implementation of Awk, a specialized programming

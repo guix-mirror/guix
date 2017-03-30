@@ -11,6 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
@@ -131,6 +132,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fcitx.scm			\
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
+  %D%/packages/file-systems.scm			\
   %D%/packages/finance.scm			\
   %D%/packages/firmware.scm			\
   %D%/packages/flashing-tools.scm		\
@@ -355,6 +357,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ssh.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
+  %D%/packages/storage.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
   %D%/packages/sync.scm			\
@@ -509,6 +512,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
+  %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
+  %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
+  %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chicken-CVE-2017-6949.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
@@ -752,6 +758,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-symlinks.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
+  %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -945,6 +952,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/texlive-texmf-CVE-2016-10243.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
+  %D%/packages/patches/thefuck-test-environ.patch		\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   %D%/packages/patches/tinyxml-use-stl.patch			\
   %D%/packages/patches/tipp10-fix-compiling.patch		\

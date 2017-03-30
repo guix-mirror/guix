@@ -147,7 +147,7 @@ files, and archive files.  Each file format is implemented as a plugin, so
 new formats can be added easily.  The package also contains a command-line
 tool to extract metadata from a file and print the results.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/libextractor/")))
+   (home-page "https://www.gnu.org/software/libextractor/")))
 
 (define-public libmicrohttpd
   (package

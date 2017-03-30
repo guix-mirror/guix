@@ -63,7 +63,7 @@
                                          (getenv "PATH")))
                   (zero? (system* "autoreconf" "-vfi"))))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/unrtf")
+    (home-page "https://www.gnu.org/software/unrtf/")
     (synopsis "Convert Rich Text Format documents to other formats")
     (description
      "GNU UnRTF converts text documents from RTF to HTML, LaTeX, or troff.

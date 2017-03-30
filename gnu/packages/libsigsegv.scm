@@ -34,7 +34,7 @@
             (sha256
              (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
-   (home-page "http://www.gnu.org/software/libsigsegv/")
+   (home-page "https://www.gnu.org/software/libsigsegv/")
    (synopsis "Library for handling page faults")
    (arguments
     ;; On MIPS, work around this error:

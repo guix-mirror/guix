@@ -57,7 +57,7 @@ past were distributed separately from Emacs."
 (define (filter-dependencies names)
   "Remove the package names included with Emacs from the list of
 NAMES (strings)."
-  (filter (compose not emacs-standard-library?) names))
+  (remove emacs-standard-library? names))
 
 (define (elpa-name->package-name name)
   "Given the NAME of an Emacs package, return the corresponding Guix name."

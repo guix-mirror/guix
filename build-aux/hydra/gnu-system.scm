@@ -221,6 +221,7 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
                    (>>= (profile-derivation (packages->manifest (list guix)))
                         (lambda (profile)
                           (self-contained-tarball "guix-binary" profile
+                                                  #:localstatedir? #t
                                                   #:compressor
                                                   (lookup-compressor "xz")))))
                  #:system system))))

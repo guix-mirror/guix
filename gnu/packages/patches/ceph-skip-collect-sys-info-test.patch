@@ -1,0 +1,29 @@
+This test fails because /etc/os-release is not available.
+
+diff --git a/src/test/common/test_util.cc b/src/test/common/test_util.cc
+index 288dd37db1..95b6cd4b30 100644
+--- a/src/test/common/test_util.cc
++++ b/src/test/common/test_util.cc
+@@ -31,19 +31,3 @@ TEST(util, unit_to_bytesize)
+ 
+   ASSERT_EQ(65536ll, unit_to_bytesize(" 64K", &cerr));
+ }
+-
+-#if defined(__linux__)
+-TEST(util, collect_sys_info)
+-{
+-  map<string, string> sys_info;
+-
+-  CephContext *cct = (new CephContext(CEPH_ENTITY_TYPE_CLIENT))->get();
+-  collect_sys_info(&sys_info, cct);
+-
+-  ASSERT_TRUE(sys_info.find("distro") != sys_info.end());
+-  ASSERT_TRUE(sys_info.find("distro_version") != sys_info.end());
+-  ASSERT_TRUE(sys_info.find("distro_description") != sys_info.end());
+-
+-  cct->put();
+-}
+-#endif
+-- 
+2.11.1
+

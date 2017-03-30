@@ -1451,21 +1451,15 @@ bug tracker.")
 (define-public python-enum34
   (package
     (name "python-enum34")
-    (version "1.1.0")
+    (version "1.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "enum34" version))
       (sha256
        (base32
-        "0yx1m4564wxgbm4glb3457hi16xihd9w63rv13y2przkdir9dfgp"))))
+        "1cgm5ng2gcfrkrm3hc22brl6chdmv67b9zvva9sfs7gn7dwc9n4a"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (alist-replace
-        'check
-        (lambda _ (zero? (system* "python" "enum/test_enum.py")))
-        %standard-phases)))
     (home-page "https://pypi.python.org/pypi/enum34")
     (synopsis "Backported Python 3.4 Enum")
     (description
@@ -1808,19 +1802,18 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
-;; This package is used by Borg until we can upgrade all our Python packages to
-;; use a more recent pytest.
-(define-public python-pytest-2.9.2
+;; Some packages require a newer pytest.
+(define-public python-pytest-3.0
   (package
     (inherit python-pytest)
     (name "python-pytest")
-    (version "2.9.2")
+    (version "3.0.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest" version))
               (sha256
                (base32
-                "1n6igbc1b138wx1q5gca4pqw1j6nsyicfxds5n0b5989kaxqmh8j"))))
+                "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1831,7 +1824,20 @@ and many external plugins.")
                 (string-append "@pytest.mark.skip"
                                "(reason=\"Assumes that /usr exists.\")\n    "
                                line)))
-             #t)))))))
+             #t)))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-hypothesis" ,python-hypothesis)))
+    (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
+
+(define-public python2-pytest-3.0
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-3.0))))
+    (package (inherit base)
+      (native-inputs
+        `(("python2-enum34" ,python2-enum34)
+          ,@(package-native-inputs base))))))
 
 (define-public python-pytest-cov
   (package
@@ -3073,6 +3079,22 @@ for Python projects or other documents consisting of multiple reStructuredText
 sources.")
     (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-sphinx))))))
+
+(define-public python-sphinx-1.5.3
+  (package
+    (inherit python-sphinx)
+    (name "python-sphinx")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Sphinx" version))
+       (sha256
+        (base32
+         "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest-3.0)
+       ,@(package-native-inputs python-sphinx)))))
 
 (define-public python2-sphinx
   (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
@@ -4880,7 +4902,7 @@ cluster without needing to write any wrapper code yourself.")
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
              #t))
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
@@ -7272,7 +7294,7 @@ responses, rather than doing any computation.")
        ("python-pyasn1" ,python-pyasn1)
        ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-pytz" ,python-pytz)
-       ("python-pytest" ,python-pytest-2.9.2)))
+       ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
     (description
@@ -13871,3 +13893,57 @@ possible to write plugins to add your own checks.")
                  ,python2-backports-functools-lru-cache)
                 ("python2-configparser" ,python2-configparser)
                 ,@(package-propagated-inputs pylint))))))
+
+(define-public python-paramunittest
+  (package
+    (name "python-paramunittest")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ParamUnittest" version))
+       (sha256
+        (base32
+         "0kp793hws5xv1wvycxq7jw2pwy36f35k39jg8hx5qikij5a0jid1"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/rik0/ParamUnittest")
+    (synopsis
+     "Simple extension to have parametrized unit tests")
+    (description
+     "This package allows to create parametrized unit-tests that work with the standard
+unittest package.  A parametrized test case is automatically converted to multiple test
+cases.  Since they are TestCase subclasses, they work with other test suites that
+recognize TestCases.")
+    (license license:bsd-2)))
+
+(define-public python2-python-paramunittest
+  (package-with-python2 python-paramunittest))
+
+(define-public python-mando
+  (package
+  (name "python-mando")
+  (version "0.5")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "mando" version))
+      (sha256
+        (base32
+          "0q05h66439gqdmlk4jqm6xrwrzfdgs4mwk70barxhr2y83qbbdc0"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-rst2ansi" ,python-rst2ansi)))
+  (native-inputs
+   `(("python-sphinx" ,python-sphinx-1.5.3)
+     ("python-paramunittest" ,python-paramunittest)))
+  (home-page "https://mando.readthedocs.org/")
+  (synopsis
+    "Wrapper around argparse, allowing creation of complete CLI applications")
+  (description
+    "This package is a wrapper around argparse, allowing you to write complete CLI
+ applications in seconds while maintaining all the flexibility.")
+  (license license:expat)))
+
+(define-public python2-mando
+  (package-with-python2 python-mando))

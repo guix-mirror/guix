@@ -167,7 +167,7 @@
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
        ("gdbm" ,gdbm)))
-    (home-page "https://www.gnu.org/software/mailutils/")
+    (home-page "https://mailutils.org")
     (synopsis "Utilities and library for reading and serving mail")
     (description
      "GNU Mailutils is a collection of programs for managing, viewing and

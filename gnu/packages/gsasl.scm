@@ -68,7 +68,7 @@ a generic, GSS interface, with which the calling application interacts via
 this library, freeing the application developer from needing to know about
 the underlying security implementation.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/gss/")))
+   (home-page "https://www.gnu.org/software/gss/")))
 
 (define-public gsasl
   (package
@@ -96,4 +96,4 @@ Security Layer framework.  On network servers such as IMAP or SMTP servers,
 SASL is used to handle client/server authentication.  This package contains
 both a library and a command-line tool to access the library.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/gsasl/")))
+   (home-page "https://www.gnu.org/software/gsasl/")))

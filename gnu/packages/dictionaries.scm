@@ -74,7 +74,7 @@
     (native-inputs `(("texinfo" ,texinfo)
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
-    (home-page "http://savannah.gnu.org/projects/vera/")
+    (home-page "https://savannah.gnu.org/projects/vera/")
     (synopsis "List of acronyms")
     (description
      "V.E.R.A. (Virtual Entity of Relevant Acronyms) is a list of computing

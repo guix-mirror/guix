@@ -47,7 +47,7 @@
                                      (string-append "--infodir=" out
                                                     "/share/info")))))
                  %standard-phases)))
-    (home-page "http://www.gnu.org/software/uucp/uucp.html")
+    (home-page "https://www.gnu.org/software/uucp/uucp.html")
     (synopsis "UUCP protocol implementation")
     (description
      "Taylor UUCP is the GNU implementation of UUCP (Unix-to-Unix Copy), a

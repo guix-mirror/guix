@@ -186,7 +186,7 @@ well as multiple highlights and forms characters.  It is typically used to
 implement user interfaces for command-line applications.  The accompanying
 ncursesw library provides wide character support.")
     (license x11)
-    (home-page "http://www.gnu.org/software/ncurses/")))
+    (home-page "https://www.gnu.org/software/ncurses/")))
 
 (define-public dialog
   (package

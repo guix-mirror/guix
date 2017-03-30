@@ -362,7 +362,20 @@ standards.")
         (mozilla-patch "icecat-bug-1343261.patch"        "9b5374019b58" "0v5w50r5ys4jjy1lpks280cq8paw7wdy9mrk7szzq7nlcxz90is7")
         (mozilla-patch "icecat-bug-1343552-pt1.patch"    "08bc7a3330e4" "1hsvffscqc4zflni866ilylgi3a13wz0n882z85xplbhwhc9lcfj")
         (mozilla-patch "icecat-bug-1343552-pt2.patch"    "8c61ebe37f1b" "1fjsr6bzfyd1zqzz2pglwh2ckys95h21wy3j4rlwkz66057z53qq")
-        (mozilla-patch "icecat-bug-1340718.patch"        "bfa75fc20c2b" "08gksd06lwbb5ykdrk9gh2cb9bximwxhbxl3rprz64jj2bnmd3dq")))
+        (mozilla-patch "icecat-bug-1340718.patch"        "bfa75fc20c2b" "08gksd06lwbb5ykdrk9gh2cb9bximwxhbxl3rprz64jj2bnmd3dq")
+        (mozilla-patch "icecat-bug-1345461.patch"        "bcd5e51251dd" "1ms2ad8j04lz761cvdwi9rj5qv3qbjmg0zwyp3fykcf01a323ygd")
+        (mozilla-patch "icecat-bug-1343505.patch"        "290f10412f92" "1dsj22fkz60zfa6isnxj54clg32dwzapwh5f1vz6jsin9r67ik2p")
+        (mozilla-patch "icecat-bug-1346648.patch"        "9369ede30cc1" "1wrdn2aixbzifz7wyqnfi65gaiva8i746pi53z6w62lmn1hwd3ji")
+        (mozilla-patch "icecat-bug-1347979.patch"        "4ae2261bfab0" "1yi3jicwjy7w8f0sv5di4rx05bfpkhcwj3r6dhl5315yz4ifqy30")
+        (mozilla-patch "icecat-bug-1343795.patch"        "dcf468969700" "0syfq35s2r86ajmnqsxlfanvxd9ax57qkfmxpkvmk447s3mxsk08")
+        (mozilla-patch "icecat-bug-1347168.patch"        "5a6390274b64" "1lg5px4sncalh82y61ni9rlg50d83jmmrrvn0944x4zfrzlfaz8x")
+        (mozilla-patch "icecat-bug-1341096.patch"        "64158495e5ae" "1lyh8m159hhzrxj5hr0yib2sb8rkd20qxpykrf398v18s3yc08cx")
+        (mozilla-patch "icecat-bug-1346654.patch"        "f359ec604627" "0j6rzbnzlz8x9sj2r79d1zr4p89c5zq7y49xa4kn6am5ay3ws0ri")
+        (mozilla-patch "icecat-bug-1344461.patch"        "6f14d2ef7981" "0n24hqvjj7vxqdvxhk38swnmvcv7h7vvn5invbidhv22m0qqzs2c")
+        (mozilla-patch "icecat-bug-1292534.patch"        "c709d4b36145" "18cdck3fr4a1ygszb6qk07g6fi3kv6i697pjfcipvqrk358qb0hq")
+        (mozilla-patch "icecat-bug-1336830.patch"        "18e355831dd5" "042487xhq9zkky3pxiqy1rpy69z0j20w0jnl7kwg2j1bzfbnniip")
+        (mozilla-patch "icecat-bug-1336832.patch"        "ebeb0b45a84b" "17ch2aqsrnkiwbnkf6x7a1cpi8jgfjhwr6wp0bsa89s8v1dax6w4")
+        (mozilla-patch "icecat-bug-1349946.patch"        "ccbecbe17a45" "19vwmhvqarpzai8mcq6i7szkrp1h9m8v5lyimkmmdlmagrivjw7f")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -545,6 +558,19 @@ standards.")
               (("^  \"h264parse\",\n") ""))
             #t))
          (add-after
+          'unpack 'use-skia-by-default
+          (lambda _
+            ;; Use the bundled Skia library by default, since IceCat appears
+            ;; to be far more stable when using it than when using our system
+            ;; Cairo.
+            (let ((out (open "browser/app/profile/icecat.js"
+                              (logior O_WRONLY O_APPEND))))
+              (format out "~%// Use Skia by default~%")
+              (format out "pref(~s, ~s);~%" "gfx.canvas.azure.backends" "skia")
+              (format out "pref(~s, ~s);~%" "gfx.content.azure.backends" "skia")
+              (close-port out))
+            #t))
+         (add-after
           'unpack 'arrange-to-link-libxul-with-libraries-it-might-dlopen
           (lambda _
             ;; libxul.so dynamically opens libraries, so here we explicitly
@@ -636,7 +662,7 @@ standards.")
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
                     "mozicon128.png" "default256.png")))))))))
-    (home-page "http://www.gnu.org/software/gnuzilla/")
+    (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
      "IceCat is the GNU version of the Firefox browser.  It is entirely free

@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,7 +189,7 @@
             (variable "INFOPATH")
             (files '("share/info")))))
 
-    (home-page "http://www.gnu.org/software/emacs/")
+    (home-page "https://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description
      "GNU Emacs is an extensible and highly customizable text editor.  It is
@@ -989,7 +990,7 @@ can control one of the supported external players.  Thus, it supports
 whatever formats are supported by your music player.  It also
 supports tagging and playlist management, all behind a clean and
 light user interface.")
-    (home-page "http://www.gnu.org/software/emms/")
+    (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-mpv
@@ -1180,7 +1181,7 @@ as a library for other Emacs packages.")
     (arguments `(#:emacs ,emacs))
     (native-inputs
      `(("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/auctex/")
+    (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
      "AUCTeX is a comprehensive customizable integrated environment for
@@ -3089,7 +3090,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "1.4.1")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/skeeto/elfeed/archive/"
@@ -3097,7 +3098,7 @@ If you want to mark a folder manually as a project just create an empty
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i75r8x9ypbfjlnym04h16ikcrlks86p7wsgawrx7mh1lk4inp89"))))
+                "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
@@ -3426,17 +3427,18 @@ used for reverse direction.")
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
-    (version "20170220.540")
+    (version "0.3.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://melpa.org/packages/monroe-"
-                            version ".el"))
+        (uri (string-append "https://github.com/sanel/monroe/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "06p0qdhg4arwij1qpiiiwsd0m1bbl1qwd20ij2bmhryrvrcpswq3"))))
+            "0icdx8shkd951phlnmcq1vqaxp1l667q5rjscskc5r22aylakh4w"))))
     (build-system emacs-build-system)
-    (home-page "http://www.github.com/sanel/monroe")
+    (home-page "https://github.com/sanel/monroe")
     (synopsis "Clojure nREPL client for Emacs")
     (description
       "Monroe is a nREPL client for Emacs, focused on simplicity and easy
@@ -3960,3 +3962,92 @@ abbreviation and automatically expand it into function templates.")
    (description "@code{emacs-memoize} is an Emacs library for
 memoizing functions.")
    (license license:unlicense)))
+
+(define-public emacs-linum-relative
+  (package
+    (name "emacs-linum-relative")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/coldnew/linum-relative/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s4frvr27866lw1rn3jal9wj5rkz9fx4yiszqv7w06azsdgsqksv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/coldnew/linum-relative")
+    (synopsis "Relative line numbering for Emacs")
+    (description "@code{emacs-linum-relative} displays the relative line
+number on the left margin in Emacs.")
+    (license license:gpl2+)))
+
+(define-public emacs-idle-highlight
+  (package
+    (name "emacs-idle-highlight")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/nonsequitur/idle-highlight-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kdv10hrgqpskjh0zvpnzwlkn5bccnqxas62gkws6njln57bf8nl"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/IdleHighlight")
+    (synopsis "Highlights all occurences of the word the point is on")
+    (description
+     "This Emacs package provides @code{idle-highlight-mode} that sets
+ an idle timer to highlight all occurences in the buffer of the word under
+ the point.")
+    (license license:gpl3+)))
+
+(define-public emacs-ox-twbs
+  (package
+    (name "emacs-ox-twbs")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/marsmining/ox-twbs/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zaq8dczq5wijjk36114k2x3hfrqig3lyx6djril6wyk67vczyqs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/marsmining/ox-twbs")
+    (synopsis "Export org-mode docs as HTML compatible with Twitter Bootstrap")
+    (description
+     "This Emacs package outputs your org-mode docs with a simple, clean and
+modern look.  It implements a new HTML back-end for exporting org-mode docs as
+HTML compatible with Twitter Bootstrap.  By default, HTML is exported with
+jQuery and Bootstrap resources included via osscdn.")
+    (license license:gpl3+)))
+
+(define-public emacs-highlight-sexp
+  (package
+    (name "emacs-highlight-sexp")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/daimrod/highlight-sexp/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jwx87qkln1rg9wmv4qkgkml935fh2pkgrg5x4ca6n5dgb4q6rj1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/daimrod/highlight-sexp")
+    (synopsis "Minor mode that highlights the s-exp at the current position")
+    (description
+     "This Emacs package highlights the s-exp at the current position.")
+    (license license:gpl3+)))

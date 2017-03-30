@@ -495,7 +495,7 @@ binary.")
                             (string-append "--mandir=" out "/share/man")
                             (string-append "--infodir=" out "/share/info")))))
                       %standard-phases)))
-    (home-page "http://www.gnu.org/software/bc/")
+    (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
      "bc is an arbitrary precision numeric processing language.  It includes

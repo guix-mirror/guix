@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,7 +20,7 @@
 (define-module (guix import cran)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:use-module ((ice-9 rdelim) #:select (read-string))
+  #:use-module ((ice-9 rdelim) #:select (read-string read-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -34,6 +34,8 @@
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
+  #:use-module ((guix build utils) #:select (find-files))
+  #:use-module (guix utils)
   #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
   #:use-module (guix upstream)
   #:use-module (guix packages)
@@ -187,6 +189,39 @@ empty list when the FIELD cannot be found."
                                     (chr (char-downcase chr)))
                                   name)))
 
+(define (needs-fortran? tarball)
+  "Check if the TARBALL contains Fortran source files."
+  (define (check pattern)
+    (parameterize ((current-error-port (%make-void-port "rw+"))
+                   (current-output-port (%make-void-port "rw+")))
+      (zero? (system* "tar" "--wildcards" "--list" pattern "-f" tarball))))
+  (or (check "*.f90")
+      (check "*.f95")
+      (check "*.f")))
+
+(define (needs-zlib? tarball)
+  "Return #T if any of the Makevars files in the src directory of the TARBALL
+contain a zlib linker flag."
+  (call-with-temporary-directory
+   (lambda (dir)
+     (let ((pattern (make-regexp "-lz")))
+       (parameterize ((current-error-port (%make-void-port "rw+")))
+         (system* "tar"
+                  "xf" tarball "-C" dir
+                  "--wildcards"
+                  "*/src/Makevars*" "*/src/configure*" "*/configure*"))
+       (any (lambda (file)
+              (call-with-input-file file
+                (lambda (port)
+                  (let loop ()
+                    (let ((line (read-line port)))
+                      (cond
+                       ((eof-object? line) #f)
+                       ((regexp-exec pattern line) #t)
+                       (else (loop)))))))
+              #t)
+            (find-files dir))))))
+
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
@@ -209,7 +244,9 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((? string? url) url)
                        (_ #f)))
          (tarball    (with-store store (download-to-store store source-url)))
-         (sysdepends (map string-downcase (listify meta "SystemRequirements")))
+         (sysdepends (append
+                      (if (needs-zlib? tarball) '("zlib") '())
+                      (map string-downcase (listify meta "SystemRequirements"))))
          (propagate  (filter (lambda (name)
                                (not (member name default-r-packages)))
                              (lset-union equal?
@@ -234,6 +271,11 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
         (build-system r-build-system)
         ,@(maybe-inputs sysdepends)
         ,@(maybe-inputs (map guix-name propagate) 'propagated-inputs)
+        ,@(if (needs-fortran? tarball)
+              `((native-inputs (,'quasiquote
+                                ,(list "gfortran"
+                                       (list 'unquote 'gfortran)))))
+              '())
         (home-page ,(if (string-null? home-page)
                         (string-append base-url name)
                         home-page))
@@ -294,7 +336,7 @@ dependencies."
               (cran->guix-package (next state) repo))
 
             ;; predicate
-            (compose not done?)
+            (negate done?)
 
             ;; generator: update the queue
             (lambda (state)

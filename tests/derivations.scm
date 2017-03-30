@@ -888,6 +888,35 @@
               (string=? (derivation-input-path input)
                         (derivation-file-name dep))))))))
 
+(test-assert "substitution-oracle and #:substitute? #f"
+  (with-store store
+    (let* ((dep   (build-expression->derivation store "dep"
+                                                `(begin ,(random-text)
+                                                        (mkdir %output))))
+           (drv   (build-expression->derivation store "not-subst"
+                                                `(begin ,(random-text)
+                                                        (mkdir %output))
+                                                #:substitutable? #f
+                                                #:inputs `(("dep" ,dep))))
+           (query #f))
+      (define (record-substitutable-path-query store paths)
+        (when query
+          (error "already called!" query))
+        (set! query paths)
+        '())
+
+      (mock ((guix store) substitutable-paths
+             record-substitutable-path-query)
+
+            (let ((pred (substitution-oracle store (list drv))))
+              (pred (derivation->output-path drv))))
+
+      ;; Make sure the oracle didn't try to get substitute info for DRV since
+      ;; DRV is mark as non-substitutable.  Assume that GUILE-FOR-BUILD is
+      ;; already in store and thus not part of QUERY.
+      (equal? (pk 'query query)
+              (list (derivation->output-path dep))))))
+
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
                       (mkdir %output)

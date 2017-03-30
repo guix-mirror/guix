@@ -47,7 +47,7 @@
 
        ;; XXX: Tests expect real name resolution to work.
        #:tests? #f))
-    (home-page "http://www.gnu.org/software/adns/")
+    (home-page "https://www.gnu.org/software/adns/")
     (synopsis "Asynchronous DNS client library and utilities")
     (description
      "GNU adns is a C library that provides easy-to-use DNS resolution

@@ -204,7 +204,7 @@ typical extension is \".gz\".  Unlike the \"zip\" format, it compresses a single
 file; as a result, it is often used in conjunction with \"tar\", resulting in
 \".tar.gz\" or \".tgz\", etc.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/gzip/")))
+   (home-page "https://www.gnu.org/software/gzip/")))
 
 (define-public bzip2
   (let ((build-shared-lib
@@ -500,7 +500,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
            (substitute* "tests/shar-1.ok"
              (((which "sh")) "/bin/sh")))
          %standard-phases)))
-    (home-page "http://www.gnu.org/software/sharutils/")
+    (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description
      "GNU sharutils is a package for creating and manipulating shell
@@ -973,7 +973,7 @@ well as bzip2.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.4")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -981,7 +981,7 @@ well as bzip2.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mq0nz8gbi1sp3y6xcg0a6wbvnd6gc717f3vh2xrjmfj5w9gwjqk"))))
+                "1wzf8yif5ym2gj52db6v5m1pxnmn258i38x7llk9x346y2nq47ig"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/google/snappy")
     (synopsis "Fast compressor/decompressor")
@@ -1178,7 +1178,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1186,7 +1186,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02mgk7cbyksfx7mq95cykghb7dya797z0n2jxr5fx9j0x0m56v0h"))
+                "1yxr1y83gphljxaqhwvxbldy1ivx81x93rngiv5l94rmdrc2pbka"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove non-free source files.

@@ -2333,7 +2333,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.5.5")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
@@ -2341,7 +2341,7 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cc00876lqvyadsfmj3sh1h2i0r3qfar98izdfar5f8q41w2009j"))))
+         "1256ypz93039n6km4macg158fpmjgylhmcmk20pnklxicsfpxv7c"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
@@ -5353,14 +5353,14 @@ The XCB util module provides the following libraries:
 (define-public xcb-util-cursor
   (package
     (name "xcb-util-cursor")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://xcb.freedesktop.org/dist/"
-                                  "xcb-util-cursor-" version ".tar.gz"))
+                                  "xcb-util-cursor-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bm0mp99abdfb6v4v60hq3msvk67b2x9ml3kbx5y2g18xdhm3rdr"))))
+                "0krr4rcw6r42cncinzvzzdqnmxk3nrgpnadyg2h8k9x10q3hm885"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)

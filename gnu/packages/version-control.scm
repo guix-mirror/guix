@@ -810,7 +810,7 @@ projects, from individuals to large-scale enterprise operations.")
              (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
-    (home-page "http://www.gnu.org/software/rcs/")
+    (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
      "RCS is the original Revision Control System.  It works on a
@@ -963,7 +963,7 @@ large, complex patch files.")
     ;; These are needed for the tests
     (native-inputs `(("git" ,git)
                      ("cvs" ,cvs)))
-    (home-page "http://www.gnu.org/software/cssc/")
+    (home-page "https://www.gnu.org/software/cssc/")
     (synopsis "File-based version control like SCCS")
     (description  "GNU CSSC provides a replacement for the legacy Unix source
 code control system SCCS.  This allows old code still under that system to be

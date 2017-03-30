@@ -340,7 +340,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and
 Go.  It also includes runtime support libraries for these languages.")
       (license gpl3+)
-      (home-page "http://gcc.gnu.org/"))))
+      (home-page "https://gcc.gnu.org/"))))
 
 (define-public gcc-4.8
   (package (inherit gcc-4.7)
@@ -885,5 +885,5 @@ effective code.")
 implemented by the GNU C Compiler (gcc).  As a reference, it is not intended
 to be a tutorial of the language.  Rather, it outlines all of the constructs
 of the language.  Library functions are not included.")
-    (home-page "http://www.gnu.org/software/gnu-c-manual")
+    (home-page "https://www.gnu.org/software/gnu-c-manual/")
     (license fdl1.3+)))

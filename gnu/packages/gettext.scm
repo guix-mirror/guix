@@ -86,7 +86,7 @@
 
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
-    (home-page "http://www.gnu.org/software/gettext/")
+    (home-page "https://www.gnu.org/software/gettext/")
     (synopsis
      "Tools and documentation for translation (used to build other packages)")
     (description

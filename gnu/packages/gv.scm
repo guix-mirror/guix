@@ -71,4 +71,4 @@
 With it, one can view and navigate through PostScript and PDF documents in X
 Windows.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/gv/")))
+   (home-page "https://www.gnu.org/software/gv/")))

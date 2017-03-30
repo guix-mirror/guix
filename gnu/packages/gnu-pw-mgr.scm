@@ -43,7 +43,7 @@
     (native-inputs
      `(("which" ,which)
        ("autogen" ,autogen)))
-    (home-page "http://www.gnu.org/software/gnu-pw-mgr/")
+    (home-page "https://www.gnu.org/software/gnu-pw-mgr/")
     (synopsis "Retrieve login credentials without recording passwords")
     (description
      "This program is designed to make it easy to reconstruct difficult

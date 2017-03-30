@@ -44,7 +44,7 @@
                                            (%current-system))
                                '("--host=aarch64-unknown-linux-gnu")
                                '()))))
-    (home-page "https://www.gnu.org/software/pth")
+    (home-page "https://www.gnu.org/software/pth/")
     (synopsis "Portable thread library")
     (description
      "GNU Pth is a portable library providing non-preemptive, priority-based

@@ -191,7 +191,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
        ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
        ;; ("gettext" ,gettext-minimal)
        ))
-    (home-page "http://www.gnu.org/software/help2man/")
+    (home-page "https://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
      "GNU help2man is a program that converts the output of standard

@@ -90,7 +90,7 @@ list.")
                      (string-append source "/standards.texi"))
             (system* "gzip" (string-append info-dir "/maintain.info"))
             (system* "gzip" (string-append info-dir "/standards.info"))))))
-    (home-page "http://www.gnu.org/prep/standards/")
+    (home-page "https://www.gnu.org/prep/standards/")
     (synopsis "GNU coding standards and maintainer information")
     (description "The GNU Coding Standards were written by Richard Stallman
 and other GNU Project volunteers.  Their purpose is to make the GNU system

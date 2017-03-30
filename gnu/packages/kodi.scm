@@ -239,8 +239,8 @@ generator library for C++.")
 (define-public kodi
   ;; We package the git version because the current released
   ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "b35147e2bec41ce332b9788f4a6ac94d2e5999e3")
-        (revision "0"))
+  (let ((commit "ec5d53da72868ad37df8bc005452a6daaa20f20b")
+        (revision "1"))
   (package
     (name "kodi")
     (version (string-append "18.0_alpha-" revision "-" (string-take commit 7)))
@@ -252,7 +252,7 @@ generator library for C++.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rhb9rcz5h8mky8mx6idzybnpgjh2lxcjkh16z1x6fr4pis2jcbj"))
+                "05f0bip0w784ya72plw3p2bism5m501q07si2xbmg03vhqsagjl5"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
@@ -286,6 +286,8 @@ generator library for C++.")
                             (assoc-ref %build-inputs "libdvdnav-bootstrapped"))
              (string-append "-Dlibdvdcss_URL="
                             (assoc-ref %build-inputs "libdvdcss-bootstrapped"))
+             (string-append "-DSYSTEM_LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %build-inputs "curl") "/lib")
              "-DENABLE_NONFREE=OFF")
        #:phases
        (modify-phases %standard-phases
@@ -302,7 +304,7 @@ generator library for C++.")
                           (zero? (system* "autoreconf" "-vif"))))
                       dirs))))
          (add-after 'bootstrap-bundled-software 'patch-stuff
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Prevent the build scripts from calling autoreconf in the
              ;; build stage.  Otherwise, it would undo the bootstrapping
              ;; and shebang patching that we worked so hard for.
@@ -316,6 +318,11 @@ generator library for C++.")
                ;; to make them writable before the build process starts.
                (("autoreconf -vif") "chmod -R u+w ."))
 
+             (substitute* "xbmc/linux/LinuxTimezone.cpp"
+               (("/usr/share/zoneinfo")
+                (string-append (assoc-ref inputs "tzdata")
+                               "/share/zoneinfo")))
+
              ;; Let's disable some tests that are known not to work here.
              ;; Doing this later while in the cmake "../build" directory
              ;; is trickier.
@@ -326,10 +333,6 @@ generator library for C++.")
                 "TEST_F(TestSystemInfo, DISABLED_GetOsName)")
                (("TEST_F\\(TestSystemInfo, GetOsVersion\\)")
                 "TEST_F(TestSystemInfo, DISABLED_GetOsVersion)"))
-             ;; FIXME: Why are these failing.
-             (substitute* "xbmc/network/test/TestWebServer.cpp"
-               (("TEST_F\\(TestWebServer, Can")
-                "TEST_F(TestWebServer, DISABLED_Can"))
              #t))
          (add-before 'build 'set-build-environment
            (lambda _
@@ -339,14 +342,7 @@ generator library for C++.")
              #t))
          (add-before 'check 'build-kodi-test
            (lambda _
-             (zero? (system* "make" "kodi-test"))))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (curl (string-append (assoc-ref inputs "curl") "/lib")))
-               (wrap-program (string-append out "/bin/kodi")
-                 `("LD_LIBRARY_PATH" suffix (,curl)))
-               #t))))))
+             (zero? (system* "make" "kodi-test")))))))
     ;; TODO: Add dependencies for:
     ;; - nfs
     ;; - cec
@@ -405,17 +401,18 @@ generator library for C++.")
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
-       ("libyajl" ,libyajl)
        ("lzo" ,lzo)
        ("mysql" ,mysql)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-2)
+       ("rapidjson" ,rapidjson)
        ("samba" ,samba)
        ("sqlite" ,sqlite)
        ("taglib" ,taglib)
        ("tinyxml" ,tinyxml)
+       ("tzdata" ,tzdata)
        ("util-linux" ,util-linux)
        ("zip" ,zip)
        ("zlib" ,zlib)))

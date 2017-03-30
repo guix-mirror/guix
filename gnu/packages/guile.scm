@@ -131,7 +131,7 @@ official extension language of the GNU system.  It is an implementation of
 the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
-   (home-page "http://www.gnu.org/software/guile/")
+   (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl2.0+)))
 
 (define-public guile-2.0
@@ -206,7 +206,7 @@ official extension language of the GNU system.  It is an implementation of
 the Scheme language which can be easily embedded in other applications to
 provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
-   (home-page "http://www.gnu.org/software/guile/")
+   (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
 (define-public guile-2.0/fixed
@@ -523,7 +523,7 @@ library.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.0)))
-    (home-page "http://www.gnu.org/software/mcron/")
+    (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
      "GNU Mcron is a complete replacement for Vixie cron.  It is used to run
@@ -1506,7 +1506,7 @@ is no support for parsing block and inline level HTML.")
            (install-file "README.md" doc)
            #t))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://github.com/TaylanUB/scheme-bytestructures")
     (synopsis "Structured access to bytevector contents for Guile")
     (description
@@ -1689,8 +1689,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "0")
-        (commit "969514aa7224217bc3c1a4c5312a9469ac5f13d5"))
+  (let ((revision "1")
+        (commit "96dfb3bdba39a37cf6aefb18e335118a6115f963"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1700,23 +1700,20 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "079l8y6pjkmahb4k6dfqh3hk34pg540rrl29aixyvv86w9bdfjil"))
+                  "0v73251kmh1vs7gp3jh4pk4rikl4d8illwi0gnhwa55ij1mn9apl"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))
-
-         ;; Test suite is not parallel-safe: the tests open same-named repos.
-         #:parallel-tests? #f))
+                        (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,guile-2.0)
+       `(("guile" ,guile-2.2)
          ("libgit2" ,libgit2)))
       (propagated-inputs
        `(("guile-bytestructures" ,guile-bytestructures)))

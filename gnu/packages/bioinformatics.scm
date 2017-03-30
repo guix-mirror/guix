@@ -1454,7 +1454,7 @@ multiple sequence alignments.")
                       (getenv "PYTHONPATH")
                       ":" (getcwd) "/build/"
                       (car (scandir "build"
-                                    (compose not (cut string-prefix? "." <>))))))
+                                    (negate (cut string-prefix? "." <>))))))
              ;; Step out of source dir so python does not import from CWD.
              (with-directory-excursion "tests"
                (setenv "HOME" "/tmp")

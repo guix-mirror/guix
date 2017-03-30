@@ -938,7 +938,7 @@ documents.")
     (description
      "Includes guile-clutter, guile-gnome-gstreamer,
 guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
-    (home-page "http://www.gnu.org/software/guile-gnome/")
+    (home-page "https://www.gnu.org/software/guile-gnome/")
     (license license:gpl2+)))
 
 ;;;

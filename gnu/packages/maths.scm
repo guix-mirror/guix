@@ -120,7 +120,7 @@ rules, Aris also supports references to older proofs.  Its use of standard
 logical symbols and its natural deduction interface make it easy to use for
 beginners.")
     (license license:gpl3+)
-    (home-page "http://www.gnu.org/software/aris/")))
+    (home-page "https://www.gnu.org/software/aris/")))
 
 (define-public c-graph
   (package
@@ -143,7 +143,7 @@ theory in visualizing the convolution process.  Rather than forcing the
 student to write code, the program offers an intuitive interface with
 interactive dialogs to guide them.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/c-graph/")))
+   (home-page "https://www.gnu.org/software/c-graph/")))
 
 (define-public coda
   (package
@@ -205,7 +205,7 @@ prefixes (micro-, kilo-, etc.).  It can also handle nonlinear
 conversions such as Fahrenheit to Celsius.  Its interpreter is powerful
 enough to be used effectively as a scientific calculator.")
    (license license:gpl3+)
-   (home-page "http://www.gnu.org/software/units/")))
+   (home-page "https://www.gnu.org/software/units/")))
 
 (define-public double-conversion
   (package
@@ -254,7 +254,7 @@ searched using a simple command-line tool, choosing from three databases:
 universal constants, atomic numbers, and constants related to
 semiconductors.")
     (license license:gpl3+)
-    (home-page "http://www.gnu.org/software/dionysus/")))
+    (home-page "https://www.gnu.org/software/dionysus/")))
 
 (define-public gsl
   (package
@@ -2006,7 +2006,7 @@ processor cores.")
        ("popt" ,popt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/gsegrafix/")
+    (home-page "https://www.gnu.org/software/gsegrafix/")
     (synopsis "GNOME application to create scientific and engineering plots")
     (description  "GSEGrafix is an application which produces high-quality graphical
 plots for science and engineering.  Plots are specified via simple ASCII
@@ -2819,7 +2819,7 @@ patterns and allows you to zoom in and out of them infinitely in a fluid,
 continuous manner.  It also includes tutorials that help to explain how fractals
 are built.  It can generate many different fractal types such as the Mandelbrot
 set.")
-    (home-page "http://www.gnu.org/software/xaos/")
+    (home-page "https://www.gnu.org/software/xaos/")
     (license license:gpl2+)))
 
 (define-public hypre
@@ -3101,6 +3101,6 @@ Longest Commons Subsequence of a set of strings.")
     (description "GNU JACAL is an interactive symbolic mathematics program based on
 Scheme.  It manipulate and simplify a range of mathematical expressions such
 as equations, scalars, vectors, and matrices.")
-    (home-page "http://www.gnu.org/software/jacal")
+    (home-page "https://www.gnu.org/software/jacal/")
     (license license:gpl3+)))
 

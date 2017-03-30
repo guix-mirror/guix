@@ -440,7 +440,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ;; etc.)  Failing to do that leads to misdetections of
             ;; declarations by 'gcc/configure', and eventually to
             ;; duplicate declarations as reported in
-            ;; <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59217>.
+            ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59217>.
             ("gmp-native" ,gmp)
             ("mpfr-native" ,mpfr)
             ("mpc-native" ,mpc)

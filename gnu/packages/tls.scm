@@ -63,7 +63,7 @@
         "00jsix5hny0g768zv4hk78dib7w0qmk5fbizf4jj37r51nd4s6k8"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/libtasn1/")
+    (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
      "GNU libtasn1 is a library implementing the ASN.1 notation.  It is used
@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.1")
+    (version "2.5.2")
     (source
      (origin
       (method url-fetch)
@@ -440,7 +440,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "1kc709scgd76vk7fld4jnb4wb5lxdv1cj8zsgyjb33xp4jlf06pp"))))
+        "10hw434azw0gvfkmfm46r85r7my1c6592rg9jsna914jh1q7vyhg"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
@@ -762,7 +762,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -772,7 +772,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "03bzbfidigljva6xj49k38q3kwlbj75lrky4a0ainylzsfg5bhy1"))))
+         "065hn5zibzflivabdh9p41dknda7wicl2zhc936dmakqfjprip8p"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)))

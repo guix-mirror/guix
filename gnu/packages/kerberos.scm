@@ -124,7 +124,7 @@ cryptography.")
        ;; #endif
        ("libgcrypt" ,libgcrypt-1.5)
        ("libtasn1" ,libtasn1)))
-    (home-page "http://www.gnu.org/software/shishi/")
+    (home-page "https://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
     (description
      "GNU Shishi is a free implementation of the Kerberos 5 network security

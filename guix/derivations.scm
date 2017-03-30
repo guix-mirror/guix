@@ -293,7 +293,14 @@ substituter many times."
     ;; to ask the substituter for just as much as needed, instead of asking it
     ;; for the whole world, which can be significantly faster when substitute
     ;; info is not already in cache.
-    (append-map derivation-input-output-paths
+    ;; Also, skip derivations marked as non-substitutable.
+    (append-map (lambda (input)
+                  (let ((drv (call-with-input-file
+                                 (derivation-input-path input)
+                               read-derivation)))
+                    (if (substitutable-derivation? drv)
+                        (derivation-input-output-paths input)
+                        '())))
                 (derivation-prerequisites drv valid-input?)))
 
   (let* ((paths (delete-duplicates
@@ -303,6 +310,8 @@ substituter many times."
                                         (((names . paths) ...)
                                          paths))))
                             (cond ((eqv? mode (build-mode check))
+                                   (cons (dependencies drv) result))
+                                  ((not (substitutable-derivation? drv))
                                    (cons (dependencies drv) result))
                                   ((every valid? self)
                                    result)

@@ -26,6 +26,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -266,7 +267,7 @@ scriptable with Guile.")
         "0a9bsl2nbnb138lq0h14jfc5xvz7hpb2bcsj4mjn6g1hcsl4ik0y"))))
     (arguments `(#:tests? #f)) ;; No check target.
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/gnushogi/")
+    (home-page "https://www.gnu.org/software/gnushogi/")
     (synopsis "The game of Shogi (Japanese chess)")
     (description  "GNU Shogi is a program that plays the game Shogi (Japanese
 Chess).  It is similar to standard chess but this variant is far more complicated.")
@@ -332,7 +333,7 @@ Chess).  It is similar to standard chess but this variant is far more complicate
     (inputs
      `(("libxaw" ,libxaw)
        ("libxt" ,libxt)))
-    (home-page "http://www.gnu.org/software/gnushogi/")
+    (home-page "https://www.gnu.org/software/gnushogi/")
     (synopsis "User interface for gnushogi")
     (description  "A graphical user interface for the package @code{gnushogi}.")
     ;; Contains a copy of GPLv3 but the licence notices simply
@@ -467,17 +468,15 @@ fight Morgoth, the Lord of Darkness.")
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
-     '(#:tests? #f                      ;no check target
+     '(#:tests? #f                      ; no check target
        #:phases
-       (alist-delete
-        'configure
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (zero? (system* "make" "install"
-                           (string-append "PREFIX="
-                                          (assoc-ref outputs "out")))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (zero? (system* "make" "install"
+                            (string-append "PREFIX="
+                                           (assoc-ref outputs "out")))))))))
     (home-page "http://pingus.seul.org/welcome.html")
     (synopsis "Lemmings clone")
     (description
@@ -502,7 +501,7 @@ level's exit.  The game is presented in a 2D side view.")
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/talkfilters")
+    (home-page "https://www.gnu.org/software/talkfilters/")
     (synopsis "Convert English text to humorous dialects")
     (description "The GNU Talk Filters are programs that convert English text
 into stereotyped or otherwise humorous dialects.  The filters are provided as
@@ -524,16 +523,16 @@ a C library, so they can easily be integrated into other programs.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; This old `configure' script doesn't support
-                        ;; variables passed as arguments.
-                        (let ((out (assoc-ref outputs "out")))
-                          (setenv "CONFIG_SHELL" (which "bash"))
-                          (zero?
-                           (system* "./configure"
-                                    (string-append "--prefix=" out)))))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old ‘configure’ script doesn't support
+             ;; variables passed as arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)))))))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
@@ -556,7 +555,7 @@ asynchronously and at a user-defined speed.")
         (base32
          "1vw2w3jwnmn44d5vsw47f8y70xvxcsz9m5msq9fgqlzjch15qhiw"))))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/chess")
+    (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
@@ -585,7 +584,7 @@ interface or via an external visual interface such as GNU XBoard.")
               ("sdl-gfx" ,sdl-gfx)
               ("fontconfig" ,fontconfig)
               ("check" ,check)))
-    (home-page "http://www.gnu.org/software/freedink/")
+    (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Twisted adventures of young pig farmer Dink Smallwood")
     (description
      "GNU FreeDink is a free and portable re-implementation of the engine
@@ -607,9 +606,12 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
                 "04f1aa8gfz30qkgv7chjz5n1s8v5hbqs01h2113cq1ylm3isd5sp"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-delete 'configure (alist-delete 'check %standard-phases))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (delete 'check))               ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
-    (home-page "http://www.gnu.org/software/freedink/")
+    (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Game data for GNU Freedink")
     (description
      "This package contains the game data of GNU Freedink.")
@@ -663,7 +665,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
     (native-inputs
      `(("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://www.gnu.org/software/xboard")
+    (home-page "https://www.gnu.org/software/xboard/")
     (synopsis "Graphical user interface for chess programs")
     (description "GNU XBoard is a graphical board for all varieties of chess,
 including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
@@ -687,29 +689,29 @@ Portable Game Notation.")
     (arguments
      `(#:tests? #f
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
 
-          (substitute* "Imakefile"
-            (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
-             (string-append "XPMINCLUDE = -I" (assoc-ref %build-inputs "libxpm")
-                            "/include/X11")))
+             (substitute* "Imakefile"
+               (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
+                (string-append "XPMINCLUDE = -I"
+                               (assoc-ref %build-inputs "libxpm")
+                               "/include/X11")))
 
-          (substitute* "Imakefile"
-            (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
+             (substitute* "Imakefile"
+               (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
 
-          ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
+             ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
 
-          (zero? (system* "xmkmf" "-a"
-                          (string-append "-DProjectRoot="
-                                         (assoc-ref outputs "out")))))
-        (alist-replace 'install
-                       (lambda* (#:key outputs #:allow-other-keys)
-                         (and
-                          (zero? (system* "make" "install.man"))
-                          (zero? (system* "make" "install"))))
-                       %standard-phases))))
+             (zero? (system* "xmkmf" "-a"
+                             (string-append "-DProjectRoot="
+                                            (assoc-ref outputs "out"))))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (and
+             (zero? (system* "make" "install.man"))
+             (zero? (system* "make" "install"))))))))
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
               ("libxpm" ,libxpm)))
@@ -750,7 +752,7 @@ destroy, the better your score.  The person with the highest score wins.")
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))
-    (home-page "http://www.gnu.org/software/gtypist/")
+    (home-page "https://www.gnu.org/software/gtypist/")
     (synopsis "Typing tutor")
     (description
      "GNU Typist is a universal typing tutor.  It can be used to learn and
@@ -775,25 +777,25 @@ are primarily in English, however some in other languages are provided.")
                 "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'fix-build-env
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile"
-                       (("INSTALL_DIR = /usr/local/lib")
-                        (string-append "INSTALL_DIR = " out "/lib")))
-                     ;; The Makefile assumes these directories exist.
-                     (mkdir-p (string-append out "/lib"))
-                     (mkdir-p (string-append out "/include"))))
-                 (alist-replace
-                  'unpack
-                  (lambda* (#:key source #:allow-other-keys)
-                    (and (zero? (system* "unzip" source))
-                         ;; The actual source is buried a few directories deep.
-                         (chdir (string-append "irrlicht-" ,version "/source/Irrlicht/"))))
-                  ;; No configure script
-                  (alist-delete 'configure %standard-phases)))
-       #:tests? #f ; no check target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-env
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("INSTALL_DIR = /usr/local/lib")
+                  (string-append "INSTALL_DIR = " out "/lib")))
+               ;; The Makefile assumes these directories exist.
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/include")))))
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (and (zero? (system* "unzip" source))
+                  ;; The actual source is buried a few directories deep.
+                  (chdir (string-append "irrlicht-" ,version
+                                        "/source/Irrlicht/")))))
+         (delete 'configure))           ; no configure script
+       #:tests? #f                      ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
      `(("unzip" ,unzip)))
@@ -978,19 +980,19 @@ in different ways.")
    (arguments
     '(#:tests? #f ; no check target
       #:phases
-      (alist-replace
-       'install
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let* ((out (assoc-ref outputs "out"))
-                (inc (string-append out "/include")))
-           (mkdir-p inc)
-           (for-each
-            (lambda (file)
-              (copy-file file (string-append inc "/" file)))
-            '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
-           (mkdir (string-append out "/lib"))
-           (copy-file "libglkterm.a" (string-append out "/lib/libglkterm.a"))))
-       (alist-delete 'configure %standard-phases))))
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (inc (string-append out "/include"))
+                   (lib (string-append out "/lib")))
+              (for-each
+               (lambda (file)
+                 (install-file file inc))
+               '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
+              (install-file "libglkterm.a" lib))
+            #t))
+        (delete 'configure))))          ; no configure script
    (home-page "http://www.eblong.com/zarf/glk/")
    (synopsis "Curses Implementation of the Glk API")
    (description
@@ -998,7 +1000,7 @@ in different ways.")
 primarily designed for interactive fiction, but it should be suitable for many
 interactive text utilities, particularly those based on a command line.
 This is an implementation of the Glk library which runs in a terminal window,
-using the curses.h library for screen control.")
+using the @code{curses.h} library for screen control.")
    (license (license:fsf-free "file://README"))))
 
 (define-public glulxe
@@ -1016,27 +1018,28 @@ using the curses.h library for screen control.")
    (build-system gnu-build-system)
    (inputs `(("glk" ,glkterm)))
    (arguments
-    '(#:tests? #f ; no check target
+    '(#:tests? #f                       ; no check target
       #:make-flags
       (let* ((glk (assoc-ref %build-inputs "glk")))
         (list (string-append "GLKINCLUDEDIR=" glk "/include")
               (string-append "GLKLIBDIR=" glk "/lib")
               (string-append "GLKMAKEFILE=" "Make.glkterm")))
       #:phases
-      (alist-replace
-       'install
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-           (mkdir-p bin)
-           (copy-file "glulxe" (string-append bin "/glulxe"))))
-       (alist-delete 'configure %standard-phases))))
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (install-file "glulxe" bin))
+            #t))
+        (delete 'configure))))          ; no configure script
    (home-page "http://www.eblong.com/zarf/glulx/")
    (synopsis "Interpreter for Glulx VM")
    (description
     "Glulx is a 32-bit portable virtual machine intended for writing and
 playing interactive fiction.  It was designed by Andrew Plotkin to relieve
 some of the restrictions in the venerable Z-machine format.  This is the
-reference interpreter, using Glk API.")
+reference interpreter, using the Glk API.")
    (license license:expat)))
 
 (define-public fizmo
@@ -1090,18 +1093,21 @@ either by Infocom or created using the Inform compiler.")
         (base32 "1xar0wagcz50clwwkvjg4zq9m1sjqw47vw3xx44pisdj94g21m5y"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:phases
-       (alist-replace
-        'configure
-        (lambda _
-          (substitute* "qb/qb.libs.sh"
-            (("/bin/true") (which "true")))
-          (zero? (system*
-                  "./configure"
-                  (string-append "--prefix=" %output)
-                  (string-append "--global-config-dir=" %output "/etc"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (substitute* "qb/qb.libs.sh"
+                 (("/bin/true") (which "true")))
+               ;; The configure script does not yet accept the extra arguments
+               ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
+               (zero? (system*
+                       "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--global-config-dir=" etc)))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
@@ -1152,7 +1158,7 @@ it is also possible to play GNU Go with 3rd party graphical interfaces or
 even in Emacs.  It supports the standard game storage format (SGF, Smart
 Game Format) and inter-process communication format (GMP, Go Modem
 Protocol).")
-    (home-page "http://www.gnu.org/software/gnugo/")
+    (home-page "https://www.gnu.org/software/gnugo/")
     (license license:gpl3+)))
 
 (define-public extremetuxracer
@@ -2652,7 +2658,6 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                           (doc     (string-append out
                                                   "/share/doc/grue-hunter")))
                      (begin
-                       (mkdir out)
                        (copy-file tarball "grue-hunter.tar.gz")
                        (zero? (system* gzip "-d" "grue-hunter.tar.gz"))
                        (zero? (system* tar "xvf"  "grue-hunter.tar"))
@@ -2663,7 +2668,6 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                        (patch-shebang (string-append bin "/grue-hunter")
                                       (list perl))
 
-                       (mkdir-p doc)
                        (install-file "grue-hunter/AGPLv3.txt" doc))))))
     (inputs `(("perl" ,perl)
               ("tar" ,tar)
@@ -3163,23 +3167,21 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "8.3j")
+    (version "9.4c")
+    ;; When updating this package, be sure to update the "hyperrogue-data"
+    ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://www.roguetemple.com/z/hyper/"
-                    name "-83j.zip"))
+                    name (string-join (string-split version #\.) "")
+                    "-src.tgz"))
               (sha256
                (base32
-                "1ag95d84m4j0rqyn9hj7655znixw2j57bpf93nk14nfy02xz1g6p"))
-              (modules '((guix build utils)))
-              ;; Remove .exe and .dll files.
-              (snippet
-               '(for-each delete-file (find-files "." "\\.(exe|dll)$")))))
+                "1ri5fllnhqjm3dlnl1xbb9mlv79iigc940vbvcnk0v5k6p58pavq"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
-       #:make-flags '("-Csrc")
+     `(#:tests? #f ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3190,21 +3192,24 @@ throwing people around in pseudo-randomly generated buildings.")
          ;; Fix font and music paths.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (dejavu-dir (string-append
-                                (assoc-ref inputs "font-dejavu")
-                                "/share/fonts/truetype"))
-                   (dejavu-font "DejaVuSans-Bold.ttf")
-                   (music-file "hyperrogue-music.txt"))
-               (with-directory-excursion "src"
-                 (substitute* "graph.cpp"
-                   ((dejavu-font)
-                    (string-append dejavu-dir "/" dejavu-font))
-                   (((string-append "\\./" music-file))
-                    (string-append out "/share/hyperrogue/" music-file)))
-                 (substitute* music-file
-                   (("\\*/")
-                    (string-append out "/share/hyperrogue/")))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (share-dir (string-append out "/share/hyperrogue"))
+                    (dejavu-dir (string-append
+                                 (assoc-ref inputs "font-dejavu")
+                                 "/share/fonts/truetype"))
+                    (dejavu-font "DejaVuSans-Bold.ttf")
+                    (music-file "hyperrogue-music.txt"))
+               (substitute* "graph.cpp"
+                 ((dejavu-font)
+                  (string-append dejavu-dir "/" dejavu-font)))
+               (substitute* "sound.cpp"
+                 (((string-append "\\./" music-file))
+                  (string-append share-dir "/" music-file))
+                 (("sounds/")
+                  (string-append share-dir "/sounds/")))
+               (substitute* music-file
+                 (("\\*/")
+                  (string-append share-dir "/sounds/"))))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3212,14 +3217,43 @@ throwing people around in pseudo-randomly generated buildings.")
                     (bin (string-append out "/bin"))
                     (share-dir (string-append out "/share/hyperrogue")))
                (mkdir-p bin)
-               (copy-file "src/hyper" (string-append bin "/hyperrogue"))
-               (mkdir-p share-dir)
-               (copy-file "src/hyperrogue-music.txt"
-                          (string-append share-dir "/hyperrogue-music.txt"))
-               (for-each (lambda (file)
-                           (copy-file file (string-append share-dir "/" file)))
-                         (find-files "." "\\.ogg$")))
-             #t)))))
+               (copy-file "hyper" (string-append bin "/hyperrogue"))
+               (install-file "hyperrogue-music.txt" share-dir))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((data (assoc-ref inputs "hyperrogue-data"))
+                    (out (assoc-ref outputs "out"))
+                    (sounds (string-append out "/share/hyperrogue/sounds"))
+                    (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+               (and
+                ;; Extract media license information into sounds directory.
+                (zero?
+                 (system* unzip "-j" data
+                          (string-append
+                           "hyperrogue"
+                           (string-join (string-split ,version #\.) "")
+                           "-win/sounds/credits.txt") "-d" sounds))
+                ;; Extract sounds and music into sounds directory.
+                (zero?
+                 (system* "unzip" "-j" data
+                          (string-append
+                           "hyperrogue"
+                           (string-join (string-split ,version #\.) "")
+                           "-win/*.ogg") "-d" sounds)))))))))
+    (native-inputs
+     `(("hyperrogue-data"
+        ,(origin
+           (method url-fetch)
+           (uri
+            (string-append
+             "http://www.roguetemple.com/z/hyper/" name
+             (string-join (string-split version #\.) "")
+             "-win.zip"))
+           (sha256
+            (base32
+             "1cyyrsnrixygg3zyz97hpsm6jzwbhydiwk3kl0lm7qjnw2nzkhhh"))))
+       ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
        ("glew" ,glew)
@@ -3236,14 +3270,17 @@ monsters -- rogue-like but for the fact that it is played on the hyperbolic
 plane and not in euclidean space.
 
 In HyperRogue, the player can move through different parts of the world, which
-are home to particular creatures and may be subject to own rules of \"physics\".
+are home to particular creatures and may be subject to their own rules of
+\"physics\".
 
-While it can use ASCII characters to display the world the classical rogue
-symbols, the game needs graphics to render the non-euclidean world.")
-    (license (list license:bsd-3         ; src/glew.c, src/mtrand.*
-                   license:cc-by-sa3.0   ; *.ogg
-                   license:public-domain ; src/direntx.*
-                   license:zlib          ; src/savepng.*
+While the game can use ASCII characters to display the the classical rogue
+symbols, it still needs graphics to render the non-euclidean world.")
+    (license (list license:bsd-3         ; glew.c, mtrand.*
+                   license:cc-by-sa3.0   ; music
+                   license:cc-by-sa4.0   ; sounds
+                   license:cc0
+                   license:public-domain ; direntx.*, some sounds
+                   license:zlib          ; savepng.*
                    license:gpl2+))))     ; remaining files
 
 (define-public kobodeluxe

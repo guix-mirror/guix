@@ -89,7 +89,7 @@
      `(("glib" ,glib "bin")             ;for glib-genmarshal
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/pspp/")
+    (home-page "https://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
      "GNU PSPP is a statistical analysis program.  It can perform

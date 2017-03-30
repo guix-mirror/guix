@@ -52,7 +52,7 @@
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/gxmessage/")
+    (home-page "https://www.gnu.org/software/gxmessage/")
     (synopsis "Open popup message window with buttons for return")
     (description "GNU gxmessage is a program that pops up dialog windows, which display
 a message to the user and waits for their action.  The program then exits

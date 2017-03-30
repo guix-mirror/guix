@@ -108,7 +108,7 @@ systems in a FITS image header.")
        ("libjpeg" ,libjpeg-8)
        ("wcslib" ,wcslib)))
     (build-system gnu-build-system)
-    (home-page "https://www.gnu.org/software/gnuastro")
+    (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomical data manipulation programs")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
 programs for the manipulation and analysis of astronomical data.")

@@ -993,7 +993,7 @@ COREUTILS-FINAL vs. COREUTILS, etc."
      "This package provides a complete GCC tool chain for C/C++ development to
 be installed in user profiles.  This includes GCC, as well as libc (headers
 and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
-    (home-page "http://gcc.gnu.org/")
+    (home-page "https://gcc.gnu.org/")
     (outputs '("out" "debug"))
 
     ;; The main raison d'être of this "meta-package" is (1) to conveniently

@@ -117,7 +117,7 @@
        ("readline" ,readline)
        ("texinfo" ,texinfo)
        ("texlive" ,texlive)))
-    (home-page "http://www.gnu.org/software/gcl")
+    (home-page "https://www.gnu.org/software/gcl/")
     (synopsis "A Common Lisp implementation")
     (description "GCL is an implementation of the Common Lisp language.  It
 features the ability to compile to native object code and to load native
@@ -414,6 +414,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
        ("subversion" ,subversion)))
     (arguments
      `(#:tests? #f                      ;no 'check' target
+       #:modules ((srfi srfi-26)
+                  (guix build utils)
+                  (guix build gnu-build-system))
        #:phases
        (alist-replace
         'unpack
@@ -465,18 +468,22 @@ statistical profiler, a code coverage tool, and many other extensions.")
                         ;; "guix package --search="
                         (_              "UNSUPPORTED")))
                     (heap (string-append kernel ".image")))
-               (mkdir-p libdir)
+               (install-file kernel libdir)
+               (install-file heap libdir)
+
+               (let ((dirs '("lib" "library" "examples" "contrib"
+                             "tools" "objc-bridge")))
+                 (for-each copy-recursively
+                           dirs
+                           (map (cut string-append libdir <>) dirs)))
+
                (mkdir-p bindir)
-               (copy-file kernel (string-append libdir kernel))
-               (copy-file heap (string-append libdir heap))
                (with-output-to-file wrapper
                  (lambda ()
                    (display
                     (string-append
                      "#!" bash "/bin/sh\n"
-                     "if [ -z \"$CCL_DEFAULT_DIRECTORY\" ]; then\n"
-                     "    CCL_DEFAULT_DIRECTORY=" libdir "\n"
-                     "fi\n"
+                     "CCL_DEFAULT_DIRECTORY=" libdir "\n"
                      "export CCL_DEFAULT_DIRECTORY\n"
                      "exec " libdir kernel "\n"))))
                (chmod wrapper #o755)))

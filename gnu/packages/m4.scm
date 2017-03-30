@@ -60,4 +60,4 @@ Autoconf.  It is used as a macro processor, which means it processes text,
 expanding macros as it encounters them.  It also has some built-in functions,
 for example to run shell commands or to do arithmetic.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/m4/")))
+   (home-page "https://www.gnu.org/software/m4/")))
