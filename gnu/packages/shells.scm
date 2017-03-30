@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,15 +49,20 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.9")
+    (version "0.5.9.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
-                           name "-" version ".tar.gz"))
+       ;; The canonical source is offline, so we fetch the source code
+       ;; from the Git repository. See:
+       ;; https://www.mail-archive.com/dash@vger.kernel.org/msg01323.html
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.kernel.org/pub/scm/utils/dash/dash.git/")
+              (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "17328wd9n5krr5wd37smrk0y7fdf8aa3hmhm02br5mqpq0a3nycj"))
+         "0p01vx7rbyf5hyyaff7h8cbhq81bm5fmq1m933484lncl9rafcai"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -67,10 +73,17 @@
               "a command interpreter based on the original Bourne shell"))
            #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs
      `(("libedit" ,libedit)))
     (arguments
-     `(#:configure-flags '("--with-libedit")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))
+       #:configure-flags '("--with-libedit")))
     (home-page "http://gondor.apana.org.au/~herbert/dash")
     (synopsis "POSIX-compliant shell optimised for size")
     (description
