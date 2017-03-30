@@ -5210,6 +5210,13 @@ against local background noises.")
                (("#include \"(bam|sam|kstring).h\"" _ header)
                 (string-append "#include <samtools/" header ".h>")))
              #t))
+         (add-after 'unpack 'remove-duplicate-typedef
+           (lambda _
+             ;; This typedef conflicts with the typedef in
+             ;; glibc-2.25/include/bits/types.h
+             (substitute* "gclib/GThreads.h"
+               (("typedef long long __intmax_t;") ""))
+             #t))
          (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
