@@ -335,7 +335,7 @@ into mutt, so it is not a fork but a large set of feature patches.")))
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.22")
+    (version "2.6.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -343,7 +343,7 @@ into mutt, so it is not a fork but a large set of feature patches.")))
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0fjmsphvz8srsmcdl4v13p2z4jp2migaybyny444hal4snbr0py2"))))
+                "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
