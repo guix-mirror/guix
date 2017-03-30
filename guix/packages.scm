@@ -576,7 +576,12 @@ specifies modules in scope when evaluating SNIPPET."
                                                     #:fail-on-error? #t)))))
                         (zero? (apply system*
                                       (string-append #+tar "/bin/tar")
-                                      "cvfa" #$output
+                                      "cvf" #$output
+                                      ;; The bootstrap xz does not support
+                                      ;; threaded compression (introduced in
+                                      ;; 5.2.0), but it ignores the extra flag.
+                                      (string-append "--use-compress-program="
+                                                     #+xz "/bin/xz --threads=0")
                                       ;; avoid non-determinism in the archive
                                       "--mtime=@0"
                                       "--owner=root:0"
