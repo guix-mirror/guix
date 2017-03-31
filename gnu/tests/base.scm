@@ -19,8 +19,6 @@
 (define-module (gnu tests base)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
-  #:use-module (gnu system file-systems)
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system vm)
@@ -44,27 +42,7 @@
             %test-nss-mdns))
 
 (define %simple-os
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Berlin")
-    (locale "en_US.UTF-8")
-
-    (bootloader (grub-configuration (device "/dev/sdX")))
-    (file-systems (cons (file-system
-                          (device "my-root")
-                          (title 'label)
-                          (mount-point "/")
-                          (type "ext4"))
-                        %base-file-systems))
-    (firmware '())
-
-    (users (cons (user-account
-                  (name "alice")
-                  (comment "Bob's sister")
-                  (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
-                 %base-user-accounts))))
+  (simple-operating-system))
 
 
 (define* (run-basic-test os command #:optional (name "basic")
@@ -420,10 +398,8 @@ functionality tests.")
                      #:user "alice"))
         (job3 #~(job next-second-from             ;to test $PATH
                      "touch witness-touch")))
-    (operating-system
-      (inherit %simple-os)
-      (services (cons (mcron-service (list job1 job2 job3))
-                      (operating-system-user-services %simple-os))))))
+    (simple-operating-system
+     (mcron-service (list job1 job2 job3)))))
 
 (define (run-mcron-test name)
   (mlet* %store-monad ((os ->   (marionette-operating-system

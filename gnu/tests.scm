@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,11 @@
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (gnu system)
+  #:use-module (gnu system grub)
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system shadow)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
   #:use-module ((gnu packages) #:select (scheme-modules))
   #:use-module (srfi srfi-1)
@@ -36,6 +40,8 @@
             marionette-service-type
             marionette-operating-system
             define-os-with-source
+
+            simple-operating-system
 
             system-test
             system-test?
@@ -187,6 +193,41 @@ the system under test."
          '(begin
             (use-modules modules ...)
             (operating-system fields ...)))))))
+
+
+;;;
+;;; Simple operating systems.
+;;;
+
+(define %simple-os
+  (operating-system
+    (host-name "komputilo")
+    (timezone "Europe/Berlin")
+    (locale "en_US.UTF-8")
+
+    (bootloader (grub-configuration (device "/dev/sdX")))
+    (file-systems (cons (file-system
+                          (device "my-root")
+                          (title 'label)
+                          (mount-point "/")
+                          (type "ext4"))
+                        %base-file-systems))
+    (firmware '())
+
+    (users (cons (user-account
+                  (name "alice")
+                  (comment "Bob's sister")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video"))
+                  (home-directory "/home/alice"))
+                 %base-user-accounts))))
+
+(define-syntax-rule (simple-operating-system user-services ...)
+  "Return an operating system that includes USER-SERVICES in addition to
+%BASE-SERVICES."
+  (operating-system (inherit %simple-os)
+                    (services (cons* user-services ... %base-services))))
+
 
 
 ;;;

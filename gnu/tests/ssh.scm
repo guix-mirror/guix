@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,12 +20,8 @@
 (define-module (gnu tests ssh)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services ssh)
   #:use-module (gnu services networking)
   #:use-module (gnu packages ssh)
@@ -35,26 +31,6 @@
   #:export (%test-openssh
             %test-dropbear))
 
-(define %base-os
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Berlin")
-    (locale "en_US.UTF-8")
-
-    (bootloader (grub-configuration (device "/dev/sdX")))
-    (file-systems %base-file-systems)
-    (firmware '())
-    (users %base-user-accounts)
-    (services (cons (dhcp-client-service)
-                    %base-services))))
-
-(define (os-with-service service)
-  "Return a test operating system that runs SERVICE."
-  (operating-system
-    (inherit %base-os)
-    (services (cons service
-                    (operating-system-user-services %base-os)))))
-
 (define* (run-ssh-test name ssh-service pid-file #:key (sftp? #f))
   "Run a test of an OS running SSH-SERVICE, which writes its PID to PID-FILE.
 SSH-SERVICE must be configured to listen on port 22 and to allow for root and
@@ -62,7 +38,9 @@ empty-password logins.
 
 When SFTP? is true, run an SFTP server test."
   (mlet* %store-monad ((os ->   (marionette-operating-system
-                                 (os-with-service ssh-service)
+                                 (simple-operating-system
+                                  (dhcp-client-service)
+                                  ssh-service)
                                  #:imported-modules '((gnu services herd)
                                                       (guix combinators))))
                        (command (system-qemu-image/shared-store-script

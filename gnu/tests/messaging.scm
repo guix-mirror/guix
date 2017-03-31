@@ -19,12 +19,8 @@
 (define-module (gnu tests messaging)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services messaging)
   #:use-module (gnu services networking)
   #:use-module (gnu packages messaging)
@@ -33,30 +29,11 @@
   #:use-module (guix monads)
   #:export (%test-prosody))
 
-(define %base-os
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Berlin")
-    (locale "en_US.UTF-8")
-
-    (bootloader (grub-configuration (device "/dev/sdX")))
-    (file-systems %base-file-systems)
-    (firmware '())
-    (users %base-user-accounts)
-    (services (cons (dhcp-client-service)
-                    %base-services))))
-
-(define (os-with-service service)
-  "Return a test operating system that runs SERVICE."
-  (operating-system
-    (inherit %base-os)
-    (services (cons service
-                    (operating-system-user-services %base-os)))))
-
 (define (run-xmpp-test name xmpp-service pid-file create-account)
   "Run a test of an OS running XMPP-SERVICE, which writes its PID to PID-FILE."
   (mlet* %store-monad ((os -> (marionette-operating-system
-                               (os-with-service xmpp-service)
+                               (simple-operating-system (dhcp-client-service)
+                                                        xmpp-service)
                                #:imported-modules '((gnu services herd))))
                        (command (system-qemu-image/shared-store-script
                                  os #:graphic? #f))

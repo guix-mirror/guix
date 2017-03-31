@@ -24,7 +24,6 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services web)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
@@ -55,23 +54,14 @@
 
 (define %nginx-os
   ;; Operating system under test.
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Berlin")
-    (locale "en_US.utf8")
-
-    (bootloader (grub-configuration (device "/dev/sdX")))
-    (file-systems %base-file-systems)
-    (firmware '())
-    (users %base-user-accounts)
-    (services (cons* (dhcp-client-service)
-                     (service nginx-service-type
-                              (nginx-configuration
-                               (log-directory "/var/log/nginx")
-                               (server-blocks %nginx-servers)))
-                     (simple-service 'make-http-root activation-service-type
-                                     %make-http-root)
-                     %base-services))))
+  (simple-operating-system
+   (dhcp-client-service)
+   (service nginx-service-type
+            (nginx-configuration
+             (log-directory "/var/log/nginx")
+             (server-blocks %nginx-servers)))
+   (simple-service 'make-http-root activation-service-type
+                   %make-http-root)))
 
 (define* (run-nginx-test #:optional (http-port 8042))
   "Run tests in %NGINX-OS, which has nginx running and listening on

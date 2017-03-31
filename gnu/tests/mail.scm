@@ -19,11 +19,8 @@
 (define-module (gnu tests mail)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system grub)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services mail)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
@@ -32,23 +29,15 @@
   #:export (%test-opensmtpd))
 
 (define %opensmtpd-os
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Berlin")
-    (locale "en_US.UTF-8")
-    (bootloader (grub-configuration (device #f)))
-    (file-systems %base-file-systems)
-    (firmware '())
-    (services (cons*
-               (dhcp-client-service)
-               (service opensmtpd-service-type
-                        (opensmtpd-configuration
-                         (config-file
-                          (plain-file "smtpd.conf" "
+  (simple-operating-system
+   (dhcp-client-service)
+   (service opensmtpd-service-type
+            (opensmtpd-configuration
+             (config-file
+              (plain-file "smtpd.conf" "
 listen on 0.0.0.0
 accept from any for local deliver to mbox
-"))))
-               %base-services))))
+"))))))
 
 (define (run-opensmtpd-test)
   "Return a test of an OS running OpenSMTPD service."

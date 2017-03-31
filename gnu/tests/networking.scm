@@ -19,12 +19,8 @@
 (define-module (gnu tests networking)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
-  #:use-module (gnu system file-systems)
-  #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -34,35 +30,27 @@
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
-  (operating-system
-    (host-name "komputilo")
-    (timezone "Europe/Brussels")
-    (locale "en_US.utf8")
-
-    (bootloader (grub-configuration (device "/dev/sdX")))
-    (file-systems %base-file-systems)
-    (firmware '())
-    (users %base-user-accounts)
-    (services (cons* (dhcp-client-service)
-                     (service inetd-service-type
-                              (inetd-configuration
-                               (entries (list
-                                         (inetd-entry
-                                          (name "echo")
-                                          (socket-type 'stream)
-                                          (protocol "tcp")
-                                          (wait? #f)
-                                          (user "root"))
-                                         (inetd-entry
-                                          (name "dict")
-                                          (socket-type 'stream)
-                                          (protocol "tcp")
-                                          (wait? #f)
-                                          (user "root")
-                                          (program (file-append bash
-                                                                "/bin/bash"))
-                                          (arguments
-                                           (list "bash" (plain-file "my-dict.sh" "\
+  (simple-operating-system
+   (dhcp-client-service)
+   (service inetd-service-type
+            (inetd-configuration
+             (entries (list
+                       (inetd-entry
+                        (name "echo")
+                        (socket-type 'stream)
+                        (protocol "tcp")
+                        (wait? #f)
+                        (user "root"))
+                       (inetd-entry
+                        (name "dict")
+                        (socket-type 'stream)
+                        (protocol "tcp")
+                        (wait? #f)
+                        (user "root")
+                        (program (file-append bash
+                                              "/bin/bash"))
+                        (arguments
+                         (list "bash" (plain-file "my-dict.sh" "\
 while read line
 do
     if [[ $line =~ ^DEFINE\\ (.*)$ ]]
@@ -81,8 +69,7 @@ do
     else
         echo ERROR
     fi
-done" ))))))))
-                     %base-services))))
+done" ))))))))))
 
 (define* (run-inetd-test)
   "Run tests in %INETD-OS, where the inetd service provides an echo service on
