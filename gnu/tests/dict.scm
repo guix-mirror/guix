@@ -1,0 +1,141 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (gnu tests dict)
+  #:use-module (gnu tests)
+  #:use-module (gnu system)
+  #:use-module (gnu system nss)
+  #:use-module (gnu system vm)
+  #:use-module (gnu services)
+  #:use-module (gnu services dict)
+  #:use-module (gnu services networking)
+  #:use-module (gnu packages wordnet)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
+  #:use-module (guix packages)
+  #:use-module (guix modules)
+  #:export (%test-dicod))
+
+(define %dicod-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (service dicod-service-type
+            (dicod-configuration
+             (interfaces '("0.0.0.0"))
+             (handlers (list (dicod-handler
+                              (name "wordnet")
+                              (module "dictorg")
+                              (options
+                               ;; XXX: Not useful since WordNet does not
+                               ;; provide DICT-formatted data?
+                               (list #~(string-append "dbdir=" #$wordnet))))))
+             (databases (list (dicod-database
+                               (name "wordnet")
+                               (complex? #t)
+                               (handler "wordnet")
+                               (options '("database=wn")))
+                              %dicod-database:gcide))))))
+
+(define* (run-dicod-test)
+  "Run tests of 'dicod-service-type'."
+  (mlet* %store-monad ((os -> (marionette-operating-system
+                               %dicod-os
+                               #:imported-modules
+                               (source-module-closure '((gnu services herd)))))
+                       (command (system-qemu-image/shared-store-script
+                                 os #:graphic? #f)))
+    (define test
+      (with-imported-modules '((gnu build marionette))
+        #~(begin
+            (use-modules (ice-9 rdelim)
+                         (ice-9 regex)
+                         (srfi srfi-64)
+                         (gnu build marionette))
+            (define marionette
+              ;; Forward the guest's DICT port to local port 8000.
+              (make-marionette (list #$command "-net"
+                                     "user,hostfwd=tcp::8000-:2628")))
+
+            (define %dico-socket
+              (socket PF_INET SOCK_STREAM 0))
+
+            (mkdir #$output)
+            (chdir #$output)
+
+            (test-begin "dicod")
+
+            ;; Wait for the service to be started.
+            (test-eq "service is running"
+              'running!
+              (marionette-eval
+               '(begin
+                  (use-modules (gnu services herd))
+                  (start-service 'dicod)
+                  'running!)
+               marionette))
+
+            ;; Wait until dicod is actually listening.
+            ;; TODO: Use a PID file instead.
+            (test-assert "connect inside"
+              (marionette-eval
+               '(begin
+                  (use-modules (ice-9 rdelim))
+                  (let ((sock (socket PF_INET SOCK_STREAM 0)))
+                    (let loop ()
+                      (pk 'try)
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock AF_INET INADDR_LOOPBACK 2628))
+                        (lambda args
+                          (pk 'connection-error args)
+                          (sleep 1)
+                          (loop))))
+                    (read-line sock 'concat)))
+               marionette))
+
+            (test-assert "connect"
+              (let ((addr (make-socket-address AF_INET INADDR_LOOPBACK 8000)))
+                (connect %dico-socket addr)
+                (read-line %dico-socket 'concat)))
+
+            (test-equal "CLIENT"
+              "250 ok\r\n"
+              (begin
+                (display "CLIENT \"GNU Guile\"\r\n" %dico-socket)
+                (read-line %dico-socket 'concat)))
+
+            (test-assert "DEFINE"
+              (begin
+                (display "DEFINE ! hello\r\n" %dico-socket)
+                (display "QUIT\r\n" %dico-socket)
+                (let ((result (read-string %dico-socket)))
+                  (and (string-contains result "gcide")
+                       (string-contains result "hello")
+                       result))))
+
+            (test-end)
+            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+    (gexp->derivation "dicod" test)))
+
+(define %test-dicod
+  (system-test
+   (name "dicod")
+   (description "Connect to the dicod DICT server.")
+   (value (run-dicod-test))))
