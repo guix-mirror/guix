@@ -3426,7 +3426,7 @@ Both phases are executed after the @code{install} phase.
 @end defvr
 
 @defvr {Scheme Variable} ocaml-build-system
-This variable is exported by @code{(guix build-sytem ocaml)}.  It implements
+This variable is exported by @code{(guix build-system ocaml)}.  It implements
 a build procedure for @uref{https://ocaml.org, OCaml} packages, which consists
 of choosing the correct set of commands to run for each package.  OCaml
 packages can expect many different commands to be run.  This build system will
@@ -9224,7 +9224,7 @@ The Rottlog package to use.
 The Rottlog configuration file to use (@pxref{Mandatory RC Variables,,,
 rottlog, GNU Rot[t]log Manual}).
 
-@item @code{periodic-rotations} (default: @code{`(("weekly" %default-rotatations))})
+@item @code{periodic-rotations} (default: @code{`(("weekly" %default-rotations))})
 A list of Rottlog period-name/period-config tuples.
 
 For example, taking an example from the Rottlog manual (@pxref{Period
@@ -11129,7 +11129,7 @@ Network interface on which to listen.
 
 @item @code{port} (default: @code{6379})
 Port on which to accept connections on, a value of 0 will disable
-listining on a TCP socket.
+listening on a TCP socket.
 
 @item @code{working-directory} (default: @code{"/var/lib/redis"})
 Directory in which to store the database and related files.
@@ -12519,7 +12519,7 @@ as in this example:
 @end deffn
 
 @deftp {Data Type} opensmtpd-configuration
-Data type regresenting the configuration of opensmtpd.
+Data type representing the configuration of opensmtpd.
 
 @table @asis
 @item @code{package} (default: @var{opensmtpd})
@@ -13473,7 +13473,7 @@ Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{openvpn-server-configuration} parameter} boolean client-to-client?
-When true, clients are alowed to talk to each other inside the VPN.
+When true, clients are allowed to talk to each other inside the VPN.
 
 Defaults to @samp{#f}.
 
@@ -13497,7 +13497,7 @@ Defaults to @samp{100}.
 
 @deftypevr {@code{openvpn-server-configuration} parameter} string status
 The status file.  This file shows a small report on current connection.
-It is trunkated and rewritten every minute.
+It is truncated and rewritten every minute.
 
 Defaults to @samp{"/var/run/openvpn/status"}.
 
@@ -14251,7 +14251,7 @@ Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{tlp-configuration} parameter} maybe-space-separated-string-list runtime-pm-blacklist
-Exclude specified PCI(e) devices adresses from Runtime Power Management.
+Exclude specified PCI(e) device addresses from Runtime Power Management.
 
 Defaults to @samp{disabled}.
 
@@ -14418,7 +14418,7 @@ List of strings or gexps representing the arguments for the database
 
 @defvr {Scheme Variable} %dicod-database:gcide
 A @code{<dicod-database>} object serving the GNU Collaborative International
-Dictonary of English using the @code{gcide} package.
+Dictionary of English using the @code{gcide} package.
 @end defvr
 
 The following is an example @code{dicod-service} configuration.
@@ -14448,7 +14448,7 @@ The @code{(gnu services version-control)} module provides the following services
 @deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
 
 Return a service that runs @command{git daemon}, a simple TCP server to
-expose repositiories over the Git protocol for annoymous access.
+expose repositories over the Git protocol for anonymous access.
 
 The optional @var{config} argument should be a
 @code{<git-daemon-configuration>} object, by default it allows read-only
@@ -15357,7 +15357,7 @@ which may be insufficient for some operations.
 The file name of the qcow2 image.
 @end table
 
-The default @command{run-vm.sh} script that is returned by an invokation of
+The default @command{run-vm.sh} script that is returned by an invocation of
 @command{guix system vm} does not add a @command{-net user} flag by default.
 To get network access from within the vm add the @code{(dhcp-client-service)}
 to your system definition and start the VM using

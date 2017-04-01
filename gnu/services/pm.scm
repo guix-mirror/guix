@@ -327,7 +327,7 @@ blacklisted ones.")
 
   (runtime-pm-blacklist
    (maybe-space-separated-string-list 'disabled)
-   "Exclude specified PCI(e) devices adresses from Runtime Power Management.")
+   "Exclude specified PCI(e) device addresses from Runtime Power Management.")
 
   (runtime-pm-driver-blacklist
    (space-separated-string-list '("radeon" "nouveau"))

@@ -352,7 +352,7 @@ channel to protect against DoS attacks.")
 
    (client-to-client?
     (boolean #f)
-    "When true, clients are alowed to talk to each other inside the VPN.")
+    "When true, clients are allowed to talk to each other inside the VPN.")
 
    (keepalive
     (keepalive '(10 120))
@@ -368,7 +368,7 @@ element is the timeout before considering the other side down.")
    (status
     (string "/var/run/openvpn/status")
     "The status file. This file shows a small report on current connection. It
-is trunkated and rewritten every minute.")
+is truncated and rewritten every minute.")
 
    (client-config-dir
     (openvpn-ccd-list '())
