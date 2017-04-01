@@ -1280,7 +1280,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.838")
+  (version "1.840")
   (source
     (origin
       (method url-fetch)
@@ -1290,7 +1290,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
              ".tar.gz"))
       (sha256
         (base32
-          "0yp5d5zr8dk9g6xdh7ygi5bq63q7nxvhd58dk2i3ki4nb7yv2yh9"))))
+          "1i5jz85z4hpx15lw6ix27pyvrf0ziyh4z33lii4d3wnhz83lg1mp"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
