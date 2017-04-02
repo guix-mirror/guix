@@ -431,7 +431,7 @@ output.")
               ;; so use the latest revision.
               (method svn-fetch)
               (uri (svn-reference
-                    (url "http://github.com/wdas/brdf")
+                    (url "https://github.com/wdas/brdf")
                     (revision (string->number version))))
               (sha256
                (base32
