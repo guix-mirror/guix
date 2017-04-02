@@ -104,6 +104,7 @@
             boot-parameters?
             boot-parameters-label
             boot-parameters-root-device
+            boot-parameters-boot-name
             boot-parameters-store-device
             boot-parameters-store-mount-point
             boot-parameters-kernel
@@ -214,6 +215,7 @@ directly by the user."
   ;; exactly to the device field of the <file-system> object representing the
   ;; OS's root file system, so it might be a device path like "/dev/sda3".
   (root-device      boot-parameters-root-device)
+  (boot-name        boot-parameters-boot-name)
   (store-device     boot-parameters-store-device)
   (store-mount-point boot-parameters-store-mount-point)
   (kernel           boot-parameters-kernel)
@@ -231,6 +233,11 @@ directly by the user."
      (boot-parameters
       (label label)
       (root-device root)
+
+      (boot-name
+       (match (assq 'boot-name rest)
+         ((_ args) args)
+         (#f       'grub))) ; for compatibility reasons.
 
       ;; In the past, we would store the directory name of the kernel instead
       ;; of the absolute file name of its image.  Detect that and correct it.
@@ -869,6 +876,9 @@ kernel arguments for that derivation to <boot-parameters>."
   (mlet* %store-monad
       ((initrd (operating-system-initrd-file os))
        (store -> (operating-system-store-file-system os))
+       (bootloader  -> (bootloader-configuration-bootloader
+                        (operating-system-bootloader os)))
+       (boot-name   -> (bootloader-name bootloader))
        (label -> (kernel->boot-label (operating-system-kernel os))))
     (return (boot-parameters
              (label label)
@@ -879,6 +889,7 @@ kernel arguments for that derivation to <boot-parameters>."
                 (operating-system-kernel-arguments os system.drv root-device)
                 (operating-system-user-kernel-arguments os)))
              (initrd initrd)
+             (boot-name boot-name)
              (store-device (fs->boot-device store))
              (store-mount-point (file-system-mount-point store))))))
 
@@ -904,6 +915,7 @@ being stored into the \"parameters\" file)."
                     (kernel-arguments
                      #$(boot-parameters-kernel-arguments params))
                     (initrd #$(boot-parameters-initrd params))
+                    (boot-name #$(boot-parameters-boot-name params))
                     (store
                      (device #$(boot-parameters-store-device params))
                      (mount-point #$(boot-parameters-store-mount-point params))))
