@@ -1707,6 +1707,11 @@ is not available for Guile 2.0.")
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
+                        ;; Install .go files to "site-ccache", not "ccache".
+                        (substitute* "Makefile.am"
+                          (("/ccache")
+                           "/site-ccache"))
+
                         (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs
        `(("autoconf" ,autoconf)
