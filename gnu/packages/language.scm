@@ -50,7 +50,7 @@ manipulating such numbers.")
 (define-public perl-lingua-en-inflect
   (package
     (name "perl-lingua-en-inflect")
-    (version "1.895")
+    (version "1.901")
     (source
      (origin
        (method url-fetch)
@@ -58,7 +58,7 @@ manipulating such numbers.")
                            "Lingua-EN-Inflect-" version ".tar.gz"))
        (sha256
         (base32
-         "0drzg9a2dkjxgf00n6jg0jzhd8972bh3j4wdnmdxpqi3zmfqhwcy"))))
+         "0mcwlgf6hkh4zm3s1x899f25xj4hyzrc2vssiwfxysqja36yf5ys"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
