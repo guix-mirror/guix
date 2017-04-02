@@ -585,7 +585,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.51")
+    (version "2.19.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -594,7 +594,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b4jvc0fixbnp8x457fzk5wgb4zd03npwwivp60kc27fmv63w5l1"))))
+                "0wjapb3if6qqdmr57z20hidx7czhl023cjimr01i8yf7k41fakh7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
