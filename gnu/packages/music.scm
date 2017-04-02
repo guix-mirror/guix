@@ -1374,17 +1374,15 @@ export.")
      `(#:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'fix-wish-path
-          (lambda _
-            (substitute* "src/s_inter.c"
-              (("  wish ") (string-append "  " (which "wish8.6") " ")))
-            (substitute* "tcl/pd-gui.tcl"
-              (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
-            #t))
-         (add-after
-          'unpack 'autoconf
-          (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+         (add-before 'configure 'fix-wish-path
+           (lambda _
+             (substitute* "src/s_inter.c"
+               (("  wish ") (string-append "  " (which "wish8.6") " ")))
+             (substitute* "tcl/pd-gui.tcl"
+               (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
+             #t))
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
