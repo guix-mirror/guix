@@ -122,7 +122,7 @@ English phrases.")
 (define-public perl-lingua-en-number-isordinal
   (package
     (name "perl-lingua-en-number-isordinal")
-    (version "0.04")
+    (version "0.05")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ English phrases.")
                            "Lingua-EN-Number-IsOrdinal-" version ".tar.gz"))
        (sha256
         (base32
-         "1321fm4pyqcamffd0qsjm1gb07ijqndlb29qkcqf22kaibngfm4i"))))
+         "1mhqjvh2ad30gjab5b3a6mbr4aysyrscp4wp42yy5x6001a6km98"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-try-tiny" ,perl-try-tiny)
