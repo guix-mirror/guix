@@ -28,7 +28,7 @@
 (define-public perl-lingua-en-findnumber
   (package
     (name "perl-lingua-en-findnumber")
-    (version "1.30")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -36,7 +36,7 @@
                            "Lingua-EN-FindNumber-" version ".tar.gz"))
        (sha256
         (base32
-         "0g5h6bwwggizwh3dd3xyx92537s4qy8nspshp1lrm9qlxh3prc28"))))
+         "015ximzdp42v824llwlg2pd77vd0d172lb4xs55q9f9zhqf6s5qx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
