@@ -178,12 +178,14 @@ TARGET, and register them."
 
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
-                  grub? grub.cfg device)
-  "Copy the closure of GRUB.CFG, which includes the output of OS-DRV, to
+                  bootloader-installer install-bootloader?
+                  bootcfg bootcfg-file
+                  device)
+  "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'guix-register' expects.
 
-When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
+When INSTALL-BOOTLOADER? is true, install bootloader on DEVICE, using BOOTCFG."
   (define (maybe-copy to-copy)
     (with-monad %store-monad
       (if (string=? target "/")
@@ -212,16 +214,21 @@ the ownership of '~a' may be incorrect!~%")
         (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
-      ;; Copy the closure of GRUB.CFG, which includes OS-DIR, GRUB's
-      ;; background image and so on.
-      (maybe-copy grub.cfg)
+      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+      ;; eventual background image and so on.
+      (maybe-copy
+       (derivation->output-path bootcfg))
 
       ;; Create a bunch of additional files.
       (format log-port "populating '~a'...~%" target)
       (populate os-dir target)
 
-      (mwhen grub?
-        (install-grub* grub.cfg device target)))))
+      (mwhen install-bootloader?
+        (install-bootloader bootloader-installer
+                            #:bootcfg bootcfg
+                            #:bootcfg-file bootcfg-file
+                            #:device device
+                            #:target target)))))
 
 
 ;;;
@@ -589,12 +596,13 @@ and TARGET arguments."
                       (#$installer #$bootloader #$device #$target))))))
 
 (define* (perform-action action os
-                         #:key bootloader? dry-run? derivations-only?
+                         #:key install-bootloader?
+                         dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
                          (mappings '())
                          (gc-root #f))
-  "Perform ACTION for OS.  BOOTLOADER? specifies whether to install
+  "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; DEVICE is the target devices for bootloader; TARGET is the target
 root directory; IMAGE-SIZE is the size of the image to be built, for the
 'vm-image' and 'disk-image' actions.  FULL-BOOT? is used for the 'vm' action;
@@ -642,10 +650,10 @@ output when building a system derivation, such as a disk image."
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if (and bootloader? bootloader-package)
+                      (if (and install-bootloader? bootloader-package)
                           (list sys bootcfg
-                                bootloader-package
-                                bootloader-installer)
+				bootloader-package
+				bootloader-installer)
                           (list sys bootcfg))
                       (list sys)))
        (%         (if derivations-only?
@@ -664,7 +672,7 @@ output when building a system derivation, such as a disk image."
             ((reconfigure)
              (mbegin %store-monad
                (switch-to-system os)
-               (mwhen bootloader?
+               (mwhen install-bootloader?
                  (install-bootloader bootloader-installer
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
@@ -675,8 +683,10 @@ output when building a system derivation, such as a disk image."
              (format #t (G_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
-                      #:grub? bootloader?
-                      #:grub.cfg (derivation->output-path grub.cfg)
+                      #:install-bootloader? install-bootloader?
+                      #:bootcfg bootcfg
+                      #:bootcfg-file bootcfg-file
+                      #:bootloader-installer bootloader-installer
                       #:device device))
             (else
              ;; All we had to do was to build SYS and maybe register an
@@ -890,7 +900,7 @@ resulting from command-line parsing."
                                                        m)
                                                       (_ #f))
                                                     opts)
-                             #:bootloader? bootloader?
+                             #:install-bootloader? bootloader?
                              #:target target #:device device
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
