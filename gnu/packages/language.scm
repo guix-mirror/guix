@@ -73,7 +73,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
 (define-public perl-lingua-en-inflect-number
   (package
     (name "perl-lingua-en-inflect-number")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -81,7 +81,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
                            "Lingua-EN-Inflect-Number-" version ".tar.gz"))
        (sha256
         (base32
-         "0rvgrff96ja7fqr79dszmiyv2wz4izw82znah0mx9szkir657gfz"))))
+         "1gxccynkaqav43ww43jp4rzkyr36x97jd03yb5f6yx0jhn1k7yv6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-inflect" ,perl-lingua-en-inflect)))
