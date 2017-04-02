@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
@@ -39,15 +40,14 @@
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/audacity/audacity/archive"
-                           "/Audacity-" version ".zip"))
+                           "/Audacity-" version ".tar.gz"))
        (sha256
-        (base32 "1642i9d5cdmqzj6r0qdl2ldnqsvpb08znnczncysi72x6zpvb5qq"))
-       (patches (search-patches "audacity-fix-ffmpeg-binding.patch"))))
+        (base32 "11mx7gb4dbqrgfp7hm0154x3m76ddnmhf2675q5zkxn7jc5qfc6b"))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree
@@ -73,7 +73,10 @@
        ("lilv" ,lilv)
        ("portaudio" ,portaudio)))
     (native-inputs
-     `(("gettext" ,gettext-minimal)     ;for msgfmt
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)     ;for msgfmt
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("which" ,which)))
@@ -90,6 +93,12 @@
           (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")
           (string-append "LIBMAD_CFLAGS=-I" libmad "/include")
           (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; FFmpeg is only detected if autoreconf runs.
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
