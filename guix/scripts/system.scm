@@ -521,6 +521,7 @@ list of services."
     (let* ((generation  (generation-file-name profile number))
            (params      (read-boot-parameters-file generation))
            (label       (boot-parameters-label params))
+           (boot-name   (boot-parameters-boot-name params))
            (root        (boot-parameters-root-device params))
            (root-device (if (bytevector? root)
                             (uuid->string root)
@@ -531,6 +532,7 @@ list of services."
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
+      (format #t (G_ "  bootloader: ~a~%") boot-name)
       (format #t (G_ "  root device: ~a~%") root-device)
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
