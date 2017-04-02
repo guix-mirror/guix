@@ -1080,7 +1080,7 @@ effects.")
 (define-public amsynth
   (package
     (name "amsynth")
-    (version "1.6.4")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
@@ -1089,7 +1089,7 @@ effects.")
                            "/amsynth-" version ".tar.bz2"))
        (sha256
         (base32
-         "07dp9dl38g9krjqxxh89l2z42z08yzrl57cx95b1l67xnxwjp5k3"))))
+         "1882pfcmf3rqg3vd4qflzkppcv158d748i603spqjbxqi8z7x7w0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1107,7 +1107,8 @@ effects.")
        ("gtk+" ,gtk+-2)
        ("gtkmm" ,gtkmm-2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
     (home-page "http://amsynth.github.io")
     (synopsis "Analog modeling synthesizer")
     (description
