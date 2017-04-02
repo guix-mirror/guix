@@ -28,7 +28,8 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages guile))
+  #:use-module (gnu packages guile)
+  #:use-module (srfi srfi-1))
 
 (define-public tcc
   (package
@@ -62,7 +63,8 @@
                                               "/lib"))
        #:test-target "test"))
     ;; Fails to build on MIPS: "Unsupported CPU"
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "aarch64-linux")))
     (synopsis "Tiny and fast C compiler")
     (description
      "TCC, also referred to as \"TinyCC\", is a small and fast C compiler
@@ -157,6 +159,7 @@ standard.")
      "PCC is a portable C compiler.  The project goal is to write a C99
 compiler while still keeping it small, simple, fast and understandable.")
     (home-page "http://pcc.ludd.ltu.se")
+    (supported-systems (delete "aarch64-linux" %supported-systems))
     ;; PCC incorporates code under various BSD licenses; for new code bsd-2 is
     ;; preferred.  See http://pcc.ludd.ltu.se/licenses/ for more details.
     (license (list license:bsd-2 license:bsd-3))))

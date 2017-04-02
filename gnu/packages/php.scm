@@ -50,21 +50,10 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
-;; This fixes PHP bugs 73155 and 73159. Remove when gd
-;; is updated to > 2.2.3.
-(define gd-for-php
-  (package (inherit gd)
-           (source
-            (origin
-              (inherit (package-source gd))
-              (patches (search-patches
-                        "gd-fix-truecolor-format-correction.patch"
-                        "gd-fix-chunk-size-on-boundaries.patch"))))))
-
 (define-public php
   (package
     (name "php")
-    (version "7.0.14")
+    (version "7.1.3")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -72,7 +61,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12ccgbrfchgvmcfb88rcknq7xmrf19c5ysdr4v8jxk51j9izy78g"))
+                "1c0brdq5aqh4i127pq1g904dfb6klz2gbg9gjvykg3kp6hk7r274"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -179,6 +168,13 @@
                             "ext/standard/tests/general_functions/bug44667.phpt"
                             "ext/standard/tests/general_functions/proc_open.phpt")
                (("/bin/cat") (which "cat")))
+
+             ;; These tests fail because they include a file whose modification
+             ;; time is 0. Touch them to make the test pass. The issue is reported
+             ;; upstream as #74137.
+             (utime "sapi/phpdbg/tests/include.inc" 1 1)
+             (utime "sapi/phpdbg/tests/phpdbg_get_executable_stream_wrapper.inc" 1 1)
+
              ;; The encoding of this file is not recognized, so we simply drop it.
              (delete-file "ext/mbstring/tests/mb_send_mail07.phpt")
 
@@ -257,8 +253,10 @@
                          ;; The test expects an Array, but instead get the contents(?).
                          "ext/gd/tests/bug43073.phpt"
                          ;; imagettftext() returns wrong coordinates.
+                         "ext/gd/tests/bug48732-mb.phpt"
                          "ext/gd/tests/bug48732.phpt"
                          ;; Similarly for imageftbbox().
+                         "ext/gd/tests/bug48801-mb.phpt"
                          "ext/gd/tests/bug48801.phpt"
                          ;; Different expected output from imagecolorallocate().
                          "ext/gd/tests/bug53504.phpt"
@@ -291,10 +289,11 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd-for-php)
+       ("gd" ,gd)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)
+       ("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
@@ -309,7 +308,7 @@
        ("pcre" ,pcre)
        ("postgresql" ,postgresql)
        ("readline" ,readline)
-       ("sqlite" ,sqlite-3.15.1)
+       ("sqlite" ,sqlite)
        ("tidy" ,tidy)
        ("zip" ,zip)
        ("zlib" ,zlib)))

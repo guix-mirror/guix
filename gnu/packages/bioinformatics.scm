@@ -2133,7 +2133,19 @@ data and settings.")
         (base32
          "0rah9ja4m0rl5mldd6vag9rwrivw1zrqxssfq8qx64m7961fp68k"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; there are no tests
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-missing-includes
+           (lambda _
+             (substitute* "src/executioninformation.hpp"
+               (("#define EXECUTIONINFORMATION_HPP" line)
+                (string-append line "\n#include <random>")))
+             (substitute* "src/plasma/fasta.hpp"
+               (("#define FASTA_HPP" line)
+                (string-append line "\n#include <random>")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)))
@@ -3138,7 +3150,10 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
        ("python-screed" ,python-screed)
-       ("python-bz2file" ,python-bz2file)))
+       ("python-bz2file" ,python-bz2file)
+       ;; Tests fail when gcc-5 is used for compilation.  Use gcc-4.9 at least
+       ;; until the next version of khmer (likely 2.1) is released.
+       ("gcc" ,gcc-4.9)))
     (home-page "https://khmer.readthedocs.org/")
     (synopsis "K-mer counting, filtering and graph traversal library")
     (description "The khmer software is a set of command-line tools for
@@ -5209,6 +5224,13 @@ against local background noises.")
                             "gclib/GBam.cpp")
                (("#include \"(bam|sam|kstring).h\"" _ header)
                 (string-append "#include <samtools/" header ".h>")))
+             #t))
+         (add-after 'unpack 'remove-duplicate-typedef
+           (lambda _
+             ;; This typedef conflicts with the typedef in
+             ;; glibc-2.25/include/bits/types.h
+             (substitute* "gclib/GThreads.h"
+               (("typedef long long __intmax_t;") ""))
              #t))
          (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)

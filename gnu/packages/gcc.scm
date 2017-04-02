@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -204,17 +205,18 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (for-each
                  (lambda (x)
                    (substitute* (find-files "gcc/config"
-                                            "^linux(64|-elf|-eabi)?\\.h$")
-                     (("(#define GLIBC_DYNAMIC_LINKER.*)\\\\\n$" _ line)
+                                            "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
+                     (("(#define (GLIBC|GNU_USER)_DYNAMIC_LINKER.*)\\\\\n$" _ line)
                       line)))
                  '(1 2 3))
 
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
-                                         "^(linux|gnu)(64|-elf|-eabi)?\\.h$")
-                  (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
-                   (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
-                           suffix
+                                         "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
+                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ ]*).*$"
+                    _ gnu-user suffix)
+                   (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
+                           gnu-user suffix
                            (string-append libc ,(glibc-dynamic-linker)))))
 
                 ;; Tell where to find libstdc++, libc, and `?crt*.o', except
@@ -240,12 +242,32 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
-                           libc line))))
+                           libc line)))
+
+              ;; The rs6000 (a.k.a. powerpc) config in GCC does not use
+              ;; GNU_USER_* defines.  Do the above for this case.
+              (substitute*
+                  "gcc/config/rs6000/sysv4.h"
+                (("#define LIB_LINUX_SPEC (.*)$" _ suffix)
+                 (format #f "#define LIB_LINUX_SPEC \
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib -lgcc_s}} \" ~a"
+                         libc libc libdir suffix))
+                (("#define	STARTFILE_LINUX_SPEC.*$" line)
+                 (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+#define STANDARD_STARTFILE_PREFIX_2 \"\"
+~a"
+                         libc line))))
 
               ;; Don't retain a dependency on the build-time sed.
               (substitute* "fixincludes/fixincl.x"
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
+
+              ;; Aarch64 support didn't land in GCC until the 4.8 series.
+              (when (file-exists? "gcc/config/aarch64")
+                ;; Force Aarch64 libdir to be /lib and not /lib64
+                (substitute* "gcc/config/aarch64/t-aarch64-linux"
+                  (("lib64") "lib")))
 
               (when (file-exists? "libbacktrace")
                 ;; GCC 4.8+ comes with libbacktrace.  By default it builds
@@ -358,8 +380,11 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
-              (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+              (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"
+                                       "gcc-5-source-date-epoch-1.patch"
+                                       "gcc-5-source-date-epoch-2.patch"))))))
 
 (define-public gcc-6
   (package
@@ -376,8 +401,9 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
-;;       the gcc-toolchain-* definitions accordingly.
-(define-public gcc gcc-4.9)
+;;       the gcc-toolchain-* definitions and the gfortran definition
+;;       accordingly.
+(define-public gcc gcc-5)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
@@ -493,16 +519,16 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-4.9 "gfortran" '("fortran")
               %generic-search-paths))
 
-(define-public gfortran
-  ;; Note: Update this when GCC changes!  We cannot use
-  ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
-  ;; that is not 'eq?' with GFORTRAN-4.9, and thus 'fold-packages' would
-  ;; report two gfortran@4.9 that are in fact identical.
-  gfortran-4.9)
-
 (define-public gfortran-5
   (custom-gcc gcc-5 "gfortran" '("fortran")
               %generic-search-paths))
+
+(define-public gfortran
+  ;; Note: Update this when GCC changes!  We cannot use
+  ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
+  ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
+  ;; report two gfortran@5 that are in fact identical.
+  gfortran-5)
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")

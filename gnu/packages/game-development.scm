@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
@@ -457,18 +457,16 @@ etc.")
 (define-public aseprite
   (package
     (name "aseprite")
-    (version "1.1.1")
-    ;; The release tarball isn't good enough because it's missing some
-    ;; necessary code that is only in git submodules.
+    (version "1.1.7") ; After 1.1.7 the source is no longer distributed under the GPL.
+    ;; TODO: Unbundle third party software.
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/aseprite/aseprite.git")
-                    (commit "v1.1.1")
-                    (recursive? #t)))
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/aseprite/aseprite"
+                                  "/releases/download/v" version
+                                  "/Aseprite-v" version "-Source.zip"))
               (sha256
                (base32
-                "1yr0l3bc68lyrffrzxgw98zznv8yz5ldl98lyvp6s5grny4s4jyk"))))
+                "1plss4i1lfxcznv9p0pip1bkhj7ipw7jlhsh5avd6dzw079l4nvv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags

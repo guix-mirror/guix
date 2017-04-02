@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,13 +41,18 @@
   "Return the URI for FILE."
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
-     (string->uri (string-append %url-base "/" system
-                                 (match system
-                                   ("armhf-linux"
-                                    "/20150101/")
-                                   (_
-                                    "/20131110/"))
-                                 basename)))))
+     (string->uri
+       (match system
+        ("aarch64-linux"
+         (string-append "http://flashner.co.il/guix/bootstrap/aarch64-linux"
+                        "/20170217/" basename))
+        (_ (string-append %url-base "/" system
+                          (match system
+                                 ("armhf-linux"
+                                  "/20150101/")
+                                 (_
+                                  "/20131110/"))
+                          basename)))))))
 
 (match (command-line)
   ((_ file expected-hash)

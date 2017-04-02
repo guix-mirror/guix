@@ -27,7 +27,6 @@
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages algebra) #:select (bc))
   #:use-module (gnu packages assembly)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
@@ -115,7 +114,10 @@
     (native-inputs
      `(("unifont" ,unifont)
        ("bison" ,bison)
-       ("flex" ,flex)
+       ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
+       ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
+       ;; TODO Try building with flex > 2.6.3.
+       ("flex" ,flex-2.6.1)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
 
@@ -238,7 +240,7 @@ menu to select one of the installed operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex-2.6.1))) ; A bug in flex prevents building with flex-2.6.3.
     (arguments
      `(#:make-flags
        (list "CC=gcc"

@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages indent)
   #:use-module (srfi srfi-1))
@@ -31,29 +32,32 @@
 (define-public flex
   (package
     (name "flex")
-    (version "2.6.0")
+    (version "2.6.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/flex/flex-"
-                                 version ".tar.bz2"))
-             (patches (search-patches "flex-CVE-2016-6354.patch"))
-             (sha256
-              (base32
-               "1sdqx63yadindzafrq1w31ajblf9gl1c301g068s20s7bbpi3ri4"))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/westes/flex"
+                    "/releases/download/v" version "/"
+                    "flex-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1an2cn2z85mkpgqcinh1fhhcd7993qm2lil1yxic8iz76ci79ck8"))))
     (build-system gnu-build-system)
     (inputs
      (let ((bison-for-tests
             ;; Work around an incompatibility with Bison 3.0:
             ;; <http://lists.gnu.org/archive/html/bug-bison/2013-09/msg00014.html>.
-            (package (inherit bison)
+            (package
+              (inherit bison)
               (version "2.7.1")
               (source (origin
-                       (method url-fetch)
-                       (uri (string-append "mirror://gnu/bison/bison-"
-                                           version ".tar.xz"))
-                       (sha256
-                        (base32
-                         "1yx7isx67sdmyijvihgyra1f59fwdz7sqriginvavfj5yb5ss2dl"))))
+                        (method url-fetch)
+                        (uri (string-append
+                              "mirror://gnu/bison/"
+                              "bison-" version ".tar.xz"))
+                        (sha256
+                         (base32
+                          "1yx7isx67sdmyijvihgyra1f59fwdz7sqriginvavfj5yb5ss2dl"))))
 
               ;; Unlike Bison 3.0, this version did not need Flex for its
               ;; tests, so it allows us to break the cycle.
@@ -61,9 +65,11 @@
        `(("bison" ,bison-for-tests)
          ("indent" ,indent))))
     ;; m4 is not present in PATH when cross-building
-    (native-inputs `(("m4" ,m4)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("m4" ,m4)))
     (propagated-inputs `(("m4" ,m4)))
-    (home-page "http://flex.sourceforge.net/")
+    (home-page "https://github.com/westes/flex")
     (synopsis "Fast lexical analyser generator")
     (description
      "Flex is a tool for generating scanners.  A scanner, sometimes
@@ -78,23 +84,21 @@ is run, it analyzes its input for occurrences of text matching the
 regular expressions for each rule.  Whenever it finds a match, it
 executes the corresponding C code.")
     (license (non-copyleft "file://COPYING"
-                        "See COPYING in the distribution."))))
+                           "See COPYING in the distribution."))))
 
+;;; Many packages fail to build with flex > 2.6.1, due to this bug in flex:
+;;; <https://github.com/westes/flex/issues/162>
+;;; We must not use a flex before 2.6.1, due to CVE-2016-6354.
+;;; TODO Try using flex > 2.6.3.
 (define-public flex-2.6.1
-  ;; The kservice and solid packages use flex.  extra-cmake-modules
-  ;; forces C89 for all C files for compatibility with windows.
-  ;; Flex 2.6.0 generates a lexer containing a single line comment.  Single
-  ;; line comments are part of the C99 standard, so the lexer won't compile
-  ;; if C89 is used.
   (package
     (inherit flex)
     (version "2.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/westes/flex"
-                    "/releases/download/v" version "/"
-                    "flex-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0fy14c35yz2m1n1m4f02by3501fn0cca37zn7jp8lpp4b3kgjhrw"))))))
+              (uri (string-append "https://github.com/westes/flex"
+                                  "/releases/download/v" version "/"
+                                  "flex-" version ".tar.xz"))
+             (sha256
+              (base32
+               "0gqhk4vkwy4gl9xbpgkljph8c0a5kpijz6wd0p5r9q202qn42yic"))))))

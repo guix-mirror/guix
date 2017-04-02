@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -389,15 +389,23 @@ makefiles."
               debug-output objcopy-command))
 
     (for-each (lambda (file)
-                (and (file-exists? file)          ;discard dangling symlinks
-                     (or (elf-file? file) (ar-file? file))
+                (and (or (elf-file? file) (ar-file? file))
                      (or (not debug-output)
                          (make-debug-file file))
+
+                     ;; Ensure the file is writable.
+                     (begin (make-file-writable file) #t)
+
                      (zero? (apply system* strip-command
                                    (append strip-flags (list file))))
                      (or (not debug-output)
                          (add-debug-link file))))
-              (find-files dir)))
+              (find-files dir
+                          (lambda (file stat)
+                            ;; Ignore symlinks such as:
+                            ;; libfoo.so -> libfoo.so.0.0.
+                            (eq? 'regular (stat:type stat)))
+                          #:stat lstat)))
 
   (or (not strip-binaries?)
       (every strip-dir
@@ -474,6 +482,23 @@ and 'man/'.  This phase moves directories to the right place if needed."
   (match outputs
     (((names . directories) ...)
      (for-each validate-output directories)))
+  #t)
+
+(define* (reset-gzip-timestamps #:key outputs #:allow-other-keys)
+  "Reset embedded timestamps in gzip files found in OUTPUTS."
+  (define (process-directory directory)
+    (let ((files (find-files directory
+                             (lambda (file stat)
+                               (and (eq? 'regular (stat:type stat))
+                                    (or (string-suffix? ".gz" file)
+                                        (string-suffix? ".tgz" file))
+                                    (gzip-file? file)))
+                             #:stat lstat)))
+      (for-each reset-gzip-timestamp files)))
+
+  (match outputs
+    (((names . directories) ...)
+     (for-each process-directory directories)))
   #t)
 
 (define* (compress-documentation #:key outputs
@@ -598,6 +623,7 @@ which cannot be found~%"
             validate-documentation-location
             delete-info-dir-file
             patch-dot-desktop-files
+            reset-gzip-timestamps
             compress-documentation)))
 
 

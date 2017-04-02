@@ -52,7 +52,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.9")
+    (version "4.10")
     (source
      (origin
       (method url-fetch)
@@ -60,7 +60,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0869cp6jx7cajgv6cnddsh3vc7bimmdkdjn80y1jpb4iss7plvsg"))))
+        "00jsix5hny0g768zv4hk78dib7w0qmk5fbizf4jj37r51nd4s6k8"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
@@ -140,8 +140,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.5.4")
-    (replacement gnutls-3.5.8)
+    (version "3.5.9")
     (source (origin
              (method url-fetch)
              (uri
@@ -152,7 +151,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1sx8p7v452s9m854r2c5pvcd1k15a3caiv5h35fhrxz0691h2f2f"))))
+               "0l9971841jsfdcvcyhas17sk5rsby6x5vvwcmmj4x3zi9q60zcc2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -195,12 +194,11 @@ living in the same process.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("guile" ,guile-2.0)
-       ("perl" ,perl)))
+     `(("guile" ,guile-2.0)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
-       ("libidn" ,libidn)
+       ("libidn2" ,libidn2)
        ("nettle" ,nettle)
        ("zlib" ,zlib)))
     (home-page "https://www.gnu.org/software/gnutls/")
@@ -214,38 +212,23 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define gnutls-3.5.8                              ;fixes GNUTLS-SA-2017-{1,2}
-  (package
-    (inherit gnutls)
-    (version "3.5.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnutls/v"
-                                  (version-major+minor version)
-                                  "/gnutls-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1zyl2z63s68hx1dpxqx0lykmlf3rwrzlrf44sq3h7dvjmr1z55qf"))))
-    (replacement #f)))
-
 (define-public gnutls/guile-2.2
   ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
   (package
-    (inherit gnutls-3.5.8)
+    (inherit gnutls)
     (name "guile2.2-gnutls")
     (arguments
      ;; Remove '--with-guile-site-dir=…/2.0'.
-     (substitute-keyword-arguments (package-arguments gnutls-3.5.8)
+     (substitute-keyword-arguments (package-arguments gnutls)
        ((#:configure-flags flags)
         `(cdr ,flags))))
     (inputs `(("guile" ,guile-2.2)
-              ,@(alist-delete "guile" (package-inputs gnutls-3.5.8))))))
+              ,@(alist-delete "guile" (package-inputs gnutls))))))
 
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl-1.0.2k)
-   (version "1.0.2j")
+   (version "1.0.2k")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -255,7 +238,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0cf4ar97ijfc7mg35zdgpad6x8ivkdx9qii6mz35khi1ps9g5bz7"))
+               "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -325,7 +308,6 @@ required structures.")
                    (lib    (string-append out "/lib"))
                    (static (assoc-ref outputs "static"))
                    (slib   (string-append static "/lib")))
-              (mkdir-p slib)
               (for-each (lambda (file)
                           (install-file file slib)
                           (delete-file file))
@@ -352,7 +334,7 @@ required structures.")
            (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
              (substitute* (find-files "test" ".*")
                (("/bin/sh")
-                (string-append bash "/bin/bash"))
+                (string-append bash "/bin/sh"))
                (("/bin/rm")
                 "rm"))
              #t)))
@@ -382,29 +364,9 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-(define openssl-1.0.2k
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.0.2k")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                  name "-" version ".tar.gz")
-                   (string-append "ftp://ftp.openssl.org/source/old/"
-                                  (string-trim-right version char-set:letter)
-                                  "/" name "-" version ".tar.gz")))
-        (sha256
-         (base32
-          "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
-        (patches (search-patches "openssl-runpath.patch"
-                                 "openssl-c-rehash-in.patch"))))))
-
 (define-public openssl-next
   (package
     (inherit openssl)
-    (replacement #f)
     (name "openssl")
     (version "1.1.0e")
     (source (origin

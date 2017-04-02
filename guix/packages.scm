@@ -230,8 +230,11 @@ name of its URI."
   '("i585-gnu" "i686-gnu"))
 
 (define %hydra-supported-systems
-  ;; This is the list of system types for which build slaves are available.
-  %supported-systems)
+  ;; This is the list of system types for which build machines are available.
+  ;;
+  ;; XXX: MIPS is temporarily unavailable on Hydra:
+  ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
+  (delete "mips64el-linux" %supported-systems))
 
 
 ;; A package.

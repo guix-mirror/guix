@@ -30,6 +30,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages swig)
   #:use-module (guix utils))
 
@@ -87,7 +88,7 @@
                (let ((out (assoc-ref outputs "out")))
                  ;; When building a wide-character (Unicode) build, create backward
                  ;; compatibility links from the the "normal" libraries to the
-                 ;; wide-character libraries (e.g. libncurses.so to libncursesw.so).
+                 ;; wide-character ones (e.g. libncurses.so to libncursesw.so).
                  ,@(if (target-mingw?)
                        '( ;; TODO: create .la files to link to the .dll?
                          (with-directory-excursion (string-append out "/bin")
@@ -116,7 +117,11 @@
                                        (define lib.so.x
                                          (string-append "lib" lib ".so.6"))
                                        (define lib.so
-                                         (string-append "lib" lib ".so")))
+                                         (string-append "lib" lib ".so"))
+                                       (define packagew.pc
+                                         (string-append lib "w.pc"))
+                                       (define package.pc
+                                         (string-append lib ".pc")))
                                      '())
 
                                (when (file-exists? libw.a)
@@ -127,7 +132,12 @@
                                          (false-if-exception (delete-file lib.so))
                                          (call-with-output-file lib.so
                                            (lambda (p)
-                                             (format p "INPUT (-l~aw)~%" lib))))
+                                             (format p "INPUT (-l~aw)~%" lib)))
+                                         (with-directory-excursion "pkgconfig"
+                                           (format #t "creating symlink for `~a'~%"
+                                                   package.pc)
+                                           (when (file-exists? packagew.pc)
+                                             (symlink packagew.pc package.pc))))
                                        '())))
                              '("curses" "ncurses" "form" "panel" "menu")))))))
        `(#:configure-flags
@@ -135,6 +145,11 @@
            'quasiquote
            `(("--with-shared" "--without-debug" "--enable-widec"
               
+              "--enable-pc-files"
+              ,(list 'unquote '(string-append "--with-pkg-config-libdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/pkgconfig"))
+
               ;; By default headers land in an `ncursesw' subdir, which is not
               ;; what users expect.
               ,(list 'unquote '(string-append "--includedir=" (assoc-ref %outputs "out")
@@ -157,6 +172,8 @@
                     (add-after 'unpack 'remove-unneeded-shebang
                       ,remove-shebang-phase)))))
     (self-native-input? #t)           ; for `tic'
+     (native-inputs
+      `(("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "TERMINFO_DIRS")

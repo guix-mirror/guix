@@ -1,0 +1,124 @@
+This patch fix the build on GNU/Hurd, due to PATH_MAX isn't defined.
+
+The patch was adapted from upstream source repository:
+'<https://cgit.freedesktop.org/fontconfig/commit/?id=abdb6d658e1a16410dd1c964e365a3ebd5039e7c>'
+Commit: abdb6d658e1a16410dd1c964e365a3ebd5039e7c
+
+---
+ src/fcdefault.c | 34 +++++++++++++++++++++++++++-------
+ src/fcint.h     |  6 ++++++
+ src/fcstat.c    | 12 +++++++++++-
+ 3 files changed, 44 insertions(+), 8 deletions(-)
+
+diff --git a/src/fcdefault.c b/src/fcdefault.c
+index 6647a8f..5afd7ec 100644
+--- a/src/fcdefault.c
++++ b/src/fcdefault.c
+@@ -148,17 +148,34 @@ retry:
+ 	    prgname = FcStrdup ("");
+ #else
+ # if defined (HAVE_GETEXECNAME)
+-	const char *p = getexecname ();
++	char *p = FcStrdup(getexecname ());
+ # elif defined (HAVE_READLINK)
+-	char buf[PATH_MAX + 1];
+-	int len;
++	size_t size = FC_PATH_MAX;
+ 	char *p = NULL;
+ 
+-	len = readlink ("/proc/self/exe", buf, sizeof (buf) - 1);
+-	if (len != -1)
++	while (1)
+ 	{
+-	    buf[len] = '\0';
+-	    p = buf;
++	    char *buf = malloc (size);
++	    ssize_t len;
++
++	    if (!buf)
++		break;
++
++	    len = readlink ("/proc/self/exe", buf, size - 1);
++	    if (len < 0)
++	    {
++		free (buf);
++		break;
++	    }
++	    if (len < size - 1)
++	    {
++		buf[len] = 0;
++		p = buf;
++		break;
++	    }
++
++	    free (buf);
++	    size *= 2;
+ 	}
+ # else
+ 	char *p = NULL;
+@@ -176,6 +193,9 @@ retry:
+ 
+ 	if (!prgname)
+ 	    prgname = FcStrdup ("");
++
++	if (p)
++	    free (p);
+ #endif
+ 
+ 	if (!fc_atomic_ptr_cmpexch (&default_prgname, NULL, prgname)) {
+diff --git a/src/fcint.h b/src/fcint.h
+index ac911ad..dad34c5 100644
+--- a/src/fcint.h
++++ b/src/fcint.h
+@@ -70,6 +70,12 @@ extern pfnSHGetFolderPathA pSHGetFolderPathA;
+ #  define FC_DIR_SEPARATOR_S       "/"
+ #endif
+ 
++#ifdef PATH_MAX
++#define FC_PATH_MAX	PATH_MAX
++#else
++#define FC_PATH_MAX	128
++#endif
++
+ #if __GNUC__ >= 4
+ #define FC_UNUSED	__attribute__((unused))
+ #else
+diff --git a/src/fcstat.c b/src/fcstat.c
+index 1734fa4..f6e1aaa 100644
+--- a/src/fcstat.c
++++ b/src/fcstat.c
+@@ -278,8 +278,13 @@ FcDirChecksum (const FcChar8 *dir, time_t *checksum)
+ 	{
+ #endif
+ 	struct stat statb;
+-	char f[PATH_MAX + 1];
++	char *f = malloc (len + 1 + dlen + 1);
+ 
++	if (!f)
++	{
++	    ret = -1;
++	    goto bail;
++	}
+ 	memcpy (f, dir, len);
+ 	f[len] = FC_DIR_SEPARATOR;
+ 	memcpy (&f[len + 1], files[n]->d_name, dlen);
+@@ -287,11 +292,16 @@ FcDirChecksum (const FcChar8 *dir, time_t *checksum)
+ 	if (lstat (f, &statb) < 0)
+ 	{
+ 	    ret = -1;
++	    free (f);
+ 	    goto bail;
+ 	}
+ 	if (S_ISDIR (statb.st_mode))
++	{
++	    free (f);
+ 	    goto bail;
++	}
+ 
++	free (f);
+ 	dtype = statb.st_mode;
+ #ifdef HAVE_STRUCT_DIRENT_D_TYPE
+ 	}
+-- 
+2.11.0
+

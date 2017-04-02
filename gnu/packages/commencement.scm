@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -172,6 +172,26 @@
                     ,cf)))))
      (inputs %boot0-inputs))))
 
+(define libstdc++-boot0
+  ;; GCC's libcc1 is always built as a shared library (the top-level
+  ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
+  ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
+  ;; C++14 features missing in our bootstrap compiler.
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
+    (package
+      (inherit lib)
+      (name "libstdc++-boot0")
+      (arguments
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
+
+         ;; XXX: libstdc++.so NEEDs ld.so for some reason.
+         #:validate-runpath? #f
+
+         ,@(package-arguments lib)))
+      (inputs %boot0-inputs)
+      (native-inputs '()))))
+
 (define gcc-boot0
   (package-with-bootstrap-guile
    (package (inherit gcc)
@@ -256,6 +276,9 @@
                ("mpfr-source" ,(package-source mpfr))
                ("mpc-source" ,(package-source mpc))
                ("binutils-cross" ,binutils-boot0)
+
+               ;; The libstdc++ that libcc1 links against.
+               ("libstdc++" ,libstdc++-boot0)
 
                ;; Call it differently so that the builder can check whether
                ;; the "libc" input is #f.
@@ -424,14 +447,8 @@ the bootstrap environment."
 (define ld-wrapper-boot0
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
   ;; in their RUNPATH, otherwise validate-runpath will fail.
-  ;;
-  ;; XXX: Work around <http://bugs.gnu.org/24832> by fixing the name and
-  ;; triplet on GNU/Linux.  For GNU/Hurd, use the right triplet.
-  (make-ld-wrapper (string-append "ld-wrapper-" "x86_64-guix-linux-gnu")
-                   #:target (lambda (system)
-                              (if (string-suffix? "-linux" system)
-                                  "x86_64-guix-linux-gnu"
-                                  (boot-triplet system)))
+  (make-ld-wrapper "ld-wrapper-boot0"
+                   #:target boot-triplet
                    #:binutils binutils-boot0
                    #:guile %bootstrap-guile
                    #:bash (car (assoc-ref %boot0-inputs "bash"))))
@@ -783,12 +800,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  ;; FIXME: This depends on 'bootstrap-binaries' via Makefile.in.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (static-libgcc-package bash)
-                                 %boot3-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (let ((bash (package
+                (inherit bash)
+                (arguments
+                 `(#:disallowed-references
+                   ,(assoc-ref %boot3-inputs "coreutils&co")
+                   ,@(package-arguments bash))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs (static-libgcc-package bash)
+                                   %boot3-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define %boot4-inputs
   ;; Now use the final Bash.
@@ -987,10 +1009,10 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
   (gcc-toolchain gcc-4.8))
 
 (define-public gcc-toolchain-4.9
-  (gcc-toolchain gcc-final))
+  (gcc-toolchain gcc-4.9))
 
 (define-public gcc-toolchain-5
-  (gcc-toolchain gcc-5))
+  (gcc-toolchain gcc-final))
 
 (define-public gcc-toolchain-6
   (gcc-toolchain gcc-6))

@@ -412,7 +412,7 @@ with a layered architecture of JTAG interface and TAP support.")
          ,@(package-arguments xbinutils)))
       (native-inputs
        `(("bison" ,bison)
-         ("flex" ,flex)
+         ("flex" ,flex-2.6.1) ; needed because of yywrap error
          ("texinfo" ,texinfo)
          ("dejagnu" ,dejagnu)
          ,@(package-native-inputs xbinutils))))))
@@ -764,7 +764,7 @@ simulator.")
                  (base32
                   "14b3h2ji740s8zq5vwm4qdcxs4aa4wxi6wb9di3bv1h39x14nyr9"))))
          ("texinfo" ,texinfo)
-         ("flex" ,flex)
+         ("flex" ,flex-2.6.1) ; A bug in flex prevents building with flex-2.6.3.
          ("bison" ,bison)
          ("guile-1.8" ,guile-1.8)
          ("which" ,base:which)))

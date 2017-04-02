@@ -1,0 +1,46 @@
+Resolves a test compatibility issue with xorg >= 1.19.
+
+Upstream bug report:
+
+https://sourceforge.net/p/linuxwacom/bugs/329/
+
+Patch copied from upstream source repository:
+
+https://sourceforge.net/p/linuxwacom/xf86-input-wacom/ci/f0dedf7a610ac97bc45738492b98ce4f1e0514ec/
+
+From f0dedf7a610ac97bc45738492b98ce4f1e0514ec Mon Sep 17 00:00:00 2001
+From: Jason Gerecke <killertofu@gmail.com>
+Date: Wed, 18 Jan 2017 09:00:10 -0800
+Subject: [PATCH] tests: Fix compilation under ABI 25 and greater
+
+diff --git a/test/fake-symbols.c b/test/fake-symbols.c
+index 6f2c10a..e649fb9 100644
+--- a/test/fake-symbols.c
++++ b/test/fake-symbols.c
+@@ -493,6 +493,7 @@ void TimerFree(OsTimerPtr timer)
+ {
+ }
+ 
++#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) < 24
+ int
+ xf86BlockSIGIO (void)
+ {
+@@ -503,6 +504,15 @@ void
+ xf86UnblockSIGIO (int wasset)
+ {
+ }
++#else
++void input_lock (void)
++{
++}
++
++void input_unlock (void)
++{
++}
++#endif
+ 
+ /* This is not the same as the X server one, but it'll do for the tests */
+ #if GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 14
+-- 
+2.11.1
+

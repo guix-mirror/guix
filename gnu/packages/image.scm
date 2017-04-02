@@ -66,19 +66,19 @@
 (define-public libpng
   (package
    (name "libpng")
-   (replacement libpng/fixed)
-   (version "1.6.25")
+   (version "1.6.28")
    (source (origin
             (method url-fetch)
-
-            ;; Note: upstream removes older tarballs.
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
                                       version "/libpng-" version ".tar.xz")
                        (string-append
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
-                        "/libpng15/libpng-" version ".tar.xz")))
+                        "/libpng16/libpng-" version ".tar.xz")
+                       (string-append
+                        "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                        "/libpng16/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "04c8inn745hw25wz2dc5vll5n5d2gsndj01i4srwzgz8861qvzh9"))))
+             (base32 "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
@@ -91,24 +91,12 @@ library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
-(define libpng/fixed
-  (package
-    (inherit libpng)
-    (source
-      (origin
-        (inherit (package-source libpng))
-        (patches (search-patches "libpng-CVE-2016-10087.patch"))))))
-
 (define-public libpng-apng
   (package
     (inherit libpng)
     (replacement #f) ;libpng's replacement doesn't apply here
     (name "libpng-apng")
     (version (package-version libpng))
-    (source
-     (origin
-       (inherit (package-source libpng))
-       (patches (search-patches "libpng-CVE-2016-10087.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -152,16 +140,17 @@ APNG patch provides APNG support to libpng.")
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (replacement #f)
     (version "1.2.57")
     (source
      (origin
        (method url-fetch)
-       ;; Note: upstream removes older tarballs.
        (uri (list (string-append "mirror://sourceforge/libpng/libpng12/"
                                  version "/libpng-" version ".tar.xz")
                   (string-append
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                   "/libpng12/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
@@ -310,12 +299,27 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
                                 version ".tar.gz"))
+            (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
+                                     "libtiff-null-dereference.patch"
+                                     "libtiff-heap-overflow-tif-dirread.patch"
+                                     "libtiff-heap-overflow-pixarlog-luv.patch"
+                                     "libtiff-divide-by-zero.patch"
+                                     "libtiff-divide-by-zero-ojpeg.patch"
+                                     "libtiff-tiffcp-underflow.patch"
+                                     "libtiff-invalid-read.patch"
+                                     "libtiff-CVE-2016-10092.patch"
+                                     "libtiff-heap-overflow-tiffcrop.patch"
+                                     "libtiff-divide-by-zero-tiffcrop.patch"
+                                     "libtiff-CVE-2016-10093.patch"
+                                     "libtiff-divide-by-zero-tiffcp.patch"
+                                     "libtiff-assertion-failure.patch"
+                                     "libtiff-CVE-2016-10094.patch"
+                                     "libtiff-CVE-2017-5225.patch"))
             (sha256
              (base32
               "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
@@ -342,29 +346,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
-                                 "libtiff-null-dereference.patch"
-                                 "libtiff-heap-overflow-tif-dirread.patch"
-                                 "libtiff-heap-overflow-pixarlog-luv.patch"
-                                 "libtiff-divide-by-zero.patch"
-                                 "libtiff-divide-by-zero-ojpeg.patch"
-                                 "libtiff-tiffcp-underflow.patch"
-                                 "libtiff-invalid-read.patch"
-                                 "libtiff-CVE-2016-10092.patch"
-                                 "libtiff-heap-overflow-tiffcrop.patch"
-                                 "libtiff-divide-by-zero-tiffcrop.patch"
-                                 "libtiff-CVE-2016-10093.patch"
-                                 "libtiff-divide-by-zero-tiffcp.patch"
-                                 "libtiff-assertion-failure.patch"
-                                 "libtiff-CVE-2016-10094.patch"
-                                 "libtiff-CVE-2017-5225.patch"))))))
 
 (define-public libwmf
   (package
@@ -497,8 +478,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (replacement openjpeg-2.1.2)
-    (version "2.1.1")
+    (version "2.1.2")
     (source
       (origin
         (method url-fetch)
@@ -508,9 +488,9 @@ work.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1anv0rjkbxw9kx91wvlfpb3dhppibda6kb1papny46bjzi3pzhl2"))
-        (patches (search-patches "openjpeg-CVE-2016-5157.patch"
-                                 "openjpeg-CVE-2016-7163.patch"))))
+          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
+        (patches (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"
+                                 "openjpeg-CVE-2016-9572-CVE-2016-9573.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -534,28 +514,9 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
-(define openjpeg-2.1.2
-  (package
-    (inherit openjpeg)
-    (name "openjpeg")
-    (version "2.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/uclouvain/openjpeg/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
-        (patches
-          (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"
-                          "openjpeg-CVE-2016-9572-CVE-2016-9573.patch"))))))
-
 (define-public openjpeg-1
   (package (inherit openjpeg)
     (name "openjpeg")
-    (replacement #f)
     (version "1.5.2")
     (source
      (origin
@@ -718,7 +679,8 @@ supplies a generic doubly-linked list and some string functions.")
              (base32
               "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
             (patches (search-patches "freeimage-CVE-2015-0852.patch"
-                                     "freeimage-CVE-2016-5684.patch"))))
+                                     "freeimage-CVE-2016-5684.patch"
+                                     "freeimage-fix-build-with-gcc-5.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -898,44 +860,28 @@ and XMP metadata of images in various formats.")
 (define-public devil
   (package
     (name "devil")
-    (version "1.7.8")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/openil/"
                                   "DevIL-" version ".tar.gz"))
               (sha256
                (base32
-                "1zd850nn7nvkkhasrv7kn17kzgslr5ry933v6db62s4lr0zzlbv8"))
-              ;; Backported from upstream:
-              ;; https://github.com/DentonW/DevIL/commit/724194d7a9a91221a564579f64bdd6f0abd64219.patch
-              (patches (search-patches "devil-fix-libpng.patch"
-                                       "devil-CVE-2009-3994.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Fix old lcms include directives and lib flags.
-               '(substitute* '("configure" "src-IL/src/il_profiles.c")
-                  (("-llcms") "-llcms2")
-                  (("lcms/lcms\\.h") "lcms2/lcms2.h")
-                  (("lcms\\.h") "lcms2.h")))))
-    (build-system gnu-build-system)
+                "02dpzvi493r09c9hfjnk54nladl3qw55iqkkg18g12fxwwz9fx80"))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("--enable-ILUT=yes") ; build utility library
+     '(;; XXX: Not supported in the released CMakeLists.txt.
+       ;; Enable this for > 1.8.0.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Fix hard-coded /bin/bash reference.
-             (substitute* '("test/Makefile")
-               (("TESTS_ENVIRONMENT = /bin/bash")
-                (string-append "TESTS_ENVIRONMENT = "
-                               (assoc-ref inputs "bash")
-                               "/bin/bash")))
-             #t)))))
+         (add-before 'configure 'change-directory
+           (lambda _ (chdir "DevIL") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmng" ,libmng)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)

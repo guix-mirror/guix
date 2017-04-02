@@ -281,7 +281,7 @@ GCC that does not target a libc; otherwise, target that libc."
               (setenv "ARCH" ,(system->linux-architecture target))
               (format #t "`ARCH' set to `~a' (cross compiling)~%" (getenv "ARCH"))
 
-              (and (zero? (system* "make" "defconfig"))
+              (and (zero? (system* "make" ,(system->defconfig target)))
                    (zero? (system* "make" "mrproper" "headers_check"))))
             ,phases))))
       (native-inputs `(("cross-gcc" ,xgcc)

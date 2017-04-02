@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -464,6 +464,17 @@ current version of any major web browser.")
               '(substitute* (find-files "." "^CMakeLists\\.txt$")
                  (("-Werror") "")))))
     (build-system cmake-build-system)
+    (arguments
+     `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
+                                           (%current-system)))
+           '(#:phases
+             (modify-phases %standard-phases
+               (add-after 'unpack 'patch-aarch-march-detection
+                 (lambda _
+                   (substitute* (find-files "." "^CMakeLists\\.txt$")
+                     (("native") "armv8-a"))
+                   #t))))
+           '())))
     (home-page "https://github.com/miloyip/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
@@ -3928,7 +3939,7 @@ developed as part of the NetSurf project.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)))
+       ("gperf" ,gperf-3.0)))
     (inputs
      `(("libwapcaplet" ,libwapcaplet)))
     (propagated-inputs

@@ -26,14 +26,14 @@
 (define-public m4
   (package
    (name "m4")
-   (version "1.4.17")
+   (version "1.4.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/m4/m4-"
-                                version ".tar.bz2"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))))
+              "01sfjd5a4waqw83bibvmn522g69qfqvwig9i2qlgy154l1nfihgj"))))
    (build-system gnu-build-system)
    (arguments
     `(;; Explicitly disable tests when cross-compiling, otherwise 'make check'
@@ -50,7 +50,7 @@
                     (substitute* (find-files "tests"
                                              "posix_spawn")
                       (("/bin/sh")
-                       (format #f "~a/bin/bash" bash)))))
+                       (format #f "~a/bin/sh" bash)))))
                 %standard-phases)))
    (synopsis "Macro processor")
    (description

@@ -168,7 +168,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.4.1")
+   (version "1.4.3")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -176,7 +176,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1g8mndf0p0fzjfvxrprga84zvqq186gbddnw6wbna7cscfmpz8l5"))))
+               "08akv3qzwnf48xajb60dfcchkmfdjkpp65a0xd8s98w81901g343"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -432,7 +432,8 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))))
+              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))
+            (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -688,9 +689,12 @@ application suites.")
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
-      ("xorg-server" ,xorg-server)))
+      ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
+      ;; of updating xorg-server directly on the master branch.
+      ("xorg-server" ,xorg-server-1.19.2)))
    (arguments
-    `(;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
+    `(#:disallowed-references (,xorg-server-1.19.2)
+      ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")

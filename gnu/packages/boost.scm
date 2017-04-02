@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.61.0")
+    (version "1.63.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -43,7 +44,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0h5nk7pgxf7xsvvshj9qfpsfp9wx6gq9r78n3nx736pxq83bsix5"))))
+                "1c5kzhcqahnic55dxcnw7r80qvwx5sfa2sa97yzv7xjrywljbbmy"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
@@ -109,14 +110,14 @@ across a broad spectrum of applications.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "0.12.1")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://kohei.us/files/mdds/src/mdds_" version ".tar.bz2"))
+                   "http://kohei.us/files/mdds/src/mdds-" version ".tar.bz2"))
              (sha256
               (base32
-               "0gg8mb9kxh3wggh7njj1gf90xy27p0yq2cw88wqar9hhg2fmwmi3"))))
+               "17fcjhsq3bzqm7ba9sgp6my3y4226jnwai6q5jq3810i745p67hl"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files

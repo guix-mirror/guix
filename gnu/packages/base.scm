@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -78,14 +78,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.25")
+   (version "3.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0c38b67cnwchwzv4wq2gpz6smkhdxrac2hhssv8f0l04qnx867p2"))
+              "1dcasjp3a578nrvzrcn38mpizb8w1q6mvfzhjmcqqgkf0nsivj72"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
@@ -118,30 +118,36 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.2.2")
+   (version "4.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
-                                ".tar.bz2"))
+                                ".tar.xz"))
             (sha256
              (base32
-              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))
-            (patches (search-patches "sed-hurd-path-max.patch"))))
+              "0fv88bcnraixc8jvpacvxshi30p5x9m7yb8ns1hfv07hmb2ypmnb"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
-    (if (%current-target-system)
-        '()
-        `(#:phases (alist-cons-before
-                    'patch-source-shebangs 'patch-test-suite
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((bash (assoc-ref inputs "bash")))
-                        (patch-makefile-SHELL "testsuite/Makefile.tests")
-                        (substitute* '("testsuite/bsd.sh"
-                                       "testsuite/bug-regex9.c")
-                          (("/bin/sh")
-                           (string-append bash "/bin/bash")))))
-                    %standard-phases))))
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'dont-rebuild-sed.1
+          (lambda _
+            ;; Make sure we do not attempt to rebuild 'doc/sed.1', which does
+            ;; not work when cross-compiling because we cannot run 'sed'.
+            ;; This is fixed upstream as commit a0a25e3.
+            (substitute* "Makefile.in"
+              (("^doc/sed\\.1:.*")
+               "doc/sed.1:\n"))
+            #t))
+        (add-before 'patch-source-shebangs 'patch-test-suite
+          (lambda* (#:key inputs #:allow-other-keys)
+            (patch-makefile-SHELL "testsuite/Makefile.tests")
+            (substitute* '("testsuite/bsd.sh"
+                           "testsuite/bug-regex9.c")
+              (("/bin/sh")
+               (which "sh")))
+            #t)))))
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
@@ -162,7 +168,8 @@ implementation offers several extensions over the standard utility.")
             (sha256
              (base32
               "097hx7sbzp8qirl4m930lw84kn0wmxhmq7v1qpra3mrg0b8cyba0"))
-            (patches (search-patches "tar-skip-unreliable-tests.patch"))))
+            (patches (search-patches "tar-CVE-2016-6321.patch"
+                                     "tar-skip-unreliable-tests.patch"))))
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
@@ -277,14 +284,15 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.25")
+   (version "8.26")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "11yfrnb94xzmvi4lhclkcmkqsbhww64wf234ya1aacjvg82prrii"))))
+              "13lspazc7xkviy93qz7ks9jv4sldvgmwpq36ghrbrqpq93br8phm"))
+            (patches (search-patches "coreutils-fix-cross-compilation.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -299,12 +307,21 @@ used to apply commands with arbitrarily long arguments.")
     ;; copy of help2man.  However, don't pass it when cross-compiling since
     ;; that would lead it to try to run programs to get their '--help' output
     ;; for help2man.
-    (if (%current-target-system)
-        '()
-        `(("perl" ,perl))))
+    `(,@(if (%current-target-system)
+            '()
+            `(("perl" ,perl)))
+
+      ;; Apply this patch only on ARM to avoid a full rebuild.
+      ;; TODO: Move to 'patches' in the next update cycle.
+      ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                      (%current-system)))
+            `(("cut-test.patch"
+               ,(search-patch "coreutils-cut-huge-range-test.patch")))
+            '())))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
+      #:parallel-tests? #f            ; race condition fixed after 8.26
       #:phases (alist-cons-before
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -319,7 +336,22 @@ used to apply commands with arbitrarily long arguments.")
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/sh" bash)))))
-                %standard-phases)))
+
+                ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                                (%current-system)))
+                      '((alist-cons-before
+                         'build 'patch-cut-test
+                         (lambda* (#:key inputs native-inputs
+                                   #:allow-other-keys)
+                           (let ((patch (or (assoc-ref inputs
+                                                       "cut-test.patch")
+                                            (assoc-ref native-inputs
+                                                       "cut-test.patch"))))
+                             (zero?
+                              (system* "patch" "-p1" "--force"
+                                       "--input" patch))))
+                         %standard-phases))
+                      '(%standard-phases)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
@@ -362,7 +394,7 @@ functionality beyond that which is outlined in the POSIX standard.")
             (let ((bash (assoc-ref inputs "bash")))
               (substitute* "job.c"
                 (("default_shell =.*$")
-                 (format #f "default_shell = \"~a/bin/bash\";\n"
+                 (format #f "default_shell = \"~a/bin/sh\";\n"
                          bash)))))))))
    (synopsis "Remake files automatically")
    (description
@@ -501,14 +533,14 @@ store.")
 (define-public glibc/linux
   (package
    (name "glibc")
-   (version "2.24")
+   (version "2.25")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))
+              "1813dzkgw6v8q8q1m4v96yfis7vjqc9pslqib6j9mrwh6fxxjyq6"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -619,14 +651,14 @@ store.")
                       ;; Same for `popen'.
                       (substitute* "libio/iopopen.c"
                         (("/bin/sh")
-                         (string-append bash "/bin/bash")))
+                         (string-append bash "/bin/sh")))
 
                       ;; Same for the shell used by the 'exec' functions for
                       ;; scripts that lack a shebang.
                       (substitute* (find-files "." "^paths\\.h$")
                         (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
                          (string-append "#define _PATH_BSHELL \""
-                                        bash "/bin/bash\"\n")))
+                                        bash "/bin/sh\"\n")))
 
                       ;; Nscd uses __DATE__ and __TIME__ to create a string to
                       ;; make sure the client and server come from the same
@@ -715,7 +747,21 @@ with the Linux kernel.")
              ;; Use the right 'pwd'.
              (substitute* "configure"
                (("/bin/pwd") "pwd")))
-          ,original-phases)))
+           (alist-replace
+            'build
+            (lambda _
+              ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
+              ;; linking errors.
+              ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
+              (let ((-j (list "-j" (number->string (parallel-job-count)))))
+                (let-syntax ((make (syntax-rules ()
+                                     ((_ target)
+                                      (zero? (apply system* "make" target -j))))))
+                  (and (make "mach/subdir_lib")
+                       (make "hurd/subdir_lib")
+                       (make "libpthread/subdir_lib")
+                       (zero? (apply system* "make" -j))))))
+            ,original-phases))))
         ((#:configure-flags original-configure-flags)
         `(append (list "--host=i586-pc-gnu"
 
@@ -749,6 +795,18 @@ GLIBC/HURD for a Hurd host"
 
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.24
+  (package
+    (inherit glibc)
+    (version "2.24")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))))))
 
 (define-public glibc-2.23
   (package
@@ -943,7 +1001,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2016j")
+    (version "2017a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -951,7 +1009,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1j4xycpwhs57qnkcxwh3np8wnf3km69n3cf4w6p2yv2z247lxvpm"))))
+               "1mmv4rvcs12lrvgghw4fidczvb69yv69cmzknghcvw1c196mqfnz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -999,7 +1057,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1dxhrk4z0n2di8p0yd6q00pa6bwyz5xqbrfbasiz8785ni7zrvxr"))))))
+                            "1b1q7gnlsh5hjgs5065pvajd37rmbc3k9b8cgzad1vcrifswdwh2"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1008,6 +1066,31 @@ representative locations around the globe.  It is updated periodically to
 reflect changes made by political bodies to time zone boundaries, UTC offsets,
 and daylight-saving rules.")
     (license public-domain)))
+
+;;; A "fixed" version of tzdata, which is used in the test suites of
+;;; glib and R. We can update this whenever we are able to rebuild
+;;; thousands of packages (for example, in a core-updates rebuild).
+(define-public tzdata-2017a
+  (package
+    (inherit tzdata)
+    (version "2017a")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.iana.org/time-zones/repository"
+                            "/releases/tzdata" version ".tar.gz"))
+        (sha256
+         (base32
+          "1mmv4rvcs12lrvgghw4fidczvb69yv69cmzknghcvw1c196mqfnz"))))
+    (inputs `(("tzcode" ,(origin
+                          (method url-fetch)
+                          (uri (string-append
+                                "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                version ".tar.gz"))
+                          (sha256
+                           (base32
+                            "1b1q7gnlsh5hjgs5065pvajd37rmbc3k9b8cgzad1vcrifswdwh2"))))))))
+
 
 (define-public libiconv
   (package

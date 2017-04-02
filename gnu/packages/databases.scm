@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -210,7 +210,44 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
+                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))
+    (arguments
+     `(#:tests? #f                            ; no check target available
+       #:disallowed-references ("doc")
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (doc (assoc-ref outputs "doc")))
+            ;; '--docdir' is not honored, so we need to patch.
+            (substitute* "dist/Makefile.in"
+              (("docdir[[:blank:]]*=.*")
+               (string-append "docdir = " doc "/share/doc/bdb")))
+
+            (zero?
+             (system* "./dist/configure"
+                      (string-append "--prefix=" out)
+                      (string-append "CONFIG_SHELL=" (which "bash"))
+                      (string-append "SHELL=" (which "bash"))
+
+                      ;; Bdb doesn't recognize aarch64 as an architecture.
+                      ,@(if (string=? "aarch64-linux" (%current-system))
+                            '("--build=aarch64-unknown-linux-gnu")
+                            '())
+
+                      ;; Remove 7 MiB of .a files.
+                      "--disable-static"
+
+                      ;; The compatibility mode is needed by some packages,
+                      ;; notably iproute2.
+                      "--enable-compat185"
+
+                      ;; The following flag is needed so that the inclusion
+                      ;; of db_cxx.h into C++ files works; it leads to
+                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                      "--enable-cxx"))))
+                 %standard-phases)))))
 
 (define-public leveldb
   (package
@@ -307,7 +344,12 @@ mapping from string keys to string values.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
-                       #t))))))
+                       #t))))
+       ;; On aarch64 the test suite runs out of memory and fails.
+       ,@(if (string-prefix? "aarch64-linux"
+                             (or (%current-target-system) (%current-system)))
+           '(#:tests? #f)
+           '())))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
@@ -665,12 +707,9 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.14.1")
+   (version "3.17.0")
    (source (origin
             (method url-fetch)
-            ;; TODO: Download from sqlite.org once this bug :
-            ;; http://lists.gnu.org/archive/html/bug-guile/2013-01/msg00027.html
-            ;; has been fixed.
             (uri (let ((numeric-version
                         (match (string-split version #\.)
                           ((first-digit other-digits ...)
@@ -680,23 +719,11 @@ for example from a shell script.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (list
-                    (string-append
-                     "https://fossies.org/linux/misc/sqlite-autoconf-"
-                     numeric-version ".tar.gz")
-                    (string-append
-                     "http://distfiles.gentoo.org/distfiles/"
-                     "/sqlite-autoconf-" numeric-version ".tar.gz"))
-
-                   ;; XXX: As of 2015-09-08, SourceForge is squatting the URL
-                   ;; below, returning 200 and showing an advertising page.
-                   ;; (string-append
-                   ;;  "mirror://sourceforge/sqlite.mirror/SQLite%20" version
-                   ;;  "/sqlite-autoconf-" numeric-version ".tar.gz")
-                   ))
+                   (string-append "https://sqlite.org/2017/sqlite-autoconf-"
+                                  numeric-version ".tar.gz")))
             (sha256
              (base32
-              "19j73j44akqgc6m82wm98yvnmm3mfzmfqr8mp3n7n080d53q4wdw"))))
+              "0k472gq0p706jq4529p60znvw02hdf172qxgbdv59q0n7anqbr54"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -707,7 +734,7 @@ for example from a shell script.")
       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
-   (home-page "http://www.sqlite.org/")
+   (home-page "https://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
     "SQLite is a software library that implements a self-contained, serverless,
@@ -715,26 +742,6 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
-
-(define-public sqlite-3.15.1
-  (package (inherit sqlite)
-           (version "3.15.1")
-           (source (origin
-                     (method url-fetch)
-                     (uri (let ((numeric-version
-                                 (match (string-split version #\.)
-                                   ((first-digit other-digits ...)
-                                    (string-append first-digit
-                                                   (string-pad-right
-                                                    (string-concatenate
-                                                     (map (cut string-pad <> 2 #\0)
-                                                          other-digits))
-                                                    6 #\0))))))
-                            (string-append "https://sqlite.org/2016/sqlite-autoconf-"
-                                           numeric-version ".tar.gz")))
-                     (sha256
-                      (base32
-                       "1ig2d9jzzixiifmgqsl6kjcvy17jwxby3s24gfnc5qvyd6vqkyjx"))))))
 
 (define-public tdb
   (package
@@ -1347,7 +1354,15 @@ trees (LSM), for sustained throughput under random insert workloads.")
      `(("python" ,python-2)))
     (inputs `(("postgresql" ,postgresql)))
     (arguments
-     `(#:tests? #f)) ; # FAIL:  1
+     `(#:tests? #f   ; # FAIL:  1
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-sed-command
+           (lambda _
+             ;; Newer sed versions error out if double brackets are not used.
+             (substitute* "configure"
+               (("\\[:space:\\]") "[[:space:]]"))
+             #t)))))
     (synopsis "C++ connector for PostgreSQL")
     (description
      "Libpqxx is a C++ library to enable user programs to communicate with the

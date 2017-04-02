@@ -67,7 +67,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.10.14")
+    (version "1.10.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +75,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "10x0wvv2ly4lyyfd42k4xw0ar5qdbi9cksw3l5fcwf1y6mq8y8r3"))
+                "121kqkjsd3vgf8vca8364xl44qa5086h7qy5zs5f1l78ldpbmc57"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -137,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.50.2")
+   (version "2.50.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -145,7 +145,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1xgvmiqbhla6grpmbidqs3bl6zrb9mjknfsh7r4hb3163xy76s5y"))
+              "16frrwhc1yqkzx6bgh3060g94dr2biab17fb01mrni819jzr9vl2"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -157,17 +157,18 @@ shared NFS home directories.")
     `(("coreutils" ,coreutils)
       ("util-linux" ,util-linux)  ; for libmount
       ("libffi" ,libffi)
-      ("zlib" ,zlib)
-      ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
+      ("zlib" ,zlib)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
       ("perl" ,perl)                              ; needed by GIO tests
-      ("bash" ,bash)))
+      ("bash" ,bash)
+      ("tzdata" ,tzdata-2017a)))                  ; for tests/gdatetime.c
    (arguments
-    '(#:phases
+    `(#:disallowed-references (,tzdata-2017a)
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -246,7 +247,12 @@ shared NFS home directories.")
 
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch")))))
+                       "/gdbus/x11-autolaunch"))
+
+                     ("glib/tests/gdatetime.c"
+                      (;; Assumes that the Brasilian time zone is named 'BRT',
+                       ;; which is no longer true as of tzdata-2017a.
+                       "/GDateTime/new_full")))))
               (and-map (lambda (x) (apply disable x)) failing-tests)))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.

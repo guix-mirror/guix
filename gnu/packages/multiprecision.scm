@@ -32,7 +32,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "6.1.1")
+   (version "6.1.2")
    (source (origin
             (method url-fetch)
             (uri
@@ -40,7 +40,7 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "0cg84n482gcvl0s4xq4wgwsk4r0x0m8dnzpizwqdd2j8vw2rqvnk"))
+              "04hrwahdxyqdik559604r7wrj9ffklwvipgfxgj4ys4skbl6bdc7"))
             (patches (search-patches "gmp-faulty-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
@@ -87,13 +87,13 @@ cryptography and computational algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.4")
+   (version "3.1.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "1x8pcnpn1vxfzfsr0js07rwhwyq27fmdzcfjpzi5773ldnqi653n"))))
+                     "1g32l2fg8f62lcyzzh88y3fsh6rk539qc6ahhdgvx7wpnf1dwpq1"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>

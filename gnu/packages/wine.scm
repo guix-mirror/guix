@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +65,8 @@
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
-                     ("flex" ,flex)
+                     ; A bug in flex prevents building with flex-2.6.3.
+                     ("flex" ,flex-2.6.1)
                      ("bison" ,bison)
                      ("perl" ,perl)))
     (inputs

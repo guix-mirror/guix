@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages docbook)
@@ -113,14 +115,14 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.11")
+    (version "1.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://ftp.stack.nl/pub/users/dimitri/"
                                  name "-" version ".src.tar.gz"))
              (sha256
               (base32
-               "0ja02pm3fpfhc5dkry00kq8mn141cqvdqqpmms373ncbwi38pl35"))
+               "0srzawqn3apzrg8hwycwrawdylmmjrndij4spw6xr1vspn3phrmg"))
              (patches (search-patches "doxygen-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -128,8 +130,18 @@ markup) can be customized and extended by the user.")
        ("flex" ,flex)
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
+    (inputs
+     `(("bash" ,bash-minimal)))
     (arguments
-     `(#:test-target "tests"))
+     `(#:test-target "tests"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-sh
+                              (lambda* (#:key inputs #:allow-other-keys)
+                                (substitute* "src/portable.cpp"
+                                  (("/bin/sh")
+                                   (string-append
+                                    (assoc-ref inputs "bash") "/bin/sh")))
+                                #t)))))
     (home-page "http://www.stack.nl/~dimitri/doxygen/")
     (synopsis "Generate documentation from annotated sources")
     (description "Doxygen is the de facto standard tool for generating

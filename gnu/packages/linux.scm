@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
@@ -113,6 +114,13 @@
           ((string-prefix? "alpha" arch) "alpha")
           (else arch))))
 
+(define-public (system->defconfig system)
+  "Some systems (notably powerpc-linux) require a special target for kernel
+defconfig.  Return the appropiate make target if applicable, otherwise return
+\"defconfig\"."
+  (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
+        (else "defconfig")))
+
 (define (linux-libre-urls version)
   "Return a list of URLs for Linux-Libre VERSION."
   (list (string-append
@@ -132,13 +140,13 @@
 (define-public linux-libre-headers
   (package
     (name "linux-libre-headers")
-    (version "4.4.18")
+    (version "4.4.47")
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0k8k17in7dkjd9d8zg3i8l1ax466dba6bxw28flxizzyq8znljps"))))
+               "00zdq7swhvzbbnnhzizq6m34q5k4fycpcp215bmkbxh1ic76v7bs"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -152,11 +160,13 @@
            (lambda _
              (let ((arch ,(system->linux-architecture
                           (or (%current-target-system)
-                              (%current-system)))))
+                              (%current-system))))
+                   (defconfig ,(system->defconfig
+                                (or (%current-target-system)
+                                    (%current-system)))))
                (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
-
-               (and (zero? (system* "make" "defconfig"))
+               (and (zero? (system* "make" defconfig))
                     (zero? (system* "make" "mrproper" "headers_check"))))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -479,8 +489,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (replacement util-linux/fixed)
-    (version "2.28.1")
+    (version "2.29.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -488,7 +497,7 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "03xnaw3c7pavxvvh1vnimcr44hlhhf25whawiyv8dxsflfj4xkiy"))
+                "1qz81w8vzrmy8xn9yx7ls4amkbgwx6vr62pl6kv9g7r0g3ba9kmc"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -504,7 +513,7 @@ providing the system administrator with some help in common tasks.")
                "static"))      ; >2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-
+                               "--enable-fs-paths-default=/run/current-system/profile/sbin"
                                ;; Install completions where our
                                ;; bash-completion package expects them.
                                (string-append "--with-bashcompletiondir="
@@ -559,17 +568,6 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
-
-(define util-linux/fixed
-  (package
-    (inherit util-linux)
-    (source
-      (origin
-        (inherit (package-source util-linux))
-        (patches
-          (append
-            (origin-patches (package-source util-linux))
-            (search-patches "util-linux-CVE-2017-2616.patch")))))))
 
 (define-public procps
   (package
@@ -889,7 +887,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.0.27.1")
+    (version "1.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -897,10 +895,9 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
-             (patches (search-patches "alsa-lib-mips-atomic-fix.patch"))))
+               "174n2psp0328xcy2f1ayls67598bxli6q9cf00d2qnac3012aa3i"))))
     (build-system gnu-build-system)
-    (home-page "http://www.alsa-project.org/")
+    (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
@@ -1211,7 +1208,7 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.24")
+    (version "2.25")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1219,7 +1216,7 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "0rbc9qbqs5bp9am9s9g83wxj5k4ixps2agy9dxr1v1fwg27mdr6f"))))
+               "0qjiqc5pknaal57453nxcbz3mn1r4hkyywam41wfcglq3v2qlg39"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
@@ -1713,7 +1710,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "23")
+    (version "24")
     (source (origin
               (method url-fetch)
               (uri
@@ -1721,7 +1718,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "0mc12sx06p8il1ym3hdmgxxb37apn9yv7xij26gddjdfkx8xa0yk"))
+                "15xkkkzvca9flvkm48gkh8y8f13vlm3sl7nz9ydc7b3jy4fqs2v1"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1758,7 +1755,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1766,8 +1763,9 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "099w62ncq78nxpxizf910mx18hc8x4qvzw3azjd00fir89wmyjnq"))
-              (patches (search-patches "eudev-rules-directory.patch"))))
+                "06gyyl90n85x8i7lfhns514y1kg1ians13l467admyzy3kjxkqsp"))
+              (patches (search-patches "eudev-rules-directory.patch"
+                                       "eudev-conflicting-declaration.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2713,7 +2711,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.43")
+    (version "5.44")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2721,7 +2719,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "05cdnpz0w2lwq2x5ba87q1h2wgb4lfnpbnbh6p7499hx59fw1j8n"))))
+                "11bc6pndivd0rkqr3c8a1xd9ar9bb60gx79piskycicb3wliwchc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,10 +23,12 @@
 
 (define-module (gnu packages gnuzilla)
   #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
@@ -68,6 +70,7 @@
              (sha256
               (base32
                "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))
+             (patches (search-patches "mozjs17-aarch64-support.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Fix incompatibility with Perl 5.22+.
@@ -75,27 +78,38 @@
                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("perl" ,perl)
-        ("python" ,python-2)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-17.0.pc
+    (inputs
+     `(("zlib" ,zlib)))
     (arguments
-      `(;; XXX: parallel build fails, lacking:
-        ;;   mkdir -p "system_wrapper_js/"
-        #:parallel-build? #f
-        #:phases
-          (alist-cons-before
-           'configure 'chdir
+     `(;; XXX: parallel build fails, lacking:
+       ;;   mkdir -p "system_wrapper_js/"
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-timedout-test
+           ;; This test times out on slower hardware.
+           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
+         (add-before 'configure 'chdir
            (lambda _
-             (chdir "js/src"))
-           (alist-replace
-            'configure
-            ;; configure fails if it is followed by SHELL and CONFIG_SHELL
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (setenv "SHELL" (which "sh"))
-                (setenv "CONFIG_SHELL" (which "sh"))
-                (zero? (system*
-                        "./configure" (string-append "--prefix=" out)))))
-            %standard-phases))))
+             (chdir "js/src")
+             #t))
+         (replace 'configure
+           ;; configure fails if it is followed by SHELL and CONFIG_SHELL
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (system*
+                       "./configure" (string-append "--prefix=" out)
+                                     ,@(if (string=? "aarch64-linux"
+                                                     (%current-system))
+                                         '("--host=aarch64-unknown-linux-gnu")
+                                         '())))))))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey")
     (synopsis "Mozilla javascript engine")
@@ -116,35 +130,30 @@ in C/C++.")
                (base32
                 "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))
               (modules '((guix build utils)))
+              (patches (search-patches "mozjs24-aarch64-support.patch"))
               (snippet
                ;; Fix incompatibility with Perl 5.22+.
                '(substitute* '("js/src/config/milestone.pl")
                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
-     '(;; XXX: parallel build fails, lacking:
-       ;;   mkdir -p "system_wrapper_js/"
-       #:parallel-build? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (chdir "js/src")
-              ;; configure fails if it is follwed by SHELL and CONFIG_SHELL
-              (setenv "SHELL" (which "sh"))
-              (setenv "CONFIG_SHELL" (which "sh"))
-              (zero? (system* "./configure"
-                              (string-append "--prefix=" out)
-                              "--with-system-nspr"
-                              "--enable-system-ffi"
-                              "--enable-threadsafe"))))))))
-    (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
-    (propagated-inputs
-     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-24.pc
+      (substitute-keyword-arguments (package-arguments mozjs)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'configure
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((out (assoc-ref outputs "out")))
+                  ;; configure fails if it is followed by SHELL and CONFIG_SHELL
+                  (setenv "SHELL" (which "sh"))
+                  (setenv "CONFIG_SHELL" (which "sh"))
+                  (zero? (system* "./configure"
+                                  (string-append "--prefix=" out)
+                                  "--with-system-nspr"
+                                  "--enable-system-ffi"
+                                  "--enable-threadsafe"
+                                  ,@(if (string=? "aarch64-linux"
+                                                  (%current-system))
+                                      '("--host=aarch64-unknown-linux-gnu")
+                                      '()))))))))))
     (inputs
      `(("libffi" ,libffi)
        ("zlib" ,zlib)))))
@@ -152,7 +161,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.13.1")
+    (version "4.14")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -160,21 +169,19 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "1arkg08l6zlp8v44shqbk2c8qzwd913lgh60fb3yfxls6d8ifk2y"))))
+               "1m8p9l3prabhfxz6zs889fl7gmcka72a62i46a8klh2pca11iz34"))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("perl" ,perl)))
+     `(("perl" ,perl)))
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags (list "--enable-64bit"
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
-       #:phases (alist-cons-before
-                 'configure 'chdir
-                 (lambda _
-                   (chdir "nspr"))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'chdir
+                    (lambda _ (chdir "nspr") #t)))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
@@ -186,7 +193,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.29.2")
+    (version "3.29.3")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -197,13 +204,14 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "149807rmzb76hnh48rw4m9jw83iw0168njzchz0hmbsgc8mk0i5w"))
+                "1sz1r2iml9bhd4iqiqz75gii855a25895vpy9scjky0y4lqwrp9m"))
               ;; Create nss.pc and nss-config.
-              (patches (search-patches "nss-pkgconfig.patch"))))
+              (patches (search-patches "nss-pkgconfig.patch"
+                                       "nss-increase-test-timeout.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
-     '(#:parallel-build? #f ; failed
+     `(#:parallel-build? #f ; not supported
        #:make-flags
        (let* ((out (assoc-ref %outputs "out"))
               (nspr (string-append (assoc-ref %build-inputs "nspr")))
@@ -221,55 +229,55 @@ in the Mozilla clients.")
                   (ice-9 match)
                   (srfi srfi-26))
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key system inputs #:allow-other-keys)
-          (setenv "CC" "gcc")
-          ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-          (when (string-prefix? "x86_64" system)
-            (setenv "USE_64" "1"))
-          #t)
-        (alist-replace
-         'check
-         (lambda _
-           ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
-           ;; The later requires a working DNS or /etc/hosts.
-           (setenv "DOMSUF" "(none)")
-           (setenv "USE_IP" "TRUE")
-           (setenv "IP_ADDRESS" "127.0.0.1")
-           (zero? (system* "./nss/tests/all.sh")))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append (assoc-ref outputs "bin") "/bin"))
-                   (inc (string-append out "/include/nss"))
-                   (lib (string-append out "/lib/nss"))
-                   (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
-                          ((obj) (string-append "dist/" obj)))))
-              ;; Install nss-config to $out/bin.
-              (install-file (string-append obj "/bin/nss-config")
-                            (string-append out "/bin"))
-              (delete-file (string-append obj "/bin/nss-config"))
-              ;; Install nss.pc to $out/lib/pkgconfig.
-              (install-file (string-append obj "/lib/pkgconfig/nss.pc")
-                            (string-append out "/lib/pkgconfig"))
-              (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
-              (rmdir (string-append obj "/lib/pkgconfig"))
-              ;; Install other files.
-              (copy-recursively "dist/public/nss" inc)
-              (copy-recursively (string-append obj "/bin") bin)
-              (copy-recursively (string-append obj "/lib") lib)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (setenv "CC" "gcc")
+             ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
+             ,@(match (%current-system)
+                 ((or "x86_64-linux" "aarch64-linux")
+                  `((setenv "USE_64" "1")))
+                 (_
+                  '()))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
+             ;; The later requires a working DNS or /etc/hosts.
+             (setenv "DOMSUF" "(none)")
+             (setenv "USE_IP" "TRUE")
+             (setenv "IP_ADDRESS" "127.0.0.1")
+             (zero? (system* "./nss/tests/all.sh"))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append (assoc-ref outputs "bin") "/bin"))
+                      (inc (string-append out "/include/nss"))
+                      (lib (string-append out "/lib/nss"))
+                      (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
+                             ((obj) (string-append "dist/" obj)))))
+                 ;; Install nss-config to $out/bin.
+                 (install-file (string-append obj "/bin/nss-config")
+                               (string-append out "/bin"))
+                 (delete-file (string-append obj "/bin/nss-config"))
+                 ;; Install nss.pc to $out/lib/pkgconfig.
+                 (install-file (string-append obj "/lib/pkgconfig/nss.pc")
+                               (string-append out "/lib/pkgconfig"))
+                 (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
+                 (rmdir (string-append obj "/lib/pkgconfig"))
+                 ;; Install other files.
+                 (copy-recursively "dist/public/nss" inc)
+                 (copy-recursively (string-append obj "/bin") bin)
+                 (copy-recursively (string-append obj "/lib") lib)
 
-              ;; FIXME: libgtest1.so is installed in the above step, and it's
-              ;; (unnecessarily) linked with several NSS libraries, but
-              ;; without the needed rpaths, causing the 'validate-runpath'
-              ;; phase to fail.  Here we simply delete libgtest1.so, since it
-              ;; seems to be used only during the tests.
-              (delete-file (string-append lib "/libgtest1.so"))
+                 ;; FIXME: libgtest1.so is installed in the above step, and it's
+                 ;; (unnecessarily) linked with several NSS libraries, but
+                 ;; without the needed rpaths, causing the 'validate-runpath'
+                 ;; phase to fail.  Here we simply delete libgtest1.so, since it
+                 ;; seems to be used only during the tests.
+                 (delete-file (string-append lib "/libgtest1.so"))
 
-              #t))
-          %standard-phases)))))
+                 #t))))))
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))

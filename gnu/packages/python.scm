@@ -121,7 +121,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.12")
+    (version "2.7.13")
     (source
      (origin
       (method url-fetch)
@@ -129,11 +129,12 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0y7rl603vmwlxm6ilkhc51rx2mfj14ckcz40xxgs0ljnvlhp30yp"))
+        "0cgpk3zk0fgpji59pb4zy9nzljr70qzgv1vpz5hq5xw2d2c47m9m"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
-                               "python-2.7-source-date-epoch.patch"))
+                               "python-2.7-source-date-epoch.patch"
+                               "python-2.7-getentropy-on-old-kernels.patch"))
       (modules '((guix build utils)))
       ;; suboptimal to delete failing tests here, but if we delete them in the
       ;; arguments then we need to make sure to strip out that phase when it
@@ -174,6 +175,7 @@
        (list "--enable-shared"                    ;allow embedding
              "--with-system-ffi"                  ;build ctypes
              "--with-ensurepip=install"           ;install pip and setuptools
+             "--enable-unicode=ucs4"
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
 
@@ -317,7 +319,7 @@ data types.")
 
 (define-public python-3.5
   (package (inherit python-2)
-    (version "3.5.2")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -325,12 +327,16 @@ data types.")
               (patches (search-patches
                         "python-fix-tests.patch"
                         "python-3.5-fix-tests.patch"
+                        "python-3.5-getentropy-on-old-kernels.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "0h6a5fr7ram2s483lh0pnmc4ncijb8llnpfdxdcl5dxr01hza400"))))
+                "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
+              (snippet
+               '(delete-file
+                  "Lib/ctypes/test/test_win32.py")))) ; fails on aarch64
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
@@ -339,23 +345,6 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
-
-(define-public python-3.4
-  (package (inherit python-3.5)
-    (version "3.4.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.python.org/ftp/python/"
-                                  version "/Python-" version ".tar.xz"))
-              (patches (search-patches
-                        "python-fix-tests.patch"
-                        "python-3.4-fix-tests.patch"
-                        "python-3-deterministic-build-info.patch"
-                        "python-3-search-paths.patch"))
-              (patch-flags '("-p0"))
-              (sha256
-               (base32
-                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))))
 
 ;; Current 3.x version.
 (define-public python-3 python-3.5)
@@ -370,11 +359,12 @@ data types.")
   (package (inherit python-2)
     (name "python-minimal")
     (outputs '("out"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-2)
-       ((#:configure-flags cf)
-        `(append ,cf '("--without-system-ffi")))))
-    (inputs '())))                          ;none of the optional dependencies
+
+    ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
+    ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
+    ;; libffi.
+    (inputs `(("libffi" ,libffi)
+              ("zlib" ,zlib)))))
 
 (define-public python-minimal
   (package (inherit python)
@@ -4567,6 +4557,7 @@ services for your Python modules and applications.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
+       (patches (search-patches "python-pillow-freetype-2.7-test-failure.patch"))
        (sha256
         (base32
          "0xkv0p1d73gz0a1qaasf0ai4262g8f334j07vd60bjrxs2wr3nmj"))))

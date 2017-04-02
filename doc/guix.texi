@@ -24,7 +24,7 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
-Copyright @copyright{} 2016 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
 Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
@@ -6876,6 +6876,11 @@ Intel 32-bit architecture (IA32), Linux-Libre kernel;
 ARMv7-A architecture with hard float, Thumb-2 and NEON,
 using the EABI hard-float application binary interface (ABI),
 and Linux-Libre kernel.
+
+@item aarch64-linux
+little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
+currently in an experimental stage, with limited support.
+@xref{Contributing}, for how to help!
 
 @item mips64el-linux
 little-endian 64-bit MIPS processors, specifically the Loongson series,

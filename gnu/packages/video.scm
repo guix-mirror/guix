@@ -136,6 +136,11 @@
                                                       (%current-system))
                                             '("--host=mips64el-unknown-linux-gnu")
                                             '())
+                                      ;; The same is also true with aarch64.
+                                      ,@(if (string=? "aarch64-linux"
+                                                      (%current-system))
+                                            '("--host=aarch64-unknown-linux-gnu")
+                                            '())
                                       (string-append "--with-ncurses="
                                                      ncurses)))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
@@ -278,6 +283,10 @@ H.264 (MPEG-4 AVC) video streams.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
+       ;; Currently the source code doesn't check for aarch64
+       ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
+           '(#:configure-flags '("-DENABLE_PIC=TRUE"))
+           '())
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build
@@ -394,7 +403,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.7.1")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
@@ -402,7 +411,7 @@ SMPTE 314M.")
              "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "1j8mb3p9kafhp30r3kmndnrklvzycc2ym0w6xdqz6m7jap626028"))))
+        (base32 "1ndrf136rlw03xag7j1xpmf9015d1h0dpnv6v587jnh6k2a17g12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

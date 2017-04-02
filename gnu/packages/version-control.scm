@@ -288,13 +288,14 @@ as well as the classic centralized workflow.")
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
     ;; with $GIT_SSL_CAINFO.
-    ;; FIXME: This variable designates a single file; it is not a search path.
     (list (search-path-specification
            (variable "GIT_SSL_CAINFO")
            (file-type 'regular)
+           (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))
           (search-path-specification
            (variable "GIT_EXEC_PATH")
+           (separator #f)                         ;single entry
            (files '("libexec/git-core")))))
 
    (synopsis "Distributed version control system")
@@ -805,7 +806,8 @@ projects, from individuals to large-scale enterprise operations.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))))
+               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))
+             (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
     (home-page "https://www.gnu.org/software/rcs/")

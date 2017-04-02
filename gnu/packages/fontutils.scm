@@ -2,7 +2,9 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,13 +48,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.6.3")
+   (version "2.7.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "18k3b026762lmyrxfil5xv8qwnvj7hc12gz9bjqzbb12lmx707ip"))))
+                     "121gm15ayfg3rglby8ifh8384mcjb9dhmx9j40zl7yszw72b4frs"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -69,7 +71,7 @@ It supports both bitmap and scalable formats, including TrueType, OpenType,
 Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
-   (home-page "http://www.freetype.org/")))
+   (home-page "https://www.freetype.org/")))
 
 (define-public ttfautohint
   (package
@@ -229,6 +231,8 @@ fonts to/from the WOFF2 format.")
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
+            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"
+                                     "fontconfig-path-max.patch"))
             (sha256 (base32
                      "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
    (build-system gnu-build-system)
@@ -254,6 +258,11 @@ fonts to/from the WOFF2 format.")
             "PYTHON=false")
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-tests-for-freetype-2.7.1
+          (lambda _
+            (substitute* "test/run-test.sh"
+              (("\\\| sort") "| cut -d' ' -f2 | sort"))
+            #t))
         (replace 'install
                  (lambda _
                    ;; Don't try to create /var/cache/fontconfig.
@@ -366,15 +375,16 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.8")
+   (version "1.3.9")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/graphite/releases/"
                            "download/" version "/" name "-" version ".tgz"))
+       (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
-         "1hlc9j7w7gihy6gvzfa7902pr6yxq1sr1xkp5rwf0p29m2rjagwz"))))
+         "0rs5h7m340z75kygx8d72cps0q6yvvqa9i788vym7585cfv8a0gc"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests

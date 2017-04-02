@@ -56,13 +56,18 @@
 
 (define (boot-guile-uri arch)
   "Return the URI for the bootstrap Guile tarball for ARCH."
-  (if (string=? "armhf" arch)
-      (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
-                     arch "-linux"
-                     "/20150101/guile-2.0.11.tar.xz")
-      (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
-                     arch "-linux"
-                     "/20131110/guile-2.0.9.tar.xz")))
+  (cond ((string=? "armhf" arch)
+         (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                        arch "-linux"
+                        "/20150101/guile-2.0.11.tar.xz"))
+        ((string=? "aarch64" arch)
+         (let ((suffix "/bootstrap/aarch64-linux/20170217/guile-2.0.14.tar.xz"))
+           (list (string-append "http://alpha.gnu.org/gnu/guix" suffix)
+                 (string-append "http://flashner.co.il/guix" suffix))))
+        (else
+         (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                        arch "-linux"
+                        "/20131110/guile-2.0.9.tar.xz"))))
 
 (define-public guix-0.12.0
   (package
@@ -92,9 +97,9 @@
                    'configure 'copy-bootstrap-guile
                    (lambda* (#:key system inputs #:allow-other-keys)
                      (define (boot-guile-version arch)
-                       (if (string=? "armhf" arch)
-                           "2.0.11"
-                           "2.0.9"))
+                       (cond ((string=? "armhf" arch)   "2.0.11")
+                             ((string=? "aarch64" arch) "2.0.14")
+                             (else "2.0.9")))
 
                      (define (copy arch)
                        (let ((guile  (assoc-ref inputs
@@ -105,12 +110,14 @@
                                                     "/guile-"
                                                     (boot-guile-version arch)
                                                     ".tar.xz")))
+                         (mkdir-p (dirname target)) ;XXX: eventually unneeded
                          (copy-file guile target)))
 
                      (copy "i686")
                      (copy "x86_64")
                      (copy "mips64el")
                      (copy "armhf")
+                     (copy "aarch64")
                      #t))
                   (add-after
                    'unpack 'disable-container-tests
@@ -192,7 +199,11 @@
          ("boot-guile/armhf"
           ,(boot-guile "armhf"
                        (base32
-                        "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
+                        "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5")))
+         ("boot-guile/aarch64"
+          ,(boot-guile "aarch64"
+                       (base32
+                        "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)

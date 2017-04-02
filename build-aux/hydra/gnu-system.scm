@@ -127,6 +127,8 @@ SYSTEM."
     "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
     "aarch64-linux-gnu"
+    "powerpc-linux-gnu"
+    "i586-pc-gnu"                                 ;aka. GNU/Hurd
     "i686-w64-mingw32"))
 
 (define %guixsd-supported-systems
@@ -303,11 +305,14 @@ valid."
                      ;; Build everything, including replacements.
                      (let ((all (fold-packages
                                  (lambda (package result)
-                                   (if (package-replacement package)
-                                       (cons* package
-                                              (package-replacement package)
-                                              result)
-                                       (cons package result)))
+                                   (cond ((package-replacement package)
+                                          (cons* package
+                                                 (package-replacement package)
+                                                 result))
+                                         ((package-superseded package)
+                                          result) ;don't build it
+                                         (else
+                                          (cons package result))))
                                  '()))
                            (job (lambda (package)
                                   (package->job store package

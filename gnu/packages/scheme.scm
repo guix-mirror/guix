@@ -248,6 +248,7 @@ features an integrated Emacs-like editor and a large runtime library.")
                          ;; "--customgc=no" ; use our libgc
                          (string-append"--mv=" (which "mv"))
                          (string-append "--rm=" (which "rm"))
+                         "--cflags=-fPIC"
                          (string-append "--ldflags=-Wl,-rpath="
                                         (assoc-ref outputs "out")
                                         "/lib/bigloo/" ,version))))))

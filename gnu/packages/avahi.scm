@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages libdaemon)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages xml))
@@ -59,6 +60,7 @@
        ("glib" ,glib)
        ("dbus" ,dbus)
        ("gdbm" ,gdbm)
+       ("libcap" ,libcap)            ;to enable chroot support in avahi-daemon
        ("libdaemon" ,libdaemon)))
     (native-inputs
      `(("intltool" ,intltool)

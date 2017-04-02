@@ -47,7 +47,7 @@
     (outputs '("out" "debug"))
     (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
-    (home-page "http://www.lysator.liu.se/~nisse/nettle/")
+    (home-page "https://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level cryptographic functionality")
     (description
      "GNU Nettle is a low-level cryptographic library.  It is designed to
@@ -60,14 +60,14 @@ themselves.")
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15wxhk52yc62rx0pddmry66hqm6z5brrrkx4npd3wh9nybg86hpa"))))
+                "07mif3af077763vc35s1x8vzhzlgqcgxh67c1xr13jnhslkjd526"))))
     (arguments
      (substitute-keyword-arguments (package-arguments nettle-2)
        ((#:configure-flags flags)

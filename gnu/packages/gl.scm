@@ -4,8 +4,9 @@
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages video)
@@ -197,7 +199,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "13.0.3")
+    (version "13.0.5")
     (source
       (origin
         (method url-fetch)
@@ -205,7 +207,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "03m4gc6qc50lb0ic06f83r3yl0x4lmj2zjq3sl60vl3nq7jqpanr"))
+          "11zgynii1wz17131ml1mmblpwib8m88zz2jwi5h5llh1r3iagkmz"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"))))
     (build-system gnu-build-system)
@@ -227,6 +229,11 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("libxvmc" ,libxvmc)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "i686-linux")
+             `(("llvm" ,llvm)))
+            (_
+             `()))
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
@@ -236,8 +243,11 @@ also known as DXTn or DXTC) for Mesa.")
         ("python" ,python-2)))
     (arguments
      `(#:configure-flags
-       '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast,nouveau,virgl"
+       '(,@(match (%current-system)
+             ((or "armhf-linux" "aarch64-linux")
+              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,svga,swrast,vc4,virgl"))
+             (_
+              '("--with-gallium-drivers=i915,nouveau,r300,r600,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm,wayland"
@@ -253,12 +263,16 @@ also known as DXTn or DXTC) for Mesa.")
          ;; Without floating point texture support, drivers such as Nouveau
          ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
          "--enable-texture-float"
+         
+         ;; Also enable the tests.
+         "--enable-gallium-tests"
 
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
-              '())
+              '("--with-dri-drivers=i915,i965,nouveau,r200,radeon,swrast"
+                "--enable-gallium-llvm")) ; default is x86/x86_64 only
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases
@@ -456,25 +470,18 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.3.1")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/anholt/libepoxy/archive/v"
-                    version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+                    "https://github.com/anholt/libepoxy/releases/download/"
+                    version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))
-              (patches (search-patches "libepoxy-gl-null-checks.patch"))))
+                "19hsyap2p0sflj75ycf4af9bsp453bamymbcgnmrphigabsspil8"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-           'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif"))))
          (add-before
            'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -482,30 +489,21 @@ OpenGL graphics API.")
                    (mesa (assoc-ref inputs "mesa")))
                (substitute* "src/gen_dispatch.py"
                  (("/usr/bin/env python") python))
+               ;; Add support for aarch64, see upstream:
+               ;; https://github.com/anholt/libepoxy/pull/114
+               (substitute* "test/dlwrap.c"
+                 (("GLIBC_2.4") "GLIBC_2.17\", \"GLIBC_2.4"))
                (substitute* (find-files "." "\\.[ch]$")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
-
-               ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
-               ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
-               ;; better to make this a normal patch, but for now we do it here
-               ;; to prevent rebuilding on other platforms.
-               ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                               (%current-system)))
-                     '((substitute* '"test/dlwrap.c"
-                         (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
-                     '())
                #t))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
      `(("mesa" ,mesa)))
-    (home-page "http://github.com/anholt/libepoxy/")
+    (home-page "https://github.com/anholt/libepoxy/")
     (synopsis "A library for handling OpenGL function pointer management")
     (description
      "A library for handling OpenGL function pointer management.")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +55,7 @@
   search-path-specification?
   (variable     search-path-specification-variable) ;string
   (files        search-path-specification-files)    ;list of strings
-  (separator    search-path-specification-separator ;string
+  (separator    search-path-specification-separator ;string | #f
                 (default ":"))
   (file-type    search-path-specification-file-type ;symbol
                 (default 'directory))
@@ -131,11 +131,23 @@ like `string-tokenize', but SEPARATOR is a string."
 DIRECTORIES, a list of directory names, and return a list of
 specification/value pairs.  Use GETENV to determine the current settings and
 report only settings not already effective."
-  (define search-path-definition
-    (match-lambda
-      ((and spec
-            ($ <search-path-specification> variable files separator
-                                           type pattern))
+  (define (search-path-definition spec)
+    (match spec
+      (($ <search-path-specification> variable files #f type pattern)
+       ;; Separator is #f so return the first match.
+       (match (with-null-error-port
+               (search-path-as-list files directories
+                                    #:type type
+                                    #:pattern pattern))
+         (()
+          #f)
+         ((head . _)
+          (let ((value (getenv variable)))
+            (if (and value (string=? value head))
+                #f                         ;VARIABLE already set appropriately
+                (cons spec head))))))
+      (($ <search-path-specification> variable files separator
+                                      type pattern)
        (let* ((values (or (and=> (getenv variable)
                                  (cut string-tokenize* <> separator))
                           '()))
@@ -164,7 +176,7 @@ current value), or 'suffix (return the definition where VALUE is added as a
 suffix to VARIABLE's current value.)  In the case of 'prefix and 'suffix,
 SEPARATOR is used as the separator between VARIABLE's current value and its
 prefix/suffix."
-  (match kind
+  (match (if (not separator) 'exact kind)
     ('exact
      (format #f "export ~a=\"~a\"" variable value))
     ('prefix

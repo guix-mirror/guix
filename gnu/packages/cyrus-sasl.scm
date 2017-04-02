@@ -31,7 +31,6 @@
 (define-public cyrus-sasl
   (package
    (name "cyrus-sasl")
-   (replacement cyrus-sasl/fixed)
    (version "2.1.26")
    (source (origin
             (method url-fetch)
@@ -41,6 +40,7 @@
                        (string-append
                         "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
                         version ".tar.gz")))
+            (patches (search-patches "cyrus-sasl-CVE-2013-4122.patch"))
             (sha256 (base32
                      "1hvvbcsg21nlncbgs0cgn3iwlnb3vannzwsp6rwvnn9ba4v53g4g"))))
    (build-system gnu-build-system)
@@ -66,10 +66,3 @@ server writers.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "http://cyrusimap.web.cmu.edu")))
-
-(define cyrus-sasl/fixed
-  (package
-    (inherit cyrus-sasl)
-    (source (origin
-              (inherit (package-source cyrus-sasl))
-              (patches (search-patches "cyrus-sasl-CVE-2013-4122.patch"))))))

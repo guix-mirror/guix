@@ -112,20 +112,23 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.13")
+    (version "0.13.1")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/Xfennec/"
                           name "/archive/v" version ".tar.gz"))
       (sha256
-       (base32 "133iar4vq5vlklydb4cyazjy6slmpbndrws474mg738bd8avc30n"))
+       (base32 "199rk6608q9m6l0fbjm0xl2w1c5krf8245dqnksdp4rqp7l9ak06"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
      `(#:tests? #f ; There is no test suite.
-       #:make-flags (list "CC=gcc" "LDFLAGS+=-lncurses"
+       #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases

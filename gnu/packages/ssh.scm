@@ -86,7 +86,7 @@ remote applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.7.0")
+   (version "1.8.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -94,13 +94,21 @@ remote applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "116mh112w48vv9k3f15ggp5kxw5sj4b88dzb5j69llsh7ba1ymp4"))))
+              "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+            (patches
+             (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
-   (arguments '(#:configure-flags `("--with-libgcrypt")))
+   (arguments '(#:configure-flags `("--with-libgcrypt")
+                #:phases (modify-phases %standard-phases
+                           (add-before 'configure 'autoreconf
+                             (lambda _
+                               (zero? (system* "autoreconf" "-v")))))))
+   (native-inputs `(("autoconf" ,autoconf)
+                    ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
@@ -447,7 +455,14 @@ basis for almost any application.")
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
        ;; instance, /dev/pts may be unavailable in chroots.)
-       #:configure-flags '("lsh_cv_sys_unix98_ptys=yes")
+       #:configure-flags '("lsh_cv_sys_unix98_ptys=yes"
+
+                           ;; Use glibc's argp rather than the bundled one.
+                           "--with-system-argp"
+
+                           ;; 'lsh_argp.h' checks HAVE_ARGP_PARSE but nothing
+                           ;; defines it.
+                           "CPPFLAGS=-DHAVE_ARGP_PARSE")
 
        ;; FIXME: Tests won't run in a chroot, presumably because
        ;; /etc/profile is missing, and thus clients get an empty $PATH
@@ -460,6 +475,12 @@ basis for almost any application.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((nettle    (assoc-ref inputs "nettle"))
                     (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               ;; Remove argp from the list of sub-directories; we don't want
+               ;; to build it, really.
+               (substitute* "src/Makefile.in"
+                 (("^SUBDIRS = argp")
+                  "SUBDIRS ="))
+
                ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
                ;; by default.
                (substitute* "src/environ.h.in"

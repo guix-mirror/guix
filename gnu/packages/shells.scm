@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,15 +49,20 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.9")
+    (version "0.5.9.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
-                           name "-" version ".tar.gz"))
+       ;; The canonical source is offline, so we fetch the source code
+       ;; from the Git repository. See:
+       ;; https://www.mail-archive.com/dash@vger.kernel.org/msg01323.html
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.kernel.org/pub/scm/utils/dash/dash.git/")
+              (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "17328wd9n5krr5wd37smrk0y7fdf8aa3hmhm02br5mqpq0a3nycj"))
+         "0p01vx7rbyf5hyyaff7h8cbhq81bm5fmq1m933484lncl9rafcai"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -67,10 +73,17 @@
               "a command interpreter based on the original Bourne shell"))
            #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs
      `(("libedit" ,libedit)))
     (arguments
-     `(#:configure-flags '("--with-libedit")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))
+       #:configure-flags '("--with-libedit")))
     (home-page "http://gondor.apana.org.au/~herbert/dash")
     (synopsis "POSIX-compliant shell optimised for size")
     (description
@@ -218,8 +231,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (replacement tcsh/fixed)
-    (version "6.18.01")
+    (version "6.20.00")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -229,43 +241,44 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
+                "17ggxkkn5skl0v1x0j6hbv5l0sgnidfzwv16992sqkdm983fg7dq"))
               (patches (search-patches "tcsh-fix-autotest.patch"
-                                       "tcsh-do-not-define-BSDWAIT.patch"))
+                                       "tcsh-fix-out-of-bounds-read.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("autoconf" ,autoconf)
-       ("coreutils" ,coreutils)
-       ("ncurses" ,ncurses)))
+       ("perl" ,perl)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'patch-test-scripts
-        (lambda _
-          ;; Take care of pwd
-          (substitute* '("tests/commands.at" "tests/variables.at")
-            (("/bin/pwd") (which "pwd")))
-          ;; The .at files create shell scripts without shebangs. Erk.
-          (substitute* "tests/commands.at"
-            (("./output.sh") "/bin/sh output.sh"))
-          (substitute* "tests/syntax.at"
-            (("; other_script.csh") "; /bin/sh other_script.csh"))
-          ;; Now, let's generate the test suite and patch it
-          (system* "make" "tests/testsuite")
+        (modify-phases %standard-phases
+          (add-before 'check 'patch-test-scripts
+            (lambda _
+              ;; Take care of pwd
+              (substitute* '("tests/commands.at" "tests/variables.at")
+                (("/bin/pwd") (which "pwd")))
+              ;; The .at files create shell scripts without shebangs. Erk.
+              (substitute* "tests/commands.at"
+                (("./output.sh") "/bin/sh output.sh"))
+              (substitute* "tests/syntax.at"
+                (("; other_script.csh") "; /bin/sh other_script.csh"))
+              ;; Now, let's generate the test suite and patch it
+              (system* "make" "tests/testsuite")
 
-          ;; This file is ISO-8859-1 encoded.
-          (with-fluids ((%default-port-encoding #f))
-            (substitute* "tests/testsuite"
-              (("/bin/sh") (which "sh")))))
-        (alist-cons-after
-         'install 'post-install
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let* ((out (assoc-ref %outputs "out"))
-                 (bin (string-append out "/bin")))
-           (with-directory-excursion bin
-             (symlink "tcsh" "csh"))))
-         %standard-phases))))
+              ;; This file is ISO-8859-1 encoded.
+              (with-fluids ((%default-port-encoding #f))
+                (substitute* "tests/testsuite"
+                  (("/bin/sh") (which "sh"))))
+              #t))
+          (add-after 'install 'post-install
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref %outputs "out"))
+                     (bin (string-append out "/bin")))
+                (with-directory-excursion bin
+                  (symlink "tcsh" "csh"))
+                #t))))))
     (home-page "http://www.tcsh.org/")
     (synopsis "Unix shell based on csh")
     (description
@@ -275,15 +288,6 @@ interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
     (license bsd-4)))
-
-(define tcsh/fixed
-  (package
-    (inherit tcsh)
-    (name "tcsh")
-    (source (origin
-              (inherit (package-source tcsh))
-              (patches (cons (search-patch "tcsh-fix-out-of-bounds-read.patch")
-                             (origin-patches (package-source tcsh))))))))
 
 (define-public zsh
   (package

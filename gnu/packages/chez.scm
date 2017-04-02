@@ -190,7 +190,15 @@
                       (symlink file (string-append (dirname file)
                                                    "/" name ".boot")))
                     (find-files lib "scheme.boot"))
-               #t))))))
+               #t)))
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (map (lambda (file)
+                    (make-file-writable file))
+                  (find-files (string-append (assoc-ref outputs "out")
+                                             "/share/man")
+                              ".*\\.gz$"))
+             #t)))))
     ;; According to the documentation MIPS is not supported.
     ;; Cross-compiling for the Raspberry Pi is supported, but not native ARM.
     (supported-systems (fold delete %supported-systems

@@ -42,14 +42,14 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.0.26")
+    (version "1.0.27")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "14jhla289cj45946h0hq2an0a9g4wkwb3v4571bla6ixfvn20rfd"))))
+               "1h7s61nhf7vklh9sdsbbqzb6x287q4x4j1jc5gmjragl4wprb4d3"))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
@@ -113,7 +113,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "9.0")
+    (version "10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -121,7 +121,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "11j682g2mn723sz3bh4i44ggq29z053zcggy0glzn63zh9mxdly3"))
+               "0mrg8qvpwm4ifarzphl3749p7p050kdx1l6mvsaj03czvqj6h653"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -155,7 +155,6 @@ rates.")
      `(("alsa-lib" ,alsa-lib)
        ("bluez" ,bluez)
        ("sbc" ,sbc)
-       ("json-c" ,json-c)
        ("speex" ,speex)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)

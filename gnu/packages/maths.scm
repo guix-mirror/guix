@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
@@ -270,7 +270,13 @@ semiconductors.")
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f))
+     `(#:parallel-tests? #f
+       ;; Currently there are numerous tests that fail on "exotic"
+       ;; architectures such as aarch64 and ppc64le.
+       ,@(if (string-prefix? "aarch64-linux"
+                             (or (%current-target-system) (%current-system)))
+           '(#:tests? #f)
+           '())))
     (home-page "https://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
@@ -1801,7 +1807,7 @@ implemented in ANSI C, and MPI for communications.")
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
-       ("flex" ,flex)
+       ("flex" ,flex-2.6.1) ; A bug in flex prevents building with flex-2.6.3.
        ("bison" ,bison)))
     (arguments
      `(#:phases
@@ -2245,7 +2251,8 @@ parts of it.")
         ,(let ((system (or (%current-target-system) (%current-system))))
            (or (string-prefix? "x86_64" system)
                (string-prefix? "i686" system)
-               (string-prefix? "mips" system)))
+               (string-prefix? "mips" system)
+               (string-prefix? "aarch64" system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
@@ -2265,6 +2272,9 @@ parts of it.")
                   ;; for Loongson cores are used.
                   ((string-prefix? "mips" system)
                    '("TARGET=SICORTEX"))
+                  ;; On aarch64 force the generic 'armv8-a' target
+                  ((string-prefix? "aarch64" system)
+                   '("TARGET=ARMV8"))
                   (else '()))))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))

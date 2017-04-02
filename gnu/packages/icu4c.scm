@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,20 +29,17 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "55.1")
+   (version "58.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "mirror://sourceforge/icu/ICU4C/"
+                  "http://download.icu-project.org/files/icu4c/"
                   version
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
             (sha256
-             (base32 "0ys5f5spizg45qlaa31j2lhgry0jka2gfha527n4ndfxxz5j4sz1"))
-            (patches (search-patches "icu4c-CVE-2014-6585.patch"
-                                     "icu4c-CVE-2015-1270.patch"
-                                     "icu4c-CVE-2015-4760.patch"))))
+             (base32 "036shcb3f8bm1lynhlsb4kpjm9s9c2vdiir01vg216rs2l8482ib"))))
    (build-system gnu-build-system)
    (inputs
     `(("perl" ,perl)))
@@ -55,18 +53,9 @@
               '("--with-data-packaging=archive")
               '()))
       #:phases
-      (alist-cons-after
-       'unpack 'chdir-to-source
-       (lambda _ (chdir "source"))
-       (alist-cons-before
-        'configure 'patch-configure
-        (lambda _
-          ;; patch out two occurrences of /bin/sh from configure script
-          ;; that might have disappeared in a release later than 54.1
-          (substitute* "configure"
-            (("`/bin/sh")
-             (string-append "`" (which "bash")))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'chdir-to-source
+          (lambda _ (chdir "source") #t)))))
    (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and

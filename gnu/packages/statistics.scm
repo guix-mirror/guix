@@ -117,7 +117,8 @@ be output in text, PostScript, PDF or HTML.")
                 "0v7wpj89b0i3ad3fi1wak5c93hywmbxv8sdnixhq8l17782nidss"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
+     `(#:disallowed-references (,tzdata-2017a)
+       #:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib/R/lib")
@@ -225,6 +226,7 @@ be output in text, PostScript, PDF or HTML.")
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
        ("which" ,which) ; for tests/Examples/base-Ex.R
+       ("tzdata" ,tzdata-2017a)
        ("xz" ,xz)))
     (inputs
      `(;; We need not only cairo here, but pango to ensure that tests for the
@@ -232,7 +234,6 @@ be output in text, PostScript, PDF or HTML.")
        ("pango" ,pango)
        ("coreutils" ,coreutils)
        ("curl" ,curl)
-       ("tzdata" ,tzdata)
        ("openblas" ,openblas)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)

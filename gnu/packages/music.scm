@@ -906,6 +906,7 @@ add_library( rapidjson INTERFACE IMPORTED )"))
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
              ;; using the bundled version of withershins.
+             ;; Also add pthread for fixing a linker error.
              (substitute* "source/build/CMakeLists.txt"
                (("withershins" line)
                 (string-append line "\n"
@@ -914,6 +915,7 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                                (assoc-ref inputs "libiberty")
                                "/lib/libiberty.a\n"
                                "dl\n"
+                               "pthread\n"
                                "z\n")))
              #t)))))
     (inputs
@@ -1238,6 +1240,13 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
                             (string-prefix? "i686" system)))
                (substitute* "bristol/Makefile.in"
                  (("-msse -mfpmath=sse") "")))
+             #t))
+         ;; alsa-lib 1.1.x no longer provides iatomic.h.  That's okay because
+         ;; bristol actually doesn't use it.
+         (add-after 'unpack 'do-not-use-alsa-iatomic
+           (lambda _
+             (substitute* "libbristolaudio/audioEngineJack.c"
+               (("#include <alsa/iatomic.h>") ""))
              #t))
          ;; We know that Bristol has been linked with JACK and we don't have
          ;; ldd, so we can just skip this check.

@@ -55,7 +55,7 @@ when producing a bootstrap libc."
                                 (string-append incdir "/linux")))
                 '("limits.h" "errno.h" "socket.h" "kernel.h"
                   "sysctl.h" "param.h" "ioctl.h" "types.h"
-                  "posix_types.h" "stddef.h"))
+                  "posix_types.h" "stddef.h" "falloc.h"))
 
       (copy-recursively (string-append kernel-headers "/include/asm")
                         (string-append incdir "/asm"))

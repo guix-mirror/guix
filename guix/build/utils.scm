@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -45,9 +45,12 @@
             call-with-ascii-input-file
             elf-file?
             ar-file?
+            gzip-file?
+            reset-gzip-timestamp
             with-directory-excursion
             mkdir-p
             install-file
+            make-file-writable
             copy-recursively
             delete-file-recursively
             file-name-predicate
@@ -195,6 +198,29 @@ with the bytes in HEADER, a bytevector."
 (define ar-file?
   (file-header-match %ar-magic-bytes))
 
+(define %gzip-magic-bytes
+  ;; Magic bytes of gzip file.  Beware, it's a small header so there could be
+  ;; false positives.
+  #vu8(#x1f #x8b))
+
+(define gzip-file?
+  (file-header-match %gzip-magic-bytes))
+
+(define* (reset-gzip-timestamp file #:key (keep-mtime? #t))
+  "If FILE is a gzip file, reset its embedded timestamp (as with 'gzip
+--no-name') and return true.  Otherwise return #f.  When KEEP-MTIME? is true,
+preserve FILE's modification time."
+  (let ((stat (stat file))
+        (port (open file O_RDWR)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (and (= 4 (seek port 4 SEEK_SET))
+             (put-bytevector port #vu8(0 0 0 0))))
+      (lambda ()
+        (close-port port)
+        (set-file-time file stat)))))
+
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
   (let ((init (getcwd)))
@@ -236,6 +262,11 @@ with the bytes in HEADER, a bytevector."
 name."
   (mkdir-p directory)
   (copy-file file (string-append directory "/" (basename file))))
+
+(define (make-file-writable file)
+  "Make FILE writable for its owner."
+  (let ((stat (lstat file)))                      ;XXX: symlinks
+    (chmod file (logior #o600 (stat:perms stat)))))
 
 (define* (copy-recursively source destination
                            #:key
@@ -400,10 +431,17 @@ for under the directories designated by FILES.  For example:
               (delete-duplicates input-dirs)))
 
 (define (list->search-path-as-string lst separator)
-  (string-join lst separator))
+  (if separator
+      (string-join lst separator)
+      (match lst
+        ((head rest ...) head)
+        (() ""))))
 
 (define* (search-path-as-string->list path #:optional (separator #\:))
-  (string-tokenize path (char-set-complement (char-set separator))))
+  (if separator
+      (string-tokenize path
+                       (char-set-complement (char-set separator)))
+      (list path)))
 
 (define* (set-path-environment-variable env-var files input-dirs
                                         #:key

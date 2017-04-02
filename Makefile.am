@@ -284,6 +284,7 @@ SCM_TESTS =					\
   tests/nar.scm					\
   tests/union.scm				\
   tests/profiles.scm				\
+  tests/search-paths.scm			\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
   tests/bournish.scm				\

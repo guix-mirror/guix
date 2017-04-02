@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
             libvorbis
             libtheora
             speex
+            speexdsp
             ao
             flac
             libkate
@@ -127,7 +129,7 @@ compressed video format.")
 (define speex
   (package
     (name "speex")
-    (version "1.2rc1")
+    (version "1.2.0")
     (source
      (origin
       (method url-fetch)
@@ -135,7 +137,7 @@ compressed video format.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "19mpkhbz3s08snvndn0h1dk2j139max6b0rr86nnsjmxazf30brl"))))
+        "150047wnllz4r94whb9r73l5qf0z5z3rlhy98bawfbblmkq8mbpa"))))
     (build-system gnu-build-system)
     (inputs `(("libogg" ,libogg)))
     (home-page "https://gnu.org/software/speex")
@@ -148,6 +150,26 @@ stereo encoding, and voice activity detection.")
     ;; 'src/getopt.c' is under LGPLv2+
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define speexdsp
+  (package
+    (name "speexdsp")
+    (version "1.2rc3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.xiph.org/releases/speex/"
+                                  "speexdsp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wcjyrnwlkayb20zdhp48y260rfyzg925qpjpljd5x9r01h8irja"))))
+    (build-system gnu-build-system)
+    (home-page "https://speex.org/")
+    (synopsis "Speex processing library")
+    (description
+     "SpeexDSP is a @dfn{DSP} (Digital Signal Processing) library based on
+work from the @code{speex} codec.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define ao
   (package
@@ -202,14 +224,14 @@ It currently supports:
 (define flac
   (package
    (name "flac")
-   (version "1.3.1")
+   (version "1.3.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/flac/flac-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0v65w7ph6ldwp5a8fbhp0a3w8f737ck468fr7yb7sxmskl4w0ws7"))))
+              "0gymm2j3276kr9nz6vmgfwsdfrq6c449n40a0mzz8h6wc7nw7kwi"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f))

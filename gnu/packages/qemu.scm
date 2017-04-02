@@ -199,7 +199,7 @@ server and embedded PowerPC, and S390 guests.")
     (arguments
      `(#:configure-flags
        ;; Restrict to the targets supported by Guix.
-       '("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu")
+       '("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu")
        ,@(package-arguments qemu)))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.

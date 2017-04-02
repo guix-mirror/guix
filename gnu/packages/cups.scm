@@ -52,7 +52,6 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (replacement cups-filters/fixed)
     (version "1.13.1")
     (source(origin
               (method url-fetch)
@@ -88,6 +87,7 @@
      `(#:make-flags (list (string-append "PREFIX=" %output))
        #:configure-flags
        `("--disable-driverless" ; TODO: enable this
+         "--disable-mutool"     ; depends on yet another PDF library (mupdf)
          ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
@@ -114,7 +114,6 @@
        ("libjpeg"      ,libjpeg)
        ("libpng"       ,libpng)
        ("libtiff"      ,libtiff)
-       ("mupdf"        ,mupdf)
        ("glib"         ,glib)
        ("qpdf"         ,qpdf)
        ("poppler"      ,poppler)
@@ -134,13 +133,6 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                    license:gpl3+
                    license:lgpl2.0+
                    license:expat))))
-
-(define mupdf/fixed-instead-of-mupdf
-  (package-input-rewriting `((,mupdf . ,(@@ (gnu packages pdf) mupdf/fixed)))))
-
-;;; Fix CVE-2016-10132 and CVE-2016-10133. See mupdf/fixed for more information.
-(define cups-filters/fixed
-  (mupdf/fixed-instead-of-mupdf cups-filters))
 
 ;; CUPS on non-MacOS systems requires cups-filters.  Since cups-filters also
 ;; depends on CUPS libraries and binaries, cups-minimal has been added to
@@ -174,6 +166,14 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
              (substitute* "Makedefs.in"
                (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
                (("/bin/sh") (which "sh")))))
+         ;; Make the compressed manpages writable so that the
+         ;; reset-gzip-timestamps phase does not error out.
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (for-each (lambda (file) (chmod file #o644))
+                         (find-files man "\\.gz")))))
          (add-before 'build 'patch-tests
            (lambda _
              (substitute* "test/ippserver.c"
@@ -275,6 +275,14 @@ device-specific programs to convert and print many types of files.")
                   (string-append "cupsFileFind(\"cat\", \"" catpath "\""))
                  (("cupsFileFind\\(\"cat\", \"/bin:/usr/bin\"")
                   (string-append "cupsFileFind(\"cat\", \"" catpath "\""))))))
+         ;; Make the compressed manpages writable so that the
+         ;; reset-gzip-timestamps phase does not error out.
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (for-each (lambda (file) (chmod file #o644))
+                         (find-files man "\\.gz")))))
          (add-after 'install 'install-cups-filters-symlinks
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))

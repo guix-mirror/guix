@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,20 +71,20 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.9.1")
+    (version "0.12.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://kohei.us/files/ixion/src/libixion-"
                           version ".tar.xz"))
       (sha256 (base32
-               "18g3nk29ljiqbyi0ml49j2x3f3xrqckdm9i66sw5fxnj7hb5rqvp"))))
+               "1bnsqbxpbijwbg42rrqq6mz06wvcxjpl0gjdzwyilkmv6s400i4b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
      (inputs
       `(("mdds" ,mdds)
-        ("python" ,python-2))) ; looks for python.pc, not python3.pc
+        ("python" ,python)))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
@@ -95,20 +96,21 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.9.2")
+    (version "0.12.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://kohei.us/files/" name "/src/lib"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "170racjz7s7yxza722hxsqc12788w57qnp6x6j2692pzp3qzjjfx"))))
+               "171bmqa9hkk4xygz20qda5900rs4kq9fgl424ldkxlj4d733dffi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
      (inputs
       `(("ixion" ,ixion)
         ("mdds" ,mdds)
+        ("python" ,python)
         ("zlib" ,zlib)))
     (home-page "https://gitlab.com/orcus/orcus")
     (synopsis "File import filter library for spreadsheet documents")
@@ -243,15 +245,15 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
 (define-public libcmis
   (package
     (name "libcmis")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "-"
-                          version ".tar.gz"))
-      (sha256 (base32
-               "1dprvk4fibylv24l7gr49gfqbkfgmxynvgssvdcycgpf7n8h4zm8"))
-      (patches (search-patches "libcmis-fix-test-onedrive.patch"))))
+      (uri (string-append "https://github.com/tdf/libcmis/releases/download/v"
+                          version "/libcmis-" version ".tar.gz"))
+      (sha256
+       (base32
+        "03kvl8ywsv5qrxblf0m6955mmvl5q2zpb6vj51vs7ayvxhidzjva"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -276,7 +278,7 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; fails without the following flag.
           (string-append "--with-boost="
                          (assoc-ref %build-inputs "boost")))))
-    (home-page "https://sourceforge.net/projects/libcmis/")
+    (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
 allows C++ applications to connect to any ECM behaving as a CMIS server such
@@ -348,22 +350,31 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.3")
+    (version "0.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0mghaqzj0qqza8z1gzprw62702adlww4kgdzynj5qpxxc9m2f4py"))))
+               "0y60vi1plyq69fqbcjnc0v8mvcjqjsl1ry6rmb3bq3q7j8a2fm6z"))
+      (patches (search-patches "libetonyek-build-with-mdds-1.2.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-mdds=1.2")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoreconf
+                              (lambda _ (system* "autoreconf"))))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
        ("glm" ,glm)
        ("gperf" ,gperf)
+       ("liblangtag" ,liblangtag)
        ("mdds" ,mdds)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf) ; due to patch
+       ("automake" ,automake)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
@@ -600,6 +611,29 @@ text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
 spreadsheet documents.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
 
+(define-public libstaroffice
+  (package
+    (name "libstaroffice")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
+                           version "/libstaroffice-" version ".tar.xz"))
+       (sha256 (base32
+                "1ii2wi3wr5npyz9gby1bjk8r4wyflpfpc6gx7mmqkhsc9c8frpmy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/fosnola/libstaroffice")
+    (synopsis "Provides LibreOffice support for old StarOffice documents")
+    (description "@code{libstaroffice} is an import filter for the document formats
+from the old StarOffice (.sdc, .sdw, ...).")
+    (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
 (define-public libwps
   (package
     (name "libwps")
@@ -628,6 +662,35 @@ spreadsheet documents.")
     (description "Libwps is a library for importing files in the Microsoft
 Works word processor file format.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
+(define-public libzmf
+  (package
+   (name "libzmf")
+   (version "0.0.1")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/libzmf/libzmf-"
+                          version ".tar.xz"))
+      (sha256 (base32
+               "0yp5l1b90xim506zmr3ljkn3qkvbc7qk3dnwq1snxdpr57m37xga"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("boost" ,boost)
+      ("icu4c" ,icu4c)
+      ("libpng" ,libpng)
+      ("librevenge" ,librevenge)
+      ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libzmf")
+    (synopsis "Parses file format of Zoner Callisto/Draw documents")
+    (description "Libzmf is a library that parses the file format of Zoner
+Callisto/Draw documents.  Currently it only understands documents created by
+Zoner Draw version 4 and 5.")
+    (license mpl2.0)))
 
 (define-public hunspell
   (package
@@ -706,15 +769,15 @@ and to return information on pronunciations, meanings and synonyms.")
     (method url-fetch)
     (uri
       (string-append
-        "http://dev-www.libreoffice.org/src/"
-        "1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz"))
+       "http://dev-www.libreoffice.org/src/"
+       "86b1daaa438f5a7bea9a52d7b9799ac0-xmlsec1-1.2.23.tar.gz"))
     (sha256 (base32
-              "0jnxxygg6z5zi6za94dvxmg1bfar1wh8p5xa2bzbha0qcn2m02ir"))))
+             "17qfw5crkqn4v6xbkjxrjvcccfc00dy053892wrwv54qdk8n7m21"))))
 
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.1.6.2")
+    (version "5.3.1.2")
     (source
      (origin
       (method url-fetch)
@@ -723,7 +786,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "150xb76pc3889gfy4jrnq8sidymm1aihkm5pzy8b1fdy51zip804"))))
+               "1zsl0z0i8pw532x2lmwd64ms6igibkkjhwf01zmm2kpnr9ycsijp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -766,6 +829,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libmwaw" ,libmwaw)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
+       ("libstaroffice" ,libstaroffice)
        ("libvisio" ,libvisio)
        ("libwpg" ,libwpg)
        ("libwps" ,libwps)
@@ -773,6 +837,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
        ("libxt" ,libxt)
+       ("libzmf" ,libzmf)
        ("lpsolve" ,lpsolve)
        ("mdds" ,mdds)
        ("mythes" ,mythes)
@@ -805,15 +870,14 @@ and to return information on pronunciations, meanings and synonyms.")
                  (substitute*
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
-                         "solenv/gbuild/platform/unxgcc.mk"
-                         "external/libxmlsec/xmlsec1-oldlibtool.patch")
+                         "solenv/gbuild/platform/unxgcc.mk")
                    (("/bin/sh") (which "bash")))
                  (mkdir "external/tarballs")
                  (symlink
                    xmlsec
                    (string-append "external/tarballs/"
-                     "1f24ab1d39f4a51faf22244c94a6203f-"
-                     "xmlsec1-1.2.14.tar.gz"))
+                                  "86b1daaa438f5a7bea9a52d7b9799ac0-"
+                                  "xmlsec1-1.2.23.tar.gz"))
                  ;; The following is required for building xmlsec from the
                  ;; unpatched external tarball; since "configure" starts with
                  ;; "/bin/sh", it needs to be executed by a command invoking

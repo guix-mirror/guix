@@ -54,7 +54,7 @@
              ;; Use the right shell.
              (substitute* "test/run"
                (("/bin/sh")
-                (which "bash")))
+                (which "sh")))
 
              ;; When building natively, run the tests.
              (unless target

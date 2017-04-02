@@ -3,6 +3,8 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,14 +41,14 @@
 (define-public lcms
   (package
    (name "lcms")
-   (replacement lcms/fixed)
-   (version "2.6")
+   (version "2.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
+            (patches (search-patches "lcms-CVE-2016-10165.patch"))
             (sha256 (base32
-                     "1c8lgq8gfs3nyplvbx9k8wzfj6r2bqi3f611vb1m8z3476454wji"))))
+                     "08pvl289g0mbznzx5l6ibhaldsgx41kwvdn2c974ga9fkli2pl36"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg-8" ,libjpeg-8)
              ("libtiff" ,libtiff)
@@ -59,14 +61,6 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
-
-(define lcms/fixed
-  (package
-    (inherit lcms)
-    (source
-      (origin
-        (inherit (package-source lcms))
-        (patches (search-patches "lcms-fix-out-of-bounds-read.patch"))))))
 
 (define-public libpaper
   (package
@@ -178,9 +172,9 @@ printing, and psresize, for adjusting page sizes.")
         (add-after 'configure 'patch-config-files
                    (lambda _
                      (substitute* "base/all-arch.mak"
-                       (("/bin/sh") (which "bash")))
+                       (("/bin/sh") (which "sh")))
                      (substitute* "base/unixhead.mak"
-                       (("/bin/sh") (which "bash")))))
+                       (("/bin/sh") (which "sh")))))
         (add-after 'configure 'remove-doc-reference
                    (lambda _
                      ;; Don't retain a reference to the 'doc' output in 'gs'.
@@ -279,25 +273,19 @@ architecture.")
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; nothing to check, just files to copy
-      #:modules ((guix build gnu-build-system)
-                 (guix build utils)
-                 (srfi srfi-1)) ; for alist-delete
       #:phases
-       (alist-delete
-        'configure
-       (alist-delete
-        'build
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (dir (string-append out "/share/fonts/type1/ghostscript")))
-            (mkdir-p dir)
-            (for-each
-              (lambda (file)
-                (copy-file file (string-append dir "/" file)))
-              (find-files "." "pfb|afm"))))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (delete 'build)
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (dir (string-append out "/share/fonts/type1/ghostscript")))
+              (mkdir-p dir)
+              (for-each
+                (lambda (file)
+                  (copy-file file (string-append dir "/" file)))
+                (find-files "." "pfb|afm"))))))))
    (synopsis "Free replacements for the PostScript fonts")
    (description
     "Ghostscript fonts provides fonts and font metrics customarily distributed with

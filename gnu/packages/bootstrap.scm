@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module ((guix store) #:select (add-to-store add-text-to-store))
   #:use-module ((guix derivations) #:select (derivation))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
+  #:use-module ((guix build utils) #:select (elf-file?))
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -167,6 +169,7 @@ successful, or false to signal an error."
         ((string=? system "i586-gnu") "/lib/ld.so.1")
         ((string=? system "i686-gnu") "/lib/ld.so.1")
         ((string=? system "aarch64-linux") "/lib/ld-linux-aarch64.so.1")
+        ((string=? system "powerpc-linux") "/lib/ld.so.1")
         ((string=? system "alpha-linux") "/lib/ld-linux.so.2")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
@@ -202,6 +205,8 @@ successful, or false to signal an error."
          (guile (->store (match system
                            ("armhf-linux"
                             "guile-2.0.11.tar.xz")
+                           ("aarch64-linux"
+                            "guile-2.0.14.tar.xz")
                            (_
                             "guile-2.0.9.tar.xz"))))
          ;; The following code, run by the bootstrap guile after it is
@@ -290,7 +295,8 @@ $out/bin/guile --version~%"
   ;; This is where the initial binaries come from.
   '("ftp://alpha.gnu.org/gnu/guix/bootstrap"
     "http://alpha.gnu.org/gnu/guix/bootstrap"
-    "http://www.fdn.fr/~lcourtes/software/guix/packages"))
+    "http://www.fdn.fr/~lcourtes/software/guix/packages"
+    "http://flashner.co.il/guix/bootstrap"))
 
 (define %bootstrap-coreutils&co
   (package-from-tarball "bootstrap-binaries"
@@ -301,6 +307,8 @@ $out/bin/guile --version~%"
                                           (match system
                                             ("armhf-linux"
                                              "/20150101/static-binaries.tar.xz")
+                                            ("aarch64-linux"
+                                             "/20170217/static-binaries.tar.xz")
                                             (_
                                              "/20131110/static-binaries.tar.xz")))
                                      %bootstrap-base-urls))
@@ -315,6 +323,9 @@ $out/bin/guile --version~%"
                               ("armhf-linux"
                                (base32
                                 "0gf0fn2kbpxkjixkmx5f4z6hv6qpmgixl69zgg74dbsfdfj8jdv5"))
+                              ("aarch64-linux"
+                               (base32
+                                "18dfiq6c6xhsdpbidigw6480wh0vdgsxqq3xindq4lpdgqlccpfh"))
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
@@ -325,6 +336,13 @@ $out/bin/guile --version~%"
                            (chmod "bin" #o755)
                            (patch-shebang "bin/egrep" path)
                            (patch-shebang "bin/fgrep" path)
+                           ;; Starting with grep@2.25 'egrep' and 'fgrep' are shell files
+                           ;; that call 'grep'.  If the bootstrap 'egrep' and 'fgrep'
+                           ;; are not binaries then patch them to execute 'grep' via its
+                           ;; absolute file name instead of searching for it in $PATH.
+                           (if (not (elf-file? "bin/egrep"))
+                             (substitute* '("bin/egrep" "bin/fgrep")
+                               (("^exec grep") (string-append (getcwd) "/bin/grep"))))
                            (chmod "bin" #o555)
                            #t)))
 
@@ -337,6 +355,8 @@ $out/bin/guile --version~%"
                                           (match system
                                             ("armhf-linux"
                                              "/20150101/binutils-2.25.tar.xz")
+                                            ("aarch64-linux"
+                                             "/20170217/binutils-2.27.tar.xz")
                                             (_
                                              "/20131110/binutils-2.23.2.tar.xz")))
                                      %bootstrap-base-urls))
@@ -351,6 +371,9 @@ $out/bin/guile --version~%"
                               ("armhf-linux"
                                (base32
                                 "1v7dj6bzn6m36f20gw31l99xaabq4xrhrx3gwqkhhig0mdlmr69q"))
+                              ("aarch64-linux"
+                               (base32
+                                "111s7ilfiby033rczc71797xrmaa3qlv179wdvsaq132pd51xv3n"))
                               ("mips64el-linux"
                                (base32
                                 "1x8kkhcxmfyzg1ddpz2pxs6fbdl6412r7x0nzbmi5n7mj8zw2gy7"))))))
@@ -398,6 +421,8 @@ $out/bin/guile --version~%"
                                     (match (%current-system)
                                       ("armhf-linux"
                                        "/20150101/glibc-2.20.tar.xz")
+                                      ("aarch64-linux"
+                                       "/20170217/glibc-2.25.tar.xz")
                                       (_
                                        "/20131110/glibc-2.18.tar.xz")))
                                %bootstrap-base-urls))
@@ -412,6 +437,9 @@ $out/bin/guile --version~%"
                         ("armhf-linux"
                          (base32
                           "18cmgvpllqfpn6khsmivqib7ys8ymnq0hdzi3qp24prik0ykz8gn"))
+                        ("aarch64-linux"
+                         (base32
+                          "07nx3x8598i2924rjnlrncg6rm61c9bmcczbbcpbx0fb742nvv5c"))
                         ("mips64el-linux"
                          (base32
                           "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
@@ -476,6 +504,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                                     (match (%current-system)
                                       ("armhf-linux"
                                        "/20150101/gcc-4.8.4.tar.xz")
+                                      ("aarch64-linux"
+                                       "/20170217/gcc-5.4.0.tar.xz")
                                       (_
                                        "/20131110/gcc-4.8.2.tar.xz")))
                                %bootstrap-base-urls))
@@ -490,6 +520,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                         ("armhf-linux"
                          (base32
                           "0ghz825yzp43fxw53kd6afm8nkz16f7dxi9xi40bfwc8x3nbbr8v"))
+                        ("aarch64-linux"
+                         (base32
+                          "1ar3vdzyqbfm0z36kmvazvfswxhcihlacl2dzdjgiq25cqnq9ih1"))
                         ("mips64el-linux"
                          (base32
                           "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))

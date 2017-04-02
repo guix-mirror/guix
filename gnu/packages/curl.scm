@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,15 +40,14 @@
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.53.0)
-   (version "7.50.3")
+   (version "7.53.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1spmk0345hq0sgpwxs8d410268lmg3wf1x9v23hxff7wxki5fm4c"))))
+              "1k0i31xygb804c61llhin5wbpcscg4gfqmbxcfkpdr1alwh7igrq"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -120,16 +119,3 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
-
-(define curl-7.53.0
-  (package
-    (inherit curl)
-    (source
-      (let ((version "7.53.0"))
-        (origin
-          (method url-fetch)
-          (uri (string-append "https://curl.haxx.se/download/curl-"
-                              version ".tar.lzma"))
-          (sha256
-           (base32
-            "1k0i31xygb804c61llhin5wbpcscg4gfqmbxcfkpdr1alwh7igrq")))))))

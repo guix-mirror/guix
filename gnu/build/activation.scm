@@ -79,11 +79,6 @@
 (define (dot-or-dot-dot? file)
   (member file '("." "..")))
 
-(define (make-file-writable file)
-  "Make FILE writable for its owner.."
-  (let ((stat (lstat file)))                      ;XXX: symlinks
-    (chmod file (logior #o600 (stat:perms stat)))))
-
 (define* (copy-account-skeletons home
                                  #:key
                                  (directory %skeleton-directory)

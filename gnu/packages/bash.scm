@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,19 @@
 (define %patch-series-4.4
   ;; This is the current patches series for 4.4, generated using
   ;; 'download-patches' below.
-  (patch-series))
+  (patch-series
+   (1 "03vzy7qwjdd5qvl3ydg99naazas2qmyd0yhnrflgjbbm64axja1y")
+   (2 "0lrwq6vyqism3yqv9s7kzaf3dsl4q5w9r5svcqz279qp7qca083h")
+   (3 "1chqww2rj6g42b8s60q5zlzy0jzp684jkpsbrbfy1vzxja8mmpsi")
+   (4 "1cy8abf96hkrjhw921ndr0shlcnc52bg45rn6xri4v5clhq0l25d")
+   (5 "0a8515kyk4zsgmvlqvlganjfr7pq0j6kzpr4d6xx02kpbdr4n7i2")
+   (6 "1f24wgqngmj2mrj9yibwvc2zvlmn5xi53mnw777g3l40c4m2x3ka")
+   (7 "1bzdsnqaf05gdbqpsixhan8vygjxpcxlz1dd8d9f5jdznw3wq76y") ;CVE-2017-5932
+   (8 "1firw915mjm03hbbw9a70ch3cpgrgnvqjpllgdnn6csr8q04f546")
+   (9 "0g1l56kvw61rpw7dqa9fcl9llkl693h73g631hrhxlm030ddssqb")
+   (10 "01lfhrkdsdkdz8ypzapr614ras23x7ckjnr60aa5bzkaqprccrc4")
+   (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")
+   (12 "0gh6lbb1rwpk44pvbamm6vzdfi50xnwkqd9v7s8cjwk3pz973hps")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -99,7 +112,6 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
          (version "4.4"))
     (package
      (name "bash")
-     (replacement bash/fixed)
      (source (origin
               (method url-fetch)
               (uri (string-append
@@ -164,6 +176,13 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                 (rename-file (string-append out "/lib/pkgconfig")
                              (string-append include
                                             "/lib/pkgconfig"))
+
+                ;; Don't capture the absolute file name of 'install' to avoid
+                ;; retaining a dependency on Coreutils.
+                (substitute* (string-append (lib include)
+                                            "/Makefile.inc")
+                  (("^INSTALL =.*")
+                   "INSTALL = install -c\n"))
                 #t))))))
 
      (native-search-paths
@@ -186,7 +205,6 @@ without modification.")
   ;; A stripped-down Bash for non-interactive use.
   (package (inherit bash)
     (name "bash-minimal")
-    (replacement #f) ;not vulnerable to CVE-2017-5932 since it lacks completion
     (inputs '())                                ; no readline, no curses
 
     ;; No "include" output because there's no support for loadable modules.
@@ -241,45 +259,6 @@ without modification.")
                    (delete-file (string-append bin "/bashbug"))
                    (delete-file-recursively (string-append out "/share"))
                    #t))))))))))
-
-(define* (url-fetch/reset-patch-level url hash-algo hash
-                                      #:optional name
-                                      #:key (system (%current-system)))
-  "Fetch the Bash patch from URL and reset its 'PATCHLEVEL' definition so it
-can apply to a patch-level 0 Bash."
-  ;; Note: Forcefully use %BOOTSTRAP-GUILE here to work around bootstrapping
-  ;; issues when using a daemon that lacks the "download" built-in.  See
-  ;; <https://bugs.gnu.org/25775>.
-  (mlet* %store-monad ((name -> (or name (basename url)))
-                       (patch (url-fetch url hash-algo hash
-                                         (string-append name ".orig")
-                                         #:system system
-                                         #:guile %bootstrap-guile)))
-    (gexp->derivation name
-                      (with-imported-modules '((guix build utils))
-                        #~(begin
-                            (use-modules (guix build utils))
-                            (copy-file #$patch #$output)
-                            (substitute* #$output
-                              (("PATCHLEVEL [0-6]+")
-                               "PATCHLEVEL 0"))))
-                      #:system system)))
-
-(define bash/fixed                        ;CVE-2017-5932 (RCE with completion)
-  (package
-    (inherit bash)
-    (version "4.4.A")                             ;4.4.0 + patch #7
-    (replacement #f)
-    (source
-     (origin
-       (inherit (package-source bash))
-       (patches (cons (origin
-                        (method url-fetch/reset-patch-level)
-                        (uri (patch-url 7))
-                        (sha256
-                         (base32
-                          "1bzdsnqaf05gdbqpsixhan8vygjxpcxlz1dd8d9f5jdznw3wq76y")))
-                      (origin-patches (package-source bash))))))))
 
 (define-public bash-completion
   (package

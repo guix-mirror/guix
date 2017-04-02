@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 ng0 <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages bash)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -300,6 +302,7 @@ Makefile, simplifying the entire process for the developer.")
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
+                     ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
 
@@ -313,21 +316,27 @@ Makefile, simplifying the entire process for the developer.")
                                       (or (%current-target-system)
                                           (%current-system))))
 
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Run the test suite in parallel, if possible.
-                   (setenv "TESTSUITEFLAGS"
-                           (string-append
-                            "-j"
-                            (number->string (parallel-job-count))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Run the test suite in parallel, if possible.
+             (setenv "TESTSUITEFLAGS"
+                     (string-append
+                      "-j"
+                      (number->string (parallel-job-count))))
+           ;; Patch references to /bin/sh.
+           (let ((bash (assoc-ref inputs "bash")))
+             (substitute* "tests/testsuite"
+               (("/bin/sh")
+                (string-append bash "/bin/sh")))
+             #t)))
+         (add-after 'patch-source-shebangs 'restore-ltmain-shebang
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build-aux/ltmain.in"
+               (("^#!.*/bin/sh$") "#!/bin/sh"))
+             #t)))))
 
-                   ;; Path references to /bin/sh.
-                   (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* "tests/testsuite"
-                       (("/bin/sh")
-                        (string-append bash "/bin/bash")))))
-                 %standard-phases)))
     (synopsis "Generic shared library support tools")
     (description
      "GNU Libtool helps in the creation and use of shared libraries, by

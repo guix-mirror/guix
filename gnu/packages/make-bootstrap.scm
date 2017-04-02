@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -206,7 +207,17 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("patch" ,patch)
                ("coreutils" ,coreutils)
                ("sed" ,sed)
-               ("grep" ,grep)
+               ;; We don't want to retain a reference to /gnu/store in the
+               ;; bootstrap versions of egrep/fgrep, so we remove the custom
+               ;; phase added since grep@2.25. The effect is 'egrep' and
+               ;; 'fgrep' look for 'grep' in $PATH.
+               ("grep" ,(package
+                          (inherit grep)
+                          (arguments
+                            (substitute-keyword-arguments (package-arguments grep)
+                              ((#:phases phases)
+                               `(modify-phases ,phases
+                                  (delete 'fix-egrep-and-fgrep)))))))
                ("gawk" ,gawk)))
       ("bash" ,static-bash))))
 
@@ -416,8 +427,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                  ;; the 'pre-configure phase of our main gcc package, because
                  ;; that shared library is not present in this static gcc.  See
                  ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
-                 (substitute* (find-files "gcc/config"
-                                          "^gnu-user.*\\.h$")
+                 (substitute* (cons "gcc/config/rs6000/sysv4.h"
+                                    (find-files "gcc/config"
+                                                "^gnu-user.*\\.h$"))
                    ((" -lgcc_s}}") "}}")))
                ,phases)))))
      (native-inputs

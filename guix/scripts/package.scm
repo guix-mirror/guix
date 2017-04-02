@@ -667,7 +667,7 @@ processed, #f otherwise."
                                         (_              #f))
                                       opts)
                      (() (list %current-profile))
-                     (lst lst)))
+                     (lst (reverse lst))))
          (profile  (match profiles
                      ((head tail ...) head))))
     (match (assoc-ref opts 'query)

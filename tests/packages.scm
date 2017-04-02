@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -379,6 +380,8 @@
   (let* ((file   (search-bootstrap-binary (match (%current-system)
                                             ("armhf-linux"
                                              "guile-2.0.11.tar.xz")
+                                            ("aarch64-linux"
+                                             "guile-2.0.14.tar.xz")
                                             (_
                                              "guile-2.0.9.tar.xz"))
                                           (%current-system)))
@@ -977,6 +980,52 @@
                   (with-output-to-string
                     (lambda ()
                       (guix-package "-p" (derivation->output-path prof)
+                                    "--search-paths"))))))
+
+(test-assert "--search-paths with single-item search path"
+  ;; Make sure 'guix package --search-paths' correctly reports environment
+  ;; variables for things like 'GIT_SSL_CAINFO' that have #f as their
+  ;; separator, meaning that the first match wins.
+  (let* ((p1 (dummy-package "foo"
+               (build-system trivial-build-system)
+               (arguments
+                `(#:guile ,%bootstrap-guile
+                  #:modules ((guix build utils))
+                  #:builder (begin
+                              (use-modules (guix build utils))
+                              (let ((out (assoc-ref %outputs "out")))
+                                (mkdir-p (string-append out "/etc/ssl/certs"))
+                                (call-with-output-file
+                                    (string-append
+                                     out "/etc/ssl/certs/ca-certificates.crt")
+                                  (const #t))))))))
+         (p2 (package (inherit p1) (name "bar")))
+         (p3 (dummy-package "git"
+               ;; Provide a fake Git to avoid building the real one.
+               (build-system trivial-build-system)
+               (arguments
+                `(#:guile ,%bootstrap-guile
+                  #:builder (mkdir (assoc-ref %outputs "out"))))
+               (native-search-paths (package-native-search-paths git))))
+         (prof1 (run-with-store %store
+                  (profile-derivation
+                   (packages->manifest (list p1 p3))
+                   #:hooks '()
+                   #:locales? #f)
+                  #:guile-for-build (%guile-for-build)))
+         (prof2 (run-with-store %store
+                  (profile-derivation
+                   (packages->manifest (list p2 p3))
+                   #:hooks '()
+                   #:locales? #f)
+                  #:guile-for-build (%guile-for-build))))
+    (build-derivations %store (list prof1 prof2))
+    (string-match (format #f "^export GIT_SSL_CAINFO=\"~a/etc/ssl/certs/ca-certificates.crt"
+                          (regexp-quote (derivation->output-path prof1)))
+                  (with-output-to-string
+                    (lambda ()
+                      (guix-package "-p" (derivation->output-path prof1)
+                                    "-p" (derivation->output-path prof2)
                                     "--search-paths"))))))
 
 (test-equal "specification->package when not found"

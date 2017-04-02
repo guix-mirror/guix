@@ -84,9 +84,9 @@ loop.")
               (patches
                (search-patches
                 "libevent-dns-tests.patch"
-                "libevent-2.0-evdns-fix-remote-stack-overread.patch"
-                "libevent-2.0-evutil-fix-buffer-overflow.patch"
-                "libevent-2.0-evdns-fix-searching-empty-hostnames.patch"
+                "libevent-2.0-CVE-2016-10195.patch"
+                "libevent-2.0-CVE-2016-10196.patch"
+                "libevent-2.0-CVE-2016-10197.patch"
                 "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))))
 
 (define-public libev

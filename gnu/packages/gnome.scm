@@ -1867,7 +1867,7 @@ editors, IDEs, etc.")
     (version "0.46.1.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
-       ("gperf" ,gperf)
+       ("gperf" ,gperf-3.0)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)

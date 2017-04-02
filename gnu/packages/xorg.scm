@@ -49,7 +49,9 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -1248,7 +1250,8 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
             "1qp4yhxbfnpj34swa0fj635kkihdkwaiw7kf55cg5zqqg630kzl1"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)))
+      `(("libbsd" ,libbsd)
+        ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -2054,21 +2057,24 @@ emulate a TI-30 or an HP-10C.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.11")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-proto-"
+               "https://xcb.freedesktop.org/dist/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0bp3f53l9fy5x3mn1rkj1g81aiyzl90wacwvqdgy831aa3kfxb5l"))))
+           "01j91946q8f34l1mbvmmgvyc393sm28ym4lxlacpiav4qsjan8jr"))
+        (patches
+         (search-patches "xcb-proto-python3-whitespace.patch"
+                         "xcb-proto-python3-print.patch"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://xcb.freedesktop.org/")
     (synopsis "XML-XCB protocol descriptions")
     (description
      "XCB-Proto provides the XML-XCB protocol descriptions that libxcb
@@ -2697,7 +2703,7 @@ framebuffer device.")
 (define-public xf86-video-geode
   (package
     (name "xf86-video-geode")
-    (version "2.11.18")
+    (version "2.11.19")
     (source
       (origin
         (method url-fetch)
@@ -2707,7 +2713,7 @@ framebuffer device.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1s59kdj573v38sb14xfhp1l926aypbhy11vaz36y72x6calfkv6n"))
+           "0zn9gb49grds5mcs1dlrx241k2w1sgqmx4i5x7v6159xxqhlqsf6"))
         (patches (search-patches "xf86-video-geode-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
@@ -2825,7 +2831,7 @@ X server.")
       (inputs `(("mesa" ,mesa)
                 ("udev" ,eudev)
                 ("libx11" ,libx11)
-                ("libxfont" ,libxfont)
+                ("libxfont" ,libxfont2)
                 ("xorg-server" ,xorg-server)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
@@ -3057,7 +3063,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
     (build-system gnu-build-system)
     (inputs
       `(("fontsproto" ,fontsproto)
-        ("libxfont" ,libxfont)
+        ("libxfont" ,libxfont2)
         ("spice-protocol" ,spice-protocol)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xorg-server" ,xorg-server)
@@ -3351,6 +3357,7 @@ X server.")
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)
+       ("llvm" ,llvm)
        ("mesa" ,mesa)                   ; for xatracker
        ("xorg-server" ,xorg-server)))
     (native-inputs
@@ -3730,7 +3737,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.18")
+    (version "2.20")
     (source
       (origin
         (method url-fetch)
@@ -3740,7 +3747,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1l6x2w357ja8vm94ns79s7yj9a5dlr01r9dxrjvzwncadiyr27f4"))))
+            "0d619g4r0w1f6q5qmaqjnsc0956gi02fqgpisqffzqy4acjwggyi"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -4650,7 +4657,7 @@ script around the mkfontscale program.")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.29")
+    (version "7.0.31")
     (source
       (origin
         (method url-fetch)
@@ -4660,7 +4667,7 @@ script around the mkfontscale program.")
                ".tar.bz2"))
         (sha256
           (base32
-            "12lzpa9mrzkyrhrphzpi1014np3328qg7mdq08wj6wyaj9q4f6kc"))))
+            "0ivpxz0rx2a7nahkpkhfgymz7j0pwzaqvyqpdgw9afmxl1yp9yf6"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
@@ -4699,7 +4706,8 @@ common definitions and porting layer.")
     (propagated-inputs
       `(("xproto" ,xproto)))
     (inputs
-      `(("xtrans" ,xtrans)))
+      `(("libbsd" ,libbsd)
+        ("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4797,11 +4805,22 @@ not be used by normal X11 clients.  X11 clients access fonts via either the
 new API's in libXft, or the legacy API's in libX11.")
     (license license:x11)))
 
+(define-public libxfont2
+  (package
+    (inherit libxfont)
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0znvwk36nhmyqpmhbm9mzisgixp1mp5qkfald8x1n5yxbm3vpyz9"))))))
 
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.8")
+    (version "1.7.9")
     (source
       (origin
         (method url-fetch)
@@ -4811,7 +4830,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1fr7mi4nbcxsa88qin9g2ipmzh595ydxy9qnabzl270laf6zmwnq"))))
+            "0idg1wc01hndvaa820fvfs7phvd1ymf0lldmq6386i7rhkzvirn2"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
@@ -4920,15 +4939,17 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.11.1")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://xorg/individual/xcb/"
+        (uri (string-append "https://xcb.freedesktop.org/dist/"
                             name "-" version ".tar.bz2"))
         (sha256
           (base32
-           "0c4xyvdyx5adh8dzyhnrmvwwz24gri4z1czxmxqm63i0gmngs85p"))))
+           "0nvv0la91cf8p5qqlb3r5xnmg1jn2wphn4fb5jfbr6byqsvv3psa"))
+        (patches
+         (search-patches "libxcb-python-3.5-compat.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
@@ -4942,7 +4963,7 @@ protocol.")
         ("python" ,python-minimal-wrapper)))
     (arguments
      `(#:configure-flags '("--enable-xkb")))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://xcb.freedesktop.org/")
     (synopsis "The X C Binding (XCB) library")
     (description
      "libxcb provides an interface to the X Window System protocol,
@@ -4964,7 +4985,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.18.4")
+    (version "1.19.2")
     (source
       (origin
         (method url-fetch)
@@ -4973,7 +4994,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1j1i3n5xy1wawhk95kxqdc54h34kg7xp4nnramba2q8xqfr5k117"))))
+          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5002,12 +5023,13 @@ over Xlib, including:
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
+        ("libepoxy" ,libepoxy)
         ("libgcrypt" ,libgcrypt)
         ("libxau" ,libxau)
         ("libxaw" ,libxaw)
         ("libxdmcp" ,libxdmcp)
         ("libxfixes" ,libxfixes)
-        ("libxfont" ,libxfont)
+        ("libxfont2" ,libxfont2)
         ("libxkbfile" ,libxkbfile)
         ("libxrender" ,libxrender)
         ("libxres" ,libxres)
@@ -5031,7 +5053,12 @@ over Xlib, including:
         ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
        `(("python" ,python-minimal-wrapper)
-         ("pkg-config" ,pkg-config)))
+         ("pkg-config" ,pkg-config)
+         ;; XXX Bootstrapping inputs for 1.19.2. Remove for > 1.19.2.
+         ("font-util" ,font-util)
+         ("libtool" ,libtool)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
@@ -5056,17 +5083,23 @@ over Xlib, including:
              "--enable-kdrive"
              "--enable-xephyr")
 
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (substitute* (find-files "." "\\.c$")
-                     (("/bin/sh") (which "sh")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; XXX The 1.19.2 release of xorg-server was not bootstrapped:
+         ;; <https://lists.x.org/archives/xorg-announce/2017-March/002780.html>
+         (add-before 'configure 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (substitute* (find-files "." "\\.c$")
+              (("/bin/sh") (which "sh")))
 
-                   ;; Don't try to 'mkdir /var'.
-                   (substitute* "hw/xfree86/Makefile.in"
-                     (("\\$\\(MKDIR_P\\).*logdir.*")
-                      "true\n")))
-                 %standard-phases)))
+            ;; Don't try to 'mkdir /var'.
+            (substitute* "hw/xfree86/Makefile.in"
+              (("\\$\\(MKDIR_P\\).*logdir.*")
+               "true\n"))
+            #t)))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description
@@ -5081,13 +5114,29 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
+;;; This package is intended to be used when building GTK+.
+(define-public xorg-server-1.19.2
+  (package
+    (inherit xorg-server)
+    (name "xorg-server")
+    (version "1.19.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://xorg/individual/xserver/"
+              name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))))
+
 (define-public xorg-server-xwayland
   (package
     (inherit xorg-server)
     (name "xorg-server-xwayland")
     (inputs
-     `(("libepoxy" ,libepoxy)
-       ("wayland" ,wayland)
+     `(("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ,@(package-inputs xorg-server)))
     (arguments
      (substitute-keyword-arguments (package-arguments xorg-server)
@@ -5105,7 +5154,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.4")
+    (version "1.6.5")
     (source
       (origin
         (method url-fetch)
@@ -5115,7 +5164,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0hg46i6h92pmb7xp1cis2j43zq3fkdz89p0yv35w4vm17az4iixp"))))
+            "0pa3cfp6h9rl2vxmkph65250gfqyki0ccqyaan6bl9d25gdr0f2d"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
