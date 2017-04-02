@@ -1360,17 +1360,15 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.45.4")
+    (version "0.47-1")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "mirror://sourceforge/pure-data/pure-data/"
-                              version "/pd-" (version-major+minor version)
-                              "-" (last (string-split version #\.))
-                              ".src.tar.gz"))
+               (string-append "http://msp.ucsd.edu/Software/pd-"
+                              version ".src.tar.gz"))
               (sha256
                (base32
-                "1ls2ap5yi2zxvmr247621g4jx0hhfds4j5704a050bn2n3l0va2p"))))
+                "0k5s949kqd7yw97h3m8z81bjz32bis9m4ih8df1z0ymipnafca67"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
