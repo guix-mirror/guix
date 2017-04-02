@@ -21,6 +21,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -663,14 +664,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.24")
+    (version "0.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1z3m9knsdmchvfjzjhjf2cmdc9yahmvbvzn46wsrsrihfvv4rr7p"))))
+                "18rw0rim6zxhnr2nggial029x4raaxqcgf9klfbdhv89qvi7s4gs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
