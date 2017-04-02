@@ -3100,6 +3100,12 @@ If you want to mark a folder manually as a project just create an empty
                (base32
                 "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "make" "test")))))))
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
     (description
