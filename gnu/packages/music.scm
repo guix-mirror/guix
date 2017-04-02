@@ -109,14 +109,14 @@
 (define-public aria-maestosa
   (package
     (name "aria-maestosa")
-    (version "1.4.11")
+    (version "1.4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ariamaestosa/ariamaestosa/"
                                   version "/AriaSrc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gf9z96z83jiabxhpl856j15vl9flfgs6x1r0r6hc7g2xvwag0vy"))))
+                "1cs3z6frx2ch7rm5ammx9p0rxcjrbj1vq14hvcbimpaw39rdsn3d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no tests
