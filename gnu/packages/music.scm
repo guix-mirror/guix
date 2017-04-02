@@ -670,8 +670,8 @@ Guile.")
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
   ;; system, so we take the last commit.
-  (let ((commit "a22f33f486a5c6f75b60e36f66504c036c0f6f8c")
-        (revision "2"))
+  (let ((commit "10c31e57291b6e42be53371567a722b62b32d220")
+        (revision "3"))
     (package
       (name "non-sequencer")
       (version (string-append "1.9.5-" revision "." (string-take commit 7)))
@@ -682,7 +682,7 @@ Guile.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "09q5x8i4f8mqnl8w6xnsq5zriy4bzdl4x2vq9n34a433rfrk84bg"))
+                  "080rha4ffp7qycyg1mqcf4vj0s7z8qfvz6bxm0w29xgg2kkmb3fx"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system waf-build-system)
       (arguments
