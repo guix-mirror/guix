@@ -140,7 +140,6 @@ Qt-style API for Wayland clients.")
        ("qttools" ,qttools)))
     (inputs
      `(("glib" ,glib)
-       ("greenisland" ,greenisland)
        ("libxcb" ,libxcb)
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
