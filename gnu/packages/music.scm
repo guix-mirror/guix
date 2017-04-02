@@ -1268,7 +1268,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.3.2")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1276,11 +1276,14 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0ldml31zvywid1w28mfd65ramyiics55fdl0ch846vm7j7nwv58j"))
+                "041275vwfr82kass7wiq9g2y82w9qrbzfinzcvfij2f2q45njwmc"))
               (modules '((guix build utils)))
               (snippet
-               ;; Delete pre-built classes
-               '(delete-file-recursively "TuxGuitar-android/bin"))))
+               '(begin
+                  ;; Delete pre-built classes
+                  (delete-file-recursively "TuxGuitar-android-gdrive/bin")
+                  (delete-file-recursively "TuxGuitar-android-gdrive-gdaa/bin")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
@@ -1289,23 +1292,31 @@ is subjective.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir "TuxGuitar-lib") #t))
-         (add-after 'build 'build-editor-utils
+         (add-after 'build 'build-libraries
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (chdir "..")
-             (let ((cwd (getcwd)))
-               (setenv "CLASSPATH"
-                       (string-append
-                        cwd "/TuxGuitar-lib/tuxguitar-lib.jar" ":"
-                        cwd "/TuxGuitar-editor-utils/build/jar/tuxguitar-editor-utils.jar" ":"
-                        (getenv "CLASSPATH"))))
-             (chdir "TuxGuitar-editor-utils")
-             ;; Generate default build.xml
-             ((@@ (guix build ant-build-system) default-build.xml)
-              "tuxguitar-editor-utils.jar"
-              (string-append (assoc-ref outputs "out")
-                             "/share/java"))
-             ((assoc-ref %standard-phases 'build))))
-         (add-after 'build-editor-utils 'build-application
+             (let* ((initial-classpath (getenv "CLASSPATH"))
+                    (build-dir (lambda (dir)
+                                 (chdir "..")
+                                 (setenv "CLASSPATH"
+                                         (string-join (cons initial-classpath
+                                                            (find-files (getcwd) "\\.jar$"))
+                                                      ":"))
+                                 (chdir dir)
+                                 (if (file-exists? "build.xml")
+                                     ((assoc-ref %standard-phases 'build)
+                                      #:build-target "build")
+                                     (begin
+                                       ;; Generate default build.xml
+                                       ((@@ (guix build ant-build-system) default-build.xml)
+                                        (string-append (string-downcase dir) ".jar")
+                                        (string-append (assoc-ref outputs "out")
+                                                       "/share/java"))
+                                       ((assoc-ref %standard-phases 'build)))))))
+               (map build-dir '("TuxGuitar-editor-utils"
+                                "TuxGuitar-ui-toolkit"
+                                "TuxGuitar-ui-toolkit-swt"
+                                "TuxGuitar-awt-graphics")))))
+         (add-after 'build-libraries 'build-application
            (lambda _
              (chdir "../TuxGuitar")
              ((assoc-ref %standard-phases 'build)
@@ -1322,10 +1333,10 @@ is subjective.")
                (for-each (lambda (file)
                            (install-file file lib))
                          (find-files ".." "\\.jar$"))
+
                ;; install all resources
-               (for-each (lambda (file)
-                           (install-file file share))
-                         (find-files "share" ".*"))
+               (copy-recursively "share" share)
+
                ;; create wrapper
                (call-with-output-file (string-append bin "/tuxguitar")
                  (lambda (port)
