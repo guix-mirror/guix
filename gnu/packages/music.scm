@@ -1046,7 +1046,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1054,7 +1054,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0j3hkmd9q0bw9b7nk9cssqywlrishkd1n790a9vq6gh3pdc5sf3r"))))
+                "15rp9d1jbb56idyrnn9cqi1i7a70z1a1qdyz7ryn0bla0ghjnich"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
