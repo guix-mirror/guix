@@ -700,8 +700,8 @@ listed in OS.  The C library expects to find it under
   (locale-directory definitions
                     #:libcs (operating-system-locale-libcs os)))
 
-(define (kernel->grub-label kernel)
-  "Return a label for the GRUB menu entry that boots KERNEL."
+(define (kernel->boot-label kernel)
+  "Return a label for the bootloader menu entry that boots KERNEL."
   (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
@@ -735,7 +735,7 @@ listed in OS.  The C library expects to find it under
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (store-fs -> (operating-system-store-file-system os))
-       (label ->    (kernel->grub-label (operating-system-kernel os)))
+       (label ->    (kernel->boot-label (operating-system-kernel os)))
        (kernel ->   (operating-system-kernel-file os))
        (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
@@ -774,7 +774,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
   (mlet %store-monad ((initrd   (operating-system-initrd-file os))
                       (root ->  (operating-system-root-file-system os))
                       (store -> (operating-system-store-file-system os))
-                      (label -> (kernel->grub-label
+                      (label -> (kernel->boot-label
                                  (operating-system-kernel os))))
     (gexp->file "parameters"
                 #~(boot-parameters
