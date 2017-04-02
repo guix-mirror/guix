@@ -622,10 +622,10 @@ output when building a system derivation, such as a disk image."
                                         (operating-system-bootloader os))))
        (grub.cfg  (if (eq? 'container action)
                       (return #f)
-                      (operating-system-grub.cfg os
-                                                 (if (eq? 'init action)
-                                                     '()
-                                                     (profile-grub-entries)))))
+                      (operating-system-bootcfg os
+                                                (if (eq? 'init action)
+                                                    '()
+                                                    (profile-grub-entries)))))
 
        ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC

@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,7 +93,7 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg
+            operating-system-bootcfg
             operating-system-etc-directory
             operating-system-locale-directory
             operating-system-boot-script
@@ -728,9 +729,9 @@ listed in OS.  The C library expects to find it under
   "Return the file system that contains the store of OS."
   (store-file-system (operating-system-file-systems os)))
 
-(define* (operating-system-grub.cfg os #:optional (old-entries '()))
-  "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
-\"old entries\" menu."
+(define* (operating-system-bootcfg os #:optional (old-entries '()))
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES to
+populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
