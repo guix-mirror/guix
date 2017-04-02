@@ -412,49 +412,58 @@ connection to the store."
 ;;;
 (define (switch-to-system-generation store spec)
   "Switch the system profile to the generation specified by SPEC, and
-re-install grub with a grub configuration file that uses the specified system
+re-install bootloader with a configuration file that uses the specified system
 generation as its default entry.  STORE is an open connection to the store."
   (let ((number (relative-generation-spec->number %system-profile spec)))
     (if number
         (begin
-          (reinstall-grub store number)
+          (reinstall-bootloader store number)
           (switch-to-generation* %system-profile number))
         (leave (G_ "cannot switch to system generation '~a'~%") spec))))
 
-(define (reinstall-grub store number)
-  "Re-install grub for existing system profile generation NUMBER.  STORE is an
-open connection to the store."
+(define* (system-bootloader-name #:optional (system %system-profile))
+  "Return the bootloader name stored in SYSTEM's \"parameters\" file."
+  (let ((params (unless-file-not-found
+                 (read-boot-parameters-file system))))
+    (boot-parameters-boot-name params)))
+
+(define (reinstall-bootloader store number)
+  "Re-install bootloader for existing system profile generation NUMBER.
+STORE is an open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
          (params (unless-file-not-found
                   (read-boot-parameters-file generation)))
-         (root-device (boot-parameters-root-device params))
-         ;; We don't currently keep track of past menu entries' details.  The
-         ;; default values will allow the system to boot, even if they differ
-         ;; from the actual past values for this generation's entry.
-         (grub-config (grub-configuration (device root-device)))
+         ;; Detect the bootloader used in %system-profile.
+         (bootloader (lookup-bootloader-by-name (system-bootloader-name)))
+
+         ;; Use the detected bootloader with default configuration.
+         ;; It will be enough to allow the system to boot.
+         (bootloader-config (bootloader-configuration
+                             (bootloader bootloader)))
+
          ;; Make the specified system generation the default entry.
          (entries (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-boot-parameters %system-profile old-generations))
-         (grub.cfg (run-with-store store
-                     (grub-configuration-file grub-config
-                                              entries
-                                              #:old-entries old-entries))))
-    (show-what-to-build store (list grub.cfg))
-    (build-derivations store (list grub.cfg))
-    ;; This is basically the same as install-grub*, but for now we avoid
-    ;; re-installing the GRUB boot loader itself onto a device, mainly because
-    ;; we don't in general have access to the same version of the GRUB package
-    ;; which was used when installing this other system generation.
-    (let* ((grub.cfg-path (derivation->output-path grub.cfg))
-           (gc-root (string-append %gc-roots-directory "/grub.cfg"))
-           (temp-gc-root (string-append gc-root ".new")))
-      (switch-symlinks temp-gc-root grub.cfg-path)
-      (unless (false-if-exception (install-grub-config grub.cfg-path "/"))
-        (delete-file temp-gc-root)
-        (leave (G_ "failed to re-install GRUB configuration file: '~a'~%")
-               grub.cfg-path))
-      (rename-file temp-gc-root gc-root))))
+         (old-entries (profile-boot-parameters
+                       %system-profile old-generations)))
+    (run-with-store store
+      (mlet* %store-monad
+          ((bootcfg ((bootloader-configuration-file-generator bootloader)
+                     bootloader-config entries
+                     #:old-entries old-entries))
+           (bootcfg-file -> (bootloader-configuration-file bootloader))
+           (target -> "/")
+           (drvs -> (list bootcfg)))
+        (mbegin %store-monad
+          (show-what-to-build* drvs)
+          (built-derivations drvs)
+          ;; Only install bootloader configuration file. Thus, no installer
+          ;; nor device is provided here.
+          (install-bootloader #f
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:device #f
+                              #:target target))))))
 
 
 ;;;
