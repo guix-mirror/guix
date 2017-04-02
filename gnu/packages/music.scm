@@ -1346,7 +1346,7 @@ is subjective.")
                #t))))))
     (inputs
      `(("java-swt" ,java-swt)))
-    (home-page "http://tuxguitar.com.ar")
+    (home-page "http://tuxguitar.pw")
     (synopsis "Multitrack tablature editor and player")
     (description
      "TuxGuitar is a guitar tablature editor with player support through midi.
