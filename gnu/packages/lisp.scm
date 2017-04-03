@@ -904,6 +904,7 @@ from other CLXes around the net.")
            (lambda* (#:key outputs #:allow-other-keys)
              (build-program
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
+              outputs
               #:entry-program '((stumpwm:stumpwm) 0))))
          (add-after 'build-program 'create-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1153,6 +1154,7 @@ multiple inspectors with independent history.")
            (build-image (string-append
                          (assoc-ref %outputs "image")
                          "/bin/slynk")
+                        %outputs
                         #:dependencies ',slynk-systems)))))))
 
 (define-public ecl-slynk
@@ -1182,7 +1184,7 @@ multiple inspectors with independent history.")
     (inherit sbcl-stumpwm)
     (name "sbcl-stumpwm-with-slynk")
     (outputs '("out"))
-    (native-inputs
+    (inputs
      `(("stumpwm" ,sbcl-stumpwm "lib")
        ("slynk" ,sbcl-slynk)))
     (arguments
@@ -1190,13 +1192,16 @@ multiple inspectors with independent history.")
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
-                 (build-program program
+                 (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm"
-                                                 ,@slynk-systems))
+                                                 ,@slynk-systems)
+                                #:dependency-prefixes
+                                (map (lambda (input) (assoc-ref inputs input))
+                                     '("stumpwm" "slynk")))
                  ;; Remove unneeded file.
                  (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
                  #t)))

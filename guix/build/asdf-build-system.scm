@@ -71,10 +71,6 @@ to it's binary output."
 (define (source-asd-file output name asd-file)
   (string-append (lisp-source-directory output name) "/" asd-file))
 
-(define (library-output outputs)
-  "If a `lib' output exists, build things there. Otherwise use `out'."
-  (or (assoc-ref outputs "lib") (assoc-ref outputs "out")))
-
 (define (copy-files-to-output out name)
   "Copy all files from the current directory to OUT.  Create an extra link to
 any system-defining files in the source to a convenient location.  This is

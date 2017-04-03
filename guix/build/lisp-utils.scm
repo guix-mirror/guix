@@ -42,7 +42,8 @@
             build-image
             make-asd-file
             valid-char-set
-            normalize-string))
+            normalize-string
+            library-output))
 
 ;;; Commentary:
 ;;;
@@ -66,6 +67,10 @@
 
 (define (%bundle-install-prefix)
   (string-append %source-install-prefix "/" (%lisp-type) "-bundle-systems"))
+
+(define (library-output outputs)
+  "If a `lib' output exists, build things there. Otherwise use `out'."
+  (or (assoc-ref outputs "lib") (assoc-ref outputs "out")))
 
 ;; See nix/libstore/store-api.cc#checkStoreName.
 (define valid-char-set
@@ -298,16 +303,20 @@ which are not nested."
   (setenv "CL_SOURCE_REGISTRY"
           (string-append path ":" (or (getenv "CL_SOURCE_REGISTRY") ""))))
 
-(define* (build-program program #:key
+(define* (build-program program outputs #:key
+                        (dependency-prefixes (list (library-output outputs)))
                         (dependencies (list (basename program)))
                         entry-program
                         #:allow-other-keys)
   "Generate an executable program containing all DEPENDENCIES, and which will
 execute ENTRY-PROGRAM.  The result is placed in PROGRAM.  When executed, it
 will run ENTRY-PROGRAM, a list of Common Lisp expressions in which `arguments'
-has been bound to the command-line arguments which were passed."
+has been bound to the command-line arguments which were passed.  Link in any
+asd files from DEPENDENCY-PREFIXES to ensure references to those libraries are
+retained."
   (generate-executable program
                        #:dependencies dependencies
+                       #:dependency-prefixes dependency-prefixes
                        #:entry-program entry-program
                        #:type 'asdf:program-op)
   (let* ((name (basename program))
@@ -317,13 +326,16 @@ has been bound to the command-line arguments which were passed."
                    name)))
   #t)
 
-(define* (build-image image #:key
+(define* (build-image image outputs #:key
+                      (dependency-prefixes (list (library-output outputs)))
                       (dependencies (list (basename image)))
                       #:allow-other-keys)
   "Generate an image, possibly standalone, which contains all DEPENDENCIES,
-placing the result in IMAGE.image."
+placing the result in IMAGE.image.  Link in any asd files from
+DEPENDENCY-PREFIXES to ensure references to those libraries are retained."
   (generate-executable image
                        #:dependencies dependencies
+                       #:dependency-prefixes dependency-prefixes
                        #:entry-program '(nil)
                        #:type 'asdf:image-op)
   (let* ((name (basename image))
@@ -335,12 +347,14 @@ placing the result in IMAGE.image."
 
 (define* (generate-executable out-file #:key
                               dependencies
+                              dependency-prefixes
                               entry-program
                               type
                               #:allow-other-keys)
   "Generate an executable by using asdf operation TYPE, containing whithin the
 image all DEPENDENCIES, and running ENTRY-PROGRAM in the case of an
-executable."
+executable.  Link in any asd files from DEPENDENCY-PREFIXES to ensure
+references to those libraries are retained."
   (let* ((bin-directory (dirname out-file))
          (name (basename out-file)))
     (mkdir-p bin-directory)
@@ -360,6 +374,24 @@ executable."
                   (,bin-directory :**/ :*.*.*)))))))
 
     (generate-executable-for-system type name)
+
+    (let* ((after-store-prefix-index
+            (string-index out-file #\/
+                          (1+ (string-length (%store-directory)))))
+           (output (string-take out-file after-store-prefix-index))
+           (hidden-asd-links (string-append output "/.asd-files")))
+
+      (mkdir-p hidden-asd-links)
+      (for-each
+       (lambda (path)
+         (for-each
+          (lambda (asd-file)
+            (symlink asd-file
+                     (string-append hidden-asd-links
+                                    "/" (basename asd-file))))
+          (find-files (string-append path (%bundle-install-prefix))
+                      "\\.asd$")))
+       dependency-prefixes))
 
     (delete-file (string-append bin-directory "/" name "-exec.asd"))
     (delete-file (string-append bin-directory "/" name "-exec.lisp"))))
