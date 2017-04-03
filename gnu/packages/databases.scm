@@ -707,7 +707,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.17.0")
+   (version "3.18.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -723,7 +723,7 @@ for example from a shell script.")
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0k472gq0p706jq4529p60znvw02hdf172qxgbdv59q0n7anqbr54"))))
+              "0p5cx7nbjxk7glcm277ypi5w4gv144qazw79ql47svlpccj62mrp"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
