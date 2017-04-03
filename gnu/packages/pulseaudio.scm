@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,14 +43,14 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.0.27")
+    (version "1.0.28")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1h7s61nhf7vklh9sdsbbqzb6x287q4x4j1jc5gmjragl4wprb4d3"))))
+               "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
