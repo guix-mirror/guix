@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,10 +43,10 @@
 (define %object-prefix "/lib")
 
 (define (source-install-prefix lisp)
-  (string-append %install-prefix "/" lisp "-source"))
+  (string-append %source-install-prefix "/" lisp "-source"))
 
 (define %system-install-prefix
-  (string-append %install-prefix "/systems"))
+  (string-append %source-install-prefix "/systems"))
 
 (define (output-path->package-name path)
   (package-name->name+version (strip-store-file-name path)))
@@ -59,7 +59,7 @@
   (string-append output (source-install-prefix lisp) "/" name))
 
 (define (source-directory output name)
-  (string-append output %install-prefix "/source/" name))
+  (string-append output %source-install-prefix "/source/" name))
 
 (define (library-directory output lisp)
   (string-append output %object-prefix
@@ -103,7 +103,7 @@ before any compiling so that the compiled source locations will be valid."
   "Copy the source to \"out\"."
   (let* ((out (assoc-ref outputs "out"))
          (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (install-path (string-append out %install-prefix)))
+         (install-path (string-append out %source-install-prefix)))
     (copy-files-to-output outputs "out" name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path

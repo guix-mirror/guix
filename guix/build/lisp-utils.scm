@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (guix build utils)
   #:export (%lisp
-            %install-prefix
+            %source-install-prefix
             lisp-eval-program
             compile-system
             test-system
@@ -54,10 +54,12 @@
   ;; File name of the Lisp compiler.
   (make-parameter "lisp"))
 
-(define %install-prefix "/share/common-lisp")
+;; The common parent for Lisp source files, as will as the symbolic
+;; link farm for system definition (.asd) files.
+(define %source-install-prefix "/share/common-lisp")
 
 (define (bundle-install-prefix lisp)
-  (string-append %install-prefix "/" lisp "-bundle-systems"))
+  (string-append %source-install-prefix "/" lisp "-bundle-systems"))
 
 (define (remove-lisp-from-name name lisp)
   (string-drop name (1+ (string-length lisp))))
