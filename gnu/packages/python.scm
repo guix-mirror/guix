@@ -4905,7 +4905,7 @@ cluster without needing to write any wrapper code yourself.")
          (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)
+       ("python-pytest" ,python-pytest-3.0)
        ("man-db" ,man-db)
        ("which" ,which)))
     (propagated-inputs
