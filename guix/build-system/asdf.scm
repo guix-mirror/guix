@@ -232,10 +232,10 @@ set up using CL source package conventions."
         (properties (alist-delete variant properties)))
       pkg))
 
-(define (lower lisp-implementation)
+(define (lower lisp-type)
   (lambda* (name
             #:key source inputs outputs native-inputs system target
-            (lisp (default-lisp (string->symbol lisp-implementation)))
+            (lisp (default-lisp (string->symbol lisp-type)))
             #:allow-other-keys
             #:rest arguments)
     "Return a bag for NAME"
@@ -251,18 +251,17 @@ set up using CL source package conventions."
                                 '())
                           ,@inputs
                           ,@(standard-packages)))
-           (build-inputs `((,lisp-implementation ,lisp)
+           (build-inputs `((,lisp-type ,lisp)
                            ,@native-inputs))
            (outputs outputs)
-           (build (asdf-build lisp-implementation))
+           (build (asdf-build lisp-type))
            (arguments (strip-keyword-arguments private-keywords arguments))))))
 
-(define (asdf-build lisp-implementation)
+(define (asdf-build lisp-type)
   (lambda* (store name inputs
                   #:key source outputs
                   (tests? #t)
                   (asd-file #f)
-                  (lisp lisp-implementation)
                   (phases '(@ (guix build asdf-build-system)
                               %standard-phases))
                   (search-paths '())
@@ -280,7 +279,7 @@ set up using CL source package conventions."
                                   (derivation->output-path source))
                                  ((source) source)
                                  (source source))
-                     #:lisp ,lisp
+                     #:lisp-type ,lisp-type
                      #:asd-file ,asd-file
                      #:system ,system
                      #:tests? ,tests?

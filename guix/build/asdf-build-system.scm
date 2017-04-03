@@ -104,29 +104,32 @@ valid."
   "Copy and symlink all the source files."
   (copy-files-to-output (assoc-ref outputs "out") (outputs->name outputs)))
 
-(define* (copy-source #:key outputs lisp #:allow-other-keys)
+(define* (copy-source #:key outputs lisp-type #:allow-other-keys)
   "Copy the source to the library output."
   (let* ((out (library-output outputs))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
+         (name (remove-lisp-from-name (output-path->package-name out)
+                                      lisp-type))
          (install-path (string-append out %source-install-prefix)))
     (copy-files-to-output out name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path
-      (rename-file "source" (string-append lisp "-source"))
+      (rename-file "source" (string-append lisp-type "-source"))
       (delete-file-recursively "systems")))
   #t)
 
-(define* (build #:key outputs inputs lisp asd-file
+(define* (build #:key outputs inputs lisp-type asd-file
                 #:allow-other-keys)
   "Compile the system."
   (let* ((out (library-output outputs))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (source-path (lisp-source-directory out lisp name))
+         (name (remove-lisp-from-name (output-path->package-name out)
+                                      lisp-type))
+         (source-path (lisp-source-directory out lisp-type name))
          (translations (wrap-output-translations
                         `(,(output-translation source-path
                                                out
-                                               lisp))))
-         (asd-file (and=> asd-file (cut source-asd-file out lisp name <>))))
+                                               lisp-type))))
+         (asd-file (and=> asd-file
+                          (cut source-asd-file out lisp-type name <>))))
 
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
@@ -139,8 +142,8 @@ valid."
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
 
     (parameterize ((%lisp (string-append
-                           (assoc-ref inputs lisp) "/bin/" lisp)))
-      (compile-system name lisp asd-file))
+                           (assoc-ref inputs lisp-type) "/bin/" lisp-type)))
+      (compile-system name lisp-type asd-file))
 
     ;; As above, ecl will sometimes create this even though it doesn't use it
 
@@ -149,47 +152,48 @@ valid."
         (delete-file-recursively cache-directory))))
   #t)
 
-(define* (check #:key lisp tests? outputs inputs asd-file
+(define* (check #:key lisp-type tests? outputs inputs asd-file
                 #:allow-other-keys)
   "Test the system."
-  (let* ((name (remove-lisp-from-name (outputs->name outputs) lisp))
+  (let* ((name (remove-lisp-from-name (outputs->name outputs) lisp-type))
          (out (library-output outputs))
-         (asd-file (and=> asd-file (cut source-asd-file out lisp name <>))))
+         (asd-file (and=> asd-file
+                          (cut source-asd-file out lisp-type name <>))))
     (if tests?
         (parameterize ((%lisp (string-append
-                               (assoc-ref inputs lisp) "/bin/" lisp)))
-          (test-system name lisp asd-file))
+                               (assoc-ref inputs lisp-type) "/bin/" lisp-type)))
+          (test-system name lisp-type asd-file))
         (format #t "test suite not run~%")))
   #t)
 
 (define* (create-asd-file #:key outputs
                           inputs
-                          lisp
+                          lisp-type
                           asd-file
                           #:allow-other-keys)
   "Create a system definition file for the built system."
   (let*-values (((out) (library-output outputs))
                 ((full-name version) (package-name->name+version
                                       (strip-store-file-name out)))
-                ((name) (remove-lisp-from-name full-name lisp))
-                ((new-asd-file) (string-append (library-directory out lisp)
+                ((name) (remove-lisp-from-name full-name lisp-type))
+                ((new-asd-file) (string-append (library-directory out lisp-type)
                                                "/" name ".asd")))
 
     (make-asd-file new-asd-file
-                   #:lisp lisp
+                   #:lisp lisp-type
                    #:system name
                    #:version version
                    #:inputs inputs
                    #:system-asd-file asd-file))
   #t)
 
-(define* (symlink-asd-files #:key outputs lisp #:allow-other-keys)
+(define* (symlink-asd-files #:key outputs lisp-type #:allow-other-keys)
   "Create an extra reference to the system in a convenient location."
   (let* ((out (library-output outputs)))
     (for-each
      (lambda (asd-file)
        (receive (new-asd-file asd-file-directory)
-           (bundle-asd-file out asd-file lisp)
+           (bundle-asd-file out asd-file lisp-type)
          (mkdir-p asd-file-directory)
          (symlink asd-file new-asd-file)
          ;; Update the source registry for future phases which might want to
@@ -200,11 +204,11 @@ valid."
      (find-files (string-append out %object-prefix) "\\.asd$")))
   #t)
 
-(define* (cleanup-files #:key outputs lisp
+(define* (cleanup-files #:key outputs lisp-type
                         #:allow-other-keys)
   "Remove any compiled files which are not a part of the final bundle."
   (let ((out (library-output outputs)))
-    (match lisp
+    (match lisp-type
       ("sbcl"
        (for-each
         (lambda (file)
@@ -216,7 +220,7 @@ valid."
                  (append (find-files out "\\.fas$")
                          (find-files out "\\.o$")))))
 
-    (with-directory-excursion (library-directory out lisp)
+    (with-directory-excursion (library-directory out lisp-type)
       (for-each
        (lambda (file)
          (rename-file file
@@ -231,9 +235,9 @@ valid."
                             (string<> ".." file)))))))
   #t)
 
-(define* (strip #:key lisp #:allow-other-keys #:rest args)
+(define* (strip #:key lisp-type #:allow-other-keys #:rest args)
   ;; stripping sbcl binaries removes their entry program and extra systems
-  (or (string=? lisp "sbcl")
+  (or (string=? lisp-type "sbcl")
       (apply (assoc-ref gnu:%standard-phases 'strip) args)))
 
 (define %standard-phases/source

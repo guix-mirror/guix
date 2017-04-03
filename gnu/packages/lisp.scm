@@ -856,9 +856,9 @@ from other CLXes around the net.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
-           (lambda* (#:key lisp outputs inputs #:allow-other-keys)
+           (lambda* (#:key lisp-type outputs inputs #:allow-other-keys)
              (build-program
-              lisp
+              lisp-type
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
               #:inputs inputs
               #:entry-program '((stumpwm:stumpwm) 0))))
@@ -1145,10 +1145,10 @@ multiple inspectors with independent history.")
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
-             (lambda* (#:key lisp inputs outputs #:allow-other-keys)
+             (lambda* (#:key lisp-type inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
-                 (build-program lisp program
+                 (build-program lisp-type program
                                 #:inputs inputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm"
