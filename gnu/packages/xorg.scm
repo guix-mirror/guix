@@ -1120,7 +1120,7 @@ themselves.")
 (define-public libpthread-stubs
   (package
     (name "libpthread-stubs")
-    (version "0.3")
+    (version "0.4")
     (source
       (origin
         (method url-fetch)
@@ -1130,7 +1130,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
+            "0cz7s9w8lqgzinicd4g36rjg08zhsbyngh0w68c3np8nlc8mkl74"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
