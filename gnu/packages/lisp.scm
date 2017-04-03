@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -950,11 +950,11 @@ productive, customizable lisp based systems.")
       (arguments
        `(#:tests? #f)) ; No test suite
       (synopsis "Common Lisp IDE for Emacs")
-      (description "SLY is a fork of SLIME.  It also features a completely
-redesigned REPL based on Emacs's own full-featured comint.el, live code
-annotations, and a consistent interactive button interface.  Everything can be
-copied to the REPL.  One can create multiple inspectors with independent
-history.")
+      (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
+It also features a completely redesigned REPL based on Emacs's own
+full-featured comint.el, live code annotations, and a consistent interactive
+button interface.  Everything can be copied to the REPL.  One can create
+multiple inspectors with independent history.")
       (home-page "https://github.com/joaotavora/sly")
       (license license:public-domain)
       (properties `((cl-source-variant . ,(delay cl-slynk)))))))
