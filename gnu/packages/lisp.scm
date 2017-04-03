@@ -853,7 +853,7 @@ from other CLXes around the net.")
     (build-system asdf-build-system/sbcl)
     (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
               ("sbcl-clx" ,sbcl-clx)))
-    (outputs '("out" "bin"))
+    (outputs '("out" "lib"))
     (arguments
      '(#:special-dependencies '("sb-posix")
        #:phases
@@ -862,20 +862,18 @@ from other CLXes around the net.")
            (lambda* (#:key lisp outputs inputs #:allow-other-keys)
              (build-program
               lisp
-              (string-append (assoc-ref outputs "bin") "/bin/stumpwm")
+              (string-append (assoc-ref outputs "out") "/bin/stumpwm")
               #:inputs inputs
               #:entry-program '((stumpwm:stumpwm) 0))))
          (add-after 'build-program 'create-desktop-file
-           (lambda* (#:key outputs lisp binary? #:allow-other-keys)
-             (let ((output (or (assoc-ref outputs "bin")
-                               (assoc-ref outputs "out")))
-                   (xsessions "/share/xsessions"))
-               (mkdir-p (string-append output xsessions))
-               (with-output-to-file
-                   (string-append output xsessions
-                                  "/stumpwm.desktop")
-                 (lambda _
-                   (format #t
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/stumpwm.desktop")
+                 (lambda (file)
+                   (format file
                     "[Desktop Entry]~@
                      Name=stumpwm~@
                      Comment=The Stump Window Manager~@
@@ -883,7 +881,7 @@ from other CLXes around the net.")
                      TryExec=~@*~a/bin/stumpwm~@
                      Icon=~@
                      Type=Application~%"
-                    output)))
+                    out)))
                #t))))))
     (synopsis "Window manager written in Common Lisp")
     (description "Stumpwm is a window manager written entirely in Common Lisp.
@@ -1143,7 +1141,7 @@ multiple inspectors with independent history.")
     (name "sbcl-stumpwm-with-slynk")
     (outputs '("out"))
     (native-inputs
-     `(("stumpwm" ,sbcl-stumpwm)
+     `(("stumpwm" ,sbcl-stumpwm "lib")
        ("slynk" ,sbcl-slynk)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
@@ -1164,6 +1162,6 @@ multiple inspectors with independent history.")
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
-           (delete 'link-dependencies)
+           (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
