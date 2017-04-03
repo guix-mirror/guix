@@ -1001,6 +1001,7 @@ can solve two kinds of problems:
     (inputs
      `(("lapack" ,lapack)
        ("readline" ,readline)
+       ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
