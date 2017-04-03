@@ -29,7 +29,7 @@
 
 (test-equal "evaluate-search-paths, separator is #f"
   (string-append %top-srcdir
-                 "/gnu/packages/bootstrap/armhf-linux")
+                 "/gnu/packages/bootstrap/aarch64-linux")
 
   ;; The following search path spec should evaluate to a single item: the
   ;; first directory that matches the "-linux$" pattern in
