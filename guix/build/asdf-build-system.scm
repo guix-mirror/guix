@@ -118,16 +118,10 @@ valid."
          (translations (wrap-output-translations
                         `(,(output-translation source-path
                                                out))))
-         (asd-file (and=> asd-file
-                          (cut source-asd-file out asd-system-name <>))))
+         (asd-file (source-asd-file out asd-system-name asd-file)))
 
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
-
-    ;; We don't need this if we have the asd file, and it can mess with the
-    ;; load ordering we're trying to enforce
-    (unless asd-file
-      (prepend-to-source-registry (string-append source-path "//")))
 
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
 
@@ -144,8 +138,7 @@ valid."
                 #:allow-other-keys)
   "Test the system."
   (let* ((out (library-output outputs))
-         (asd-file (and=> asd-file
-                          (cut source-asd-file out asd-system-name <>))))
+         (asd-file (source-asd-file out asd-system-name asd-file)))
     (if tests?
         (test-system asd-system-name asd-file)
         (format #t "test suite not run~%")))

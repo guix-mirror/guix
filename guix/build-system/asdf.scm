@@ -294,7 +294,7 @@ set up using CL source package conventions."
                                     (derivation->output-path source))
                                    ((source) source)
                                    (source source))
-                       #:asd-file ,asd-file
+                       #:asd-file ,(or asd-file (string-append system-name ".asd"))
                        #:asd-system-name ,system-name
                        #:system ,system
                        #:tests? ,tests?

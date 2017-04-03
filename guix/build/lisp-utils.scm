@@ -112,15 +112,12 @@ with PROGRAM."
 
 (define (compile-system system asd-file)
   "Use a lisp implementation to compile SYSTEM using asdf.  Load ASD-FILE
-first if SYSTEM is defined there."
+first."
   (lisp-eval-program
    `(progn
      (require :asdf)
-     (in-package :asdf)
-     ,@(if asd-file
-           `((load ,asd-file))
-           '())
-     (in-package :cl-user)
+     (let ((*package* (find-package :asdf)))
+       (load ,asd-file))
      (funcall (find-symbol
                (symbol-name :operate)
                (symbol-name :asdf))
@@ -131,15 +128,13 @@ first if SYSTEM is defined there."
 
 (define (system-dependencies system asd-file)
   "Return the dependencies of SYSTEM, as reported by
-asdf:system-depends-on.  First load the system's ASD-FILE, if necessary."
+asdf:system-depends-on.  First load the system's ASD-FILE."
   (define deps-file ".deps.sexp")
   (define program
     `(progn
       (require :asdf)
-      ,@(if asd-file
-            `((let ((*package* (find-package :asdf)))
-                (load ,asd-file)))
-            '())
+      (let ((*package* (find-package :asdf)))
+        (load ,asd-file))
       (with-open-file
        (stream ,deps-file :direction :output)
        (format stream
@@ -183,16 +178,12 @@ asdf:system-depends-on.  First load the system's ASD-FILE, if necessary."
           '())))
 
 (define (test-system system asd-file)
-  "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first
-if SYSTEM is defined there."
+  "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first."
   (lisp-eval-program
    `(progn
      (require :asdf)
-     (in-package :asdf)
-     ,@(if asd-file
-           `((load ,asd-file))
-           '())
-     (in-package :cl-user)
+     (let ((*package* (find-package :asdf)))
+       (load ,asd-file))
      (funcall (find-symbol
                (symbol-name :test-system)
                (symbol-name :asdf))
