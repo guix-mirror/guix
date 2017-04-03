@@ -403,7 +403,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.7.3")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -411,7 +411,7 @@ SMPTE 314M.")
              "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "1ndrf136rlw03xag7j1xpmf9015d1h0dpnv6v587jnh6k2a17g12"))))
+        (base32 "0n6ncbsx2x1iy92kfb3vqw9i2dii7ck7g0rlflsxz09rpvfg74pb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
