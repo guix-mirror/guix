@@ -536,7 +536,6 @@ propagate their changes to their respective configuration files.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
              (setenv "HOME" (getcwd))
              (setenv "TMPDIR" (getcwd))
              #t)))))
@@ -902,10 +901,6 @@ pixel units.")
              (substitute* '("autotests/input/highlight.pl"
                             "autotests/folding/highlight.pl.fold")
                (((which "perl")) "/usr/bin/perl"))
-             #t))
-         (add-before 'check 'check-setup
-           (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Syntax highlighting engine for Kate syntax definitions")
@@ -983,7 +978,6 @@ represented by a QPoint or a QSize.")
            (lambda _
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug info
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t))
          (add-before 'check 'start-xorg-server
@@ -1572,7 +1566,6 @@ covers feedback and persistent events.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
              (setenv "HOME" (getcwd))
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -1608,7 +1601,6 @@ were traditional plugins.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
            (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              (substitute* "autotests/kptyprocesstest.cpp"
                (("/bin/bash") (which "bash")))
              #t)))))
@@ -2113,7 +2105,6 @@ with su and ssh respectively.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2207,7 +2198,6 @@ window does not need focus for them to be activated.")
                      (string-append (assoc-ref inputs "shared-mime-info")
                                     "/share"))
              (setenv "HOME" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2316,7 +2306,6 @@ makes starting KDE applications faster and reduces memory consumption.")
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "XDG_RUNTIME_DIR" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2382,7 +2371,6 @@ KIO enabled infrastructure.")
          (add-before 'check 'check-setup
            (lambda _ ; XDG_DATA_DIRS isn't set
              (setenv "HOME" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2517,7 +2505,6 @@ widgets with a user-interface defined in terms of actions.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2574,7 +2561,6 @@ to easily extend the contacts collection.")
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2620,7 +2606,6 @@ typed.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
@@ -2691,7 +2676,6 @@ types or handled by application specific code.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Full text editor component")
@@ -2830,7 +2814,6 @@ the passwords on KDE work spaces.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Framework for managing menu and toolbar actions")
@@ -2940,7 +2923,6 @@ setUrl, setUserAgent and call.")
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
