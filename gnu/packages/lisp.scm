@@ -856,11 +856,9 @@ from other CLXes around the net.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
-           (lambda* (#:key lisp-type outputs inputs #:allow-other-keys)
+           (lambda* (#:key outputs #:allow-other-keys)
              (build-program
-              lisp-type
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
-              #:inputs inputs
               #:entry-program '((stumpwm:stumpwm) 0))))
          (add-after 'build-program 'create-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1103,12 +1101,14 @@ multiple inspectors with independent history.")
 
          (prepend-to-source-registry
           (string-append (assoc-ref %outputs "out") "//"))
-         (build-image "sbcl"
-                      (string-append
-                       (assoc-ref %outputs "image")
-                       "/bin/slynk")
-                      #:inputs %build-inputs
-                      #:dependencies ',slynk-systems))))))
+
+         (parameterize ((%lisp-type "sbcl")
+                        (%lisp (string-append (assoc-ref %build-inputs "sbcl")
+                                              "/bin/sbcl")))
+           (build-image (string-append
+                         (assoc-ref %outputs "image")
+                         "/bin/slynk")
+                        #:dependencies ',slynk-systems)))))))
 
 (define-public ecl-slynk
   (package
@@ -1145,11 +1145,10 @@ multiple inspectors with independent history.")
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
-             (lambda* (#:key lisp-type inputs outputs #:allow-other-keys)
+             (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
-                 (build-program lisp-type program
-                                #:inputs inputs
+                 (build-program program
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm"
                                                  ,@slynk-systems))

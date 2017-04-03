@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (guix build utils)
   #:export (%lisp
+            %lisp-type
             %source-install-prefix
             lisp-eval-program
             compile-system
@@ -33,7 +34,7 @@
             generate-executable-wrapper-system
             generate-executable-entry-point
             generate-executable-for-system
-            bundle-install-prefix
+            %bundle-install-prefix
             bundle-asd-file
             remove-lisp-from-name
             wrap-output-translations
@@ -54,24 +55,28 @@
   ;; File name of the Lisp compiler.
   (make-parameter "lisp"))
 
+(define %lisp-type
+  ;; String representing the class of implementation being used.
+  (make-parameter "lisp"))
+
 ;; The common parent for Lisp source files, as will as the symbolic
 ;; link farm for system definition (.asd) files.
 (define %source-install-prefix "/share/common-lisp")
 
-(define (bundle-install-prefix lisp)
-  (string-append %source-install-prefix "/" lisp "-bundle-systems"))
+(define (%bundle-install-prefix)
+  (string-append %source-install-prefix "/" (%lisp-type) "-bundle-systems"))
 
 (define (remove-lisp-from-name name lisp)
   (string-drop name (1+ (string-length lisp))))
 
-(define (inputs->asd-file-map inputs lisp)
+(define (inputs->asd-file-map inputs)
   "Produce a hash table of the form (system . asd-file), where system is the
 name of an ASD system, and asd-file is the full path to its definition."
   (alist->hash-table
    (filter-map
     (match-lambda
       ((_ . path)
-       (let ((prefix (string-append path (bundle-install-prefix lisp))))
+       (let ((prefix (string-append path (%bundle-install-prefix))))
          (and (directory-exists? prefix)
               (match (find-files prefix "\\.asd$")
                 ((asd-file)
@@ -86,16 +91,16 @@ name of an ASD system, and asd-file is the full path to its definition."
     ,@translations
     :inherit-configuration))
 
-(define (lisp-eval-program lisp program)
+(define (lisp-eval-program program)
   "Evaluate PROGRAM with a given LISP implementation."
   (unless (zero? (apply system*
-                        (lisp-invoke lisp (format #f "~S" program))))
-    (error "lisp-eval-program failed!" lisp program)))
+                        (lisp-invoke (format #f "~S" program))))
+    (error "lisp-eval-program failed!" (%lisp) program)))
 
-(define (lisp-invoke lisp program)
+(define (lisp-invoke program)
   "Return a list of arguments for system* determining how to invoke LISP
 with PROGRAM."
-  (match lisp
+  (match (%lisp-type)
     ("sbcl" `(,(%lisp) "--non-interactive" "--eval" ,program))
     ("ecl" `(,(%lisp) "-eval" ,program "-eval" "(quit)"))
     (_ (error "The LISP provided is not supported at this time."))))
@@ -109,26 +114,26 @@ with PROGRAM."
            ,system))
        systems))
 
-(define (compile-system system lisp asd-file)
+(define (compile-system system asd-file)
   "Use a lisp implementation to compile SYSTEM using asdf.  Load ASD-FILE
 first if SYSTEM is defined there."
-  (lisp-eval-program lisp
-                     `(progn
-                       (require :asdf)
-                       (in-package :asdf)
-                       ,@(if asd-file
-                             `((load ,asd-file))
-                             '())
-                       (in-package :cl-user)
-                       (funcall (find-symbol
-                                 (symbol-name :operate)
-                                 (symbol-name :asdf))
-                                (find-symbol
-                                 (symbol-name :compile-bundle-op)
-                                 (symbol-name :asdf))
-                                ,system))))
+  (lisp-eval-program
+   `(progn
+     (require :asdf)
+     (in-package :asdf)
+     ,@(if asd-file
+           `((load ,asd-file))
+           '())
+     (in-package :cl-user)
+     (funcall (find-symbol
+               (symbol-name :operate)
+               (symbol-name :asdf))
+              (find-symbol
+               (symbol-name :compile-bundle-op)
+               (symbol-name :asdf))
+              ,system))))
 
-(define (system-dependencies lisp system asd-file)
+(define (system-dependencies system asd-file)
   "Return the dependencies of SYSTEM, as reported by
 asdf:system-depends-on.  First load the system's ASD-FILE, if necessary."
   (define deps-file ".deps.sexp")
@@ -157,56 +162,55 @@ asdf:system-depends-on.  First load the system's ASD-FILE, if necessary."
 
   (dynamic-wind
     (lambda _
-      (lisp-eval-program lisp program))
+      (lisp-eval-program program))
     (lambda _
       (call-with-input-file deps-file read))
     (lambda _
       (when (file-exists? deps-file)
         (delete-file deps-file)))))
 
-(define (compiled-system system lisp)
-  (match lisp
+(define (compiled-system system)
+  (match (%lisp-type)
     ("sbcl" (string-append system "--system"))
     (_ system)))
 
-(define* (generate-system-definition lisp system
+(define* (generate-system-definition system
                                      #:key version dependencies)
   `(asdf:defsystem
     ,system
     :class asdf/bundle:prebuilt-system
     :version ,version
     :depends-on ,dependencies
-    :components ((:compiled-file ,(compiled-system system lisp)))
-    ,@(if (string=? "ecl" lisp)
+    :components ((:compiled-file ,(compiled-system system)))
+    ,@(if (string=? "ecl" (%lisp-type))
           `(:lib ,(string-append system ".a"))
           '())))
 
-(define (test-system system lisp asd-file)
+(define (test-system system asd-file)
   "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first
 if SYSTEM is defined there."
-  (lisp-eval-program lisp
-                     `(progn
-                       (require :asdf)
-                       (in-package :asdf)
-                       ,@(if asd-file
-                             `((load ,asd-file))
-                             '())
-                       (in-package :cl-user)
-                       (funcall (find-symbol
-                                 (symbol-name :test-system)
-                                 (symbol-name :asdf))
-                                ,system))))
+  (lisp-eval-program
+   `(progn
+     (require :asdf)
+     (in-package :asdf)
+     ,@(if asd-file
+           `((load ,asd-file))
+           '())
+     (in-package :cl-user)
+     (funcall (find-symbol
+               (symbol-name :test-system)
+               (symbol-name :asdf))
+              ,system))))
 
 (define (string->lisp-keyword . strings)
   "Return a lisp keyword for the concatenation of STRINGS."
   (string->symbol (apply string-append ":" strings)))
 
-(define (generate-executable-for-system type system lisp)
+(define (generate-executable-for-system type system)
   "Use LISP to generate an executable, whose TYPE can be \"image\" or
 \"program\".  The latter will always be standalone.  Depends on having created
 a \"SYSTEM-exec\" system which contains the entry program."
   (lisp-eval-program
-   lisp
    `(progn
      (require :asdf)
      (funcall (find-symbol
@@ -249,7 +253,7 @@ ENTRY-PROGRAM for SYSTEM within the current directory."
                       (declare (ignorable arguments))
                       ,@entry-program))))))))
 
-(define (generate-dependency-links lisp registry system)
+(define (generate-dependency-links registry system)
   "Creates a program which populates asdf's source registry from REGISTRY, an
 alist of dependency names to corresponding asd files.  This allows the system
 to locate its dependent systems."
@@ -265,16 +269,15 @@ to locate its dependent systems."
            registry)))
 
 (define* (make-asd-file asd-file
-                        #:key lisp system version inputs
+                        #:key system version inputs
                         (system-asd-file #f))
   "Create an ASD-FILE for SYSTEM@VERSION, appending a program to allow the
 system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
   (define dependencies
-    (parameterize ((%lisp (string-append (assoc-ref inputs lisp) "/bin/" lisp)))
-      (system-dependencies lisp system system-asd-file)))
+    (system-dependencies system system-asd-file))
 
   (define lisp-input-map
-    (inputs->asd-file-map inputs lisp))
+    (inputs->asd-file-map inputs))
 
   (define registry
     (filter-map hash-get-handle
@@ -291,18 +294,18 @@ system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
       (display
        (replace-escaped-macros
         (format #f "~y~%~y~%"
-                (generate-system-definition lisp system
+                (generate-system-definition system
                                             #:version version
                                             #:dependencies dependencies)
-                (generate-dependency-links lisp registry system)))
+                (generate-dependency-links registry system)))
        port))))
 
-(define (bundle-asd-file output-path original-asd-file lisp)
+(define (bundle-asd-file output-path original-asd-file)
   "Find the symlinked bundle file for ORIGINAL-ASD-FILE by looking in
 OUTPUT-PATH/share/common-lisp/LISP-bundle-systems/<system>.asd.  Returns two
 values: the asd file itself and the directory in which it resides."
   (let ((bundle-asd-path (string-append output-path
-                                        (bundle-install-prefix lisp))))
+                                        (%bundle-install-prefix))))
     (values (string-append bundle-asd-path "/" (basename original-asd-file))
             bundle-asd-path)))
 
@@ -317,7 +320,7 @@ which are not nested."
   (setenv "CL_SOURCE_REGISTRY"
           (string-append path ":" (or (getenv "CL_SOURCE_REGISTRY") ""))))
 
-(define* (build-program lisp program #:key inputs
+(define* (build-program program #:key
                         (dependencies (list (basename program)))
                         entry-program
                         #:allow-other-keys)
@@ -325,8 +328,7 @@ which are not nested."
 execute ENTRY-PROGRAM.  The result is placed in PROGRAM.  When executed, it
 will run ENTRY-PROGRAM, a list of Common Lisp expressions in which `arguments'
 has been bound to the command-line arguments which were passed."
-  (generate-executable lisp program
-                       #:inputs inputs
+  (generate-executable program
                        #:dependencies dependencies
                        #:entry-program entry-program
                        #:type "program")
@@ -337,13 +339,12 @@ has been bound to the command-line arguments which were passed."
                    name)))
   #t)
 
-(define* (build-image lisp image #:key inputs
+(define* (build-image image #:key
                       (dependencies (list (basename image)))
                       #:allow-other-keys)
   "Generate an image, possibly standalone, which contains all DEPENDENCIES,
 placing the result in IMAGE.image."
-  (generate-executable lisp image
-                       #:inputs inputs
+  (generate-executable image
                        #:dependencies dependencies
                        #:entry-program '(nil)
                        #:type "image")
@@ -354,7 +355,7 @@ placing the result in IMAGE.image."
                    (string-append name ".image"))))
   #t)
 
-(define* (generate-executable lisp out-file #:key inputs
+(define* (generate-executable out-file #:key
                               dependencies
                               entry-program
                               type
@@ -380,9 +381,7 @@ executable."
                `(((,bin-directory :**/ :*.*.*)
                   (,bin-directory :**/ :*.*.*)))))))
 
-    (parameterize ((%lisp (string-append
-                           (assoc-ref inputs lisp) "/bin/" lisp)))
-      (generate-executable-for-system type name lisp))
+    (generate-executable-for-system type name)
 
     (delete-file (string-append bin-directory "/" name "-exec.asd"))
     (delete-file (string-append bin-directory "/" name "-exec.lisp"))))

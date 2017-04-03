@@ -273,21 +273,24 @@ set up using CL source package conventions."
     (define builder
       `(begin
          (use-modules ,@modules)
-         (asdf-build #:name ,name
-                     #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source) source)
-                                 (source source))
-                     #:lisp-type ,lisp-type
-                     #:asd-file ,asd-file
-                     #:system ,system
-                     #:tests? ,tests?
-                     #:phases ,phases
-                     #:outputs %outputs
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:inputs %build-inputs)))
+         (parameterize ((%lisp (string-append
+                                (assoc-ref %build-inputs ,lisp-type)
+                                "/bin/" ,lisp-type))
+                        (%lisp-type ,lisp-type))
+           (asdf-build #:name ,name
+                       #:source ,(match (assoc-ref inputs "source")
+                                   (((? derivation? source))
+                                    (derivation->output-path source))
+                                   ((source) source)
+                                   (source source))
+                       #:asd-file ,asd-file
+                       #:system ,system
+                       #:tests? ,tests?
+                       #:phases ,phases
+                       #:outputs %outputs
+                       #:search-paths ',(map search-path-specification->sexp
+                                             search-paths)
+                       #:inputs %build-inputs))))
 
     (define guile-for-build
       (match guile
