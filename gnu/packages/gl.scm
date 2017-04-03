@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
@@ -612,3 +615,35 @@ library for OpenGL.  It has lean API modeled after HTML5 canvas API.  It is
 aimed to be a practical and fun toolset for building scalable user interfaces
 and visualizations.")
     (license license:zlib)))
+
+(define-public gl2ps
+  (package
+    (name "gl2ps")
+    (version "1.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://geuz.org/gl2ps/src/gl2ps-"
+             version ".tgz"))
+       (sha256
+        (base32
+         "0h1nrhmkc4qjw2ninwpj2zbgwhc0qg6pdhpsibbvry0d2bzhns4a"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f))  ;; no tests
+    (home-page "http://www.geuz.org/gl2ps/")
+    (synopsis "OpenGL to PostScript printing library")
+    (description "GL2PS is a C library providing high quality vector
+output for any OpenGL application.  GL2PS uses sorting algorithms
+capable of handling intersecting and stretched polygons, as well as
+non-manifold objects.  GL2PS provides many features including advanced
+smooth shading and text rendering, culling of invisible primitives and
+mixed vector/bitmap output.")
+    (license (list license:lgpl2.0+
+                   (license:fsf-free "http://www.geuz.org/gl2ps/COPYING.GL2PS"
+                                     "GPL-incompatible copyleft license")))))
