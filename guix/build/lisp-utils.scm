@@ -40,7 +40,9 @@
             prepend-to-source-registry
             build-program
             build-image
-            make-asd-file))
+            make-asd-file
+            valid-char-set
+            normalize-string))
 
 ;;; Commentary:
 ;;;
@@ -64,6 +66,15 @@
 
 (define (%bundle-install-prefix)
   (string-append %source-install-prefix "/" (%lisp-type) "-bundle-systems"))
+
+;; See nix/libstore/store-api.cc#checkStoreName.
+(define valid-char-set
+  (string->char-set
+   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-._?="))
+
+(define (normalize-string str)
+  "Replace invalid characters in STR with a hyphen."
+  (string-join (string-tokenize str valid-char-set) "-"))
 
 (define (inputs->asd-file-map inputs)
   "Produce a hash table of the form (system . asd-file), where system is the
@@ -161,14 +172,15 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
         (delete-file deps-file)))))
 
 (define (compiled-system system)
-  (match (%lisp-type)
-    ("sbcl" (string-append system "--system"))
-    (_ system)))
+  (let ((system (basename system))) ; this is how asdf handles slashes
+    (match (%lisp-type)
+      ("sbcl" (string-append system "--system"))
+      (_ system))))
 
 (define* (generate-system-definition system
                                      #:key version dependencies)
   `(asdf:defsystem
-    ,system
+    ,(normalize-string system)
     :class asdf/bundle:prebuilt-system
     :version ,version
     :depends-on ,dependencies
@@ -261,20 +273,20 @@ to locate its dependent systems."
   "Create an ASD-FILE for SYSTEM@VERSION, appending a program to allow the
 system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
   (define dependencies
-    (system-dependencies system system-asd-file))
+    (let ((deps
+           (system-dependencies system system-asd-file)))
+      (if (eq? 'NIL deps)
+          '()
+          (map normalize-string deps))))
 
   (define lisp-input-map
     (inputs->asd-file-map inputs))
 
   (define registry
     (filter-map hash-get-handle
-                (make-list (if (eq? 'NIL dependencies)
-                               0
-                               (length dependencies))
+                (make-list (length dependencies)
                            lisp-input-map)
-                (if (eq? 'NIL dependencies)
-                    '()
-                    dependencies)))
+                dependencies))
 
   (call-with-output-file asd-file
     (lambda (port)

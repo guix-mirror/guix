@@ -153,8 +153,10 @@ valid."
   (let*-values (((out) (library-output outputs))
                 ((_ version) (package-name->name+version
                               (strip-store-file-name out)))
-                ((new-asd-file) (string-append (library-directory out)
-                                               "/" asd-system-name ".asd")))
+                ((new-asd-file) (string-append
+                                 (library-directory out)
+                                 "/" (normalize-string asd-system-name)
+                                 ".asd")))
 
     (make-asd-file new-asd-file
                    #:system asd-system-name
