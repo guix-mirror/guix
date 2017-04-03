@@ -101,66 +101,56 @@ name of an ASD system, and asd-file is the full path to its definition."
 (define (lisp-eval-program program)
   "Evaluate PROGRAM with a given LISP implementation."
   (unless (zero? (apply system*
-                        (lisp-invoke (format #f "~S" program))))
+                        (lisp-invocation program)))
     (error "lisp-eval-program failed!" (%lisp) program)))
 
-(define (lisp-invoke program)
+(define (spread-statements program argument-name)
+  "Return a list with the statements from PROGRAM spread between
+ARGUMENT-NAME, a string representing the argument a lisp implementation uses
+to accept statements to be evaluated before starting."
+  (append-map (lambda (statement)
+                (list argument-name (format #f "~S" statement)))
+              program))
+
+(define (lisp-invocation program)
   "Return a list of arguments for system* determining how to invoke LISP
 with PROGRAM."
   (match (%lisp-type)
-    ("sbcl" `(,(%lisp) "--non-interactive" "--eval" ,program))
-    ("ecl" `(,(%lisp) "-eval" ,program "-eval" "(quit)"))
+    ("sbcl" `(,(%lisp) "--non-interactive"
+              ,@(spread-statements program "--eval")))
+    ("ecl" `(,(%lisp)
+             ,@(spread-statements program "--eval")
+             "--eval" "(quit)"))
     (_ (error "The LISP provided is not supported at this time."))))
 
 (define (asdf-load-all systems)
   (map (lambda (system)
-         `(funcall
-           (find-symbol
-            (symbol-name :load-system)
-            (symbol-name :asdf))
-           ,system))
+         `(asdf:load-system ,system))
        systems))
 
 (define (compile-system system asd-file)
   "Use a lisp implementation to compile SYSTEM using asdf.  Load ASD-FILE
 first."
   (lisp-eval-program
-   `(progn
-     (require :asdf)
+   `((require :asdf)
      (let ((*package* (find-package :asdf)))
        (load ,asd-file))
-     (funcall (find-symbol
-               (symbol-name :operate)
-               (symbol-name :asdf))
-              (find-symbol
-               (symbol-name :compile-bundle-op)
-               (symbol-name :asdf))
-              ,system))))
+     (asdf:operate 'asdf:compile-bundle-op ,system))))
 
 (define (system-dependencies system asd-file)
   "Return the dependencies of SYSTEM, as reported by
 asdf:system-depends-on.  First load the system's ASD-FILE."
   (define deps-file ".deps.sexp")
   (define program
-    `(progn
-      (require :asdf)
+    `((require :asdf)
       (let ((*package* (find-package :asdf)))
         (load ,asd-file))
       (with-open-file
        (stream ,deps-file :direction :output)
        (format stream
                "~s~%"
-               (funcall
-                (find-symbol
-                 (symbol-name :system-depends-on)
-                 (symbol-name :asdf))
-
-                (funcall
-                 (find-symbol
-                  (symbol-name :find-system)
-                  (symbol-name :asdf))
-
-                 ,system))))))
+               (asdf:system-depends-on
+                (asdf:find-system ,system))))))
 
   (dynamic-wind
     (lambda _
@@ -192,33 +182,22 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
 (define (test-system system asd-file)
   "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first."
   (lisp-eval-program
-   `(progn
-     (require :asdf)
+   `((require :asdf)
      (let ((*package* (find-package :asdf)))
        (load ,asd-file))
-     (funcall (find-symbol
-               (symbol-name :test-system)
-               (symbol-name :asdf))
-              ,system))))
+     (asdf:test-system ,system))))
 
 (define (string->lisp-keyword . strings)
   "Return a lisp keyword for the concatenation of STRINGS."
   (string->symbol (apply string-append ":" strings)))
 
 (define (generate-executable-for-system type system)
-  "Use LISP to generate an executable, whose TYPE can be \"image\" or
-\"program\".  The latter will always be standalone.  Depends on having created
-a \"SYSTEM-exec\" system which contains the entry program."
+  "Use LISP to generate an executable, whose TYPE can be 'asdf:image-op or
+'asdf:program-op.  The latter will always be standalone.  Depends on having
+created a \"SYSTEM-exec\" system which contains the entry program."
   (lisp-eval-program
-   `(progn
-     (require :asdf)
-     (funcall (find-symbol
-               (symbol-name :operate)
-               (symbol-name :asdf))
-              (find-symbol
-               (symbol-name ,(string->lisp-keyword type "-op"))
-               (symbol-name :asdf))
-              ,(string-append system "-exec")))))
+   `((require :asdf)
+     (asdf:operate ',type ,(string-append system "-exec")))))
 
 (define (generate-executable-wrapper-system system dependencies)
   "Generates a system which can be used by asdf to produce an image or program
@@ -330,7 +309,7 @@ has been bound to the command-line arguments which were passed."
   (generate-executable program
                        #:dependencies dependencies
                        #:entry-program entry-program
-                       #:type "program")
+                       #:type 'asdf:program-op)
   (let* ((name (basename program))
          (bin-directory (dirname program)))
     (with-directory-excursion bin-directory
@@ -346,7 +325,7 @@ placing the result in IMAGE.image."
   (generate-executable image
                        #:dependencies dependencies
                        #:entry-program '(nil)
-                       #:type "image")
+                       #:type 'asdf:image-op)
   (let* ((name (basename image))
          (bin-directory (dirname image)))
     (with-directory-excursion bin-directory
@@ -359,7 +338,7 @@ placing the result in IMAGE.image."
                               entry-program
                               type
                               #:allow-other-keys)
-  "Generate an executable by using asdf's TYPE-op, containing whithin the
+  "Generate an executable by using asdf operation TYPE, containing whithin the
 image all DEPENDENCIES, and running ENTRY-PROGRAM in the case of an
 executable."
   (let* ((bin-directory (dirname out-file))
