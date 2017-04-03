@@ -464,7 +464,7 @@ some compression ratio).")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0jlizsavak8lc469zkjiyhpx4sbg07ij7mzq70dq5yhv7a3z6ygm"))))
+               "1p8lvc22sv3damld9ng8y6i8z2dvvpsbi9v7yhr5bc2a20m8iya7"))))
     (build-system gnu-build-system)
     (home-page "http://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
