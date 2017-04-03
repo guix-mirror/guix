@@ -470,6 +470,14 @@
       (package-derivation %store p)
       #f)))
 
+(let ((dummy (dummy-package "foo" (inputs `(("x" ,(current-module)))))))
+  (test-equal "&package-input-error"
+    (list dummy (current-module))
+    (guard (c ((package-input-error? c)
+               (list (package-error-package c)
+                     (package-error-invalid-input c))))
+      (package-derivation %store dummy))))
+
 (test-assert "reference to non-existent output"
   ;; See <http://bugs.gnu.org/19630>.
   (parameterize ((%graft? #f))

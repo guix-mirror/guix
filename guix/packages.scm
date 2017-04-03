@@ -31,7 +31,6 @@
   #:use-module (guix memoization)
   #:use-module (guix build-system)
   #:use-module (guix search-paths)
-  #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -846,7 +845,16 @@ information in exceptions."
      ;; source.
      (list name (intern file)))
     (((? string? name) (? struct? source))
-     (list name (package-source-derivation store source system)))
+     ;; 'package-source-derivation' calls 'lower-object', which can throw
+     ;; '&gexp-input-error'.  However '&gexp-input-error' lacks source
+     ;; location info, so we catch and rethrow here (XXX: not optimal
+     ;; performance-wise).
+     (guard (c ((gexp-input-error? c)
+                (raise (condition
+                        (&package-input-error
+                         (package package)
+                         (input   (gexp-error-invalid-input c)))))))
+       (list name (package-source-derivation store source system))))
     (x
      (raise (condition (&package-input-error
                         (package package)
