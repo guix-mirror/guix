@@ -78,14 +78,18 @@ to it's binary output."
 (define (source-asd-file output lisp name asd-file)
   (string-append (lisp-source-directory output lisp name) "/" asd-file))
 
-(define (copy-files-to-output outputs output name)
-  "Copy all files from OUTPUT to \"out\".  Create an extra link to any
-system-defining files in the source to a convenient location.  This is done
-before any compiling so that the compiled source locations will be valid."
-  (let* ((out (assoc-ref outputs output))
-         (source (getcwd))
-         (target (source-directory out name))
-         (system-path (string-append out %system-install-prefix)))
+(define (library-output outputs)
+  "If a `lib' output exists, build things there. Otherwise use `out'."
+  (or (assoc-ref outputs "lib") (assoc-ref outputs "out")))
+
+(define (copy-files-to-output out name)
+  "Copy all files from the current directory to OUT.  Create an extra link to
+any system-defining files in the source to a convenient location.  This is
+done before any compiling so that the compiled source locations will be
+valid."
+  (let ((source (getcwd))
+        (target (source-directory out name))
+        (system-path (string-append out %system-install-prefix)))
     (copy-recursively source target)
     (mkdir-p system-path)
     (for-each
@@ -97,14 +101,14 @@ before any compiling so that the compiled source locations will be valid."
 
 (define* (install #:key outputs #:allow-other-keys)
   "Copy and symlink all the source files."
-  (copy-files-to-output outputs "out" (outputs->name outputs)))
+  (copy-files-to-output (assoc-ref outputs "out") (outputs->name outputs)))
 
 (define* (copy-source #:key outputs lisp #:allow-other-keys)
-  "Copy the source to \"out\"."
-  (let* ((out (assoc-ref outputs "out"))
+  "Copy the source to the library output."
+  (let* ((out (library-output outputs))
          (name (remove-lisp-from-name (output-path->package-name out) lisp))
          (install-path (string-append out %source-install-prefix)))
-    (copy-files-to-output outputs "out" name)
+    (copy-files-to-output out name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path
       (rename-file "source" (string-append lisp "-source"))
@@ -114,7 +118,7 @@ before any compiling so that the compiled source locations will be valid."
 (define* (build #:key outputs inputs lisp asd-file
                 #:allow-other-keys)
   "Compile the system."
-  (let* ((out (assoc-ref outputs "out"))
+  (let* ((out (library-output outputs))
          (name (remove-lisp-from-name (output-path->package-name out) lisp))
          (source-path (lisp-source-directory out lisp name))
          (translations (wrap-output-translations
@@ -148,7 +152,7 @@ before any compiling so that the compiled source locations will be valid."
                 #:allow-other-keys)
   "Test the system."
   (let* ((name (remove-lisp-from-name (outputs->name outputs) lisp))
-         (out (assoc-ref outputs "out"))
+         (out (library-output outputs))
          (asd-file (and=> asd-file (cut source-asd-file out lisp name <>))))
     (if tests?
         (parameterize ((%lisp (string-append
@@ -167,7 +171,7 @@ before any compiling so that the compiled source locations will be valid."
 find their dependencies.  Exclude any TEST-ONLY-SYSTEMS which were only
 included to run tests.  Add any SPECIAL-DEPENDENCIES which the LISP
 implementation itself provides."
-  (let* ((out (assoc-ref outputs "out"))
+  (let* ((out (library-output outputs))
          (name (remove-lisp-from-name (output-path->package-name out) lisp))
          (registry (lset-difference
                     (lambda (input system)
@@ -186,7 +190,7 @@ implementation itself provides."
 
 (define* (symlink-asd-files #:key outputs lisp #:allow-other-keys)
   "Create an extra reference to the system in a convenient location."
-  (let* ((out (assoc-ref outputs "out")))
+  (let* ((out (library-output outputs)))
     (for-each
      (lambda (asd-file)
        (substitute* asd-file
@@ -208,7 +212,7 @@ implementation itself provides."
 (define* (cleanup-files #:key outputs lisp
                              #:allow-other-keys)
   "Remove any compiled files which are not a part of the final bundle."
-  (let ((out (assoc-ref outputs "out")))
+  (let ((out (library-output outputs)))
     (match lisp
       ("sbcl"
        (for-each
