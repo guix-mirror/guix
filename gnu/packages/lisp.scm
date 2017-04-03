@@ -904,11 +904,15 @@ productive, customizable lisp based systems.")
       (outputs '("out"))
       (arguments '()))))
 
+;; The slynk that users expect to install includes all of slynk's contrib
+;; modules.  Therefore, we build the base module and all contribs first; then
+;; we expose the union of these as `sbcl-slynk'.  The following variable
+;; describes the base module.
 (define sbcl-slynk-boot0
   (let ((revision "1")
         (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
     (package
-      (name "sbcl-slynk")
+      (name "sbcl-slynk") ; name must refer to the system name for now
       (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
       (source
        (origin
