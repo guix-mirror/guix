@@ -214,8 +214,7 @@ valid."
       ("ecl"
        (for-each delete-file
                  (append (find-files out "\\.fas$")
-                         (find-files out "\\.o$")
-                         (find-files out "\\.a$")))))
+                         (find-files out "\\.o$")))))
 
     (with-directory-excursion (library-directory out lisp)
       (for-each
