@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,33 +163,35 @@ set up using CL source package conventions."
          (match-lambda
            ((name content . rest)
             (let* ((is-package? (package? content))
-                   (new-content (if is-package? (transform content) content))
-                   (new-name (if (and is-package?
-                                      (string-prefix? from-prefix name))
-                                 (package-name new-content)
-                                 name)))
-              `(,new-name ,new-content ,@rest)))))
+                   (new-content (if is-package? (transform content) content)))
+              `(,name ,new-content ,@rest)))))
 
        ;; Special considerations for source packages: CL inputs become
-       ;; propagated, and un-handled arguments are removed. Native inputs are
-       ;; removed as are extraneous outputs.
+       ;; propagated, and un-handled arguments are removed.
+
        (define new-propagated-inputs
          (if target-is-source?
              (map rewrite
-                  (filter (match-lambda
-                            ((_ input . _)
-                             (has-from-build-system? input)))
-                          (package-inputs pkg)))
-             '()))
+                  (append
+                   (filter (match-lambda
+                             ((_ input . _)
+                              (has-from-build-system? input)))
+                           (append (package-inputs pkg)
+                                   ;; The native inputs might be needed just
+                                   ;; to load the system.
+                                   (package-native-inputs pkg)))
+                   (package-propagated-inputs pkg)))
 
-       (define new-inputs
+             (map rewrite (package-propagated-inputs pkg))))
+
+       (define (new-inputs inputs-getter)
          (if target-is-source?
              (map rewrite
                   (filter (match-lambda
                             ((_ input . _)
                              (not (has-from-build-system? input))))
-                          (package-inputs pkg)))
-             (map rewrite (package-inputs pkg))))
+                          (inputs-getter pkg)))
+             (map rewrite (inputs-getter pkg))))
 
        (define base-arguments
          (if target-is-source?
@@ -212,11 +214,9 @@ set up using CL source package conventions."
            (arguments
             (substitute-keyword-arguments base-arguments
               ((#:phases phases) (list phases-transformer phases))))
-           (inputs new-inputs)
+           (inputs (new-inputs package-inputs))
            (propagated-inputs new-propagated-inputs)
-           (native-inputs (if target-is-source?
-                              '()
-                              (map rewrite (package-native-inputs pkg))))
+           (native-inputs (new-inputs package-native-inputs))
            (outputs (if target-is-source?
                         '("out")
                         (package-outputs pkg)))))

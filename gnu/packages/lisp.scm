@@ -659,7 +659,7 @@ portable between implementations.")
        (sha256
         (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
        (file-name (string-append "fiveam-" version ".tar.gz"))))
-    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
     (description "FiveAM is a simple (as far as writing and running tests
@@ -687,8 +687,8 @@ interactive development model in mind.")
                (base32 "10ryrcx832fwqdawb6jmknymi7wpdzhi30qzx7cbrk0cpnka71w2"))
               (file-name
                (string-append "bordeaux-threads-" version ".tar.gz"))))
-    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
-    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("fiveam" ,sbcl-fiveam)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Portable shared-state concurrency library for Common Lisp")
     (description "BORDEAUX-THREADS is a proposed standard for a minimal
@@ -749,7 +749,7 @@ thin compatibility layer for gray streams.")
         (base32 "16grnxvs7vqm5s6myf8a5s7vwblzq1kgwj8i7ahz8vwvihm9gzfi"))
        (file-name (string-append "flexi-streams-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (inputs `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (inputs `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Implementation of virtual bivalent streams for Common Lisp")
     (description "Flexi-streams is an implementation of \"virtual\" bivalent
 streams that can be layered atop real binary or bivalent streams and that can
@@ -779,7 +779,7 @@ streams which are similar to string streams.")
         (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
        (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (native-inputs `(("tests:cl-flexi-streams" ,sbcl-flexi-streams)))
+    (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
     (description "CL-PPCRE is a portable regular expression library for Common
 Lisp, which is compatible with perl.  It is pretty fast, thread-safe, and
@@ -849,8 +849,8 @@ from other CLXes around the net.")
                (base32 "1maxp98gh64az3d9vz9br6zdd6rc9fmj2imvax4by85g6kxvdz1i"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
-              ("sbcl-clx" ,sbcl-clx)))
+    (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
+              ("clx" ,sbcl-clx)))
     (outputs '("out" "lib"))
     (arguments
      '(#:phases
@@ -968,7 +968,7 @@ multiple inspectors with independent history.")
   (package
     (inherit sbcl-slynk-boot0)
     (name "sbcl-slynk-arglists")
-    (inputs `(("sbcl-slynk" ,sbcl-slynk-boot0)))
+    (inputs `(("slynk" ,sbcl-slynk-boot0)))
     (arguments
      `(#:asd-file "slynk.asd"
        ,@(package-arguments sbcl-slynk-boot0)))))
@@ -988,7 +988,7 @@ multiple inspectors with independent history.")
   (package
     (inherit sbcl-slynk-arglists)
     (name "sbcl-slynk-fancy-inspector")
-    (inputs `(("sbcl-slynk-util" ,sbcl-slynk-util)
+    (inputs `(("slynk-util" ,sbcl-slynk-util)
               ,@(package-inputs sbcl-slynk-arglists)))))
 
 (define ecl-slynk-fancy-inspector
