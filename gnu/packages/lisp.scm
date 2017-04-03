@@ -793,6 +793,51 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
+(define sbcl-cl-unicode-base
+  (let ((revision "1")
+        (commit "9fcd06fba1ddc9e66aed2f2d6c32dc9b764f03ea"))
+    (package
+      (name "sbcl-cl-unicode-base")
+      (version (string-append "0.1.5-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/edicl/cl-unicode.git")
+                      (commit commit)))
+                (file-name (string-append "cl-unicode-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1jicprb5b3bv57dy1kg03572gxkcaqdjhak00426s76g0plmx5ki"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-file "cl-unicode.asd"
+         #:asd-system-name "cl-unicode/base"))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "http://weitz.de/cl-unicode/")
+      (synopsis "Portable Unicode library for Common Lisp")
+      (description "CL-UNICODE is a portable Unicode library Common Lisp, which
+is compatible with perl.  It is pretty fast, thread-safe, and compatible with
+ANSI-compliant Common Lisp implementations.")
+      (license license:bsd-2))))
+
+(define-public sbcl-cl-unicode
+  (package
+    (inherit sbcl-cl-unicode-base)
+    (name "sbcl-cl-unicode")
+    (inputs
+     `(("cl-unicode/base" ,sbcl-cl-unicode-base)
+       ,@(package-inputs sbcl-cl-unicode-base)))
+    (native-inputs
+     `(("flexi-streams" ,sbcl-flexi-streams)))
+    (arguments '())))
+
+(define-public ecl-cl-unicode
+  (sbcl-package->ecl-package sbcl-cl-unicode))
+
+(define-public cl-unicode
+  (sbcl-package->cl-source-package sbcl-cl-unicode))
+
 (define-public sbcl-clx
   (let ((revision "1")
         (commit "1c62774b03c1cf3fe6e5cb532df8b14b44c96b95"))
