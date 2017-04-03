@@ -1792,6 +1792,36 @@ buffers, and audio capture.")
 and ALSA.")
     (license license:gpl3+)))
 
+(define-public qjackctl
+  (package
+    (name "qjackctl")
+    (version "0.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://downloads.sourceforge.net/project/qjackctl/qjackctl/"
+                version "/qjackctl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19bbljb3iz5ss4s5fmra1dxabg2fnp61sa51d63zsm56xkvv47ak"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no check target
+
+    (inputs
+     `(("jack-2" ,jack-2)
+       ("qt" ,qt)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "https://qjackctl.sourceforge.io/")
+    (synopsis "Jack server control application")
+    (description "Control a Jack server.  Allows you to plug various sources
+into various outputs and to start, stop and configure jackd")
+    (license license:gpl2+)))
+
+
 (define-public raul
   (package
     (name "raul")
