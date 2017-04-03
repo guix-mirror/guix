@@ -194,8 +194,7 @@ set up using CL source package conventions."
        (define base-arguments
          (if target-is-source?
              (strip-keyword-arguments
-              '(#:tests? #:special-dependencies #:asd-file
-                #:test-only-systems #:lisp)
+              '(#:tests? #:asd-file #:lisp)
               (package-arguments pkg))
              (package-arguments pkg)))
 
@@ -262,9 +261,7 @@ set up using CL source package conventions."
   (lambda* (store name inputs
                   #:key source outputs
                   (tests? #t)
-                  (special-dependencies ''())
                   (asd-file #f)
-                  (test-only-systems ''())
                   (lisp lisp-implementation)
                   (phases '(@ (guix build asdf-build-system)
                               %standard-phases))
@@ -284,9 +281,7 @@ set up using CL source package conventions."
                                  ((source) source)
                                  (source source))
                      #:lisp ,lisp
-                     #:special-dependencies ,special-dependencies
                      #:asd-file ,asd-file
-                     #:test-only-systems ,test-only-systems
                      #:system ,system
                      #:tests? ,tests?
                      #:phases ,phases

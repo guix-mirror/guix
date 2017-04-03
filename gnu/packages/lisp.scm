@@ -822,8 +822,6 @@ compatible with ANSI-compliant Common Lisp implementations.")
              (substitute* "clx.asd"
                (("\\(:file \"trapezoid\"\\)") ""))))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:special-dependencies '("sb-bsd-sockets")))
       (home-page "http://www.cliki.net/portable-clx")
       (synopsis "X11 client library for Common Lisp")
       (description "CLX is an X11 client library for Common Lisp.  The code was
@@ -855,8 +853,7 @@ from other CLXes around the net.")
               ("sbcl-clx" ,sbcl-clx)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:special-dependencies '("sb-posix")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
            (lambda* (#:key lisp outputs inputs #:allow-other-keys)

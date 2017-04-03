@@ -21,6 +21,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build lisp-utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
@@ -161,31 +162,25 @@ valid."
         (format #t "test suite not run~%")))
   #t)
 
-(define* (patch-asd-files #:key outputs
+(define* (create-asd-file #:key outputs
                           inputs
                           lisp
-                          special-dependencies
-                          test-only-systems
+                          asd-file
                           #:allow-other-keys)
-  "Patch any asd files created by the compilation process so that they can
-find their dependencies.  Exclude any TEST-ONLY-SYSTEMS which were only
-included to run tests.  Add any SPECIAL-DEPENDENCIES which the LISP
-implementation itself provides."
-  (let* ((out (library-output outputs))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (registry (lset-difference
-                    (lambda (input system)
-                      (match input
-                        ((name . path) (string=? name system))))
-                    (lisp-dependencies lisp inputs)
-                    test-only-systems))
-         (lisp-systems (map first registry)))
+  "Create a system definition file for the built system."
+  (let*-values (((out) (library-output outputs))
+                ((full-name version) (package-name->name+version
+                                      (strip-store-file-name out)))
+                ((name) (remove-lisp-from-name full-name lisp))
+                ((new-asd-file) (string-append (library-directory out lisp)
+                                               "/" name ".asd")))
 
-    (for-each
-     (lambda (asd-file)
-       (patch-asd-file asd-file registry lisp
-                       (append lisp-systems special-dependencies)))
-     (find-files out "\\.asd$")))
+    (make-asd-file new-asd-file
+                   #:lisp lisp
+                   #:system name
+                   #:version version
+                   #:inputs inputs
+                   #:system-asd-file asd-file))
   #t)
 
 (define* (symlink-asd-files #:key outputs lisp #:allow-other-keys)
@@ -193,9 +188,6 @@ implementation itself provides."
   (let* ((out (library-output outputs)))
     (for-each
      (lambda (asd-file)
-       (substitute* asd-file
-         ((";;; Built for.*") "") ; remove potential non-determinism
-         (("^\\(DEFSYSTEM(.*)$" all end) (string-append "(asdf:defsystem" end)))
        (receive (new-asd-file asd-file-directory)
            (bundle-asd-file out asd-file lisp)
          (mkdir-p asd-file-directory)
@@ -205,12 +197,11 @@ implementation itself provides."
          (prepend-to-source-registry
           (string-append asd-file-directory "/"))))
 
-     (find-files (string-append out %object-prefix) "\\.asd$"))
-)
+     (find-files (string-append out %object-prefix) "\\.asd$")))
   #t)
 
 (define* (cleanup-files #:key outputs lisp
-                             #:allow-other-keys)
+                        #:allow-other-keys)
   "Remove any compiled files which are not a part of the final bundle."
   (let ((out (library-output outputs)))
     (match lisp
@@ -261,8 +252,8 @@ implementation itself provides."
     (add-before 'build 'copy-source copy-source)
     (replace 'check check)
     (replace 'strip strip)
-    (add-after 'check 'link-dependencies patch-asd-files)
-    (add-after 'link-dependencies 'cleanup cleanup-files)
+    (add-after 'check 'create-asd-file create-asd-file)
+    (add-after 'create-asd-file 'cleanup cleanup-files)
     (add-after 'cleanup 'create-symlinks symlink-asd-files)))
 
 (define* (asdf-build #:key inputs
