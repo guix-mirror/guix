@@ -15238,6 +15238,11 @@ of the given @var{size}.  @var{size} may be a number of bytes, or it may
 include a unit as a suffix (@pxref{Block size, size specifications,,
 coreutils, GNU Coreutils}).
 
+@item --root=@var{file}
+@itemx -r @var{file}
+Make @var{file} a symlink to the result, and register it as a garbage
+collector root.
+
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.
 @var{strategy} may be one of the following:
