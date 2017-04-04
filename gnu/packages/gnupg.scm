@@ -217,15 +217,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.19")
+    (version "2.1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
-              (patches (search-patches "gnupg-2.1-fix-Y2038-test-failure.patch"))
               (sha256
                (base32
-                "1w4vccmb5l50lm4yrz9vkdj7whbfvzx543r55362kkj1aqgyvk26"))))
+                "03cnd6gz8f4lf69inskssw57idrswcdimhccdyglmrlv6rlrmkr4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
