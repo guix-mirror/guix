@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -508,7 +509,11 @@ standards.")
                            "--with-system-jpeg"        ; must be libjpeg-turbo
                            "--with-system-libevent"
                            "--with-system-libvpx"
-                           "--with-system-icu"
+
+                           ;; FIXME: It is preferable to build with system
+                           ;; libraries, but this fixes crashes.
+                           ;; "--with-system-icu"
+
                            "--with-system-nspr"
                            "--with-system-nss"
                            "--enable-system-pixman"
