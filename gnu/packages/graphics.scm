@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -256,6 +256,20 @@ exception-handling library.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-ilmbase-directory-in-pc-file
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Add '-I ILMBASE/include/OpenEXR' to 'OpenEXR.pc' since some of
+             ;; the headers of OpenEXR expect IlmBase headers to live in the
+             ;; same directory.  Unfortunately this doesn't help much because
+             ;; 'FindOpenEXR.cmake' doesn't read 'OpenEXR.pc'...
+             (let ((ilmbase (assoc-ref inputs "ilmbase")))
+               (substitute* "OpenEXR.pc.in"
+                 (("^Cflags: (.*)$" _ cflags)
+                  (string-append "Cflags: "
+                                 " -I" ilmbase "/include"
+                                 " -I" ilmbase "/include/OpenEXR "
+                                 cflags "\n")))
+               #t)))
          (add-after 'unpack 'disable-broken-test
            ;; This test fails on i686. Upstream developers suggest that
            ;; this test is broken on i686 and can be safely disabled:
