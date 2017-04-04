@@ -80,7 +80,8 @@ development and clean, pragmatic design.  It provides many tools for building
 any Web site.  Django focuses on automating as much as possible and adhering
 to the @dfn{don't repeat yourself} (DRY) principle.")
     (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-django))))))
+    (properties `((python2-variant . ,(delay python2-django))
+                  (cpe-name . "django")))))
 
 (define-public python2-django
   (let ((base (package-with-python2 (strip-python2-variant python-django))))
