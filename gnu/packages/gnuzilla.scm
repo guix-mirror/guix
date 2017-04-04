@@ -472,7 +472,6 @@ standards.")
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
-       #:parallel-build? #f
 
        ;; XXX: There are RUNPATH issues such as
        ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
