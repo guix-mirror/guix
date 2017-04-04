@@ -51,7 +51,8 @@
             options->transformation
             show-transformation-options-help
 
-            guix-build))
+            guix-build
+            register-root))
 
 (define %default-log-urls
   ;; Default base URLs for build logs.
