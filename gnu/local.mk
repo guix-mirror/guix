@@ -53,7 +53,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/assembly.scm			\
   %D%/packages/astronomy.scm			\
   %D%/packages/attr.scm				\
-  %D%/packages/audacity.scm			\
   %D%/packages/audio.scm			\
   %D%/packages/augeas.scm			\
   %D%/packages/autogen.scm			\
