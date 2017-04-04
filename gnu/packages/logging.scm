@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages autotools))
 
@@ -62,7 +63,8 @@ staying as close to their API as is reasonable.")
               (sha256
                (base32
                 "0ym5g15m7c8kjfr2c3zq6bz08ghin2d1r1nb6v2vnkfh1vn945x1"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (patches (search-patches "glog-gcc-5-demangling.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)                             ;for tests
