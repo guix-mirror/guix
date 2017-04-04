@@ -3406,6 +3406,7 @@ is designed to have a low barrier to entry.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
+       (patches (search-patches "python-cython-fix-tests-32bit.patch"))
        (sha256
         (base32
          "01h3lrf6d98j07iakifi81qjszh6faa37ibx7ylva1vsqbwx2hgi"))))
