@@ -4057,3 +4057,26 @@ jQuery and Bootstrap resources included via osscdn.")
     (description
      "This Emacs package highlights the s-exp at the current position.")
     (license license:gpl3+)))
+
+(define-public emacs-adaptive-wrap
+  (package
+    (name "emacs-adaptive-wrap")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://elpa.gnu.org/packages/adaptive-wrap-"
+                    version ".el"))
+              (sha256
+               (base32
+                "0frgmp8vrrml4iykm60j4d6cl9rbcivy9yh24q6kd10bcyx59ypy"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/adaptive-wrap.html")
+    (synopsis "Smart line-wrapping with wrap-prefix")
+    (description
+     "This Emacs package provides the @code{adaptive-wrap-prefix-mode}
+minor mode which sets the wrap-prefix property on the fly so that
+single-long-line paragraphs get word-wrapped in a way similar to what
+you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
+actually changing the buffer's text.")
+    (license license:gpl3+)))
