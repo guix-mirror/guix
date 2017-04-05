@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -494,7 +495,9 @@ binary.")
                             ;; PREFIX/share/{man,info}.
                             (string-append "--mandir=" out "/share/man")
                             (string-append "--infodir=" out "/share/info")))))
-                      %standard-phases)))
+                      %standard-phases)
+       #:configure-flags
+       (list "--with-readline")))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
