@@ -4832,7 +4832,19 @@ sequence itself can be retrieved from these databases.")
                      (string-append "--with-ngs-sdk-prefix="
                                     (assoc-ref inputs "ngs-sdk"))
                      (string-append "--with-hdf5-prefix="
-                                    (assoc-ref inputs "hdf5")))))))))
+                                    (assoc-ref inputs "hdf5"))))))
+         ;; This version of sra-tools fails to build with glibc because of a
+         ;; naming conflict.  glibc-2.25/include/bits/mathcalls.h already
+         ;; contains a definition of "canonicalize", so we rename it.
+         ;;
+         ;; See upstream bug report:
+         ;; https://github.com/ncbi/sra-tools/issues/67
+         (add-after 'unpack 'patch-away-glibc-conflict
+           (lambda _
+             (substitute* "tools/bam-loader/bam.c"
+               (("canonicalize\\(" line)
+                (string-append "sra_tools_" line)))
+             #t)))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("ngs-sdk" ,ngs-sdk)
