@@ -4790,50 +4790,49 @@ sequence itself can be retrieved from these databases.")
                                  "/lib64"
                                  "/lib32")))
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          ;; The build system expects a directory containing the sources and
-          ;; raw build output of ncbi-vdb, including files that are not
-          ;; installed.  Since we are building against an installed version of
-          ;; ncbi-vdb, the following modifications are needed.
-          (substitute* "setup/konfigure.perl"
-            ;; Make the configure script look for the "ilib" directory of
-            ;; "ncbi-vdb" without first checking for the existence of a
-            ;; matching library in its "lib" directory.
-            (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
-             "my $f = File::Spec->catdir($ilibdir, $ilib);")
-            ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
-            (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
-             "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; The build system expects a directory containing the sources and
+             ;; raw build output of ncbi-vdb, including files that are not
+             ;; installed.  Since we are building against an installed version of
+             ;; ncbi-vdb, the following modifications are needed.
+             (substitute* "setup/konfigure.perl"
+               ;; Make the configure script look for the "ilib" directory of
+               ;; "ncbi-vdb" without first checking for the existence of a
+               ;; matching library in its "lib" directory.
+               (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
+                "my $f = File::Spec->catdir($ilibdir, $ilib);")
+               ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
+               (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
+                "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
 
-          ;; Dynamic linking
-          (substitute* "tools/copycat/Makefile"
-            (("smagic-static") "lmagic"))
+             ;; Dynamic linking
+             (substitute* "tools/copycat/Makefile"
+               (("smagic-static") "lmagic"))
 
-          ;; The 'configure' script doesn't recognize things like
-          ;; '--enable-fast-install'.
-          (zero? (system*
-                  "./configure"
-                  (string-append "--build-prefix=" (getcwd) "/build")
-                  (string-append "--prefix=" (assoc-ref outputs "out"))
-                  (string-append "--debug")
-                  (string-append "--with-fuse-prefix="
-                                 (assoc-ref inputs "fuse"))
-                  (string-append "--with-magic-prefix="
-                                 (assoc-ref inputs "libmagic"))
-                  ;; TODO: building with libxml2 fails with linker errors
-                  ;; (string-append "--with-xml2-prefix="
-                  ;;                (assoc-ref inputs "libxml2"))
-                  (string-append "--with-ncbi-vdb-sources="
-                                 (assoc-ref inputs "ncbi-vdb"))
-                  (string-append "--with-ncbi-vdb-build="
-                                 (assoc-ref inputs "ncbi-vdb"))
-                  (string-append "--with-ngs-sdk-prefix="
-                                 (assoc-ref inputs "ngs-sdk"))
-                  (string-append "--with-hdf5-prefix="
-                                 (assoc-ref inputs "hdf5")))))
-        %standard-phases)))
+             ;; The 'configure' script doesn't recognize things like
+             ;; '--enable-fast-install'.
+             (zero? (system*
+                     "./configure"
+                     (string-append "--build-prefix=" (getcwd) "/build")
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     (string-append "--debug")
+                     (string-append "--with-fuse-prefix="
+                                    (assoc-ref inputs "fuse"))
+                     (string-append "--with-magic-prefix="
+                                    (assoc-ref inputs "libmagic"))
+                     ;; TODO: building with libxml2 fails with linker errors
+                     ;; (string-append "--with-xml2-prefix="
+                     ;;                (assoc-ref inputs "libxml2"))
+                     (string-append "--with-ncbi-vdb-sources="
+                                    (assoc-ref inputs "ncbi-vdb"))
+                     (string-append "--with-ncbi-vdb-build="
+                                    (assoc-ref inputs "ncbi-vdb"))
+                     (string-append "--with-ngs-sdk-prefix="
+                                    (assoc-ref inputs "ngs-sdk"))
+                     (string-append "--with-hdf5-prefix="
+                                    (assoc-ref inputs "hdf5")))))))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("ngs-sdk" ,ngs-sdk)
