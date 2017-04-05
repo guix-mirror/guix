@@ -457,6 +457,19 @@ dependencies."
             (any predicate uris))
            (_ #f)))))
 
+(define (bioconductor-experiment-package? package)
+  "Return true if PACKAGE is an R experiment package from Bioconductor."
+  (let ((predicate (lambda (uri)
+                     (and (string-prefix? "http://bioconductor.org" uri)
+                          (string-contains uri "/data/experiment/")))))
+    (and (string-prefix? "r-" (package-name package))
+         (match (and=> (package-source package) origin-uri)
+           ((? string? uri)
+            (predicate uri))
+           ((? list? uris)
+            (any predicate uris))
+           (_ #f)))))
+
 (define %cran-updater
   (upstream-updater
    (name 'cran)
