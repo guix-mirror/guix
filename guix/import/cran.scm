@@ -235,6 +235,13 @@ contain a zlib linker flag."
    tarball "-lz"
    "*/src/Makevars*" "*/src/configure*" "*/configure*"))
 
+(define (needs-pkg-config? tarball)
+  "Return #T if any of the Makevars files in the src directory of the TARBALL
+reference the pkg-config tool."
+  (tarball-files-match-pattern?
+   tarball "pkg-config"
+   "*/src/Makevars*" "*/src/configure*" "*/configure*"))
+
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
@@ -284,11 +291,12 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
         (build-system r-build-system)
         ,@(maybe-inputs sysdepends)
         ,@(maybe-inputs (map guix-name propagate) 'propagated-inputs)
-        ,@(if (needs-fortran? tarball)
-              `((native-inputs (,'quasiquote
-                                ,(list "gfortran"
-                                       (list 'unquote 'gfortran)))))
-              '())
+        ,@(maybe-inputs
+           `(,@(if (needs-fortran? tarball)
+                   '("gfortran") '())
+             ,@(if (needs-pkg-config? tarball)
+                   '("pkg-config") '()))
+           'native-inputs)
         (home-page ,(if (string-null? home-page)
                         (string-append base-url name)
                         home-page))
