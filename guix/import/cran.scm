@@ -207,17 +207,16 @@ empty list when the FIELD cannot be found."
       (check "*.f95")
       (check "*.f")))
 
-(define (needs-zlib? tarball)
-  "Return #T if any of the Makevars files in the src directory of the TARBALL
-contain a zlib linker flag."
+(define (tarball-files-match-pattern? tarball regexp . file-patterns)
+  "Return #T if any of the files represented by FILE-PATTERNS in the TARBALL
+match the given REGEXP."
   (call-with-temporary-directory
    (lambda (dir)
-     (let ((pattern (make-regexp "-lz")))
+     (let ((pattern (make-regexp regexp)))
        (parameterize ((current-error-port (%make-void-port "rw+")))
-         (system* "tar"
-                  "xf" tarball "-C" dir
-                  "--wildcards"
-                  "*/src/Makevars*" "*/src/configure*" "*/configure*"))
+         (apply system* "tar"
+                "xf" tarball "-C" dir
+                `("--wildcards" ,@file-patterns)))
        (any (lambda (file)
               (call-with-input-file file
                 (lambda (port)
@@ -226,9 +225,15 @@ contain a zlib linker flag."
                       (cond
                        ((eof-object? line) #f)
                        ((regexp-exec pattern line) #t)
-                       (else (loop)))))))
-              #t)
+                       (else (loop))))))))
             (find-files dir))))))
+
+(define (needs-zlib? tarball)
+  "Return #T if any of the Makevars files in the src directory of the TARBALL
+contain a zlib linker flag."
+  (tarball-files-match-pattern?
+   tarball "-lz"
+   "*/src/Makevars*" "*/src/configure*" "*/configure*"))
 
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
