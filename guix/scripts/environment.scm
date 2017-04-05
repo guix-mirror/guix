@@ -79,7 +79,9 @@ existing enviroment variables with additional search paths."
                (let ((current (getenv variable)))
                  (setenv variable
                          (if (and current (not pure?))
-                             (string-append value separator current)
+                             (if separator
+                                 (string-append value separator current)
+                                 value)
                              value)))))
             (evaluate-profile-search-paths profile paths))
 
