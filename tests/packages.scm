@@ -886,6 +886,33 @@
            (and (build-derivations %store (list drv))
                 (file-exists? (string-append out "/bin/make")))))))
 
+(test-equal "package-mapping"
+  42
+  (let* ((dep       (dummy-package "chbouib"
+                      (native-inputs `(("x" ,grep)))))
+         (p0        (dummy-package "example"
+                      (inputs `(("foo" ,coreutils)
+                                ("bar" ,grep)
+                                ("baz" ,dep)))))
+         (transform (lambda (p)
+                      (package (inherit p) (source 42))))
+         (rewrite   (package-mapping transform))
+         (p1        (rewrite p0)))
+    (and (eq? p1 (rewrite p0))
+         (eqv? 42 (package-source p1))
+         (match (package-inputs p1)
+           ((("foo" dep1) ("bar" dep2) ("baz" dep3))
+            (and (eq? dep1 (rewrite coreutils))   ;memoization
+                 (eq? dep2 (rewrite grep))
+                 (eq? dep3 (rewrite dep))
+                 (eqv? 42
+                       (package-source dep1) (package-source dep2)
+                       (package-source dep3))
+                 (match (package-native-inputs dep3)
+                   ((("x" dep))
+                    (and (eq? dep (rewrite grep))
+                         (package-source dep))))))))))
+
 (test-assert "package-input-rewriting"
   (let* ((dep     (dummy-package "chbouib"
                     (native-inputs `(("x" ,grep)))))

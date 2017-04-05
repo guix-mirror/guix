@@ -2946,6 +2946,16 @@ with @var{libressl}.  Then we use it to define a @dfn{variant} of the
 This is exactly what the @option{--with-input} command-line option does
 (@pxref{Package Transformation Options, @option{--with-input}}).
 
+A more generic procedure to rewrite a package dependency graph is
+@code{package-mapping}: it supports arbitrary changes to nodes in the
+graph.
+
+@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}]
+Return a procedure that, given a package, applies @var{proc} to all the packages
+depended on and returns the resulting package.  The procedure stops recursion
+when @var{cut?} returns true for a given package.
+@end deffn
+
 @menu
 * package Reference ::          The package data type.
 * origin Reference::            The origin data type.
