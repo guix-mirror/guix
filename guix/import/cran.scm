@@ -433,7 +433,9 @@ dependencies."
                           ;; the Github mirror, so we have to exclude them
                           ;; from the set of bioconductor packages that can be
                           ;; updated automatically.
-                          (not (string-contains uri "/data/annotation/"))))))
+                          (not (string-contains uri "/data/annotation/"))
+                          ;; Experiment packages are in a separate repository.
+                          (not (string-contains uri "/data/experiment/"))))))
     (and (string-prefix? "r-" (package-name package))
          (match (and=> (package-source package) origin-uri)
            ((? string? uri)
