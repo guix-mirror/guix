@@ -26,7 +26,6 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
-  #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gl)
@@ -40,7 +39,6 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tex)
-  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
@@ -470,22 +468,35 @@ binary.")
 (define-public bc
   (package
     (name "bc")
-    (version "1.07")
+    (version "1.06")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/bc/bc-" version ".tar.gz"))
              (sha256
               (base32
-               "1b852b39y43zrbya7d8civ7vmdbfap5v1ivc70ypr3bj7b1izksm"))))
+               "0cqf5jkwx6awgd2xc2a0mkpxilzcfmhncdcfg7c9439wgkqxkxjf"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("readline" ,readline)))
-    (native-inputs
-     `(("ed" ,ed)
-       ("flex" ,flex)
-       ("texinfo" ,texinfo)))
+    (inputs `(("readline" ,readline)))
+    (native-inputs `(("flex" ,flex)))
     (arguments
-     '(#:configure-flags
+     '(#:phases
+       (alist-replace 'configure
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; This old `configure' script doesn't support
+                        ;; variables passed as arguments.
+                        (let ((out (assoc-ref outputs "out")))
+                          (setenv "CONFIG_SHELL" (which "bash"))
+                          (zero?
+                           (system*
+                            "./configure"
+                            (string-append "--prefix=" out)
+                            ;; By default, man and info pages are put in
+                            ;; PREFIX/{man,info}, but we want them in
+                            ;; PREFIX/share/{man,info}.
+                            (string-append "--mandir=" out "/share/man")
+                            (string-append "--infodir=" out "/share/info")))))
+                      %standard-phases)
+       #:configure-flags
        (list "--with-readline")))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
