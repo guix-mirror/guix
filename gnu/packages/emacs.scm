@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
@@ -4058,6 +4061,73 @@ jQuery and Bootstrap resources included via osscdn.")
     (description
      "This Emacs package highlights the s-exp at the current position.")
     (license license:gpl3+)))
+
+(define-public emacspeak
+  (package
+    (name "emacspeak")
+    (version "45.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tvraman/emacspeak/releases/download/"
+             version "/emacspeak-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0npcr867xbbhwa0i7v26hnk4z2d51522jwcfwc594j74kbv3g6ka"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("\\$\\(INSTALL\\) -d \\$\\(libdir\\)/servers/linux-outloud")
+                "")
+               (("\\$\\(INSTALL\\)  -m 755 \\$\\{OUTLOUD\\}.*$") "")
+               (("\\*info\\*") "*"))
+             (substitute* "etc/emacspeak.sh.def"
+               (("<emacspeak-dir>")
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs/site-lisp/emacspeak/lisp")))
+             (zero? (system* "make" "config"))))
+         (add-after 'install 'install-espeak-server
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion "servers/linux-espeak"
+                 (and (zero? (system* "make"))
+                      (zero? (system* "make" "install"
+                                      (string-append "PREFIX=" out))))))))
+         (add-after 'install-espeak-server 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (emacspeak (string-append out "/bin/emacspeak"))
+                    (espeak (string-append (assoc-ref inputs "espeak")
+                                           "/bin/espeak")))
+               ;; The environment variable DTK_PROGRAM tells emacspeak what
+               ;; program to use for speech.
+               (wrap-program emacspeak
+                 `("DTK_PROGRAM" ":" prefix (,espeak)))
+               #t))))
+       #:tests? #f)) ; no check target
+    (inputs
+     `(("espeak" ,espeak)
+       ("tcl" ,tcl)
+       ("tclx" ,tclx)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (home-page "http://emacspeak.sourceforge.net")
+    (synopsis "Audio desktop interface for Emacs")
+    (description
+     "Emacspeak is a speech interface that allows visually impaired users to
+interact independently and efficiently with the computer.  Audio formatting
+--a technique pioneered by AsTeR-- and full support for W3C's Aural CSS (ACSS)
+allows Emacspeak to produce rich aural presentations of electronic information.
+By seamlessly blending all aspects of the Internet such as Web-surfing and
+messaging, Emacspeak speech-enables local and remote information via a
+consistent and well-integrated user interface.")
+    (license license:gpl2+)))
 
 (define-public emacs-adaptive-wrap
   (package
