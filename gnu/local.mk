@@ -929,6 +929,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
+  %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
+  %D%/packages/patches/python-genshi-buildable-on-python-2.7.patch	\
+  %D%/packages/patches/python-genshi-disable-speedups-on-python-3.3.patch	\
+  %D%/packages/patches/python-genshi-fix-tests-on-python-3.5.patch	\
+  %D%/packages/patches/python-genshi-isstring-helper.patch	\
+  %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\

@@ -14825,3 +14825,43 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 
 (define-public python2-sql
   (package-with-python2 python-sql))
+
+(define-public python-genshi
+  (package
+    (name "python-genshi")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://ftp.edgewall.org/pub/genshi/Genshi-"
+             version ".tar.gz"))
+       (patches
+        (search-patches
+         ;; The first 4 patches are in the master branch upstream.
+         ;; See this as a reference https://genshi.edgewall.org/ticket/582
+         ;; The last 2 are NOT in any branch.
+         ;; They were sent as attachments to a ticket opened at
+         ;; https://genshi.edgewall.org/ticket/602#no1
+         "python-genshi-stripping-of-unsafe-script-tags.patch"
+         "python-genshi-disable-speedups-on-python-3.3.patch"
+         "python-genshi-isstring-helper.patch"
+         "python-genshi-add-support-for-python-3.4-AST.patch"
+         "python-genshi-fix-tests-on-python-3.5.patch"
+         "python-genshi-buildable-on-python-2.7.patch"))
+       (sha256
+        (base32
+         "0lkkbp6fbwzv0zda5iqc21rr7rdldkwh3hfabfjl9i4bwq14858x"))))
+    (build-system python-build-system)
+    (home-page "https://genshi.edgewall.org/")
+    (synopsis "Toolkit for generation of output for the web")
+    (description "Genshi is a Python library that provides an integrated set
+of components for parsing, generating, and processing HTML, XML or other
+textual content for output generation on the web.")
+    (license license:bsd-3)))
+
+;; The linter here claims that patch file names should start with the package
+;; name. But, in this case the patches are inherited from python-genshi with
+;; the "python-genshi-" prefix instead of "python2-genshi-".
+(define-public python2-genshi
+  (package-with-python2 python-genshi))
