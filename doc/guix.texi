@@ -165,6 +165,7 @@ GNU Distribution
 
 * System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring the operating system.
+* Documentation::                Browsing software user manuals.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -6907,6 +6908,7 @@ For information on porting to other architectures or kernels,
 @menu
 * System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring the operating system.
+* Documentation::                Browsing software user manuals.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -15904,6 +15906,70 @@ Each extension must pass a list of @code{<shepherd-service>}.
 This service represents PID@tie{}1.
 @end defvr
 
+
+@node Documentation
+@section Documentation
+
+@cindex documentation, searching for
+@cindex searching for documentation
+@cindex Info, documentation format
+@cindex man pages
+@cindex manual pages
+In most cases packages installed with Guix come with documentation.
+There are two main documentation formats: ``Info'', a browseable
+hypertext format used for GNU software, and ``manual pages'' (or ``man
+pages''), the linear documentation format traditionally found on Unix.
+Info manuals are accessed with the @command{info} command or with Emacs,
+and man pages are accessed using @command{man}.
+
+You can look for documentation of software installed on your system by
+keyword.  For example, the following command searches for information
+about ``TLS'' in Info manuals:
+
+@example
+$ info -k TLS
+"(emacs)Network Security" -- STARTTLS
+"(emacs)Network Security" -- TLS
+"(gnutls)Core TLS API" -- gnutls_certificate_set_verify_flags
+"(gnutls)Core TLS API" -- gnutls_certificate_set_verify_function
+@dots{}
+@end example
+
+@noindent
+The command below searches for the same keyword in man pages:
+
+@example
+$ man -k TLS
+SSL (7)              - OpenSSL SSL/TLS library
+certtool (1)         - GnuTLS certificate tool
+@dots {}
+@end example
+
+These searches are purely local to your computer so you have the
+guarantee that documentation you find corresponds to what you have
+actually installed, you can access it off-line, and your privacy is
+respected.
+
+Once you have these results, you can view the relevant documentation by
+running, say:
+
+@example
+$ info "(gnutls)Core TLS API"
+@end example
+
+@noindent
+or:
+
+@example
+$ man certtool
+@end example
+
+Info manuals contain sections and indices as well as hyperlinks like
+those found in Web pages.  The @command{info} reader (@pxref{Top, Info
+reader,, info-stnd, Stand-alone GNU Info}) and its Emacs counterpart
+(@pxref{Misc Help,,, emacs, The GNU Emacs Manual}) provide intuitive key
+bindings to navigate manuals.  @xref{Getting Started,,, info, Info: An
+Introduction}, for an introduction to Info navigation.
 
 @node Installing Debugging Files
 @section Installing Debugging Files
