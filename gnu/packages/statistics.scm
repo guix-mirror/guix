@@ -3571,21 +3571,22 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "1bpwbphgl43ym433b0nrshwhr7pprmj1wkpkamdzix1zvf9dcbc2"))))
+         "11hs3gqpbaw3w281as4m7j9n594ix5axfpwbyjsd0l62pwnzj217"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
        ("r-rcpp" ,r-rcpp)
-       ("r-stringi" ,r-stringi)))
+       ("r-stringi" ,r-stringi)
+       ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/hadley/tidyr")
     (synopsis "Tidy data with `spread()` and `gather()` functions")
     (description
