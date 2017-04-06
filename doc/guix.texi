@@ -4038,8 +4038,15 @@ in this example:
 @deffnx {Scheme Syntax} mlet* @var{monad} ((@var{var} @var{mval}) ...) @
        @var{body} ...
 Bind the variables @var{var} to the monadic values @var{mval} in
-@var{body}.  The form (@var{var} -> @var{val}) binds @var{var} to the
-``normal'' value @var{val}, as per @code{let}.
+@var{body}, which is a sequence of expressions.  As with the bind
+operator, this can be thought of as ``unpacking'' the raw, non-monadic
+value ``contained'' in @var{mval} and making @var{var} refer to that
+raw, non-monadic value within the scope of the @var{body}.  The form
+(@var{var} -> @var{val}) binds @var{var} to the ``normal'' value
+@var{val}, as per @code{let}.  The binding operations occur in sequence
+from left to right.  The last expression of @var{body} must be a monadic
+expression, and its result will become the result of the @code{mlet} or
+@code{mlet*} when run in the @var{monad}.
 
 @code{mlet*} is to @code{mlet} what @code{let*} is to @code{let}
 (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}).
@@ -4047,7 +4054,8 @@ Bind the variables @var{var} to the monadic values @var{mval} in
 
 @deffn {Scheme System} mbegin @var{monad} @var{mexp} ...
 Bind @var{mexp} and the following monadic expressions in sequence,
-returning the result of the last expression.
+returning the result of the last expression.  Every expression in the
+sequence must be a monadic expression.
 
 This is akin to @code{mlet}, except that the return values of the
 monadic expressions are ignored.  In that sense, it is analogous to

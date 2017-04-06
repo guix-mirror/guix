@@ -185,8 +185,9 @@ form is (VAR -> VAL), bind VAR to the non-monadic value VAL in the same way as
 
 (define-syntax mbegin
   (syntax-rules (%current-monad)
-    "Bind the given monadic expressions in sequence, returning the result of
-the last one."
+    "Bind MEXP and the following monadic expressions in sequence, returning
+the result of the last expression.  Every expression in the sequence must be a
+monadic expression."
     ((_ %current-monad mexp)
      mexp)
     ((_ %current-monad mexp rest ...)
