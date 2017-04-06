@@ -3496,13 +3496,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.51.0")
+    (version "0.52.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "0bsalx605kgb9nl7mfnq1qinkyd9s97p8plymsyfja1gmcnjrcpj"))))
+                "0ihxnbbc1czfbccm8mrh7hjwdik3y90964xhbjday6fci0xjcsi5"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
