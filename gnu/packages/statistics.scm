@@ -2111,6 +2111,31 @@ code for report generation.  The template syntax is similar to PHP, Ruby's erb
 module, Java Server Pages, and Python's psp module.")
     (license license:gpl2+)))
 
+(define-public r-desc
+  (package
+    (name "r-desc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "desc" version))
+       (sha256
+        (base32
+         "0mc1jmiwqyj7s6gzxz6fyamzjpmdn3rpfpllby2fq11ml30c6jpr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)
+       ("r-r6" ,r-r6)
+       ("r-rprojroot" ,r-rprojroot)))
+    (home-page "https://github.com/r-pkgs/desc")
+    (synopsis "Manipulate DESCRIPTION Files")
+    (description
+     "This package provides tools to read, write, create, and manipulate
+DESCRIPTION files.  It is intended for packages that create or manipulate
+other packages.")
+    (license license:expat)))
+
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
