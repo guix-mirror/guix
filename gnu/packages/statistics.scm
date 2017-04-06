@@ -3520,17 +3520,18 @@ memory usage.")
 (define-public r-viridis
   (package
     (name "r-viridis")
-    (version "0.3.4")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "viridis" version))
               (sha256
                (base32
-                "1a9hqn2pccpc51vh8ghw698ni6xzdnp8v0n8kgjh51nlz5hhc87j"))))
+                "03mha2935k1mw7mjjkq7mrx185hl0m3vq3967iiwbknpivbdxllk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)))
+       ("r-gridextra" ,r-gridextra)
+       ("r-viridislite" ,r-viridislite)))
     (home-page "https://github.com/sjmgarnier/viridis")
     (synopsis "Matplotlib default color map")
     (description
