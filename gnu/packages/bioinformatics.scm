@@ -5497,14 +5497,6 @@ high-throughput sequencing experiments.")
          "1walwkqryn1gnwz7zryr5764a0p6ia7ag4w6w9n8fskg8dkg0fqs"))))
     (properties `((upstream-name . "DESeq2")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'link-against-armadillo
-           (lambda _
-             (substitute* "src/Makevars"
-               (("PKG_LIBS =" prefix)
-                (string-append prefix "-larmadillo"))))))))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)

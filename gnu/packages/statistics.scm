@@ -2443,32 +2443,17 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.7.600.1.0")
+    (version "0.7.700.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0k1wniip184j0ckcg9kcjy2q4mcfj5jpd1nkk4l0ab75ad8znywv"))
-              (modules '((guix build utils)))
-              ;; Remove bundled armadillo sources
-              (snippet
-               '(begin
-                  (delete-file-recursively "inst/include/armadillo_bits")
-                  (delete-file "inst/include/armadillo")))))
+                "03cvl2xgmvh4sylw7ff7s020y7k2wzyj34l0zngm09qs44pa9q0m"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'link-against-armadillo
-           (lambda _
-             (substitute* "src/Makevars"
-               (("PKG_LIBS=" prefix)
-                (string-append prefix "-larmadillo"))))))))
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("armadillo" ,armadillo-for-rcpparmadillo)))
+     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/RcppCore/RcppArmadillo")
     (synopsis "Rcpp integration for the Armadillo linear algebra library")
     (description
