@@ -4431,19 +4431,19 @@ letters, as is often required for scientific publications.")
 (define-public r-mixtools
   (package
     (name "r-mixtools")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mixtools" version))
        (sha256
         (base32
-         "133rr17ywmlhsc6457hs8qxi8ng443ql9ashxpwc8875gjhv1x32"))))
+         "13wdm0xs5bakhpa8ypg6lvhjaqkxyabwz4glxdwn0jwdvkcdhgsl"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-boot" ,r-boot)
-       ("r-mass" ,r-mass)
-       ("r-segmented" ,r-segmented)))
+     `(("r-mass" ,r-mass)
+       ("r-segmented" ,r-segmented)
+       ("r-survival" ,r-survival)))
     (home-page "http://cran.r-project.org/web/packages/mixtools")
     (synopsis "Tools for analyzing finite mixture models")
     (description
