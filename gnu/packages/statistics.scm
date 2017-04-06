@@ -1525,18 +1525,17 @@ defined in different packages.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "1.2")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "011i352ylq9b4xfcj7h10h7qsqd9qkc1rzc0pr1gf8qjb788p2pd"))))
+         "1q25i1cv3qms6d3lw7jd3z142w188znkcbyam460gn9si8l8g2bk"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-assertthat" ,r-assertthat)
-       ("r-lazyeval" ,r-lazyeval)
+     `(("r-lazyeval" ,r-lazyeval)
        ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/tibble")
     (synopsis "Simple data frames")
