@@ -28,7 +28,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2017-03-01")
+     (version "2017-04-01")
      (source (origin
                (method url-fetch)
                (uri
@@ -38,7 +38,7 @@
                (file-name (string-append name "-" version ".tar.gz"))
                (sha256
                 (base32
-                 "1s3kdcrz2mwi30k6pz9jkv5vk8b704bz65xgcr67wbn2pn3hpnqr"))))
+                 "14i9pf9ap8h48j1584ifsq7c7a884cr1s4r7zvpcb9x1xr9232wh"))))
      (build-system gnu-build-system)
      (arguments
       `(#:test-target "test"
