@@ -3051,7 +3051,7 @@ manipulating HTS data.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.3.1")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3059,7 +3059,7 @@ manipulating HTS data.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))
+                "1crkk79kgxcmrkmh5f58c4k93w4rz6lp97sfsq3s6556zxcxvll5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3071,7 +3071,9 @@ manipulating HTS data.")
               (("/bin/bash") (which "bash")))
             #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("openssl" ,openssl)
+       ("curl" ,curl)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "http://www.htslib.org")
