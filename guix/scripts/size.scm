@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,7 +91,8 @@ if ITEM is not in the store."
                          (* 100. (/ self whole 1.)))))
               (sort profile
                     (match-lambda*
-                      ((($ <profile> _ _ total1) ($ <profile> _ _ total2))
+                      ((($ <profile> name1 self1 total1)
+                        ($ <profile> name2 self2 total2))
                        (> total1 total2)))))
     (format port (_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
 
@@ -200,7 +201,8 @@ the name of a PNG file."
            0
            (sort profiles
                  (match-lambda*
-                   ((($ <profile> _ _ total1) ($ <profile> _ _ total2))
+                   ((($ <profile> name1 self1 total1)
+                     ($ <profile> name2 self2 total2))
                     (> total1 total2))))))
 
   ;; TRANSLATORS: This is the title of a graph, meaning that the graph
