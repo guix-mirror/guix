@@ -1095,7 +1095,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.13.4")
+    (version "0.13.5")
     (source
       (origin
         (method url-fetch)
@@ -1105,7 +1105,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1krgryi9ngjr66242v0v5mczihgv0y7rrvx0563arr318mjn9y07"))))
+            "16dr80rdw5bzdyhahvilfjrflj7scs2yl2mmghsb84f3nglm8b3m"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)))
