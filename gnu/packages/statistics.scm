@@ -1601,14 +1601,14 @@ transformations.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.5")
+    (version "2.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "1bkvqmv8h2c423q9ag2afb6s9j2vcdlxsf559zzbimraphrr2c2b"))))
+         "1z4gbz7chxxi4ly6c0yjlikwgf8aa8dlg05cn5cd6pjr21zvh97l"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
