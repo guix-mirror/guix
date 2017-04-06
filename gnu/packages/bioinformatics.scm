@@ -6142,13 +6142,13 @@ functionality.")
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocCheck" version))
               (sha256
                (base32
-                "1rfy37xg1nc2cmgbclvzsi7sgmdcdjiahsx9crgx3yaw7kxgiack"))))
+                "197kpiycyl3qawm6801fxyxj81d2g57a00qxaqprapsf1d140l52"))))
     (properties
      `((upstream-name . "BiocCheck")))
     (build-system r-build-system)
@@ -6176,10 +6176,8 @@ functionality.")
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
-       ("r-knitr" ,r-knitr)
        ("r-httr" ,r-httr)
        ("r-optparse" ,r-optparse)
-       ("r-devtools" ,r-devtools)
        ("r-biocinstaller" ,r-biocinstaller)
        ("r-biocviews" ,r-biocviews)))
     (home-page "http://bioconductor.org/packages/BiocCheck")
