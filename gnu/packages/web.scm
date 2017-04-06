@@ -3422,18 +3422,20 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.7")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "0x2f2hrbhvm53zqwn0ny9wxbk34nwf6zww8cx4bjy5ax15asdllm"))))
+         "0ciic1f4iczq14j81fg7kxibn65sy8z1zxkvk1yxnxxg6dzplj2v"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-knitr" ,r-knitr)
+     `(("r-checkmate" ,r-checkmate)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr)
        ("r-magrittr" ,r-magrittr)
        ("r-stringr" ,r-stringr)))
     (home-page "http://gforge.se/packages/")
