@@ -2307,17 +2307,16 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "0xji0dbal6xcxnsmjj678fw29n7wrj45wrd5ng99yhqqijcm9f6g"))))
+                "1g7g3gdmvq7nj8asw6fi13k38c420sy9696nqgkrhlvv5h13yqs7"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-curl" ,r-curl)
-       ("r-rcpp" ,r-rcpp)
+     `(("r-rcpp" ,r-rcpp)
        ("r-hms" ,r-hms)
        ("r-tibble" ,r-tibble)
        ("r-r6" ,r-r6)
