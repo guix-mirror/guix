@@ -2643,13 +2643,13 @@ error stream.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "1.1-1")
+    (version "1.1-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "11vnzds5gidgakdmsbdn0bvnsz064ym1savwb7l6gc1bjn7xa2k4"))))
+                "0mg9yhdvny3vjn72agai5ghqxd3vk8cd4x1lsc0gzc2b2dm2w0p4"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
