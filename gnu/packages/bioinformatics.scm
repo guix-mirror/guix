@@ -5532,14 +5532,14 @@ distribution.")
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationForge" version))
        (sha256
         (base32
-         "02msyb9p3hywrryx00zpjkjl126mrv827i1ah1092s0cplm6xxvf"))))
+         "0l1g9hy88sh5g567svyfd8pnjvkyklkn6a3gjn8zalvh62qqjjq1"))))
     (properties
      `((upstream-name . "AnnotationForge")))
     (build-system r-build-system)
