@@ -553,14 +553,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "2.40-1")
+    (version "2.41-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "10pf0kq0g66k5rgizrvh29mq3r84acljw2jgrv5yp6z38xw23mci"))))
+         "07cnr0hnki6ybbjll54l4s5lllhk19vni5f8m0mvsfp99ls7qygk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
