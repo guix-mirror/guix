@@ -204,8 +204,10 @@ the last one."
 
 (define-syntax mwhen
   (syntax-rules ()
-    "When CONDITION is true, evaluate MEXP0..MEXP* as in an 'mbegin'.  When
-CONDITION is false, return *unspecified* in the current monad."
+    "When CONDITION is true, evaluate the sequence of monadic expressions
+MEXP0..MEXP* as in an 'mbegin'.  When CONDITION is false, return *unspecified*
+in the current monad.  Every expression in the sequence must be a monadic
+expression."
     ((_ condition mexp0 mexp* ...)
      (if condition
          (mbegin %current-monad
@@ -214,8 +216,10 @@ CONDITION is false, return *unspecified* in the current monad."
 
 (define-syntax munless
   (syntax-rules ()
-    "When CONDITION is false, evaluate MEXP0..MEXP* as in an 'mbegin'.  When
-CONDITION is true, return *unspecified* in the current monad."
+    "When CONDITION is false, evaluate the sequence of monadic expressions
+MEXP0..MEXP* as in an 'mbegin'.  When CONDITION is true, return *unspecified*
+in the current monad.  Every expression in the sequence must be a monadic
+expression."
     ((_ condition mexp0 mexp* ...)
      (if condition
          (return *unspecified*)

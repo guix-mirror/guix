@@ -4054,6 +4054,20 @@ monadic expressions are ignored.  In that sense, it is analogous to
 @code{begin}, but applied to monadic expressions.
 @end deffn
 
+@deffn {Scheme System} mwhen @var{condition} @var{mexp0} @var{mexp*} ...
+When @var{condition} is true, evaluate the sequence of monadic
+expressions @var{mexp0}..@var{mexp*} as in an @code{mbegin}.  When
+@var{condition} is false, return @code{*unspecified*} in the current
+monad.  Every expression in the sequence must be a monadic expression.
+@end deffn
+
+@deffn {Scheme System} munless @var{condition} @var{mexp0} @var{mexp*} ...
+When @var{condition} is false, evaluate the sequence of monadic
+expressions @var{mexp0}..@var{mexp*} as in an @code{mbegin}.  When
+@var{condition} is true, return @code{*unspecified*} in the current
+monad.  Every expression in the sequence must be a monadic expression.
+@end deffn
+
 @cindex state monad
 The @code{(guix monads)} module provides the @dfn{state monad}, which
 allows an additional value---the state---to be @emph{threaded} through
