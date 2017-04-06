@@ -2719,6 +2719,8 @@ in finite element programs.")
           (base32
             "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))))
     (build-system cmake-build-system)
+    (outputs '("out"
+               "octave"))                  ;46 MiB .mex file that pulls Octave
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
@@ -2736,6 +2738,14 @@ in finite element programs.")
        ;; Save 12 MiB by not installing .a files.  Passing
        ;; '-DBUILD_STATIC_LIBS=OFF' has no effect.
        #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-octave-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install the .mex file in the "octave" output.
+                      (let ((out (assoc-ref outputs "octave")))
+                        (substitute* "src/matlab/CMakeLists.txt"
+                          (("share/flann/octave")
+                           (string-append out "/share/flann/octave")))
+                        #t)))
                   (add-after 'install 'remove-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
