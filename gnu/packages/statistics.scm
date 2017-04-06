@@ -2136,6 +2136,30 @@ DESCRIPTION files.  It is intended for packages that create or manipulate
 other packages.")
     (license license:expat)))
 
+(define-public r-commonmark
+  (package
+    (name "r-commonmark")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "commonmark" version))
+       (sha256
+        (base32
+         "12q5mncxvkwdxc35is6y5idx8a1h99hyz5x6ri0arni6k25krchk"))))
+    (build-system r-build-system)
+    ;;(inputs `(("zlib" ,zlib)))
+    (home-page "http://cran.r-project.org/web/packages/commonmark")
+    (synopsis "CommonMark and Github Markdown Rendering in R")
+    (description
+     "The CommonMark specification defines a rationalized version of markdown
+syntax.  This package uses the 'cmark' reference implementation for converting
+markdown text into various formats including HTML, LaTeX and groff man.  In
+addition, it exposes the markdown parse tree in XML format.  The latest
+version of this package also adds support for Github extensions including
+tables, autolinks and strikethrough text.")
+    (license license:bsd-2)))
+
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
