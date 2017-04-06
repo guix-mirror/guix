@@ -1520,7 +1520,7 @@ type system, elevating types to first-class status.")
 (define-public guile-aspell
   (package
     (name "guile-aspell")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1528,7 +1528,7 @@ type system, elevating types to first-class status.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1wknn57x2qcsbn7zw6sbn1ma6fjsg8cvpnf78ak47s8jw6k6j75n"))))
+                "0vpk5xj9m9qc702z3khmkwhgpb949qbsyz8kw2qycda6qnxk0077"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guilesitedir="
@@ -1538,7 +1538,7 @@ type system, elevating types to first-class status.")
                   (add-before 'build 'set-libaspell-file-name
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((aspell (assoc-ref inputs "aspell")))
-                        (substitute* "aspell/aspell.scm"
+                        (substitute* "aspell.scm"
                           (("\"libaspell\\.so\"")
                            (string-append "\"" aspell
                                           "/lib/libaspell\"")))
