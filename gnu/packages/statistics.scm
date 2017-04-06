@@ -2163,20 +2163,24 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "5.0.1")
+    (version "6.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "19gblyrrn29msbpawcb1hn5m1rshiqwxy0lby0vf92rm13fmsxcz"))))
+                "0xpzziminf225kjwhyl51kgkzhplyzhk5farhf5s822krl2xqbfj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
+       ("r-commonmark" ,r-commonmark)
+       ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
+       ("r-r6" ,r-r6)
        ("r-rcpp" ,r-rcpp)
        ("r-stringi" ,r-stringi)
-       ("r-stringr" ,r-stringr)))
+       ("r-stringr" ,r-stringr)
+       ("r-xml2" ,r-xml2)))
     (home-page "https://github.com/klutometis/roxygen")
     (synopsis "In-source documentation system for R")
     (description
