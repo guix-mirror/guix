@@ -2183,7 +2183,7 @@ environments.  It can be used for machine learning, pattern recognition,
 signal processing, bioinformatics, statistics, econometrics, etc.  The library
 provides efficient classes for vectors, matrices and cubes, as well as 150+
 associated functions (eg. contiguous and non-contiguous submatrix views).")
-    (license license:mpl2.0)))
+    (license license:asl2.0)))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a
