@@ -4533,29 +4533,26 @@ to the user's query of interest.")
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:configure-flags (list "--with-ncurses")
        #:phases
-       (alist-cons-after
-        'unpack 'patch-tests
-        (lambda _
-          (substitute* "test/test.pl"
-            ;; The test script calls out to /bin/bash
-            (("/bin/bash") (which "bash")))
-          #t)
-        (alist-cons-after
-         'install 'install-library
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (install-file "libbam.a" lib)
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               ;; The test script calls out to /bin/bash
+               (("/bin/bash") (which "bash")))
              #t))
-         (alist-cons-after
-          'install 'install-headers
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((include (string-append (assoc-ref outputs "out")
-                                          "/include/samtools/")))
-              (for-each (lambda (file)
-                          (install-file file include))
-                        (scandir "." (lambda (name) (string-match "\\.h$" name))))
-              #t))
-          %standard-phases)))))
+         (add-after 'install 'install-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "libbam.a" lib)
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((include (string-append (assoc-ref outputs "out")
+                                           "/include/samtools/")))
+               (for-each (lambda (file)
+                           (install-file file include))
+                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
+               #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
