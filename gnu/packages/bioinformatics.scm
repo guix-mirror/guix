@@ -4516,7 +4516,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.3.1")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -4525,7 +4525,7 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "0znnnxc467jbf1as2dpskrjhfh8mbll760j6w6rdkwlwbqsp8gbc"))))
+         "0vzxjm5vkgvzynl7cssm1l560rqs2amdaib1x8sp2ch9b7bxx9xx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -4533,7 +4533,7 @@ to the user's query of interest.")
                   (guix build gnu-build-system)
                   (guix build utils))
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:configure-flags (list "--with-ncurses")
+       #:configure-flags (list "--with-ncurses" "--with-htslib=system")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
@@ -4556,10 +4556,12 @@ to the user's query of interest.")
                          (scandir "." (lambda (name) (string-match "\\.h$" name))))
                #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("ncurses" ,ncurses)
-              ("perl" ,perl)
-              ("python" ,python)
-              ("zlib" ,zlib)))
+    (inputs
+     `(("htslib" ,htslib)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))
     (home-page "http://samtools.sourceforge.net")
     (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
     (description
