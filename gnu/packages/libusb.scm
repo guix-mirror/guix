@@ -42,7 +42,7 @@
 (define-public libusb
   (package
     (name "libusb")
-    (version "1.0.19")
+    (version "1.0.21")
     (source
      (origin
       (method url-fetch)
@@ -50,7 +50,7 @@
                           "libusb-" version "/libusb-" version ".tar.bz2"))
       (sha256
        (base32
-        "0h38p9rxfpg9vkrbyb120i1diq57qcln82h5fr7hvy82c20jql3c"))))
+        "0jw2n5kdnrqvp7zh792fd6mypzzfap6jp4gfcmq4n6c1kb79rkkx"))))
     (build-system gnu-build-system)
 
     ;; XXX: Enabling udev is now recommended, but eudev indirectly depends on
@@ -58,7 +58,7 @@
     (arguments `(#:configure-flags '("--disable-udev")))
     ;; (inputs `(("eudev" ,eudev)))
 
-    (home-page "http://www.libusb.org")
+    (home-page "http://libusb.info")
     (synopsis "User-space USB library")
     (description
      "Libusb is a library that gives applications easy access to USB
