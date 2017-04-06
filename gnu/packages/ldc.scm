@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +121,8 @@ and freshness without requiring additional information from the user.")
                 (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
              (substitute* "tests/d2/dmd-testsuite/Makefile"
                (("/bin/bash") (which "bash")))
+             ;; FIXME: this test cannot be linked.
+             (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
              #t)))))
     (inputs
      `(("libconfig" ,libconfig)
