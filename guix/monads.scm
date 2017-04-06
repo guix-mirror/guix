@@ -204,23 +204,23 @@ the last one."
 
 (define-syntax mwhen
   (syntax-rules ()
-    "When CONDITION is true, evaluate EXP0..EXP* as in an 'mbegin'.  When
+    "When CONDITION is true, evaluate MEXP0..MEXP* as in an 'mbegin'.  When
 CONDITION is false, return *unspecified* in the current monad."
-    ((_ condition exp0 exp* ...)
+    ((_ condition mexp0 mexp* ...)
      (if condition
          (mbegin %current-monad
-           exp0 exp* ...)
+           mexp0 mexp* ...)
          (return *unspecified*)))))
 
 (define-syntax munless
   (syntax-rules ()
-    "When CONDITION is false, evaluate EXP0..EXP* as in an 'mbegin'.  When
+    "When CONDITION is false, evaluate MEXP0..MEXP* as in an 'mbegin'.  When
 CONDITION is true, return *unspecified* in the current monad."
-    ((_ condition exp0 exp* ...)
+    ((_ condition mexp0 mexp* ...)
      (if condition
          (return *unspecified*)
          (mbegin %current-monad
-           exp0 exp* ...)))))
+           mexp0 mexp* ...)))))
 
 (define-syntax define-lift
   (syntax-rules ()
