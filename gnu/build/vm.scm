@@ -21,6 +21,7 @@
 (define-module (gnu build vm)
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
+  #:use-module (guix build syscalls)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (guix records)
