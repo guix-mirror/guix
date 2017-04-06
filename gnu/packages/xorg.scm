@@ -4985,7 +4985,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.2")
+    (version "1.19.3")
     (source
       (origin
         (method url-fetch)
@@ -4994,7 +4994,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))
+          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5053,12 +5053,7 @@ over Xlib, including:
         ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
        `(("python" ,python-minimal-wrapper)
-         ("pkg-config" ,pkg-config)
-         ;; XXX Bootstrapping inputs for 1.19.2. Remove for > 1.19.2.
-         ("font-util" ,font-util)
-         ("libtool" ,libtool)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)))
+         ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
@@ -5085,10 +5080,6 @@ over Xlib, including:
 
        #:phases
        (modify-phases %standard-phases
-         ;; XXX The 1.19.2 release of xorg-server was not bootstrapped:
-         ;; <https://lists.x.org/archives/xorg-announce/2017-March/002780.html>
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
          (add-before
           'configure 'pre-configure
           (lambda _
