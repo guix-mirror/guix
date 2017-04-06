@@ -969,13 +969,13 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
 (define-public r-stringr
   (package
     (name "r-stringr")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringr" version))
        (sha256
-        (base32 "0css5j4psl80br75chg6s1s3ipzf89f71bnbys34flp9yghg1cfc"))))
+        (base32 "16hj2rmv8x03lp6cp2jk0k2plibvbggf444kp05przdvd03v7l31"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
