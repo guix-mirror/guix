@@ -1531,10 +1531,14 @@ type system, elevating types to first-class status.")
                 "0vpk5xj9m9qc702z3khmkwhgpb949qbsyz8kw2qycda6qnxk0077"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "--with-guilesitedir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-guilesitedir
+                    (lambda _
+                      (substitute* "Makefile.in"
+                        (("^guilesitedir =.*$")
+                         "guilesitedir = \
+$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      #t))
                   (add-before 'build 'set-libaspell-file-name
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((aspell (assoc-ref inputs "aspell")))
