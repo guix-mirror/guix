@@ -2185,17 +2185,6 @@ provides efficient classes for vectors, matrices and cubes, as well as 150+
 associated functions (eg. contiguous and non-contiguous submatrix views).")
     (license license:mpl2.0)))
 
-(define-public armadillo-for-rcpparmadillo
-  (package (inherit armadillo)
-    (version "7.600.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/arma/armadillo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1dxgfd2r9lbh24nszvqm2lag439s0srxaf1l86f6ww6waqm5r8zk"))))))
-
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a
   ;; different hash. In order to make `guix package --upgrade` work correctly,
