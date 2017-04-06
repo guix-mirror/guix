@@ -3190,14 +3190,14 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.6-7")
+    (version "1.6-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "1069qwj9gsjq6par2cgfah8nn5x2w38830761x1f7mqpmk0gnj3h"))))
+         "08n6i26nfckjpxjkzi8phhanc3ahsrirkv5rz38y2jcv7ds031pn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)))
