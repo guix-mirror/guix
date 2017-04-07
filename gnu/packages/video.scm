@@ -14,6 +14,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1022,6 +1023,31 @@ access to mpv's powerful playback capabilities.")
 YouTube.com and a few more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
+
+(define-public you-get
+  (package
+    (name "you-get")
+    (version "0.4.652")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/soimort/you-get/releases/download/v"
+                    version "/you-get-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0brkz98lycx8mmxjwmn7jlhqfdbvl0hy070n7skwr1k75kh99q30"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     '(#:tests? #f))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (synopsis "Download videos, audios, or images from Web sites")
+    (description
+     "You-Get is a command-line utility to download media contents (videos,
+audio, images) from the Web.  It can use either mpv or vlc for playback.")
+    (home-page "https://you-get.org/")
+    (license license:expat)))
 
 (define-public libbluray
   (package
