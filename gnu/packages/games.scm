@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
@@ -225,7 +225,7 @@ representation of the playing board.")
 (define-public gnubik
   (package
     (name "gnubik")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
       (method url-fetch)
@@ -233,7 +233,7 @@ representation of the playing board.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mhpfnxzbns0wfrsjv5vafqr34770rbvkmdzxk0x0aq67hb3zyl5"))))
+        "1vlf924mq8hg93bsjj0rzvs0crc6psmlxyc6zn0fr7msnmpx6gib"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
