@@ -75,14 +75,14 @@ definitions for all the SEARCH-PATHS."
       ;;   source ~/.guix-profile/etc/profile ~/.guix-profile
       ;;
       ;; However, when 'source' is used with no arguments, $1 refers to the
-      ;; first positional parameter of the calling scripts, so we can rely on
-      ;; it.
+      ;; first positional parameter of the calling script, so we cannot rely
+      ;; on it.
       (display "\
 # Source this file to define all the relevant environment variables in Bash
 # for this profile.  You may want to define the 'GUIX_PROFILE' environment
 # variable to point to the \"visible\" name of the profile, like this:
 #
-#  GUIX_PROFILE=/path/to/profile
+#  GUIX_PROFILE=/path/to/profile \\
 #  source /path/to/profile/etc/profile
 #
 # When GUIX_PROFILE is undefined, the various environment variables refer
