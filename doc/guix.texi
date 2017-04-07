@@ -2476,6 +2476,14 @@ This produces a tarball that follows the
 Docker Image Specification}.
 @end table
 
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the package @var{expr} evaluates to.
+
+This has the same purpose as the same-named option in @command{guix
+build} (@pxref{Additional Build Options, @code{--expression} in
+@command{guix build}}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
