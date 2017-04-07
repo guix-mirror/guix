@@ -300,7 +300,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.3.1")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -308,11 +308,12 @@ BAM files.")
                     version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "095ry68vmz9q5s1scjsa698dhgyvgw5aicz24c19iwfbai07mhqj"))
+                "024xv59bzv148b6w3das4jmldf7rywsf8y1fbqznap008qc8gl6p"))
+              (patches (search-patches "bcftools-fix-makefile.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
-               '(delete-file-recursively "htslib-1.3.1"))))
+               '(delete-file-recursively "htslib-1.4.1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -321,19 +322,12 @@ BAM files.")
         "USE_GPL=1"
         (string-append "prefix=" (assoc-ref %outputs "out"))
         (string-append "HTSDIR=" (assoc-ref %build-inputs "htslib") "/include")
-        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.a")
+        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.so")
         (string-append "BGZIP=" (assoc-ref %build-inputs "htslib") "/bin/bgzip")
-        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix"))
+        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix")
+        (string-append "PACKAGE_VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; Do not attempt to build htslib.
-               (("^include \\$\\(HTSDIR\\)/htslib\\.mk") "")
-               ;; Link against GSL cblas.
-               (("-lcblas") "-lgslcblas"))
-             #t))
          (delete 'configure)
          (add-before 'check 'patch-tests
            (lambda _
