@@ -1186,7 +1186,7 @@ modification time.")
      `(("perl" ,perl)))
     (arguments
      '(#:test-target "test"
-       #:phases (alist-delete 'configure %standard-phases)
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" %output))))
     (home-page "https://myrepos.branchable.com/")
     (synopsis "Multiple repository management tool")
