@@ -2224,6 +2224,7 @@ in a digital read-out.")
        ;; ("newt" ,newt)
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
+       ("libiberty" ,libiberty)      ;used alongside BDF for symbol demangling
 
        ;; Documentation.
        ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
