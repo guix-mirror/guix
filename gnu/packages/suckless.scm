@@ -266,7 +266,7 @@ drawing.")
 (define-public surf
   (package
     (name "surf")
-    (version "0.7")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -274,7 +274,7 @@ drawing.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0jj93izd8fizxfa6ln9w1h9bwki81sz5dhskh5x1rl34zd38aq4m"))))
+         "07cmajyafljigy10d21kkyvv5jf3hxkx06pz3rwwk3y3c9x4rvps"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -294,7 +294,7 @@ drawing.")
      `(("dmenu" ,dmenu)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("webkitgtk" ,webkitgtk)
        ("xprop" ,xprop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
