@@ -1171,24 +1171,24 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20160123")
+    (version "1.20170129")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/joeyh/myrepos/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://myrepos.branchable.com/myrepos")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1723cg5haplz2w9dwdzp6ds1ip33cx3awmj4wnb0h4yq171v5lqk"))))
+        (base32 "15i9bs2i25l7ibv530ghy8280kklcgm5kr6j86s7iwcqqckd0czp"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
     (arguments
-     `(#:test-target "test"
+     '(#:test-target "test"
        #:phases (alist-delete 'configure %standard-phases)
        #:make-flags (list (string-append "PREFIX=" %output))))
-    (home-page "http://myrepos.branchable.com/")
+    (home-page "https://myrepos.branchable.com/")
     (synopsis "Multiple repository management tool")
     (description
      "Myrepos provides the @code{mr} command, which maps an operation (e.g.,
