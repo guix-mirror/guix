@@ -39,6 +39,10 @@
   (string-append "mirror://gnu/gnumach/gnumach-"
                  version ".tar.gz"))
 
+(define (hurd-source-url version)
+  (string-append "mirror://gnu/hurd/hurd-"
+                 version ".tar.gz"))
+
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
@@ -113,8 +117,7 @@ communication.")
     (version "0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnu/hurd/hurd-"
-                                  version ".tar.gz"))
+              (uri (hurd-source-url version))
               (sha256
                (base32
                 "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))))
