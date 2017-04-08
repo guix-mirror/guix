@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages w3m)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -62,23 +64,61 @@
 (define-public xdg-utils
   (package
     (name "xdg-utils")
-    (version "1.0.2")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
           (uri (string-append
                  "https://portland.freedesktop.org/download/xdg-utils-"
-                 version ".tgz"))
+                 version ".tar.gz"))
           (sha256
             (base32
-             "1b019d3r1379b60p33d6z44kx589xjgga62ijz9vha95dg8vgbi1"))))
+             "09a1pk3ifsndc5qz2kcd1557i137gpgnv3d739pv22vfayi67pdh"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("libxslt" ,libxslt)
+       ("w3m" ,w3m)
+       ("xmlto" ,xmlto)))
     (propagated-inputs
      `(("xprop" ,xprop) ; for Xfce detecting
        ("xset" ,xset))) ; for xdg-screensaver
     (arguments
-     `(#:tests? #f)) ; no check target
-    (home-page "http://portland.freedesktop.org/")
+     `(#:tests? #f   ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-hardcoded-paths
+           (lambda _
+             (substitute* "scripts/xdg-mime.in"
+               (("/usr/bin/file") (which "file")))
+             (substitute* "scripts/xdg-open.in"
+               (("/usr/bin/printf") (which "printf")))
+             #t))
+         (add-before 'build 'locate-catalog-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("http://.*/docbookx\\.dtd")
+                              (string-append xmldoc "/docbookx.dtd"))))
+                         (find-files "scripts/desc" "\\.xml$"))
+               (substitute* "scripts/Makefile"
+                 ;; Apparently `xmlto' does not bother to looks up the stylesheets
+                 ;; specified in the XML, unlike the above substitition. Instead it
+                 ;; uses a hard-coded URL. Work around it here, but if this is
+                 ;; common perhaps we should hardcode this path in xmlto itself.
+                 (("\\$\\(XMLTO\\) man")
+                  (string-append "$(XMLTO) -x " xsldoc
+                                 "/manpages/docbook.xsl man")))
+               (setenv "STYLESHEET"
+                       (string-append xsldoc "/html/docbook.xsl"))
+               #t))))))
+    (home-page "https://www.freedesktop.org/wiki/Software/xdg-utils/")
     (synopsis "Freedesktop.org scripts for desktop integration")
     (description "The xdg-utils package is a set of simple scripts that
 provide basic desktop integration functions in the framework of the
