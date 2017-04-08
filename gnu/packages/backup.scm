@@ -186,7 +186,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.2.2")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -194,7 +194,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "03q6y428rg723c9fj1vidzjw46w1vf8z0h95lkvz1l9jw571j739"))))
+         "1rr40hxlm9vy5z2zb5w7pyfkgd1a4s061qapm83s19accb8mpji9"))))
     (build-system gnu-build-system)
     ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
