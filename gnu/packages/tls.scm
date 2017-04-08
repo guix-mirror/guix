@@ -469,18 +469,29 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.12.0")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "1pzv8fcfwdqzvvpyhgjz412is0b98yj9495k8sidzzqgbdmvlp50"))))
+        "05cqadwzgfcianw3v0qxwja65dxnzw429f7dk8w0mnh21pib72bl"))))
     (build-system python-build-system)
+
+    ;; TODO factorize the 'docs' phase and share arguments between python-acme
+    ;; and certbot.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'docs
+         (add-after 'unpack 'patch-dependency
+           ;; This module is part of the Python standard library, so we don't
+           ;; need to use an external package.
+           ;; https://github.com/certbot/certbot/pull/2249
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse',") ""))
+             #t))
+         (add-after 'build 'docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
@@ -526,12 +537,20 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1dw86gb8lyap5ckjawmli1hxgbchw2g62g1lqfvxyqjv0df94waa"))))
+                "1wq0khcf4ixda71cgfd9rkqqzx6j8hp8ha0cssvjzjnsgrsdffpn"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-dependency
+           ;; This module is part of the Python standard library, so we don't
+           ;; need to use an external package.
+           ;; https://github.com/certbot/certbot/pull/2249
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse',") ""))
+             #t))
          (add-after 'build 'docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
