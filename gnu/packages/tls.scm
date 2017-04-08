@@ -478,8 +478,6 @@ security, and applying best practice development processes.")
         "05cqadwzgfcianw3v0qxwja65dxnzw429f7dk8w0mnh21pib72bl"))))
     (build-system python-build-system)
 
-    ;; TODO factorize the 'docs' phase and share arguments between python-acme
-    ;; and certbot.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -541,28 +539,21 @@ security, and applying best practice development processes.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-dependency
-           ;; This module is part of the Python standard library, so we don't
-           ;; need to use an external package.
-           ;; https://github.com/certbot/certbot/pull/2249
-           (lambda _
-             (substitute* "setup.py"
-               (("'argparse',") ""))
-             #t))
-         (add-after 'build 'docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man1 (string-append out "/share/man/man1"))
-                    (man7 (string-append out "/share/man/man7"))
-                    (info (string-append out "/info")))
-               (and
-                 (zero? (system* "make" "-C" "docs" "man" "info"))
-                 (install-file "docs/_build/texinfo/Certbot.info" info)
-                 (install-file "docs/_build/man/certbot.1" man1)
-                 (install-file "docs/_build/man/certbot.7" man7)
-                 #t)))))))
+       ,@(substitute-keyword-arguments (package-arguments python-acme)
+           ((#:phases phases)
+            `(modify-phases ,phases
+              (replace 'docs
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let* ((out (assoc-ref outputs "out"))
+                         (man1 (string-append out "/share/man/man1"))
+                         (man7 (string-append out "/share/man/man7"))
+                         (info (string-append out "/info")))
+                    (and
+                      (zero? (system* "make" "-C" "docs" "man" "info"))
+                      (install-file "docs/_build/texinfo/Certbot.info" info)
+                      (install-file "docs/_build/man/certbot.1" man1)
+                      (install-file "docs/_build/man/certbot.7" man7)
+                      #t)))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python2-nose" ,python2-nose)
