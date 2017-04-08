@@ -2076,7 +2076,7 @@ installation on systems where resources are limited.  Its features include:
          "1adxyh8knw9knjlh73xq0jpn5adml0ck4alsv0swakm95wfyx46z"))))
     (build-system python-build-system)
     (inputs
-     `(("python-django" ,python-django)
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-requests-oauthlib" ,python-requests-oauthlib)
