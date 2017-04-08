@@ -119,6 +119,7 @@
                ;; extension of php.
                "--with-iconv"
                "--with-openssl"
+               "--with-mysqli"          ; Required for, e.g. wordpress
                "--with-pdo-mysql"
                "--with-zlib"
                "--enable-calendar"
