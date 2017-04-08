@@ -821,7 +821,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; This package must be public because other modules refer to it.  However,
   ;; mark it as hidden so that 'fold-packages' ignores it.
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs (hidden-package guile-2.0/fixed)
+   (package-with-explicit-inputs (hidden-package guile-2.2/fixed)
                                  %boot4-inputs
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
@@ -940,7 +940,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 the implicit inputs of 'gnu-build-system', return that one, otherwise return
 PACKAGE.
 
-The goal is to avoid duplication in cases like GUILE-FINAL vs. GUILE-2.0,
+The goal is to avoid duplication in cases like GUILE-FINAL vs. GUILE-2.2,
 COREUTILS-FINAL vs. COREUTILS, etc."
       ;; XXX: This doesn't handle dependencies of the final inputs, such as
       ;; libunistring, GMP, etc.

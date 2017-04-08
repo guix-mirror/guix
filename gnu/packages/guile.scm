@@ -209,14 +209,6 @@ without requiring the source code to be rewritten.")
    (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
-(define-public guile-2.0/fixed
-  ;; A package of Guile 2.0 that's rarely changed.  It is the one used
-  ;; in the `base' module, and thus changing it entails a full rebuild.
-  (package
-    (inherit guile-2.0)
-    (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
-    (replacement #f)))
-
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
@@ -224,11 +216,14 @@ without requiring the source code to be rewritten.")
     (replacement #f)
     (source (origin
               (method url-fetch)
+
+              ;; Note: we are limited to one of the compression formats
+              ;; supported by the bootstrap binaries, so no lzip here.
               (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.lz"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "083vp6754dp4d5pvcy4bqvxq60cayf92v5slf5cgij8bnvixgyvr"))
+                "05dmvhd1y135x7w5qfw4my42cfp6l8bbhjfxvchcc1cbdvzri0f1"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -246,6 +241,14 @@ without requiring the source code to be rewritten.")
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
+
+(define-public guile-2.2/fixed
+  ;; A package of Guile 2.2 that's rarely changed.  It is the one used
+  ;; in the `base' module, and thus changing it entails a full rebuild.
+  (package
+    (inherit guile-2.2)
+    (properties '((hidden? . #t)))          ;people should install 'guile-2.2'
+    (replacement #f)))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
