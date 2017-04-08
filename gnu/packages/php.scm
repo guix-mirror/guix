@@ -130,8 +130,7 @@
                "--enable-inifile"
                "--enable-mbstring"
                "--enable-pcntl"
-               "--enable-sockets"
-               "--enable-threads"))
+               "--enable-sockets"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-record-build-flags
