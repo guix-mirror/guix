@@ -525,7 +525,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/coreutils-cut-huge-range-test.patch	\
-  %D%/packages/patches/coreutils-fix-cross-compilation.patch    \
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\

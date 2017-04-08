@@ -286,15 +286,15 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.26")
+   (version "8.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "13lspazc7xkviy93qz7ks9jv4sldvgmwpq36ghrbrqpq93br8phm"))
-            (patches (search-patches "coreutils-fix-cross-compilation.patch"))))
+              "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))
+            (patches (search-patches "coreutils-cut-huge-range-test.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -309,21 +309,12 @@ used to apply commands with arbitrarily long arguments.")
     ;; copy of help2man.  However, don't pass it when cross-compiling since
     ;; that would lead it to try to run programs to get their '--help' output
     ;; for help2man.
-    `(,@(if (%current-target-system)
-            '()
-            `(("perl" ,perl)))
-
-      ;; Apply this patch only on ARM to avoid a full rebuild.
-      ;; TODO: Move to 'patches' in the next update cycle.
-      ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                      (%current-system)))
-            `(("cut-test.patch"
-               ,(search-patch "coreutils-cut-huge-range-test.patch")))
-            '())))
+    (if (%current-target-system)
+        '()
+        `(("perl" ,perl))))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
-      #:parallel-tests? #f            ; race condition fixed after 8.26
       #:phases (alist-cons-before
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -338,22 +329,7 @@ used to apply commands with arbitrarily long arguments.")
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/sh" bash)))))
-
-                ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                                (%current-system)))
-                      '((alist-cons-before
-                         'build 'patch-cut-test
-                         (lambda* (#:key inputs native-inputs
-                                   #:allow-other-keys)
-                           (let ((patch (or (assoc-ref inputs
-                                                       "cut-test.patch")
-                                            (assoc-ref native-inputs
-                                                       "cut-test.patch"))))
-                             (zero?
-                              (system* "patch" "-p1" "--force"
-                                       "--input" patch))))
-                         %standard-phases))
-                      '(%standard-phases)))))
+                %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are

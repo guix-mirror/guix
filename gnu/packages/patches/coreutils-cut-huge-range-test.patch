@@ -1,22 +1,33 @@
 This patch fixes 100% reproducible test failures on arm-linux-gnueabihf in our
-the build environment chroot, as reported at <https://bugs.gnu.org/26253>.
-It is a followup to this upstream patch:
+the build environment chroot, as reported at <https://bugs.gnu.org/26253>,
+and now on x86_64-linux-gnu as well.  It is a variant of this upstream patch:
 
-   commit 28803c8a3144d5d4363cdbd148bbe067af1a67c2
-   Author: Pádraig Brady <P@draigBrady.com>
-   Date:   Fri Mar 3 00:25:54 2017 -0800
+  commit f5422009389678680dba9ff4ecb7d33632ee3383
+  Author: Ludovic Courtès <ludo@gnu.org>
+  Date:   Mon Mar 27 20:34:39 2017 -0700
 
-       tests: avoid a spurious failure on older debian
+      tests: avoid false ulimit failure on some systems
+
+      * tests/misc/cut-huge-range.sh: On some systems returns_ may
+      use more memory, so incorporate that in the determination
+      of the ulimit value to use.  Noticed on ARMv7 with bash-4.4.12,
+      and x86_64 with bash-4.2.37.
+      Fixes http://bugs.gnu.org/26253
 
 ... which appeared to be insufficient.
 
+diff --git a/tests/misc/cut-huge-range.sh b/tests/misc/cut-huge-range.sh
+index 6b3c5b6ed..55b7b640e 100755
 --- a/tests/misc/cut-huge-range.sh
 +++ b/tests/misc/cut-huge-range.sh
-@@ -22,6 +22,7 @@ getlimits_
+@@ -20,9 +20,9 @@
+ print_ver_ cut
+ getlimits_
  
- vm=$(get_min_ulimit_v_ cut -b1 /dev/null) \
+-vm=$(get_min_ulimit_v_ cut -b1 /dev/null) \
++vm=$(get_min_ulimit_v_ sh -c 'cut -b1 /dev/null') \
    || skip_ "this shell lacks ulimit support"
-+vm=$(($vm + $(getconf PAGESIZE))) # avoid spurious failures
+ vm=$(($vm + 1000)) # avoid spurious failures
  
  # sed script to subtract one from the input.
  # Each input line should consist of a positive decimal number.
