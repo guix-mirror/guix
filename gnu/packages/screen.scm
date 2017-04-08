@@ -40,6 +40,7 @@
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
+             (patches (search-patches "screen-fix-info-syntax-error.patch"))
              (sha256
               (base32 "0bbv16gpxrh64sn4bvjy3qjy7jsxjlqlilyysin02fwnvla23nwp"))))
     (build-system gnu-build-system)
