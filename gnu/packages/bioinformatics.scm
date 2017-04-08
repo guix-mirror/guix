@@ -5356,40 +5356,18 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-2")
+    (version "2.4-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "12wf64izrpq9z3ix7mgm5421mq0xsm8dw5qblvcrz452nfhjf5w9"))))
+         "15zcxfix2d854897k1lr0sfmj2n00339nlsppcr3zrb238lb2mi5"))))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'revert-test-deletion
-           ;; The distributed sources do not include tests with the CRAN
-           ;; package.  Here we revert the commit
-           ;; `591d0e8ba1deaaf82445474ec6619c0b43db4e63' which deletes these
-           ;; tests.  There are plans to not delete tests in future as
-           ;; documented at https://github.com/vegandevs/vegan/issues/181.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero?
-              (system* "patch" "-R" "-p1" "-i"
-                       (assoc-ref inputs "r-vegan-delete-tests-patch"))))))))
     (native-inputs
      `(("gfortran" ,gfortran)
-       ("r-knitr" ,r-knitr)
-       ("r-vegan-delete-tests-patch"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/vegandevs/vegan/commit/"
-                 "591d0e8ba1deaaf82445474ec6619c0b43db4e63.patch"))
-           (sha256
-            (base32
-             "0b1bi7y4jjdl3ph721vm9apm51dr2z9piwvhy4355sf2b4kyyj5a"))))))
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-lattice" ,r-lattice)
