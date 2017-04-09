@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages openbox)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -433,9 +435,10 @@ in LXDE.")
     (arguments '(#:builder (mkdir %output)))
     (propagated-inputs
      ;; TODO:
-     ;; lxshortcut, lxsession-edit, gpicview, leafpad,
+     ;; lxshortcut, lxsession-edit, gpicview
      ;; lxappearance-obconf
      `(("menu-cache" ,menu-cache)
+       ("leafpad" ,leafpad)
        ("lxappearance" ,lxappearance)
        ("lxde-icon-theme" ,lxde-icon-theme)
        ("lxde-common" ,lxde-common)
