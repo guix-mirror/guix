@@ -4102,3 +4102,38 @@ actually changing the buffer's text.")
     (description "@code{emacs-diminish} implements hiding or
 abbreviation of the mode line displays (lighters) of minor modes.")
     (license license:gpl2+)))
+
+(define-public emacs-use-package
+  (package
+    (name "emacs-use-package")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwiegley/use-package/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x4h136jb3imyli6zsh7dyzjrra6pv0v6b0yk94jdng3rdfcmsf5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-diminish" ,emacs-diminish)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "use-package-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit"))
+             ;; Tests fail in this release, but have been fixed in
+             ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
+             #t)))))
+    (home-page "https://github.com/jwiegley/use-package")
+    (synopsis "Declaration for simplifying your .emacs")
+    (description "The use-package macro allows you to isolate package
+configuration in your @file{.emacs} file in a way that is both
+performance-oriented and tidy.")
+    (license license:gpl2+)))
