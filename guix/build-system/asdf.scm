@@ -22,6 +22,9 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
+  #:use-module ((guix build utils)
+                #:select ((package-name->name+version
+                           . hyphen-separated-name->name+version)))
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
@@ -196,7 +199,7 @@ set up using CL source package conventions."
        (define base-arguments
          (if target-is-source?
              (strip-keyword-arguments
-              '(#:tests? #:asd-file #:lisp)
+              '(#:tests? #:asd-file #:lisp #:asd-system-name)
               (package-arguments pkg))
              (package-arguments pkg)))
 
@@ -262,6 +265,7 @@ set up using CL source package conventions."
                   #:key source outputs
                   (tests? #t)
                   (asd-file #f)
+                  (asd-system-name #f)
                   (phases '(@ (guix build asdf-build-system)
                               %standard-phases))
                   (search-paths '())
@@ -269,6 +273,13 @@ set up using CL source package conventions."
                   (guile #f)
                   (imported-modules %asdf-build-system-modules)
                   (modules %asdf-build-modules))
+
+    (define system-name
+      (or asd-system-name
+          (string-drop
+           ;; NAME is the value returned from `package-full-name'.
+           (hyphen-separated-name->name+version name)
+           (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
 
     (define builder
       `(begin
@@ -284,6 +295,7 @@ set up using CL source package conventions."
                                    ((source) source)
                                    (source source))
                        #:asd-file ,asd-file
+                       #:asd-system-name ,system-name
                        #:system ,system
                        #:tests? ,tests?
                        #:phases ,phases

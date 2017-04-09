@@ -36,7 +36,6 @@
             generate-executable-for-system
             %bundle-install-prefix
             bundle-asd-file
-            remove-lisp-from-name
             wrap-output-translations
             prepend-to-source-registry
             build-program
@@ -65,9 +64,6 @@
 
 (define (%bundle-install-prefix)
   (string-append %source-install-prefix "/" (%lisp-type) "-bundle-systems"))
-
-(define (remove-lisp-from-name name lisp)
-  (string-drop name (1+ (string-length lisp))))
 
 (define (inputs->asd-file-map inputs)
   "Produce a hash table of the form (system . asd-file), where system is the

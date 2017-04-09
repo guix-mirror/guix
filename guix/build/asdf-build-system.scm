@@ -49,13 +49,6 @@
 (define %system-install-prefix
   (string-append %source-install-prefix "/systems"))
 
-(define (output-path->package-name path)
-  (package-name->name+version (strip-store-file-name path)))
-
-(define (outputs->name outputs)
-  (output-path->package-name
-   (assoc-ref outputs "out")))
-
 (define (lisp-source-directory output name)
   (string-append output (%lisp-source-install-prefix) "/" name))
 
@@ -101,31 +94,32 @@ valid."
 
 (define* (install #:key outputs #:allow-other-keys)
   "Copy and symlink all the source files."
-  (copy-files-to-output (assoc-ref outputs "out") (outputs->name outputs)))
+  (define output (assoc-ref outputs "out"))
+  (copy-files-to-output output
+                        (package-name->name+version
+                         (strip-store-file-name output))))
 
-(define* (copy-source #:key outputs #:allow-other-keys)
+(define* (copy-source #:key outputs asd-system-name #:allow-other-keys)
   "Copy the source to the library output."
   (let* ((out (library-output outputs))
-         (name (remove-lisp-from-name (output-path->package-name out)))
          (install-path (string-append out %source-install-prefix)))
-    (copy-files-to-output out name)
+    (copy-files-to-output out asd-system-name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path
       (rename-file "source" (string-append (%lisp-type) "-source"))
       (delete-file-recursively "systems")))
   #t)
 
-(define* (build #:key outputs inputs asd-file
+(define* (build #:key outputs inputs asd-file asd-system-name
                 #:allow-other-keys)
   "Compile the system."
   (let* ((out (library-output outputs))
-         (name (remove-lisp-from-name (output-path->package-name out)))
-         (source-path (lisp-source-directory out name))
+         (source-path (lisp-source-directory out asd-system-name))
          (translations (wrap-output-translations
                         `(,(output-translation source-path
                                                out))))
          (asd-file (and=> asd-file
-                          (cut source-asd-file out name <>))))
+                          (cut source-asd-file out asd-system-name <>))))
 
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
@@ -137,7 +131,7 @@ valid."
 
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
 
-    (compile-system name asd-file)
+    (compile-system asd-system-name asd-file)
 
     ;; As above, ecl will sometimes create this even though it doesn't use it
 
@@ -146,32 +140,31 @@ valid."
         (delete-file-recursively cache-directory))))
   #t)
 
-(define* (check #:key tests? outputs inputs asd-file
+(define* (check #:key tests? outputs inputs asd-file asd-system-name
                 #:allow-other-keys)
   "Test the system."
-  (let* ((name (remove-lisp-from-name (outputs->name outputs)))
-         (out (library-output outputs))
+  (let* ((out (library-output outputs))
          (asd-file (and=> asd-file
-                          (cut source-asd-file out name <>))))
+                          (cut source-asd-file out asd-system-name <>))))
     (if tests?
-        (test-system name asd-file)
+        (test-system asd-system-name asd-file)
         (format #t "test suite not run~%")))
   #t)
 
 (define* (create-asd-file #:key outputs
                           inputs
                           asd-file
+                          asd-system-name
                           #:allow-other-keys)
   "Create a system definition file for the built system."
   (let*-values (((out) (library-output outputs))
-                ((full-name version) (package-name->name+version
-                                      (strip-store-file-name out)))
-                ((name) (remove-lisp-from-name full-name))
+                ((_ version) (package-name->name+version
+                              (strip-store-file-name out)))
                 ((new-asd-file) (string-append (library-directory out)
-                                               "/" name ".asd")))
+                                               "/" asd-system-name ".asd")))
 
     (make-asd-file new-asd-file
-                   #:system name
+                   #:system asd-system-name
                    #:version version
                    #:inputs inputs
                    #:system-asd-file asd-file))
