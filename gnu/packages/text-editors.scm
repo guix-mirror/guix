@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,8 +30,11 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages xml))
@@ -161,3 +165,28 @@ competitive (as in keystroke count) with Vim.")
 interface similar to many user-friendly editors.  JOE has some of the key
 bindings and many of the powerful features of GNU Emacs.")
     (license license:gpl3+)))
+
+(define-public leafpad
+  (package
+    (name "leafpad")
+    (version "0.8.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.savannah.gnu.org/releases/"
+                                  "leafpad/leafpad-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b0az2wvqgvam7w0ns1j8xp2llslm1rx6h7zcsy06a7j0yp257cm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (home-page "https://wiki.gnome.org/Apps/Gedit")
+    (synopsis "GTK+ based text editor")
+    (description "Leafpad is a GTK+ text editor that emphasizes simplicity.  As
+development focuses on keeping weight down to a minimum, only the most essential
+features are implemented in the editor.  Leafpad is simple to use, is easily
+compiled, requires few libraries, and starts up quickly. ")
+    (license license:gpl2+)))
