@@ -1513,7 +1513,7 @@ using a system-independent interface.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "2.19.0")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1521,17 +1521,17 @@ using a system-independent interface.")
                     version "/frescobaldi-" version ".tar.gz"))
               (sha256
                (base32
-                "1rnk8i8dlshzx16n2qxcsqcs7kywgyazzyzw2vy4vp2gsm9vs9ml"))))
+                "15cqhbjbjikr7ljgiq56bz2gxrr38j8p0f78p2vhyzydaviy9a2z"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no tests included
     (inputs
      `(("lilypond" ,lilypond)
        ("portmidi" ,portmidi)
-       ("python-pyqt-4" ,python-pyqt-4)
+       ("python-pyqt" ,python-pyqt)
        ("python-ly" ,python-ly)
        ("python-pyportmidi" ,python-pyportmidi)
        ("poppler" ,poppler)
-       ("python-poppler-qt4" ,python-poppler-qt4)
+       ("python-poppler-qt5" ,python-poppler-qt5)
        ("python-sip" ,python-sip)))
     (home-page "http://www.frescobaldi.org/")
     (synopsis "LilyPond sheet music text editor")
