@@ -127,6 +127,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages speech)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -6057,3 +6058,65 @@ kill/reinice processes.")
 accessibility infrastructure.")
     (license license:lgpl2.0)
     (properties '((upstream-name . "pyatspi")))))
+
+(define-public orca
+  (package
+    (name "orca")
+    (version "3.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1la6f815drykrgqf791jx1dda6716cfv6052frqp7nhjxr75xg97"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'qualify-xkbcomp
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xkbcomp (string-append
+                             (assoc-ref inputs "xkbcomp") "/bin/xkbcomp")))
+               (substitute* "src/orca/orca.py"
+                 (("'xkbcomp'") (format #f "'~a'" xkbcomp))))
+             #t))
+         (add-after 'install 'wrap-orca
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/orca")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH")))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
+                   (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 `("PYTHONPATH" ":" prefix
+                   (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("at-spi2-atk" ,at-spi2-atk)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyatspi" ,python-pyatspi)
+       ("python-speechd" ,speech-dispatcher)
+       ("xkbcomp" ,xkbcomp)))
+    (synopsis
+     "Screen reader for individuals who are blind or visually impaired")
+    (home-page "https://wiki.gnome.org/Projects/Orca")
+    (description
+     "Orca is a screen reader that provides access to the graphical desktop
+via speech and refreshable braille.  Orca works with applications and toolkits
+that support the Assistive Technology Service Provider Interface (AT-SPI).")
+    (license license:lgpl2.1+)))
