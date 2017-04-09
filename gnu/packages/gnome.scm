@@ -6029,3 +6029,31 @@ for process dependencies, icons for processes, the ability to hide processes,
 graphical time histories of CPU/memory/swap usage and the ability to
 kill/reinice processes.")
     (license license:gpl2+)))
+
+(define-public python-pyatspi
+  (package
+    (name "python-pyatspi")
+    (version "2.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/pyatspi/"
+                    (version-major+minor version)
+                    "/pyatspi-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14m6y27ziqc9f6339gjz49mlsk6mrsyg4bkj055cdzc7sfjlgvz7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Python client bindings for D-Bus AT-SPI")
+    (home-page "https://wiki.linuxfoundation.org/accessibility\
+/atk/at-spi/at-spi_on_d-bus")
+    (description
+     "This package includes a python client library for the AT-SPI D-Bus
+accessibility infrastructure.")
+    (license license:lgpl2.0)
+    (properties '((upstream-name . "pyatspi")))))
