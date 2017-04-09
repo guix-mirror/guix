@@ -489,15 +489,17 @@ security, and applying best practice development processes.")
              (substitute* "setup.py"
                (("'argparse',") ""))
              #t))
-         (add-after 'build 'docs
+         (add-after 'build 'build-documentation
+           (lambda _
+             (zero? (system* "make" "-C" "docs" "man" "info"))))
+         (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (info (string-append out "/info")))
-               (and (zero? (system* "make" "-C" "docs" "man" "info"))
-                    (install-file "docs/_build/texinfo/acme-python.info" info)
-                    (install-file "docs/_build/man/acme-python.1" man)
-                    #t)))))))
+               (install-file "docs/_build/texinfo/acme-python.info" info)
+               (install-file "docs/_build/man/acme-python.1" man)
+               #t))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -542,18 +544,16 @@ security, and applying best practice development processes.")
        ,@(substitute-keyword-arguments (package-arguments python-acme)
            ((#:phases phases)
             `(modify-phases ,phases
-              (replace 'docs
+              (replace 'install-documentation
                 (lambda* (#:key outputs #:allow-other-keys)
                   (let* ((out (assoc-ref outputs "out"))
                          (man1 (string-append out "/share/man/man1"))
                          (man7 (string-append out "/share/man/man7"))
                          (info (string-append out "/info")))
-                    (and
-                      (zero? (system* "make" "-C" "docs" "man" "info"))
-                      (install-file "docs/_build/texinfo/Certbot.info" info)
-                      (install-file "docs/_build/man/certbot.1" man1)
-                      (install-file "docs/_build/man/certbot.7" man7)
-                      #t)))))))))
+                    (install-file "docs/_build/texinfo/Certbot.info" info)
+                    (install-file "docs/_build/man/certbot.1" man1)
+                    (install-file "docs/_build/man/certbot.7" man7)
+                    #t))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python2-nose" ,python2-nose)
