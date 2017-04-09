@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -1874,18 +1874,18 @@ and ALSA.")
               (method url-fetch)
               (uri
                (string-append
-                "https://downloads.sourceforge.net/project/qjackctl/qjackctl/"
+                "mirror://sourceforge/qjackctl/qjackctl/"
                 version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
                 "19bbljb3iz5ss4s5fmra1dxabg2fnp61sa51d63zsm56xkvv47ak"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; no check target
-
+     '(#:tests? #f)) ; no check target
     (inputs
      `(("jack-2" ,jack-2)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
