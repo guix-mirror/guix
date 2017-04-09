@@ -2659,7 +2659,7 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -2668,7 +2668,7 @@ automatically.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18nqwl05is71dzswnvpfhlg7b0v3apvbsfxrwab9c0apwavi892q"))))
+         "1abi1rvjarwfxxylpx8qlhck0kbavnj0nmlaaizk9q5zr02xfx1j"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
