@@ -3358,23 +3358,8 @@ These build systems can also be used to produce executable programs, or
 lisp images which contain a set of packages pre-loaded.
 
 The build system uses naming conventions.  For binary packages, the
-package itself as well as its run-time dependencies should begin their
-name with the lisp implementation, such as @code{sbcl-} for
-@code{asdf-build-system/sbcl}.  Beginning the input name with this
-prefix will allow the build system to encode its location into the
-resulting library, so that the input can be found at run-time.
-
-If dependencies are used only for tests, it is convenient to use a
-different prefix in order to avoid having a run-time dependency on such
-systems.  For example,
-
-@example
-(define-public sbcl-bordeaux-threads
-  (package
-    ...
-    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
-    ...))
-@end example
+package name should be prefixed with the lisp implementation, such as
+@code{sbcl-} for @code{asdf-build-system/sbcl}.
 
 Additionally, the corresponding source package should be labeled using
 the same convention as python packages (see @ref{Python Modules}), using
@@ -3394,7 +3379,16 @@ expressions to be passed as the @code{#:entry-program} argument.
 
 If the system is not defined within its own @code{.asd} file of the same
 name, then the @code{#:asd-file} parameter should be used to specify
-which file the system is defined in.
+which file the system is defined in.  Furthermore, if the package
+defines a system for its tests in a separate file, it will be loaded
+before the tests are run if it is specified by the
+@code{#:test-asd-file} parameter.  If it is not set, the files
+@code{<system>-tests.asd}, @code{<system>-test.asd}, @code{tests.asd},
+and @code{test.asd} will be tried if they exist.
+
+If for some reason the package must be named in a different way than the
+naming conventions suggest, the @code{#:asd-system-name} parameter can
+be used to specify the name of the system.
 
 @end defvr
 
