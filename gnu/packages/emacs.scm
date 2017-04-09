@@ -4081,3 +4081,24 @@ single-long-line paragraphs get word-wrapped in a way similar to what
 you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
 actually changing the buffer's text.")
     (license license:gpl3+)))
+
+(define-public emacs-diminish
+  (package
+    (name "emacs-diminish")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/myrjola/diminish.el/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i3629sv5cfrrb00hcnmaqzgs8mk36yasc1ax3ry1ga09nr6rkj9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/myrjola/diminish.el")
+    (synopsis "Diminish minor modes with no modeline display")
+    (description "@code{emacs-diminish} implements hiding or
+abbreviation of the mode line displays (lighters) of minor modes.")
+    (license license:gpl2+)))
