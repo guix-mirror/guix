@@ -4041,7 +4041,7 @@ extremely diverse sets of genomes.")
 (define-public raxml
   (package
     (name "raxml")
-    (version "8.2.9")
+    (version "8.2.10")
     (source
      (origin
        (method url-fetch)
@@ -4052,7 +4052,7 @@ extremely diverse sets of genomes.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pv8p2fy67y21a9y4cm7xpvxqjwz2v4201flfjshdq1p8j52rqf7"))))
+         "13s7aspfdcfr6asynwdg1x6vznys6pzap5f8wsffbnnwpkkg9ya8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
