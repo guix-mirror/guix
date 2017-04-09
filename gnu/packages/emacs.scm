@@ -3065,7 +3065,7 @@ in Emacs.")
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/bbatsov"
@@ -3073,7 +3073,7 @@ in Emacs.")
               (file-name (string-append "projectile-" version ".el"))
               (sha256
                (base32
-                "1pc6xb61hzxzc5hkqkli1ab0s7wz0rfgx4kcn9y30ksvhw18smbz"))))
+                "1ql1wnzhblbwnv66hf2y0wq45g71hh6s9inc090lmhm1vgylbd1f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
