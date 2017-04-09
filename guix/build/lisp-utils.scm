@@ -184,12 +184,24 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
           `(:lib ,(string-append system ".a"))
           '())))
 
-(define (test-system system asd-file)
-  "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first."
+(define (test-system system asd-file test-asd-file)
+  "Use a lisp implementation to test SYSTEM using asdf.  Load ASD-FILE first.
+Also load TEST-ASD-FILE if necessary."
   (lisp-eval-program
    `((require :asdf)
      (let ((*package* (find-package :asdf)))
-       (load ,asd-file))
+       (load ,asd-file)
+       ,@(if test-asd-file
+             `((load ,test-asd-file))
+             ;; Try some likely files.
+             (map (lambda (file)
+                    `(when (uiop:file-exists-p ,file)
+                       (load ,file)))
+                  (list
+                   (string-append system "-tests.asd")
+                   (string-append system "-test.asd")
+                   "tests.asd"
+                   "test.asd"))))
      (asdf:test-system ,system))))
 
 (define (string->lisp-keyword . strings)

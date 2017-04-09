@@ -199,7 +199,7 @@ set up using CL source package conventions."
        (define base-arguments
          (if target-is-source?
              (strip-keyword-arguments
-              '(#:tests? #:asd-file #:lisp #:asd-system-name)
+              '(#:tests? #:asd-file #:lisp #:asd-system-name #:test-asd-file)
               (package-arguments pkg))
              (package-arguments pkg)))
 
@@ -266,6 +266,7 @@ set up using CL source package conventions."
                   (tests? #t)
                   (asd-file #f)
                   (asd-system-name #f)
+                  (test-asd-file #f)
                   (phases '(@ (guix build asdf-build-system)
                               %standard-phases))
                   (search-paths '())
@@ -296,6 +297,7 @@ set up using CL source package conventions."
                                    (source source))
                        #:asd-file ,(or asd-file (string-append system-name ".asd"))
                        #:asd-system-name ,system-name
+                       #:test-asd-file ,test-asd-file
                        #:system ,system
                        #:tests? ,tests?
                        #:phases ,phases

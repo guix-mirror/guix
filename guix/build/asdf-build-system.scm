@@ -131,12 +131,16 @@ valid."
   #t)
 
 (define* (check #:key tests? outputs inputs asd-file asd-system-name
+                test-asd-file
                 #:allow-other-keys)
   "Test the system."
   (let* ((out (library-output outputs))
-         (asd-file (source-asd-file out asd-system-name asd-file)))
+         (asd-file (source-asd-file out asd-system-name asd-file))
+         (test-asd-file
+          (and=> test-asd-file
+                 (cut source-asd-file out asd-system-name <>))))
     (if tests?
-        (test-system asd-system-name asd-file)
+        (test-system asd-system-name asd-file test-asd-file)
         (format #t "test suite not run~%")))
   #t)
 
