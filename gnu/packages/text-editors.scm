@@ -183,7 +183,7 @@ bindings and many of the powerful features of GNU Emacs.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+-2)))
-    (home-page "https://wiki.gnome.org/Apps/Gedit")
+    (home-page "http://tarot.freeshell.org/leafpad/")
     (synopsis "GTK+ based text editor")
     (description "Leafpad is a GTK+ text editor that emphasizes simplicity.  As
 development focuses on keeping weight down to a minimum, only the most essential
