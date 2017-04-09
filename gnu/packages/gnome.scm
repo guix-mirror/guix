@@ -89,6 +89,7 @@
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -722,6 +723,29 @@ update-desktop-database: updates the database containing a cache of MIME types
                 "1dyw8mm72wfpkn83vdqr0ifv5yhy565jhxrcjsd83nc7c3igd2y1"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+
+(define-public tango-icon-theme
+  (package
+    (name "tango-icon-theme")
+    (version "0.8.90")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tango.freedesktop.org/releases/"
+                                  "tango-icon-theme-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "034r9s944b4yikyfgn602yv7s54wdzlq0qfvqh52b9x6kbx08h79"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("imagemagick" ,imagemagick)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://tango-project.org/")
+    (synopsis "Tango icon theme")
+    (description "This is an icon theme that follows the Tango visual
+guidelines.")
+    (license license:public-domain)))
 
 (define-public shared-mime-info
   (package
