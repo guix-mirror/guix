@@ -3458,3 +3458,60 @@ starting a decryption sequence to reveal the original plaintext characters.")
 game, where you control the armies of one of seven different factions: Tech,
 Magic, Egypt, Indians, Norsemen, Persian or Romans.")
     (license license:gpl2+)))
+
+(define-public freegish
+  (let ((commit "8795cd7adc95957883f2d3465eb9036a774667a7")
+        (revision "1"))
+    (package
+      (name "freegish")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/freegish/freegish.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1p1zf5qqagmcpi1db2bs02cnalpy3qiymp6yzan7k1bhmv859gsx"))
+                (modules '((guix build utils)))
+                ;; The audio files in the "music" directory are licensed under
+                ;; CC-BY-NC, so we delete them.
+                (snippet
+                 '(begin
+                    (delete-file-recursively "music")
+                    #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:configure-flags
+         (list "-DCMAKE_INSTALL_FHS=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-DATAPATH
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "CMakeLists.txt"
+                 (("^option\\(INSTALL_FHS" line)
+                  (string-append "add_definitions(-DDATAPATH=\""
+                                 (assoc-ref outputs "out") "/share/freegish\")\n"
+                                 line)))
+               #t)))))
+      (inputs
+       `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))
+         ("openal" ,openal)
+         ("libvorbis" ,libvorbis)
+         ("libogg" ,libogg)
+         ("mesa" ,mesa)
+         ("libpng" ,libpng)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/freegish/freegish")
+      (synopsis "Side-scrolling physics platformer with a ball of tar")
+      (description "In FreeGish you control Gish, a ball of tar who lives
+happily with his girlfriend Brea, until one day a mysterious dark creature
+emerges from a sewer hole and pulls her below ground.")
+      ;; The textures are available under the Expat license.  All other assets
+      ;; (including levels) are covered under CC-BY-SA or public domain.  The
+      ;; source code is under GPLv2+.
+      (license (list license:gpl2+
+                     license:expat
+                     license:public-domain
+                     license:cc-by-sa3.0)))))
