@@ -951,7 +951,7 @@ productive, customizable lisp based systems.")
   (let ((revision "1")
         (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
     (package
-      (name "sbcl-slynk") ; name must refer to the system name for now
+      (name "sbcl-slynk-boot0")
       (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
       (source
        (origin
@@ -991,7 +991,8 @@ productive, customizable lisp based systems.")
               (scandir "slynk"))))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:tests? #f)) ; No test suite
+       `(#:tests? #f ; No test suite
+         #:asd-system-name "slynk"))
       (synopsis "Common Lisp IDE for Emacs")
       (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
 It also features a completely redesigned REPL based on Emacs's own
@@ -1003,7 +1004,9 @@ multiple inspectors with independent history.")
       (properties `((cl-source-variant . ,(delay cl-slynk)))))))
 
 (define-public cl-slynk
-  (sbcl-package->cl-source-package sbcl-slynk-boot0))
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-slynk-boot0))
+    (name "cl-slynk")))
 
 (define ecl-slynk-boot0
   (sbcl-package->ecl-package sbcl-slynk-boot0))
@@ -1014,8 +1017,9 @@ multiple inspectors with independent history.")
     (name "sbcl-slynk-arglists")
     (inputs `(("slynk" ,sbcl-slynk-boot0)))
     (arguments
-     `(#:asd-file "slynk.asd"
-       ,@(package-arguments sbcl-slynk-boot0)))))
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
+       ((#:asd-file _ "") "slynk.asd")
+       ((#:asd-system-name _ #f) #f)))))
 
 (define ecl-slynk-arglists
   (sbcl-package->ecl-package sbcl-slynk-arglists))
@@ -1110,6 +1114,7 @@ multiple inspectors with independent history.")
 (define-public sbcl-slynk
   (package
     (inherit sbcl-slynk-boot0)
+    (name "sbcl-slynk")
     (inputs
      `(("slynk" ,sbcl-slynk-boot0)
        ("slynk-util" ,sbcl-slynk-util)
