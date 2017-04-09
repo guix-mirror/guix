@@ -24,11 +24,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages textutils))
 
 (define-public mitlm
@@ -75,9 +77,12 @@ efficiency through the use of a compact vector representation of n-grams.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dotconf" ,dotconf)
+       ("espeak" ,espeak)
        ("glib" ,glib)
        ("libltdl" ,libltdl)
-       ("libsndfile" ,libsndfile)))
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)
+       ("python" ,python)))
     (synopsis "Common interface to speech synthesizers")
     (description "The Speech Dispatcher project provides a high-level
 device independent layer for access to speech synthesis through a simple,
