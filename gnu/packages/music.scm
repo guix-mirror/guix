@@ -2524,7 +2524,7 @@ parallel with a DarkBooster, followed by a volume control.")))
               (file-name (string-append name "-" version ".tar.gz"))))
     (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
     (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
-    (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
+    (description "This package provides the LV2 plugin \"GxSuperFuzz\", an
 analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
 pot, which is usualy in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics.")))
