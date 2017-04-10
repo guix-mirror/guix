@@ -2530,24 +2530,22 @@ pot, which is usualy in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics.")))
 
 (define-public gx-vintage-fuzz-master-lv2
-  (let ((commit "0fec0bc1e8a8ba909a68e916e036138a3425d7db")
-        (revision "2"))
-    (package (inherit gx-guvnor-lv2)
-      (name "gx-vintage-fuzz-master-lv2")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "06szi6d2iwkygbw5azhwzhcl2as4lmk2gs9hanngsf46a1zbdcp7"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
-      (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
-      (description "This package provides the LV2 plugin
-\"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal."))))
+  (package (inherit gx-guvnor-lv2)
+    (name "gx-vintage-fuzz-master-lv2")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/"
+                                  "GxVintageFuzzMaster.lv2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bdkfj6xi2g4izfw3pmr4i0nqzg8jnkdwc23x9ifxwc6p1kbayzk"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
+    (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
+    (description "This package provides the LV2 plugin
+\"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal.")))
 
 (define-public gx-slow-gear-lv2
   (let ((commit "cb852e0426f4e6fe077e7f1ede73a4da335cfc5e")
