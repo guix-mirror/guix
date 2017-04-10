@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,8 +150,19 @@
 ;;; Commentary:
 ;;;
 ;;; This module provides bindings to libc's syscall wrappers.  It uses the
-;;; FFI, and thus requires a dynamically-linked Guile.  (For statically-linked
-;;; Guile, we instead apply 'guile-linux-syscalls.patch'.)
+;;; FFI, and thus requires a dynamically-linked Guile.
+;;;
+;;; Some syscalls are already defined in statically-linked Guile by applying
+;;; 'guile-linux-syscalls.patch'.
+;;;
+;;; Visibility of syscall's symbols shared between this module and static Guile
+;;; is a bit delicate. It is handled by 'define-as-needed' macro.
+;;;
+;;; This macro is used to export symbols in dynamic Guile context, and to
+;;; re-export them in static Guile context.
+;;;
+;;; This way, even if they don't appear in #:export list, it is safe to use
+;;; syscalls from this module in static or dynamic Guile context.
 ;;;
 ;;; Code:
 
@@ -409,6 +421,25 @@ the returned procedure is called."
         (error (format #f "~a: syscall->procedure failed: ~s"
                        name args))))))
 
+(define-syntax define-as-needed
+  (syntax-rules ()
+    "Define VARIABLE.  If VARIABLE already exists in (guile) then re-export it,
+  otherwise export the newly-defined VARIABLE."
+    ((_ (proc args ...) body ...)
+     (define-as-needed proc (lambda* (args ...) body ...)))
+    ((_ variable value)
+     (begin
+       (when (module-defined? the-scm-module 'variable)
+         (re-export variable))
+
+       (define variable
+         (if (module-defined? the-scm-module 'variable)
+             (module-ref the-scm-module 'variable)
+             value))
+
+       (unless (module-defined? the-scm-module 'variable)
+         (export variable))))))
+
 
 ;;;
 ;;; File systems.
@@ -546,6 +577,22 @@ constants from <sys/mount.h>."
           (throw 'system-error "swapoff" "~S: ~A"
                  (list device (strerror err))
                  (list err)))))))
+
+(define-as-needed RB_AUTOBOOT    #x01234567)
+(define-as-needed RB_HALT_SYSTEM #xcdef0123)
+(define-as-needed RB_ENABLED_CAD #x89abcdef)
+(define-as-needed RB_DISABLE_CAD 0)
+(define-as-needed RB_POWER_OFF   #x4321fedc)
+(define-as-needed RB_SW_SUSPEND  #xd000fce2)
+(define-as-needed RB_KEXEC       #x45584543)
+
+(define-as-needed (reboot #:optional (cmd RB_AUTOBOOT))
+  (let ((proc (syscall->procedure int "reboot" (list int))))
+    (let-values (((ret err) (proc cmd)))
+      (unless (zero? ret)
+        (throw 'system-error "reboot" "~S: ~A"
+               (list cmd (strerror err))
+               (list err))))))
 
 (define (kernel? pid)
   "Return #t if PID designates a \"kernel thread\" rather than a normal
