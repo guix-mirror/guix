@@ -578,6 +578,18 @@ constants from <sys/mount.h>."
                (list cmd (strerror err))
                (list err))))))
 
+(define-as-needed (load-linux-module data #:optional (options ""))
+  (let ((proc (syscall->procedure int "init_module"
+                                  (list '* unsigned-long '*))))
+    (let-values (((ret err)
+                  (proc (bytevector->pointer data)
+                        (bytevector-length data)
+                        (string->pointer options))))
+      (unless (zero? ret)
+        (throw 'system-error "load-linux-module" "~A"
+               (list (strerror err))
+               (list err))))))
+
 (define (kernel? pid)
   "Return #t if PID designates a \"kernel thread\" rather than a normal
 user-land process."
