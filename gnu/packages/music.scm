@@ -1951,7 +1951,7 @@ socket or command line.")
 (define-public pianobar
   (package
     (name "pianobar")
-    (version "2015.11.22")
+    (version "2016.06.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/PromyLOPh/"
@@ -1959,7 +1959,7 @@ socket or command line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "022df19bhxqvkhy0qy21xahba5s1fm17b13y0p9p9dnf2yl44wfv"))))
+                "1hi5rr6jcr0kwf4xfz007ndwkjkp287lhwlsgfz6iryqa5n6jzcp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
