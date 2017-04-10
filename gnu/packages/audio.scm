@@ -1301,7 +1301,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
 (define-public jack-1
   (package
     (name "jack")
-    (version "0.124.1")
+    (version "0.125.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1310,7 +1310,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
                    ".tar.gz"))
              (sha256
               (base32
-               "1mk1wnx33anp6haxfjjkfhwbaknfblsvj35nxvz0hvspcmhdyhpb"))))
+               "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
