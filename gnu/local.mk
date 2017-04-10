@@ -105,7 +105,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
-  %D%/packages/dillo.scm			\
   %D%/packages/disk.scm				\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
@@ -389,6 +388,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
   %D%/packages/web.scm				\
+  %D%/packages/web-browsers.scm			\
   %D%/packages/webkit.scm			\
   %D%/packages/wget.scm				\
   %D%/packages/wicd.scm				\
