@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +121,29 @@ interoperability; easy integration with other software; geeqie works on files
 and directories, there is no need to import images; fast preview for many raw
 image formats; tools for image comparison, sorting and managing photo
 collection.  Geeqie was initially based on GQview.")
+    (license license:gpl2+)))
+
+(define-public gpicview
+  (package
+    (name "gpicview")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/lxde/"
+                                  "GPicView%20%28image%20Viewer%29/0.2.x/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hi9v0rdx47nys0wvm9xasdrafa34r5kq6crb074a0ipwmc60iiq"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+-2)
+              ("libjpeg" ,libjpeg)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "Simple and fast image viewer for X")
+    (description "gpicview is a lightweight GTK+ 2.x based image viewer.
+It is the default image viewer on LXDE desktop environment.")
+    (home-page "http://lxde.sourceforge.net/gpicview/")
     (license license:gpl2+)))
 
 (define-public sxiv

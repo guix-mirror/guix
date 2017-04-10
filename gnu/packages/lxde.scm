@@ -27,6 +27,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image-viewers)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openbox)
   #:use-module (gnu packages pkg-config)
@@ -435,9 +436,10 @@ in LXDE.")
     (arguments '(#:builder (mkdir %output)))
     (propagated-inputs
      ;; TODO:
-     ;; lxshortcut, lxsession-edit, gpicview
+     ;; lxshortcut, lxsession-edit
      ;; lxappearance-obconf
      `(("menu-cache" ,menu-cache)
+       ("gpicview" ,gpicview)
        ("leafpad" ,leafpad)
        ("lxappearance" ,lxappearance)
        ("lxde-icon-theme" ,lxde-icon-theme)
