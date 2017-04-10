@@ -45,8 +45,6 @@
             MNT_EXPIRE
             UMOUNT_NOFOLLOW
             restart-on-EINTR
-            mount
-            umount
             mount-points
             swapon
             swapoff
@@ -492,58 +490,50 @@ the returned procedure is called."
 (define MNT_EXPIRE      4)
 (define UMOUNT_NOFOLLOW 8)
 
-(define mount
-  ;; If called from the statically linked Guile, use Guile core 'mount'.
-  ;; Otherwise, use an FFI binding to define 'mount'.
-  ;; XXX: '#:update-mtab?' is not implemented by core 'mount'.
-  (if (module-defined? the-scm-module 'mount)
-      (module-ref the-scm-module 'mount)
-      (let ((proc (syscall->procedure int "mount" `(* * * ,unsigned-long *))))
-        (lambda* (source target type #:optional (flags 0) options
+(define-as-needed (mount source target type
+                         #:optional (flags 0) options
                          #:key (update-mtab? #f))
-          "Mount device SOURCE on TARGET as a file system TYPE.
+  "Mount device SOURCE on TARGET as a file system TYPE.
 Optionally, FLAGS may be a bitwise-or of the MS_* <sys/mount.h>
 constants, and OPTIONS may be a string.  When FLAGS contains
 MS_REMOUNT, SOURCE and TYPE are ignored.  When UPDATE-MTAB? is true,
 update /etc/mtab.  Raise a 'system-error' exception on error."
-          (let-values (((ret err)
-                        (proc (if source
-                                  (string->pointer source)
-                                  %null-pointer)
-                              (string->pointer target)
-                              (if type
-                                  (string->pointer type)
-                                  %null-pointer)
-                              flags
-                              (if options
-                                  (string->pointer options)
-                                  %null-pointer))))
-            (unless (zero? ret)
-              (throw 'system-error "mount" "mount ~S on ~S: ~A"
-                     (list source target (strerror err))
-                     (list err)))
-            (when update-mtab?
-              (augment-mtab source target type options)))))))
+  ;; XXX: '#:update-mtab?' is not implemented by core 'mount'.
+  (let ((proc (syscall->procedure int "mount" `(* * * ,unsigned-long *))))
+    (let-values (((ret err)
+                  (proc (if source
+                            (string->pointer source)
+                            %null-pointer)
+                        (string->pointer target)
+                        (if type
+                            (string->pointer type)
+                            %null-pointer)
+                        flags
+                        (if options
+                            (string->pointer options)
+                            %null-pointer))))
+      (unless (zero? ret)
+        (throw 'system-error "mount" "mount ~S on ~S: ~A"
+               (list source target (strerror err))
+               (list err)))
+      (when update-mtab?
+        (augment-mtab source target type options)))))
 
-(define umount
-  ;; If called from the statically linked Guile, use Guile core 'umount'.
-  ;; Otherwise, use an FFI binding to define 'umount'.
-  ;; XXX: '#:update-mtab?' is not implemented by core 'umount'.
-  (if (module-defined? the-scm-module 'umount)
-      (module-ref the-scm-module 'umount)
-      (let ((proc (syscall->procedure int "umount2" `(* ,int))))
-        (lambda* (target #:optional (flags 0)
-                         #:key (update-mtab? #f))
-          "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
+(define-as-needed (umount target
+                          #:optional (flags 0)
+                          #:key (update-mtab? #f))
+  "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
 constants from <sys/mount.h>."
-          (let-values (((ret err)
-                        (proc (string->pointer target) flags)))
-            (unless (zero? ret)
-              (throw 'system-error "umount" "~S: ~A"
-                     (list target (strerror err))
-                     (list err)))
-            (when update-mtab?
-              (remove-from-mtab target)))))))
+  ;; XXX: '#:update-mtab?' is not implemented by core 'umount'.
+  (let ((proc (syscall->procedure int "umount2" `(* ,int))))
+    (let-values (((ret err)
+                  (proc (string->pointer target) flags)))
+      (unless (zero? ret)
+        (throw 'system-error "umount" "~S: ~A"
+               (list target (strerror err))
+               (list err)))
+      (when update-mtab?
+        (remove-from-mtab target)))))
 
 (define (mount-points)
   "Return the mounts points for currently mounted file systems."
