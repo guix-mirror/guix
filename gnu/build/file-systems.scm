@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,12 +48,7 @@
 
             mount-flags->bit-mask
             check-file-system
-            mount-file-system)
-  #:re-export (mount
-               umount
-               MS_BIND
-               MS_MOVE
-               MS_RDONLY))
+            mount-file-system))
 
 ;;; Commentary:
 ;;;
@@ -60,13 +56,6 @@
 ;;; check file systems.
 ;;;
 ;;; Code:
-
-;; 'mount' is already defined in the statically linked Guile used for initial
-;; RAM disks, in which case the bindings in (guix build syscalls) do not work
-;; (the FFI bindings do not work there).  Override them in that case.
-(when (module-defined? the-scm-module 'mount)
-  (set! mount (@ (guile) mount))
-  (set! umount (@ (guile) umount)))
 
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
