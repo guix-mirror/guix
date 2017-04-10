@@ -39,6 +39,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages zip)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1089,3 +1090,35 @@ files.  It is designed to be fast and to handle large input files.")
 
 (define-public python2-defusedxml
   (package-with-python2 python-defusedxml))
+
+(define-public libxls
+  (package
+    (name "libxls")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/"
+                                  name "/files/" name "-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "1g8ds7wbhsa4hdcn77xc2c0l3vvz5bx2hx9ng9c9n7aii92ymfnk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Bootstrapping is required in order to fix the test driver script.
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "bash" "bootstrap")))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "http://libxls.sourceforge.net/")
+    (synopsis "Read Excel files")
+    (description
+     "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
+libxls cannot write Excel files.")
+    (license license:bsd-2)))
