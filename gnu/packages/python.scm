@@ -529,14 +529,14 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "1.16.0")
+    (version "1.17.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "14k8z7ndc3zk5xivnm4d8lncchx475ll5izpf8vmfbq7rp9yp5rj"))))
+         "1rs2qcmskcmq66q6g5al08wa41l9am0fad5r719m8wf91msyylqw"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: One test fails with "EOFError not raised by connect".
