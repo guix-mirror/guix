@@ -2490,26 +2490,24 @@ saturation effect."))))
 simulation of the Hyperion Fuzz pedal.")))
 
 (define-public gx-voodoo-fuzz-lv2
-  (let ((commit "aec7889b489385e8add06126e7a36ae2e26254b1")
-        (revision "2"))
-    (package (inherit gx-guvnor-lv2)
-      (name "gx-voodoo-fuzz-lv2")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/brummer10/GxVoodoFuzz.lv2")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0mc41ldlv89069iaysnfiqxy5h5sr8mdi5cxm3ij5q5v4jv3viwx"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
-      (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
-      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
+  (package (inherit gx-guvnor-lv2)
+    (name "gx-voodoo-fuzz-lv2")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/"
+                                  "GxVoodoFuzz.lv2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0cc8sg7q493bs6pcq4ipqp6czpxv04nh9yvn8kq2x65ni2208n2f"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
+    (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
+    (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
 simulation modelled after the Voodoo Lab SuperFuzz pedal.  It's basically a
 Bosstone circuit, followed by the tone control of the FoxToneMachine in
-parallel with a DarkBooster, followed by a volume control."))))
+parallel with a DarkBooster, followed by a volume control.")))
 
 (define-public gx-super-fuzz-lv2
   (let ((commit "f40389575812c909007d140d327ce579930b71f7")
