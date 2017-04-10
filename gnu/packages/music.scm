@@ -1824,7 +1824,7 @@ follows a traditional multi-track tape recorder control paradigm.")
 (define-public ams-lv2
   (package
     (name "ams-lv2")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1833,7 +1833,7 @@ follows a traditional multi-track tape recorder control paradigm.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1392spswkhfd38fggf584wb3m8aqpg7csfrs9zxnzyvhgmp0fgqk"))))
+         "1xacxyzqcj83g9c1gwfn36gg1c6yi15v7km4vidfidrjzb4x27fq"))))
     (build-system waf-build-system)
     (arguments
      `(#:phases
