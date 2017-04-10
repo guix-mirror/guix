@@ -1902,8 +1902,8 @@ analogue-like user interface.")
 (define-public mod-host
   ;; The last release was in 2014 but since then more than 140 commits have
   ;; been made.
-  (let ((commit "72aca771e3a4e3889641b9bab84985586c9bb926")
-        (revision "1"))
+  (let ((commit "299a3977476e8eb0285837fbd7522cec506a11de")
+        (revision "2"))
     (package
       (name "mod-host")
       (version (string-append "0.10.6-" revision "." (string-take commit 9)))
@@ -1914,7 +1914,7 @@ analogue-like user interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "19szi8cy65jlchbrmbjbma03g6gxj9zyyp4dgw1k06r0cxbx82gq"))
+                  "128q7p5mph086v954rqnafalfbkyvhgwclaq6ks6swrhj45wnag6"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
