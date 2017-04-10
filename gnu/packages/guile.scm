@@ -480,7 +480,7 @@ many readers as needed).")
                "1wvggbr4xv8idh1hzd8caj4xfp4pln78a7w1wqzd4zgzwmnzxr2f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("guile" ,guile-2.0)))
+              ("guile" ,guile-2.2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags (list "--with-ncursesw"  ; Unicode support
@@ -498,7 +498,7 @@ many readers as needed).")
                          (files (find-files dir ".scm")))
                     (substitute* files
                       (("\"libguile-ncurses\"")
-                       (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
+                       (format #f "\"~a/lib/guile/2.2/libguile-ncurses\""
                                out)))
                     #t)))))))
     (home-page "https://www.gnu.org/software/guile-ncurses/")
