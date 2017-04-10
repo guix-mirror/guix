@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,7 +114,8 @@
                 (alist-delete 'strip
                  %standard-phases))))
     (native-inputs
-     `(("m4" ,m4)
+     `(("gcc" ,gcc-4.9)
+       ("m4" ,m4)
        ("readline" ,readline)
        ("texinfo" ,texinfo)
        ("texlive" ,texlive)))
