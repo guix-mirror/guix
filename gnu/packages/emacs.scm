@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
@@ -1128,9 +1130,22 @@ than @code{electric-indent-mode}.")
                ("ag-executable"
                 (string-append (assoc-ref inputs "the-silver-searcher")
                                "/bin/ag")))
-             #t)))))
+             #t))
+         (add-before 'install 'make-info
+           (lambda _
+             (with-directory-excursion "docs"
+               (zero? (system* "make" "info")))))
+         (add-after 'install 'install-info
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (install-file "docs/_build/texinfo/agel.info" info)
+               #t))))))
     (inputs
      `(("the-silver-searcher" ,the-silver-searcher)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("s" ,emacs-s)))
