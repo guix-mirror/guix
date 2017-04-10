@@ -3515,3 +3515,40 @@ emerges from a sewer hole and pulls her below ground.")
                      license:expat
                      license:public-domain
                      license:cc-by-sa3.0)))))
+
+(define-public cdogs-sdl
+  (package
+    (name "cdogs-sdl")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cxong/cdogs-sdl/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08c3y8ijimx6mp0gm90abz4lsnbflqka519q2v0id0096vsc2pxn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCDOGS_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/cdogs-sdl/"))))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "http://cxong.github.io/cdogs-sdl/")
+    (synopsis "Classic overhead run-and-gun game")
+    (description "C-Dogs SDL is a classic overhead run-and-gun game,
+supporting up to 4 players in co-op and deathmatch modes.  Customize your
+player, choose from many weapons, and blast, slide and slash your way through
+over 100 user-created campaigns.")
+    ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
+    ;; CC0/CC-BY/CC-BY-SA for assets.
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0))))
