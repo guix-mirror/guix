@@ -1600,15 +1600,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.22.0")
+    (version "0.24.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/lilv-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1d3ss7vv8drf1c5340lyd0gv736n2qy7sxji2nh1rw9y48hr69yd"))))
+               "08m5a372pr1l7aii9s3pic5nm68gynx1n1bc7bnlswziq6qnbv7p"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
