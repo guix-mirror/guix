@@ -82,17 +82,11 @@
 
             PF_PACKET
             AF_PACKET
-            IFF_UP
-            IFF_BROADCAST
-            IFF_LOOPBACK
             all-network-interface-names
             network-interface-names
-            network-interface-flags
             network-interface-netmask
             loopback-network-interface?
             network-interface-address
-            set-network-interface-flags
-            set-network-interface-address
             set-network-interface-netmask
             set-network-interface-up
             configure-network-interface
@@ -920,9 +914,9 @@ exception if it's already taken."
 
 ;; Flags and constants from <net/if.h>.
 
-(define IFF_UP #x1)                               ;Interface is up
-(define IFF_BROADCAST #x2)                        ;Broadcast address valid.
-(define IFF_LOOPBACK #x8)                         ;Is a loopback net.
+(define-as-needed IFF_UP #x1)                     ;Interface is up
+(define-as-needed IFF_BROADCAST #x2)              ;Broadcast address valid.
+(define-as-needed IFF_LOOPBACK #x8)               ;Is a loopback net.
 
 (define IF_NAMESIZE 16)                           ;maximum interface name size
 
@@ -1069,7 +1063,7 @@ that are not up."
                 (else
                  (loop interfaces))))))))
 
-(define (network-interface-flags socket name)
+(define-as-needed (network-interface-flags socket name)
   "Return a number that is the bit-wise or of 'IFF*' flags for network
 interface NAME."
   (let ((req (make-bytevector ifreq-struct-size)))
@@ -1080,8 +1074,8 @@ interface NAME."
                           (bytevector->pointer req))))
       (if (zero? ret)
 
-          ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the beginning of
-          ;; 'struct ifreq', and it's a short int.
+          ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the
+          ;; beginning of 'struct ifreq', and it's a short int.
           (bytevector-sint-ref req IF_NAMESIZE (native-endianness)
                                (sizeof short))
 
@@ -1097,7 +1091,7 @@ interface NAME."
     (close-port sock)
     (not (zero? (logand flags IFF_LOOPBACK)))))
 
-(define (set-network-interface-flags socket name flags)
+(define-as-needed (set-network-interface-flags socket name flags)
   "Set the flag of network interface NAME to FLAGS."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0
@@ -1114,7 +1108,7 @@ interface NAME."
                (list name (strerror err))
                (list err))))))
 
-(define (set-network-interface-address socket name sockaddr)
+(define-as-needed (set-network-interface-address socket name sockaddr)
   "Set the address of network interface NAME to SOCKADDR."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0
