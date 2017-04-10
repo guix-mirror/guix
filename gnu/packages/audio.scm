@@ -2048,15 +2048,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.8.2")
+    (version "0.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/suil-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1s3adyiw7sa5gfvm5wasa61qa23629kprxyv6w8hbxdiwp0hhxkq"))))
+               "1kji3lhha26qr6xm9j8ic5c40zbrrb5qnwm2qxzmsfxgmrz29wkf"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
     (inputs
