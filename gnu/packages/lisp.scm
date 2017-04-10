@@ -88,27 +88,26 @@
      `(#:parallel-build? #f  ; The build system seems not to be thread safe.
        #:tests? #f  ; There does not seem to be make check or anything similar.
        #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-       #:phases (alist-cons-before
-                'configure 'pre-conf
-                (lambda _
-                  (substitute*
-                      (append
-                       '("pcl/impl/kcl/makefile.akcl"
-                         "add-defs"
-                         "unixport/makefile.dos"
-                         "add-defs.bat"
-                         "gcl-tk/makefile.prev"
-                         "add-defs1")
-                       (find-files "h" "\\.defs"))
-                    (("SHELL=/bin/bash")
-                     (string-append "SHELL=" (which "bash")))
-                    (("SHELL=/bin/sh")
-                     (string-append "SHELL=" (which "sh"))))
-                  #t)
-                ;; drop strip phase to make maxima build, see
-                ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
-                (alist-delete 'strip
-                 %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'pre-conf
+                    (lambda _
+                      (substitute*
+                        (append
+                         '("pcl/impl/kcl/makefile.akcl"
+                           "add-defs"
+                           "unixport/makefile.dos"
+                           "add-defs.bat"
+                           "gcl-tk/makefile.prev"
+                           "add-defs1")
+                         (find-files "h" "\\.defs"))
+                        (("SHELL=/bin/bash")
+                         (string-append "SHELL=" (which "bash")))
+                        (("SHELL=/bin/sh")
+                         (string-append "SHELL=" (which "sh"))))
+                      #t))
+                  ;; drop strip phase to make maxima build, see
+                  ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
+                  (delete 'strip))))
     (inputs
      `(("gmp" ,gmp)
        ("readline" ,readline)))
