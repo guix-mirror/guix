@@ -2510,26 +2510,24 @@ Bosstone circuit, followed by the tone control of the FoxToneMachine in
 parallel with a DarkBooster, followed by a volume control.")))
 
 (define-public gx-super-fuzz-lv2
-  (let ((commit "f40389575812c909007d140d327ce579930b71f7")
-        (revision "2"))
-    (package (inherit gx-guvnor-lv2)
-      (name "gx-super-fuzz-lv2")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/brummer10/GxSuperFuzz.lv2")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "174bibj8qzm8zr6f5h8bcj94iry17zravk8flpdy84n6yg7cixji"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
-      (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
-      (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
+  (package (inherit gx-guvnor-lv2)
+    (name "gx-super-fuzz-lv2")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/"
+                                  "GxSuperFuzz.lv2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0pnivq05f1kji8c5jxsqdzhdfk3xn422v2d1x20x3jfsxnaf115x"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
+    (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
+    (description "This package provides the LV2 plugin \"GxVoodooFuzz\", an
 analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
 pot, which is usualy in the housing, is exposed as a control parameter.  It
-adjusts the amount of harmonics."))))
+adjusts the amount of harmonics.")))
 
 (define-public gx-vintage-fuzz-master-lv2
   (let ((commit "0fec0bc1e8a8ba909a68e916e036138a3425d7db")
