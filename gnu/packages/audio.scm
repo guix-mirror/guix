@@ -1402,14 +1402,14 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jalv
   (package
     (name "jalv")
-    (version "1.4.6")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
+                "1x2wpzzx2cgvz3dgdcgsj8dr0w3zsasy62mvl199bsdj5fbjaili"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1425,8 +1425,8 @@ synchronous execution of all clients, and low latency operation.")
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
        ("suil" ,suil)
-       ("gtk" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)
+       ("gtk" ,gtk+)
+       ("gtkmm" ,gtkmm)
        ("jack" ,jack-1)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
