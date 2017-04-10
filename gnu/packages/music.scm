@@ -2462,24 +2462,22 @@ pedal.")))
 saturation effect."))))
 
 (define-public gx-hyperion-lv2
-  (let ((commit "6a096a664e553e551e179e85cf390bd1683410fb")
-        (revision "2"))
-    (package (inherit gx-guvnor-lv2)
-      (name "gx-hyperion-lv2")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/brummer10/GxHyperion.lv2")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1ksv3wmylhwbf6kjl2lnhr14h9rfl291cfm21471gnb1r68yqfxh"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (home-page "https://github.com/brummer10/GxHyperion.lv2")
-      (synopsis "Simulation of the Hyperion Fuzz pedal")
-      (description "This package provides the LV2 plugin \"GxHyperion\", a
-simulation of the Hyperion Fuzz pedal."))))
+  (package (inherit gx-guvnor-lv2)
+    (name "gx-hyperion-lv2")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/"
+                                  "GxHyperion.lv2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1pd7l33a14kq73wavgqq7csw4n3mwjz9d5rxaj0jgsyxd3llp3wh"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/brummer10/GxHyperion.lv2")
+    (synopsis "Simulation of the Hyperion Fuzz pedal")
+    (description "This package provides the LV2 plugin \"GxHyperion\", a
+simulation of the Hyperion Fuzz pedal.")))
 
 (define-public gx-voodoo-fuzz-lv2
   (let ((commit "aec7889b489385e8add06126e7a36ae2e26254b1")
