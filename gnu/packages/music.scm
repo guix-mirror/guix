@@ -2423,25 +2423,23 @@ clean boost effect with a 3-knob tonestack."))))
 simulation of a push pull transistor fuzz effect with added high octave."))))
 
 (define-public gx-suppa-tone-bender-lv2
-  (let ((commit "4e6dc713ec24e7fcf5ea23b7e685af627c01b9c9")
-        (revision "1"))
-    (package (inherit gx-guvnor-lv2)
-      (name "gx-suppa-tone-bender-lv2")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/brummer10/GxSuppaToneBender.lv2")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1i22xr252nkbazkwidll2zb3i96610gx65qn5djdkijlz7j77138"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (home-page "https://github.com/brummer10/GxSuppaToneBender.lv2")
-      (synopsis "Simulation of the Vox Suppa Tone Bender pedal")
-      (description "This package provides the LV2 plugin
+  (package (inherit gx-guvnor-lv2)
+    (name "gx-suppa-tone-bender-lv2")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/"
+                                  "GxSuppaToneBender.lv2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1j90fns87035sfr6bxs4cvqxbyy3pqjhihx1nis8xajn202nl1hx"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/brummer10/GxSuppaToneBender.lv2")
+    (synopsis "Simulation of the Vox Suppa Tone Bender pedal")
+    (description "This package provides the LV2 plugin
 \"GxSuppaToneBender\", a simulation modelled after the Vox Suppa Tone Bender
-pedal."))))
+pedal.")))
 
 (define-public gx-saturator-lv2
   (let ((commit "0b581ac85c515325b9f16e51937cae6e1bf81a0a")
