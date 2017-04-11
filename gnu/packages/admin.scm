@@ -15,6 +15,7 @@
 ;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Coypright © 2016 John Darrington <jmd@gnu.org>
+;;; Coypright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2049,3 +2050,36 @@ low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
     (license license:expat)))
 
+(define-public fabric
+  (package
+    (name "fabric")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Fabric" version))
+       (sha256
+        (base32
+         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f     ;XXX: Tests attempt to download Python "fudge" package.
+       #:python ,python-2))                       ;Python 2 only
+    (propagated-inputs
+     ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
+     ;; between python-paramiko and newer python-pycrypto. Without this, the
+     ;; `fab` command fails with "ValueError: CTR mode needs counter
+     ;; parameter, not IV". See:
+     ;; https://github.com/paramiko/paramiko/pull/714#issuecomment-281191548.
+     `(("python2-paramiko" ,python2-paramiko)))
+    (home-page "http://fabfile.org")
+    (synopsis "Simple Pythonic remote execution and deployment tool")
+    (description
+     "Fabric is designed to upload files and run shell commands on a number of
+servers in parallel or serially.  These commands are grouped in tasks (which
+are regular Python functions) and specified in a @dfn{fabfile}.
+
+It is similar to Capistrano, except it's implemented in Python and doesn't
+expect you to be deploying Rails applications.  Fabric is a simple, Pythonic
+tool for remote execution and deployment.")
+    (license license:bsd-2)))
