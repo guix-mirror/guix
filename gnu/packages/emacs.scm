@@ -4208,6 +4208,28 @@ configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
     (license license:gpl2+)))
 
+(define-public emacs-strace-mode
+  (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
+         (revision "1"))
+    (package
+      (name "emacs-strace-mode")
+      (version (string-append "0.0.2-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkmoore/strace-mode")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lbk2kzdznf2bkfazizfbimaxxzfzv00lrz1ran9dc2zqbc0bj9f"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/pkmoore/strace-mode")
+      (synopsis "Emacs major mode to highlight strace outputs")
+      (description "@code{emacs-strace-mode} provides an Emacs major mode
+ highlighting strace outputs.")
+      (license license:gpl3+))))
+
 (define-public emacs-default-encrypt
   (package
     (name "emacs-default-encrypt")
