@@ -30,7 +30,7 @@
 (define-public %pkg-config
   (package
    (name "pkg-config")
-   (version "0.29.1")
+   (version "0.29.2")
    (source (origin
             (method url-fetch)
             (uri (list
@@ -46,7 +46,7 @@
                    version ".tar.gz")))
             (sha256
              (base32
-              "00dh1jn8rbppmgbhhgqhmbh3c58b0gccy39rsjdlcma50sg3rd5y"))))
+              "14fmwzki1rlz8bs2p810lk6jqdxsk966d8drgsjmi54cd00rrikg"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--with-internal-glib")))
    (native-search-paths
