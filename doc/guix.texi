@@ -234,7 +234,7 @@ Packaging Guidelines
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
-* Python Modules::              Taming the snake.
+* Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
@@ -16325,7 +16325,7 @@ needed is to review and apply the patch.
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
-* Python Modules::              Taming the snake.
+* Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
