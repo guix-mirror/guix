@@ -206,7 +206,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.3")
+   (version "1.40.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -214,7 +214,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1lqi4yncw5q0v7g5makzxyp18g5cksqyld8m1wx0qli8wxf8pfmb"))))
+              "1j81kmdq2kndayahfck60myd05hj5qd7mixj0w5kchkc8m082x14"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
