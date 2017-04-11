@@ -4278,3 +4278,33 @@ source file, @file{jl-encrypt.el}.")
 the associated decorations to HTML.  Output to CSS, inline CSS and
 fonts is supported.")
     (license license:gpl2+)))
+
+(define-public emacs-xmlgen
+  (package
+    (name "emacs-xmlgen")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/philjackson/xmlgen/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "xmlgen-test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/philjackson/xmlgen")
+    (synopsis "S-expression to XML domain specific language (DSL) in
+Emacs Lisp")
+    (description "@code{emacs-xmlgen} provides S-expression to XML
+conversion for Emacs Lisp.")
+    (license license:gpl2+)))
