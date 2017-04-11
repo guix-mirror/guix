@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -29,17 +29,24 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages))
 
 (define-public feh
   (package
@@ -290,3 +297,66 @@ your images.  Among its features are:
      "Catimg is a little program that prints images in the terminal.
 It supports JPEG, PNG and GIF formats.")
     (license license:expat)))
+
+(define-public luminance-hdr
+  (package
+    (name "luminance-hdr")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/qtpfsgui/luminance/"
+                    version "/luminance-hdr-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "00fldbcizrx8jcnjgq74n3zmbm27dxzl96fxa7q49689mfnlw08l"))
+              (patches (search-patches "luminance-hdr-qt-printer.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebkit" ,qtwebkit)
+       ("boost" ,boost)
+       ;; ("gtest" ,gtest)
+       ("libraw" ,libraw)
+       ("zlib" ,zlib)
+       ("exiv2" ,exiv2)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg)
+       ("lcms" ,lcms)
+       ("openexr" ,openexr)
+       ("fftw" ,fftwf)
+       ("gsl" ,gsl)
+       ("libtiff" ,libtiff)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'add-ilmbase-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; 'OpenEXR.pc' has a -I for IlmBase but 'FindOpenEXR.cmake' does
+             ;; not use 'OpenEXR.pc'.  Thus, we need to add
+             ;; "$ilmbase/include/OpenEXR/" to the CPATH.
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "ilmbase")
+                                    "/include/OpenEXR"
+                                    ":" (or (getenv "CPATH") "")))
+             #t)))))
+    (home-page "http://qtpfsgui.sourceforge.net")
+    (synopsis "High dynamic range (HDR) imaging application")
+    (description
+     "Luminance HDR (formerly QtPFSGui) is a graphical user interface
+application that aims to provide a workflow for high dynamic range (HDR)
+imaging.  It supports several HDR and LDR image formats, and it can:
+
+@itemize
+@item Create an HDR file from a set of images (formats: JPEG, TIFF 8bit and
+16bit, RAW) of the same scene taken at different exposure setting;
+@item Save load HDR images;
+@item Rotate, resize and crop HDR images;
+@item Tone-map HDR images;
+@item Copy EXIF data between sets of images.
+@end itemize\n")
+    (license license:gpl2+)))
