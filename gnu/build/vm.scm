@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,7 @@
             partition-size
             partition-file-system
             partition-label
-            partition-bootable?
+            partition-flags
             partition-initializer
 
             root-partition-initializer
@@ -141,7 +142,7 @@ the #:references-graphs parameter of 'derivation'."
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
   (label       partition-label (default #f))
-  (bootable?   partition-bootable? (default #f))
+  (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
 
 (define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
@@ -168,9 +169,10 @@ actual /dev name based on DEVICE."
     (cons* "mkpart" "primary" "ext2"
            (format #f "~aB" offset)
            (format #f "~aB" (+ offset (partition-size part)))
-           (if (partition-bootable? part)
-               `("set" ,(number->string index) "boot" "on")
-               '())))
+           (append-map (lambda (flag)
+                         (list "set" (number->string index)
+                               (symbol->string flag) "on"))
+                       (partition-flags part))))
 
   (define (options partitions offset)
     (let loop ((partitions partitions)
@@ -303,6 +305,11 @@ in PARTITIONS, and using BOOTCFG as its bootloader configuration file.
 
 Each partition is initialized by calling its 'initializer' procedure,
 passing it a directory name where it is mounted."
+
+  (define (partition-bootable? partition)
+    "Return the first partition found with the boot flag set."
+    (member 'boot (partition-flags partition)))
+
   (let* ((partitions (initialize-partition-table device partitions))
          (root       (find partition-bootable? partitions))
          (target     "/fs"))
