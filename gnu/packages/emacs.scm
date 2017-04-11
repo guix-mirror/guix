@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -4207,3 +4207,31 @@ abbreviation of the mode line displays (lighters) of minor modes.")
 configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
     (license license:gpl2+)))
+
+(define-public emacs-default-encrypt
+  (package
+    (name "emacs-default-encrypt")
+    (version "4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             ;; A versioned, signed copy of this package is avialable on the
+             ;; home page, but 'guix download' fails to download it.
+             "https://github.com/emacsmirror/emacswiki.org/raw/master/jl-encrypt.el"))
+       (file-name (string-append "jl-encrypt-" version ".el"))
+       (sha256
+        (base32
+         "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (synopsis "Automatically encrypt or sign Gnus messages in Emacs")
+    (description
+     "DefaultEncrypt is designed to be used with Gnus in Emacs.  It
+automatically encrypts messages that you send (e.g., email) when public keys
+for all recipients are available, and it protects you from accidentally
+sending un-encrypted messages.  It can also be configured to automatically
+sign messages that you send.  For details and instructions on how to use
+DefaultEncrypt, please refer to the home page or read the comments in the
+source file, @file{jl-encrypt.el}.")
+    (license license:gpl3+)))
