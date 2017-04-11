@@ -229,7 +229,7 @@ the image."
                                                 (* 10 (expt 2 20))))
                                      (label #$file-system-label)
                                      (file-system #$file-system-type)
-                                     (bootable? #t)
+                                     (flags '(boot))
                                      (initializer initialize)))))
              (initialize-hard-disk "/dev/vda"
                                    #:partitions partitions
