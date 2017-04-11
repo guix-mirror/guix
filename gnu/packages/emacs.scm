@@ -4257,3 +4257,25 @@ sign messages that you send.  For details and instructions on how to use
 DefaultEncrypt, please refer to the home page or read the comments in the
 source file, @file{jl-encrypt.el}.")
     (license license:gpl3+)))
+
+(define-public emacs-htmlize
+  (package
+    (name "emacs-htmlize")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/hniksic/emacs-htmlize/archive/release/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fy1lybzrxl8a8r88f6p19nz8ygmvcxhxbnymkxh7jqaz25viwld"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hniksic/emacs-htmlize")
+    (synopsis "Convert buffer text and decorations to HTML")
+    (description "@code{emacs-htmlize} converts the buffer text and
+the associated decorations to HTML.  Output to CSS, inline CSS and
+fonts is supported.")
+    (license license:gpl2+)))
