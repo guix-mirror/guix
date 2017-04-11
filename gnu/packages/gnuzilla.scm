@@ -524,11 +524,7 @@ standards.")
                            "--with-system-jpeg"        ; must be libjpeg-turbo
                            "--with-system-libevent"
                            "--with-system-libvpx"
-
-                           ;; FIXME: It is preferable to build with system
-                           ;; libraries, but this fixes crashes.
-                           ;; "--with-system-icu"
-
+                           "--with-system-icu"
                            "--with-system-nspr"
                            "--with-system-nss"
                            "--enable-system-pixman"
