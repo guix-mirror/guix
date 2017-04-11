@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   (package
    (name "icu4c")
    (version "58.2")
+   (replacement icu4c/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -63,3 +65,12 @@ globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
+
+(define icu4c/fixed
+  (package
+    (inherit icu4c)
+    (replacement #f)
+    (source (origin
+              (inherit (package-source icu4c))
+              (patches
+               (search-patches "icu4c-reset-keyword-list-iterator.patch"))))))
