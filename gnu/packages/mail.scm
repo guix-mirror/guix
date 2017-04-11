@@ -1086,15 +1086,17 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.28")
+    (version "2.2.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
-       (sha256 (base32
-                "098zpkmkk93372qnv6drgbfg8hp5mynspzc1735qgar6wdcqya70"))))
+       (patches (search-patches "dovecot-fix-failing-test.patch"))
+       (sha256
+        (base32
+         "19irf7b5mjqq68mrpdd38gxc0zp2nqib942kjp3aif3f2acylffr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
