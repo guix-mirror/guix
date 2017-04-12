@@ -403,16 +403,13 @@ ACTIVATION-SCRIPT-TYPE."
       ;; Let users debug their own processes!
       (activate-ptrace-attach)))
 
-(define linux-bare-metal-service-type
-  (service-type (name 'linux-bare-metal)
-                (extensions
-                 (list (service-extension activation-service-type
-                                          (const %linux-kernel-activation))))))
-
 (define %linux-bare-metal-service
   ;; The service that does things that are needed on the "bare metal", but not
   ;; necessary or impossible in a container.
-  (service linux-bare-metal-service-type #f))
+  (simple-service 'linux-bare-metal
+                  activation-service-type
+                  %linux-kernel-activation))
+
 
 (define special-files-service-type
   ;; Service to install "special files" such as /bin/sh and /usr/bin/env.
