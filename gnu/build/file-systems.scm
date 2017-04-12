@@ -565,10 +565,6 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
-(define (regular-file? file-name)
-  "Return #t if FILE-NAME is a regular file."
-  (eq? (stat:type (stat file-name)) 'regular))
-
 (define* (mount-file-system spec #:key (root "/root"))
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
@@ -608,9 +604,9 @@ run a file system check."
          (check-file-system source type))
 
        ;; Create the mount point.  Most of the time this is a directory, but
-       ;; in the case of a bind mount, a regular file may be needed.
+       ;; in the case of a bind mount, a regular file or socket may be needed.
        (if (and (= MS_BIND (logand flags MS_BIND))
-                (regular-file? source))
+                (not (file-is-directory? source)))
            (unless (file-exists? mount-point)
              (mkdir-p (dirname mount-point))
              (call-with-output-file mount-point (const #t)))
