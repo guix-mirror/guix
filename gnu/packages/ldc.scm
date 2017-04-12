@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -308,6 +309,12 @@ latest DMD frontend and uses LLVM as backend.")
     (native-inputs
      `(("ldc" ,ldc)))
     (home-page "https://code.dlang.org/getting_started")
-    (synopsis "DUB package manager")
-    (description "This package provides the D package manager.")
+    (synopsis "Package and build manager for D projects")
+    (description
+     "DUB is a package and build manager for applications and libraries written
+in the D programming language.  It can automatically retrieve a project's
+dependencies and integrate them in the build process.
+
+The design emphasis is on maximum simplicity for simple projects, while
+providing the opportunity to customize things when needed. ")
     (license license:expat)))
