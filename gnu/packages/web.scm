@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -4220,17 +4220,12 @@ and similar services.")
     (version "1.12")
     (source
      (origin
-       ;; The darkhttpd release tarball URL fails to download with a
-       ;; 'TLS warning alert'. Download from the darkhttpd git repo
-       ;; until the problem has been fixed upstream.
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append "https://unix4lyfe.org/git/darkhttpd"))
-             (commit "41b68476c35270f47dcd2ddebe27cbcd87e43d41")))
+       (method url-fetch)
+       (uri (string-append "https://unix4lyfe.org/darkhttpd/darkhttpd-"
+                           version ".tar.bz2"))
        (sha256
         (base32
-         "0wi8dfgj4ic0fsy4dszl69xgxdxlwxz4c30vsw2i2dpnczgjm04k"))
-       (file-name (string-append name "-" version "-checkout"))))
+         "0185wlyx4iqiwfigp1zvql14zw7gxfacncii3d15yaxk4av1f155"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")
