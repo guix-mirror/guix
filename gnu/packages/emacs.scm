@@ -4238,9 +4238,8 @@ performance-oriented and tidy.")
      (origin
        (method url-fetch)
        (uri (string-append
-             ;; A versioned, signed copy of this package is avialable on the
-             ;; home page, but 'guix download' fails to download it.
-             "https://github.com/emacsmirror/emacswiki.org/raw/master/jl-encrypt.el"))
+             "https://www.informationelle-selbstbestimmung-im-internet.de"
+             "/emacs/jl-encrypt" version "/jl-encrypt.el"))
        (file-name (string-append "jl-encrypt-" version ".el"))
        (sha256
         (base32
