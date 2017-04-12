@@ -76,14 +76,14 @@ for reading and writing new sound file formats.")
 (define-public libsamplerate
   (package
     (name "libsamplerate")                     ; aka. Secret Rabbit Code (SRC)
-    (version "0.1.8")
+    (version "0.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/SRC/libsamplerate-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01hw5xjbjavh412y63brcslj5hi9wdgkjd3h9csx5rnm8vglpdck"))))
+               "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
