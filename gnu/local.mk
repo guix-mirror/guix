@@ -539,7 +539,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
-  %D%/packages/patches/dovecot-fix-failing-test.patch		\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
