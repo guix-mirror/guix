@@ -541,10 +541,6 @@ store.")
    (arguments
     `(#:out-of-source? #t
 
-      ;; In version 2.21, there a race in the 'elf' directory, see
-      ;; <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00709.html>.
-      #:parallel-build? #f
-
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
       ;; libraries (libdl-2.24.so, etc.) have ld.so marked as NEEDED.  Since
       ;; these libraries are always going to be found anyway, just skip
