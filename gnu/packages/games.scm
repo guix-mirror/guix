@@ -56,6 +56,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
@@ -3649,3 +3650,91 @@ small robot living in the nano world, repair its maker.")
     ;; kiki-the-nano-bot/kiki-the-nano-bot_1.0.2+dfsg1-4_copyright>
     ;; for a statement from the author.
     (license license:public-domain)))
+
+(define-public teeworlds
+  (package
+    (name "teeworlds")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/teeworlds/teeworlds/"
+                                  "archive/" version "-release.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                            '("src/engine/external/wavpack/"
+                              "src/engine/external/zlib/"))
+                  #t))
+              (patches
+               (search-patches "teeworlds-use-latest-wavpack.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Embed path to assets.
+             (substitute* "src/engine/shared/storage.cpp"
+               (("#define DATA_DIR.*")
+                (string-append "#define DATA_DIR \""
+                               (assoc-ref outputs "out")
+                               "/share/teeworlds/data"
+                               "\"")))
+
+             ;; Bam expects all files to have a recent time stamp.
+             (for-each (lambda (file)
+                         (utime file 1 1))
+                       (find-files "."))
+
+             ;; Do not use bundled libraries.
+             (substitute* "bam.lua"
+               (("if config.zlib.value == 1 then")
+                "if true then")
+               (("wavpack = .*")
+                "wavpack = {}
+settings.link.libs:Add(\"wavpack\")\n"))
+             (substitute* "src/engine/client/sound.cpp"
+               (("#include <engine/external/wavpack/wavpack.h>")
+                "#include <wavpack/wavpack.h>"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "bam" "-a" "-v" "release"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (data (string-append out "/share/teeworlds/data")))
+               (mkdir-p bin)
+               (mkdir-p data)
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         '("teeworlds" "teeworlds_srv"))
+               (copy-recursively "data" data)
+               #t))))))
+    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
+    ;; library without a build system.
+    (inputs
+     `(("freetype" ,freetype)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bam" ,bam)
+       ("python" ,python-2)))
+    (home-page "https://www.teeworlds.com")
+    (synopsis "2D retro multiplayer shooter game")
+    (description "Teeworlds is an online multiplayer game.  Battle with up to
+16 players in a variety of game modes, including Team Deathmatch and Capture
+The Flag.  You can even design your own maps!")
+    (license license:bsd-3)))
