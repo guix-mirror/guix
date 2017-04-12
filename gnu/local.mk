@@ -666,6 +666,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
+  %D%/packages/patches/kiki-level-selection-crash.patch		\
+  %D%/packages/patches/kiki-makefile.patch			\
+  %D%/packages/patches/kiki-missing-includes.patch		\
+  %D%/packages/patches/kiki-portability-64bit.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\

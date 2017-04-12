@@ -1,0 +1,57 @@
+Downloaded from https://anonscm.debian.org/viewvc/pkg-games/packages/trunk/kiki-the-nano-bot/debian/patches/Makefile.patch?revision=15681&view=co
+
+Makefile fixes:
+ - Make CXXFLAGS, CPPFLAGS, LDFLAGS available for user-specified flags.
+ - run SWIG before compiling
+
+Peter De Wachter (pdewacht@gmail.com)
+placed in the public domain
+
+--- a/kodilib/linux/Makefile
++++ b/kodilib/linux/Makefile
+@@ -21,7 +21,7 @@
+ 
+ INCLUDES = $(KODI_INCLUDES) $(X11_INCLUDES) $(SDL_INCLUDES)
+ 
+-CXXFLAGS = $(INCLUDES) $(SDL_CFLAGS)
++CXXOPTS = -Wall $(INCLUDES) $(SDL_CFLAGS) $(CPPFLAGS) $(CXXFLAGS)
+ 
+ src =  \
+ 	$(KODISRCDIR)/handler/KEventHandler.cpp \
+@@ -95,4 +95,4 @@
+ 	$(RM) -f $(obj) libkodi.a
+ 
+ %.o:    %.cpp
+-	$(CXX) -c $(CXXFLAGS) -o $@ $<
++	$(CXX) -c $(CXXOPTS) -o $@ $<
+--- a/linux/Makefile
++++ b/linux/Makefile
+@@ -46,7 +46,7 @@
+ 
+ INCLUDES = $(KIKI_INCLUDES) $(X11_INCLUDES) $(PYTHON_INCLUDES)
+ 
+-CXXFLAGS = $(INCLUDES) $(SDLCFLAGS)
++CXXOPTS = -Wall $(INCLUDES) $(SDLCFLAGS) $(CPPFLAGS) $(CXXFLAGS)
+ 
+ src =  \
+ 	$(KIKISRC)/base/KikiAction.cpp \
+@@ -105,8 +105,10 @@
+ obj = $(src:.cpp=.o)
+ 
+ kiki: $(KIKISRC)/../SWIG/KikiPy_wrap.cpp $(obj)
+-	-(cd ../SWIG; swig -c++ -python -globals kiki -o KikiPy_wrap.cpp KikiPy.i; cp kiki.py ../py)
+-	$(CXX) $(obj) $(KODILIB) -o kiki $(GLLIBS) $(SDLLIBS) $(PYTHONLIBS)
++	$(CXX) $(LDFLAGS) $(obj) $(KODILIB) -o kiki $(GLLIBS) $(SDLLIBS) $(PYTHONLIBS)
++
++$(KIKISRC)/../SWIG/KikiPy_wrap.cpp: $(wildcard ../SWIG/*.i)
++	(cd ../SWIG && swig -c++ -python -globals kiki -DSWIG_PYTHON_LEGACY_BOOL -o KikiPy_wrap.cpp KikiPy.i && cp kiki.py ../py)
+ 
+ obj-clean:
+ 	$(RM) -f $(obj)
+@@ -115,5 +117,5 @@
+ 	$(RM) -f $(obj) kiki
+ 
+ %.o:    %.cpp
+-	$(CXX) -c $(CXXFLAGS) -o $@ $<
++	$(CXX) -c $(CXXOPTS) -o $@ $<
+ 

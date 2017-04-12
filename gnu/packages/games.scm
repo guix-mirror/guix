@@ -89,6 +89,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages fonts)
@@ -3552,3 +3553,99 @@ over 100 user-created campaigns.")
                    license:cc0
                    license:cc-by3.0
                    license:cc-by-sa3.0))))
+
+(define-public kiki
+  (package
+    (name "kiki")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/kiki/kiki-src/"
+                                  version "/kiki-" version "-src.tgz"))
+              (sha256
+               (base32
+                "0ihjdsxbn8z3cz0gpcprafiipcqaiskgdnh1rhmw4qff8dszalbn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.dll$"))
+                  #t))
+              (patches
+               (search-patches "kiki-level-selection-crash.patch"
+                               "kiki-makefile.patch"
+                               "kiki-missing-includes.patch"
+                               "kiki-portability-64bit.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CXX=g++")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL:"
+                                    (assoc-ref inputs "python")
+                                    "/include/python2.7:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             (substitute* "src/main/main.cpp"
+               (("#include <SDL.h>" line)
+                (string-append line "
+#define K_INCLUDE_GLUT
+#include \"KIncludeTools.h\""))
+               (("// initialize SDL" line)
+                (string-append "glutInit(&argc,argv);\n" line)))
+             (substitute* "src/main/KikiController.cpp"
+               (("getenv\\(\"KIKI_HOME\"\\)")
+                (string-append "\"" (assoc-ref outputs "out") "/share/kiki/\"")))
+             (substitute* "linux/Makefile"
+               (("CXXOPTS =" line)
+                (string-append line " -fpermissive"))
+               (("PYTHON_VERSION=.*") "PYTHON_VERSION=2.7")
+               (("PYTHONHOME =.*")
+                (string-append "PYTHONHOME = "
+                               (assoc-ref inputs "python")
+                               "/lib/python2.7/"))
+               (("\\$\\(GLLIBS\\)" line)
+                (string-append line " -lm -lpython2.7")))
+             (substitute* "src/main/KikiPythonWidget.h"
+               (("#define __KikiPythonWidget" line)
+                (string-append line "\n#include \"KikiPython.h\"")))
+             #t))
+         (add-before 'build 'build-kodilib
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (with-directory-excursion "kodilib/linux"
+               (zero? (apply system* "make" make-flags)))))
+         (add-after 'build-kodilib 'chdir
+           (lambda _ (chdir "linux") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/kiki")))
+               (mkdir-p bin)
+               (mkdir-p share)
+               (install-file "kiki" bin)
+               (copy-recursively "../py" (string-append share "/py"))
+               (copy-recursively "../sound" (string-append share "/sound"))
+               #t))))))
+    (inputs
+     `(("glu" ,glu)
+       ;; Kiki builds fine with freeglut 3.0.0 but segfaults on start.
+       ("freeglut" ,freeglut-2.8)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("python" ,python-2)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page "http://kiki.sourceforge.net/")
+    (synopsis "3D puzzle game")
+    (description "Kiki the nano bot is a 3D puzzle game.  It is basically a
+mixture of the games Sokoban and Kula-World.  Your task is to help Kiki, a
+small robot living in the nano world, repair its maker.")
+    ;; See <http://metadata.ftp-master.debian.org/changelogs/main/k/
+    ;; kiki-the-nano-bot/kiki-the-nano-bot_1.0.2+dfsg1-4_copyright>
+    ;; for a statement from the author.
+    (license license:public-domain)))

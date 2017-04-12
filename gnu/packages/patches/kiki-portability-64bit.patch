@@ -1,0 +1,328 @@
+This patch was downloaded from Debian:
+https://anonscm.debian.org/viewvc/pkg-games/packages/trunk/kiki-the-nano-bot/debian/patches/portability-64bit.patch?revision=7984&view=co
+
+Make 64-bit clean (string positions don't fit in an int on 64-bit machines)
+
+Peter De Wachter (pdewacht@gmail.com)
+placed in the public domain
+
+Status: in upstream CVS
+
+--- a/kodilib/src/tools/KFileTools.cpp
++++ b/kodilib/src/tools/KFileTools.cpp
+@@ -214,8 +214,8 @@
+ // --------------------------------------------------------------------------------------------------------
+ string kFileSuffix ( const string & path )
+ {
+-    unsigned int lastDotPos = path.rfind(".");
+-    unsigned int lastSlashPos = path.rfind(kPathSep);
++    std::string::size_type lastDotPos = path.rfind(".");
++    std::string::size_type lastSlashPos = path.rfind(kPathSep);
+ 
+     if (lastDotPos < path.size() - 1 && (lastDotPos > lastSlashPos || lastSlashPos == string::npos))
+     {
+@@ -228,7 +228,7 @@
+ string kFileDirName ( const string & path )
+ {
+ 	string native = kFileNativePath(path);
+-    unsigned int lastSlashPos = native.rfind(kPathSep);
++    std::string::size_type lastSlashPos = native.rfind(kPathSep);
+     if (lastSlashPos < native.size())
+     {
+         return native.substr(0, lastSlashPos+1);
+@@ -241,7 +241,7 @@
+ {
+ 	string native = kFileNativePath(path);
+     string baseName = native;
+-    unsigned int lastSlashPos = native.rfind(kPathSep);
++    std::string::size_type lastSlashPos = native.rfind(kPathSep);
+     if (lastSlashPos < native.size() - 1) 
+     {
+         baseName = native.substr(lastSlashPos+1);
+--- a/kodilib/src/tools/KKeyTools.cpp
++++ b/kodilib/src/tools/KKeyTools.cpp
+@@ -170,7 +170,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ int kKeyGetDisplayWidthForKey ( const std::string & keyName )
+ {
+-    unsigned int keyPos = keyName.find('_', 0);
++    std::string::size_type keyPos = keyName.find('_', 0);
+     if (keyPos == std::string::npos) 
+     {
+         return kKeyGetDisplayWidthForPureKey(keyName) + KDL_MOD_KEY_SPACING;
+@@ -313,7 +313,7 @@
+ int kKeyDisplayKey ( const std::string & keyName, const KPosition & pos )
+ {
+     KPosition start = pos;
+-    unsigned int keyPos = keyName.find('_', 0);
++    std::string::size_type keyPos = keyName.find('_', 0);
+     if (keyPos == std::string::npos) 
+     {
+         return start.x + kKeyDisplayPureKey(keyName, start) + KDL_MOD_KEY_SPACING;
+@@ -380,7 +380,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ SDL_keysym kKeyGetKeysymForKeyName ( const std::string & keyName )
+ {
+-    unsigned int pos = keyName.find('_');
++    std::string::size_type pos = keyName.find('_');
+     
+     std::string modString;
+     std::string symString = keyName;
+--- a/kodilib/src/tools/KStringTools.cpp
++++ b/kodilib/src/tools/KStringTools.cpp
+@@ -13,7 +13,7 @@
+ void kStringInsertStringBehindTags ( std::string & str, const std::string & insertString, 
+                                      const std::string & tag )
+ {
+-    unsigned int oldPos = 0;
++    std::string::size_type oldPos = 0;
+     while ((oldPos = str.find(tag, oldPos)) != std::string::npos)
+     {
+         oldPos += tag.size();
+@@ -34,8 +34,8 @@
+ {
+     std::vector<std::string> components;
+     
+-    unsigned int dividerLength = divider.size();
+-    unsigned int oldpos = 0, pos;
++    std::string::size_type dividerLength = divider.size();
++    std::string::size_type oldpos = 0, pos;
+     
+     while ((pos = str.find(divider, oldpos)) != std::string::npos)
+     {
+@@ -50,7 +50,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ void kStringReplace ( std::string & str, const std::string & toReplace, const std::string & replacement )
+ {
+-    unsigned int pos = 0, chars = toReplace.size();
++    std::string::size_type pos = 0, chars = toReplace.size();
+     while ((pos = str.find(toReplace, pos)) != std::string::npos)
+     {
+         str.replace(pos, chars, replacement);
+@@ -60,11 +60,11 @@
+ // --------------------------------------------------------------------------------------------------------
+ void kStringReplaceTabs ( std::string & str, unsigned int tabWidth )
+ {
+-    unsigned int tabPos;
++    std::string::size_type tabPos;
+     while ((tabPos = str.find('\t')) != std::string::npos)
+     {
+-        unsigned int lastNewlinePos = str.rfind('\n', tabPos-1);
+-        unsigned int relPos = (lastNewlinePos == std::string::npos) ? tabPos : tabPos - lastNewlinePos; 
++        std::string::size_type lastNewlinePos = str.rfind('\n', tabPos-1);
++        std::string::size_type relPos = (lastNewlinePos == std::string::npos) ? tabPos : tabPos - lastNewlinePos; 
+         str.replace(tabPos, 1, std::string(tabWidth-(relPos % tabWidth), ' '));
+     }
+ }
+@@ -114,7 +114,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ unsigned int kStringNthCharPos ( const std::string & str, unsigned int n, char c )
+ {
+-    unsigned int loc = n, oloc = 0;
++    std::string::size_type loc = n, oloc = 0;
+     while (n > 0 && (loc = str.find(c, oloc)) != std::string::npos)
+     { 
+         n--; 
+@@ -138,7 +138,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ void kStringCropCols ( std::string & str, unsigned int columns )
+ {        
+-    unsigned int oloc = 0, nloc = 0;
++    std::string::size_type oloc = 0, nloc = 0;
+     while ((nloc = str.find('\n', oloc)) != std::string::npos)
+     {
+         if ((nloc - oloc) > columns)
+@@ -160,10 +160,10 @@
+ unsigned int kStringCols ( const std::string & str )
+ {
+     if (str.size() == 0) return 0;
+-    int oloc = 0, nloc;
++    long oloc = 0, nloc;
+     std::string substring;
+     int maxlength = 0, length;
+-    while ((nloc = str.find('\n', oloc)) != (int)std::string::npos) 
++    while ((nloc = str.find('\n', oloc)) != (long)std::string::npos) 
+     {
+         substring = str.substr(oloc, nloc - oloc);
+         length = substring.size();
+@@ -181,7 +181,7 @@
+ unsigned int kStringRows ( const std::string & str )
+ {
+     if (str.size() == 0) return 1;
+-    unsigned int loc = 0, lines = 0;
++    std::string::size_type loc = 0, lines = 0;
+     while ((loc = str.find('\n', loc)) != std::string::npos) { lines++; loc++; }
+     if (str[str.size()-1] == '\n') return lines;
+     return lines+1;
+@@ -204,8 +204,8 @@
+ {
+     static char str[256];
+     std::string format(fmt), subformat, text;
+-    unsigned int oloc = 0;
+-    unsigned int nloc = 0;
++    std::string::size_type oloc = 0;
++    std::string::size_type nloc = 0;
+     
+     kStringReplaceTabs(format);
+     
+@@ -260,7 +260,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ bool kStringHasSuffix ( const std::string & str, const std::string & suffix )
+ {
+-    unsigned int result = str.rfind(suffix);
++    std::string::size_type result = str.rfind(suffix);
+     if (result == std::string::npos) return false;
+     return (result == str.size()-suffix.size());
+ }
+--- a/kodilib/src/tools/KXMLTools.cpp
++++ b/kodilib/src/tools/KXMLTools.cpp
+@@ -58,11 +58,11 @@
+ std::string kXMLParseToTagsInVector ( std::string & xml, const std::vector<std::string> & tags )
+ {
+     std::string open("<");
+-    unsigned int minLoc = std::string::npos; 
++    std::string::size_type minLoc = std::string::npos; 
+     std::vector<std::string>::const_iterator iter = tags.begin();
+     while (iter != tags.end())
+     {
+-        unsigned int loc = xml.find(open+(*iter));
++        std::string::size_type loc = xml.find(open+(*iter));
+         if (loc < minLoc) minLoc = loc;
+         iter++;
+     }
+@@ -77,7 +77,7 @@
+     std::string value;
+     std::string nameStr(name);
+     nameStr += "='";
+-    unsigned int loc = xml.find(nameStr);
++    std::string::size_type loc = xml.find(nameStr);
+     if (loc != std::string::npos)
+     {	
+         loc += nameStr.size();
+@@ -90,7 +90,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ bool kXMLParseNamedCloseTag ( std::string & xml, const std::string & name, bool printError )
+ {
+-    unsigned int loc = xml.find('<');
++    std::string::size_type loc = xml.find('<');
+     if (loc == std::string::npos) 
+     {
+         if (printError) KConsole::printError(kStringPrintf("invalid XML:\nmissing close tag '%s'", 
+@@ -117,7 +117,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ bool kXMLReadNamedOpenTag ( const std::string & xml, const std::string & name, std::string * attributes )
+ {
+-    unsigned int loc = xml.find('<'), endloc;
++    std::string::size_type loc = xml.find('<'), endloc;
+     
+     if (loc == std::string::npos || xml[loc+1] == '/') return false;
+     
+@@ -140,7 +140,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ std::string kXMLParseNamedOpenTag ( std::string & xml, const std::string & name, std::string * attributes, bool printError )
+ {
+-    unsigned int loc = xml.find('<');
++    std::string::size_type loc = xml.find('<');
+     if (loc == std::string::npos || xml[loc+1] == '/') 
+     {
+         if (printError) KConsole::printError(kStringPrintf("invalid XML:\nmissing tag '%s'", name.c_str()));
+@@ -191,7 +191,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ bool kXMLParseOpenTag ( std::string & xml, std::string & name, std::string * attributes, bool printError )
+ {
+-    unsigned int loc = xml.find('<');
++    std::string::size_type loc = xml.find('<');
+     if (loc == std::string::npos || xml[loc+1] == '/') 
+     {
+         if (printError) KConsole::printError("invalid XML:\nmissing open tag");
+@@ -295,7 +295,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ bool kXMLParseValue( std::string & xml, const std::string & name, int type, void * value, bool printError )
+ {
+-    unsigned int loc = xml.find('<');
++    std::string::size_type loc = xml.find('<');
+     if (loc == std::string::npos || xml[loc+1] == '/')     
+     {
+         if (printError) KConsole::printError(kStringPrintf("invalid XML:\nmissing value '%s'", name.c_str()));
+@@ -379,8 +379,8 @@
+         }
+         else if (typeString == "string")
+         {
+-            unsigned int first = substring.find("\"")+1;
+-            unsigned int last  = substring.rfind("\"", std::string::npos);
++            std::string::size_type first = substring.find("\"")+1;
++            std::string::size_type last  = substring.rfind("\"", std::string::npos);
+             *((std::string*)value) = substring.substr(first, last-first);
+         }
+         
+--- a/kodilib/src/types/KKey.cpp
++++ b/kodilib/src/types/KKey.cpp
+@@ -31,7 +31,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ std::string KKey::getUnmodifiedName () const
+ {
+-    unsigned int keyPos = name.find('_', 0);
++    std::string::size_type keyPos = name.find('_', 0);
+     if (keyPos == std::string::npos) 
+     {
+         return name;
+@@ -42,7 +42,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ std::string KKey::getModifierName () const
+ {
+-    unsigned int keyPos = name.find('_', 0);
++    std::string::size_type keyPos = name.find('_', 0);
+     if (keyPos == std::string::npos) 
+     {
+         return "";
+--- a/kodilib/src/widgets/KFileNameField.cpp
++++ b/kodilib/src/widgets/KFileNameField.cpp
+@@ -41,7 +41,7 @@
+         std::string restPath; 				 // path behind cursor
+         
+         // map cropped path to current directory and rest path to file prefix
+-        unsigned int lastSlashPos = croppedPath.rfind("/");
++        std::string::size_type lastSlashPos = croppedPath.rfind("/");
+         if (lastSlashPos < croppedPath.size()-1)
+         {
+             restPath = croppedPath.substr(lastSlashPos+1);
+@@ -88,7 +88,7 @@
+         }
+ 
+         // ............................collect list of entries in searchDir that match prefix restPath
+-        unsigned int restLength = restPath.size();
++        std::string::size_type restLength = restPath.size();
+         std::vector<std::string> matchingEntries;
+         std::vector<std::string>::iterator iter = dir_entries.begin();
+         while (iter != dir_entries.end())
+@@ -223,7 +223,7 @@
+ // --------------------------------------------------------------------------------------------------------
+ void KFileNameField::selectLastPathComponent ()
+ {
+-    unsigned int lastSlashPos = text.rfind("/");
++    std::string::size_type lastSlashPos = text.rfind("/");
+     if (lastSlashPos == text.size()-1) lastSlashPos = text.rfind("/", lastSlashPos-1);
+     if (lastSlashPos < text.size()) cursor_pos = lastSlashPos+1;
+     else cursor_pos = 0;
+--- a/src/gui/KikiMenu.cpp
++++ b/src/gui/KikiMenu.cpp
+@@ -54,7 +54,7 @@
+ {
+     std::string item_text (itemText);
+     std::string event_name (itemText);
+-    unsigned int pos;
++    std::string::size_type pos;
+     float scale_factor = 1.0;
+ 
+     KikiMenuItem * menu_item = new KikiMenuItem ();
+--- a/src/gui/KikiTextLine.cpp
++++ b/src/gui/KikiTextLine.cpp
+@@ -46,7 +46,7 @@
+ void KikiTextLine::setText ( const std::string & str )
+ {
+     text = str;
+-    unsigned int pos;
++    std::string::size_type pos;
+  
+     if ((pos = text.find ("$scale(")) != std::string::npos)
+     {
