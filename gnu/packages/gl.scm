@@ -124,6 +124,21 @@ the mouse, keyboard and joystick functions.  Freeglut is released under
 the X-Consortium license.")
     (license license:x11)))
 
+;; Needed for "kiki".
+(define-public freeglut-2.8
+  (package (inherit freeglut)
+    (name "freeglut")
+    (version "2.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/freeglut/freeglut/"
+                    version "/freeglut-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16lrxxxd9ps9l69y3zsw6iy0drwjsp6m26d1937xj71alqk6dr6x"))))
+    (build-system gnu-build-system)))
+
 (define-public ftgl
   (package
     (name "ftgl")
