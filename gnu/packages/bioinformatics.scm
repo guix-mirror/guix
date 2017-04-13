@@ -85,6 +85,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -9426,3 +9427,50 @@ exon-skipping scanner detection scheme.")
     (description "PHYLIP (the PHYLogeny Inference Package) is a package of
 programs for inferring phylogenies (evolutionary trees).")
     (license license:bsd-2)))
+
+(define-public imp
+  (package
+    (name "imp")
+    (version "2.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://integrativemodeling.org/"
+                           version "/download/imp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lxqx7vh79d771svr611dkilp6sn30qrbw8zvscbrm37v38d2j6h"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; FIXME: Some tests fail because they produce warnings, others fail
+       ;; because the PYTHONPATH does not include the modeller's directory.
+       #:tests? #f
+       ;; Do not place libraries in an architecture-specific directory.
+       #:configure-flags
+       (list "-DCMAKE_INSTALL_LIBDIR=lib")))
+    (inputs
+     `(("boost" ,boost)
+       ("gsl" ,gsl)
+       ("swig" ,swig)
+       ("hdf5" ,hdf5)
+       ("fftw" ,fftw)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-pandas" ,python2-pandas)
+       ("python2-scikit-learn" ,python2-scikit-learn)
+       ("python2-networkx" ,python2-networkx)))
+    (home-page "https://integrativemodeling.org")
+    (synopsis "Integrative modeling platform")
+    (description "IMP's broad goal is to contribute to a comprehensive
+structural characterization of biomolecules ranging in size and complexity
+from small peptides to large macromolecular assemblies, by integrating data
+from diverse biochemical and biophysical experiments.  IMP provides a C++ and
+Python toolbox for solving complex modeling problems, and a number of
+applications for tackling some common problems in a user-friendly way.")
+    ;; IMP is largely available under the GNU Lesser GPL; see the file
+    ;; COPYING.LGPL for the full text of this license. Some IMP modules are
+    ;; available under the GNU GPL (see the file COPYING.GPL).
+    (license (list license:lgpl2.1+
+                   license:gpl3+))))
