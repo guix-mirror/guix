@@ -3738,3 +3738,72 @@ settings.link.libs:Add(\"wavpack\")\n"))
 16 players in a variety of game modes, including Team Deathmatch and Capture
 The Flag.  You can even design your own maps!")
     (license license:bsd-3)))
+
+(define-public fillets-ng
+  (package
+    (name "fillets-ng")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fillets/"
+                                  "Fish%20Fillets%20-%20Next%20Generation/"
+                                  version "/fillets-ng-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nljp75aqqb35qq3x7abhs2kp69vjcj0h1vxcpdyn2yn2nalv6ij"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-lua="
+                            (assoc-ref %build-inputs "lua")))
+       #:make-flags
+       (list (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL")
+             (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Lua 5.1 does not provide it.
+         (add-after 'unpack 'do-not-link-with-lualib
+           (lambda _
+             (substitute* "configure"
+               (("-llualib") ""))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((data (string-append (assoc-ref outputs "out")
+                                        "/share/games/fillets-ng")))
+               (mkdir-p data)
+               (zero? (system* "tar" "-xvf"
+                               (assoc-ref inputs "fillets-ng-data")
+                               "--strip-components=1"
+                               "-C" data))))))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image
+                                      sdl-ttf)))
+       ("fribidi" ,fribidi)
+       ("libx11" ,libx11)
+       ("lua" ,lua-5.1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("fillets-ng-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/fillets/"
+                               "Fish%20Fillets%20-%20Next%20Generation/"
+                               version "/fillets-ng-data-" version ".tar.gz"))
+           (sha256
+            (base32
+             "169p0yqh2gxvhdilvjc2ld8aap7lv2nhkhkg4i1hlmgc6pxpkjgh"))))))
+    (home-page "http://fillets.sourceforge.net/")
+    (synopsis "Puzzle game")
+    (description "Fish Fillets NG is strictly a puzzle game.  The goal in
+every of the seventy levels is always the same: find a safe way out.  The fish
+utter witty remarks about their surroundings, the various inhabitants of their
+underwater realm quarrel among themselves or comment on the efforts of your
+fish.  The whole game is accompanied by quiet, comforting music.")
+    (license license:gpl2+)))
