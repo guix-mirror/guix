@@ -2077,7 +2077,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.8.12")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -2086,7 +2086,7 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vwmbqm7h4lrszv2qxy6fqzznm9raigi84cadx982c9m7shp0zzz"))))
+         "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
     (build-system emacs-build-system)
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
