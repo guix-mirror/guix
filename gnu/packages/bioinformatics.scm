@@ -9223,3 +9223,48 @@ working with SAM and BAM files.  Current parallelised functionality is
 an important subset of samtools functionality, including view, index,
 sort, markdup, and depth.")
     (license license:gpl2+)))
+
+(define-public ritornello
+  (package
+    (name "ritornello")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/KlugerLab/"
+                                  "Ritornello/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02nik86gq9ljjriv6pamwlmqnfky3ads1fpklx6mc3hx6k40pg38"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-samtools-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("src/SamStream.h"
+                            "src/BufferedGenomeReader.h")
+               (("<sam.h>") "<samtools/sam.h>"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin/")))
+               (mkdir-p bin)
+               (install-file "bin/Ritornello" bin)
+               #t))))))
+    (inputs
+     `(("samtools" ,samtools-0.1)
+       ("fftw" ,fftw)
+       ("boost" ,boost)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/KlugerLab/Ritornello")
+    (synopsis "Control-free peak caller for ChIP-seq data")
+    (description "Ritornello is a ChIP-seq peak calling algorithm based on
+signal processing that can accurately call binding events without the need to
+do a pair total DNA input or IgG control sample.  It has been tested for use
+with narrow binding events such as transcription factor ChIP-seq.")
+    (license license:gpl3+)))
