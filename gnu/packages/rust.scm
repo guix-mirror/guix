@@ -301,6 +301,8 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+;; This tries very hard not to get into a cyclic dependency like this:
+;;   cargo <- cargo-build-system <- cargo.
 (define-public cargo
   (package
     (name "cargo")
@@ -825,6 +827,11 @@ safety and thread safety guarantees.")
     (arguments
      `(#:cargo ,cargo-bootstrap
        #:tests? #f ; FIXME
+       #:modules
+       ((ice-9 match)
+        (srfi srfi-1) ; 'every
+        (guix build utils)
+        (guix build cargo-build-system))
        #:phases
        (modify-phases %standard-phases
          ;; Avoid cargo complaining about missmatched checksums.
@@ -833,30 +840,36 @@ safety and thread safety guarantees.")
          (delete 'patch-usr-bin-file)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((unpack (lambda (source target)
-                             (mkdir-p target)
-                             (with-directory-excursion target
-                               (zero? (system* "tar" "xf"
-                                               source
-                                               "--strip-components=1"))))))
+             (define (unpack source target)
+               (mkdir-p target)
+               (with-directory-excursion target
+                 (zero? (system* "tar" "xf"
+                                 source
+                                 "--strip-components=1"))))
+             (define (touch file-name)
+               (call-with-output-file file-name (const #t)))
+             (define (install-rust-library entry)
+               (match entry
+                 ((name . src)
+                  (if (string-prefix? "rust-" name)
+                    (let* ((rust-length (string-length "rust-"))
+                           (rust-name (string-drop name
+                                                   rust-length))
+                           (rsrc (string-append "vendor/"
+                                                rust-name))
+                           (unpack-status (unpack src rsrc)))
+                      (touch (string-append rsrc "/.cargo-ok"))
+                      (generate-checksums rsrc src)
+                      unpack-status)))
+                 (_ #t)))
                (mkdir "vendor")
-               (for-each (lambda (p)
-                           (let ((name (car p)))
-                             (if (string-prefix? "rust-" name)
-                               (let ((rsrc (string-append "vendor/"
-                                                           (string-drop name
-                                                                        (string-length "rust-")))))
-                                 (unpack (assoc-ref inputs name) rsrc)
-                                 (system* "touch" (string-append rsrc "/.cargo-ok"))
-                                 (generate-checksums rsrc (assoc-ref inputs name)))))) inputs))))
-         ;; Set CARGO_HOME to use the vendored dependencies.
-         (add-after 'unpack 'set-cargo-home
+               (every install-rust-library inputs)))
+         (add-after 'unpack 'set-environment-up
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcc (assoc-ref inputs "gcc"))
                     (cc (string-append gcc "/bin/gcc")))
-               (mkdir "cargohome")
-               (setenv "CARGO_HOME" (string-append (getcwd) "/cargohome"))
-               (call-with-output-file "cargohome/config"
+               (mkdir ".cargo")
+               (call-with-output-file ".cargo/config"
                  (lambda (p)
                    (format p "
 [source.crates-io]
@@ -868,7 +881,8 @@ directory = 'vendor'
 ")))
                (setenv "CMAKE_C_COMPILER" cc)
                (setenv "CC" cc))
-             #t)))))
+             #t))
+         (delete 'configure))))
     (home-page "https://github.com/rust-lang/cargo")
     (synopsis "Build tool and package manager for Rust")
     (description "Cargo is a tool that allows Rust projects to declare their
