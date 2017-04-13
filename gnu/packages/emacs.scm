@@ -4323,3 +4323,28 @@ Emacs Lisp")
     (description "@code{emacs-xmlgen} provides S-expression to XML
 conversion for Emacs Lisp.")
     (license license:gpl2+)))
+
+(define-public emacs-cdlatex
+  (package
+    (name "emacs-cdlatex")
+    (version "4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cdominik/cdlatex/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pivapphmykc6vhvpx7hdyl55ls37vc4jcrxpvs4yk7jzcmwa9xp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cdominik/cdlatex")
+    (synopsis "Fast Emacs input methods for LaTeX environments and
+math")
+    (description "CDLaTeX is an Emacs minor mode supporting fast
+insertion of environment templates and math in LaTeX.  Similar
+commands are also offered as part of the AUCTeX package, but it is not
+the same - CDLaTeX focuses on speediness for inserting LaTeX
+constructs.")
+    (license license:gpl3+)))
