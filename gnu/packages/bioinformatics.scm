@@ -9328,3 +9328,64 @@ with narrow binding events such as transcription factor ChIP-seq.")
 adapter trimming as well as quality control, with some added functionality to
 remove biased methylation positions for RRBS sequence files.")
     (license license:gpl3+)))
+
+(define-public gess
+  (package
+    (name "gess")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://compbio.uthscsa.edu/"
+                                  "GESS_Web/files/"
+                                  "gess-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0hyk403kxscclzfs24pvdgiv0wm03kjcziqdrp5w46cb049gz0d7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((python (assoc-ref inputs "python"))
+                    (out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin/"))
+                    (target (string-append
+                             out "/lib/python2.7/site-packages/gess/")))
+               (mkdir-p target)
+               (copy-recursively "." target)
+               ;; Make GESS.py executable
+               (chmod (string-append target "GESS.py") #o555)
+               ;; Add Python shebang to the top and make Matplotlib
+               ;; usable.
+               (substitute* (string-append target "GESS.py")
+                 (("\"\"\"Description:" line)
+                  (string-append "#!" (which "python") "
+import matplotlib
+matplotlib.use('Agg')
+" line)))
+               ;; Make sure GESS has all modules in its path
+               (wrap-program (string-append target "GESS.py")
+                 `("PYTHONPATH" ":" prefix (,target ,(getenv "PYTHONPATH"))))
+               (mkdir-p bin)
+               (symlink (string-append target "GESS.py")
+                        (string-append bin "GESS.py"))
+               #t))))))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pysam" ,python2-pysam)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-networkx" ,python2-networkx)
+       ("python2-biopython" ,python2-biopython)))
+    (home-page "http://compbio.uthscsa.edu/GESS_Web/")
+    (synopsis "Detect exon-skipping events from raw RNA-seq data")
+    (description
+     "GESS is an implementation of a novel computational method to detect de
+novo exon-skipping events directly from raw RNA-seq data without the prior
+knowledge of gene annotation information.  GESS stands for the graph-based
+exon-skipping scanner detection scheme.")
+    (license license:bsd-3)))
