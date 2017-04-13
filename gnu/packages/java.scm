@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2085,3 +2086,79 @@ for your architecture which is provided by the jsvc package.
 
 This is a part of the Apache Commons Project.")
     (license license:asl2.0)))
+
+(define-public antlr2
+  (package
+    (name "antlr2")
+    (version "2.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.antlr2.org/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1ffvcwdw73id0dk6pj2mlxjvbg0662qacx4ylayqcxgg381fnfl5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "antlr.jar")
+                  (substitute* "lib/cpp/antlr/CharScanner.hpp"
+                    (("#include <map>")
+                     (string-append
+                       "#include <map>\n"
+                       "#define EOF (-1)\n"
+                       "#include <strings.h>")))
+                  (substitute* "configure"
+                    (("/bin/sh") "sh"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'strip-jar-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (jar1 (string-append out "/lib/antlr.jar"))
+                    (jar2 (string-append out "/share/antlr-2.7.7/antlr.jar")))
+               ;; XXX: copied from (guix build ant-build-system)
+               (define (strip-jar jar dir)
+                 (let ((manifest (string-append dir "/META-INF/MANIFEST.MF")))
+                   (mkdir-p dir)
+                   (and (with-directory-excursion dir
+                          (zero? (system* "jar" "xf" jar)))
+                        (delete-file jar)
+                        (for-each (lambda (file)
+                                    (let ((s (lstat file)))
+                                      (unless (eq? (stat:type s) 'symlink)
+                                                 (utime file 0 0 0 0))))
+                                  (find-files dir #:directories? #t))
+                        (with-directory-excursion dir
+                          (let* ((files (find-files "." ".*" #:directories? #t)))
+                            (unless (zero? (apply system*
+                                                  `("zip" "-X" ,jar ,manifest
+                                                    ,@files)))
+                              (error "'zip' failed"))))
+                        (utime jar 0 0)
+                        #t)))
+                (strip-jar jar1 "temp1")
+                (strip-jar jar2 "temp2"))))
+         (add-after 'configure 'fix-bin-ls
+           (lambda _
+             (for-each (lambda (file)
+                         (substitute* file
+                          (("/bin/ls") "ls")))
+               (find-files "." "Makefile")))))))
+    (native-inputs
+     `(("which" ,which)
+       ("zip" ,zip)
+       ("java" ,icedtea "jdk")))
+    (inputs
+     `(("java" ,icedtea)))
+    (home-page "http://www.antlr2.org")
+    (synopsis "Framework for constructing recognizers, compilers, and translators")
+    (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
+is a language tool that provides a framework for constructing recognizers,
+compilers, and translators from grammatical descriptions containing Java, C#,
+C++, or Python actions.  ANTLR provides excellent support for tree construction,
+tree walking, and translation.")
+    (license license:public-domain)))
