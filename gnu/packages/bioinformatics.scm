@@ -9268,3 +9268,63 @@ signal processing that can accurately call binding events without the need to
 do a pair total DNA input or IgG control sample.  It has been tested for use
 with narrow binding events such as transcription factor ChIP-seq.")
     (license license:gpl3+)))
+
+(define-public trim-galore
+  (package
+    (name "trim-galore")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
+                           "projects/trim_galore/trim_galore_v"
+                           version ".zip"))
+       (sha256
+        (base32
+         "0b9qdxi4521gsrjvbhgky8g7kry9b5nx3byzaxkgxz7p4k8bn1mn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; The archive contains plain files.
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (zero? (system* "unzip" source))))
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'unpack 'hardcode-tool-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "trim_galore"
+               (("\\$path_to_cutadapt = 'cutadapt'")
+                (string-append "$path_to_cutadapt = '"
+                               (assoc-ref inputs "cutadapt")
+                               "/bin/cutadapt'"))
+               (("\\| gzip")
+                (string-append "| "
+                               (assoc-ref inputs "gzip")
+                               "/bin/gzip"))
+               (("\"gunzip")
+                (string-append "\""
+                               (assoc-ref inputs "gzip")
+                               "/bin/gunzip")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (mkdir-p bin)
+               (install-file "trim_galore" bin)
+               #t))))))
+    (inputs
+     `(("gzip" ,gzip)
+       ("perl" ,perl)
+       ("cutadapt" ,cutadapt)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/")
+    (synopsis "Wrapper around Cutadapt and FastQC")
+    (description "Trim Galore! is a wrapper script to automate quality and
+adapter trimming as well as quality control, with some added functionality to
+remove biased methylation positions for RRBS sequence files.")
+    (license license:gpl3+)))
