@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +76,7 @@ for reading and writing new sound file formats.")
 (define-public libsamplerate
   (package
     (name "libsamplerate")                     ; aka. Secret Rabbit Code (SRC)
+    (replacement libsamplerate-0.1.9)
     (version "0.1.8")
     (source (origin
              (method url-fetch)
@@ -109,6 +111,19 @@ signal-to-noise ratio of 145dB with -3dB passband extending from DC to 96% of
 the theoretical best bandwidth for a given pair of input and output sample
 rates.")
     (license l:gpl2+)))
+
+(define libsamplerate-0.1.9
+  (package
+    (inherit libsamplerate)
+    (version "0.1.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://www.mega-nerd.com/SRC/libsamplerate-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))))
 
 (define-public pulseaudio
   (package
