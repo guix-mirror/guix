@@ -43,6 +43,7 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
+    (replacement libsndfile-1.0.28)
     (version "1.0.27")
     (source (origin
              (method url-fetch)
@@ -72,6 +73,19 @@ as big-endian processor systems such as Motorola 68k, Power PC, MIPS and
 SPARC.  Hopefully the design of the library will also make it easy to extend
 for reading and writing new sound file formats.")
     (license l:gpl2+)))
+
+(define libsndfile-1.0.28
+  (package
+    (inherit libsndfile)
+    (version "1.0.28")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))))
 
 (define-public libsamplerate
   (package
