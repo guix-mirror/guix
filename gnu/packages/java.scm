@@ -2200,3 +2200,340 @@ or any other formatted text output.  StringTemplate is particularly good at
 code generators, multiple site skins, and internationalization / localization.
 StringTemplate also powers ANTLR.")
     (license license:bsd-3)))
+
+;; antlr3 is partially written using antlr3 grammar files. It also depends on
+;; ST4 (stringtemplate4), which is also partially written using antlr3 grammar
+;; files and uses antlr3 at runtime. The latest version requires a recent version
+;; of antlr3 at runtime.
+;; Fortunately, ST4 4.0.6 can be built with an older antlr3, and we use antlr3.3.
+;; This version of ST4 is sufficient for the latest antlr3.
+;; We use ST4 4.0.6 to build a boostrap antlr3 (latest version), and build
+;; the latest ST4 with it. Then we build our final antlr3 that will be linked
+;; against the latest ST4.
+;; antlr3.3 still depends on antlr3 to generate some files, so we use an
+;; even older version, antlr3.1, to generate them. Fortunately antlr3.1 uses
+;; only grammar files with the antlr2 syntax.
+;; So we build antlr3.1 -> antlr3.3 -> ST4.0.6 -> antlr3-bootstrap -> ST4 -> antlr3.
+
+(define-public stringtemplate4
+  (package
+    (name "stringtemplate4")
+    (version "4.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/stringtemplate4/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pri8hqa95rfdkjy55icl5q1m09zwp5k67ib14abas39s4v3w087"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:jar-name (string-append ,name "-" ,version ".jar")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-grammar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chdir "src/org/stringtemplate/v4/compiler/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("STParser.g" "Group.g" "CodeGenerator.g"))
+             (chdir "../../../../.."))))))
+    (inputs
+     `(("antlr3" ,antlr3-bootstrap)
+       ("antlr2" ,antlr2)
+       ("stringtemplate" ,stringtemplate3)))
+    (home-page "http://www.stringtemplate.org")
+    (synopsis "Template engine to generate formatted text output")
+    (description "StringTemplate is a java template engine (with ports for C#,
+Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
+or any other formatted text output.  StringTemplate is particularly good at
+code generators, multiple site skins, and internationalization / localization.
+StringTemplate also powers ANTLR.")
+    (license license:bsd-3)))
+
+(define stringtemplate4-4.0.6
+  (package
+    (inherit stringtemplate4)
+    (name "stringtemplate4")
+    (version "4.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/stringtemplate4/archive/ST-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hjmh1ahdsh3w825i67mli9l4nncc4l6hdbf9ma91jvlj590sljp"))))
+    (inputs
+     `(("antlr3" ,antlr3-3.3)
+       ("antlr2" ,antlr2)
+       ("stringtemplate" ,stringtemplate3)))))
+
+(define-public antlr3
+  (package
+    (name "antlr3")
+    (version "3.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/antlr3/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07zff5frmjd53rnqdx31h0pmswz1lv0p2lp28cspfszh25ysz6sj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "tool/src/main/java:runtime/Java/src/main/java:tool/src/main/antlr3"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/" ,name "-" ,version ".jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate4")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("ANTLR.g" "ANTLRTreePrinter.g" "ActionAnalysis.g"
+                         "AssignTokenTypesWalker.g"
+                         "ActionTranslator.g" "TreeToNFAConverter.g"
+                         "ANTLRv3.g" "ANTLRv3Tree.g" "LeftRecursiveRuleWalker.g"
+                         "CodeGenTreeWalker.g" "DefineGrammarItemsWalker.g"))
+             (substitute* "ANTLRParser.java"
+               (("public Object getTree") "public GrammarAST getTree"))
+             (substitute* "ANTLRv3Parser.java"
+               (("public Object getTree") "public CommonTree getTree"))
+             (chdir "../../../../../java")
+             (system* "antlr" "-o" "org/antlr/tool"
+                      "org/antlr/tool/serialize.g")
+             (substitute* "org/antlr/tool/LeftRecursiveRuleAnalyzer.java"
+               (("import org.antlr.grammar.v3.\\*;") "import org.antlr.grammar.v3.*;
+import org.antlr.grammar.v3.ANTLRTreePrinter;"))
+             (substitute* "org/antlr/tool/ErrorManager.java"
+               (("case NO_SUCH_ATTRIBUTE_PASS_THROUGH:") ""))
+             (chdir "../../../..")))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"tool/src/main/resources\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-bootstrap)))
+    (inputs
+     `(("junit" ,java-junit)
+       ("stringtemplate" ,stringtemplate3)
+       ("stringtemplate4" ,stringtemplate4)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)
+       ("antlr" ,antlr2)
+       ("stringtemplate4" ,stringtemplate4-4.0.6)))
+    (home-page "http://www.antlr3.org")
+    (synopsis "Framework for constructing recognizers, compilers, and translators")
+    (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
+is a language tool that provides a framework for constructing recognizers,
+compilers, and translators from grammatical descriptions containing Java, C#,
+C++, or Python actions.  ANTLR provides excellent support for tree construction,
+tree walking, and translation.")
+    (license license:bsd-3)))
+
+(define antlr3-bootstrap
+  (package
+    (inherit antlr3)
+    (name "antlr3-bootstrap")
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.3)))
+    (inputs
+     `(("junit" ,java-junit)))))
+
+(define antlr3-3.3
+  (package
+    (inherit antlr3)
+    (name "antlr3")
+    (version "3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-antlr3/raw/"
+                                  "gh-pages/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir (string-append "tool/src/main/java:runtime/Java/src/main/java:"
+                                "tool/src/main/antlr2:tool/src/main/antlr3")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr3-3.3.jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "tool/src/main/antlr2/org/antlr/grammar/v2/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("antlr.g" "antlr.print.g" "assign.types.g"
+                           "buildnfa.g" "codegen.g" "define.g")))
+             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
+                         "ANTLRv3Tree.g"))
+             (chdir "../../../../../../../..")
+             (substitute* "tool/src/main/java/org/antlr/tool/Grammar.java"
+               (("import org.antlr.grammar.v2.\\*;")
+                "import org.antlr.grammar.v2.*;\n
+import org.antlr.grammar.v2.TreeToNFAConverter;\n
+import org.antlr.grammar.v2.DefineGrammarItemsWalker;\n
+import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"tool/src/main/resources\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.1)))
+    (inputs
+     `(("junit" ,java-junit)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)
+       ("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.1)))))
+
+(define antlr3-3.1
+  (package
+    (inherit antlr3)
+    (name "antlr3-3.1")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-antlr3/raw/"
+                                  "gh-pages/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "src:runtime/Java/src"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr3-3.1-3.1.jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "src/org/antlr/tool/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("antlr.g" "antlr.print.g" "assign.types.g"
+                           "buildnfa.g" "define.g")))
+             (format #t "codegen.g\n")
+             (system* "antlr" "-o" "src/org/antlr/codegen"
+                      "src/org/antlr/codegen/codegen.g")))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"src\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)))
+    (inputs
+     `(("junit" ,java-junit)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)))))
