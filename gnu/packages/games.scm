@@ -27,6 +27,7 @@
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,6 +117,8 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -3808,3 +3811,73 @@ utter witty remarks about their surroundings, the various inhabitants of their
 underwater realm quarrel among themselves or comment on the efforts of your
 fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))
+
+(define-public crawl
+  (package
+    (name "crawl")
+    (version "0.19.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             ;; Older releases get moved into a versioned directory
+             (string-append "http://crawl.develz.org/release/"
+                            (version-major+minor version) "/stone_soup-"
+                            version "-nodeps.tar.xz")
+             ;; Only the latest release is in this directory
+             (string-append "http://crawl.develz.org/release/stone_soup-"
+                            version "-nodeps.tar.xz")))
+       (sha256
+        (base32
+         "00yl2lb2shglxlxzpyk99zvglfx4amjybqwnzdcasvbiggb4cj18"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lua51" ,lua-5.1)
+       ("ncurses" ,ncurses)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:make-flags
+       (let* ((sqlite (assoc-ref %build-inputs "sqlite"))
+              (out (assoc-ref %outputs "out")))
+         (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
+               (string-append "prefix=" out)
+               "SAVEDIR=~/.crawl"
+               ;; TODO: build graphical client
+               "TILES="
+               ;; don't build any bundled dependencies
+               "BUILD_LUA="
+               "BUILD_SQLITE="
+               "BUILD_ZLIB="
+               "-Csource"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         ;; Test cases require the source to be rebuild with the -DDEBUG define.
+         ;; Do 'check before 'build to avoid a 3rd build on make install.
+         (add-before 'build 'check
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             ;; Fake a terminal for the test cases.
+             (setenv "TERM" "xterm-256color")
+             (zero? (apply system* "make" "debug" "test"
+                           (format #f "-j~d" (parallel-job-count))
+                           make-flags)))))))
+    (synopsis "Roguelike dungeon crawler game")
+    (description "Dungeon Crawl Stone Soup is a roguelike adventure through
+dungeons filled with dangerous monsters in a quest to find the mystifyingly
+fabulous Orb of Zot.")
+    (home-page "https://crawl.develz.org")
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:expat
+                   license:zlib
+                   license:asl2.0))))
