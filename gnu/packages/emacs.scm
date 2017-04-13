@@ -2811,7 +2811,7 @@ S-expression.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2820,7 +2820,7 @@ S-expression.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gi8ra3ap5m3mz4qh1yxp2cldn7z9xcxvypznr6rrlc6a9l8s5a6"))))
+                "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
