@@ -2162,3 +2162,41 @@ compilers, and translators from grammatical descriptions containing Java, C#,
 C++, or Python actions.  ANTLR provides excellent support for tree construction,
 tree walking, and translation.")
     (license license:public-domain)))
+
+(define-public stringtemplate3
+  (package
+    (name "stringtemplate3")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-st4/raw/"
+                                  "gh-pages/download/stringtemplate-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "086yj68np1vqhkj7483diz3km6s6y4gmwqswa7524a0ca6vxn2is"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "stringtemplate-3.2.1.jar"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "src/org/antlr/stringtemplate/language/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("template.g" "angle.bracket.template.g" "action.g"
+                           "eval.g" "group.g" "interface.g"))))))))
+    (native-inputs
+     `(("antlr" ,antlr2)))
+    (home-page "http://www.stringtemplate.org")
+    (synopsis "Template engine to generate formatted text output")
+    (description "StringTemplate is a java template engine (with ports for C#,
+Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
+or any other formatted text output.  StringTemplate is particularly good at
+code generators, multiple site skins, and internationalization / localization.
+StringTemplate also powers ANTLR.")
+    (license license:bsd-3)))
