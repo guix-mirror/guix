@@ -28,6 +28,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -120,6 +122,10 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages networking)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -3981,3 +3987,184 @@ fight against their plot and save his fellow rabbits from slavery.")
                    ;; assets:
                    license:cc-by-sa3.0
                    license:cc-by-sa4.0))))
+
+(define-public 0ad-data
+  (package
+    (name "0ad-data")
+    (version "0.0.21-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+                           version "-unix-data.tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "15xadyrpvq27lm9p1ny7bcmmv56m16h3xadbkdx69gfkzxc3razk"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            (for-each
+             (lambda (name)
+               (let* ((dir (string-append "binaries/data/mods/" name))
+                      (file (string-append dir "/" name ".zip"))
+                      (unzip #$(file-append unzip "/bin/unzip")))
+                 (system* unzip "-d" dir file)
+                 (delete-file file)))
+             '("mod" "public"))
+            #t))))
+    (build-system trivial-build-system)
+    (native-inputs `(("tar" ,tar)
+                     ("xz" ,xz)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((out (assoc-ref %outputs "out"))
+               (source (assoc-ref %build-inputs "source"))
+               (tar (string-append (assoc-ref %build-inputs "tar") "/bin/tar"))
+               (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
+           (setenv "PATH" xz-path)
+           (mkdir out)
+           (zero? (system* tar "xvf" source "-C" out "--strip=3"))))))
+    (synopsis "Data files for 0ad")
+    (description "0ad-data provides the data files required by the game 0ad.")
+    (home-page "https://play0ad.com")
+    (license (list (license:fsdg-compatible
+                    "http://tavmjong.free.fr/FONTS/ArevCopyright.txt"
+                    (license:license-comment
+                     (package-license font-bitstream-vera)))
+                   (package-license font-bitstream-vera)
+                   license:cc-by-sa3.0
+                   license:expat
+                   license:gfl1.0
+                   license:gpl2+
+                   license:gpl3+))))
+
+(define-public 0ad
+  (package
+    (name "0ad")
+    (version "0.0.21-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+                           version "-unix-build.tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1kw3hqnr737ipx4f03khz3hvsh3ha7r8iy9njppk2faa53j27gln"))
+       ;; A snippet here would cause a build failure because of timestamps
+       ;; reset.  See https://bugs.gnu.org/26734.
+       ))
+    (inputs
+     `(("0ad-data" ,0ad-data)
+       ("curl" ,curl)
+       ("enet" ,enet)
+       ("gloox" ,gloox)
+       ("icu4c" ,icu4c)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("libxcursor" ,libxcursor)
+       ("libxml2" ,libxml2)
+       ("miniupnpc" ,miniupnpc)
+       ("mozjs-38" ,mozjs-38)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("wxwidgets" ,wxwidgets)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("boost" ,boost)
+       ("cmake" ,cmake)
+       ("mesa" ,mesa)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundles
+           (lambda _
+             (delete-file-recursively "libraries/source/spidermonkey")
+             #t))
+         (add-after 'unpack 'fix-x11-includes
+           (lambda _
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xlib.h>") "<X11/Xlib.h>"))
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xatom.h>") "<X11/Xatom.h>"))
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xcursor/Xcursor.h>") "<X11/Xcursor/Xcursor.h>"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((jobs (number->string (parallel-job-count)))
+                    (out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (data (string-append out "/share/0ad")))
+               (setenv "JOBS" (string-append "-j" jobs))
+               (setenv "CC" "gcc")
+               (with-directory-excursion "build/workspaces"
+                 (zero? (system* "./update-workspaces.sh"
+                                 (string-append "--libdir=" lib)
+                                 (string-append "--datadir=" data)
+                                 "--minimal-flags"
+                                 ;; TODO: "--with-system-nvtt"
+                                 "--with-system-mozjs38"))))))
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "build/workspaces/gcc")
+             #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (chdir "../../../binaries")
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (data (string-append out "/share/0ad"))
+                    (applications (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps"))
+                    (0ad-data (assoc-ref inputs "0ad-data")))
+               ;; data
+               (copy-recursively "data" data)
+               (for-each (lambda (file)
+                           (symlink (string-append 0ad-data "/" file)
+                                    (string-append data "/" file)))
+                         '("config" "mods/mod" "mods/public" "tools"))
+               ;; libraries
+               (for-each (lambda (file)
+                           (install-file file lib))
+                         (find-files "system" "\\.so$"))
+               ;; binaries
+               (install-file "system/pyrogenesis" bin)
+               (with-directory-excursion bin
+                 (symlink "pyrogenesis" "0ad"))
+               ;; resources
+               (with-directory-excursion "../build/resources"
+                 (install-file "0ad.desktop" applications)
+                 (install-file "0ad.png" pixmaps))
+               #t)))
+         (add-after 'install 'check
+           (lambda _
+             (with-directory-excursion "system"
+               (zero? (system* "./test"))))))))
+    (home-page "https://play0ad.com")
+    (synopsis "3D real-time strategy game of ancient warfare")
+    (description "0 A.D. is a real-time strategy (RTS) game of ancient
+warfare.  It's a historically-based war/economy game that allows players to
+relive or rewrite the history of twelve ancient civilizations, each depicted
+at their peak of economic growth and military prowess.
+
+0ad needs a window manager that supports 'Extended Window Manager Hints'.")
+    (license (list license:bsd-2
+                   license:bsd-3
+                   license:expat
+                   license:gpl2+
+                   license:ibmpl1.0
+                   license:isc
+                   license:lgpl2.1
+                   license:lgpl3
+                   license:mpl2.0
+                   license:zlib))))
