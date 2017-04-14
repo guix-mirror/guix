@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,12 +117,12 @@ directory = '" port)
       (close-pipe port)
       result)))
 
-;; Example dir-name: "/gnu/store/hwlr49riz3la33m6in2n898ly045ylld-rust-rand-0.3.15".
 (define (generate-checksums dir-name src-name)
-  "Given DIR-NAME, checksum all the files in it one by one and put the
-   result into the file \".cargo-checksum.json\" in the same directory.
-   Also includes the checksum of an extra file SRC-NAME as if it was
-   part of the directory DIR-NAME with name \"package\"."
+  "Given DIR-NAME, a store directory, checksum all the files in it one
+by one and put the result into the file \".cargo-checksum.json\" in
+the same directory.  Also includes the checksum of an extra file
+SRC-NAME as if it was part of the directory DIR-NAME with name
+\"package\"."
   (let* ((file-names (find-files dir-name "."))
          (dir-prefix-name (string-append dir-name "/"))
          (dir-prefix-name-len (string-length dir-prefix-name))
