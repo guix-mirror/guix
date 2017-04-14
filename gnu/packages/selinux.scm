@@ -22,9 +22,14 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex))
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages swig))
 
 ;; Update the SELinux packages together!
 
@@ -104,3 +109,60 @@ Checkmodule is a program that checks and compiles a SELinux security policy
 module into a binary representation.")
     ;; GPLv2 only
     (license license:gpl2)))
+
+(define-public libselinux
+  (package (inherit libsepol)
+    (name "libselinux")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsepol)
+       ((#:make-flags flags)
+        `(cons* "PYTHON=python3"
+                (string-append "PYSITEDIR="
+                               (assoc-ref %outputs "out")
+                               "/lib/python"
+                               ,(version-major+minor (package-version python))
+                               "/site-packages/")
+                ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'enter-dir
+             (lambda _ (chdir ,name) #t))
+           ;; libsepol.a is not located in this package's LIBDIR.
+           (add-after 'enter-dir 'patch-libsepol-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/Makefile"
+                 (("\\$\\(LIBDIR\\)/libsepol.a")
+                  (string-append (assoc-ref inputs "libsepol")
+                                 "/lib/libsepol.a")))
+               #t))
+           (add-after 'enter-dir 'remove-Werror
+             (lambda _
+               ;; GCC complains about the fact that the output does not (yet)
+               ;; have an "include" directory, even though it is referenced.
+               (substitute* '("src/Makefile"
+                              "utils/Makefile")
+                 (("-Werror ") ""))
+               #t))
+           (add-after 'build 'pywrap
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "pywrap" make-flags))))
+           (add-after 'install 'install-pywrap
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-pywrap" make-flags))))))))
+    (inputs
+     `(("libsepol" ,libsepol)
+       ("pcre" ,pcre)
+       ;; For pywrap phase
+       ("python" ,python-wrapper)))
+    ;; These inputs are only needed for the pywrap phase.
+    (native-inputs
+     `(("swig" ,swig)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "SELinux core libraries and utilities")
+    (description
+     "The libselinux library provides an API for SELinux applications to get
+and set process and file security contexts, and to obtain security policy
+decisions.  It is required for any applications that use the SELinux API, and
+used by all applications that are SELinux-aware.  This package also includes
+the core SELinux management utilities.")
+    (license license:public-domain)))
