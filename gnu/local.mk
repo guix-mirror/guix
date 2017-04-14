@@ -811,6 +811,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
+  %D%/packages/patches/mozjs38-pkg-config-version.patch		\
+  %D%/packages/patches/mozjs38-shell-version.patch		\
+  %D%/packages/patches/mozjs38-tracelogger.patch		\
+  %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/multiqc-fix-git-subprocess-error.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\

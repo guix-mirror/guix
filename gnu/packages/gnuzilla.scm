@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,8 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:use-module (gnu packages readline))
 
 (define-public mozjs
   (package
@@ -157,6 +159,92 @@ in C/C++.")
                                       '()))))))))))
     (inputs
      `(("libffi" ,libffi)
+       ("zlib" ,zlib)))))
+
+(define-public mozjs-38
+  (package
+    (inherit mozjs)
+    (name "mozjs")
+    (version "38.2.1.rc0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://people.mozilla.org/~sstangl/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p4bmbpgkfsj54xschcny0a118jdrdgg0q29rwxigg3lh5slr681"))
+              (patches
+               (search-patches
+                ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1269317 for
+                ;; GCC 6 compatibility.
+
+                "mozjs38-version-detection.patch" ; for 0ad
+                "mozjs38-tracelogger.patch"
+
+                ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1339931.
+                "mozjs38-pkg-config-version.patch"
+                "mozjs38-shell-version.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix incompatibility with sed 4.4.
+                  (substitute* "js/src/configure"
+                    (("\\^\\[:space:\\]") "^[[:space:]]"))
+
+                  ;; The headers are symlinks to files that are in /tmp, so they
+                  ;; end up broken.  Copy them instead.
+                  (substitute*
+                      "python/mozbuild/mozbuild/backend/recursivemake.py"
+                    (("\\['dist_include'\\].add_symlink")
+                     "['dist_include'].add_copy"))
+
+                  ;; Remove bundled libraries.
+                  (for-each delete-file-recursively
+                            '("intl"
+                              "js/src/ctypes/libffi"
+                              "js/src/ctypes/libffi-patches"
+                              "modules/zlib"))
+                  #t))))
+    (arguments
+     `(;; XXX: parallel build fails, lacking:
+       ;;   mkdir -p "system_wrapper_js/"
+       #:parallel-build? #f
+       ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1008470.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chdir "js/src")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               "--enable-ctypes"
+                               "--enable-gcgenerational"
+                               "--enable-optimize"
+                               "--enable-pie"
+                               "--enable-readline"
+                               "--enable-shared-js"
+                               "--enable-system-ffi"
+                               "--enable-threadsafe"
+                               "--enable-xterm-updates"
+                               "--with-system-icu"
+                               "--with-system-nspr"
+                               "--with-system-zlib"
+
+                               ;; Intl API requires bundled ICU.
+                               "--without-intl-api"))))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (inputs
+     `(("libffi" ,libffi)
+       ("readline" ,readline)
+       ("icu4c" ,icu4c)
        ("zlib" ,zlib)))))
 
 (define-public nspr
