@@ -593,6 +593,9 @@ types are supported, as is encryption.")
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
+               ;; This test fails with GCC-5 and is unmaintained.
+               ;; https://github.com/facebook/rocksdb/issues/2148
+               (("^[[:blank:]]+spatial_db_test[[:blank:]]+\\\\") "\\")
                ;; These tests reliably fail due to "Too many open files".
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
                (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
