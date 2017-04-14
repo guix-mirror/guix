@@ -13,17 +13,15 @@ diff --git a/source/fitz/load-jpx.c b/source/fitz/load-jpx.c
 index 6b92e5c..72dea50 100644
 --- a/source/fitz/load-jpx.c
 +++ b/source/fitz/load-jpx.c
-@@ -1,13 +1,5 @@
- #include "mupdf/fitz.h"
+@@ -444,11 +444,6 @@
  
--/* Without the definition of OPJ_STATIC, compilation fails on windows
-- * due to the use of __stdcall. We believe it is required on some
-- * linux toolchains too. */
+ #else /* HAVE_LURATECH */
+ 
 -#define OPJ_STATIC
--#ifndef _MSC_VER
+-#define OPJ_HAVE_INTTYPES_H
+-#if !defined(_WIN32) && !defined(_WIN64)
 -#define OPJ_HAVE_STDINT_H
 -#endif
--
- #include <openjpeg.h>
+ #define USE_JPIP
  
- static void fz_opj_error_callback(const char *msg, void *client_data)
+ #include <openjpeg.h>
