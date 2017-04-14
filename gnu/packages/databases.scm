@@ -576,9 +576,6 @@ types are supported, as is encryption.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
-                          ;; Make the resulting library position-independent so the
-                          ;; static version can be included in shared objects.
-                          "EXTRA_CXXFLAGS=-fPIC"
                           (string-append "INSTALL_PATH="
                                          (assoc-ref %outputs "out")))
        #:phases
@@ -587,6 +584,9 @@ types are supported, as is encryption.")
            (lambda _
              (substitute* "Makefile"
                (("build_tools/gnu_parallel") "parallel")
+               ;; Don't depend on the static library when installing.
+               (("install: install-static")
+                "install: install-shared")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
          (delete 'configure)
@@ -600,26 +600,15 @@ types are supported, as is encryption.")
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
                (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
              #t))
-         (add-after
-          'check 'build-release-libraries
-          ;; The 'check' target depends on the default target which is compiled
-          ;; with debug symbols. The 'install' target depends on shared and
-          ;; static release targets so we build them here for clarity.
-          ;; TODO: Add debug output.
-          (lambda* (#:key (make-flags '()) #:allow-other-keys)
-            ;; Prevent the build from adding machine-specific optimizations.
-            ;; This does not work if passed as a make flag...
-            (setenv "PORTABLE" "1")
-            (and (zero? (apply system* "make" "static_lib" make-flags))
-                 (zero? (apply system* "make" "shared_lib" make-flags)))))
-         (add-after 'install 'delete-static-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (delete-file file))
-                         (find-files lib "\\.l?a$"))
-               #t))))))
+         (add-after 'check 'build-release-libraries
+           ;; The default build target is a debug build for tests. The
+           ;; install target depends on "shared_lib" and "static_lib"
+           ;; targets for release builds so we build them here for clarity.
+           ;; TODO: Add debug output.
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             ;; Prevent the build from adding machine-specific optimizations.
+             (setenv "PORTABLE" "1")
+             (zero? (apply system* "make" "shared_lib" make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
        ("perl" ,perl)
