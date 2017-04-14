@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages flex))
 
 ;; Update the SELinux packages together!
@@ -69,3 +70,37 @@ similar tools, and programs such as @code{load_policy}, which must perform
 specific transformations on binary policies (for example, customizing policy
 boolean settings).")
     (license license:lgpl2.1+)))
+
+(define-public checkpolicy
+  (package (inherit libsepol)
+    (name "checkpolicy")
+    (arguments
+     `(#:tests? #f ; there is no check target
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "LDLIBS="
+                              (assoc-ref %build-inputs "libsepol")
+                              "/lib/libsepol.a "
+                              (assoc-ref %build-inputs "flex")
+                              "/lib/libfl.a")
+               "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir ,name) #t)))))
+    (inputs
+     `(("libsepol" ,libsepol)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (synopsis "Check SELinux security policy configurations and modules")
+    (description
+     "This package provides the tools \"checkpolicy\" and \"checkmodule\".
+Checkpolicy is a program that checks and compiles a SELinux security policy
+configuration into a binary representation that can be loaded into the kernel.
+Checkmodule is a program that checks and compiles a SELinux security policy
+module into a binary representation.")
+    ;; GPLv2 only
+    (license license:gpl2)))
