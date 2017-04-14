@@ -238,3 +238,55 @@ binary policies.")
     (description "The SELinux CIL compiler is a compiler that converts the
 @dfn{common intermediate language} (CIL) into a kernel binary policy file.")
     (license license:bsd-2)))
+
+(define-public python-sepolgen
+  (package (inherit libsepol)
+    (name "python-sepolgen")
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       ,@(substitute-keyword-arguments (package-arguments libsepol)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (replace 'enter-dir
+                 (lambda _ (chdir "sepolgen") #t))
+               ;; By default all Python files would be installed to
+               ;; $out/gnu/store/...-python-.../, so we override the
+               ;; PACKAGEDIR to fix this.
+               (add-after 'enter-dir 'fix-target-path
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((get-python-version
+                          ;; FIXME: copied from python-build-system
+                          (lambda (python)
+                            (let* ((version     (last (string-split python #\-)))
+                                   (components  (string-split version #\.))
+                                   (major+minor (take components 2)))
+                              (string-join major+minor ".")))))
+                     (substitute* "src/sepolgen/Makefile"
+                       (("^PACKAGEDIR.*")
+                        (string-append "PACKAGEDIR="
+                                       (assoc-ref outputs "out")
+                                       "/lib/python"
+                                       (get-python-version
+                                        (assoc-ref inputs "python"))
+                                       "/site-packages/sepolgen")))
+                     (substitute* "src/share/Makefile"
+                       (("\\$\\(DESTDIR\\)") (assoc-ref outputs "out"))))
+                   #t)))))))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (native-inputs '())
+    (synopsis "Python module for generating SELinux policies")
+    (description
+     "This package contains a Python module that forms the core of
+@code{audit2allow}, a part of the package @code{policycoreutils}.  The
+sepolgen library contains: Reference Policy Representation, which are Objects
+for representing policies and the reference policy interfaces.  It has objects
+and algorithms for representing access and sets of access in an abstract way
+and searching that access.  It also has a parser for reference policy
+\"headers\".  It contains infrastructure for parsing SELinux related messages
+as produced by the audit system.  It has facilities for generating policy
+based on required access.")
+    ;; GPLv2 only
+    (license license:gpl2)))
