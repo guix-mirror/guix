@@ -61,9 +61,8 @@
                         arch "-linux"
                         "/20150101/guile-2.0.11.tar.xz"))
         ((string=? "aarch64" arch)
-         (let ((suffix "/bootstrap/aarch64-linux/20170217/guile-2.0.14.tar.xz"))
-           (list (string-append "http://alpha.gnu.org/gnu/guix" suffix)
-                 (string-append "http://flashner.co.il/guix" suffix))))
+         (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                        arch "-linux/20170217/guile-2.0.14.tar.xz"))
         (else
          (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
                         arch "-linux"
