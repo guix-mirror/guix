@@ -4,6 +4,7 @@
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
+# Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -394,6 +395,7 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  gnu/build/svg.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
