@@ -343,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sdl.scm				\
   %D%/packages/search.scm			\
   %D%/packages/security-token.scm		\
+  %D%/packages/selinux.scm			\
   %D%/packages/serialization.scm		\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
