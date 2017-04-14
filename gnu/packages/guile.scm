@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1731,5 +1732,40 @@ is not available for Guile 2.0.")
        "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
       (license license:gpl3+))))
+
+(define-public guile-syntax-highlight
+  (let ((commit "a047675e66861b647426372aa2ba7820f749616d")
+        (revision "0"))
+    (package
+      (name "guile-syntax-highlight")
+      (version (string-append "0.0." revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://dthompson.us/guile-syntax-highlight.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "sh" "bootstrap")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (synopsis "General-purpose syntax highlighter for GNU Guile")
+      (description "Guile-syntax-highlight is a general-purpose syntax
+highlighting library for GNU Guile.  It can parse code written in various
+programming languages into a simple s-expression that can be converted to
+HTML (via SXML) or any other format for rendering.")
+      (home-page "http://dthompson.us/software/guile-syntax-highlight")
+      (license license:lgpl3+))))
 
 ;;; guile.scm ends here
