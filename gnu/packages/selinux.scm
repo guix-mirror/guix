@@ -28,6 +28,10 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -342,3 +346,136 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
     ;; Some programs are under GPL, all libraries under LGPL.
     (license (list license:lgpl2.1+
                    license:gpl2+))))
+
+(define-public policycoreutils
+  (package (inherit libsepol)
+    (name "policycoreutils")
+    (source
+     (origin (inherit (package-source libsepol))
+             (patches (search-patches "policycoreutils-make-sepolicy-use-python3.patch"))
+             (patch-flags '("-p1" "-d" "policycoreutils"))))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "CC=gcc"
+               (string-append "PREFIX=" out)
+               (string-append "LOCALEDIR=" out "/share/locale")
+               (string-append "BASHCOMPLETIONDIR=" out
+                              "/share/bash-completion/completions")
+               "INSTALL=install -c -p"
+               "INSTALL_DIR=install -d"
+               ;; These ones are needed because some Makefiles define the
+               ;; directories relative to DESTDIR, not relative to PREFIX.
+               (string-append "SBINDIR=" out "/sbin")
+               (string-append "ETCDIR=" out "/etc")
+               (string-append "SYSCONFDIR=" out "/etc/sysconfig")
+               (string-append "MAN5DIR=" out "/share/man/man5")
+               (string-append "INSTALL_NLS_DIR=" out "/share/locale")
+               (string-append "AUTOSTARTDIR=" out "/etc/xdg/autostart")
+               (string-append "DBUSSERVICEDIR=" out "/share/dbus-1/services")
+               (string-append "SYSTEMDDIR=" out "/lib/systemd")
+               (string-append "INITDIR=" out "/etc/rc.d/init.d")
+               (string-append "SELINUXDIR=" out "/etc/selinux")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir ,name) #t))
+         (add-after 'enter-dir 'ignore-/usr-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The Makefile decides to build restorecond only if it finds the
+             ;; inotify header somewhere under /usr.
+             (substitute* "Makefile"
+               (("ifeq.*") "")
+               (("endif.*") ""))
+             ;; Rewrite lookup paths for header files.
+             (substitute* '("newrole/Makefile"
+                            "setfiles/Makefile"
+                            "run_init/Makefile")
+               (("/usr(/include/security/pam_appl.h)" _ file)
+                (string-append (assoc-ref inputs "pam") file))
+               (("/usr(/include/libaudit.h)" _ file)
+                (string-append (assoc-ref inputs "audit") file)))
+             #t))
+         (add-after 'enter-dir 'fix-glib-cflags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "restorecond/Makefile"
+               (("/usr(/include/glib-2.0|/lib/glib-2.0/include)" _ path)
+                (string-append (assoc-ref inputs "glib") path))
+               (("/usr(/include/dbus-1.0|/lib/dbus-1.0/include)" _ path)
+                (string-append (assoc-ref inputs "dbus") path
+                               " -I"
+                               (assoc-ref inputs "dbus-glib") path)))
+             #t))
+         (add-after 'enter-dir 'fix-linkage-with-libsepol
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("semodule_deps/Makefile"
+                            "sepolgen-ifgen/Makefile")
+               (("\\$\\(LIBDIR\\)")
+                (string-append (assoc-ref inputs "libsepol") "/lib/")))))
+         (add-after 'enter-dir 'fix-target-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "audit2allow/sepolgen-ifgen"
+                 (("ATTR_HELPER = \"/usr/bin/sepolgen-ifgen-attr-helper\"")
+                  (string-append "ATTR_HELPER = \"" out
+                                 "/bin/sepolgen-ifgen-attr-helper\"")))
+               (substitute* "sepolicy/sepolicy/__init__.py"
+                 (("/usr/bin/sepolgen-ifgen")
+                  (string-append out "/bin/sepolgen-ifgen")))
+               (substitute* "sepolicy/Makefile"
+                 ;; By default all Python files would be installed to
+                 ;; $out/gnu/store/...-python-.../.
+                 (("setup.py install.*$")
+                  (string-append "setup.py install --prefix=" out "\n"))
+                 (("\\$\\(DESTDIR\\)/etc")
+                  (string-append out "/etc"))
+                 (("\\$\\(DESTDIR\\)/usr") out)))
+             #t))
+         (add-after 'install 'wrap-python-tools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (var (string-append out "/lib/python"
+                                        ,(version-major+minor (package-version python))
+                                        "/site-packages:"
+                                        (getenv "PYTHONPATH"))))
+               ;; The scripts' shebangs tell Python to ignore the PYTHONPATH,
+               ;; so we need to patch them before wrapping.
+               (for-each (lambda (file)
+                           (let ((path (string-append out "/" file)))
+                             (substitute* path
+                               (("bin/python -Es") "bin/python -s"))
+                             (wrap-program path
+                               `("PYTHONPATH" ":" prefix (,var)))))
+                         '("bin/audit2allow"
+                           "bin/chcat"
+                           "bin/sandbox"
+                           "bin/sepolgen-ifgen"
+                           "bin/sepolicy"
+                           "sbin/semanage")))
+             #t)))))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("audit" ,audit)
+       ("pam" ,linux-pam)
+       ("libsepol" ,libsepol)
+       ("libselinux" ,libselinux)
+       ("libsemanage" ,libsemanage)
+       ("python-sepolgen" ,python-sepolgen)
+       ("python-setools" ,python-setools)
+       ("python-ipy" ,python-ipy)
+       ("libcap-ng" ,libcap-ng)
+       ("pcre" ,pcre)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (synopsis "SELinux core utilities")
+    (description "The policycoreutils package contains the core utilities that
+are required for the basic operation of an SELinux-enabled GNU system and its
+policies.  These utilities include @code{load_policy} to load policies,
+@code{setfiles} to label file systems, @code{newrole} to switch roles, and
+@code{run_init} to run service scripts in their proper context.")
+    (license license:gpl2+)))
