@@ -24,12 +24,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages swig))
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages textutils))
 
 ;; Update the SELinux packages together!
 
@@ -166,3 +168,45 @@ decisions.  It is required for any applications that use the SELinux API, and
 used by all applications that are SELinux-aware.  This package also includes
 the core SELinux management utilities.")
     (license license:public-domain)))
+
+(define-public libsemanage
+  (package (inherit libsepol)
+    (name "libsemanage")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsepol)
+       ((#:make-flags flags)
+        `(cons* "PYTHON=python3"
+                (string-append "PYSITEDIR="
+                               (assoc-ref %outputs "out")
+                               "/lib/python"
+                               ,(version-major+minor (package-version python))
+                               "/site-packages/")
+                ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'enter-dir
+             (lambda _ (chdir ,name) #t))
+           (add-after 'build 'pywrap
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "pywrap" make-flags))))
+           (add-after 'install 'install-pywrap
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (zero? (apply system* "make" "install-pywrap" make-flags))))))))
+    (inputs
+     `(("libsepol" ,libsepol)
+       ("libselinux" ,libselinux)
+       ("audit" ,audit)
+       ("ustr" ,ustr)
+       ;; For pywrap phase
+       ("python" ,python-wrapper)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ;; For pywrap phase
+       ("swig" ,swig)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "SELinux policy management libraries")
+    (description
+     "The libsemanage library provides an API for the manipulation of SELinux
+binary policies.")
+    (license license:lgpl2.1+)))
