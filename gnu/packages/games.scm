@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
@@ -56,6 +56,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
@@ -89,6 +90,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages fonts)
@@ -225,7 +227,7 @@ representation of the playing board.")
 (define-public gnubik
   (package
     (name "gnubik")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
       (method url-fetch)
@@ -233,7 +235,7 @@ representation of the playing board.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mhpfnxzbns0wfrsjv5vafqr34770rbvkmdzxk0x0aq67hb3zyl5"))))
+        "1vlf924mq8hg93bsjj0rzvs0crc6psmlxyc6zn0fr7msnmpx6gib"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
@@ -3457,4 +3459,351 @@ starting a decryption sequence to reveal the original plaintext characters.")
     (description "MegaGlest is a cross-platform 3D real-time strategy (RTS)
 game, where you control the armies of one of seven different factions: Tech,
 Magic, Egypt, Indians, Norsemen, Persian or Romans.")
+    (license license:gpl2+)))
+
+(define-public freegish
+  (let ((commit "8795cd7adc95957883f2d3465eb9036a774667a7")
+        (revision "1"))
+    (package
+      (name "freegish")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/freegish/freegish.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1p1zf5qqagmcpi1db2bs02cnalpy3qiymp6yzan7k1bhmv859gsx"))
+                (modules '((guix build utils)))
+                ;; The audio files in the "music" directory are licensed under
+                ;; CC-BY-NC, so we delete them.
+                (snippet
+                 '(begin
+                    (delete-file-recursively "music")
+                    #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:configure-flags
+         (list "-DCMAKE_INSTALL_FHS=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-DATAPATH
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "CMakeLists.txt"
+                 (("^option\\(INSTALL_FHS" line)
+                  (string-append "add_definitions(-DDATAPATH=\""
+                                 (assoc-ref outputs "out") "/share/freegish\")\n"
+                                 line)))
+               #t)))))
+      (inputs
+       `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))
+         ("openal" ,openal)
+         ("libvorbis" ,libvorbis)
+         ("libogg" ,libogg)
+         ("mesa" ,mesa)
+         ("libpng" ,libpng)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/freegish/freegish")
+      (synopsis "Side-scrolling physics platformer with a ball of tar")
+      (description "In FreeGish you control Gish, a ball of tar who lives
+happily with his girlfriend Brea, until one day a mysterious dark creature
+emerges from a sewer hole and pulls her below ground.")
+      ;; The textures are available under the Expat license.  All other assets
+      ;; (including levels) are covered under CC-BY-SA or public domain.  The
+      ;; source code is under GPLv2+.
+      (license (list license:gpl2+
+                     license:expat
+                     license:public-domain
+                     license:cc-by-sa3.0)))))
+
+(define-public cdogs-sdl
+  (package
+    (name "cdogs-sdl")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cxong/cdogs-sdl/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08c3y8ijimx6mp0gm90abz4lsnbflqka519q2v0id0096vsc2pxn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCDOGS_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/cdogs-sdl/"))))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "http://cxong.github.io/cdogs-sdl/")
+    (synopsis "Classic overhead run-and-gun game")
+    (description "C-Dogs SDL is a classic overhead run-and-gun game,
+supporting up to 4 players in co-op and deathmatch modes.  Customize your
+player, choose from many weapons, and blast, slide and slash your way through
+over 100 user-created campaigns.")
+    ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
+    ;; CC0/CC-BY/CC-BY-SA for assets.
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0))))
+
+(define-public kiki
+  (package
+    (name "kiki")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/kiki/kiki-src/"
+                                  version "/kiki-" version "-src.tgz"))
+              (sha256
+               (base32
+                "0ihjdsxbn8z3cz0gpcprafiipcqaiskgdnh1rhmw4qff8dszalbn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.dll$"))
+                  #t))
+              (patches
+               (search-patches "kiki-level-selection-crash.patch"
+                               "kiki-makefile.patch"
+                               "kiki-missing-includes.patch"
+                               "kiki-portability-64bit.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CXX=g++")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL:"
+                                    (assoc-ref inputs "python")
+                                    "/include/python2.7:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             (substitute* "src/main/main.cpp"
+               (("#include <SDL.h>" line)
+                (string-append line "
+#define K_INCLUDE_GLUT
+#include \"KIncludeTools.h\""))
+               (("// initialize SDL" line)
+                (string-append "glutInit(&argc,argv);\n" line)))
+             (substitute* "src/main/KikiController.cpp"
+               (("getenv\\(\"KIKI_HOME\"\\)")
+                (string-append "\"" (assoc-ref outputs "out") "/share/kiki/\"")))
+             (substitute* "linux/Makefile"
+               (("CXXOPTS =" line)
+                (string-append line " -fpermissive"))
+               (("PYTHON_VERSION=.*") "PYTHON_VERSION=2.7")
+               (("PYTHONHOME =.*")
+                (string-append "PYTHONHOME = "
+                               (assoc-ref inputs "python")
+                               "/lib/python2.7/"))
+               (("\\$\\(GLLIBS\\)" line)
+                (string-append line " -lm -lpython2.7")))
+             (substitute* "src/main/KikiPythonWidget.h"
+               (("#define __KikiPythonWidget" line)
+                (string-append line "\n#include \"KikiPython.h\"")))
+             #t))
+         (add-before 'build 'build-kodilib
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (with-directory-excursion "kodilib/linux"
+               (zero? (apply system* "make" make-flags)))))
+         (add-after 'build-kodilib 'chdir
+           (lambda _ (chdir "linux") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/kiki")))
+               (mkdir-p bin)
+               (mkdir-p share)
+               (install-file "kiki" bin)
+               (copy-recursively "../py" (string-append share "/py"))
+               (copy-recursively "../sound" (string-append share "/sound"))
+               #t))))))
+    (inputs
+     `(("glu" ,glu)
+       ;; Kiki builds fine with freeglut 3.0.0 but segfaults on start.
+       ("freeglut" ,freeglut-2.8)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("python" ,python-2)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page "http://kiki.sourceforge.net/")
+    (synopsis "3D puzzle game")
+    (description "Kiki the nano bot is a 3D puzzle game.  It is basically a
+mixture of the games Sokoban and Kula-World.  Your task is to help Kiki, a
+small robot living in the nano world, repair its maker.")
+    ;; See <http://metadata.ftp-master.debian.org/changelogs/main/k/
+    ;; kiki-the-nano-bot/kiki-the-nano-bot_1.0.2+dfsg1-4_copyright>
+    ;; for a statement from the author.
+    (license license:public-domain)))
+
+(define-public teeworlds
+  (package
+    (name "teeworlds")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/teeworlds/teeworlds/"
+                                  "archive/" version "-release.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                            '("src/engine/external/wavpack/"
+                              "src/engine/external/zlib/"))
+                  #t))
+              (patches
+               (search-patches "teeworlds-use-latest-wavpack.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Embed path to assets.
+             (substitute* "src/engine/shared/storage.cpp"
+               (("#define DATA_DIR.*")
+                (string-append "#define DATA_DIR \""
+                               (assoc-ref outputs "out")
+                               "/share/teeworlds/data"
+                               "\"")))
+
+             ;; Bam expects all files to have a recent time stamp.
+             (for-each (lambda (file)
+                         (utime file 1 1))
+                       (find-files "."))
+
+             ;; Do not use bundled libraries.
+             (substitute* "bam.lua"
+               (("if config.zlib.value == 1 then")
+                "if true then")
+               (("wavpack = .*")
+                "wavpack = {}
+settings.link.libs:Add(\"wavpack\")\n"))
+             (substitute* "src/engine/client/sound.cpp"
+               (("#include <engine/external/wavpack/wavpack.h>")
+                "#include <wavpack/wavpack.h>"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "bam" "-a" "-v" "release"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (data (string-append out "/share/teeworlds/data")))
+               (mkdir-p bin)
+               (mkdir-p data)
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         '("teeworlds" "teeworlds_srv"))
+               (copy-recursively "data" data)
+               #t))))))
+    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
+    ;; library without a build system.
+    (inputs
+     `(("freetype" ,freetype)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bam" ,bam)
+       ("python" ,python-2)))
+    (home-page "https://www.teeworlds.com")
+    (synopsis "2D retro multiplayer shooter game")
+    (description "Teeworlds is an online multiplayer game.  Battle with up to
+16 players in a variety of game modes, including Team Deathmatch and Capture
+The Flag.  You can even design your own maps!")
+    (license license:bsd-3)))
+
+(define-public fillets-ng
+  (package
+    (name "fillets-ng")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fillets/"
+                                  "Fish%20Fillets%20-%20Next%20Generation/"
+                                  version "/fillets-ng-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nljp75aqqb35qq3x7abhs2kp69vjcj0h1vxcpdyn2yn2nalv6ij"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-lua="
+                            (assoc-ref %build-inputs "lua")))
+       #:make-flags
+       (list (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL")
+             (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Lua 5.1 does not provide it.
+         (add-after 'unpack 'do-not-link-with-lualib
+           (lambda _
+             (substitute* "configure"
+               (("-llualib") ""))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((data (string-append (assoc-ref outputs "out")
+                                        "/share/games/fillets-ng")))
+               (mkdir-p data)
+               (zero? (system* "tar" "-xvf"
+                               (assoc-ref inputs "fillets-ng-data")
+                               "--strip-components=1"
+                               "-C" data))))))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image
+                                      sdl-ttf)))
+       ("fribidi" ,fribidi)
+       ("libx11" ,libx11)
+       ("lua" ,lua-5.1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("fillets-ng-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/fillets/"
+                               "Fish%20Fillets%20-%20Next%20Generation/"
+                               version "/fillets-ng-data-" version ".tar.gz"))
+           (sha256
+            (base32
+             "169p0yqh2gxvhdilvjc2ld8aap7lv2nhkhkg4i1hlmgc6pxpkjgh"))))))
+    (home-page "http://fillets.sourceforge.net/")
+    (synopsis "Puzzle game")
+    (description "Fish Fillets NG is strictly a puzzle game.  The goal in
+every of the seventy levels is always the same: find a safe way out.  The fish
+utter witty remarks about their surroundings, the various inhabitants of their
+underwater realm quarrel among themselves or comment on the efforts of your
+fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))

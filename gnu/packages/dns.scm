@@ -90,7 +90,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind
   (package
     (name "bind")
-    (version "9.10.4-P6")
+    (version "9.10.4-P8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -98,7 +98,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0rgffdm0h6dks0np4h9q4kd8nyb3azrdxw2skqnjzd8ws78vzpx1"))))
+                "1sv6fp5gznjj1kmx9q8wr2c6js10wqckgy25sqj83bbf8smmdlvx"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -318,14 +318,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0licfnjl0mq9lzdn6frzdasrj65253xc9n33dhvxcjqr3z7pznip"))
+                "0kvhibnnk77nqi9gdw2zbnp0dydfcy6zy96qv0f3a7wwnay5h0pr"))
               (modules '((guix build utils)))
               (snippet
                '(begin

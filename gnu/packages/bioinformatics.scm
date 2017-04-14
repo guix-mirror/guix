@@ -2084,7 +2084,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.36")
+    (version "0.8.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2093,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "092smzzjcg51n3x4h84k52ijpz9m40ri838j9k2i463ribc3c8rh"))))
+                "1zn7q8m41ayfnjvf9snrsnq00mm68alf9rhdadx5q1sk23lyvp2l"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -3196,7 +3196,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.305")
+    (version "7.310")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3205,7 +3205,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0ziim7g58n3z8gppsa713f5fxprl60ldj3xck186z0n9dpp06i8r"))))
+                "0gbsaz6z2qa307kd7wfb06c3y4ikmv1hsdvlns11f6zq4w1z9pwc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -4041,7 +4041,7 @@ extremely diverse sets of genomes.")
 (define-public raxml
   (package
     (name "raxml")
-    (version "8.2.9")
+    (version "8.2.10")
     (source
      (origin
        (method url-fetch)
@@ -4052,7 +4052,7 @@ extremely diverse sets of genomes.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pv8p2fy67y21a9y4cm7xpvxqjwz2v4201flfjshdq1p8j52rqf7"))))
+         "13s7aspfdcfr6asynwdg1x6vznys6pzap5f8wsffbnnwpkkg9ya8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -4790,50 +4790,61 @@ sequence itself can be retrieved from these databases.")
                                  "/lib64"
                                  "/lib32")))
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          ;; The build system expects a directory containing the sources and
-          ;; raw build output of ncbi-vdb, including files that are not
-          ;; installed.  Since we are building against an installed version of
-          ;; ncbi-vdb, the following modifications are needed.
-          (substitute* "setup/konfigure.perl"
-            ;; Make the configure script look for the "ilib" directory of
-            ;; "ncbi-vdb" without first checking for the existence of a
-            ;; matching library in its "lib" directory.
-            (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
-             "my $f = File::Spec->catdir($ilibdir, $ilib);")
-            ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
-            (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
-             "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; The build system expects a directory containing the sources and
+             ;; raw build output of ncbi-vdb, including files that are not
+             ;; installed.  Since we are building against an installed version of
+             ;; ncbi-vdb, the following modifications are needed.
+             (substitute* "setup/konfigure.perl"
+               ;; Make the configure script look for the "ilib" directory of
+               ;; "ncbi-vdb" without first checking for the existence of a
+               ;; matching library in its "lib" directory.
+               (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
+                "my $f = File::Spec->catdir($ilibdir, $ilib);")
+               ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
+               (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
+                "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
 
-          ;; Dynamic linking
-          (substitute* "tools/copycat/Makefile"
-            (("smagic-static") "lmagic"))
+             ;; Dynamic linking
+             (substitute* "tools/copycat/Makefile"
+               (("smagic-static") "lmagic"))
 
-          ;; The 'configure' script doesn't recognize things like
-          ;; '--enable-fast-install'.
-          (zero? (system*
-                  "./configure"
-                  (string-append "--build-prefix=" (getcwd) "/build")
-                  (string-append "--prefix=" (assoc-ref outputs "out"))
-                  (string-append "--debug")
-                  (string-append "--with-fuse-prefix="
-                                 (assoc-ref inputs "fuse"))
-                  (string-append "--with-magic-prefix="
-                                 (assoc-ref inputs "libmagic"))
-                  ;; TODO: building with libxml2 fails with linker errors
-                  ;; (string-append "--with-xml2-prefix="
-                  ;;                (assoc-ref inputs "libxml2"))
-                  (string-append "--with-ncbi-vdb-sources="
-                                 (assoc-ref inputs "ncbi-vdb"))
-                  (string-append "--with-ncbi-vdb-build="
-                                 (assoc-ref inputs "ncbi-vdb"))
-                  (string-append "--with-ngs-sdk-prefix="
-                                 (assoc-ref inputs "ngs-sdk"))
-                  (string-append "--with-hdf5-prefix="
-                                 (assoc-ref inputs "hdf5")))))
-        %standard-phases)))
+             ;; The 'configure' script doesn't recognize things like
+             ;; '--enable-fast-install'.
+             (zero? (system*
+                     "./configure"
+                     (string-append "--build-prefix=" (getcwd) "/build")
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     (string-append "--debug")
+                     (string-append "--with-fuse-prefix="
+                                    (assoc-ref inputs "fuse"))
+                     (string-append "--with-magic-prefix="
+                                    (assoc-ref inputs "libmagic"))
+                     ;; TODO: building with libxml2 fails with linker errors
+                     ;; (string-append "--with-xml2-prefix="
+                     ;;                (assoc-ref inputs "libxml2"))
+                     (string-append "--with-ncbi-vdb-sources="
+                                    (assoc-ref inputs "ncbi-vdb"))
+                     (string-append "--with-ncbi-vdb-build="
+                                    (assoc-ref inputs "ncbi-vdb"))
+                     (string-append "--with-ngs-sdk-prefix="
+                                    (assoc-ref inputs "ngs-sdk"))
+                     (string-append "--with-hdf5-prefix="
+                                    (assoc-ref inputs "hdf5"))))))
+         ;; This version of sra-tools fails to build with glibc because of a
+         ;; naming conflict.  glibc-2.25/include/bits/mathcalls.h already
+         ;; contains a definition of "canonicalize", so we rename it.
+         ;;
+         ;; See upstream bug report:
+         ;; https://github.com/ncbi/sra-tools/issues/67
+         (add-after 'unpack 'patch-away-glibc-conflict
+           (lambda _
+             (substitute* "tools/bam-loader/bam.c"
+               (("canonicalize\\(" line)
+                (string-append "sra_tools_" line)))
+             #t)))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("ngs-sdk" ,ngs-sdk)
@@ -5345,40 +5356,18 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-2")
+    (version "2.4-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "12wf64izrpq9z3ix7mgm5421mq0xsm8dw5qblvcrz452nfhjf5w9"))))
+         "15zcxfix2d854897k1lr0sfmj2n00339nlsppcr3zrb238lb2mi5"))))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'revert-test-deletion
-           ;; The distributed sources do not include tests with the CRAN
-           ;; package.  Here we revert the commit
-           ;; `591d0e8ba1deaaf82445474ec6619c0b43db4e63' which deletes these
-           ;; tests.  There are plans to not delete tests in future as
-           ;; documented at https://github.com/vegandevs/vegan/issues/181.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero?
-              (system* "patch" "-R" "-p1" "-i"
-                       (assoc-ref inputs "r-vegan-delete-tests-patch"))))))))
     (native-inputs
      `(("gfortran" ,gfortran)
-       ("r-knitr" ,r-knitr)
-       ("r-vegan-delete-tests-patch"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/vegandevs/vegan/commit/"
-                 "591d0e8ba1deaaf82445474ec6619c0b43db4e63.patch"))
-           (sha256
-            (base32
-             "0b1bi7y4jjdl3ph721vm9apm51dr2z9piwvhy4355sf2b4kyyj5a"))))))
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-lattice" ,r-lattice)
@@ -5486,14 +5475,6 @@ high-throughput sequencing experiments.")
          "1walwkqryn1gnwz7zryr5764a0p6ia7ag4w6w9n8fskg8dkg0fqs"))))
     (properties `((upstream-name . "DESeq2")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'link-against-armadillo
-           (lambda _
-             (substitute* "src/Makevars"
-               (("PKG_LIBS =" prefix)
-                (string-append prefix "-larmadillo"))))))))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
@@ -5521,14 +5502,14 @@ distribution.")
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationForge" version))
        (sha256
         (base32
-         "02msyb9p3hywrryx00zpjkjl126mrv827i1ah1092s0cplm6xxvf"))))
+         "0l1g9hy88sh5g567svyfd8pnjvkyklkn6a3gjn8zalvh62qqjjq1"))))
     (properties
      `((upstream-name . "AnnotationForge")))
     (build-system r-build-system)
@@ -5660,14 +5641,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.32.0")
+    (version "1.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "0mjdlg92x5qw4x2djc4dv5lxwl7ai6ix56nnf86zr07jk8vc7yls"))))
+         "1m7lbfxs7xwcy9xs76zy5rky2mb96anvh457xfw60lh3kygwfpxc"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
@@ -5807,7 +5788,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -5817,7 +5798,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "15zy2d9xvgbgdjlxvrhj8s5ga42p13k7a3xv015ingn0bi1p3n6w"))
+         "0hc110ycqpa54nr6x173qg7190hk08qp7yz7zzqxlsypqnpc5zzp"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -6131,13 +6112,13 @@ functionality.")
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocCheck" version))
               (sha256
                (base32
-                "1rfy37xg1nc2cmgbclvzsi7sgmdcdjiahsx9crgx3yaw7kxgiack"))))
+                "197kpiycyl3qawm6801fxyxj81d2g57a00qxaqprapsf1d140l52"))))
     (properties
      `((upstream-name . "BiocCheck")))
     (build-system r-build-system)
@@ -6165,10 +6146,8 @@ functionality.")
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
-       ("r-knitr" ,r-knitr)
        ("r-httr" ,r-httr)
        ("r-optparse" ,r-optparse)
-       ("r-devtools" ,r-devtools)
        ("r-biocinstaller" ,r-biocinstaller)
        ("r-biocviews" ,r-biocviews)))
     (home-page "http://bioconductor.org/packages/BiocCheck")
@@ -6247,13 +6226,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.12.1")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0i36y3w36h3d8rmazxcrip4gvn54rd9av1wz4lygsprrjmylfhcc"))))
+                "0syx0qgipx97zsp3b8afhzamsr30835a2a99yb9wnq7b50g3v3p1"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -6274,14 +6253,14 @@ S4Vectors package itself.")
 (define-public r-seqinr
   (package
     (name "r-seqinr")
-    (version "3.3-3")
+    (version "3.3-6")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "seqinr" version))
         (sha256
           (base32
-            "0rk4yba8km26c0rh1f4h474zsb5n6kjmqsi55bnzr6p8pymp18hj"))))
+            "13d0qxm2244wgdl2dy2s8vnrnf5fx4n47if9gkb49dqx6c0sx8s2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
@@ -6299,13 +6278,13 @@ utilities for sequence data management under the ACNUC system.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.8.1")
+    (version "2.8.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0cryqnpqb3p6l9jjw27hyqd550sxlljls3ka7b9rb38hkji7b5hw"))))
+                "0x8h74ik3xwdnwrkn89hq5ll0qa1lp9jgzlbmpa02dpws7snfwyr"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -6328,19 +6307,20 @@ possible.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.10.2")
+    (version "1.10.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "0zh894qd1sgpjbn0wfvq6hs2dzn7y1pyicvzk2aa48y3zbidanv7"))))
+                "18g24cf6b3vi13w85ki2mam6i2gl4yxr1zchyga34xc3dkdngzrw"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
        ("r-s4vectors" ,r-s4vectors)))
     (home-page "http://bioconductor.org/packages/GenomeInfoDb")
     (synopsis "Utilities for manipulating chromosome identifiers")
@@ -6381,13 +6361,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.20.2")
+    (version "1.20.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "165wda1d2jagd907pnra4m3sla66icyqxvd60xpv09jl5agd5mn9"))))
+                "10v8apgfw57nd4dxmdxdrijxpw135jpp2p8wrk3wjpb3hhfjp1qj"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -6419,13 +6399,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.30.7")
+    (version "3.30.13")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "1xg9w4lmn9n4hwyflxiwi6g969lcy569cg4z1x47crwwg7z7qdka"))))
+                "1ji8kb19anwq2505zii2kzqlrnk75mk1mpz8vy4s1mckzs1cz4m0"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -6438,13 +6418,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-xvector
   (package
     (name "r-xvector")
-    (version "0.14.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "XVector" version))
               (sha256
                (base32
-                "09lbqxpqr80g0kw77mpz0p1a8cq706j33kz8194wp71il67cdzi7"))))
+                "1j14ip4c260kdp3zcmgfa2v8ky88csa0gfdg6a1xsb64s03hdbm6"))))
     (properties
      `((upstream-name . "XVector")))
     (build-system r-build-system)
@@ -6474,13 +6454,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.26.2")
+    (version "1.26.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "0if5dswkp77lyqppd0z2iyvnwag9h1gsr03707s8npcx13mzpsia"))))
+                "1789ycqzv20d8p1axkxrhsz9v0ww6w1dk2mfvm85p8j53zd1f67c"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
@@ -6525,13 +6505,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.36.0")
+    (version "1.36.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "0ydrqw1k1j5p6w76bwc753cx545c055x88q87wzya93858synj6r"))))
+                "0574lmyisn3nv9aicz9x3iivx990da4q2j4i0f1jz0mpj9v3vc2w"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
@@ -6582,13 +6562,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "123i928rwi4h4sy4fpysv6pinw5nns0sm3myxi2ghqhm34ws8gyl"))))
+                "18zpa0vl375n9pvxsgbid1k96m17nqqgv1g1sfnlmm7kj34jxg6v"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
@@ -6632,13 +6612,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "1.26.1")
+    (version "1.26.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "0pf4f6brf4bl5zgjrah0f38qslazrs49ayqgyh0xfqgrh63yx4ck"))))
+                "118nsajgghi4cy3h0wi7777kc70a5j1fdyxv5n1dy01glix2z4qk"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -6706,13 +6686,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "11vb0a0zd36i4yhg4mfijv787v0nihn6pkjj6q7rfy19gwy61xlc"))))
+                "1dilghbsyf64iz5c0kib2c7if72x7almd5w3ali09a2b2ff2mcjk"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
@@ -6739,13 +6719,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.34.1")
+    (version "1.34.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "0x59k2fd0iaqi93gy6bm58p2j2z90z1b7a6w5b4c098y98n096rc"))))
+                "1j3cyvg1wg1d9l0lkcjk3jn7pb96zi17nd1qsa5lglsimja19mpl"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -6784,13 +6764,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.26.2")
+    (version "1.26.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "1ybi6r3bax07wlv2qcd34y5qjdvcqcfayfvlrjc39ifrkk65wv4f"))))
+                "1y16lqach0v3ym5zhdhj4r2imfi0kpa0djlb51hj85yf7xkzwdlb"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8295,14 +8275,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-seqminer
   (package
     (name "r-seqminer")
-    (version "5.3")
+    (version "5.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seqminer" version))
        (sha256
         (base32
-         "0y0gc5lws3hdxasjb84m532ics6imb7qg9sl1zy62h503jh4j9gw"))))
+         "0p75wyl70cvp36mwg5y74nv573j1gdqi15ac2a7xf61jmsq7ycpy"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -8349,14 +8329,14 @@ trait.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.16")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "067xbmy10mpsvmv77g62chd7wwhdhcfn5hmp5fisbnz2h5rq0q60"))))
+         "0z5srzsfgsgi4bssr4chls4ry6d18y2g9143znqmraylppwrrqzr"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/MALDIquant")

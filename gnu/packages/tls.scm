@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
       (method url-fetch)
@@ -440,7 +440,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "10hw434azw0gvfkmfm46r85r7my1c6592rg9jsna914jh1q7vyhg"))))
+        "0c4awq45cl757fv7f7f75i5i0ibc6v7ns13n7xvfak7chv2lrqql"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
@@ -469,26 +469,37 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.12.0")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "1pzv8fcfwdqzvvpyhgjz412is0b98yj9495k8sidzzqgbdmvlp50"))))
+        "05cqadwzgfcianw3v0qxwja65dxnzw429f7dk8w0mnh21pib72bl"))))
     (build-system python-build-system)
+
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'docs
+         (add-after 'unpack 'patch-dependency
+           ;; This module is part of the Python standard library, so we don't
+           ;; need to use an external package.
+           ;; https://github.com/certbot/certbot/pull/2249
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse',") ""))
+             #t))
+         (add-after 'build 'build-documentation
+           (lambda _
+             (zero? (system* "make" "-C" "docs" "man" "info"))))
+         (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (info (string-append out "/info")))
-               (and (zero? (system* "make" "-C" "docs" "man" "info"))
-                    (install-file "docs/_build/texinfo/acme-python.info" info)
-                    (install-file "docs/_build/man/acme-python.1" man)
-                    #t)))))))
+               (install-file "docs/_build/texinfo/acme-python.info" info)
+               (install-file "docs/_build/man/acme-python.1" man)
+               #t))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -498,9 +509,7 @@ security, and applying best practice development processes.")
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("python-ndg-httpsclient" ,python-ndg-httpsclient)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-six" ,python-six)
+     `(("python-six" ,python-six)
        ("python-requests" ,python-requests)
        ("python-pytz" ,python-pytz)
        ("python-pyrfc3339" ,python-pyrfc3339)
@@ -526,24 +535,23 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1dw86gb8lyap5ckjawmli1hxgbchw2g62g1lqfvxyqjv0df94waa"))))
+                "1wq0khcf4ixda71cgfd9rkqqzx6j8hp8ha0cssvjzjnsgrsdffpn"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man1 (string-append out "/share/man/man1"))
-                    (man7 (string-append out "/share/man/man7"))
-                    (info (string-append out "/info")))
-               (and
-                 (zero? (system* "make" "-C" "docs" "man" "info"))
-                 (install-file "docs/_build/texinfo/Certbot.info" info)
-                 (install-file "docs/_build/man/certbot.1" man1)
-                 (install-file "docs/_build/man/certbot.7" man7)
-                 #t)))))))
+       ,@(substitute-keyword-arguments (package-arguments python-acme)
+           ((#:phases phases)
+            `(modify-phases ,phases
+              (replace 'install-documentation
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let* ((out (assoc-ref outputs "out"))
+                         (man1 (string-append out "/share/man/man1"))
+                         (man7 (string-append out "/share/man/man7"))
+                         (info (string-append out "/info")))
+                    (install-file "docs/_build/texinfo/Certbot.info" info)
+                    (install-file "docs/_build/man/certbot.1" man1)
+                    (install-file "docs/_build/man/certbot.7" man7)
+                    #t))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python2-nose" ,python2-nose)
@@ -557,7 +565,6 @@ security, and applying best practice development processes.")
     (propagated-inputs
      `(("python2-acme" ,python2-acme)
        ("python2-zope-interface" ,python2-zope-interface)
-       ("python2-pythondialog" ,python2-pythondialog)
        ("python2-pyrfc3339" ,python2-pyrfc3339)
        ("python2-pyopenssl" ,python2-pyopenssl)
        ("python2-configobj" ,python2-configobj)

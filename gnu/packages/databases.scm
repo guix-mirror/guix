@@ -290,7 +290,7 @@ mapping from string keys to string values.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.17")
+    (version "5.7.18")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -302,7 +302,7 @@ mapping from string keys to string values.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0lcn9cm36n14g22bcppq5vf4nxbrl3khvlsp9hsixqdfb3l27gyf"))))
+               "18m1mr55k9zmvnyqs0wr50csqsz3scs09fykh60wsml6c3np2p8b"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -438,14 +438,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.5.6")
+    (version "9.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bz1b9r249ffjfvldaiah2g78ccwq30ddh8hdvlq61z26inmz7mv"))))
+                "1jahzqqw5inyvmacic2ihhj5f8z50lapci2fwws91h719ccbb1q1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -960,7 +960,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-pg
   (package
     (name "perl-dbd-pg")
-    (version "3.5.1")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
@@ -968,7 +968,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-Pg-" version ".tar.gz"))
        (sha256
         (base32
-         "0z0kf1kjgbi5f6nr63i2fnrx7629d9lvxg1q8sficwb3zdf1ggzx"))))
+         "03m9w1cd0yyrbqwkwcl92j1cpmasmm69f3hwvcrlfsi5fnwsk63y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbi" ,perl-dbi)))
@@ -1008,7 +1008,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.52")
+    (version "1.54")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1016,7 +1016,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0kimb2qr1rh07yylbbfybwcizpmy61ck667amypn4clmkfg0knm6"))))
+                "0sbj9lx9syzpknvjv8cz9jndg32qz775vy2prgq305npv3dsca9r"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1280,7 +1280,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.838")
+  (version "1.840")
   (source
     (origin
       (method url-fetch)
@@ -1290,7 +1290,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
              ".tar.gz"))
       (sha256
         (base32
-          "0yp5d5zr8dk9g6xdh7ygi5bq63q7nxvhd58dk2i3ki4nb7yv2yh9"))))
+          "1i5jz85z4hpx15lw6ix27pyvrf0ziyh4z33lii4d3wnhz83lg1mp"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))

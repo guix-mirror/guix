@@ -1001,6 +1001,7 @@ can solve two kinds of problems:
     (inputs
      `(("lapack" ,lapack)
        ("readline" ,readline)
+       ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
@@ -1583,12 +1584,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "1.9.5")
+    (version "2.0.4")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "19nr2jlkbcdgvw3gx5hry12av565lmvqd5q4h7zlch3q13avwwl2"))))
+        (base32 "1z3i90mkzwvp9di17caf4934z2xlb2imm3hwxllcrbwvmnmhrwyc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
@@ -2159,14 +2160,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "7.600.2")
+    (version "7.800.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0bac9y46m61zxinj51l82w06v01ra9vw7a9j6rrwdjhznkkdb437"))))
+                "1qqzy7dp891j9v7062mv1599hdwr97vqzrd3j2fl8c3gmc00dmzg"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
@@ -2183,18 +2184,7 @@ environments.  It can be used for machine learning, pattern recognition,
 signal processing, bioinformatics, statistics, econometrics, etc.  The library
 provides efficient classes for vectors, matrices and cubes, as well as 150+
 associated functions (eg. contiguous and non-contiguous submatrix views).")
-    (license license:mpl2.0)))
-
-(define-public armadillo-for-rcpparmadillo
-  (package (inherit armadillo)
-    (version "7.600.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/arma/armadillo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1dxgfd2r9lbh24nszvqm2lag439s0srxaf1l86f6ww6waqm5r8zk"))))))
+    (license license:asl2.0)))
 
 (define-public muparser
   ;; When switching download sites, muparser re-issued a 2.2.5 release with a
@@ -2730,6 +2720,8 @@ in finite element programs.")
           (base32
             "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))))
     (build-system cmake-build-system)
+    (outputs '("out"
+               "octave"))                  ;46 MiB .mex file that pulls Octave
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
@@ -2747,6 +2739,14 @@ in finite element programs.")
        ;; Save 12 MiB by not installing .a files.  Passing
        ;; '-DBUILD_STATIC_LIBS=OFF' has no effect.
        #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-octave-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install the .mex file in the "octave" output.
+                      (let ((out (assoc-ref outputs "octave")))
+                        (substitute* "src/matlab/CMakeLists.txt"
+                          (("share/flann/octave")
+                           (string-append out "/share/flann/octave")))
+                        #t)))
                   (add-after 'install 'remove-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))

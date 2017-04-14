@@ -14,12 +14,12 @@ Increase timeouts to increase chances of a successful build.
  }
  
  void TlsConnectTestBase::EnableExtendedMasterSecret() {
-@@ -387,7 +387,7 @@
-   } else {
-     fail_agent = server_;
+@@ -385,7 +385,7 @@
+   if (failing_side == TlsAgent::CLIENT) {
+     failing_agent = client_;
    }
--  ASSERT_TRUE_WAIT(fail_agent->state() == TlsAgent::STATE_ERROR, 5000);
-+  ASSERT_TRUE_WAIT(fail_agent->state() == TlsAgent::STATE_ERROR, 25000);
+-  ASSERT_TRUE_WAIT(failing_agent->state() == TlsAgent::STATE_ERROR, 5000);
++  ASSERT_TRUE_WAIT(failing_agent->state() == TlsAgent::STATE_ERROR, 25000);
  }
  
  void TlsConnectTestBase::ConfigureVersion(uint16_t version) {

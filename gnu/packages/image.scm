@@ -905,7 +905,8 @@ convert, manipulate, filter and display a wide variety of image formats.")
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))))
+                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))
+              (patches (search-patches "jasper-CVE-2017-6850.patch"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

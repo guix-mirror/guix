@@ -53,7 +53,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/assembly.scm			\
   %D%/packages/astronomy.scm			\
   %D%/packages/attr.scm				\
-  %D%/packages/audacity.scm			\
   %D%/packages/audio.scm			\
   %D%/packages/augeas.scm			\
   %D%/packages/autogen.scm			\
@@ -71,6 +70,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/boost.scm			\
   %D%/packages/bootloaders.scm			\
   %D%/packages/bootstrap.scm			\
+  %D%/packages/build-tools.scm			\
   %D%/packages/busybox.scm			\
   %D%/packages/c.scm				\
   %D%/packages/calcurse.scm			\
@@ -106,7 +106,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
-  %D%/packages/dillo.scm			\
   %D%/packages/disk.scm				\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
@@ -390,6 +389,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
   %D%/packages/web.scm				\
+  %D%/packages/web-browsers.scm			\
   %D%/packages/webkit.scm			\
   %D%/packages/wget.scm				\
   %D%/packages/wicd.scm				\
@@ -460,7 +460,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/linux-modules.scm			\
   %D%/build/marionette.scm			\
   %D%/build/shepherd.scm			\
-  %D%/build/svg.scm				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
@@ -495,7 +494,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
-  %D%/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/automake-regexp-syntax.patch		\
   %D%/packages/patches/automake-test-gzip-warning.patch		\
@@ -609,11 +607,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-o-largefile.patch			\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
+  %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnupg-2.1-fix-Y2038-test-failure.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
@@ -662,12 +660,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
+  %D%/packages/patches/jasper-CVE-2017-6850.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
-  %D%/packages/patches/kio-CVE-2017-6410.patch			\
+  %D%/packages/patches/kiki-level-selection-crash.patch		\
+  %D%/packages/patches/kiki-makefile.patch			\
+  %D%/packages/patches/kiki-missing-includes.patch		\
+  %D%/packages/patches/kiki-portability-64bit.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
@@ -759,8 +761,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luajit-symlinks.patch			\
   %D%/packages/patches/luit-posix.patch				\
+  %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
+  %D%/packages/patches/lz4-fix-test-failures.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -794,6 +798,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
+  %D%/packages/patches/networkmanager-qt-activeconnection-test-1.patch \
+  %D%/packages/patches/networkmanager-qt-activeconnection-test-2.patch \
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
@@ -821,11 +827,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
-  %D%/packages/patches/password-store-gnupg-compat.patch	\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
+  %D%/packages/patches/pcre-CVE-2017-7186.patch			\
+  %D%/packages/patches/pcre2-CVE-2017-7186.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -878,6 +885,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
+  %D%/packages/patches/python-cython-fix-tests-32bit.patch	\
   %D%/packages/patches/python-fake-factory-fix-build-32bit.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
@@ -891,18 +899,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2016-10155.patch			\
-  %D%/packages/patches/qemu-CVE-2017-2615.patch			\
-  %D%/packages/patches/qemu-CVE-2017-2620.patch			\
-  %D%/packages/patches/qemu-CVE-2017-2630.patch			\
   %D%/packages/patches/qemu-CVE-2017-5525.patch			\
   %D%/packages/patches/qemu-CVE-2017-5526.patch			\
   %D%/packages/patches/qemu-CVE-2017-5552.patch			\
   %D%/packages/patches/qemu-CVE-2017-5578.patch			\
   %D%/packages/patches/qemu-CVE-2017-5579.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5667.patch			\
   %D%/packages/patches/qemu-CVE-2017-5856.patch			\
   %D%/packages/patches/qemu-CVE-2017-5898.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5931.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -921,6 +924,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
+  %D%/packages/patches/screen-fix-info-syntax-error.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-comment-style-fix.patch		\
@@ -952,6 +956,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
   %D%/packages/patches/tcsh-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
+  %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texlive-texmf-CVE-2016-10243.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\

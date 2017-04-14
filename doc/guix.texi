@@ -165,6 +165,7 @@ GNU Distribution
 
 * System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring the operating system.
+* Documentation::                Browsing software user manuals.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -233,7 +234,7 @@ Packaging Guidelines
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
-* Python Modules::              Taming the snake.
+* Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
@@ -436,6 +437,14 @@ Make @code{root}'s profile available under @file{~/.guix-profile}:
 @example
 # ln -sf /var/guix/profiles/per-user/root/guix-profile \
          ~root/.guix-profile
+@end example
+
+Source @file{etc/profile} to augment @code{PATH} and other relevant
+environment variables:
+
+@example
+# GUIX_PROFILE=$HOME/.guix-profile \
+  source $GUIX_PROFILE/etc/profile
 @end example
 
 @item
@@ -2475,6 +2484,14 @@ This produces a tarball that follows the
 Docker Image Specification}.
 @end table
 
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the package @var{expr} evaluates to.
+
+This has the same purpose as the same-named option in @command{guix
+build} (@pxref{Additional Build Options, @code{--expression} in
+@command{guix build}}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
@@ -2945,6 +2962,16 @@ with @var{libressl}.  Then we use it to define a @dfn{variant} of the
 @var{git} package that uses @var{libressl} instead of @var{openssl}.
 This is exactly what the @option{--with-input} command-line option does
 (@pxref{Package Transformation Options, @option{--with-input}}).
+
+A more generic procedure to rewrite a package dependency graph is
+@code{package-mapping}: it supports arbitrary changes to nodes in the
+graph.
+
+@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}]
+Return a procedure that, given a package, applies @var{proc} to all the packages
+depended on and returns the resulting package.  The procedure stops recursion
+when @var{cut?} returns true for a given package.
+@end deffn
 
 @menu
 * package Reference ::          The package data type.
@@ -4011,8 +4038,15 @@ in this example:
 @deffnx {Scheme Syntax} mlet* @var{monad} ((@var{var} @var{mval}) ...) @
        @var{body} ...
 Bind the variables @var{var} to the monadic values @var{mval} in
-@var{body}.  The form (@var{var} -> @var{val}) binds @var{var} to the
-``normal'' value @var{val}, as per @code{let}.
+@var{body}, which is a sequence of expressions.  As with the bind
+operator, this can be thought of as ``unpacking'' the raw, non-monadic
+value ``contained'' in @var{mval} and making @var{var} refer to that
+raw, non-monadic value within the scope of the @var{body}.  The form
+(@var{var} -> @var{val}) binds @var{var} to the ``normal'' value
+@var{val}, as per @code{let}.  The binding operations occur in sequence
+from left to right.  The last expression of @var{body} must be a monadic
+expression, and its result will become the result of the @code{mlet} or
+@code{mlet*} when run in the @var{monad}.
 
 @code{mlet*} is to @code{mlet} what @code{let*} is to @code{let}
 (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}).
@@ -4020,11 +4054,26 @@ Bind the variables @var{var} to the monadic values @var{mval} in
 
 @deffn {Scheme System} mbegin @var{monad} @var{mexp} ...
 Bind @var{mexp} and the following monadic expressions in sequence,
-returning the result of the last expression.
+returning the result of the last expression.  Every expression in the
+sequence must be a monadic expression.
 
 This is akin to @code{mlet}, except that the return values of the
 monadic expressions are ignored.  In that sense, it is analogous to
 @code{begin}, but applied to monadic expressions.
+@end deffn
+
+@deffn {Scheme System} mwhen @var{condition} @var{mexp0} @var{mexp*} ...
+When @var{condition} is true, evaluate the sequence of monadic
+expressions @var{mexp0}..@var{mexp*} as in an @code{mbegin}.  When
+@var{condition} is false, return @code{*unspecified*} in the current
+monad.  Every expression in the sequence must be a monadic expression.
+@end deffn
+
+@deffn {Scheme System} munless @var{condition} @var{mexp0} @var{mexp*} ...
+When @var{condition} is false, evaluate the sequence of monadic
+expressions @var{mexp0}..@var{mexp*} as in an @code{mbegin}.  When
+@var{condition} is true, return @code{*unspecified*} in the current
+monad.  Every expression in the sequence must be a monadic expression.
 @end deffn
 
 @cindex state monad
@@ -6897,6 +6946,7 @@ For information on porting to other architectures or kernels,
 @menu
 * System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring the operating system.
+* Documentation::                Browsing software user manuals.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -15226,6 +15276,11 @@ of the given @var{size}.  @var{size} may be a number of bytes, or it may
 include a unit as a suffix (@pxref{Block size, size specifications,,
 coreutils, GNU Coreutils}).
 
+@item --root=@var{file}
+@itemx -r @var{file}
+Make @var{file} a symlink to the result, and register it as a garbage
+collector root.
+
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.
 @var{strategy} may be one of the following:
@@ -15895,6 +15950,70 @@ This service represents PID@tie{}1.
 @end defvr
 
 
+@node Documentation
+@section Documentation
+
+@cindex documentation, searching for
+@cindex searching for documentation
+@cindex Info, documentation format
+@cindex man pages
+@cindex manual pages
+In most cases packages installed with Guix come with documentation.
+There are two main documentation formats: ``Info'', a browseable
+hypertext format used for GNU software, and ``manual pages'' (or ``man
+pages''), the linear documentation format traditionally found on Unix.
+Info manuals are accessed with the @command{info} command or with Emacs,
+and man pages are accessed using @command{man}.
+
+You can look for documentation of software installed on your system by
+keyword.  For example, the following command searches for information
+about ``TLS'' in Info manuals:
+
+@example
+$ info -k TLS
+"(emacs)Network Security" -- STARTTLS
+"(emacs)Network Security" -- TLS
+"(gnutls)Core TLS API" -- gnutls_certificate_set_verify_flags
+"(gnutls)Core TLS API" -- gnutls_certificate_set_verify_function
+@dots{}
+@end example
+
+@noindent
+The command below searches for the same keyword in man pages:
+
+@example
+$ man -k TLS
+SSL (7)              - OpenSSL SSL/TLS library
+certtool (1)         - GnuTLS certificate tool
+@dots {}
+@end example
+
+These searches are purely local to your computer so you have the
+guarantee that documentation you find corresponds to what you have
+actually installed, you can access it off-line, and your privacy is
+respected.
+
+Once you have these results, you can view the relevant documentation by
+running, say:
+
+@example
+$ info "(gnutls)Core TLS API"
+@end example
+
+@noindent
+or:
+
+@example
+$ man certtool
+@end example
+
+Info manuals contain sections and indices as well as hyperlinks like
+those found in Web pages.  The @command{info} reader (@pxref{Top, Info
+reader,, info-stnd, Stand-alone GNU Info}) and its Emacs counterpart
+(@pxref{Misc Help,,, emacs, The GNU Emacs Manual}) provide intuitive key
+bindings to navigate manuals.  @xref{Getting Started,,, info, Info: An
+Introduction}, for an introduction to Info navigation.
+
 @node Installing Debugging Files
 @section Installing Debugging Files
 
@@ -16206,7 +16325,7 @@ needed is to review and apply the patch.
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
-* Python Modules::              Taming the snake.
+* Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.

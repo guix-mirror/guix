@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -470,17 +471,17 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "2.1")
+    (version "2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1h7rnq4g7xlxxybcb3vjq6nscm9zhlmfaxb7258c8ax7him4azg6"))))
+               "1wvggbr4xv8idh1hzd8caj4xfp4pln78a7w1wqzd4zgzwmnzxr2f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("guile" ,guile-2.0)))
+              ("guile" ,guile-2.2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags (list "--with-ncursesw"  ; Unicode support
@@ -498,7 +499,7 @@ many readers as needed).")
                          (files (find-files dir ".scm")))
                     (substitute* files
                       (("\"libguile-ncurses\"")
-                       (format #f "\"~a/lib/guile/2.0/libguile-ncurses\""
+                       (format #f "\"~a/lib/guile/2.2/libguile-ncurses\""
                                out)))
                     #t)))))))
     (home-page "https://www.gnu.org/software/guile-ncurses/")
@@ -1520,7 +1521,7 @@ type system, elevating types to first-class status.")
 (define-public guile-aspell
   (package
     (name "guile-aspell")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1528,23 +1529,27 @@ type system, elevating types to first-class status.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1wknn57x2qcsbn7zw6sbn1ma6fjsg8cvpnf78ak47s8jw6k6j75n"))))
+                "0vpk5xj9m9qc702z3khmkwhgpb949qbsyz8kw2qycda6qnxk0077"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "--with-guilesitedir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-guilesitedir
+                    (lambda _
+                      (substitute* "Makefile.in"
+                        (("^guilesitedir =.*$")
+                         "guilesitedir = \
+$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      #t))
                   (add-before 'build 'set-libaspell-file-name
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((aspell (assoc-ref inputs "aspell")))
-                        (substitute* "aspell/aspell.scm"
+                        (substitute* "aspell.scm"
                           (("\"libaspell\\.so\"")
                            (string-append "\"" aspell
                                           "/lib/libaspell\"")))
                         #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("aspell" ,aspell)))
     (home-page "https://github.com/spk121/guile-aspell")
     (synopsis "Spell-checking from Guile")
@@ -1727,5 +1732,40 @@ is not available for Guile 2.0.")
        "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
       (license license:gpl3+))))
+
+(define-public guile-syntax-highlight
+  (let ((commit "a047675e66861b647426372aa2ba7820f749616d")
+        (revision "0"))
+    (package
+      (name "guile-syntax-highlight")
+      (version (string-append "0.0." revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://dthompson.us/guile-syntax-highlight.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "sh" "bootstrap")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (synopsis "General-purpose syntax highlighter for GNU Guile")
+      (description "Guile-syntax-highlight is a general-purpose syntax
+highlighting library for GNU Guile.  It can parse code written in various
+programming languages into a simple s-expression that can be converted to
+HTML (via SXML) or any other format for rendering.")
+      (home-page "http://dthompson.us/software/guile-syntax-highlight")
+      (license license:lgpl3+))))
 
 ;;; guile.scm ends here

@@ -529,14 +529,14 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "1.16.0")
+    (version "1.17.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "14k8z7ndc3zk5xivnm4d8lncchx475ll5izpf8vmfbq7rp9yp5rj"))))
+         "1rs2qcmskcmq66q6g5al08wa41l9am0fad5r719m8wf91msyylqw"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: One test fails with "EOFError not raised by connect".
@@ -3401,14 +3401,15 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.24.1")
+    (version "0.25.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
+       (patches (search-patches "python-cython-fix-tests-32bit.patch"))
        (sha256
         (base32
-         "1fg7fmpvfcq9md4ncyqnnylyjy4z3ksdrshzis95g1sh03d8z044"))))
+         "01h3lrf6d98j07iakifi81qjszh6faa37ibx7ylva1vsqbwx2hgi"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -4905,7 +4906,7 @@ cluster without needing to write any wrapper code yourself.")
          (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)
+       ("python-pytest" ,python-pytest-3.0)
        ("man-db" ,man-db)
        ("which" ,which)))
     (propagated-inputs
@@ -13947,3 +13948,20 @@ recognize TestCases.")
 
 (define-public python2-mando
   (package-with-python2 python-mando))
+
+(define-public python-mando-0.3.1
+  ;; python-radon (version 1.5.0) has a requirement
+  ;; for mando<0.4,>=0.3
+  (package
+    (inherit python-mando)
+    (name "python-mando")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rubik/mando/archive/v"
+                           version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "17jlkdpqw22z1nyml5ybslilqkzmnk0dxxjml8bfghav1l5hbwd2"))))))

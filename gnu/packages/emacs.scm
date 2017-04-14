@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -22,6 +22,8 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,13 +53,16 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
@@ -725,7 +730,7 @@ the body are let-bound and this search is done at compile time.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "28")
+    (version "30")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -733,7 +738,7 @@ the body are let-bound and this search is done at compile time.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "1yjxivk11d7w39zfhj2xr4h6xhwx1aj6yhyzd63rjrad7xpjfl86"))))
+                "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -1125,9 +1130,22 @@ than @code{electric-indent-mode}.")
                ("ag-executable"
                 (string-append (assoc-ref inputs "the-silver-searcher")
                                "/bin/ag")))
-             #t)))))
+             #t))
+         (add-before 'install 'make-info
+           (lambda _
+             (with-directory-excursion "docs"
+               (zero? (system* "make" "info")))))
+         (add-after 'install 'install-info
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (install-file "docs/_build/texinfo/agel.info" info)
+               #t))))))
     (inputs
      `(("the-silver-searcher" ,the-silver-searcher)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("s" ,emacs-s)))
@@ -1487,17 +1505,18 @@ strings.")
 (define-public emacs-symon
   (package
     (name "emacs-symon")
-    (version "20170224.33")
+    (version "20160630")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://melpa.org/packages/symon-"
-                           version ".el"))
+       (uri (string-append "https://github.com/zk-phi/symon/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "109jd7yjhdrrf5jqpqyv543nb28g7065z58bji9pvxanzi4zl2iz"))))
+         "0h4jcgdnq98wc9rj72nwyazq8498yg55jfljiij5qwbn1xf1g5zz"))))
     (build-system emacs-build-system)
-    (home-page "http://hins11.yu-yake.com/")
+    (home-page "https://github.com/zk-phi/symon")
     (synopsis "Tiny graphical system monitor")
     (description
      "Tiny graphical system monitor for the Emacs minibuffer when idle.")
@@ -1979,14 +1998,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.12")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1swi4d7fhahimid9j12cypmkz7dlqgffrnhfxy5ra44y3j2b35ph"))))
+                "07wgcvg038l88gxvjr0gjpjhyk743w22x1rqghz3gkmif0g70say"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
@@ -2058,7 +2077,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.8.12")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -2067,8 +2086,20 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vwmbqm7h4lrszv2qxy6fqzznm9raigi84cadx982c9m7shp0zzz"))))
+         "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             ;; The company-files-candidates-normal-root test looks
+             ;; for the /bin directory, but the build environment has
+             ;; no /bin directory. Modify the test to look for the
+             ;; /tmp directory.
+             (substitute* "test/files-tests.el"
+               (("/bin/") "/tmp/"))
+             (zero? (system* "make" "test-batch")))))))
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
@@ -2442,7 +2473,7 @@ organizer.")
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2451,7 +2482,7 @@ organizer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lyi84bm8sa7vj40n6zg6rlbsmi53mi1y9xn6gkjj29s5zbcnlg7"))))
+                "03kfhzgbbbl8ivpzzky6qxw4j9mmp452m1sk7wikxmcalfnix0gn"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bbatsov/zenburn-emacs")
     (synopsis "Low contrast color theme for Emacs")
@@ -2655,7 +2686,7 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -2664,7 +2695,7 @@ automatically.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18nqwl05is71dzswnvpfhlg7b0v3apvbsfxrwab9c0apwavi892q"))))
+         "1abi1rvjarwfxxylpx8qlhck0kbavnj0nmlaaizk9q5zr02xfx1j"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
@@ -2792,7 +2823,7 @@ S-expression.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2801,7 +2832,7 @@ S-expression.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gi8ra3ap5m3mz4qh1yxp2cldn7z9xcxvypznr6rrlc6a9l8s5a6"))))
+                "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
@@ -3064,7 +3095,7 @@ in Emacs.")
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/bbatsov"
@@ -3072,7 +3103,7 @@ in Emacs.")
               (file-name (string-append "projectile-" version ".el"))
               (sha256
                (base32
-                "1pc6xb61hzxzc5hkqkli1ab0s7wz0rfgx4kcn9y30ksvhw18smbz"))))
+                "1ql1wnzhblbwnv66hf2y0wq45g71hh6s9inc090lmhm1vgylbd1f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -3100,6 +3131,12 @@ If you want to mark a folder manually as a project just create an empty
                (base32
                 "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "make" "test")))))))
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
     (description
@@ -4050,4 +4087,276 @@ jQuery and Bootstrap resources included via osscdn.")
     (synopsis "Minor mode that highlights the s-exp at the current position")
     (description
      "This Emacs package highlights the s-exp at the current position.")
+    (license license:gpl3+)))
+
+(define-public emacspeak
+  (package
+    (name "emacspeak")
+    (version "45.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tvraman/emacspeak/releases/download/"
+             version "/emacspeak-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0npcr867xbbhwa0i7v26hnk4z2d51522jwcfwc594j74kbv3g6ka"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("\\$\\(INSTALL\\) -d \\$\\(libdir\\)/servers/linux-outloud")
+                "")
+               (("\\$\\(INSTALL\\)  -m 755 \\$\\{OUTLOUD\\}.*$") "")
+               (("\\*info\\*") "*"))
+             (substitute* "etc/emacspeak.sh.def"
+               (("<emacspeak-dir>")
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs/site-lisp/emacspeak/lisp")))
+             (zero? (system* "make" "config"))))
+         (add-after 'install 'install-espeak-server
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion "servers/linux-espeak"
+                 (and (zero? (system* "make"))
+                      (zero? (system* "make" "install"
+                                      (string-append "PREFIX=" out))))))))
+         (add-after 'install-espeak-server 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (emacspeak (string-append out "/bin/emacspeak"))
+                    (espeak (string-append (assoc-ref inputs "espeak")
+                                           "/bin/espeak")))
+               ;; The environment variable DTK_PROGRAM tells emacspeak what
+               ;; program to use for speech.
+               (wrap-program emacspeak
+                 `("DTK_PROGRAM" ":" prefix (,espeak)))
+               #t))))
+       #:tests? #f)) ; no check target
+    (inputs
+     `(("espeak" ,espeak)
+       ("tcl" ,tcl)
+       ("tclx" ,tclx)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (home-page "http://emacspeak.sourceforge.net")
+    (synopsis "Audio desktop interface for Emacs")
+    (description
+     "Emacspeak is a speech interface that allows visually impaired users to
+interact independently and efficiently with the computer.  Audio formatting
+--a technique pioneered by AsTeR-- and full support for W3C's Aural CSS (ACSS)
+allows Emacspeak to produce rich aural presentations of electronic information.
+By seamlessly blending all aspects of the Internet such as Web-surfing and
+messaging, Emacspeak speech-enables local and remote information via a
+consistent and well-integrated user interface.")
+    (license license:gpl2+)))
+
+(define-public emacs-adaptive-wrap
+  (package
+    (name "emacs-adaptive-wrap")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://elpa.gnu.org/packages/adaptive-wrap-"
+                    version ".el"))
+              (sha256
+               (base32
+                "0frgmp8vrrml4iykm60j4d6cl9rbcivy9yh24q6kd10bcyx59ypy"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/adaptive-wrap.html")
+    (synopsis "Smart line-wrapping with wrap-prefix")
+    (description
+     "This Emacs package provides the @code{adaptive-wrap-prefix-mode}
+minor mode which sets the wrap-prefix property on the fly so that
+single-long-line paragraphs get word-wrapped in a way similar to what
+you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
+actually changing the buffer's text.")
+    (license license:gpl3+)))
+
+(define-public emacs-diminish
+  (package
+    (name "emacs-diminish")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/myrjola/diminish.el/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i3629sv5cfrrb00hcnmaqzgs8mk36yasc1ax3ry1ga09nr6rkj9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/myrjola/diminish.el")
+    (synopsis "Diminish minor modes with no modeline display")
+    (description "@code{emacs-diminish} implements hiding or
+abbreviation of the mode line displays (lighters) of minor modes.")
+    (license license:gpl2+)))
+
+(define-public emacs-use-package
+  (package
+    (name "emacs-use-package")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwiegley/use-package/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x4h136jb3imyli6zsh7dyzjrra6pv0v6b0yk94jdng3rdfcmsf5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-diminish" ,emacs-diminish)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "use-package-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit"))
+             ;; Tests fail in this release, but have been fixed in
+             ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
+             #t)))))
+    (home-page "https://github.com/jwiegley/use-package")
+    (synopsis "Declaration for simplifying your .emacs")
+    (description "The use-package macro allows you to isolate package
+configuration in your @file{.emacs} file in a way that is both
+performance-oriented and tidy.")
+    (license license:gpl2+)))
+
+(define-public emacs-strace-mode
+  (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
+         (revision "1"))
+    (package
+      (name "emacs-strace-mode")
+      (version (string-append "0.0.2-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkmoore/strace-mode")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lbk2kzdznf2bkfazizfbimaxxzfzv00lrz1ran9dc2zqbc0bj9f"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/pkmoore/strace-mode")
+      (synopsis "Emacs major mode to highlight strace outputs")
+      (description "@code{emacs-strace-mode} provides an Emacs major mode
+ highlighting strace outputs.")
+      (license license:gpl3+))))
+
+(define-public emacs-default-encrypt
+  (package
+    (name "emacs-default-encrypt")
+    (version "4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.informationelle-selbstbestimmung-im-internet.de"
+             "/emacs/jl-encrypt" version "/jl-encrypt.el"))
+       (file-name (string-append "jl-encrypt-" version ".el"))
+       (sha256
+        (base32
+         "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (synopsis "Automatically encrypt or sign Gnus messages in Emacs")
+    (description
+     "DefaultEncrypt is designed to be used with Gnus in Emacs.  It
+automatically encrypts messages that you send (e.g., email) when public keys
+for all recipients are available, and it protects you from accidentally
+sending un-encrypted messages.  It can also be configured to automatically
+sign messages that you send.  For details and instructions on how to use
+DefaultEncrypt, please refer to the home page or read the comments in the
+source file, @file{jl-encrypt.el}.")
+    (license license:gpl3+)))
+
+(define-public emacs-htmlize
+  (package
+    (name "emacs-htmlize")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/hniksic/emacs-htmlize/archive/release/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fy1lybzrxl8a8r88f6p19nz8ygmvcxhxbnymkxh7jqaz25viwld"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hniksic/emacs-htmlize")
+    (synopsis "Convert buffer text and decorations to HTML")
+    (description "@code{emacs-htmlize} converts the buffer text and
+the associated decorations to HTML.  Output to CSS, inline CSS and
+fonts is supported.")
+    (license license:gpl2+)))
+
+(define-public emacs-xmlgen
+  (package
+    (name "emacs-xmlgen")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/philjackson/xmlgen/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "xmlgen-test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/philjackson/xmlgen")
+    (synopsis "S-expression to XML domain specific language (DSL) in
+Emacs Lisp")
+    (description "@code{emacs-xmlgen} provides S-expression to XML
+conversion for Emacs Lisp.")
+    (license license:gpl2+)))
+
+(define-public emacs-cdlatex
+  (package
+    (name "emacs-cdlatex")
+    (version "4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cdominik/cdlatex/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pivapphmykc6vhvpx7hdyl55ls37vc4jcrxpvs4yk7jzcmwa9xp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cdominik/cdlatex")
+    (synopsis "Fast Emacs input methods for LaTeX environments and
+math")
+    (description "CDLaTeX is an Emacs minor mode supporting fast
+insertion of environment templates and math in LaTeX.  Similar
+commands are also offered as part of the AUCTeX package, but it is not
+the same - CDLaTeX focuses on speediness for inserting LaTeX
+constructs.")
     (license license:gpl3+)))

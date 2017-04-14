@@ -31,7 +31,6 @@
   #:use-module (guix memoization)
   #:use-module (guix build-system)
   #:use-module (guix search-paths)
-  #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -99,6 +98,7 @@
             package-transitive-propagated-inputs
             package-transitive-native-search-paths
             package-transitive-supported-systems
+            package-mapping
             package-input-rewriting
             package-source-derivation
             package-derivation
@@ -742,6 +742,35 @@ dependencies are known to build on SYSTEM."
   "Return the \"target inputs\" of BAG, recursively."
   (transitive-inputs (bag-target-inputs bag)))
 
+(define* (package-mapping proc #:optional (cut? (const #f)))
+  "Return a procedure that, given a package, applies PROC to all the packages
+depended on and returns the resulting package.  The procedure stops recursion
+when CUT? returns true for a given package."
+  (define (rewrite input)
+    (match input
+      ((label (? package? package) outputs ...)
+       (let ((proc (if (cut? package) proc replace)))
+         (cons* label (proc package) outputs)))
+      (_
+       input)))
+
+  (define replace
+    (mlambdaq (p)
+      ;; Return a variant of P with PROC applied to P and its explicit
+      ;; dependencies, recursively.  Memoize the transformations.  Failing to
+      ;; do that, we would build a huge object graph with lots of duplicates,
+      ;; which in turns prevents us from benefiting from memoization in
+      ;; 'package-derivation'.
+      (let ((p (proc p)))
+        (package
+          (inherit p)
+          (location (package-location p))
+          (inputs (map rewrite (package-inputs p)))
+          (native-inputs (map rewrite (package-native-inputs p)))
+          (propagated-inputs (map rewrite (package-propagated-inputs p)))))))
+
+  replace)
+
 (define* (package-input-rewriting replacements
                                   #:optional (rewrite-name identity))
   "Return a procedure that, when passed a package, replaces its direct and
@@ -751,26 +780,14 @@ package to replace, and the second one is the replacement.
 
 Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
 package and returns its new name after rewrite."
-  (define (rewrite input)
-    (match input
-      ((label (? package? package) outputs ...)
-       (match (assq-ref replacements package)
-         (#f  (cons* label (replace package) outputs))
-         (new (cons* label new outputs))))
-      (_
-       input)))
+  (define (rewrite p)
+    (match (assq-ref replacements p)
+      (#f  (package
+             (inherit p)
+             (name (rewrite-name (package-name p)))))
+      (new new)))
 
-  (define replace
-    (mlambdaq (p)
-      ;; Return a variant of P with its inputs rewritten.
-      (package
-        (inherit p)
-        (name (rewrite-name (package-name p)))
-        (inputs (map rewrite (package-inputs p)))
-        (native-inputs (map rewrite (package-native-inputs p)))
-        (propagated-inputs (map rewrite (package-propagated-inputs p))))))
-
-  replace)
+  (package-mapping rewrite (cut assq <> replacements)))
 
 
 ;;;
@@ -846,7 +863,16 @@ information in exceptions."
      ;; source.
      (list name (intern file)))
     (((? string? name) (? struct? source))
-     (list name (package-source-derivation store source system)))
+     ;; 'package-source-derivation' calls 'lower-object', which can throw
+     ;; '&gexp-input-error'.  However '&gexp-input-error' lacks source
+     ;; location info, so we catch and rethrow here (XXX: not optimal
+     ;; performance-wise).
+     (guard (c ((gexp-input-error? c)
+                (raise (condition
+                        (&package-input-error
+                         (package package)
+                         (input   (gexp-error-invalid-input c)))))))
+       (list name (package-source-derivation store source system))))
     (x
      (raise (condition (&package-input-error
                         (package package)

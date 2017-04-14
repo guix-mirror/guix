@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -83,7 +83,7 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -91,7 +91,7 @@
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "0bhickil88lalp9jdj1kmf4is70zinhx8ha9rng0g3z50r4a2qmv"))))
+                "1a9m7hzzrwk71gvwwrd1p45s64yid61i41n95gm5pzbry6p9fpl0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

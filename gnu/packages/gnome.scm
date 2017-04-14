@@ -23,6 +23,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +90,7 @@
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -722,6 +724,29 @@ update-desktop-database: updates the database containing a cache of MIME types
                 "1dyw8mm72wfpkn83vdqr0ifv5yhy565jhxrcjsd83nc7c3igd2y1"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+
+(define-public tango-icon-theme
+  (package
+    (name "tango-icon-theme")
+    (version "0.8.90")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tango.freedesktop.org/releases/"
+                                  "tango-icon-theme-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "034r9s944b4yikyfgn602yv7s54wdzlq0qfvqh52b9x6kbx08h79"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("imagemagick" ,imagemagick)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://tango-project.org/")
+    (synopsis "Tango icon theme")
+    (description "This is an icon theme that follows the Tango visual
+guidelines.")
+    (license license:public-domain)))
 
 (define-public shared-mime-info
   (package
@@ -4549,7 +4574,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.4.4")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4557,7 +4582,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "029k2f1arx1m5hppmr778i9yg34jj68nmji3i89qs06c33rpi4w2"))
+                "1y96k82rav8if334jl500zc024d210c4pgprh94yqyz3rmanyaxj"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -4601,12 +4626,14 @@ users.")
              ;; cope with being already in the Guix build jail as that jail
              ;; lacks some features that they would like to proxy over (like
              ;; a /sys mount).
-             (substitute* '("src/platform/Makefile.in"
-                            "src/devices/Makefile.in")
-               (("SUBDIRS = tests") ""))
-             (substitute* '("src/tests/Makefile.in")
-               (("\ttest-route-manager-linux") "\t")
-               (("\ttest-route-manager-fake") "\t"))
+             (substitute* '("Makefile.in")
+               (("src/platform/tests/test-address-linux") " ")
+               (("src/platform/tests/test-cleanup-linux") " ")
+               (("src/platform/tests/test-link-linux") " ")
+               (("src/platform/tests/test-route-linux") " ")
+               (("src/devices/tests/test-arping") " ")
+               (("src/devices/tests/test-lldp") " ")
+               (("src/tests/test-route-manager-linux") " "))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -4619,13 +4646,17 @@ users.")
                              "sysconfdir=/tmp"
                              "rundir=/tmp"
                              "statedir=/tmp"
+                             "nmstatedir=/tmp/nm"
                              "install")))))))
     (propagated-inputs
      `(("glib" ,glib)))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen
        ("gobject-introspection" ,gobject-introspection)
+       ("docbook-xsl" ,docbook-xsl)
        ("intltool" ,intltool)
+       ("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
        ;; For testing.
        ("python" ,python-wrapper)
@@ -4637,6 +4668,7 @@ users.")
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
+       ("jansson" ,jansson)
        ("libgcrypt" ,libgcrypt)
        ("libgudev" ,libgudev)
        ("libndp" ,libndp)

@@ -946,6 +946,13 @@
                      (string=? (readlink (string-append comp "/text"))
                                text)))))))
 
+(test-assert "lower-object & gexp-input-error?"
+  (guard (c ((gexp-input-error? c)
+             (gexp-error-invalid-input c)))
+    (run-with-store %store
+      (lower-object (current-module))
+      #:guile-for-build (%guile-for-build))))
+
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
  \"/bin/uname\"\\) [[:xdigit:]]+>$"

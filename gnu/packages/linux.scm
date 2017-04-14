@@ -352,8 +352,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.10.8")
-(define %linux-libre-hash "0936i2h9l4gn67gby9kx70w6zqv1nbzbgwssry6k11wrjwa2p8n4")
+(define %linux-libre-version "4.10.10")
+(define %linux-libre-hash "1py6hzv39hbyafkvz69pmcidwxbd7psp9jzmnm4dg4jj7j92m6b7")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -362,14 +362,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.20"
-                    "0hnxylfnyz3xf7k3qcq2wri2wpbi2islngxjmqp445v1pzr4k9xp"
+  (make-linux-libre "4.9.22"
+                    "1dvsbqkw7wvg40nmzdyiyvb0i54j5w6d9dvsvv7z87d2id56lqm0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.59"
-                    "1nrg7mg6cn0xzsdklg24aj5fqx05hab11j9nq4b8dabjf4crlkx5"
+  (make-linux-libre "4.4.61"
+                    "12555h3yxymxgfgq3g33sy78g7rj6l8dpqr29z98kr9ybs93q7vj"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2224,6 +2224,7 @@ in a digital read-out.")
        ;; ("newt" ,newt)
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
+       ("libiberty" ,libiberty)      ;used alongside BDF for symbol demangling
 
        ;; Documentation.
        ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES

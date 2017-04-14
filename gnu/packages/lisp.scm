@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,34 +88,32 @@
      `(#:parallel-build? #f  ; The build system seems not to be thread safe.
        #:tests? #f  ; There does not seem to be make check or anything similar.
        #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-       #:phases (alist-cons-before
-                'configure 'pre-conf
-                (lambda _
-                  ;; Patch bug when building readline support.  This bug was
-                  ;; also observed by Debian
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=741819
-                  (substitute* "o/gcl_readline.d"
-                    (("rl_attempted_completion_function = \
-\\(CPPFunction \\*\\)rl_completion;")
-                      "rl_attempted_completion_function = rl_completion;"))
-                  (substitute*
-                      (append
-                       '("pcl/impl/kcl/makefile.akcl"
-                         "add-defs"
-                         "unixport/makefile.dos"
-                         "add-defs.bat"
-                         "gcl-tk/makefile.prev"
-                         "add-defs1")
-                       (find-files "h" "\\.defs"))
-                    (("SHELL=/bin/(ba)?sh")
-                     (string-append "SHELL=" (which "bash")))))
-                ;; drop strip phase to make maxima build, see
-                ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
-                (alist-delete 'strip
-                 %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'pre-conf
+                    (lambda _
+                      (substitute*
+                        (append
+                         '("pcl/impl/kcl/makefile.akcl"
+                           "add-defs"
+                           "unixport/makefile.dos"
+                           "add-defs.bat"
+                           "gcl-tk/makefile.prev"
+                           "add-defs1")
+                         (find-files "h" "\\.defs"))
+                        (("SHELL=/bin/bash")
+                         (string-append "SHELL=" (which "bash")))
+                        (("SHELL=/bin/sh")
+                         (string-append "SHELL=" (which "sh"))))
+                      #t))
+                  ;; drop strip phase to make maxima build, see
+                  ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
+                  (delete 'strip))))
+    (inputs
+     `(("gmp" ,gmp)
+       ("readline" ,readline)))
     (native-inputs
-     `(("m4" ,m4)
-       ("readline" ,readline)
+     `(("gcc" ,gcc-4.9)
+       ("m4" ,m4)
        ("texinfo" ,texinfo)
        ("texlive" ,texlive)))
     (home-page "https://www.gnu.org/software/gcl/")

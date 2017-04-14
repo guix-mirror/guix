@@ -233,15 +233,14 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.22.0")
+    (version "0.26.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/serd-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1lmgca2s6r7ysakcld2lrj06bgn0pr45c51b47k3apxpnj3h40vv"))))
+               "164j43am4hka2vbzw4n52zy7rafgp6kmkgbcbvap368az644mr73"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -267,15 +266,14 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public sord
   (package
     (name "sord")
-    (version "0.14.0")
+    (version "0.16.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/sord-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "16piw1s3l95cf9x3rdcplp9l52k2lxq8drwg2q50ygm4avndhmkn"))))
+               "0nh3i867g9z4kdlnk82cg2kcw8r02qgifxvkycvzb4vfjv4v4g4x"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target

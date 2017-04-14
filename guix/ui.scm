@@ -26,6 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix ui)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -448,6 +449,10 @@ interpreted."
                       (location->string loc)
                       (package-full-name package)
                       (build-system-name system))))
+            ((gexp-input-error? c)
+             (let ((input (package-error-invalid-input c)))
+               (leave (_ "~s: invalid G-expression input~%")
+                      (gexp-error-invalid-input c))))
             ((profile-not-found-error? c)
              (leave (_ "profile '~a' does not exist~%")
                     (profile-error-profile c)))

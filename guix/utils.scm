@@ -155,7 +155,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
-    ('xz           (filtered-port `(,%xz "-dc -T0") input))
+    ('xz           (filtered-port `(,%xz "-dc" "-T0") input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     (else          (error "unsupported compression scheme" compression))))
 
@@ -165,7 +165,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-c") input))
-    ('xz           (filtered-port `(,%xz "-c -T0") input))
+    ('xz           (filtered-port `(,%xz "-c" "-T0") input))
     ('gzip         (filtered-port `(,%gzip "-c") input))
     (else          (error "unsupported compression scheme" compression))))
 
@@ -222,7 +222,7 @@ program--e.g., '(\"--fast\")."
   (match compression
     ((or #f 'none) (values output '()))
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
-    ('xz           (filtered-output-port `(,%xz "-c -T0" ,@options) output))
+    ('xz           (filtered-output-port `(,%xz "-c" "-T0" ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     (else          (error "unsupported compression scheme" compression))))
 

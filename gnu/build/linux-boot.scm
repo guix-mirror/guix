@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
+  #:use-module (guix build syscalls)
   #:use-module (gnu build linux-modules)
   #:use-module (gnu build file-systems)
   #:export (mount-essential-file-systems

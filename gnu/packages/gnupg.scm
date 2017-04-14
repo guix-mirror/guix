@@ -217,15 +217,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.19")
+    (version "2.1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
-              (patches (search-patches "gnupg-2.1-fix-Y2038-test-failure.patch"))
               (sha256
                (base32
-                "1w4vccmb5l50lm4yrz9vkdj7whbfvzx543r55362kkj1aqgyvk26"))))
+                "03cnd6gz8f4lf69inskssw57idrswcdimhccdyglmrlv6rlrmkr4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -371,7 +370,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
       (method url-fetch)
@@ -379,7 +378,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "0csx3qnycwm0n90ql6gs65if5xi4gqyzzy21fxs2xqicghjrfq2r"))))
+        "1ssc0gs02r4fasabk7c6v6r865k2j02mpb5g1vkpbmzsigdzwa8v"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.

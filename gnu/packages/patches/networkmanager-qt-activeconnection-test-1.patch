@@ -1,0 +1,60 @@
+From 61337983ba74361938b7d5323de5d2819a235fdc Mon Sep 17 00:00:00 2001
+From: Jan Grulich <jgrulich@redhat.com>
+Date: Mon, 3 Apr 2017 12:53:12 +0200
+Subject: Fix unit test for active connections
+
+Instead of sending PropertiesChanged signal for an active connection we
+added recently we should set all properties initially and just advertise
+that we have a new active connection once everything is set
+---
+ src/fakenetwork/fakenetwork.cpp | 26 +++++++-------------------
+ 1 file changed, 7 insertions(+), 19 deletions(-)
+
+diff --git a/src/fakenetwork/fakenetwork.cpp b/src/fakenetwork/fakenetwork.cpp
+index bc1144e..261fe8e 100644
+--- a/src/fakenetwork/fakenetwork.cpp
++++ b/src/fakenetwork/fakenetwork.cpp
+@@ -215,8 +215,14 @@ void FakeNetwork::unregisterService()
+ 
+ QDBusObjectPath FakeNetwork::ActivateConnection(const QDBusObjectPath &connection, const QDBusObjectPath &device, const QDBusObjectPath &specific_object)
+ {
+-    ActiveConnection *newActiveConnection = new ActiveConnection(this);
+     QString newActiveConnectionPath = QString("/org/kde/fakenetwork/ActiveConnection/") + QString::number(m_activeConnectionsCounter++);
++    ActiveConnection *newActiveConnection = new ActiveConnection(this);
++    newActiveConnection->addDevice(device);
++    newActiveConnection->setActiveConnectionPath(newActiveConnectionPath);
++    newActiveConnection->setConnection(connection);
++    newActiveConnection->setSpecificObject(specific_object);
++    newActiveConnection->setState(NetworkManager::ActiveConnection::Activating);
++
+     m_activeConnections.insert(QDBusObjectPath(newActiveConnectionPath), newActiveConnection);
+     QDBusConnection::sessionBus().registerObject(newActiveConnectionPath, newActiveConnection, QDBusConnection::ExportScriptableContents);
+ 
+@@ -227,24 +233,6 @@ QDBusObjectPath FakeNetwork::ActivateConnection(const QDBusObjectPath &connectio
+     map.insert(QLatin1Literal("ActivatingConnection"), QVariant::fromValue(QDBusObjectPath(newActiveConnectionPath)));
+     Q_EMIT PropertiesChanged(map);
+ 
+-    newActiveConnection->addDevice(device);
+-    newActiveConnection->setActiveConnectionPath(newActiveConnectionPath);
+-    newActiveConnection->setConnection(connection);
+-    newActiveConnection->setSpecificObject(specific_object);
+-    newActiveConnection->setState(NetworkManager::ActiveConnection::Activating);
+-
+-    map.clear();
+-    const QList<QDBusObjectPath> deviceList { device };
+-    map.insert(QLatin1Literal("Devices"), QVariant::fromValue<QList<QDBusObjectPath> >(deviceList));
+-    map.insert(QLatin1Literal("Connection"), QVariant::fromValue<QDBusObjectPath>(connection));
+-    if (!specific_object.path().isEmpty()) {
+-        map.insert(QLatin1Literal("SpecificObject"), QVariant::fromValue<QDBusObjectPath>(connection));
+-    }
+-    map.insert(QLatin1Literal("State"), NetworkManager::ActiveConnection::Activating);
+-    QDBusMessage message = QDBusMessage::createSignal(newActiveConnectionPath, QLatin1Literal("org.kde.fakenetwork.Connection.Active"), QLatin1Literal("PropertiesChanged"));
+-    message << map;
+-    QDBusConnection::sessionBus().send(message);
+-
+     Device *usedDevice = static_cast<Device *>(QDBusConnection::sessionBus().objectRegisteredAt(device.path()));
+     if (usedDevice) {
+         m_activatedDevice = usedDevice->devicePath();
+-- 
+cgit v0.11.2
+

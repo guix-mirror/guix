@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,8 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages tls)
@@ -33,9 +36,53 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
+
+(define-public cifs-utils
+  (package
+    (name "cifs-utils")
+    (version "6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.samba.org/pub/linux-cifs/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256 (base32
+                "1ayghnkryy1n1zm5dyvyyr7n3807nsm6glfcbbki5c2a8w91dwmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("keytuils" ,keyutils)
+       ("linux-pam" ,linux-pam)
+       ("libcap-ng" ,libcap-ng)
+       ("mit-krb5" ,mit-krb5)
+       ("samba" ,samba)
+       ("talloc" ,talloc)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The 6.7 tarball is missing ‘install.sh’. Create it.
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-i"))))
+         (add-before 'configure 'set-root-sbin
+           (lambda _ ; Don't try to install in "/sbin".
+             (setenv "ROOTSBINDIR"
+                     (string-append (assoc-ref %outputs "out") "/sbin"))
+             #t)))))
+    (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
+    (description "@code{cifs-utils} is a set of user-space utilities for
+mounting and managing @dfn{Common Internet File System} (CIFS) shares using
+the Linux kernel CIFS client.")
+    (home-page "https://wiki.samba.org/index.php/LinuxCIFS_utils")
+    ;; cifs-utils is licensed as GPL3 or later, but 3 files contain LGPL code.
+    (license gpl3+)))
 
 (define-public iniparser
   (package

@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -75,6 +75,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -267,6 +268,80 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
      "Ardour is a multi-channel digital audio workstation, allowing users to
 record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
+    (license license:gpl2+)))
+
+(define-public audacity
+  (package
+    (name "audacity")
+    (version "2.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/audacity/audacity/archive"
+                           "/Audacity-" version ".tar.gz"))
+       (sha256
+        (base32 "11mx7gb4dbqrgfp7hm0154x3m76ddnmhf2675q5zkxn7jc5qfc6b"))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree
+     ;; versions shipping with Audacity are used for now.
+     `(("wxwidgets" ,wxwidgets-gtk2)
+       ("gtk" ,gtk+-2)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("expat" ,expat)
+       ("ffmpeg" ,ffmpeg)
+       ("lame" ,lame)
+       ("flac" ,flac)
+       ("libid3tag" ,libid3tag)
+       ("libmad" ,libmad)
+       ("libsbsms" ,libsbsms)
+       ("libsndfile" ,libsndfile)
+       ("soundtouch" ,soundtouch)
+       ("soxr" ,soxr)                   ;replaces libsamplerate
+       ("twolame" ,twolame)
+       ("vamp" ,vamp)
+       ("libvorbis" ,libvorbis)
+       ("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("portaudio" ,portaudio)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)     ;for msgfmt
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("which" ,which)))
+    (arguments
+     '(#:configure-flags
+       (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
+             (libmad (assoc-ref %build-inputs "libmad")))
+         (list
+          ;; Loading FFmpeg dynamically is problematic.
+          "--disable-dynamic-loading"
+          ;; libid3tag and libmad provide no .pc files, so pkg-config fails to
+          ;; find them.  Force their inclusion.
+          (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
+          (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")
+          (string-append "LIBMAD_CFLAGS=-I" libmad "/include")
+          (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; FFmpeg is only detected if autoreconf runs.
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))
+       ;; The test suite is not "well exercised" according to the developers,
+       ;; and fails with various errors.  See
+       ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
+       #:tests? #f))
+    (home-page "http://audacity.sourceforge.net/")
+    (synopsis "Software for recording and editing sounds")
+    (description
+     "Audacity is a multi-track audio editor designed for recording, playing
+and editing digital audio.  It features digital effects and spectrum analysis
+tools.")
     (license license:gpl2+)))
 
 (define-public azr3
@@ -1091,7 +1166,6 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("jack" ,jack-1)
        ("gtkmm" ,gtkmm-2)
        ("gtk+" ,gtk+-2)
-       ("webkitgtk/gtk+-2" ,webkitgtk/gtk+-2)
        ("fftwf" ,fftwf)
        ("lrdf" ,lrdf)
        ("zita-resampler" ,zita-resampler)
@@ -1227,7 +1301,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
 (define-public jack-1
   (package
     (name "jack")
-    (version "0.124.1")
+    (version "0.125.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1236,7 +1310,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
                    ".tar.gz"))
              (sha256
               (base32
-               "1mk1wnx33anp6haxfjjkfhwbaknfblsvj35nxvz0hvspcmhdyhpb"))))
+               "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1328,14 +1402,14 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jalv
   (package
     (name "jalv")
-    (version "1.4.6")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
+                "1x2wpzzx2cgvz3dgdcgsj8dr0w3zsasy62mvl199bsdj5fbjaili"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1351,8 +1425,8 @@ synchronous execution of all clients, and low latency operation.")
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
        ("suil" ,suil)
-       ("gtk" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)
+       ("gtk" ,gtk+)
+       ("gtkmm" ,gtkmm)
        ("jack" ,jack-1)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1526,15 +1600,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.22.0")
+    (version "0.24.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/lilv-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1d3ss7vv8drf1c5340lyd0gv736n2qy7sxji2nh1rw9y48hr69yd"))))
+               "08m5a372pr1l7aii9s3pic5nm68gynx1n1bc7bnlswziq6qnbv7p"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1792,6 +1865,36 @@ buffers, and audio capture.")
 and ALSA.")
     (license license:gpl3+)))
 
+(define-public qjackctl
+  (package
+    (name "qjackctl")
+    (version "0.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "mirror://sourceforge/qjackctl/qjackctl/"
+                version "/qjackctl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19bbljb3iz5ss4s5fmra1dxabg2fnp61sa51d63zsm56xkvv47ak"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f)) ; no check target
+    (inputs
+     `(("jack-2" ,jack-2)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "https://qjackctl.sourceforge.io/")
+    (synopsis "Jack server control application")
+    (description "Control a Jack server.  Allows you to plug various sources
+into various outputs and to start, stop and configure jackd")
+    (license license:gpl2+)))
+
+
 (define-public raul
   (package
     (name "raul")
@@ -1918,15 +2021,14 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.4.6")
+    (version "0.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/sratom-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "080jjiyxjnj7hf25844hd9rb01grvzz1rk8mxcdnakywmspbxfd4"))))
+               "0hrxd9i66s06bpn6i3s9ka95134g3sm8yscmif7qgdzhyjqw42j4"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
     (inputs
@@ -1945,15 +2047,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.8.2")
+    (version "0.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/suil-"
-                                 version
-                                 ".tar.bz2"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "1s3adyiw7sa5gfvm5wasa61qa23629kprxyv6w8hbxdiwp0hhxkq"))))
+               "1kji3lhha26qr6xm9j8ic5c40zbrrb5qnwm2qxzmsfxgmrz29wkf"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
     (inputs

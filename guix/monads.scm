@@ -185,8 +185,9 @@ form is (VAR -> VAL), bind VAR to the non-monadic value VAL in the same way as
 
 (define-syntax mbegin
   (syntax-rules (%current-monad)
-    "Bind the given monadic expressions in sequence, returning the result of
-the last one."
+    "Bind MEXP and the following monadic expressions in sequence, returning
+the result of the last expression.  Every expression in the sequence must be a
+monadic expression."
     ((_ %current-monad mexp)
      mexp)
     ((_ %current-monad mexp rest ...)
@@ -204,23 +205,27 @@ the last one."
 
 (define-syntax mwhen
   (syntax-rules ()
-    "When CONDITION is true, evaluate EXP0..EXP* as in an 'mbegin'.  When
-CONDITION is false, return *unspecified* in the current monad."
-    ((_ condition exp0 exp* ...)
+    "When CONDITION is true, evaluate the sequence of monadic expressions
+MEXP0..MEXP* as in an 'mbegin'.  When CONDITION is false, return *unspecified*
+in the current monad.  Every expression in the sequence must be a monadic
+expression."
+    ((_ condition mexp0 mexp* ...)
      (if condition
          (mbegin %current-monad
-           exp0 exp* ...)
+           mexp0 mexp* ...)
          (return *unspecified*)))))
 
 (define-syntax munless
   (syntax-rules ()
-    "When CONDITION is false, evaluate EXP0..EXP* as in an 'mbegin'.  When
-CONDITION is true, return *unspecified* in the current monad."
-    ((_ condition exp0 exp* ...)
+    "When CONDITION is false, evaluate the sequence of monadic expressions
+MEXP0..MEXP* as in an 'mbegin'.  When CONDITION is true, return *unspecified*
+in the current monad.  Every expression in the sequence must be a monadic
+expression."
+    ((_ condition mexp0 mexp* ...)
      (if condition
          (return *unspecified*)
          (mbegin %current-monad
-           exp0 exp* ...)))))
+           mexp0 mexp* ...)))))
 
 (define-syntax define-lift
   (syntax-rules ()

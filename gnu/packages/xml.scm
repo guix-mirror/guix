@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -39,6 +39,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages zip)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1068,3 +1069,56 @@ XSLT and EXSLT.")
 XLSM) format spreadsheets into plaintext @dfn{comma separated values} (CSV)
 files.  It is designed to be fast and to handle large input files.")
     (license license:gpl2+)))
+
+(define-public python-defusedxml
+  (package
+    (name "python-defusedxml")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "defusedxml" version))
+       (sha256
+        (base32
+         "0y147zy3jqmk6ly7fbhqmzn1hf41xcb53f2vcc3m8x4ba5d1smfd"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/tiran/defusedxml")
+    (synopsis "XML bomb protection for Python stdlib modules")
+    (description
+     "Defusedxml provides XML bomb protection for Python stdlib modules.")
+    (license license:psfl)))
+
+(define-public python2-defusedxml
+  (package-with-python2 python-defusedxml))
+
+(define-public libxls
+  (package
+    (name "libxls")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/"
+                                  name "/files/" name "-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "1g8ds7wbhsa4hdcn77xc2c0l3vvz5bx2hx9ng9c9n7aii92ymfnk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Bootstrapping is required in order to fix the test driver script.
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "bash" "bootstrap")))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "http://libxls.sourceforge.net/")
+    (synopsis "Read Excel files")
+    (description
+     "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
+libxls cannot write Excel files.")
+    (license license:bsd-2)))

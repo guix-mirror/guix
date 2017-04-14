@@ -87,7 +87,7 @@
      (list (shepherd-service
             (documentation "Run Cuirass.")
             (provision '(cuirass))
-            (requirement '(guix-daemon))
+            (requirement '(guix-daemon networking))
             (start #~(make-forkexec-constructor
                       (list (string-append #$cuirass "/bin/cuirass")
                             "--cache-directory" #$cache-directory

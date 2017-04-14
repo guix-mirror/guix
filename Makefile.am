@@ -4,6 +4,7 @@
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
+# Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -394,11 +395,11 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  gnu/build/svg.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
   build-aux/hydra/gnu-system.scm			\
-  build-aux/hydra/demo-os.scm				\
   build-aux/hydra/guix.scm				\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
@@ -489,11 +490,13 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
-# The self-contained tarball.
+# The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
+# so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
-	  -s "$*" --localstatedir guix` ;			\
+	  -s "$*" --localstatedir guix glibc-utf8-locales	\
+	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;	\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 

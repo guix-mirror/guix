@@ -284,7 +284,7 @@ any X11 window.")
 (define-public password-store
   (package
     (name "password-store")
-    (version "1.7")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -292,8 +292,7 @@ any X11 window.")
                               name "-" version ".tar.xz"))
               (sha256
                (base32
-                "002mw7j0m33bw483rllzhcf41wp3ixka8yma6kqrfaj57jyw66hn"))
-              (patches (search-patches "password-store-gnupg-compat.patch"))))
+                "0scqkpll2q8jhzcgcsh9kqz0gwdpvynivqjmmbzax2irjfaiklpn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

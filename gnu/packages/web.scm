@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -130,14 +130,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.11.11")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qkj4xqv2f986dwqwlkidmr6jpxhv3ds67pxd1pd4a4f4j0c8yjs"))))
+                "0c2vg6530qplwk8rhldww5r3cwcbw1avka53qg9sh85nzlk2w8ml"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -3316,13 +3316,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "1.2")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "0k966hzp3qnwck7fgd76w49zrz39s7pqyywws17bhbcd8rh4csyb"))))
+                "11rgkjp5qir79niad0aizjxvjzyvkl6l9nsrv3ikv446vllmrasn"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
@@ -3422,18 +3422,20 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.7")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "0x2f2hrbhvm53zqwn0ny9wxbk34nwf6zww8cx4bjy5ax15asdllm"))))
+         "0ciic1f4iczq14j81fg7kxibn65sy8z1zxkvk1yxnxxg6dzplj2v"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-knitr" ,r-knitr)
+     `(("r-checkmate" ,r-checkmate)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr)
        ("r-magrittr" ,r-magrittr)
        ("r-stringr" ,r-stringr)))
     (home-page "http://gforge.se/packages/")
@@ -3451,13 +3453,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "0gbw5l0wnsw26fbr08gj9vgxrzxg8axvqxfshmd8g9khpgbdl0gr"))))
+                "0j1i24irpn4hvpcs61rzq0n19rmgmn29v48qc36csjk3r661l4pm"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -4218,17 +4220,12 @@ and similar services.")
     (version "1.12")
     (source
      (origin
-       ;; The darkhttpd release tarball URL fails to download with a
-       ;; 'TLS warning alert'. Download from the darkhttpd git repo
-       ;; until the problem has been fixed upstream.
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append "https://unix4lyfe.org/git/darkhttpd"))
-             (commit "41b68476c35270f47dcd2ddebe27cbcd87e43d41")))
+       (method url-fetch)
+       (uri (string-append "https://unix4lyfe.org/darkhttpd/darkhttpd-"
+                           version ".tar.bz2"))
        (sha256
         (base32
-         "0wi8dfgj4ic0fsy4dszl69xgxdxlwxz4c30vsw2i2dpnczgjm04k"))
-       (file-name (string-append name "-" version "-checkout"))))
+         "0185wlyx4iqiwfigp1zvql14zw7gxfacncii3d15yaxk4av1f155"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")

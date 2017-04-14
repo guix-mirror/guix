@@ -83,54 +83,43 @@ pre-defined variants of this transformation recorded in the 'properties' field
 of packages.  The property value must be the promise of a package.  This is a
 convenient way for package writers to force the transformation to use
 pre-defined variants."
-  (define transform
-    ;; Memoize the transformations.  Failing to do that, we would build a huge
-    ;; object graph with lots of duplicates, which in turns prevents us from
-    ;; benefiting from memoization in 'package-derivation'.
-    (mlambdaq (p)
-      (let* ((rewrite-if-package
-              (lambda (content)
-                ;; CONTENT may be a file name, in which case it is returned,
-                ;; or a package, which is rewritten with the new PYTHON and
-                ;; NEW-PREFIX.
-                (if (package? content)
-                    (transform content)
-                    content)))
-             (rewrite
-              (match-lambda
-                ((name content . rest)
-                 (append (list name (rewrite-if-package content)) rest)))))
+  (define package-variant
+    (if variant-property
+        (lambda (package)
+          (assq-ref (package-properties package)
+                    variant-property))
+        (const #f)))
 
-        (cond
-         ;; If VARIANT-PROPERTY is present, use that.
-         ((and variant-property
-               (assoc-ref (package-properties p) variant-property))
-          => force)
+  (define (transform p)
+    (cond
+     ;; If VARIANT-PROPERTY is present, use that.
+     ((package-variant p)
+      => force)
 
-         ;; Otherwise build the new package object graph.
-         ((eq? (package-build-system p) python-build-system)
-          (package
-            (inherit p)
-            (location (package-location p))
-            (name (let ((name (package-name p)))
-                    (string-append new-prefix
-                                   (if (string-prefix? old-prefix name)
-                                       (substring name
-                                                  (string-length old-prefix))
-                                       name))))
-            (arguments
-             (let ((python (if (promise? python)
-                               (force python)
-                               python)))
-               (ensure-keyword-arguments (package-arguments p)
-                                         `(#:python ,python))))
-            (inputs (map rewrite (package-inputs p)))
-            (propagated-inputs (map rewrite (package-propagated-inputs p)))
-            (native-inputs (map rewrite (package-native-inputs p)))))
-         (else
-          p)))))
+     ;; Otherwise build the new package object graph.
+     ((eq? (package-build-system p) python-build-system)
+      (package
+        (inherit p)
+        (location (package-location p))
+        (name (let ((name (package-name p)))
+                (string-append new-prefix
+                               (if (string-prefix? old-prefix name)
+                                   (substring name
+                                              (string-length old-prefix))
+                                   name))))
+        (arguments
+         (let ((python (if (promise? python)
+                           (force python)
+                           python)))
+           (ensure-keyword-arguments (package-arguments p)
+                                     `(#:python ,python))))))
+     (else p)))
 
-  transform)
+  (define (cut? p)
+    (or (not (eq? (package-build-system p) python-build-system))
+        (package-variant p)))
+
+  (package-mapping transform cut?))
 
 (define package-with-python2
   ;; Note: delay call to 'default-python2' until after the 'arguments' field

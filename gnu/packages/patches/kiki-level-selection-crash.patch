@@ -1,0 +1,19 @@
+Downloaded from https://anonscm.debian.org/viewvc/pkg-games/packages/trunk/kiki-the-nano-bot/debian/patches/level-selection-with-no-levels-solved.patch?revision=8291&view=co
+
+Kiki crashes if the user tries to use the level selection menu before
+finishing any level.
+
+Peter De Wachter (pdewacht@gmail.com)
+placed in the public domain
+
+--- a/py/levelselection.py
++++ b/py/levelselection.py
+@@ -25,6 +25,8 @@
+     # ............................................................................................................    
+     
+     last_level = highscore.getLastAvailableLevel()
++    if last_level < 0:
++        last_level = 0
+     current_level = (level_index >= 0) and level_index or last_level 
+         
+     world.max_level_index = last_level

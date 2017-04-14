@@ -28,7 +28,7 @@
 (define-public perl-lingua-en-findnumber
   (package
     (name "perl-lingua-en-findnumber")
-    (version "1.30")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -36,7 +36,7 @@
                            "Lingua-EN-FindNumber-" version ".tar.gz"))
        (sha256
         (base32
-         "0g5h6bwwggizwh3dd3xyx92537s4qy8nspshp1lrm9qlxh3prc28"))))
+         "015ximzdp42v824llwlg2pd77vd0d172lb4xs55q9f9zhqf6s5qx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
@@ -50,7 +50,7 @@ manipulating such numbers.")
 (define-public perl-lingua-en-inflect
   (package
     (name "perl-lingua-en-inflect")
-    (version "1.895")
+    (version "1.901")
     (source
      (origin
        (method url-fetch)
@@ -58,7 +58,7 @@ manipulating such numbers.")
                            "Lingua-EN-Inflect-" version ".tar.gz"))
        (sha256
         (base32
-         "0drzg9a2dkjxgf00n6jg0jzhd8972bh3j4wdnmdxpqi3zmfqhwcy"))))
+         "0mcwlgf6hkh4zm3s1x899f25xj4hyzrc2vssiwfxysqja36yf5ys"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
@@ -73,7 +73,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
 (define-public perl-lingua-en-inflect-number
   (package
     (name "perl-lingua-en-inflect-number")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -81,7 +81,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
                            "Lingua-EN-Inflect-Number-" version ".tar.gz"))
        (sha256
         (base32
-         "0rvgrff96ja7fqr79dszmiyv2wz4izw82znah0mx9szkir657gfz"))))
+         "1gxccynkaqav43ww43jp4rzkyr36x97jd03yb5f6yx0jhn1k7yv6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-inflect" ,perl-lingua-en-inflect)))
@@ -122,7 +122,7 @@ English phrases.")
 (define-public perl-lingua-en-number-isordinal
   (package
     (name "perl-lingua-en-number-isordinal")
-    (version "0.04")
+    (version "0.05")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ English phrases.")
                            "Lingua-EN-Number-IsOrdinal-" version ".tar.gz"))
        (sha256
         (base32
-         "1321fm4pyqcamffd0qsjm1gb07ijqndlb29qkcqf22kaibngfm4i"))))
+         "1mhqjvh2ad30gjab5b3a6mbr4aysyrscp4wp42yy5x6001a6km98"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-try-tiny" ,perl-try-tiny)
@@ -146,7 +146,7 @@ digits, is a cardinal or ordinal number.")
 (define-public perl-lingua-en-tagger
   (package
     (name "perl-lingua-en-tagger")
-    (version "0.24")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -154,7 +154,7 @@ digits, is a cardinal or ordinal number.")
                            "Lingua-EN-Tagger-" version ".tar.gz"))
        (sha256
         (base32
-         "0qksqh1zi8fz76a29s2ll4g6yr8y6agmzgq7ngccvgj3gza5q241"))))
+         "1rm223d871s150dgnhbar71w56bim950cp45f0904w6px5fifcqa"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-memoize-expirelru" ,perl-memoize-expirelru)

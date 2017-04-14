@@ -280,6 +280,9 @@ the image."
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -323,6 +326,8 @@ Create a bundle of PACKAGE.\n"))
   (display (_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
   (display (_ "
+  -e, --expression=EXPR  consider the package EXPR evaluates to"))
+  (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
@@ -349,20 +354,22 @@ Create a bundle of PACKAGE.\n"))
   (define opts
     (parse-command-line args %options (list %default-options)))
 
+  (define maybe-package-argument
+    ;; Given an option pair, return a package, a package/output tuple, or #f.
+    (match-lambda
+      (('argument . spec)
+       (call-with-values
+           (lambda ()
+             (specification->package+output spec))
+         list))
+      (('expression . exp)
+       (read/eval-package-expression exp))
+      (x #f)))
+
   (with-error-handling
     (parameterize ((%graft? (assoc-ref opts 'graft?)))
-      (let* ((dry-run? (assoc-ref opts 'dry-run?))
-             (specs    (filter-map (match-lambda
-                                     (('argument . name)
-                                      name)
-                                     (x #f))
-                                   opts))
-             (packages (map (lambda (spec)
-                              (call-with-values
-                                  (lambda ()
-                                    (specification->package+output spec))
-                                list))
-                            specs))
+      (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+             (packages    (filter-map maybe-package-argument opts))
              (pack-format (assoc-ref opts 'format))
              (name        (string-append (symbol->string pack-format)
                                          "-pack"))

@@ -8,13 +8,14 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Coypright © 2016 John Darrington <jmd@gnu.org>
+;;; Coypright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,10 +68,12 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
@@ -477,7 +480,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "6")      ; for patch release, e.g. "6"
+         (bind-release-version "8")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -593,7 +596,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1qf9j0nyqx0qy871mj22xh4dg0n1pqlv94lpiijb8vr7n7m3svhr"))))
+                      "1f5i64f6y4rmy61y63r5if1lifw8dw8r8dh6ns3x4002hanzrpgz"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1997,3 +2000,86 @@ with all the commands and parameters identified for your viewing pleasure.
 With sedsed you can master any sed script.  No more secrets, no more hidden
 buffers.")
     (license license:expat)))
+
+(define-public intel-gpu-tools
+  (package
+    (name "intel-gpu-tools")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
+                                  "intel-gpu-tools/snapshot/"
+                                  "intel-gpu-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w7djk0y5w76hzn1b3cm39zd5c6w9za1wfn80wd857h0v313rzq3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; many of the tests try to load kernel modules
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             ;; Don't run configure in this phase
+             (setenv "NOCONFIGURE" "1")
+             (zero? (system* "sh" "autogen.sh")))))))
+    (inputs
+     `(("util-macros" ,util-macros)
+       ("libdrm" ,libdrm)
+       ("libpciaccess" ,libpciaccess)
+       ("kmod" ,kmod)
+       ("procps" ,procps)
+       ("cairo" ,cairo)
+       ("libunwind" ,libunwind)
+       ("libxrandr" ,libxrandr)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (synopsis "Tools for development and testing of the Intel DRM driver")
+    (description "Intel GPU Tools is a collection of tools for development and
+testing of the Intel DRM driver.  There are many macro-level test suites that
+get used against the driver, including xtest, rendercheck, piglit, and
+oglconform, but failures from those can be difficult to track down to kernel
+changes, and many require complicated build procedures or specific testing
+environments to get useful results.  Therefore, Intel GPU Tools includes
+low-level tools and tests specifically for development and testing of the
+Intel DRM Driver.")
+    (license license:expat)))
+
+(define-public fabric
+  (package
+    (name "fabric")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Fabric" version))
+       (sha256
+        (base32
+         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f     ;XXX: Tests attempt to download Python "fudge" package.
+       #:python ,python-2))                       ;Python 2 only
+    (propagated-inputs
+     ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
+     ;; between python-paramiko and newer python-pycrypto. Without this, the
+     ;; `fab` command fails with "ValueError: CTR mode needs counter
+     ;; parameter, not IV". See:
+     ;; https://github.com/paramiko/paramiko/pull/714#issuecomment-281191548.
+     `(("python2-paramiko" ,python2-paramiko)))
+    (home-page "http://fabfile.org")
+    (synopsis "Simple Pythonic remote execution and deployment tool")
+    (description
+     "Fabric is designed to upload files and run shell commands on a number of
+servers in parallel or serially.  These commands are grouped in tasks (which
+are regular Python functions) and specified in a @dfn{fabfile}.
+
+It is similar to Capistrano, except it's implemented in Python and doesn't
+expect you to be deploying Rails applications.  Fabric is a simple, Pythonic
+tool for remote execution and deployment.")
+    (license license:bsd-2)))

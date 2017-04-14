@@ -51,7 +51,9 @@
             options->transformation
             show-transformation-options-help
 
-            guix-build))
+            guix-build
+            register-root
+            register-root*))
 
 (define %default-log-urls
   ;; Default base URLs for build logs.
@@ -121,6 +123,9 @@ found.  Return #f if no build log was found."
       (lambda args
         (leave (_ "failed to create GC root `~a': ~a~%")
                root (strerror (system-error-errno args)))))))
+
+(define register-root*
+  (store-lift register-root))
 
 (define (package-with-source store p uri)
   "Return a package based on P but with its source taken from URI.  Extract

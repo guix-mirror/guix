@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,13 +30,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.10.5")
+    (version "1.10.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "12szjsmnfhh2yr54sfynyjr8vl0q9gb6qak3ayqcifcinrs97f0d"))))
+                "1f5hnn2dzfr5szk4yc47bs4kk2nmrayjcvgpqi2s4l13pjfpfgar"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -80,7 +81,8 @@ development and clean, pragmatic design.  It provides many tools for building
 any Web site.  Django focuses on automating as much as possible and adhering
 to the @dfn{don't repeat yourself} (DRY) principle.")
     (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-django))))))
+    (properties `((python2-variant . ,(delay python2-django))
+                  (cpe-name . "django")))))
 
 (define-public python2-django
   (let ((base (package-with-python2 (strip-python2-variant python-django))))
@@ -188,3 +190,58 @@ them do this.")
 
 (define-public python2-django-filter
   (package-with-python2 python-django-filter))
+
+(define-public python-django-allauth
+  (package
+    (name "python-django-allauth")
+    (version "0.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-allauth" version))
+       (sha256
+        (base32
+         "1fslqc5qqb0b66yscvkyjwfv8cnbfx5nlkpnwimyb3pf1nc1w7r3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-openid" ,python-openid)
+       ("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/pennersr/django-allauth")
+    (synopsis "Set of Django applications addressing authentication")
+    (description
+     "Integrated set of Django applications addressing authentication,
+registration, account management as well as 3rd party (social)
+account authentication.")
+    (license license:expat)))
+
+(define-public python2-django-allauth
+  (package-with-python2 python-django-allauth))
+
+(define-public python-django-gravatar2
+  (package
+    (name "python-django-gravatar2")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-gravatar2" version))
+       (sha256
+        (base32
+         "1v4qyj6kms321yw0z2g1kch6b2dskmv6fjd6sfxzwr4xshq9mccl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/twaddington/django-gravatar")
+    (synopsis "Gravatar support for Django, improved version")
+    (description
+     "Essential Gravatar support for Django.  Features helper methods,
+templatetags and a full test suite.")
+    (license license:expat)))
+
+(define-public python2-django-gravatar2
+  (package-with-python2 python-django-gravatar2))

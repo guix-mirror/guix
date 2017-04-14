@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -673,14 +673,16 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.7.4.2")
+    (version "1.7.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/Cyan4973/lz4/archive/"
+       (uri (string-append "https://github.com/lz4/lz4/archive/"
                            "v" version ".tar.gz"))
+       (patches (search-patches "lz4-fix-test-failures.patch"))
        (sha256
-        (base32 "0l39bymif15rmmfz7h6wvrr853rix4wj8wbqq8z8fm49xa7gx9fb"))
+        (base32
+         "0zkykqqjfa1q3ji0qmb1ml3l9063qqfh99agyj3cnb02cg6wm401"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
@@ -691,7 +693,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
-    (home-page "https://github.com/Cyan4973/lz4")
+    (home-page "https://github.com/lz4/lz4")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
 compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an

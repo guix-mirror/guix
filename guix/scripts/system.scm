@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -593,7 +593,8 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                          #:key grub? dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
-                         (mappings '()))
+                         (mappings '())
+                         (gc-root #f))
   "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
 the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
 is the size of the image to be built, for the 'vm-image' and 'disk-image'
@@ -601,7 +602,10 @@ actions.  FULL-BOOT? is used for the 'vm' action; it determines whether to
 boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
-building anything."
+building anything.
+
+When GC-ROOT is a path, also make that path an indirect root of the build
+output when building a system derivation, such as a disk image."
   (define println
     (cut format #t "~a~%" <>))
 
@@ -665,8 +669,13 @@ building anything."
                       #:grub.cfg (derivation->output-path grub.cfg)
                       #:device device))
             (else
-             ;; All we had to do was to build SYS.
-             (return (derivation->output-path sys))))))))
+             ;; All we had to do was to build SYS and maybe register an
+             ;; indirect GC root.
+             (let ((output (derivation->output-path sys)))
+               (mbegin %store-monad
+                 (mwhen gc-root
+                   (register-root* (list output) gc-root))
+                 (return output)))))))))
 
 (define (export-extension-graph os port)
   "Export the service extension graph of OS to PORT."
@@ -741,6 +750,10 @@ Some ACTIONS support additional ARGS.\n"))
   (display (_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
   (display (_ "
+  -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
+                         and 'build', make FILE a symlink to the result, and
+                         register it as a garbage collector root"))
+  (display (_ "
       --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (_ "
       --full-boot        for 'vm', make a full boot sequence"))
@@ -797,6 +810,9 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '(#\r "root") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'gc-root arg result)))
          %standard-build-options))
 
 (define %default-options
@@ -863,7 +879,8 @@ resulting from command-line parsing."
                                                       (_ #f))
                                                     opts)
                              #:grub? grub?
-                             #:target target #:device device))))
+                             #:target target #:device device
+                             #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
 
 (define (process-command command args opts)

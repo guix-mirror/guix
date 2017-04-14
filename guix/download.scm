@@ -66,7 +66,7 @@
        "ftp://gcc.gnu.org/pub/gcc/"
        ,@(map (cut string-append <> "/gcc") gnu-mirrors))
       (gnupg
-       "ftp://gd.tuwien.ac.at/privacy/gnupg/"
+       "http://gd.tuwien.ac.at/privacy/gnupg/"
        "ftp://mirrors.dotsrc.org/gcrypt/"
        "ftp://mirror.cict.fr/gnupg/"
        "http://artfiles.org/gnupg.org"

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   (package
    (name "pcre")
    (version "8.40")
+   (replacement pcre/fixed)
    (source (origin
             (method url-fetch)
             (uri (list
@@ -70,6 +72,14 @@ POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "http://www.pcre.org/")))
 
+(define pcre/fixed
+  (package
+    (inherit pcre)
+    (replacement #f)
+    (source (origin
+              (inherit (package-source pcre))
+              (patches (search-patches "pcre-CVE-2017-7186.patch"))))))
+
 (define-public pcre2
   (package
     (name "pcre2")
@@ -81,7 +91,8 @@ POSIX regular expression API.")
 
               (sha256
                (base32
-                "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))))
+                "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))
+              (patches (search-patches "pcre2-CVE-2017-7186.patch"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)

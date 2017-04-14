@@ -26,6 +26,8 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (gexp
             gexp?
@@ -84,7 +86,13 @@
             gexp-compiler?
             lower-object
 
-            lower-inputs))
+            lower-inputs
+
+            &gexp-error
+            gexp-error?
+            &gexp-input-error
+            gexp-input-error?
+            gexp-error-invalid-input))
 
 ;;; Commentary:
 ;;;
@@ -140,6 +148,14 @@
   (lower      gexp-compiler-lower)
   (expand     gexp-compiler-expand))              ;#f | DRV -> sexp
 
+(define-condition-type &gexp-error &error
+  gexp-error?)
+
+(define-condition-type &gexp-input-error &gexp-error
+  gexp-input-error?
+  (input gexp-error-invalid-input))
+
+
 (define %gexp-compilers
   ;; 'eq?' mapping of record type descriptor to <gexp-compiler>.
   (make-hash-table 20))
@@ -177,8 +193,11 @@ procedure to expand it; otherwise return #f."
 corresponding to OBJ for SYSTEM, cross-compiling for TARGET if TARGET is true.
 OBJ must be an object that has an associated gexp compiler, such as a
 <package>."
-  (let ((lower (lookup-compiler obj)))
-    (lower obj system target)))
+  (match (lookup-compiler obj)
+    (#f
+     (raise (condition (&gexp-input-error (input obj)))))
+    (lower
+     (lower obj system target))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)
