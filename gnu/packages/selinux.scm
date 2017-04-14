@@ -26,12 +26,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages swig)
-  #:use-module (gnu packages textutils))
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages xml))
 
 ;; Update the SELinux packages together!
 
@@ -210,3 +212,29 @@ the core SELinux management utilities.")
      "The libsemanage library provides an API for the manipulation of SELinux
 binary policies.")
     (license license:lgpl2.1+)))
+
+(define-public secilc
+  (package (inherit libsepol)
+    (name "secilc")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsepol)
+       ((#:make-flags flags)
+        `(let ((docbook (assoc-ref %build-inputs "docbook-xsl")))
+           (cons (string-append "XMLTO=xmlto --skip-validation -x "
+                                docbook "/xml/xsl/docbook-xsl-"
+                                ,(package-version docbook-xsl)
+                                "/manpages/docbook.xsl")
+                 ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'enter-dir
+             (lambda _ (chdir ,name) #t))))))
+    (inputs
+     `(("libsepol" ,libsepol)))
+    (native-inputs
+     `(("xmlto" ,xmlto)
+       ("docbook-xsl" ,docbook-xsl)))
+    (synopsis "SELinux common intermediate language (CIL) compiler")
+    (description "The SELinux CIL compiler is a compiler that converts the
+@dfn{common intermediate language} (CIL) into a kernel binary policy file.")
+    (license license:bsd-2)))
