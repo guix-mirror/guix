@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1124,7 +1125,7 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -1133,7 +1134,7 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ir9fqwr7cl9kfq7dgh9vkydkwf59wsx0cwbzbffw8i313xhzxa1"))))
+         "1v4xd03303mlzmv43qaz3fmskp2prhs1678a5522ia2yqwv98adz"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
