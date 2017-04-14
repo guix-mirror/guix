@@ -54,7 +54,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.10")
+    (version "2.11")
     (source (origin
               (method url-fetch)
               (uri
@@ -63,7 +63,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "10pzs9z815a8hgbbbiliapyiw82bnplsccj5irgqjw5f5plcs22g"))))
+                "1xms8q44g6zc7sc212qpcihq6ch3pmph3i1m9hzymmy0jcw6kzhm"))))
     (build-system gnu-build-system)
     (native-inputs `(("doxygen" ,doxygen)))
     (synopsis "Music Player Daemon client library")
