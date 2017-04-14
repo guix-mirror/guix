@@ -2088,6 +2088,18 @@ build jobs.")
         (base32
          "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             ;; The company-files-candidates-normal-root test looks
+             ;; for the /bin directory, but the build environment has
+             ;; no /bin directory. Modify the test to look for the
+             ;; /tmp directory.
+             (substitute* "test/files-tests.el"
+               (("/bin/") "/tmp/"))
+             (zero? (system* "make" "test-batch")))))))
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
