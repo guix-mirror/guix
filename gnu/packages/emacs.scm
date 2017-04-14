@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4381,4 +4382,43 @@ insertion of environment templates and math in LaTeX.  Similar
 commands are also offered as part of the AUCTeX package, but it is not
 the same - CDLaTeX focuses on speediness for inserting LaTeX
 constructs.")
+    (license license:gpl3+)))
+
+(define-public emacs-xelb
+  (package
+    (name "emacs-xelb")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/xelb-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0i9n0f3ibj4a5pwcsvwrah9m0fz32m0x6a9wsmjn3li20v8pcb81"))))
+    (build-system emacs-build-system)
+    ;; The following functions and variables needed by emacs-xelb are
+    ;; not included in emacs-minimal:
+    ;; x-display-screens, x-keysym-table, x-alt-keysym, x-meta-keysym
+    ;; x-hyper-keysym, x-super-keysym, libxml-parse-xml-region
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'regenerate-el-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "make"
+                             (string-append "PROTO_PATH="
+                                            (assoc-ref inputs "xcb-proto")
+                                            "/share/xcb")
+                             (string-append "EMACS_BIN="
+                                            (assoc-ref inputs "emacs")
+                                            "/bin/emacs -Q"))))))))
+    (native-inputs `(("xcb-proto" ,xcb-proto)))
+    (home-page "https://github.com/ch11ng/xelb")
+    (synopsis "X protocol Emacs Lisp binding")
+    (description "@code{emacs-xelb} is a pure Emacs Lisp implementation of the
+X11 protocol based on the XML description files from the XCB project.  It
+features an object-oriented API and permits a certain degree of concurrency.
+It should enable you to implement low-level X11 applications.")
     (license license:gpl3+)))
