@@ -15684,7 +15684,7 @@ Return true if @var{obj} is a service.
 Return the type of @var{service}---i.e., a @code{<service-type>} object.
 @end deffn
 
-@deffn {Scheme Procedure} service-parameters @var{service}
+@deffn {Scheme Procedure} service-value @var{service}
 Return the value associated with @var{service}.  It represents its
 parameters.
 @end deffn

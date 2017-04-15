@@ -615,7 +615,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
-    (service-parameters boot)))
+    (service-value boot)))
 
 (define (operating-system-user-accounts os)
   "Return the list of user accounts of OS."
@@ -623,12 +623,12 @@ hardware-related operations as necessary when booting a Linux container."
          (account  (fold-services services
                                   #:target-type account-service-type)))
     (filter user-account?
-            (service-parameters account))))
+            (service-value account))))
 
 (define (operating-system-shepherd-service-names os)
   "Return the list of Shepherd service names for OS."
   (append-map shepherd-service-provision
-              (service-parameters
+              (service-value
                (fold-services (operating-system-services os)
                               #:target-type
                               shepherd-root-service-type))))
@@ -638,7 +638,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (system   (fold-services services)))
     ;; SYSTEM contains the derivation as a monadic value.
-    (service-parameters system)))
+    (service-value system)))
 
 (define* (operating-system-profile os #:key container?)
   "Return a derivation that builds the system profile of OS."

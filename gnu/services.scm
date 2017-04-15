@@ -51,7 +51,8 @@
             service
             service?
             service-kind
-            service-parameters
+            service-value
+            service-parameters                    ;deprecated
 
             simple-service
             modify-services
@@ -142,10 +143,14 @@
 
 ;; Services of a given type.
 (define-record-type <service>
-  (service type parameters)
+  (service type value)
   service?
   (type       service-kind)
-  (parameters service-parameters))
+  (value      service-value))
+
+(define service-parameters
+  ;; Deprecated alias.
+  service-value)
 
 (define (simple-service name target value)
   "Return a service that extends TARGET with VALUE.  This works by creating a
@@ -161,7 +166,7 @@ singleton service type NAME, of which the returned service is an instance."
      service)
     ((_ svc (kind param => exp ...) clauses ...)
      (if (eq? (service-kind svc) kind)
-         (let ((param (service-parameters svc)))
+         (let ((param (service-value svc)))
            (service (service-kind svc)
                     (begin exp ...)))
          (%modify-service svc clauses ...)))))
@@ -321,7 +326,7 @@ file."
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of
 ACTIVATION-SCRIPT-TYPE."
-  (activation-script (service-parameters service)))
+  (activation-script (service-value service)))
 
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
@@ -432,7 +437,7 @@ and FILE could be \"/usr/bin/env\"."
 
 (define (etc-directory service)
   "Return the directory for SERVICE, a service of type ETC-SERVICE-TYPE."
-  (files->etc-directory (service-parameters service)))
+  (files->etc-directory (service-value service)))
 
 (define (files->etc-directory files)
   (file-union "etc" files))
@@ -605,7 +610,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
       (match (find (matching-extension target)
                    (service-type-extensions (service-kind service)))
         (($ <service-extension> _ compute)
-         (compute (service-parameters service))))))
+         (compute (service-value service))))))
 
   (match (filter (lambda (service)
                    (eq? (service-kind service) target-type))
@@ -616,7 +621,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
               (extensions (map (apply-extension sink) dependents))
               (extend     (service-type-extend (service-kind sink)))
               (compose    (service-type-compose (service-kind sink)))
-              (params     (service-parameters sink)))
+              (params     (service-value sink)))
          ;; We distinguish COMPOSE and EXTEND because PARAMS typically has a
          ;; different type than the elements of EXTENSIONS.
          (if extend

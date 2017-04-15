@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +75,7 @@
                                         (iota 5 1)))
                             #:target-type t1)))
     (and (eq? (service-kind r) t1)
-         (service-parameters r))))
+         (service-value r))))
 
 (test-assert "fold-services, ambiguity"
   (let* ((t1 (service-type (name 't1) (extensions '())

@@ -56,7 +56,7 @@ passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
   (define special-files
-    (service-parameters
+    (service-value
      (fold-services (operating-system-services os)
                     #:target-type special-files-service-type)))
 

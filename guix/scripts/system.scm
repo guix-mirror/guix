@@ -289,7 +289,7 @@ This is currently very conservative in that it does not stop or unload any
 running service.  Unloading or stopping the wrong service ('udev', say) could
 bring the system down."
   (define new-services
-    (service-parameters
+    (service-value
      (fold-services (operating-system-services os)
                     #:target-type shepherd-root-service-type)))
 
@@ -487,7 +487,7 @@ open connection to the store."
 (define (service-node-label service)
   "Return a label to represent SERVICE."
   (let ((type  (service-kind service))
-        (value (service-parameters service)))
+        (value (service-value service)))
     (string-append (symbol->string (service-type-name type))
                    (cond ((or (number? value) (symbol? value))
                           (string-append " " (object->string value)))
@@ -711,7 +711,7 @@ output when building a system derivation, such as a disk image."
   (let* ((services  (operating-system-services os))
          (pid1      (fold-services services
                                    #:target-type shepherd-root-service-type))
-         (shepherds (service-parameters pid1)) ;list of <shepherd-service>
+         (shepherds (service-value pid1))         ;list of <shepherd-service>
          (sinks     (filter (lambda (service)
                               (null? (shepherd-service-requirement service)))
                             shepherds)))
