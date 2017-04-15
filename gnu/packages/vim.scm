@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -60,7 +60,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0494")
+    (version "8.0.0566")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -68,7 +68,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "08kzimdyla35ndrbn68jf8pmzm7nd2qrydnvk57j089m6ajic62r"))))
+               "0qq9pj8391sikzaahlqi289l5wdkbvsdhz8qb6np268yqizpg4p2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
