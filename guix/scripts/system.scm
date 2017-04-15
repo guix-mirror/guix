@@ -78,6 +78,29 @@
 ;;; Installation.
 ;;;
 
+(define-syntax-rule (save-load-path-excursion body ...)
+  "Save the current values of '%load-path' and '%load-compiled-path', run
+BODY..., and restore them."
+  (let ((path %load-path)
+        (cpath %load-compiled-path))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (set! %load-path path)
+        (set! %load-compiled-path cpath)))))
+
+(define-syntax-rule (save-environment-excursion body ...)
+  "Save the current environment variables, run BODY..., and restore them."
+  (let ((env (environ)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (environ env)))))
+
 (define topologically-sorted*
   (store-lift topologically-sorted))
 
@@ -201,29 +224,6 @@ the ownership of '~a' may be incorrect!~%")
 (define %system-profile
   ;; The system profile.
   (string-append %state-directory "/profiles/system"))
-
-(define-syntax-rule (save-environment-excursion body ...)
-  "Save the current environment variables, run BODY..., and restore them."
-  (let ((env (environ)))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        body ...)
-      (lambda ()
-        (environ env)))))
-
-(define-syntax-rule (save-load-path-excursion body ...)
-  "Save the current values of '%load-path' and '%load-compiled-path', run
-BODY..., and restore them."
-  (let ((path %load-path)
-        (cpath %load-compiled-path))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        body ...)
-      (lambda ()
-        (set! %load-path path)
-        (set! %load-compiled-path cpath)))))
 
 (define-syntax-rule (with-shepherd-error-handling mbody ...)
   "Catch and report Shepherd errors that arise when binding MBODY, a monadic
@@ -622,10 +622,10 @@ output when building a system derivation, such as a disk image."
                                         (operating-system-bootloader os))))
        (grub.cfg  (if (eq? 'container action)
                       (return #f)
-                      (operating-system-grub.cfg os
-                                                 (if (eq? 'init action)
-                                                     '()
-                                                     (profile-grub-entries)))))
+                      (operating-system-bootcfg os
+                                                (if (eq? 'init action)
+                                                    '()
+                                                    (profile-grub-entries)))))
 
        ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
