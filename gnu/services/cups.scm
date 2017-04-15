@@ -1022,7 +1022,9 @@ extensions that it uses."
                       (inherit config)
                       (extensions
                        (append (opaque-cups-configuration-extensions config)
-                               extensions)))))))))
+                               extensions)))))))
+
+                (default-value (cups-configuration))))
 
 ;; A little helper to make it easier to document all those fields.
 (define (generate-cups-documentation)

@@ -529,7 +529,8 @@ make an initial adjustment of more than 1,000 seconds."
   tor-configuration?
   (tor              tor-configuration-tor
                     (default tor))
-  (config-file      tor-configuration-config-file)
+  (config-file      tor-configuration-config-file
+                    (default (plain-file "empty" "")))
   (hidden-services  tor-configuration-hidden-services
                     (default '())))
 
@@ -666,7 +667,8 @@ HiddenServicePort ~a ~a~%"
                            (inherit config)
                            (hidden-services
                             (append (tor-configuration-hidden-services config)
-                                    services)))))))
+                                    services)))))
+                (default-value (tor-configuration))))
 
 (define* (tor-service #:optional
                       (config-file (plain-file "empty" ""))
@@ -719,9 +721,12 @@ project's documentation} for more information."
   bitlbee-configuration?
   (bitlbee bitlbee-configuration-bitlbee
            (default bitlbee))
-  (interface bitlbee-configuration-interface)
-  (port bitlbee-configuration-port)
-  (extra-settings bitlbee-configuration-extra-settings))
+  (interface bitlbee-configuration-interface
+             (default "127.0.0.1"))
+  (port bitlbee-configuration-port
+        (default 6667))
+  (extra-settings bitlbee-configuration-extra-settings
+                  (default "")))
 
 (define bitlbee-shepherd-service
   (match-lambda
@@ -789,7 +794,8 @@ project's documentation} for more information."
                        (service-extension account-service-type
                                           (const %bitlbee-accounts))
                        (service-extension activation-service-type
-                                          (const %bitlbee-activation))))))
+                                          (const %bitlbee-activation))))
+                (default-value (bitlbee-configuration))))
 
 (define* (bitlbee-service #:key (bitlbee bitlbee)
                           (interface "127.0.0.1") (port 6667)
@@ -1002,7 +1008,8 @@ dns=" dns "
                  (list (service-extension shepherd-root-service-type
                                           wpa-supplicant-shepherd-service)
                        (service-extension dbus-root-service-type list)
-                       (service-extension profile-service-type list)))))
+                       (service-extension profile-service-type list)))
+                (default-value wpa-supplicant)))
 
 
 ;;;

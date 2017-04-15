@@ -9066,9 +9066,9 @@ This service is not part of @var{%base-services}.
 @end deffn
 
 @anchor{guix-publish-service-type}
-@deffn {Scheme Variable} guix-publish-service-type @var{config}
+@deffn {Scheme Variable} guix-publish-service-type
 This is the service type for @command{guix publish} (@pxref{Invoking
-guix publish}).  @var{config} must be a @code{guix-configuration}
+guix publish}).  Its value must be a @code{guix-configuration}
 object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
@@ -9256,7 +9256,7 @@ with the default settings.
 (operating-system
   ;; @dots{}
   (services (cons* (mcron-service)
-                   (service rottlog-service-type (rottlog-configuration)) 
+                   (service rottlog-service-type)
                    %base-services)))
 @end lisp
 
@@ -9433,10 +9433,9 @@ The value of this service is the @code{wpa-supplicant} package to use.
 Thus, it can be instantiated like this:
 
 @lisp
-(use-modules (gnu services networking)
-             (gnu packages admin))
+(use-modules (gnu services networking))
 
-(service wpa-supplicant-service-type wpa-supplicant)
+(service wpa-supplicant-service-type)
 @end lisp
 @end defvr
 
@@ -10044,9 +10043,10 @@ system, add a @code{cups-service} to the operating system definition:
 
 @deffn {Scheme Variable} cups-service-type
 The service type for the CUPS print server.  Its value should be a valid
-CUPS configuration (see below).  For example:
+CUPS configuration (see below).  To use the default settings, simply
+write:
 @example
-(service cups-service-type (cups-configuration))
+(service cups-service-type)
 @end example
 @end deffn
 
@@ -13874,9 +13874,10 @@ source is detected.  More information can be found at
 
 @deffn {Scheme Variable} tlp-service-type
 The service type for the TLP tool.  Its value should be a valid
-TLP configuration (see below).  For example:
+TLP configuration (see below).  To use the default settings, simply
+write:
 @example
-(service tlp-service-type (tlp-configuration))
+(service tlp-service-type)
 @end example
 @end deffn
 

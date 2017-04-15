@@ -162,7 +162,8 @@ database {
           (service-extension activation-service-type
                              (const %dicod-activation))
           (service-extension shepherd-root-service-type
-                             dicod-shepherd-service)))))
+                             dicod-shepherd-service)))
+   (default-value (dicod-configuration))))
 
 (define* (dicod-service #:key (config (dicod-configuration)))
   "Return a service that runs the @command{dicod} daemon, an implementation
