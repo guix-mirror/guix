@@ -146,12 +146,14 @@ Epigram and Agda.")
                                                     idris-path-files))
                  (install-cmd (cons* idris-bin
                                      "--ibcsubdir" ibcsubdir
-                                     "--install" ipkg
+                                     "--build" ipkg
+                                     ;; only trigger a build, as --ibcsubdir
+                                     ;; already installs .ibc files.
+
                                      (apply append (map (lambda (path)
                                                           (list "--idrispath"
                                                                 path))
                                                         idris-path-subdirs)))))
-            (setenv "IDRIS_LIBRARY_PATH" idris-libs)
             ;; FIXME: Seems to be a bug in idris that causes a dubious failure.
             (apply system* install-cmd)
             #t))))))
