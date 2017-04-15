@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -206,7 +206,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.3-25")
+    (version "1.2.3-37")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -218,7 +218,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0d6a42p8111raf7k16yvjajnpj22abiqndy3yzkrb4b8l071r24d"))))
+                "180146rm8fxlbd6x25x81yscf6q8qjpzr35k203r25c2xkcb7h2x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
