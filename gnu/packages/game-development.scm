@@ -70,7 +70,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.85.1")
+    (version "2.86.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bulletphysics/bullet3/"
@@ -78,7 +78,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qpd37ws0xlxwy55dg058a5b4yw2jxiz09yyc3lc0frpa05pq5bf"))))
+                "0nghzcl84p8di215p7xj0gy1hyy072hw2xk9cnmav9hv6bjb4n60"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list (string-append
