@@ -554,6 +554,36 @@ are detected, the user is notified.")
     (home-page "https://github.com/vim-syntastic/syntastic")
     (license license:wtfpl2)))
 
+(define-public neovim-syntastic
+  (package
+    (inherit vim-syntastic)
+    (name "neovim-syntastic")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/nvim/site"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (syntax-checkers (string-append vimfiles "/syntax_checkers")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "syntax_checkers" syntax-checkers)
+               #t))))))
+    (synopsis "Syntax checking plugin for Neovim")
+    (description
+     "Vim-syntastic is a syntax checking plugin for Neovim.  It runs files through
+external syntax checkers and displays any resulting errors to the user.  This
+can be done on demand, or automatically as files are saved.  If syntax errors
+are detected, the user is notified.")))
+
 (define-public neovim
   (package
     (name "neovim")
