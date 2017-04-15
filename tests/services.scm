@@ -31,6 +31,17 @@
 
 (test-begin "services")
 
+(test-equal "services, default value"
+  '(42 123 234 error)
+  (let* ((t1 (service-type (name 't1) (extensions '())))
+         (t2 (service-type (name 't2) (extensions '())
+                           (default-value 42))))
+    (list (service-value (service t2))
+          (service-value (service t2 123))
+          (service-value (service t1 234))
+          (guard (c ((missing-value-service-error? c) 'error))
+            (service t1)))))
+
 (test-assert "service-back-edges"
   (let* ((t1 (service-type (name 't1) (extensions '())
                            (compose +) (extend *)))

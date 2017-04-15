@@ -15555,11 +15555,12 @@ with a simple example, the service type for the Guix build daemon
    (extensions
     (list (service-extension shepherd-root-service-type guix-shepherd-service)
           (service-extension account-service-type guix-accounts)
-          (service-extension activation-service-type guix-activation)))))
+          (service-extension activation-service-type guix-activation)))
+   (default-value (guix-configuration))))
 @end example
 
 @noindent
-It defines two things:
+It defines three things:
 
 @enumerate
 @item
@@ -15572,6 +15573,9 @@ service, returns a list of objects to extend the service of that type.
 
 Every service type has at least one service extension.  The only
 exception is the @dfn{boot service type}, which is the ultimate service.
+
+@item
+Optionally, a default value for instances of this type.
 @end enumerate
 
 In this example, @var{guix-service-type} extends three services:
@@ -15607,7 +15611,13 @@ A service of this type is instantiated like this:
 The second argument to the @code{service} form is a value representing
 the parameters of this specific service instance.
 @xref{guix-configuration-type, @code{guix-configuration}}, for
-information about the @code{guix-configuration} data type.
+information about the @code{guix-configuration} data type.  When the
+value is omitted, the default value specified by
+@code{guix-service-type} is used:
+
+@example
+(service guix-service-type)
+@end example
 
 @var{guix-service-type} is quite simple because it extends other
 services but is not extensible itself.
@@ -15670,10 +15680,31 @@ Services}).  This section provides a reference on how to manipulate
 services and service types.  This interface is provided by the
 @code{(gnu services)} module.
 
-@deffn {Scheme Procedure} service @var{type} @var{value}
+@deffn {Scheme Procedure} service @var{type} [@var{value}]
 Return a new service of @var{type}, a @code{<service-type>} object (see
 below.)  @var{value} can be any object; it represents the parameters of
 this particular service instance.
+
+When @var{value} is omitted, the default value specified by @var{type}
+is used; if @var{type} does not specify a default value, an error is
+raised.
+
+For instance, this:
+
+@example
+(service openssh-service-type)
+@end example
+
+@noindent
+is equivalent to this:
+
+@example
+(service openssh-service-type
+         (openssh-configuration))
+@end example
+
+In both cases the result is an instance of @code{openssh-service-type}
+with the default configuration.
 @end deffn
 
 @deffn {Scheme Procedure} service? @var{obj}
