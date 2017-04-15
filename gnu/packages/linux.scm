@@ -3733,3 +3733,28 @@ constructing of both the Netlink header and TLVs that are repetitive and easy to
 get wrong.  This library aims to provide simple helpers that allows you to
 re-use code and to avoid re-inventing the wheel.")
     (license license:lgpl2.1+)))
+
+(define-public libnftnl
+  (package
+    (name "libnftnl")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.netfilter.org/projects/libnftnl/files/"
+                            "libnftnl-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "10irjrylcfkbp11617yr19vpfhgl54w0kw02jhj0i1abqv5nxdlv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmnl" ,libmnl)))
+    (home-page "https://www.netfilter.org/projects/libnftnl/index.html")
+    (synopsis "Netlink programming interface to the Linux nf_tables subsystem")
+    (description "Libnftnl is a userspace library providing a low-level netlink
+programming interface to the in-kernel nf_tables subsystem.  The library
+libnftnl has been previously known as libnftables.  This library is currently
+used by nftables.")
+    (license license:gpl2+)))
