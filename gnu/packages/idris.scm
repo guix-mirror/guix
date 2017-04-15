@@ -31,7 +31,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "0.99.1")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -39,7 +39,7 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "12kw452arnl5ldip2x749j5np3l40bv7asqdv9w0f60j45hii40r"))))
+                "1srbz0cyvd0k1yqgbrwnfj94yg5y3z533q1kzac96z1h7v454s5h"))))
     (build-system haskell-build-system)
     (inputs
      `(("gmp" ,gmp)
