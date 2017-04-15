@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1419,3 +1421,41 @@ misspelled words in a GtkTextView widget.")
 thereof, global hotkeys and clipboard item actions.  It was forked from
 Parcellite and adds bugfixes and features.")
     (license license:gpl2+)))
+
+(define-public graphene
+  (package
+    (name "graphene")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ebassi/graphene/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1zd2daj7y590wnzn4jw0niyc4fnzgxrcl9i7nwhy8b25ks2hz5wq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-introspection=yes")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("which" ,which)
+       ("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("python" ,python)
+       ("python-2" ,python-2)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "http://ebassi.github.io/graphene")
+    (synopsis "Thin layer of graphic data types")
+    (description "This library provides graphic types and their relative API;
+it does not deal with windowing system surfaces, drawing, scene graphs, or
+input.")
+    (license license:expat)))
