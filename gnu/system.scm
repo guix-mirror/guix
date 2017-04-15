@@ -742,17 +742,16 @@ populate the \"old entries\" menu."
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entries ->  (list (boot-parameters
+       (entries ->  (list (menu-entry
                            (label label)
-                           (root-device root-device)
 
                            ;; The device where the kernel and initrd live.
-                           (store-device (fs->boot-device store-fs))
-                           (store-mount-point
+                           (device (fs->boot-device store-fs))
+                           (device-mount-point
                             (file-system-mount-point store-fs))
 
-                           (kernel kernel)
-                           (kernel-arguments
+                           (linux kernel)
+                           (linux-arguments
                             (cons* (string-append "--root=" root-device)
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system

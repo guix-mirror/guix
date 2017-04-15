@@ -456,9 +456,9 @@ open connection to the store."
          ;; from the actual past values for this generation's entry.
          (grub-config (grub-configuration (device root-device)))
          ;; Make the specified system generation the default entry.
-         (entries (profile-boot-parameters %system-profile (list number)))
+         (entries (profile-grub-entries %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-boot-parameters %system-profile old-generations))
+         (old-entries (profile-grub-entries %system-profile old-generations))
          (grub.cfg (run-with-store store
                      (grub-configuration-file grub-config
                                               entries
@@ -643,7 +643,7 @@ output when building a system derivation, such as a disk image."
                       (operating-system-bootcfg os
                                                 (if (eq? 'init action)
                                                     '()
-                                                    (profile-boot-parameters)))))
+                                                    (profile-grub-entries)))))
 
        ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
