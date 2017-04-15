@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,7 +254,7 @@ clone.")
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
        ("openal" ,openal)))
-    (home-page "http://www.sfml-dev.org")
+    (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
     (description
      "SFML provides a simple interface to the various computer components,
@@ -305,7 +306,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://icculus.org/physfs/downloads/physfs-"
+                    "https://icculus.org/physfs/downloads/physfs-"
                     version ".tar.bz2"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
@@ -318,7 +319,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)))
-    (home-page "http://icculus.org/physfs")
+    (home-page "https://icculus.org/physfs")
     (synopsis "File system abstraction library")
     (description
      "PhysicsFS is a library to provide abstract access to various archives.
@@ -510,7 +511,7 @@ etc.")
     (description "Aseprite is a tool for creating 2D pixel art for video
 games.  In addition to basic pixel editing features, Aseprite can assist in
 the creation of animations, tiled graphics, texture atlases, and more.")
-    (home-page "http://www.aseprite.org/")
+    (home-page "https://www.aseprite.org/")
     (license license:gpl2+)))
 
 (define-public qqwing
@@ -655,7 +656,7 @@ interface (API).")
        ("libsmpeg" ,libsmpeg)
        ("portmidi" ,portmidi)
        ("v4l-utils" ,v4l-utils)))
-    (home-page "http://www.pygame.org")
+    (home-page "https://www.pygame.org")
     (synopsis "SDL wrapper for Python")
     (description "Pygame is a set of Python modules designed for writing games.
 Pygame adds functionality on top of the excellent SDL library. This allows you
