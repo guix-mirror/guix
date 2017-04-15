@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -295,7 +296,7 @@ to USB sticks meant to be read-only."
                   #:copy-inputs? #t
                   #:register-closures? #t
                   #:inputs `(("system" ,os-drv)
-                             ("grub.cfg" ,bootcfg))))))
+                             ("bootcfg" ,bootcfg))))))
 
 (define* (system-qemu-image os
                             #:key
@@ -334,7 +335,7 @@ of the GNU system as described by OS."
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
                    #:inputs `(("system" ,os-drv)
-                              ("grub.cfg" ,bootcfg))
+                              ("bootcfg" ,bootcfg))
                    #:copy-inputs? #t))))
 
 
@@ -425,14 +426,14 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
   (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                        (bootcfg  (operating-system-bootcfg os)))
     ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
-    ;; GRUB.CFG and all its dependencies, including the output of OS-DRV.
+    ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
     ;; This is more than needed (we only need the kernel, initrd, GRUB for its
     ;; font, and the background image), but it's hard to filter that.
     (qemu-image #:os-derivation os-drv
                 #:grub-configuration bootcfg
                 #:disk-image-size disk-image-size
                 #:inputs (if full-boot?
-                             `(("grub.cfg" ,bootcfg))
+                             `(("bootcfg" ,bootcfg))
                              '())
 
                 ;; XXX: Passing #t here is too slow, so let it off by default.
