@@ -3711,3 +3711,25 @@ and more on DMI-capable x86 or EFI (IA-64) systems and on some PowerPC
 machines (PowerMac G4 is known to work).")
     (home-page "https://www.ezix.org/project/wiki/HardwareLiSter")
     (license license:gpl2+)))
+
+(define-public libmnl
+  (package
+    (name "libmnl")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.netfilter.org/projects/libmnl/files/"
+                            "libmnl-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "108zampspaalv44zn0ar9h386dlfixpd149bnxa5hsi8kxlqj7qp"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.netfilter.org/projects/libmnl/")
+    (synopsis "Netlink utility library")
+    (description "Libmnl is a minimalistic user-space library oriented to
+Netlink developers.  There are a lot of common tasks in parsing, validating,
+constructing of both the Netlink header and TLVs that are repetitive and easy to
+get wrong.  This library aims to provide simple helpers that allows you to
+re-use code and to avoid re-inventing the wheel.")
+    (license license:lgpl2.1+)))
