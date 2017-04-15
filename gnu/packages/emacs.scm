@@ -1207,6 +1207,28 @@ writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
     (license license:gpl3+)))
 
+(define-public emacs-calfw
+  (package
+    (name "emacs-calfw")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/kiwanami/emacs-calfw/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17ssg8gx66yp63nhygjq2r6kgl4h45cacmrxsxs9f0lrfcx37k0l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/kiwanami/emacs-calfw/")
+    (synopsis "Calendar framework for Emacs")
+    (description
+     "This package displays a calendar view with various shedule data in
+the Emacs buffer.")
+    (license license:gpl3+)))
+
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
