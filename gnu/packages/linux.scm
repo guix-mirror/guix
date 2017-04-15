@@ -1016,21 +1016,28 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.4.21")
+    (version "1.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.netfilter.org/projects/iptables/files/iptables-"
+                   "https://www.netfilter.org/projects/iptables/files/iptables-"
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1q6kg7sf0pgpq0qhab6sywl23cngxxfzc9zdzscsba8x09l4q02j"))))
+               "1x8c9y340x79djsq54bc1674ryv59jfphrk4f88i7qbvbnyxghhg"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (inputs
+     `(("libmnl" ,libmnl)
+       ("libnftnl" ,libnftnl)))
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
-    (home-page "http://www.netfilter.org/projects/iptables/index.html")
+    (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
      "iptables is the userspace command line program used to configure the
