@@ -298,9 +298,9 @@ corresponding to old generations of the system."
                   #$initrd)))))
 
   (mlet %store-monad ((sugar (eye-candy config
-                                        (menu-entry-device (first entries))
+                                        (menu-entry-device (first all-entries))
                                         (menu-entry-device-mount-point
-                                         (first entries))
+                                         (first all-entries))
                                         #:system system
                                         #:port #~port)))
     (define builder
