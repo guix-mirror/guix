@@ -4422,3 +4422,75 @@ X11 protocol based on the XML description files from the XCB project.  It
 features an object-oriented API and permits a certain degree of concurrency.
 It should enable you to implement low-level X11 applications.")
     (license license:gpl3+)))
+
+(define-public emacs-exwm
+  (package
+    (name "emacs-exwm")
+    (version "0.13")
+    (synopsis "Emacs X window manager")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/exwm-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0n1wzy6chh024r0yaywjbf7mdsrxs6hrfycv5v0ps0drf6q3zldc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-xelb" ,emacs-xelb)))
+    (inputs
+     `(("xhost" ,xhost)
+       ("dbus" ,dbus)))
+    ;; The following functions and variables needed by emacs-exwm are
+    ;; not included in emacs-minimal:
+    ;; scroll-bar-mode, fringe-mode
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-xsession
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions"))
+                    (bin (string-append out "/bin"))
+                    (exwm-executable (string-append bin "/exwm")))
+               ;; Add a .desktop file to xsessions
+               (mkdir-p xsessions)
+               (mkdir-p bin)
+               (with-output-to-file
+                   (string-append xsessions "/exwm.desktop")
+                 (lambda _
+                   (format #t "[Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a~@
+                     TryExec=~@*~a~@
+                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
+               (with-output-to-file exwm-executable
+                 (lambda _
+                   (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
+                     ~a +SI:localuser:$USER ~@
+                     exec ~a --exit-with-session ~a --eval '~s' ~%"
+                           (string-append (assoc-ref inputs "bash") "/bin/sh")
+                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
+                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
+                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           '(cond
+                             ((file-exists-p "~/.exwm")
+                              (load-file "~/.exwm"))
+                             ((not (featurep 'exwm))
+                              (require 'exwm)
+                              (require 'exwm-config)
+                              (exwm-config-default)
+                              (message "exwm configuration not found. Falling back to default configuration..."))))))
+               (chmod exwm-executable #o555)
+               #t))))))
+    (home-page "https://github.com/ch11ng/exwm")
+    (description "EXWM is a full-featured tiling X window manager for Emacs
+built on top of XELB.")
+    (license license:gpl3+)))
