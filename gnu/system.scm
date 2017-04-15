@@ -746,7 +746,7 @@ populate the \"old entries\" menu."
                            (label label)
 
                            ;; The device where the kernel and initrd live.
-                           (device (grub-device store-fs))
+                           (device (fs->boot-device store-fs))
                            (device-mount-point
                             (file-system-mount-point store-fs))
 
@@ -761,7 +761,7 @@ populate the \"old entries\" menu."
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
 
-(define (grub-device fs)
+(define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the
 device in a <menu-entry>."
   (case (file-system-title fs)
@@ -787,7 +787,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                     #$(operating-system-kernel-arguments os))
                    (initrd #$initrd)
                    (store
-                    (device #$(grub-device store))
+                    (device #$(fs->boot-device store))
                     (mount-point #$(file-system-mount-point store))))
                 #:set-load-path? #f)))
 
