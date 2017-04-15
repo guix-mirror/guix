@@ -26,6 +26,7 @@
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (gnu artwork)
+  #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
@@ -266,6 +267,15 @@ code."
         (#f
          #~(format #f "search --file --set ~a" #$file)))))
 
+(define (boot-parameters->menu-entry conf)
+  (menu-entry
+   (label (boot-parameters-label conf))
+   (device (boot-parameters-store-device conf))
+   (device-mount-point (boot-parameters-store-mount-point conf))
+   (linux (boot-parameters-kernel conf))
+   (linux-arguments (boot-parameters-kernel-arguments conf))
+   (initrd (boot-parameters-initrd conf))))
+
 (define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
@@ -275,7 +285,8 @@ code."
 <file-system> object.  OLD-ENTRIES is taken to be a list of menu entries
 corresponding to old generations of the system."
   (define all-entries
-    (append entries (grub-configuration-menu-entries config)))
+    (append (map boot-parameters->menu-entry entries)
+            (grub-configuration-menu-entries config)))
 
   (define entry->gexp
     (match-lambda
@@ -321,7 +332,7 @@ set timeout=~a~%"
             #$@(if (pair? old-entries)
                    #~((format port "
 submenu \"GNU system, old configurations...\" {~%")
-                      #$@(map entry->gexp old-entries)
+                      #$@(map entry->gexp (map boot-parameters->menu-entry old-entries))
                       (format port "}~%"))
                    #~()))))
 
