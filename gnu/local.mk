@@ -45,6 +45,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/adns.scm				\
   %D%/packages/algebra.scm			\
   %D%/packages/aidc.scm				\
+  %D%/packages/android.scm			\
   %D%/packages/animation.scm			\
   %D%/packages/anthy.scm			\
   %D%/packages/apl.scm				\
@@ -689,6 +690,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
+  %D%/packages/patches/libbase-fix-includes.patch		\
+  %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libdrm-symbol-check.patch		\
