@@ -591,7 +591,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
     (warning (_ "Failing to do that may downgrade your system!~%"))))
 
 (define* (perform-action action os
-                         #:key grub? dry-run? derivations-only?
+                         #:key bootloader? dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
                          (mappings '())
@@ -631,7 +631,7 @@ output when building a system derivation, such as a disk image."
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
        ;; root.  See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if grub?
+                      (if bootloader?
                           (list sys grub.cfg grub)
                           (list sys grub.cfg))
                       (list sys)))
@@ -648,7 +648,7 @@ output when building a system derivation, such as a disk image."
                     drvs)
 
           ;; Make sure GRUB is accessible.
-          (when grub?
+          (when bootloader?
             (let ((prefix (derivation->output-path grub)))
               (setenv "PATH"
                       (string-append  prefix "/bin:" prefix "/sbin:"
@@ -658,7 +658,7 @@ output when building a system derivation, such as a disk image."
             ((reconfigure)
              (mbegin %store-monad
                (switch-to-system os)
-               (mwhen grub?
+               (mwhen bootloader?
                  (install-grub* (derivation->output-path grub.cfg)
                                 device "/"))))
             ((init)
@@ -666,7 +666,7 @@ output when building a system derivation, such as a disk image."
              (format #t (_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
-                      #:grub? grub?
+                      #:grub? bootloader?
                       #:grub.cfg (derivation->output-path grub.cfg)
                       #:device device))
             (else
@@ -788,7 +788,7 @@ Some ACTIONS support additional ARGS.\n"))
                                result)))
          (option '("no-grub") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'install-grub? #f result)))
+                   (alist-cons 'install-bootloader? #f result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
@@ -825,7 +825,7 @@ Some ACTIONS support additional ARGS.\n"))
     (max-silent-time . 3600)
     (verbosity . 0)
     (image-size . ,(* 900 (expt 2 20)))
-    (install-grub? . #t)))
+    (install-bootloader? . #t)))
 
 
 ;;;
@@ -837,23 +837,23 @@ Some ACTIONS support additional ARGS.\n"))
 ACTION must be one of the sub-commands that takes an operating system
 declaration as an argument (a file name.)  OPTS is the raw alist of options
 resulting from command-line parsing."
-  (let* ((file     (match args
-                     (() #f)
-                     ((x . _) x)))
-         (system   (assoc-ref opts 'system))
-         (os       (if file
-                       (load* file %user-module
-                              #:on-error (assoc-ref opts 'on-error))
-                       (leave (_ "no configuration file specified~%"))))
+  (let* ((file        (match args
+                        (() #f)
+                        ((x . _) x)))
+         (system      (assoc-ref opts 'system))
+         (os          (if file
+                          (load* file %user-module
+                                 #:on-error (assoc-ref opts 'on-error))
+                          (leave (_ "no configuration file specified~%"))))
 
-         (dry?     (assoc-ref opts 'dry-run?))
-         (grub?    (assoc-ref opts 'install-grub?))
-         (target   (match args
-                     ((first second) second)
-                     (_ #f)))
-         (device   (and grub?
-                        (grub-configuration-device
-                         (operating-system-bootloader os)))))
+         (dry?        (assoc-ref opts 'dry-run?))
+         (bootloader? (assoc-ref opts 'install-bootloader?))
+         (target      (match args
+                        ((first second) second)
+                        (_ #f)))
+         (device      (and bootloader?
+                           (grub-configuration-device
+                            (operating-system-bootloader os)))))
 
     (with-store store
       (set-build-options-from-command-line store opts)
@@ -879,7 +879,7 @@ resulting from command-line parsing."
                                                        m)
                                                       (_ #f))
                                                     opts)
-                             #:grub? grub?
+                             #:bootloader? bootloader?
                              #:target target #:device device
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
