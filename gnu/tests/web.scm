@@ -19,7 +19,6 @@
 (define-module (gnu tests web)
   #:use-module (gnu tests)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
