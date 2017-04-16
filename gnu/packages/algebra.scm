@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -479,22 +480,22 @@ binary.")
     (native-inputs `(("flex" ,flex)))
     (arguments
      '(#:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; This old `configure' script doesn't support
-                        ;; variables passed as arguments.
-                        (let ((out (assoc-ref outputs "out")))
-                          (setenv "CONFIG_SHELL" (which "bash"))
-                          (zero?
-                           (system*
-                            "./configure"
-                            (string-append "--prefix=" out)
-                            ;; By default, man and info pages are put in
-                            ;; PREFIX/{man,info}, but we want them in
-                            ;; PREFIX/share/{man,info}.
-                            (string-append "--mandir=" out "/share/man")
-                            (string-append "--infodir=" out "/share/info")))))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old `configure' script doesn't support
+             ;; variables passed as arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system*
+                 "./configure"
+                 (string-append "--prefix=" out)
+                 ;; By default, man and info pages are put in
+                 ;; PREFIX/{man,info}, but we want them in
+                 ;; PREFIX/share/{man,info}.
+                 (string-append "--mandir=" out "/share/man")
+                 (string-append "--infodir=" out "/share/info")))))))))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
