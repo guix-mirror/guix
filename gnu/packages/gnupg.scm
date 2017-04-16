@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -58,7 +58,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.26")
+    (version "1.27")
     (source
      (origin
       (method url-fetch)
@@ -66,7 +66,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0sgfia0syq78k1c9h10rkhc1nfv5v097icrprlx2x4qn074wnjsc"))))
+        "1li95ni122fzinzlmxbln63nmgij63irxfvi52ws4zfbzv3am4sg"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
