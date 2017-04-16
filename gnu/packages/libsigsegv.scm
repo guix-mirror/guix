@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,12 +45,12 @@
     ;; linux-libre-headers-cross-mips64el-linux-gnu-3.3.8/include/asm/sigcontext.h:57:8: error: redefinition of 'struct sigcontext'
     (if (string-contains (or (%current-target-system) (%current-system))
                          "mips64el")
-        `(#:phases (alist-cons-before
-                    'configure 'patch-mips-old-h
-                    (lambda _
-                      (substitute* "src/fault-linux-mips-old.h"
-                        (("#include <asm/sigcontext\\.h>") "")))
-                    %standard-phases))
+        `(#:phases (modify-phases %standard-phases
+                     (add-before 'configure 'patch-mips-old-h
+                       (lambda _
+                         (substitute* "src/fault-linux-mips-old.h"
+                           (("#include <asm/sigcontext\\.h>") ""))
+                         #t))))
         '()))
    (description
     "GNU libsigsegv is a library to handle page faults, which occur when a
