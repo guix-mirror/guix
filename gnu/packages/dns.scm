@@ -377,7 +377,7 @@ Extensions} (DNSSEC).")
                             "/etc/bash_completion.d"))))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
-    (description "Knot DNS is an authorative name server for the @dfn{Domain
+    (description "Knot DNS is an authoritative name server for the @dfn{Domain
 Name System} (DNS), designed to meet the needs of root and @dfn{top-level
 domain} (TLD) name servers.  It is implemented as a threaded daemon and uses a
 number of programming techniques to improve speed.  For example, the responder

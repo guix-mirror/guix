@@ -1763,7 +1763,7 @@ a new command using the matched rule, and runs it.")
      "'di' is a disk information utility, displaying everything
 (and more) that your @code{df} command does.  It features the ability to
 display your disk usage in whatever format you prefer.  It is designed to be
-highly portable.  Great for heterogenous networks.")
+highly portable.  Great for heterogeneous networks.")
     (license license:zlib)))
 
 (define-public cbatticon

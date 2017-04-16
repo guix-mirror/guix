@@ -1210,7 +1210,7 @@ extensive documentation, including API reference and a tutorial.")
     (synopsis "Python bindings for GTK+")
     (description
      "PyGTK allows you to write full featured GTK programs in Python.  It is
-targetted at GTK 2.x, and can be used in conjunction with gnome-python to
+targeted at GTK 2.x, and can be used in conjunction with gnome-python to
 write GNOME applications.")
     (license license:lgpl2.1+)))
 

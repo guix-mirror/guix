@@ -85,7 +85,7 @@
 gnome-terminal (GNOME) or Konsole (KDE), with the difference that it drops down
 from the edge of a screen when a certain configurable hotkey is pressed.  This
 is similar to the built-in consoles in some applications.  Tilda is highly
-configureable through a graphical wizard.")
+configurable through a graphical wizard.")
     (home-page "https://github.com/lanoxx/tilda")
     (license license:gpl2+)))
 

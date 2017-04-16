@@ -4059,10 +4059,10 @@ number on the left margin in Emacs.")
          "0kdv10hrgqpskjh0zvpnzwlkn5bccnqxas62gkws6njln57bf8nl"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/IdleHighlight")
-    (synopsis "Highlights all occurences of the word the point is on")
+    (synopsis "Highlights all occurrences of the word the point is on")
     (description
      "This Emacs package provides @code{idle-highlight-mode} that sets
- an idle timer to highlight all occurences in the buffer of the word under
+ an idle timer to highlight all occurrences in the buffer of the word under
  the point.")
     (license license:gpl3+)))
 

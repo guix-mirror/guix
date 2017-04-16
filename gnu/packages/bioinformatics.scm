@@ -5406,7 +5406,7 @@ data types as well.")
     (home-page
      "http://bioconductor.org/packages/annotate")
     (synopsis "Annotation for microarrays")
-    (description "This package provides R enviroments for the annotation of
+    (description "This package provides R environments for the annotation of
 microarrays.")
     (license license:artistic2.0)))
 

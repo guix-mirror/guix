@@ -2053,7 +2053,7 @@ the GNU Mailman 3 REST API.")
     (description
      "Mlmmj is a simple and slim mailing list manager (MLM) inspired by ezmlm.
 It works with many different Mail Transport Agents (MTAs) and is simple for a
-system adminstrator to install, configure and integrate with other software.
+system administrator to install, configure and integrate with other software.
 As it uses very few resources, and requires no daemons, it is ideal for
 installation on systems where resources are limited.  Its features include:
 @enumerate

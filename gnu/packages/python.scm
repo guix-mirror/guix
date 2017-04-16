@@ -7089,7 +7089,7 @@ printing of sub-tables by specifying a row range.")
     (home-page "http://www.pytables.org/")
     (synopsis "Hierarchical datasets for Python")
     (description "PyTables is a package for managing hierarchical datasets and
-designed to efficently cope with extremely large amounts of data.")
+designed to efficiently cope with extremely large amounts of data.")
     (license license:bsd-3)))
 
 (define-public python2-tables
@@ -8691,7 +8691,7 @@ pure Python module that works on virtually all Python versions.")
     (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
 Python interpreters across version, platform and network barriers.  It has a
-minimal and fast API targetting the following uses:
+minimal and fast API targeting the following uses:
 @enumerate
 @item distribute tasks to (many) local or remote CPUs
 @item write and deploy hybrid multi-process applications
@@ -10790,7 +10790,7 @@ Python.  It generates C++ code and a Makefile."))
     (description "Rope is a refactoring library for Python.  It facilitates
 the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
-to occurences in strings and comments.")
+to occurrences in strings and comments.")
     (license license:gpl2)))
 
 (define-public python-py3status
@@ -13832,7 +13832,7 @@ in other versions.")
     (home-page "https://liw.fi/coverage-test-runner/")
     (synopsis "Python module for running unit tests")
     (description "@code{CoverageTestRunner} is a python module for running
-unit tests and failing them if the unit test module does not excercise all
+unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
 

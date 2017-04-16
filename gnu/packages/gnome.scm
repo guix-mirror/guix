@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -863,11 +863,11 @@ some form of information without getting in the user's way.")
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
-     "Libpeas is a gobject-based plugins engine, and is targetted at giving
-every application the chance to assume its own extensibility.  It also has a
-set of features including, but not limited to: multiple extension points; on
-demand (lazy) programming language support for C, Python and JS; simplicity of
-the API.")
+     "Libpeas is a gobject-based plugin engine, targeted at giving every
+application the chance to assume its own extensibility.  It also has a set of
+features including, but not limited to: multiple extension points; on-demand
+(lazy) programming language support for C, Python and JS; simplicity of the
+API.")
     (license license:lgpl2.0+)))
 
 (define-public gtkglext

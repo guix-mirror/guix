@@ -380,7 +380,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
     (description
      "Nload is a console application which monitors network traffic and
 bandwidth usage in real time.  It visualizes the in- and outgoing traffic using
-two graphs and provides additional info like total amount of transfered data
+two graphs, and provides additional info like total amount of transferred data
 and min/max network usage.")
     (license license:gpl2+)))
 
