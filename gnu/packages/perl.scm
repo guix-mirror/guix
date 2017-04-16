@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6122,9 +6123,8 @@ statements: @code{switch} and @code{case}.")
     (build-system perl-build-system)
     (synopsis "Perl extension for getting CPU information")
     (description
-     "In responce to a post on perlmonks.org, a module for counting the number
-of CPU's on a system.  Support has now also been added for type of CPU and
-clock speed.")
+     "Sys::CPU is a module for counting the number of CPUs on a system, and
+determining their type and clock speed.")
     (home-page (string-append "http://search.cpan.org/~mzsanford/"
                               "Sys-CPU-" version))
     (license (package-license perl))))
