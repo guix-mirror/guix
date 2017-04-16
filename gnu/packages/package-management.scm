@@ -450,16 +450,17 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "78")
+    (version "81")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1bx8i6sx2mcvm166nhw0i5442ld6wigkwav8dsnv22y7gnsl9d7n"))))
+                "093lxy6zj69i19fxdkj3jnai3b1ajqbksyqcvy8wqj3plaaxjna5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-before 'unpack 'n (lambda _ #t))
                   ;; setup.py mistakenly requires python-magic from PyPi, even
                   ;; though the Python bindings of `file` are sufficient.
                   ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
