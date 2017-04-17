@@ -132,4 +132,4 @@ perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "http://nodejs.org/")
     (license expat)
-    (properties '((timeout . 216000)))))
+    (properties '((timeout . 3600))))) ; 1 h
