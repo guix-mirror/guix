@@ -598,14 +598,14 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
 (define freedink-data
   (package
     (name "freedink-data")
-    (version "1.08.20140901")
+    (version "1.08.20170401")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-data-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "04f1aa8gfz30qkgv7chjz5n1s8v5hbqs01h2113cq1ylm3isd5sp"))))
+                "1zx7qywibhznj7bnz217404scr8dfh0xj24xjihnda5iapzz7lz8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
