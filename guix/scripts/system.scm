@@ -765,7 +765,7 @@ Some ACTIONS support additional ARGS.\n"))
   (display (_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (_ "
-      --no-grub          for 'init', do not install GRUB"))
+      --no-bootloader    for 'init', do not install a bootloader"))
   (display (_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
   (display (_ "
@@ -804,7 +804,7 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
                                result)))
-         (option '("no-grub") #f #f
+         (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'install-bootloader? #f result)))
          (option '("full-boot") #f #f
