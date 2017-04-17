@@ -36,7 +36,8 @@ Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
-Copyright @copyright{} 2017 Christopher Allan Webber
+Copyright @copyright{} 2017 Christopher Allan Webber@*
+Copyright @copyright{} 2017 Marius Bakke
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -7445,6 +7446,17 @@ ping -c 3 gnu.org
 
 Setting up network access is almost always a requirement because the
 image does not contain all the software and tools that may be needed.
+
+@cindex installing over SSH
+If you want to, you can continue the installation remotely by starting
+an SSH server:
+
+@example
+herd start ssh-daemon
+@end example
+
+Make sure to either set a password with @command{passwd}, or configure
+OpenSSH public key authentication before logging in.
 
 @subsubsection Disk Partitioning
 
