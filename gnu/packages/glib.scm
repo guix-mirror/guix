@@ -137,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.50.3")
+   (version "2.52.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -145,7 +145,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "16frrwhc1yqkzx6bgh3060g94dr2biab17fb01mrni819jzr9vl2"))
+              "0vsqrvjwsk2x3mm2i428hpm5vgsi1b384l6xdhm7xmzj2yw2d34l"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
