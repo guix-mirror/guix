@@ -24,6 +24,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 threads)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
@@ -45,13 +46,15 @@
   #:use-module (guix hash)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
+  #:use-module (guix workers)
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix zlib)
   #:use-module (guix ui)
   #:use-module (guix scripts)
-  #:use-module ((guix utils) #:select (compressed-file?))
-  #:use-module ((guix build utils) #:select (dump-port))
+  #:use-module ((guix utils)
+                #:select (with-atomic-file-output compressed-file?))
+  #:use-module ((guix build utils) #:select (dump-port mkdir-p))
   #:export (%public-key
             %private-key
 
@@ -69,6 +72,10 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
   -C, --compression[=LEVEL]
                          compress archives at LEVEL"))
+  (display (_ "
+  -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
+  (display (_ "
+      --workers=N        use N workers to bake items"))
   (display (_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
   (display (_ "
@@ -154,6 +161,13 @@ if ITEM is already compressed."
                            (warning (_ "zlib support is missing; \
 compression disabled~%"))
                            result))))))
+        (option '(#\c "cache") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'cache arg result)))
+        (option '("workers") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'workers (string->number* arg)
+                              result)))
         (option '("ttl") #t #f
                 (lambda (opt name arg result)
                   (let ((duration (string->duration arg)))
@@ -189,6 +203,9 @@ compression disabled~%"))
     (compression . ,(if (zlib-available?)
                         %default-gzip-compression
                         %no-compression))
+
+    ;; Default number of workers when caching is enabled.
+    (workers . ,(current-processor-count))
 
     (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
@@ -308,6 +325,121 @@ appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
                                   #:compression compression)
                   <>)))))
 
+(define* (nar-cache-file directory item
+                             #:key (compression %no-compression))
+  (string-append directory "/"
+                 (symbol->string (compression-type compression))
+                 "/" (basename item) ".nar"))
+
+(define* (narinfo-cache-file directory item
+                             #:key (compression %no-compression))
+  (string-append directory "/"
+                 (symbol->string (compression-type compression))
+                 "/" (basename item)
+                 ".narinfo"))
+
+(define run-single-baker
+  (let ((baking (make-weak-value-hash-table))
+        (mutex  (make-mutex)))
+    (lambda (item thunk)
+      "Run THUNK, which is supposed to bake ITEM, but make sure only one
+thread is baking ITEM at a given time."
+      (define selected?
+        (with-mutex mutex
+          (and (not (hash-ref baking item))
+               (begin
+                 (hash-set! baking item (current-thread))
+                 #t))))
+
+      (when selected?
+        (dynamic-wind
+          (const #t)
+          thunk
+          (lambda ()
+            (with-mutex mutex
+              (hash-remove! baking item))))))))
+
+(define-syntax-rule (single-baker item exp ...)
+  "Bake ITEM by evaluating EXP, but make sure there's only one baker for ITEM
+at a time."
+  (run-single-baker item (lambda () exp ...)))
+
+
+(define* (render-narinfo/cached store request hash
+                                #:key ttl (compression %no-compression)
+                                (nar-path "nar")
+                                cache pool)
+  "Respond to the narinfo request for REQUEST.  If the narinfo is available in
+CACHE, then send it; otherwise, return 404 and \"bake\" that nar and narinfo
+requested using POOL."
+  (let* ((item        (hash-part->path store hash))
+         (compression (actual-compression item compression))
+         (cached      (and (not (string-null? item))
+                           (narinfo-cache-file cache item
+                                               #:compression compression))))
+    (cond ((string-null? item)
+           (not-found request))
+          ((file-exists? cached)
+           ;; Narinfo is in cache, send it.
+           (values `((content-type . (application/x-nix-narinfo))
+                     ,@(if ttl
+                           `((cache-control (max-age . ,ttl)))
+                           '()))
+                   (lambda (port)
+                     (display (call-with-input-file cached
+                                read-string)
+                              port))))
+          ((valid-path? store item)
+           ;; Nothing in cache: bake the narinfo and nar in the background and
+           ;; return 404.
+           (eventually pool
+             (single-baker item
+               ;; (format #t "baking ~s~%" item)
+               (bake-narinfo+nar cache item
+                                 #:ttl ttl
+                                 #:compression compression
+                                 #:nar-path nar-path)))
+           (not-found request))
+          (else
+           (not-found request)))))
+
+(define* (bake-narinfo+nar cache item
+                           #:key ttl (compression %no-compression)
+                           (nar-path "/nar"))
+  "Write the narinfo and nar for ITEM to CACHE."
+  (let* ((compression (actual-compression item compression))
+         (nar         (nar-cache-file cache item
+                                      #:compression compression))
+         (narinfo     (narinfo-cache-file cache item
+                                          #:compression compression)))
+
+    (mkdir-p (dirname nar))
+    (match (compression-type compression)
+      ('gzip
+       ;; Note: the file port gets closed along with the gzip port.
+       (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
+         (lambda (port)
+           (write-file item port))
+         #:level (compression-level compression))
+       (rename-file (string-append nar ".tmp") nar))
+      ('none
+       ;; When compression is disabled, we retrieve files directly from the
+       ;; store; no need to cache them.
+       #t))
+
+    (mkdir-p (dirname narinfo))
+    (with-atomic-file-output narinfo
+      (lambda (port)
+        ;; Open a new connection to the store.  We cannot reuse the main
+        ;; thread's connection to the store since we would end up sending
+        ;; stuff concurrently on the same channel.
+        (with-store store
+          (display (narinfo-string store item
+                                   (%private-key)
+                                   #:nar-path nar-path
+                                   #:compression compression)
+                   port))))))
+
 ;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
 ;; internal consumption: it allows us to pass the compression info to
 ;; 'http-write', as part of the workaround to <http://bugs.gnu.org/21093>.
@@ -337,6 +469,21 @@ appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
                 ;; instead to 'http-write'.  This is a hack to work around
                 ;; <http://bugs.gnu.org/21093>.
                 store-path)
+        (not-found request))))
+
+(define* (render-nar/cached store cache request store-item
+                            #:key (compression %no-compression))
+  "Respond to REQUEST with a nar for STORE-ITEM.  If the nar is in CACHE,
+return it; otherwise, return 404."
+  (let ((cached (nar-cache-file cache store-item
+                                #:compression compression)))
+    (if (file-exists? cached)
+        (values `((content-type . (application/octet-stream
+                                   (charset . "ISO-8859-1"))))
+                ;; XXX: We're not returning the actual contents, deferring
+                ;; instead to 'http-write'.  This is a hack to work around
+                ;; <http://bugs.gnu.org/21093>.
+                cached)
         (not-found request))))
 
 (define (render-content-addressed-file store request
@@ -495,6 +642,7 @@ blocking."
 
 (define* (make-request-handler store
                                #:key
+                               cache pool
                                narinfo-ttl
                                (nar-path "nar")
                                (compression %no-compression))
@@ -515,10 +663,17 @@ blocking."
           (((= extract-narinfo-hash (? string? hash)))
            ;; TODO: Register roots for HASH that will somehow remain for
            ;; NARINFO-TTL.
-           (render-narinfo store request hash
-                           #:ttl narinfo-ttl
-                           #:nar-path nar-path
-                           #:compression compression))
+           (if cache
+               (render-narinfo/cached store request hash
+                                      #:cache cache
+                                      #:pool pool
+                                      #:ttl narinfo-ttl
+                                      #:nar-path nar-path
+                                      #:compression compression)
+               (render-narinfo store request hash
+                               #:ttl narinfo-ttl
+                               #:nar-path nar-path
+                               #:compression compression)))
           ;; /nar/file/NAME/sha256/HASH
           (("file" name "sha256" hash)
            (guard (c ((invalid-base32-character? c)
@@ -534,13 +689,16 @@ blocking."
           ;; /nar/gzip/<store-item>
           ((components ... "gzip" store-item)
            (if (and (nar-path? components) (zlib-available?))
-               (render-nar store request store-item
-                           #:compression
-                           (match compression
-                             (($ <compression> 'gzip)
-                              compression)
-                             (_
-                              %default-gzip-compression)))
+               (let ((compression (match compression
+                                    (($ <compression> 'gzip)
+                                     compression)
+                                    (_
+                                     %default-gzip-compression))))
+                 (if cache
+                     (render-nar/cached store cache request store-item
+                                        #:compression compression)
+                     (render-nar store request store-item
+                                 #:compression compression)))
                (not-found request)))
 
           ;; /nar/<store-item>
@@ -555,8 +713,11 @@ blocking."
 
 (define* (run-publish-server socket store
                              #:key (compression %no-compression)
-                             (nar-path "nar") narinfo-ttl)
+                             (nar-path "nar") narinfo-ttl
+                             cache pool)
   (run-server (make-request-handler store
+                                    #:cache cache
+                                    #:pool pool
                                     #:nar-path nar-path
                                     #:narinfo-ttl narinfo-ttl
                                     #:compression compression)
@@ -606,6 +767,8 @@ blocking."
            (socket  (open-server-socket address))
            (nar-path  (assoc-ref opts 'nar-path))
            (repl-port (assoc-ref opts 'repl))
+           (cache     (assoc-ref opts 'cache))
+           (workers   (assoc-ref opts 'workers))
 
            ;; Read the key right away so that (1) we fail early on if we can't
            ;; access them, and (2) we can then drop privileges.
@@ -631,6 +794,12 @@ consider using the '--user' option!~%")))
           (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
         (with-store store
           (run-publish-server socket store
+                              #:cache cache
+                              #:pool (and cache (make-pool workers))
                               #:nar-path nar-path
                               #:compression compression
                               #:narinfo-ttl ttl))))))
+
+;;; Local Variables:
+;;; eval: (put 'single-baker 'scheme-indent-function 1)
+;;; End:

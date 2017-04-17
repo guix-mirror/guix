@@ -6522,6 +6522,13 @@ archive}), the daemon may download substitutes from it:
 guix-daemon --substitute-urls=http://example.org:8080
 @end example
 
+By default, @command{guix publish} compresses archives on the fly as it
+serves them.  This ``on-the-fly'' mode is convenient in that it requires
+no setup and is immediately available.  However, when serving lots of
+clients, we recommend using the @option{--cache} option, which enables
+caching of the archives before they are sent to clients---see below for
+details.
+
 As a bonus, @command{guix publish} also serves as a content-addressed
 mirror for source files referenced in @code{origin} records
 (@pxref{origin Reference}).  For instance, assuming @command{guix
@@ -6559,10 +6566,43 @@ disable compression.  The range 1 to 9 corresponds to different gzip
 compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
 The default is 3.
 
-Compression occurs on the fly and the compressed streams are not
+Unless @option{--cache} is used, compression occurs on the fly and
+the compressed streams are not
 cached.  Thus, to reduce load on the machine that runs @command{guix
-publish}, it may be a good idea to choose a low compression level, or to
-run @command{guix publish} behind a caching proxy.
+publish}, it may be a good idea to choose a low compression level, to
+run @command{guix publish} behind a caching proxy, or to use
+@option{--cache}.  Using @option{--cache} has the advantage that it
+allows @command{guix publish} to add @code{Content-Length} HTTP header
+to its responses.
+
+@item --cache=@var{directory}
+@itemx -c @var{directory}
+Cache archives and meta-data (@code{.narinfo} URLs) to @var{directory}
+and only serve archives that are in cache.
+
+When this option is omitted, archives and meta-data are created
+on-the-fly.  This can reduce the available bandwidth, especially when
+compression is enabled, since this may become CPU-bound.  Another
+drawback of the default mode is that the length of archives is not known
+in advance, so @command{guix publish} does not add a
+@code{Content-Length} HTTP header to its responses, which in turn
+prevents clients from knowing the amount of data being downloaded.
+
+Conversely, when @option{--cache} is used, the first request for a store
+item (@i{via} a @code{.narinfo} URL) returns 404 and triggers a
+background process to @dfn{bake} the archive---computing its
+@code{.narinfo} and compressing the archive, if needed.  Once the
+archive is cached in @var{directory}, subsequent requests succeed and
+are served directly from the cache, which guarantees that clients get
+the best possible bandwidth.
+
+The ``baking'' process is performed by worker threads.  By default, one
+thread per CPU core is created, but this can be customized.  See
+@option{--workers} below.
+
+@item --workers=@var{N}
+When @option{--cache} is used, request the allocation of @var{N} worker
+threads to ``bake'' archives.
 
 @item --ttl=@var{ttl}
 Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
