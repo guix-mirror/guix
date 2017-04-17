@@ -1492,14 +1492,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.10.1")
+    (version "1.12.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1h1nhg5cmmzlbipak526nk4bm6d0yb217mll75f3rpg7kz1cqiv1"))))
+                "0vpl3jl0x441y7b5cn7zhdsyi954hp9h2p30jhnr1zkx1rpxsiss"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1508,7 +1508,8 @@ tools, XML authoring components, and an extensible plug-in based API.")
                             "/lib/udev")
              "CXXFLAGS=-std=gnu++11")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
