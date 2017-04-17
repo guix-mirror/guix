@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -365,13 +366,13 @@ canvas operations.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://download.videolan.org/pub/videolan/libdca/"
+                    "https://download.videolan.org/pub/videolan/libdca/"
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
                 "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdca.html")
+    (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
 streams.")
@@ -1097,7 +1098,7 @@ players, like VLC or MPlayer.")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1120,7 +1121,7 @@ installed).")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1154,7 +1155,7 @@ encapsulated.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.videolan.org/videolan/libdvdnav/libdvdnav-"
+                "https://download.videolan.org/videolan/libdvdnav/libdvdnav-"
                 version ".tar.xz"))
               (sha256
                (base32
@@ -1178,14 +1179,14 @@ encapsulated.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/pub/"
+              (uri (string-append "https://download.videolan.org/pub/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0nl45ifc4xcb196snv9d6hinfw614cqpzcqp92dg43c0hickg290"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdvdcss.html")
+    (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
     (description
      "libdvdcss is a simple library designed for accessing DVDs like a block
@@ -1709,7 +1710,7 @@ and MPEG system streams.")
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libbdplus.html")
+    (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libbdplus is a library which implements the BD+ System
 specifications.")
@@ -1732,7 +1733,7 @@ specifications.")
      `(("bison" ,bison)
        ("flex" ,flex)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libaacs.html")
+    (home-page "https://www.videolan.org/developers/libaacs.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libaacs is a library which implements the Advanced Access
 Content System specification.")
