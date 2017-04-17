@@ -562,6 +562,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
+  %D%/packages/patches/findutils-gnulib-multi-core.patch	\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\

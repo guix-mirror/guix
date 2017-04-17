@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -259,8 +260,13 @@ interactive means to merge two files.")
             (sha256
              (base32
               "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
-            (patches (search-patches "findutils-localstatedir.patch"
-                                     "findutils-test-xargs.patch"))))
+            (patches (search-patches
+                      "findutils-localstatedir.patch"
+                      "findutils-test-xargs.patch"
+                      ;; test-lock has performance issues on multi-core
+                      ;; machines, it hangs or takes a long time to complete.
+                      ;; This is a commit from gnulib to fix this issue.
+                      "findutils-gnulib-multi-core.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
