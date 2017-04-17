@@ -469,7 +469,9 @@ blocking."
                                                                       size)
                                                  client))
                        (output   (response-port response)))
-                  (dump-port input output)
+                  (if (file-port? output)
+                      (sendfile output input size)
+                      (dump-port input output))
                   (close-port output)
                   (values)))))
           (lambda args
