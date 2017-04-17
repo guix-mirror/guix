@@ -38,14 +38,14 @@
 (define-public node
   (package
     (name "node")
-    (version "6.8.0")
+    (version "7.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0lj3250hglz4w5ic4svd7wlg2r3qc49hnasvbva1v69l8yvx98m8"))
+                "1nkngdjbsm81nn3v0w0c2aqx9nb7mwy3z49ynq4wwcrzfr9ap8ka"))
               ;; https://github.com/nodejs/node/pull/9077
               (patches (search-patches "node-9077.patch"))))
     (build-system gnu-build-system)
@@ -62,6 +62,7 @@
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
                             "lib/internal/v8_prof_polyfill.js"
+                            "test/parallel/test-child-process-spawnsync-shell.js"
                             "test/parallel/test-stdio-closed.js")
                (("'/bin/sh'")
                 (string-append "'" (which "sh") "'")))
@@ -130,4 +131,5 @@ event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "http://nodejs.org/")
-    (license expat)))
+    (license expat)
+    (properties '((timeout . 216000)))))
