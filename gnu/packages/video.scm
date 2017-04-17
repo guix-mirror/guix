@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -1024,6 +1026,81 @@ access to mpv's powerful playback capabilities.")
 YouTube.com and a few more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
+
+(define-public youtube-dl-gui
+  (package
+    (name "youtube-dl-gui")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Youtube-DLG" version))
+       (sha256
+        (base32
+         "0napxwzgls5ik1bxbp99vly32l23xpc4ng5kr24hfhf21ypjyadb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; In Guix, wxpython has not yet been packaged for Python 3.
+     `(#:python ,python-2
+       ;; This package has no tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The youtube-dl-gui program lets you configure options.  Some of
+             ;; them are problematic, so we change their defaults.
+             (substitute* "youtube_dl_gui/optionsmanager.py"
+               ;; When this is true, the builder process will try (and fail) to
+               ;; write logs to the builder user's home directory.
+               (("'enable_log': True") "'enable_log': False")
+               ;; This determines which youtube-dl program youtube-dl-gui will
+               ;; run.  If we don't set this, then youtube-dl-gui might download
+               ;; an arbitrary copy from the Internet into the user's home
+               ;; directory and run it, so let's make sure youtube-dl-gui uses
+               ;; the youtube-dl from the inputs by default.
+               (("'youtubedl_path': self.config_path")
+                (string-append "'youtubedl_path': '"
+                               (assoc-ref inputs "youtube-dl")
+                               "/bin'"))
+               ;; When this is True, when youtube-dl-gui is finished downloading
+               ;; a file, it will try (and possibly fail) to open the directory
+               ;; containing the downloaded file.  This can fail because it
+               ;; assumes that xdg-open is in PATH.  Unfortunately, simply
+               ;; adding xdg-utils to the propagated inputs is not enough to
+               ;; make this work, so for now we set the default to False.
+               (("'open_dl_dir': True") "'open_dl_dir': False"))
+             ;; The youtube-dl program from the inputs is actually a wrapper
+             ;; script written in bash, so attempting to invoke it as a python
+             ;; script will fail.
+             (substitute* "youtube_dl_gui/downloaders.py"
+               (("cmd = \\['python', self\\.youtubedl_path\\]")
+                "cmd = [self.youtubedl_path]"))
+             ;; Use relative paths for installing data files so youtube-dl-gui
+             ;; installs the files relative to its prefix in the store, rather
+             ;; than relative to /.  Also, instead of installing data files into
+             ;; $prefix/usr/share, install them into $prefix/share for
+             ;; consistency (see: (standards) Directory Variables).
+             (substitute* "setup.py"
+               (("= '/usr/share") "= 'share"))
+             ;; Update get_locale_file() so it finds the installed localization
+             ;; files.
+             (substitute* "youtube_dl_gui/utils.py"
+               (("os\\.path\\.join\\('/usr', 'share'")
+                (string-append "os.path.join('"
+                               (assoc-ref %outputs "out")
+                               "', 'share'"))))))))
+    (inputs
+     `(("python2-wxpython" ,python2-wxpython)
+       ("youtube-dl" ,youtube-dl)))
+    (home-page "https://github.com/MrS0m30n3/youtube-dl-gui")
+    (synopsis
+     "GUI (Graphical User Interface) for @command{youtube-dl}")
+    (description
+     "Youtube-dlG is a GUI (Graphical User Interface) for
+@command{youtube-dl}.  You can use it to download videos from YouTube and any
+other site that youtube-dl supports.")
+    (license license:unlicense)))
 
 (define-public you-get
   (package
