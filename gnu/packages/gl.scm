@@ -217,17 +217,20 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "13.0.5")
+    (version "17.0.4")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                            version "/mesa-" version ".tar.xz"))
+        (uri (list (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                  "mesa-" version ".tar.xz")
+                   (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                  version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "11zgynii1wz17131ml1mmblpwib8m88zz2jwi5h5llh1r3iagkmz"))
+          "0im3ca1vwwmkjf5w761vh7vabr4vrrdxpckr0wm974x18n2xqs8j"))
         (patches
-         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"))))
+         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
+                         "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -281,7 +284,7 @@ also known as DXTn or DXTC) for Mesa.")
          ;; Without floating point texture support, drivers such as Nouveau
          ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
          "--enable-texture-float"
-         
+
          ;; Also enable the tests.
          "--enable-gallium-tests"
 
@@ -301,7 +304,8 @@ also known as DXTn or DXTC) for Mesa.")
              (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
                (("/usr/bin/env bash") (which "bash")))
              (substitute* "src/intel/genxml/gen_pack_header.py"
-               (("/usr/bin/env python2") (which "python")))))
+               (("/usr/bin/env python2") (which "python")))
+             #t))
          (add-before
            'build 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -325,8 +329,9 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; it's never installed since Mesa removed its
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
-                  (string-append "\"" out "/lib/dri/gbm_dri.so")))))))))
-    (home-page "http://mesa3d.org/")
+                  (string-append "\"" out "/lib/dri/gbm_dri.so")))
+               #t))))))
+    (home-page "https://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
 a system for rendering interactive 3D graphics.  A variety of device drivers
