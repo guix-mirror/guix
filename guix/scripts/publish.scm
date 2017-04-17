@@ -110,6 +110,13 @@ Publish ~a over HTTP.\n") %store-directory)
   ;; Since we compress on the fly, default to fast compression.
   (compression 'gzip 3))
 
+(define (actual-compression item requested)
+  "Return the actual compression used for ITEM, which may be %NO-COMPRESSION
+if ITEM is already compressed."
+  (if (compressed-file? item)
+      %no-compression
+      requested))
+
 (define %options
   (list (option '(#\h "help") #f #f
                 (lambda _
@@ -218,9 +225,7 @@ compression disabled~%"))
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
 narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
   (let* ((path-info  (query-path-info store store-path))
-         (compression (if (compressed-file? store-path)
-                          %no-compression
-                          compression))
+         (compression (actual-compression store-path compression))
          (url        (encode-and-join-uri-path
                       `(,@(split-and-decode-uri-path nar-path)
                         ,@(match compression
