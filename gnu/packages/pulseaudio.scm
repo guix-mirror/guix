@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -247,3 +248,38 @@ sound server.")
 graphical user interface to connect to a PulseAudio server and
 easily control the volume of all clients, sinks, etc.")
     (license l:gpl2+)))
+
+(define-public ponymix
+  (package
+    (name "ponymix")
+    (version "5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/falconindy/ponymix/"
+                                 "archive/" version ".tar.gz"))
+             (sha256
+              (base32
+               "1c0ch98zry3c4ixywwynjid1n1nh4xl4l1p548giq2w3zwflaghn"))
+             (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no test suite.
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr") ""))))
+         (delete 'configure)))) ; There's no configure phase.
+    (inputs
+     `(("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/falconindy/ponymix")
+    (synopsis "Console-based PulseAudio mixer")
+    (description "Ponymix is a PulseAudio mixer and volume controller with a
+command-line interface.  In addition, it is possible to use named sources and
+sinks.")
+    (license l:expat)))
