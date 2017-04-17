@@ -1576,22 +1576,22 @@ UnionFS-FUSE additionally supports copy-on-write.")
 (define-public sshfs-fuse
   (package
     (name "sshfs-fuse")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/sshfs/releases/"
-                                  "download/sshfs_" version
-                                  "/sshfs-" version ".tar.gz"))
+                                  "download/sshfs-" version "/sshfs-" version
+                                  ".tar.gz"))
               (sha256
                (base32
-                "08mdd4rs7yys7hmyig6i08qlid76p17xlvrh64k7wsrfs1s92s3z"))))
+                "1pp5wsl1jx11apkv2fpp559miifqhi8ka400npy5awp9ghlf3la6"))))
     (build-system gnu-build-system)
     (inputs
      `(("fuse" ,fuse)
        ("glib" ,glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://fuse.sourceforge.net/sshfs.html")
+    (home-page "https://github.com/libfuse/sshfs")
     (synopsis "Mount remote file systems over SSH")
     (description
      "This is a file system client based on the SSH File Transfer Protocol.
