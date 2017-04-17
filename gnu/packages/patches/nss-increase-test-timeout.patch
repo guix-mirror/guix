@@ -1,4 +1,4 @@
-We've seen some tests take up to a minute to complete on a busy armhf
+We've seen some tests take more than 20s to complete on a busy armhf
 machine. Even a busy x86_64 machine can use more than 5s on some tests.
 
 Increase timeouts to increase chances of a successful build.
@@ -10,7 +10,7 @@ Increase timeouts to increase chances of a successful build.
    ASSERT_TRUE_WAIT((client_->state() != TlsAgent::STATE_CONNECTING) &&
                         (server_->state() != TlsAgent::STATE_CONNECTING),
 -                   5000);
-+                   60000);
++                   25000);
  }
  
  void TlsConnectTestBase::EnableExtendedMasterSecret() {
@@ -19,7 +19,7 @@ Increase timeouts to increase chances of a successful build.
      failing_agent = client_;
    }
 -  ASSERT_TRUE_WAIT(failing_agent->state() == TlsAgent::STATE_ERROR, 5000);
-+  ASSERT_TRUE_WAIT(failing_agent->state() == TlsAgent::STATE_ERROR, 60000);
++  ASSERT_TRUE_WAIT(failing_agent->state() == TlsAgent::STATE_ERROR, 25000);
  }
  
  void TlsConnectTestBase::ConfigureVersion(uint16_t version) {
