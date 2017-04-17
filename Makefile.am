@@ -61,6 +61,7 @@ MODULES =					\
   guix/licenses.scm				\
   guix/graph.scm				\
   guix/cve.scm					\
+  guix/workers.scm				\
   guix/zlib.scm					\
   guix/build-system.scm				\
   guix/build-system/ant.scm			\
@@ -296,6 +297,7 @@ SCM_TESTS =					\
   tests/graph.scm				\
   tests/challenge.scm				\
   tests/cve.scm					\
+  tests/workers.scm				\
   tests/zlib.scm				\
   tests/file-systems.scm			\
   tests/system.scm				\
