@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base))
 
 (define-public libunistring
@@ -37,7 +39,11 @@
                   version ".tar.xz"))
             (sha256
              (base32
-              "15z76qrmrvkc3c6hfq2lzzqysgd21s682f2smycfab5g598n8drf"))))
+              "15z76qrmrvkc3c6hfq2lzzqysgd21s682f2smycfab5g598n8drf"))
+             ;; test-lock has performance issues on multi-core machines,
+             ;; it hangs or takes a long time to complete.
+             ;; This is a commit from gnulib to fix this issue.
+            (patches (search-patches "libunistring-gnulib-multi-core.patch"))))
    (propagated-inputs (libiconv-if-needed))
    (build-system gnu-build-system)
    (arguments
