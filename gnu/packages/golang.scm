@@ -3,8 +3,9 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Petter <petter@mykolab.ch>
+;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,11 +198,11 @@ garbage collection, various safety features and in the style of communicating
 sequential processes (CSP) concurrent programming features added.")
     (license license:bsd-3)))
 
-(define-public go-1.7
+(define-public go-1.8
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.7.5")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -209,7 +210,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "058q57zmi23rflingzhy1b87yl69mb62ql2psfxqr7q7l89lb0sf"))))
+         "0mqf8ydxdx1pwmrs8p8wl5y1qrplzxmxzgb6vkghy4l67z0g9nik"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -300,8 +301,8 @@ sequential processes (CSP) concurrent programming features added.")
                    (("/etc/services") (string-append net-base "/etc/services")))
                  (substitute* "time/zoneinfo_unix.go"
                    (("/usr/share/zoneinfo/") tzdata-path))
-                 (substitute* (find-files "cmd" "asm.c")
-                   (("/lib/ld-linux.*\\.so\\.[0-9]") loader))
+                 (substitute* (find-files "cmd" "\\.go")
+                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
                  #t)))
            (add-before 'build 'set-bootstrap-variables
              (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -364,4 +365,4 @@ sequential processes (CSP) concurrent programming features added.")
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))))
 
-(define-public go go-1.7)
+(define-public go go-1.8)
