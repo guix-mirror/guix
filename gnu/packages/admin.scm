@@ -12,10 +12,10 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Coypright © 2016 John Darrington <jmd@gnu.org>
-;;; Coypright © 2017 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2060,11 +2060,15 @@ Intel DRM Driver.")
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))))
+         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))
+       (patches (search-patches "fabric-tests.patch"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f     ;XXX: Tests attempt to download Python "fudge" package.
-       #:python ,python-2))                       ;Python 2 only
+     `(#:python ,python-2))                       ;Python 2 only
+    (native-inputs
+     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
+       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
+       ("python2-nose" ,python2-nose))) ; Requires < 2.0
     (propagated-inputs
      ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
      ;; between python-paramiko and newer python-pycrypto. Without this, the
