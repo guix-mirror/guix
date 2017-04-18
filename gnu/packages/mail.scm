@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,6 +95,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
@@ -2284,3 +2286,58 @@ tools and applications:
 @item pilot, the standalone file system navigator
 @end enumerate\n")
     (license asl2.0)))
+
+(define-public balsa
+  (package
+    (name "balsa")
+    (version "2.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pawsa.fedorapeople.org/balsa/balsa-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "15jkwp3ylbwd8iha4dr37z1xb6mkk31ym90vv3h2a5xk2rmym5mq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '(;; Balsa tries to install additional MIME icons
+         ;; under gtk+ directory.
+         "--enable-extra-mimeicons=no"
+         "--with-gtksourceview"
+         "--with-canberra"
+         "--with-spell-checker=gtkspell"
+         "--with-gpgme"
+         "--with-sqlite"
+         "--with-compface"
+         "--with-ldap")))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("enchant" ,enchant)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gmime" ,gmime)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("gtkspell3" ,gtkspell3)
+       ("libcanberra" ,libcanberra)
+       ("libesmtp" ,libesmtp)
+       ("libnotify" ,libnotify)
+       ("openldap" ,openldap)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
+    (native-inputs
+     `(("compface" ,compface)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (home-page "https://pawsa.fedorapeople.org/balsa")
+    (synopsis "E-mail client for GNOME")
+    (description "Balsa is a highly configurable and robust mail client for
+the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
+mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
+the use of a local MTA such as Sendemail.")
+    (license gpl3+)))
