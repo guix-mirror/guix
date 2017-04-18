@@ -50,11 +50,13 @@
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix zlib)
+  #:use-module (guix cache)
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module ((guix utils)
                 #:select (with-atomic-file-output compressed-file?))
-  #:use-module ((guix build utils) #:select (dump-port mkdir-p))
+  #:use-module ((guix build utils)
+                #:select (dump-port mkdir-p find-files))
   #:export (%public-key
             %private-key
 
@@ -365,6 +367,14 @@ at a time."
   (run-single-baker item (lambda () exp ...)))
 
 
+(define (narinfo-files cache)
+  "Return the list of .narinfo files under CACHE."
+  (if (file-is-directory? cache)
+      (find-files cache
+                  (lambda (file stat)
+                    (string-suffix? ".narinfo" file)))
+      '()))
+
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compression %no-compression)
                                 (nar-path "nar")
@@ -372,6 +382,14 @@ at a time."
   "Respond to the narinfo request for REQUEST.  If the narinfo is available in
 CACHE, then send it; otherwise, return 404 and \"bake\" that nar and narinfo
 requested using POOL."
+  (define (delete-entry narinfo)
+    ;; Delete NARINFO and the corresponding nar from CACHE.
+    (let ((nar (string-append (string-drop-right narinfo
+                                                 (string-length ".narinfo"))
+                              ".nar")))
+      (delete-file* narinfo)
+      (delete-file* nar)))
+
   (let* ((item        (hash-part->path store hash))
          (compression (actual-compression item compression))
          (cached      (and (not (string-null? item))
@@ -398,7 +416,16 @@ requested using POOL."
                (bake-narinfo+nar cache item
                                  #:ttl ttl
                                  #:compression compression
-                                 #:nar-path nar-path)))
+                                 #:nar-path nar-path))
+
+             (when ttl
+               (single-baker 'cache-cleanup
+                 (maybe-remove-expired-cache-entries cache
+                                                     narinfo-files
+                                                     #:entry-expiration
+                                                     (file-expiration-time ttl)
+                                                     #:delete-entry delete-entry
+                                                     #:cleanup-period ttl))))
            (not-found request))
           (else
            (not-found request)))))

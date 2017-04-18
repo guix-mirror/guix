@@ -6600,6 +6600,9 @@ The ``baking'' process is performed by worker threads.  By default, one
 thread per CPU core is created, but this can be customized.  See
 @option{--workers} below.
 
+When @option{--ttl} is used, cached entries are automatically deleted
+when they have expired.
+
 @item --workers=@var{N}
 When @option{--cache} is used, request the allocation of @var{N} worker
 threads to ``bake'' archives.
@@ -6613,6 +6616,9 @@ This allows the user's Guix to keep substitute information in cache for
 @var{ttl}.  However, note that @code{guix publish} does not itself
 guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
+
+Additionally, when @option{--cache} is used, cached entries that have
+not been accessed for @var{ttl} may be deleted.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files
