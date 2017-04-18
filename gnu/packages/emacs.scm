@@ -4475,7 +4475,7 @@ It should enable you to implement low-level X11 applications.")
                    (format #t "#!~a ~@
                      export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
-                     exec ~a --exit-with-session ~a --eval '~s' ~%"
+                     exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
                            (string-append (assoc-ref inputs "xhost") "/bin/xhost")
                            (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
