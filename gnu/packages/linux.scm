@@ -2630,11 +2630,17 @@ arrays when needed.")
      '(#:tests? #f ; No tests.
        #:make-flags (list (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
+                          "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
                                          "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "Makefile.inc"
+               (("\\$\\(prefix\\)/usr") "$(prefix)"))
+             #t))
          (delete 'configure)
          (add-before 'build 'set-CC
            (lambda _
