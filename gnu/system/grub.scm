@@ -26,6 +26,7 @@
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (gnu artwork)
+  #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
@@ -275,7 +276,8 @@ code."
 <file-system> object.  OLD-ENTRIES is taken to be a list of menu entries
 corresponding to old generations of the system."
   (define all-entries
-    (append entries (grub-configuration-menu-entries config)))
+    (append entries
+            (grub-configuration-menu-entries config)))
 
   (define entry->gexp
     (match-lambda
@@ -298,9 +300,9 @@ corresponding to old generations of the system."
                   #$initrd)))))
 
   (mlet %store-monad ((sugar (eye-candy config
-                                        (menu-entry-device (first entries))
+                                        (menu-entry-device (first all-entries))
                                         (menu-entry-device-mount-point
-                                         (first entries))
+                                         (first all-entries))
                                         #:system system
                                         #:port #~port)))
     (define builder

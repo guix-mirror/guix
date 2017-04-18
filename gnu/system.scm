@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,7 +93,7 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg
+            operating-system-bootcfg
             operating-system-etc-directory
             operating-system-locale-directory
             operating-system-boot-script
@@ -614,7 +615,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
-    (service-parameters boot)))
+    (service-value boot)))
 
 (define (operating-system-user-accounts os)
   "Return the list of user accounts of OS."
@@ -622,12 +623,12 @@ hardware-related operations as necessary when booting a Linux container."
          (account  (fold-services services
                                   #:target-type account-service-type)))
     (filter user-account?
-            (service-parameters account))))
+            (service-value account))))
 
 (define (operating-system-shepherd-service-names os)
   "Return the list of Shepherd service names for OS."
   (append-map shepherd-service-provision
-              (service-parameters
+              (service-value
                (fold-services (operating-system-services os)
                               #:target-type
                               shepherd-root-service-type))))
@@ -637,7 +638,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (system   (fold-services services)))
     ;; SYSTEM contains the derivation as a monadic value.
-    (service-parameters system)))
+    (service-value system)))
 
 (define* (operating-system-profile os #:key container?)
   "Return a derivation that builds the system profile of OS."
@@ -700,8 +701,8 @@ listed in OS.  The C library expects to find it under
   (locale-directory definitions
                     #:libcs (operating-system-locale-libcs os)))
 
-(define (kernel->grub-label kernel)
-  "Return a label for the GRUB menu entry that boots KERNEL."
+(define (kernel->boot-label kernel)
+  "Return a label for the bootloader menu entry that boots KERNEL."
   (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
@@ -728,14 +729,14 @@ listed in OS.  The C library expects to find it under
   "Return the file system that contains the store of OS."
   (store-file-system (operating-system-file-systems os)))
 
-(define* (operating-system-grub.cfg os #:optional (old-entries '()))
-  "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
-\"old entries\" menu."
+(define* (operating-system-bootcfg os #:optional (old-entries '()))
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES to
+populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (store-fs -> (operating-system-store-file-system os))
-       (label ->    (kernel->grub-label (operating-system-kernel os)))
+       (label ->    (kernel->boot-label (operating-system-kernel os)))
        (kernel ->   (operating-system-kernel-file os))
        (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
@@ -745,7 +746,7 @@ listed in OS.  The C library expects to find it under
                            (label label)
 
                            ;; The device where the kernel and initrd live.
-                           (device (grub-device store-fs))
+                           (device (fs->boot-device store-fs))
                            (device-mount-point
                             (file-system-mount-point store-fs))
 
@@ -760,7 +761,7 @@ listed in OS.  The C library expects to find it under
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
 
-(define (grub-device fs)
+(define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the
 device in a <menu-entry>."
   (case (file-system-title fs)
@@ -774,7 +775,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
   (mlet %store-monad ((initrd   (operating-system-initrd-file os))
                       (root ->  (operating-system-root-file-system os))
                       (store -> (operating-system-store-file-system os))
-                      (label -> (kernel->grub-label
+                      (label -> (kernel->boot-label
                                  (operating-system-kernel os))))
     (gexp->file "parameters"
                 #~(boot-parameters
@@ -786,7 +787,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                     #$(operating-system-kernel-arguments os))
                    (initrd #$initrd)
                    (store
-                    (device #$(grub-device store))
+                    (device #$(fs->boot-device store))
                     (mount-point #$(file-system-mount-point store))))
                 #:set-load-path? #f)))
 

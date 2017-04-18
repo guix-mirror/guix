@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -379,7 +380,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
     (description
      "Nload is a console application which monitors network traffic and
 bandwidth usage in real time.  It visualizes the in- and outgoing traffic using
-two graphs and provides additional info like total amount of transfered data
+two graphs, and provides additional info like total amount of transferred data
 and min/max network usage.")
     (license license:gpl2+)))
 
@@ -470,7 +471,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.5")
+    (version "2.2.6")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -479,7 +480,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1j4sc3pmy8l6k41007spglcqiabjlzc7f85pn3jmjr9ksv9qipbm"))))
+         "0jd89i9si43lyv3hsl6p1lkjmz4zagvc37wcbigsxxc5v8gda9zn"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -1124,7 +1125,7 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -1133,7 +1134,7 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ir9fqwr7cl9kfq7dgh9vkydkwf59wsx0cwbzbffw8i313xhzxa1"))))
+         "1v4xd03303mlzmv43qaz3fmskp2prhs1678a5522ia2yqwv98adz"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")

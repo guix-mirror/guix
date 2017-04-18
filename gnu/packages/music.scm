@@ -2526,7 +2526,7 @@ parallel with a DarkBooster, followed by a volume control.")))
     (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
     (description "This package provides the LV2 plugin \"GxSuperFuzz\", an
 analog simulation of the UniVox SuperFuzz pedal.  In this simulation the trim
-pot, which is usualy in the housing, is exposed as a control parameter.  It
+pot, which is usually in the housing, is exposed as a control parameter.  It
 adjusts the amount of harmonics.")))
 
 (define-public gx-vintage-fuzz-master-lv2

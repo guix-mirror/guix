@@ -1424,7 +1424,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
           (service-extension account-service-type guix-accounts)
           (service-extension activation-service-type guix-activation)
           (service-extension profile-service-type
-                             (compose list guix-configuration-guix))))))
+                             (compose list guix-configuration-guix))))
+   (default-value (guix-configuration))))
 
 (define* (guix-service #:optional (config %default-guix-configuration))
   "Return a service that runs the Guix build daemon according to
@@ -1477,7 +1478,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                  (list (service-extension shepherd-root-service-type
                                           guix-publish-shepherd-service)
                        (service-extension account-service-type
-                                          (const %guix-publish-accounts))))))
+                                          (const %guix-publish-accounts))))
+                (default-value (guix-publish-configuration))))
 
 (define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
   "Return a service that runs @command{guix publish} listening on @var{host}

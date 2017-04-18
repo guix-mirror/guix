@@ -1426,7 +1426,7 @@ from DocBook files.")
     (synopsis "Extract metadata from different fileformats")
     (description "KFileMetaData provides a simple library for extracting the
 text and metadata from a number of different files.  This library is typically
-used by file indexers to retreive the metadata.  This library can also be used
+used by file indexers to retrieve the metadata.  This library can also be used
 by applications to write metadata.")
     (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
 
@@ -1750,7 +1750,7 @@ maintaining an index of the contents of your files.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Core components for the KDE Activity concept")
     (description "KActivities provides the infrastructure needed to manage a
-user's activites, allowing them to switch between tasks, and for applications
+user's activities, allowing them to switch between tasks, and for applications
 to update their state to match the user's current activity.  This includes a
 daemon, a library for interacting with that daemon, and plugins for integration
 with other frameworks.")

@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -127,6 +127,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages speech)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -862,11 +863,11 @@ some form of information without getting in the user's way.")
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
-     "Libpeas is a gobject-based plugins engine, and is targetted at giving
-every application the chance to assume its own extensibility.  It also has a
-set of features including, but not limited to: multiple extension points; on
-demand (lazy) programming language support for C, Python and JS; simplicity of
-the API.")
+     "Libpeas is a gobject-based plugin engine, targeted at giving every
+application the chance to assume its own extensibility.  It also has a set of
+features including, but not limited to: multiple extension points; on-demand
+(lazy) programming language support for C, Python and JS; simplicity of the
+API.")
     (license license:lgpl2.0+)))
 
 (define-public gtkglext
@@ -6029,3 +6030,93 @@ for process dependencies, icons for processes, the ability to hide processes,
 graphical time histories of CPU/memory/swap usage and the ability to
 kill/reinice processes.")
     (license license:gpl2+)))
+
+(define-public python-pyatspi
+  (package
+    (name "python-pyatspi")
+    (version "2.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/pyatspi/"
+                    (version-major+minor version)
+                    "/pyatspi-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14m6y27ziqc9f6339gjz49mlsk6mrsyg4bkj055cdzc7sfjlgvz7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Python client bindings for D-Bus AT-SPI")
+    (home-page "https://wiki.linuxfoundation.org/accessibility\
+/atk/at-spi/at-spi_on_d-bus")
+    (description
+     "This package includes a python client library for the AT-SPI D-Bus
+accessibility infrastructure.")
+    (license license:lgpl2.0)
+    (properties '((upstream-name . "pyatspi")))))
+
+(define-public orca
+  (package
+    (name "orca")
+    (version "3.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1la6f815drykrgqf791jx1dda6716cfv6052frqp7nhjxr75xg97"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'qualify-xkbcomp
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xkbcomp (string-append
+                             (assoc-ref inputs "xkbcomp") "/bin/xkbcomp")))
+               (substitute* "src/orca/orca.py"
+                 (("'xkbcomp'") (format #f "'~a'" xkbcomp))))
+             #t))
+         (add-after 'install 'wrap-orca
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/orca")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH")))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
+                   (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 `("PYTHONPATH" ":" prefix
+                   (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("at-spi2-atk" ,at-spi2-atk)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyatspi" ,python-pyatspi)
+       ("python-speechd" ,speech-dispatcher)
+       ("xkbcomp" ,xkbcomp)))
+    (synopsis
+     "Screen reader for individuals who are blind or visually impaired")
+    (home-page "https://wiki.gnome.org/Projects/Orca")
+    (description
+     "Orca is a screen reader that provides access to the graphical desktop
+via speech and refreshable braille.  Orca works with applications and toolkits
+that support the Assistive Technology Service Provider Interface (AT-SPI).")
+    (license license:lgpl2.1+)))

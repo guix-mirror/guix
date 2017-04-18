@@ -233,30 +233,27 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                       (format #f (_ "invalid description: ~s") description)
                       'description))))
 
-(define (warn-if-package-has-input linted inputs-to-check input-names message)
-  ;; Emit a warning MESSAGE if some of the inputs named in INPUT-NAMES are
-  ;; contained in INPUTS-TO-CHECK, which are assumed to be inputs of package
-  ;; LINTED.
+(define (package-input-intersection inputs-to-check input-names)
+  "Return the intersection between INPUTS-TO-CHECK, the list of input tuples
+of a package, and INPUT-NAMES, a list of package specifications such as
+\"glib:bin\"."
   (match inputs-to-check
     (((labels packages . outputs) ...)
-     (for-each (lambda (package output)
-                 (when (package? package)
-                   (let ((input (string-append
-                                 (package-name package)
-                                 (if (> (length output) 0)
-                                     (string-append ":" (car output))
-                                     ""))))
-                     (when (member input input-names)
-                       (emit-warning linted
-                                     (format #f (_ message) input)
-                                     'inputs-to-check)))))
-               packages outputs))))
+     (filter-map (lambda (package output)
+                   (and (package? package)
+                        (let ((input (string-append
+                                      (package-name package)
+                                      (if (> (length output) 0)
+                                          (string-append ":" (car output))
+                                          ""))))
+                          (and (member input input-names)
+                               input))))
+                 packages outputs))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
   ;; native inputs.
-  (let ((message "'~a' should probably be a native input")
-        (inputs (package-inputs package))
+  (let ((inputs (package-inputs package))
         (input-names
           '("pkg-config"
             "extra-cmake-modules"
@@ -274,24 +271,29 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
             "python-sphinx" "python2-sphinx")))
-    (warn-if-package-has-input package inputs input-names message)))
+    (for-each (lambda (input)
+                (emit-warning
+                 package
+                 (format #f (_ "'~a' should probably be a native input")
+                         input)
+                 'inputs-to-check))
+              (package-input-intersection inputs input-names))))
 
 (define (check-inputs-should-not-be-an-input-at-all package)
   ;; Emit a warning if some inputs of PACKAGE are likely to should not be
   ;; an input at all.
-  (let ((message "'~a' should probably not be an input at all")
-        (inputs (package-inputs package))
-        (input-names
-          '("python-setuptools"
-            "python2-setuptools"
-            "python-pip"
-            "python2-pip")))
-    (warn-if-package-has-input package (package-inputs package)
-                               input-names message)
-    (warn-if-package-has-input package (package-native-inputs package)
-                               input-names message)
-    (warn-if-package-has-input package (package-propagated-inputs package)
-                               input-names message)))
+  (let ((input-names '("python-setuptools"
+                       "python2-setuptools"
+                       "python-pip"
+                       "python2-pip")))
+    (for-each (lambda (input)
+                (emit-warning
+                 package
+                 (format #f
+                         (_ "'~a' should probably not be an input at all")
+                         input)))
+              (package-input-intersection (package-direct-inputs package)
+                                          input-names))))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a

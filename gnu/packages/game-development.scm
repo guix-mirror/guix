@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +70,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.85.1")
+    (version "2.86.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bulletphysics/bullet3/"
@@ -77,7 +78,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qpd37ws0xlxwy55dg058a5b4yw2jxiz09yyc3lc0frpa05pq5bf"))))
+                "0nghzcl84p8di215p7xj0gy1hyy072hw2xk9cnmav9hv6bjb4n60"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list (string-append
@@ -253,7 +254,7 @@ clone.")
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
        ("openal" ,openal)))
-    (home-page "http://www.sfml-dev.org")
+    (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
     (description
      "SFML provides a simple interface to the various computer components,
@@ -305,7 +306,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://icculus.org/physfs/downloads/physfs-"
+                    "https://icculus.org/physfs/downloads/physfs-"
                     version ".tar.bz2"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
@@ -318,7 +319,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)))
-    (home-page "http://icculus.org/physfs")
+    (home-page "https://icculus.org/physfs")
     (synopsis "File system abstraction library")
     (description
      "PhysicsFS is a library to provide abstract access to various archives.
@@ -510,7 +511,7 @@ etc.")
     (description "Aseprite is a tool for creating 2D pixel art for video
 games.  In addition to basic pixel editing features, Aseprite can assist in
 the creation of animations, tiled graphics, texture atlases, and more.")
-    (home-page "http://www.aseprite.org/")
+    (home-page "https://www.aseprite.org/")
     (license license:gpl2+)))
 
 (define-public qqwing
@@ -655,7 +656,7 @@ interface (API).")
        ("libsmpeg" ,libsmpeg)
        ("portmidi" ,portmidi)
        ("v4l-utils" ,v4l-utils)))
-    (home-page "http://www.pygame.org")
+    (home-page "https://www.pygame.org")
     (synopsis "SDL wrapper for Python")
     (description "Pygame is a set of Python modules designed for writing games.
 Pygame adds functionality on top of the excellent SDL library. This allows you

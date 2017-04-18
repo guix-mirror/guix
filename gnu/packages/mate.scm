@@ -61,16 +61,15 @@
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version (package-version gtk+))
+    (version "3.22.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/themes/"
-                                  (version-major+minor (package-version gtk+))
-                                  "/mate-themes-" (package-version gtk+)
-                                  ".tar.xz"))
+                                  (version-major+minor version) "/mate-themes-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1gsfzrcbwp7835pbilk7cvda8hjsf9g3gl4llbm61y9j7a4x2kn6"))))
+                "03ficjfxa4qpx4vcshhk2zxryivckxpw7wcjgbn8xqnjk3lgzjcb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

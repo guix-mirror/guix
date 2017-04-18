@@ -7413,7 +7413,7 @@ guix system init /mnt/etc/config.scm /mnt
 
 @noindent
 This copies all the necessary files and installs GRUB on
-@file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
+@file{/dev/sdX}, unless you pass the @option{--no-bootloader} option.  For
 more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
@@ -9066,9 +9066,9 @@ This service is not part of @var{%base-services}.
 @end deffn
 
 @anchor{guix-publish-service-type}
-@deffn {Scheme Variable} guix-publish-service-type @var{config}
+@deffn {Scheme Variable} guix-publish-service-type
 This is the service type for @command{guix publish} (@pxref{Invoking
-guix publish}).  @var{config} must be a @code{guix-configuration}
+guix publish}).  Its value must be a @code{guix-configuration}
 object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
@@ -9256,7 +9256,7 @@ with the default settings.
 (operating-system
   ;; @dots{}
   (services (cons* (mcron-service)
-                   (service rottlog-service-type (rottlog-configuration)) 
+                   (service rottlog-service-type)
                    %base-services)))
 @end lisp
 
@@ -9433,10 +9433,9 @@ The value of this service is the @code{wpa-supplicant} package to use.
 Thus, it can be instantiated like this:
 
 @lisp
-(use-modules (gnu services networking)
-             (gnu packages admin))
+(use-modules (gnu services networking))
 
-(service wpa-supplicant-service-type wpa-supplicant)
+(service wpa-supplicant-service-type)
 @end lisp
 @end defvr
 
@@ -10044,9 +10043,10 @@ system, add a @code{cups-service} to the operating system definition:
 
 @deffn {Scheme Variable} cups-service-type
 The service type for the CUPS print server.  Its value should be a valid
-CUPS configuration (see below).  For example:
+CUPS configuration (see below).  To use the default settings, simply
+write:
 @example
-(service cups-service-type (cups-configuration))
+(service cups-service-type)
 @end example
 @end deffn
 
@@ -13874,9 +13874,10 @@ source is detected.  More information can be found at
 
 @deffn {Scheme Variable} tlp-service-type
 The service type for the TLP tool.  Its value should be a valid
-TLP configuration (see below).  For example:
+TLP configuration (see below).  To use the default settings, simply
+write:
 @example
-(service tlp-service-type (tlp-configuration))
+(service tlp-service-type)
 @end example
 @end deffn
 
@@ -15093,7 +15094,7 @@ overwritten.  This behavior mirrors that of @command{guix package}
 
 It also adds a GRUB menu entry for the new OS configuration, and moves
 entries for older configurations to a submenu---unless
-@option{--no-grub} is passed.
+@option{--no-bootloader} is passed.
 
 @quotation Note
 @c The paragraph below refers to the problem discussed at
@@ -15173,7 +15174,7 @@ needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
 This command also installs GRUB on the device specified in
-@file{my-os-config}, unless the @option{--no-grub} option was passed.
+@file{my-os-config}, unless the @option{--no-bootloader} option was passed.
 
 @item vm
 @cindex virtual machine
@@ -15555,11 +15556,12 @@ with a simple example, the service type for the Guix build daemon
    (extensions
     (list (service-extension shepherd-root-service-type guix-shepherd-service)
           (service-extension account-service-type guix-accounts)
-          (service-extension activation-service-type guix-activation)))))
+          (service-extension activation-service-type guix-activation)))
+   (default-value (guix-configuration))))
 @end example
 
 @noindent
-It defines two things:
+It defines three things:
 
 @enumerate
 @item
@@ -15572,6 +15574,9 @@ service, returns a list of objects to extend the service of that type.
 
 Every service type has at least one service extension.  The only
 exception is the @dfn{boot service type}, which is the ultimate service.
+
+@item
+Optionally, a default value for instances of this type.
 @end enumerate
 
 In this example, @var{guix-service-type} extends three services:
@@ -15607,7 +15612,13 @@ A service of this type is instantiated like this:
 The second argument to the @code{service} form is a value representing
 the parameters of this specific service instance.
 @xref{guix-configuration-type, @code{guix-configuration}}, for
-information about the @code{guix-configuration} data type.
+information about the @code{guix-configuration} data type.  When the
+value is omitted, the default value specified by
+@code{guix-service-type} is used:
+
+@example
+(service guix-service-type)
+@end example
 
 @var{guix-service-type} is quite simple because it extends other
 services but is not extensible itself.
@@ -15670,10 +15681,31 @@ Services}).  This section provides a reference on how to manipulate
 services and service types.  This interface is provided by the
 @code{(gnu services)} module.
 
-@deffn {Scheme Procedure} service @var{type} @var{value}
+@deffn {Scheme Procedure} service @var{type} [@var{value}]
 Return a new service of @var{type}, a @code{<service-type>} object (see
 below.)  @var{value} can be any object; it represents the parameters of
 this particular service instance.
+
+When @var{value} is omitted, the default value specified by @var{type}
+is used; if @var{type} does not specify a default value, an error is
+raised.
+
+For instance, this:
+
+@example
+(service openssh-service-type)
+@end example
+
+@noindent
+is equivalent to this:
+
+@example
+(service openssh-service-type
+         (openssh-configuration))
+@end example
+
+In both cases the result is an instance of @code{openssh-service-type}
+with the default configuration.
 @end deffn
 
 @deffn {Scheme Procedure} service? @var{obj}
@@ -15684,7 +15716,7 @@ Return true if @var{obj} is a service.
 Return the type of @var{service}---i.e., a @code{<service-type>} object.
 @end deffn
 
-@deffn {Scheme Procedure} service-parameters @var{service}
+@deffn {Scheme Procedure} service-value @var{service}
 Return the value associated with @var{service}.  It represents its
 parameters.
 @end deffn

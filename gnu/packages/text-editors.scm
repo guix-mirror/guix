@@ -42,18 +42,17 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/"
                                   name "/archive/v" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0bbmkblpndc53pvr8xcfywdn8g351yxfj8c46zp5d744c3bq2nry"))))
+               (base32 "0xvhkj4j8pcmpnsx7f93d6n2f068xnl7wacfs97vr0agxwrfvn5y"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("CFLAGS=-pie")
-       #:tests? #f ; No tests.
+     `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-binary

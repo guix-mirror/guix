@@ -214,9 +214,8 @@ substitute invalid byte sequences with question marks.  This is a
   (write-string "contents" p)
   (write-long-long size p)
   (call-with-binary-input-file file
-    ;; Use `sendfile' when available (Guile 2.0.8+).
-    (if (and (compile-time-value (defined? 'sendfile))
-             (file-port? p))
+    ;; Use 'sendfile' when P is a file port.
+    (if (file-port? p)
         (cut sendfile p <> size 0)
         (cut dump <> p size)))
   (write-padding size p))

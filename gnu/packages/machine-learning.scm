@@ -207,7 +207,7 @@ classification.")
       (description
        "The General Hidden Markov Model library (GHMM) is a C library with
 additional Python bindings implementing a wide range of types of @dfn{Hidden
-Markov Models} (HMM) and algorithms: discrete, continous emissions, basic
+Markov Models} (HMM) and algorithms: discrete, continuous emissions, basic
 training, HMM clustering, HMM mixtures.")
       (license license:lgpl2.0+))))
 

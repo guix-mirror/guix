@@ -65,7 +65,7 @@ and heaps.")
      "This library contains several hash-map implementations, similar in API
 to SGI's @code{hash_map} class, but with different performance
 characteristics.  @code{sparse_hash_map} uses very little space overhead, 1-2
-bits per entry.  @code{dense_hash_map} is very fast, particulary on lookup.
+bits per entry.  @code{dense_hash_map} is very fast, particularly on lookup.
 @code{sparse_hash_set} and @code{dense_hash_set} are the set versions of these
 routines.  All these implementation use a hashtable with internal quadratic
 probing.  This method is space-efficient -- there is no pointer overhead --

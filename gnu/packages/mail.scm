@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -221,14 +222,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
-                                 version ".tar.gz"))
+             (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
+                                 "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1axdcylyv0p194y6lj1jx127g5yc74zqzzxdc014cjw02bd1x125"))
+               "1b8dggq5x1b77a9i9250b3jhv2iddfzhr9rix1yfzckdms65mr8b"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -418,7 +419,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.14")
+    (version "7.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -426,7 +427,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i5dvygps1ai2qwgamab8kngrp0c5m3bgaw0jk34l8ypsk54wj8r"))))
+                "1r0sbgwyirpbks82ri9g88raf3mp8shq9rg0r92gkr7h6888v6fw"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -2052,7 +2053,7 @@ the GNU Mailman 3 REST API.")
     (description
      "Mlmmj is a simple and slim mailing list manager (MLM) inspired by ezmlm.
 It works with many different Mail Transport Agents (MTAs) and is simple for a
-system adminstrator to install, configure and integrate with other software.
+system administrator to install, configure and integrate with other software.
 As it uses very few resources, and requires no daemons, it is ideal for
 installation on systems where resources are limited.  Its features include:
 @enumerate

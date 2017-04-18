@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1205,6 +1206,28 @@ as a library for other Emacs packages.")
      "AUCTeX is a comprehensive customizable integrated environment for
 writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-calfw
+  (package
+    (name "emacs-calfw")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/kiwanami/emacs-calfw/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17ssg8gx66yp63nhygjq2r6kgl4h45cacmrxsxs9f0lrfcx37k0l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/kiwanami/emacs-calfw/")
+    (synopsis "Calendar framework for Emacs")
+    (description
+     "This package displays a calendar view with various shedule data in
+the Emacs buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-mmm-mode
@@ -4037,10 +4060,10 @@ number on the left margin in Emacs.")
          "0kdv10hrgqpskjh0zvpnzwlkn5bccnqxas62gkws6njln57bf8nl"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/IdleHighlight")
-    (synopsis "Highlights all occurences of the word the point is on")
+    (synopsis "Highlights all occurrences of the word the point is on")
     (description
      "This Emacs package provides @code{idle-highlight-mode} that sets
- an idle timer to highlight all occurences in the buffer of the word under
+ an idle timer to highlight all occurrences in the buffer of the word under
  the point.")
     (license license:gpl3+)))
 
@@ -4359,4 +4382,115 @@ insertion of environment templates and math in LaTeX.  Similar
 commands are also offered as part of the AUCTeX package, but it is not
 the same - CDLaTeX focuses on speediness for inserting LaTeX
 constructs.")
+    (license license:gpl3+)))
+
+(define-public emacs-xelb
+  (package
+    (name "emacs-xelb")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/xelb-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0i9n0f3ibj4a5pwcsvwrah9m0fz32m0x6a9wsmjn3li20v8pcb81"))))
+    (build-system emacs-build-system)
+    ;; The following functions and variables needed by emacs-xelb are
+    ;; not included in emacs-minimal:
+    ;; x-display-screens, x-keysym-table, x-alt-keysym, x-meta-keysym
+    ;; x-hyper-keysym, x-super-keysym, libxml-parse-xml-region
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'regenerate-el-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "make"
+                             (string-append "PROTO_PATH="
+                                            (assoc-ref inputs "xcb-proto")
+                                            "/share/xcb")
+                             (string-append "EMACS_BIN="
+                                            (assoc-ref inputs "emacs")
+                                            "/bin/emacs -Q"))))))))
+    (native-inputs `(("xcb-proto" ,xcb-proto)))
+    (home-page "https://github.com/ch11ng/xelb")
+    (synopsis "X protocol Emacs Lisp binding")
+    (description "@code{emacs-xelb} is a pure Emacs Lisp implementation of the
+X11 protocol based on the XML description files from the XCB project.  It
+features an object-oriented API and permits a certain degree of concurrency.
+It should enable you to implement low-level X11 applications.")
+    (license license:gpl3+)))
+
+(define-public emacs-exwm
+  (package
+    (name "emacs-exwm")
+    (version "0.13")
+    (synopsis "Emacs X window manager")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/exwm-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0n1wzy6chh024r0yaywjbf7mdsrxs6hrfycv5v0ps0drf6q3zldc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-xelb" ,emacs-xelb)))
+    (inputs
+     `(("xhost" ,xhost)
+       ("dbus" ,dbus)))
+    ;; The following functions and variables needed by emacs-exwm are
+    ;; not included in emacs-minimal:
+    ;; scroll-bar-mode, fringe-mode
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-xsession
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions"))
+                    (bin (string-append out "/bin"))
+                    (exwm-executable (string-append bin "/exwm")))
+               ;; Add a .desktop file to xsessions
+               (mkdir-p xsessions)
+               (mkdir-p bin)
+               (with-output-to-file
+                   (string-append xsessions "/exwm.desktop")
+                 (lambda _
+                   (format #t "[Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a~@
+                     TryExec=~@*~a~@
+                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
+               (with-output-to-file exwm-executable
+                 (lambda _
+                   (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
+                     ~a +SI:localuser:$USER ~@
+                     exec ~a --exit-with-session ~a --eval '~s' ~%"
+                           (string-append (assoc-ref inputs "bash") "/bin/sh")
+                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
+                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
+                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           '(cond
+                             ((file-exists-p "~/.exwm")
+                              (load-file "~/.exwm"))
+                             ((not (featurep 'exwm))
+                              (require 'exwm)
+                              (require 'exwm-config)
+                              (exwm-config-default)
+                              (message "exwm configuration not found. Falling back to default configuration..."))))))
+               (chmod exwm-executable #o555)
+               #t))))))
+    (home-page "https://github.com/ch11ng/exwm")
+    (description "EXWM is a full-featured tiling X window manager for Emacs
+built on top of XELB.")
     (license license:gpl3+)))

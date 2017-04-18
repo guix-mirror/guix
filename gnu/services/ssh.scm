@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -408,7 +408,8 @@ The other options should be self-descriptive."
                        (service-extension activation-service-type
                                           openssh-activation)
                        (service-extension account-service-type
-                                          (const %openssh-accounts))))))
+                                          (const %openssh-accounts))))
+                (default-value (openssh-configuration))))
 
 
 ;;;

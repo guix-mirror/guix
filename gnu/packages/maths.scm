@@ -3003,7 +3003,7 @@ compilers and compiler versions as well as portability between different vector
 instruction sets.  Thus, an application written with Vc can be compiled for:
 @enumerate
 @item AVX and AVX2
-@item SSE2 upto SSE4.2 or SSE4a
+@item SSE2 up to SSE4.2 or SSE4a
 @item Scalar
 @item MIC
 @item NEON (in development)

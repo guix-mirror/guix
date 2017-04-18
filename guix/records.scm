@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,10 +134,9 @@ fields, and DELAYED is the list of identifiers of delayed fields."
            ((_ (field value) (... ...))
             (let ((fields (map syntax->datum #'(field (... ...)))))
               (define (field-value f)
-                (or (and=> (find (lambda (x)
-                                   (eq? f (car (syntax->datum x))))
-                                 #'((field value) (... ...)))
-                           car)
+                (or (find (lambda (x)
+                            (eq? f (syntax->datum x)))
+                          #'(field (... ...)))
                     (wrap-field-value f (field-default-value f))))
 
               (let ((fields (append fields (map car default-values))))

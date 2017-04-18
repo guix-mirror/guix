@@ -124,6 +124,11 @@
        "http://tenet.dl.sourceforge.net/project/"
        "http://vorboss.dl.sourceforge.net/project/"
        "http://netassist.dl.sourceforge.net/project/")
+      (netfilter.org ; https://www.netfilter.org/mirrors.html
+       "http://ftp.netfilter.org/pub/"
+       "ftp://ftp.es.netfilter.org/mirrors/netfilter/"
+       "ftp://ftp.hu.netfilter.org/"
+       "ftp://www.lt.netfilter.org/pub/")
       (kernel.org
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
        "http://linux-kernel.uio.no/pub/"

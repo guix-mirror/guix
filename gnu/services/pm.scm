@@ -396,7 +396,8 @@ shutdown on system startup."))
      (service-extension udev-service-type
                         (compose list tlp-configuration-tlp))
      (service-extension activation-service-type
-                        tlp-activation)))))
+                        tlp-activation)))
+   (default-value (tlp-configuration))))
 
 (define (generate-tlp-documentation)
   (generate-documentation

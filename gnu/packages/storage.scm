@@ -59,6 +59,7 @@
               (patches
                (search-patches "ceph-skip-unittest_blockdev.patch"
                                "ceph-skip-collect-sys-info-test.patch"
+                               "ceph-disable-unittest-throttle.patch"
                                "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
               (snippet

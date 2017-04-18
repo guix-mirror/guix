@@ -25,6 +25,7 @@
   #:use-module (guix profiles)
   #:use-module (guix sets)
   #:use-module (guix ui)
+  #:use-module ((guix utils) #:select (source-properties->location))
   #:use-module (guix modules)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -47,11 +48,13 @@
             service-type-extensions
             service-type-compose
             service-type-extend
+            service-type-default-value
 
             service
             service?
             service-kind
-            service-parameters
+            service-value
+            service-parameters                    ;deprecated
 
             simple-service
             modify-services
@@ -59,6 +62,9 @@
             fold-services
 
             service-error?
+            missing-value-service-error?
+            missing-value-service-error-type
+            missing-value-service-error-location
             missing-target-service-error?
             missing-target-service-error-service
             missing-target-service-error-target-type
@@ -118,6 +124,10 @@
   (target  service-extension-target)              ;<service-type>
   (compute service-extension-compute))            ;params -> params
 
+(define &no-default-value
+  ;; Value used to denote service types that have no associated default value.
+  '(no default value))
+
 (define-record-type* <service-type> service-type make-service-type
   service-type?
   (name       service-type-name)                  ;symbol (for debugging)
@@ -131,7 +141,11 @@
 
   ;; Extend the services' own parameters with the extension composition.
   (extend     service-type-extend                 ;list of Any -> parameters
-              (default #f)))
+              (default #f))
+
+  ;; Optional default value for instances of this type.
+  (default-value service-type-default-value       ;Any
+                 (default &no-default-value)))
 
 (define (write-service-type type port)
   (format port "#<service-type ~a ~a>"
@@ -142,10 +156,56 @@
 
 ;; Services of a given type.
 (define-record-type <service>
-  (service type parameters)
+  (make-service type value)
   service?
   (type       service-kind)
-  (parameters service-parameters))
+  (value      service-value))
+
+(define-syntax service
+  (syntax-rules ()
+    "Return a service instance of TYPE.  The service value is VALUE or, if
+omitted, TYPE's default value."
+    ((_ type value)
+     (make-service type value))
+    ((_ type)
+     (%service-with-default-value (current-source-location)
+                                  type))))
+
+(define (%service-with-default-value location type)
+  "Return a instance of service type TYPE with its default value, if any.  If
+TYPE does not have a default value, an error is raised."
+  ;; TODO: Currently this is a run-time error but with a little bit macrology
+  ;; we could turn it into an expansion-time error.
+  (let ((default (service-type-default-value type)))
+    (if (eq? default &no-default-value)
+        (let ((location (source-properties->location location)))
+          (raise
+           (condition
+            (&missing-value-service-error (type type) (location location))
+            (&message
+             (message (format #f (_ "~a: no value specified \
+for service of type '~a'")
+                              (location->string location)
+                              (service-type-name type)))))))
+        (service type default))))
+
+(define-condition-type &service-error &error
+  service-error?)
+
+(define-condition-type &missing-value-service-error &service-error
+  missing-value-service-error?
+  (type     missing-value-service-error-type)
+  (location missing-value-service-error-location))
+
+
+
+;;;
+;;; Helpers.
+;;;
+
+(define service-parameters
+  ;; Deprecated alias.
+  service-value)
 
 (define (simple-service name target value)
   "Return a service that extends TARGET with VALUE.  This works by creating a
@@ -161,7 +221,7 @@ singleton service type NAME, of which the returned service is an instance."
      service)
     ((_ svc (kind param => exp ...) clauses ...)
      (if (eq? (service-kind svc) kind)
-         (let ((param (service-parameters svc)))
+         (let ((param (service-value svc)))
            (service (service-kind svc)
                     (begin exp ...)))
          (%modify-service svc clauses ...)))))
@@ -321,7 +381,7 @@ file."
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of
 ACTIVATION-SCRIPT-TYPE."
-  (activation-script (service-parameters service)))
+  (activation-script (service-value service)))
 
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
@@ -432,7 +492,7 @@ and FILE could be \"/usr/bin/env\"."
 
 (define (etc-directory service)
   "Return the directory for SERVICE, a service of type ETC-SERVICE-TYPE."
-  (files->etc-directory (service-parameters service)))
+  (files->etc-directory (service-value service)))
 
 (define (files->etc-directory files)
   (file-union "etc" files))
@@ -536,9 +596,6 @@ kernel."
 ;;; Service folding.
 ;;;
 
-(define-condition-type &service-error &error
-  service-error?)
-
 (define-condition-type &missing-target-service-error &service-error
   missing-target-service-error?
   (service      missing-target-service-error-service)
@@ -605,7 +662,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
       (match (find (matching-extension target)
                    (service-type-extensions (service-kind service)))
         (($ <service-extension> _ compute)
-         (compute (service-parameters service))))))
+         (compute (service-value service))))))
 
   (match (filter (lambda (service)
                    (eq? (service-kind service) target-type))
@@ -616,7 +673,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
               (extensions (map (apply-extension sink) dependents))
               (extend     (service-type-extend (service-kind sink)))
               (compose    (service-type-compose (service-kind sink)))
-              (params     (service-parameters sink)))
+              (params     (service-value sink)))
          ;; We distinguish COMPOSE and EXTEND because PARAMS typically has a
          ;; different type than the elements of EXTENSIONS.
          (if extend

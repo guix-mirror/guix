@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -284,18 +285,18 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (unless register-closures?
       (reset-timestamps target))))
 
-(define (register-grub.cfg-root target grub.cfg)
-  "On file system TARGET, register GRUB.CFG as a GC root."
+(define (register-grub.cfg-root target bootcfg)
+  "On file system TARGET, register BOOTCFG as a GC root."
   (let ((directory (string-append target "/var/guix/gcroots")))
     (mkdir-p directory)
-    (symlink grub.cfg (string-append directory "/grub.cfg"))))
+    (symlink bootcfg (string-append directory "/grub.cfg"))))
 
 (define* (initialize-hard-disk device
                                #:key
                                grub.cfg
                                (partitions '()))
   "Initialize DEVICE as a disk containing all the <partition> objects listed
-in PARTITIONS, and using GRUB.CFG as its bootloader configuration file.
+in PARTITIONS, and using BOOTCFG as its bootloader configuration file.
 
 Each partition is initialized by calling its 'initializer' procedure,
 passing it a directory name where it is mounted."

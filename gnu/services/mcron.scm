@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +97,8 @@
                           (mcron-configuration
                            (inherit config)
                            (jobs (append (mcron-configuration-jobs config)
-                                         jobs)))))))
+                                         jobs)))))
+                (default-value (mcron-configuration)))) ;empty job list
 
 (define* (mcron-service jobs #:optional (mcron mcron2))
   "Return an mcron service running @var{mcron} that schedules @var{jobs}, a

@@ -531,7 +531,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.10a")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -539,10 +539,8 @@ extracting content or merging files.")
                             name "-" version "-source.tar.gz"))
         (sha256
          (base32
-          "0dm8wcs8i29aibzkqkrn8kcnk4q0kd1v66pg48h5c3qqp4v1zk5a"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
-                                 "mupdf-mujs-CVE-2016-10132.patch"
-                                 "mupdf-mujs-CVE-2016-10133.patch"))
+          "02phamcchgsmvjnb3ir7r5sssvx9fcrscn297z73b82n1jl79510"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
@@ -554,7 +552,7 @@ extracting content or merging files.")
                          "thirdparty/glfw"
                          "thirdparty/harfbuzz"
                          "thirdparty/jbig2dec"
-                         "thirdparty/jpeg"
+                         "thirdparty/libjpeg"
                          "thirdparty/openjpeg"
                          "thirdparty/zlib")))))
     (build-system gnu-build-system)

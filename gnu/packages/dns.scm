@@ -275,9 +275,9 @@ asynchronous fashion.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.3")
+    (version "2.2.4")
     (source
-     (let ((revision "6711"))
+     (let ((revision "6924"))
        (origin
          (method url-fetch)
          (uri
@@ -285,7 +285,7 @@ asynchronous fashion.")
                          name "-" version "-" revision ".tar.gz"))
          (sha256
           (base32
-           "0ikfm40gx0zjw3gnxsw3rn1k4wb8jacgklja3ygcj1knq6hy2zaa")))))
+           "060ydcfn9876bs6p5xi3p1k20ca547f4jck25r5x1hnxjlv7ss03")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -377,7 +377,7 @@ Extensions} (DNSSEC).")
                             "/etc/bash_completion.d"))))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
-    (description "Knot DNS is an authorative name server for the @dfn{Domain
+    (description "Knot DNS is an authoritative name server for the @dfn{Domain
 Name System} (DNS), designed to meet the needs of root and @dfn{top-level
 domain} (TLD) name servers.  It is implemented as a threaded daemon and uses a
 number of programming techniques to improve speed.  For example, the responder

@@ -86,6 +86,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
@@ -1016,21 +1017,28 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.4.21")
+    (version "1.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.netfilter.org/projects/iptables/files/iptables-"
+                   "mirror://netfilter.org/iptables/iptables-"
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1q6kg7sf0pgpq0qhab6sywl23cngxxfzc9zdzscsba8x09l4q02j"))))
+               "1x8c9y340x79djsq54bc1674ryv59jfphrk4f88i7qbvbnyxghhg"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (inputs
+     `(("libmnl" ,libmnl)
+       ("libnftnl" ,libnftnl)))
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
-    (home-page "http://www.netfilter.org/projects/iptables/index.html")
+    (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
      "iptables is the userspace command line program used to configure the
@@ -1569,22 +1577,22 @@ UnionFS-FUSE additionally supports copy-on-write.")
 (define-public sshfs-fuse
   (package
     (name "sshfs-fuse")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/sshfs/releases/"
-                                  "download/sshfs_" version
-                                  "/sshfs-" version ".tar.gz"))
+                                  "download/sshfs-" version "/sshfs-" version
+                                  ".tar.gz"))
               (sha256
                (base32
-                "08mdd4rs7yys7hmyig6i08qlid76p17xlvrh64k7wsrfs1s92s3z"))))
+                "1pp5wsl1jx11apkv2fpp559miifqhi8ka400npy5awp9ghlf3la6"))))
     (build-system gnu-build-system)
     (inputs
      `(("fuse" ,fuse)
        ("glib" ,glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://fuse.sourceforge.net/sshfs.html")
+    (home-page "https://github.com/libfuse/sshfs")
     (synopsis "Mount remote file systems over SSH")
     (description
      "This is a file system client based on the SSH File Transfer Protocol.
@@ -2599,7 +2607,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.6.4")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://git.opensvc.com/?p=multipath-tools/"
@@ -2607,7 +2615,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12smwmljrkl2afc06dghd2253rqnfawvzr818a2xpxr06f44f9qy"))
+                "0w0rgi3lqksaki30yvd4l5rgjqb0d7js1sh7masl8aw6xbrsm26p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2623,20 +2631,36 @@ arrays when needed.")
      '(#:tests? #f ; No tests.
        #:make-flags (list (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
+                          "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
                                          "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lvm2 (assoc-ref inputs "lvm2"))
+                   (udev (assoc-ref inputs "udev")))
+               (substitute* "Makefile.inc"
+                 (("\\$\\(prefix\\)/usr") "$(prefix)"))
+               (substitute* '("kpartx/Makefile" "libmultipath/Makefile")
+                 (("/usr/include/libdevmapper.h")
+                  (string-append lvm2 "/include/libdevmapper.h"))
+                 (("/usr/include/libudev.h")
+                  (string-append udev "/include/libudev.h")))
+               #t)))
          (delete 'configure)
          (add-before 'build 'set-CC
            (lambda _
              (setenv "CC" "gcc")
              #t)))))
     (native-inputs
-     `(("valgrind" ,valgrind)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("valgrind" ,valgrind)))
     (inputs
      `(("ceph:lib" ,ceph "lib")
+       ("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)
@@ -3710,4 +3734,51 @@ configuration, CPU version and speed, cache configuration, bus speed,
 and more on DMI-capable x86 or EFI (IA-64) systems and on some PowerPC
 machines (PowerMac G4 is known to work).")
     (home-page "https://www.ezix.org/project/wiki/HardwareLiSter")
+    (license license:gpl2+)))
+
+(define-public libmnl
+  (package
+    (name "libmnl")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://netfilter.org/libmnl/"
+                            "libmnl-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "108zampspaalv44zn0ar9h386dlfixpd149bnxa5hsi8kxlqj7qp"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.netfilter.org/projects/libmnl/")
+    (synopsis "Netlink utility library")
+    (description "Libmnl is a minimalistic user-space library oriented to
+Netlink developers.  There are a lot of common tasks in parsing, validating,
+constructing of both the Netlink header and TLVs that are repetitive and easy to
+get wrong.  This library aims to provide simple helpers that allows you to
+re-use code and to avoid re-inventing the wheel.")
+    (license license:lgpl2.1+)))
+
+(define-public libnftnl
+  (package
+    (name "libnftnl")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://netfilter.org/libnftnl/"
+                            "libnftnl-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "10irjrylcfkbp11617yr19vpfhgl54w0kw02jhj0i1abqv5nxdlv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmnl" ,libmnl)))
+    (home-page "https://www.netfilter.org/projects/libnftnl/index.html")
+    (synopsis "Netlink programming interface to the Linux nf_tables subsystem")
+    (description "Libnftnl is a userspace library providing a low-level netlink
+programming interface to the in-kernel nf_tables subsystem.  The library
+libnftnl has been previously known as libnftables.  This library is currently
+used by nftables.")
     (license license:gpl2+)))

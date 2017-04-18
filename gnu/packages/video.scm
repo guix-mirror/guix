@@ -15,6 +15,8 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +97,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -365,13 +368,13 @@ canvas operations.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://download.videolan.org/pub/videolan/libdca/"
+                    "https://download.videolan.org/pub/videolan/libdca/"
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
                 "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdca.html")
+    (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
 streams.")
@@ -985,7 +988,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.04.14")
+    (version "2017.04.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -993,7 +996,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rjc4ilafzrig02znrlxwjyzk5rpcc3li55n8rw2c4dmjmvjppkh"))))
+                "1pgdfspzv15772q7kakfq5qx1r70lcviwzk6sz9z1cddxzffxgdd"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1024,10 +1027,85 @@ YouTube.com and a few more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
 
+(define-public youtube-dl-gui
+  (package
+    (name "youtube-dl-gui")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Youtube-DLG" version))
+       (sha256
+        (base32
+         "0napxwzgls5ik1bxbp99vly32l23xpc4ng5kr24hfhf21ypjyadb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; In Guix, wxpython has not yet been packaged for Python 3.
+     `(#:python ,python-2
+       ;; This package has no tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The youtube-dl-gui program lets you configure options.  Some of
+             ;; them are problematic, so we change their defaults.
+             (substitute* "youtube_dl_gui/optionsmanager.py"
+               ;; When this is true, the builder process will try (and fail) to
+               ;; write logs to the builder user's home directory.
+               (("'enable_log': True") "'enable_log': False")
+               ;; This determines which youtube-dl program youtube-dl-gui will
+               ;; run.  If we don't set this, then youtube-dl-gui might download
+               ;; an arbitrary copy from the Internet into the user's home
+               ;; directory and run it, so let's make sure youtube-dl-gui uses
+               ;; the youtube-dl from the inputs by default.
+               (("'youtubedl_path': self.config_path")
+                (string-append "'youtubedl_path': '"
+                               (assoc-ref inputs "youtube-dl")
+                               "/bin'"))
+               ;; When this is True, when youtube-dl-gui is finished downloading
+               ;; a file, it will try (and possibly fail) to open the directory
+               ;; containing the downloaded file.  This can fail because it
+               ;; assumes that xdg-open is in PATH.  Unfortunately, simply
+               ;; adding xdg-utils to the propagated inputs is not enough to
+               ;; make this work, so for now we set the default to False.
+               (("'open_dl_dir': True") "'open_dl_dir': False"))
+             ;; The youtube-dl program from the inputs is actually a wrapper
+             ;; script written in bash, so attempting to invoke it as a python
+             ;; script will fail.
+             (substitute* "youtube_dl_gui/downloaders.py"
+               (("cmd = \\['python', self\\.youtubedl_path\\]")
+                "cmd = [self.youtubedl_path]"))
+             ;; Use relative paths for installing data files so youtube-dl-gui
+             ;; installs the files relative to its prefix in the store, rather
+             ;; than relative to /.  Also, instead of installing data files into
+             ;; $prefix/usr/share, install them into $prefix/share for
+             ;; consistency (see: (standards) Directory Variables).
+             (substitute* "setup.py"
+               (("= '/usr/share") "= 'share"))
+             ;; Update get_locale_file() so it finds the installed localization
+             ;; files.
+             (substitute* "youtube_dl_gui/utils.py"
+               (("os\\.path\\.join\\('/usr', 'share'")
+                (string-append "os.path.join('"
+                               (assoc-ref %outputs "out")
+                               "', 'share'"))))))))
+    (inputs
+     `(("python2-wxpython" ,python2-wxpython)
+       ("youtube-dl" ,youtube-dl)))
+    (home-page "https://github.com/MrS0m30n3/youtube-dl-gui")
+    (synopsis
+     "GUI (Graphical User Interface) for @command{youtube-dl}")
+    (description
+     "Youtube-dlG is a GUI (Graphical User Interface) for
+@command{youtube-dl}.  You can use it to download videos from YouTube and any
+other site that youtube-dl supports.")
+    (license license:unlicense)))
+
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.652")
+    (version "0.4.715")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1035,7 +1113,7 @@ YouTube.com and a few more sites.")
                     version "/you-get-" version ".tar.gz"))
               (sha256
                (base32
-                "0brkz98lycx8mmxjwmn7jlhqfdbvl0hy070n7skwr1k75kh99q30"))))
+                "043122hfh56fbbszp1kwd1f65asgyn60j1ijday93hf2dkhvbrnh"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
@@ -1097,7 +1175,7 @@ players, like VLC or MPlayer.")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1120,7 +1198,7 @@ installed).")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1154,7 +1232,7 @@ encapsulated.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.videolan.org/videolan/libdvdnav/libdvdnav-"
+                "https://download.videolan.org/videolan/libdvdnav/libdvdnav-"
                 version ".tar.xz"))
               (sha256
                (base32
@@ -1178,14 +1256,14 @@ encapsulated.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/pub/"
+              (uri (string-append "https://download.videolan.org/pub/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0nl45ifc4xcb196snv9d6hinfw614cqpzcqp92dg43c0hickg290"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdvdcss.html")
+    (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
     (description
      "libdvdcss is a simple library designed for accessing DVDs like a block
@@ -1491,14 +1569,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.10.1")
+    (version "1.12.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1h1nhg5cmmzlbipak526nk4bm6d0yb217mll75f3rpg7kz1cqiv1"))))
+                "0vpl3jl0x441y7b5cn7zhdsyi954hp9h2p30jhnr1zkx1rpxsiss"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1507,7 +1585,8 @@ tools, XML authoring components, and an extensible plug-in based API.")
                             "/lib/udev")
              "CXXFLAGS=-std=gnu++11")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
@@ -1709,7 +1788,7 @@ and MPEG system streams.")
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libbdplus.html")
+    (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libbdplus is a library which implements the BD+ System
 specifications.")
@@ -1732,7 +1811,7 @@ specifications.")
      `(("bison" ,bison)
        ("flex" ,flex)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libaacs.html")
+    (home-page "https://www.videolan.org/developers/libaacs.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libaacs is a library which implements the Advanced Access
 Content System specification.")

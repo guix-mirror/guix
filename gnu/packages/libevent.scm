@@ -182,7 +182,7 @@ resolution, asynchronous file system operations, and threading primitives.")
      "API for I/O, timer, signal, child process and completion events")
     (description
      "This module allows using a variety of events without forcing module
-authors to pick a specific event loop, and without noticable overhead.
+authors to pick a specific event loop, and without noticeable overhead.
 Currently supported event loops are EV, Event, Glib/Gtk2, Tk, Qt,
 @code{Event::Lib}, Irssi, @code{IO::Async} and POE (and thus also WxWidgets
 and Prima).  It also comes with a very fast Pure Perl event loop that does

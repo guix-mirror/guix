@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -284,10 +285,10 @@ to USB sticks meant to be read-only."
                                   file-systems-to-keep)))))
 
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                         (grub.cfg (operating-system-grub.cfg os)))
+                         (bootcfg  (operating-system-bootcfg os)))
       (qemu-image #:name name
                   #:os-derivation os-drv
-                  #:grub-configuration grub.cfg
+                  #:grub-configuration bootcfg
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
                   #:file-system-type file-system-type
@@ -295,7 +296,7 @@ to USB sticks meant to be read-only."
                   #:copy-inputs? #t
                   #:register-closures? #t
                   #:inputs `(("system" ,os-drv)
-                             ("grub.cfg" ,grub.cfg))))))
+                             ("bootcfg" ,bootcfg))))))
 
 (define* (system-qemu-image os
                             #:key
@@ -328,13 +329,13 @@ of the GNU system as described by OS."
                                   file-systems-to-keep)))))
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
-         (grub.cfg    (operating-system-grub.cfg os)))
+         (bootcfg     (operating-system-bootcfg os)))
       (qemu-image  #:os-derivation os-drv
-                   #:grub-configuration grub.cfg
+                   #:grub-configuration bootcfg
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
                    #:inputs `(("system" ,os-drv)
-                              ("grub.cfg" ,grub.cfg))
+                              ("bootcfg" ,bootcfg))
                    #:copy-inputs? #t))))
 
 
@@ -423,16 +424,16 @@ When FULL-BOOT? is true, return an image that does a complete boot sequence,
 bootloaded included; thus, make a disk image that contains everything the
 bootloader refers to: OS kernel, initrd, bootloader data, etc."
   (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                       (grub.cfg (operating-system-grub.cfg os)))
+                       (bootcfg  (operating-system-bootcfg os)))
     ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
-    ;; GRUB.CFG and all its dependencies, including the output of OS-DRV.
+    ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
     ;; This is more than needed (we only need the kernel, initrd, GRUB for its
     ;; font, and the background image), but it's hard to filter that.
     (qemu-image #:os-derivation os-drv
-                #:grub-configuration grub.cfg
+                #:grub-configuration bootcfg
                 #:disk-image-size disk-image-size
                 #:inputs (if full-boot?
-                             `(("grub.cfg" ,grub.cfg))
+                             `(("bootcfg" ,bootcfg))
                              '())
 
                 ;; XXX: Passing #t here is too slow, so let it off by default.
