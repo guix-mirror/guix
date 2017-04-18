@@ -60,6 +60,7 @@ MODULES =					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/graph.scm				\
+  guix/cache.scm				\
   guix/cve.scm					\
   guix/workers.scm				\
   guix/zlib.scm					\
@@ -296,6 +297,7 @@ SCM_TESTS =					\
   tests/size.scm				\
   tests/graph.scm				\
   tests/challenge.scm				\
+  tests/cache.scm				\
   tests/cve.scm					\
   tests/workers.scm				\
   tests/zlib.scm				\
