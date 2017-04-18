@@ -86,6 +86,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
@@ -2606,7 +2607,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.6.4")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://git.opensvc.com/?p=multipath-tools/"
@@ -2614,7 +2615,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12smwmljrkl2afc06dghd2253rqnfawvzr818a2xpxr06f44f9qy"))
+                "0w0rgi3lqksaki30yvd4l5rgjqb0d7js1sh7masl8aw6xbrsm26p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2637,19 +2638,29 @@ arrays when needed.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
-           (lambda _
-             (substitute* "Makefile.inc"
-               (("\\$\\(prefix\\)/usr") "$(prefix)"))
-             #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lvm2 (assoc-ref inputs "lvm2"))
+                   (udev (assoc-ref inputs "udev")))
+               (substitute* "Makefile.inc"
+                 (("\\$\\(prefix\\)/usr") "$(prefix)"))
+               (substitute* '("kpartx/Makefile" "libmultipath/Makefile")
+                 (("/usr/include/libdevmapper.h")
+                  (string-append lvm2 "/include/libdevmapper.h"))
+                 (("/usr/include/libudev.h")
+                  (string-append udev "/include/libudev.h")))
+               #t)))
          (delete 'configure)
          (add-before 'build 'set-CC
            (lambda _
              (setenv "CC" "gcc")
              #t)))))
     (native-inputs
-     `(("valgrind" ,valgrind)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("valgrind" ,valgrind)))
     (inputs
      `(("ceph:lib" ,ceph "lib")
+       ("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)
