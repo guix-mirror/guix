@@ -1848,7 +1848,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.46.1")
+    (version "0.48.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1856,22 +1856,15 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ipmnfazvhzjp5pjw90mmxbkizivnh7gnlqqml94lw2rqa5wy048"))))
+                "14060d5rmjjmxaknrabhnsjwxni5wa3crg61mqxv8f7yxl0v6y62"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; XXX: fails to compile tests with the default flags.
-     ;; vteconv.cc:774:40:
-     ;;    error: missing sentinel in function call [-Werror=format=]
-     ;;    g_test_init (&argc, &argv, NULL);
-     ;;
-     ;; cc1plus: some warnings being treated as errors
-     '(#:configure-flags '("CXXFLAGS=-Wformat=0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gperf" ,gperf)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
