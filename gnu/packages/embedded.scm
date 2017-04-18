@@ -773,3 +773,27 @@ simulator.")
 the Raspberry Pi chip.")
       (license license:gpl3+)
       (home-page "https://github.com/puppeh/vc4-toolchain/"))))
+
+(define-public gcc-vc4
+  (let ((commit "165f6d0e11d2e76ee799533bb45bd5c92bf60dc2")
+        (xgcc (cross-gcc "vc4-elf" binutils-vc4)))
+    (package (inherit xgcc)
+      (name "gcc-vc4")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/puppeh/gcc-vc4.git")
+                      (commit commit)))
+                (file-name (string-append name
+                                          "-"
+                                          (package-version xgcc)
+                                          "-checkout"))
+                (sha256
+                 (base32
+                  "13h30qjcwnlz6lfma1d82nnvfmjnhh7abkagip4vly6vm5fpnvf2"))))
+      (native-inputs
+        `(("flex" ,flex)
+          ,@(package-native-inputs xgcc)))
+      (synopsis "GCC for VC4")
+      (description "This package provides @code{gcc} for VideoCore IV,
+the Raspberry Pi chip."))))
