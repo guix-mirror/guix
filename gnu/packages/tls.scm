@@ -442,6 +442,11 @@ required structures.")
        (base32
         "0c4awq45cl757fv7f7f75i5i0ibc6v7ns13n7xvfak7chv2lrqql"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Do as if 'getentropy' was missing since older Linux kernels lack it
+     ;; and libc would return ENOSYS, which is not properly handled.
+     ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
+     '(#:configure-flags '("ac_cv_func_getentropy=no")))
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
       ;; and are not actually "search paths."  In practice it works OK in
