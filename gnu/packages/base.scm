@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1075,21 +1075,14 @@ and daylight-saving rules.")
 (define-public libiconv
   (package
     (name "libiconv")
-    (version "1.14")
+    (version "1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libiconv/libiconv-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04q6lgl3kglmmhw59igq1n7v3rp1rpkypl366cy1k1yn2znlvckj"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Work around "declared gets" error on glibc systems (fixed by
-               ;; Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348.)
-               '(substitute* "srclib/stdio.in.h"
-                  (("^#undef gets") "")
-                  (("^_GL_WARN_ON_USE \\(gets.*") "")))))
+                "0y1ij745r4p48mxq84rax40p10ln7fc7m243p8k8sia519i3dxfc"))))
     (build-system gnu-build-system)
     (synopsis "Character set conversion library")
     (description
