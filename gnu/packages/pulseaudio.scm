@@ -50,6 +50,7 @@
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
+             (patches (search-patches "libsndfile-armhf-type-checks.patch"))
              (sha256
               (base32
                "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
