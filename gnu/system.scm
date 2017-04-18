@@ -385,7 +385,7 @@ explicitly appear in OS."
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.0 bash coreutils findutils grep sed
+              (list guile-2.0 bash coreutils-8.27 findutils grep sed
                     diffutils patch gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
