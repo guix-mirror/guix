@@ -7413,7 +7413,7 @@ guix system init /mnt/etc/config.scm /mnt
 
 @noindent
 This copies all the necessary files and installs GRUB on
-@file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
+@file{/dev/sdX}, unless you pass the @option{--no-bootloader} option.  For
 more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
@@ -15094,7 +15094,7 @@ overwritten.  This behavior mirrors that of @command{guix package}
 
 It also adds a GRUB menu entry for the new OS configuration, and moves
 entries for older configurations to a submenu---unless
-@option{--no-grub} is passed.
+@option{--no-bootloader} is passed.
 
 @quotation Note
 @c The paragraph below refers to the problem discussed at
@@ -15174,7 +15174,7 @@ needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
 This command also installs GRUB on the device specified in
-@file{my-os-config}, unless the @option{--no-grub} option was passed.
+@file{my-os-config}, unless the @option{--no-bootloader} option was passed.
 
 @item vm
 @cindex virtual machine
