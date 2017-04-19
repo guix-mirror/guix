@@ -73,4 +73,5 @@ C/C++ part.")
     (source (origin
               (inherit (package-source icu4c))
               (patches
-               (search-patches "icu4c-reset-keyword-list-iterator.patch"))))))
+               (search-patches "icu4c-CVE-2017-7867-CVE-2017-7868.patch"
+                               "icu4c-reset-keyword-list-iterator.patch"))))))
