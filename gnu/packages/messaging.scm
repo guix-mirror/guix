@@ -434,24 +434,23 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/n/nbxmpp/"
-                           "nbxmpp-" version ".tar.gz"))
+       (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0dcr786dyips1fdvgsn8yvpgcz5j7217fi05c29cfypdl8jnp6mp"))))
+         "1gnzrzrdl4nii1sc5x8p5iw2ya5sl70j3nn34abqsny51p2pzmv6"))))
     (build-system python-build-system)
-    ;; No tests included
-    (arguments `(#:tests? #f))
-    (home-page "http://python-nbxmpp.gajim.org")
+    (arguments
+     `(#:tests? #f))                    ; no tests
+    (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (synopsis "Non-blocking Jabber/XMPP module")
     (description
      "The goal of this python library is to provide a way for Python
 applications to use Jabber/XMPP networks in a non-blocking way.  This library
-was initially a fork of xmpppy, but is using non-blocking sockets.")
+was initially a fork of xmpppy, but uses non-blocking sockets.")
     (license license:gpl3+)))
 
 (define-public python2-nbxmpp
