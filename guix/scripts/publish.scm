@@ -39,6 +39,7 @@
   #:use-module (web response)
   #:use-module (web server)
   #:use-module (web uri)
+  #:autoload   (sxml simple) (sxml->xml)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix config)
@@ -532,6 +533,22 @@ has the given HASH of type ALGO."
             (not-found request)))
       (not-found request)))
 
+(define (render-home-page request)
+  "Render the home page."
+  (values `((content-type . (text/html (charset . "UTF-8"))))
+          (call-with-output-string
+            (lambda (port)
+              (sxml->xml '(html
+                           (head (title "GNU Guix Substitute Server"))
+                           (body
+                            (h1 "GNU Guix Substitute Server")
+                            (p "Hi, "
+                               (a (@ (href
+                                      "https://gnu.org/s/guix/manual/html_node/Invoking-guix-publish.html"))
+                                  (tt "guix publish"))
+                               " speaking.  Welcome!")))
+                         port)))))
+
 (define extract-narinfo-hash
   (let ((regexp (make-regexp "^([a-df-np-sv-z0-9]{32}).narinfo$")))
     (lambda (str)
@@ -686,6 +703,9 @@ blocking."
           ;; /nix-cache-info
           (("nix-cache-info")
            (render-nix-cache-info))
+          ;; /
+          ((or () ("index.html"))
+           (render-home-page request))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
            ;; TODO: Register roots for HASH that will somehow remain for
