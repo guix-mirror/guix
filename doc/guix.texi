@@ -12654,18 +12654,25 @@ remote servers.  Run @command{man smtpd.conf} for more information.
 
 @subsubheading Exim Service
 
+@cindex mail transfer agent (MTA)
+@cindex MTA (mail transfer agent)
+@cindex SMTP
+
 @deffn {Scheme Variable} exim-service-type
-This is the type of the @uref{https://exim.org, Exim} service, whose value
-should be an @code{exim-configuration} object as in this example:
+This is the type of the @uref{https://exim.org, Exim} mail transfer
+agent (MTA), whose value should be an @code{exim-configuration} object
+as in this example:
 
 @example
 (service exim-service-type
          (exim-configuration
-           (config-file (local-file "./my-exim.conf"))
-           (aliases '(("postmaster" "bob")
-                      ("bob" "bob@@example.com" "bob@@example2.com")))))
+           (config-file (local-file "./my-exim.conf"))))
 @end example
 @end deffn
+
+In order to use an @code{exim-service-type} service you must also have a
+@code{mail-aliases-service-type} service present in your
+@code{operating-system} (even if it has no aliases).
 
 @deftp {Data Type} exim-configuration
 Data type representing the configuration of exim.
@@ -12681,15 +12688,36 @@ provided in @code{package}. The resulting configuration file is loaded
 after setting the @code{exim_user} and @code{exim_group} configuration
 variables.
 
-@item @code{aliases} (default: @code{'()})
-List of aliases to use when delivering mail on this system. The
-@code{car} of each list is used to match incoming mail, with the
-@code{cdr} of each list designating how to deliver it. There may be many
-delivery methods provided, in which case the mail is delivered to them
-all.
-
 @end table
 @end deftp
+
+@subsubheading Mail Aliases Service
+
+@cindex email aliases
+@cindex aliases, for email addresses
+
+@deffn {Scheme Variable} mail-aliases-service-type
+This is the type of the service which provides @code{/etc/aliases},
+specifying how to deliver mail to users on this system.
+
+@example
+(service mail-aliases-service-type
+         '(("postmaster" "bob")
+           ("bob" "bob@@example.com" "bob@@example2.com")))
+@end example
+@end deffn
+
+The configuration for a @code{mail-aliases-service-type} service is an
+association list denoting how to deliver mail that comes to this
+system. Each entry is of the form @code{(alias addresses ...)}, with
+@code{alias} specifying the local alias and @code{addresses} specifying
+where to deliver this user's mail.
+
+The aliases aren't required to exist as users on the local system. In
+the above example, there doesn't need to be a @code{postmaster} entry in
+the @code{operating-system}'s @code{user-accounts} in order to deliver
+the @code{postmaster} mail to @code{bob} (which subsequently would
+deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
 
 @node Messaging Services
 @subsubsection Messaging Services
