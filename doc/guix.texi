@@ -9145,6 +9145,23 @@ compression ratio at the expense of increased CPU usage.
 @item @code{nar-path} (default: @code{"nar"})
 The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
 publish, @code{--nar-path}}, for details.
+
+@item @code{cache} (default: @code{#f})
+When it is @code{#f}, disable caching and instead generate archives on
+demand.  Otherwise, this should be the name of a directory---e.g.,
+@code{"/var/cache/guix/publish"}---where @command{guix publish} caches
+archives and meta-data ready to be sent.  @xref{Invoking guix publish,
+@option{--cache}}, for more information on the tradeoffs involved.
+
+@item @code{workers} (default: @code{#f})
+When it is an integer, this is the number of worker threads used for
+caching; when @code{#f}, the number of processors is used.
+@xref{Invoking guix publish, @option{--workers}}, for more information.
+
+@item @code{ttl} (default: @code{#f})
+When it is an integer, this denotes the @dfn{time-to-live} of the
+published archives.  @xref{Invoking guix publish, @option{--ttl}}, for
+more information.
 @end table
 @end deftp
 

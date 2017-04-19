@@ -129,6 +129,8 @@
             guix-publish-configuration-host
             guix-publish-configuration-compression-level
             guix-publish-configuration-nar-path
+            guix-publish-configuration-cache
+            guix-publish-configuration-ttl
             guix-publish-service
             guix-publish-service-type
 
@@ -1445,11 +1447,18 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (compression-level guix-publish-configuration-compression-level ;integer
                      (default 3))
   (nar-path    guix-publish-configuration-nar-path ;string
-               (default "nar")))
+               (default "nar"))
+  (cache       guix-publish-configuration-cache   ;#f | string
+               (default #f))
+  (workers     guix-publish-configuration-workers ;#f | integer
+               (default #f))
+  (ttl         guix-publish-configuration-ttl     ;#f | integer
+               (default #f)))
 
 (define guix-publish-shepherd-service
   (match-lambda
-    (($ <guix-publish-configuration> guix port host compression nar-path)
+    (($ <guix-publish-configuration> guix port host compression
+                                     nar-path cache workers ttl)
      (list (shepherd-service
             (provision '(guix-publish))
             (requirement '(guix-daemon))
@@ -1459,7 +1468,20 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                             "-p" #$(number->string port)
                             "-C" #$(number->string compression)
                             (string-append "--nar-path=" #$nar-path)
-                            (string-append "--listen=" #$host))))
+                            (string-append "--listen=" #$host)
+                            #$@(if workers
+                                   #~((string-append "--workers="
+                                                     #$(number->string
+                                                        workers)))
+                                   #~())
+                            #$@(if ttl
+                                   #~((string-append "--ttl="
+                                                     #$(number->string ttl)
+                                                     "s"))
+                                   #~())
+                            #$@(if cache
+                                   #~((string-append "--cache=" #$cache))
+                                   #~()))))
             (stop #~(make-kill-destructor)))))))
 
 (define %guix-publish-accounts
@@ -1472,13 +1494,29 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define (guix-publish-activation config)
+  (let ((cache (guix-publish-configuration-cache config)))
+    (if cache
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+
+              (mkdir-p #$cache)
+              (let* ((pw  (getpw "guix-publish"))
+                     (uid (passwd:uid pw))
+                     (gid (passwd:gid pw)))
+                (chown #$cache uid gid))))
+        #t)))
+
 (define guix-publish-service-type
   (service-type (name 'guix-publish)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           guix-publish-shepherd-service)
                        (service-extension account-service-type
-                                          (const %guix-publish-accounts))))
+                                          (const %guix-publish-accounts))
+                       (service-extension activation-service-type
+                                          guix-publish-activation)))
                 (default-value (guix-publish-configuration))))
 
 (define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
