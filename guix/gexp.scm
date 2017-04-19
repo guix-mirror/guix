@@ -459,21 +459,24 @@ whether this should be considered a \"native\" input or not."
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
 (define (gexp-modules gexp)
-  "Return the list of Guile module names GEXP relies on."
-  (delete-duplicates
-   (append (gexp-self-modules gexp)
-           (append-map (match-lambda
-                         (($ <gexp-input> (? gexp? exp))
-                          (gexp-modules exp))
-                         (($ <gexp-input> (lst ...))
-                          (append-map (lambda (item)
-                                        (if (gexp? item)
-                                            (gexp-modules item)
-                                            '()))
-                                      lst))
-                         (_
-                          '()))
-                       (gexp-references gexp)))))
+  "Return the list of Guile module names GEXP relies on.  If (gexp? GEXP) is
+false, meaning that GEXP is a plain Scheme object, return the empty list."
+  (if (gexp? gexp)
+      (delete-duplicates
+       (append (gexp-self-modules gexp)
+               (append-map (match-lambda
+                             (($ <gexp-input> (? gexp? exp))
+                              (gexp-modules exp))
+                             (($ <gexp-input> (lst ...))
+                              (append-map (lambda (item)
+                                            (if (gexp? item)
+                                                (gexp-modules item)
+                                                '()))
+                                          lst))
+                             (_
+                              '()))
+                           (gexp-references gexp))))
+      '()))                                       ;plain Scheme data type
 
 (define* (lower-inputs inputs
                        #:key system target)
