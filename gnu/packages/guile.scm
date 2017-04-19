@@ -221,7 +221,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.0")
+    (version "2.2.1")
     (replacement #f)
     (source (origin
               (method url-fetch)
@@ -229,7 +229,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.lz"))
               (sha256
                (base32
-                "083vp6754dp4d5pvcy4bqvxq60cayf92v5slf5cgij8bnvixgyvr"))
+                "0dlwkpqs0b17mmjbf53891acs16ppxxmfwhx2vl5x2946pzrm3c7"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
