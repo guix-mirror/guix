@@ -1,0 +1,58 @@
+Fix a test failure when building for 32 bit architectures:
+
+http://lists.gnu.org/archive/html/guix-devel/2017-04/msg00381.html
+
+Patch copied from upstream source repository:
+
+https://cgit.freedesktop.org/mesa/mesa/commit/?id=61bbb25a080e48a8ca897ba7f6e73cc6a8e9b5b8
+
+From 61bbb25a080e48a8ca897ba7f6e73cc6a8e9b5b8 Mon Sep 17 00:00:00 2001
+From: Grazvydas Ignotas <notasas@gmail.com>
+Date: Thu, 9 Mar 2017 02:54:53 +0200
+Subject: [PATCH] util/disk_cache: fix size subtraction on 32bit
+
+Negating size_t on 32bit produces a 32bit result. This was effectively
+adding values close to UINT_MAX to the cache size (the files are usually
+small) instead of intended subtraction.
+Fixes 'make check' disk_cache failures on 32bit.
+
+Signed-off-by: Grazvydas Ignotas <notasas@gmail.com>
+Reviewed-by: Timothy Arceri <tarceri@itsqueeze.com>
+---
+ src/util/disk_cache.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/util/disk_cache.c b/src/util/disk_cache.c
+index 5470688df3..facdcecf7c 100644
+--- a/src/util/disk_cache.c
++++ b/src/util/disk_cache.c
+@@ -603,7 +603,7 @@ evict_random_item(struct disk_cache *cache)
+    free(dir_path);
+ 
+    if (size) {
+-      p_atomic_add(cache->size, - size);
++      p_atomic_add(cache->size, - (uint64_t)size);
+       return;
+    }
+ 
+@@ -624,7 +624,7 @@ evict_random_item(struct disk_cache *cache)
+    free(dir_path);
+ 
+    if (size)
+-      p_atomic_add(cache->size, - size);
++      p_atomic_add(cache->size, - (uint64_t)size);
+ }
+ 
+ void
+#@@ -646,7 +646,7 @@ disk_cache_remove(struct disk_cache *cache, const cache_key key)
+#    free(filename);
+# 
+#    if (sb.st_size)
+#-      p_atomic_add(cache->size, - sb.st_size);
+#+      p_atomic_add(cache->size, - (uint64_t)sb.st_size);
+# }
+# 
+# /* From the zlib docs:
+-- 
+2.12.2
+

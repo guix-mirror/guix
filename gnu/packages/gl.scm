@@ -229,7 +229,8 @@ also known as DXTn or DXTC) for Mesa.")
          (base32
           "0im3ca1vwwmkjf5w761vh7vabr4vrrdxpckr0wm974x18n2xqs8j"))
         (patches
-         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
+         (search-patches "mesa-fix-32bit-test-failures.patch"
+                         "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
