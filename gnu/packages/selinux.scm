@@ -290,3 +290,55 @@ as produced by the audit system.  It has facilities for generating policy
 based on required access.")
     ;; GPLv2 only
     (license license:gpl2)))
+
+;; The latest 4.1.x version does not work with the latest 2.6 release of
+;; policycoreutils, so we use the last 4.0.x release.
+(define-public python-setools
+  (package
+    (name "python-setools")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/TresysTechnology/"
+                                  "setools/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zndpl4ck5c23p7s4sci06db89q1w87jig3jbd4f8s1ggy3lj82c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; the test target causes a rebuild
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-SEPOL-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "SEPOL"
+                     (string-append (assoc-ref inputs "libsepol")
+                                    "/lib/libsepol.a"))))
+         (add-after 'unpack 'remove-Werror
+           (lambda _
+             (substitute* "setup.py"
+               (("'-Werror',") ""))
+             #t))
+         (add-after 'unpack 'fix-target-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("join\\(sys.prefix")
+                (string-append "join(\"" (assoc-ref outputs "out") "/\"")))
+             #t)))))
+    (propagated-inputs
+     `(("python-networkx" ,python-networkx)))
+    (inputs
+     `(("libsepol" ,libsepol)
+       ("libselinux" ,libselinux)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("swig" ,swig)))
+    (home-page "https://github.com/TresysTechnology/setools")
+    (synopsis "Tools for SELinux policy analysis")
+    (description "SETools is a collection of graphical tools, command-line
+tools, and libraries designed to facilitate SELinux policy analysis.")
+    ;; Some programs are under GPL, all libraries under LGPL.
+    (license (list license:lgpl2.1+
+                   license:gpl2+))))
