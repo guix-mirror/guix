@@ -1442,9 +1442,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
            (default 80))
   (host    guix-publish-configuration-host        ;string
            (default "localhost"))
-  (compression-level guix-publish-compression-level ;integer
+  (compression-level guix-publish-configuration-compression-level ;integer
                      (default 3))
-  (nar-path    guix-publish-nar-path              ;string
+  (nar-path    guix-publish-configuration-nar-path ;string
                (default "nar")))
 
 (define guix-publish-shepherd-service
