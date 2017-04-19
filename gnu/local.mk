@@ -657,9 +657,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-binutils.patch			\
-  %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
-  %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
-  %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
