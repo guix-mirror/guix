@@ -2849,6 +2849,7 @@ safety of the Chromium vessel.")
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)"
                       "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
+       #:parallel-build? #f             ;fails on some systems
        #:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
