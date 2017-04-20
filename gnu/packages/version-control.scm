@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -308,18 +309,18 @@ everything from small to very large projects with speed and efficiency.")
    (home-page "http://git-scm.com/")))
 
 ;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.10
-(define-public git@2.9
+;; have changed in 2.12
+(define-public git@2.10
   (package
     (inherit git)
-    (version "2.9.3")
+    (version "2.10.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))))
+              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))))
 
 (define-public libgit2
   (package
@@ -423,7 +424,7 @@ to lock down your entire repository.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -431,7 +432,7 @@ to lock down your entire repository.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0kbh835p7dl4h88qv55fyfh1za09cgnqh63rii325w9215hm95x8"))))
+                "142qcgs8dwnzhymn0a7xx47p9fc2z5wrb86ah4a9iz0mpqlsz288"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -467,7 +468,7 @@ to lock down your entire repository.")
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)))
     (inputs
-     `(("git:src" ,(package-source git@2.9))
+     `(("git:src" ,(package-source git@2.10))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
