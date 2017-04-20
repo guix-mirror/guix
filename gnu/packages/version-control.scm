@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -713,22 +714,25 @@ and offers an easy and intuitive interface.")
                            "--with-ssl=openssl")))
     (home-page "http://www.webdav.org/neon/")
     (synopsis "HTTP and WebDAV client library")
-    (description "Neon is an HTTP and WebDAV client library, with a
-C interface.  Features:
-High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
-DELETE, etc.);
-low-level interface to the HTTP request/response engine, allowing the use
-of arbitrary HTTP methods, headers, etc.;
-authentication support including Basic and Digest support, along with
-GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
-SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
-verifying server certificates, handling client certificates, and examining
-certificate properties, smartcard-based client certificates are also
-supported via a PKCS#11 wrapper interface;
-abstract interface to parsing XML using libxml2 or expat, and wrappers for
-simplifying handling XML HTTP response bodies;
-WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
-property manipulation.")
+    (description
+     "Neon is an HTTP and WebDAV client library, with a C interface and the
+following features:
+@enumerate
+@item High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
+  DELETE, etc.);
+@item low-level interface to the HTTP request/response engine, allowing the use
+  of arbitrary HTTP methods, headers, etc.;
+@item authentication support including Basic and Digest support, along with
+  GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
+@item SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
+  verifying server certificates, handling client certificates, and examining
+  certificate properties, smartcard-based client certificates are also
+  supported via a PKCS#11 wrapper interface;
+@item abstract interface to parsing XML using libxml2 or expat, and wrappers for
+  simplifying handling XML HTTP response bodies;
+@item WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
+  property manipulation.
+@end enumerate\n")
     (license license:gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
 (define-public subversion
