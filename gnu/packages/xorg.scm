@@ -5114,13 +5114,16 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
-;;; This package is intended to be used when building GTK+.
+;; This package is intended to be used when building GTK+.
+;; Note: It's currently marked as "hidden" to avoid having two non-eq?
+;; packages with the same name and version.
 (define-public xorg-server-1.19.2
-  (package
-    (inherit xorg-server)
-    (name "xorg-server")
-    (version "1.19.2")
-    (source
+  (hidden-package
+   (package
+     (inherit xorg-server)
+     (name "xorg-server")
+     (version "1.19.2")
+     (source
       (origin
         (method url-fetch)
         (uri (string-append
@@ -5128,7 +5131,7 @@ draggable titlebars and borders.")
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))))
+          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg")))))))
 
 (define-public xorg-server-xwayland
   (package
