@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,21 +30,21 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.59")
+    (version "0.60")
     (source
      (origin
        (method url-fetch)
        (uri (list
              (string-append
               "mirror://debian/pool/main/m/moreutils/moreutils_"
-              version ".orig.tar.gz")
+              version ".orig.tar.xz")
              ;; The main Debian mirrors only hold the current packages.
              (string-append
-              "http://snapshot.debian.org/archive/debian/20161223T212806Z"
-              "/pool/main/m/moreutils/moreutils_0.59.orig.tar.gz")))
+              "http://snapshot.debian.org/archive/debian-debug/20170109T210531Z"
+              "/pool/main/m/moreutils/moreutils_0.60.orig.tar.xz")))
        (sha256
         (base32
-         "1d6ik3j4lwp90vb93p7yv60k6vk2chz448d1z9xrmxvv371i33m4"))))
+         "1i8pphg5i5y4x1s1hz73gqhispgspr13bysmk9vh7l6jrfx1hbg4"))))
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
