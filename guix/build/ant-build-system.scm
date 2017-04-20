@@ -118,10 +118,9 @@
                  (target (@ (name "jar")
                             (depends "compile, manifest"))
                          (mkdir (@ (dir "${jar.dir}")))
-                         (exec (@ (executable "jar"))
-                               (arg (@ (line ,(string-append "-cmf ${manifest.file} "
-                                                             "${jar.dir}/" jar-name
-                                                             " -C ${classes.dir} ."))))))
+                         (jar (@ (destfile ,(string-append "${jar.dir}/" jar-name))
+                                 (manifest "${manifest.file}")
+                                 (basedir "${classes.dir}"))))
 
                  (target (@ (name "install"))
                          (copy (@ (todir "${dist.dir}"))
