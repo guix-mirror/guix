@@ -566,12 +566,14 @@ that form."
      (write-list env-vars write-env-var port)
      (display ")" port))))
 
-(define derivation->string
+(define derivation->bytevector
   (mlambda (drv)
-    "Return the external representation of DRV as a string."
+    "Return the external representation of DRV as a UTF-8-encoded string."
     (with-fluids ((%default-port-encoding "UTF-8"))
-      (call-with-output-string
-        (cut write-derivation drv <>)))))
+      (call-with-values open-bytevector-output-port
+        (lambda (port get-bytevector)
+          (write-derivation drv port)
+          (get-bytevector))))))
 
 (define* (derivation->output-path drv #:optional (output "out"))
   "Return the store path of its output OUTPUT.  Raise a
@@ -670,8 +672,7 @@ derivation at FILE."
          ;; XXX: At this point this remains faster than `port-sha256', because
          ;; the SHA256 port's `write' method gets called for every single
          ;; character.
-         (sha256
-          (string->utf8 (derivation->string drv))))))))
+         (sha256 (derivation->bytevector drv)))))))
 
 (define (store-path type hash name)               ; makeStorePath
   "Return the store path for NAME/HASH/TYPE."
@@ -872,8 +873,8 @@ output should not be used."
                                       system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
-    (let* ((file (add-text-to-store store (string-append name ".drv")
-                                    (derivation->string drv)
+    (let* ((file (add-data-to-store store (string-append name ".drv")
+                                    (derivation->bytevector drv)
                                     (map derivation-input-path inputs)))
            (drv* (set-field drv (derivation-file-name) file)))
       (hash-set! %derivation-cache file drv*)
@@ -1237,23 +1238,25 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                       ;; Guile sets it, but remove it to avoid conflicts when
                       ;; building Guile-using packages.
                       (unsetenv "LD_LIBRARY_PATH")))
-         (builder  (add-text-to-store store
+         (builder  (add-data-to-store store
                                       (string-append name "-guile-builder")
 
                                       ;; Explicitly use UTF-8 for determinism,
                                       ;; and also because UTF-8 output is faster.
                                       (with-fluids ((%default-port-encoding
                                                      "UTF-8"))
-                                        (call-with-output-string
-                                         (lambda (port)
-                                           (write prologue port)
-                                           (write
-                                            `(exit
-                                              ,(match exp
-                                                 ((_ ...)
-                                                  (remove module-form? exp))
-                                                 (_ `(,exp))))
-                                            port))))
+                                        (call-with-values
+                                            open-bytevector-output-port
+                                          (lambda (port get-bv)
+                                            (write prologue port)
+                                            (write
+                                             `(exit
+                                               ,(match exp
+                                                  ((_ ...)
+                                                   (remove module-form? exp))
+                                                  (_ `(,exp))))
+                                             port)
+                                            (get-bv))))
 
                                       ;; The references don't really matter
                                       ;; since the builder is always used in
