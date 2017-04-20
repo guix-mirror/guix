@@ -3,7 +3,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 ng0 <ng0@libertad.pw>
 ;;;
@@ -91,6 +91,35 @@ know anything about Autoconf or M4.")
       (sha256
        (base32
         "0j3jdjpf5ly39dlp0bg70h72nzqr059k0x8iqxvaxf106chpgn9j"))))))
+
+(define-public autoconf-2.13
+  ;; GNU IceCat 52.x requires autoconf-2.13 to build!
+  (package (inherit autoconf)
+    (version "2.13")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/autoconf/autoconf-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "07krzl4czczdsgzrrw9fiqx35xcf32naf751khg821g5pqv12qgh"))))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       ;; The 'configure' script in autoconf-2.13 can't cope with "SHELL=" and
+       ;; "CONFIG_SHELL=" arguments, so we set them as environment variables
+       ;; and pass a simplified set of arguments.
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key build inputs outputs #:allow-other-keys)
+             (let ((bash (which "bash"))
+                   (out  (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" bash)
+               (setenv "SHELL" bash)
+               (zero? (system* bash "./configure"
+                               (string-append "--prefix=" out)
+                               (string-append "--build=" build)))))))))))
 
 
 (define* (autoconf-wrapper #:optional (autoconf autoconf))
