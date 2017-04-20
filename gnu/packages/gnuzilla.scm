@@ -208,6 +208,7 @@ in the Mozilla clients.")
                 "096frzvyp3z257x84rxknscfgsbavzh2a0gyibx7kvmw4vzpfjhd"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
+                                       "nss-disable-long-b64-tests.patch"
                                        "nss-increase-test-timeout.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
