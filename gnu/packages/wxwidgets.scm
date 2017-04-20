@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix build utils)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -101,6 +103,27 @@ and many other languages.")
                         "gtk+"
                         (package-inputs wxwidgets))))
            (name "wxwidgets-gtk2")))
+
+;; Development version of wxWidgets, required to build against gstreamer-1.x.
+;; This can be removed when wxWidgets is updated to the next stable version.
+(define-public wxwidgets-3.1
+  (package (inherit wxwidgets)
+           (version "3.1.0")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/wxWidgets/wxWidgets/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append "wxwidgets-" version ".tar.gz"))
+              (sha256
+               (base32 "1yan5ysjwh6a7xw82sfjd1xn0nsy1dn2s0cx9ac7cw19191blc3y"))))
+           (inputs `(("gstreamer" ,gstreamer)
+                     ("gst-plugins-base" ,gst-plugins-base)
+                     ,@(package-inputs wxwidgets)))
+           (arguments
+            (substitute-keyword-arguments (package-arguments wxwidgets)
+              ((#:configure-flags flags)
+               `(cons "--enable-mediactrl" ,flags))))))
 
 (define-public python2-wxpython
   (package
