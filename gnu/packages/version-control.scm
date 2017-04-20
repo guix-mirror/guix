@@ -686,14 +686,14 @@ and offers an easy and intuitive interface.")
 (define-public neon
   (package
     (name "neon")
-    (version "0.30.1")
+    (version "0.30.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.webdav.org/neon/neon-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1pawhk02x728xn396a1kcivy9gqm94srmgad6ymr9l0qvk02dih0"))))
+               "1jpvczcx658vimqm7c8my2q41fnmjaf1j03g7bsli6rjxk6xh2yv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
