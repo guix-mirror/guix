@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages elf)
@@ -253,6 +255,47 @@ images.")
 
    ;; mkisofs is GPL, the other programs are CDDL.
    (license (list cddl1.0 gpl2))))
+
+(define-public dvd+rw-tools
+  (package
+    (name "dvd+rw-tools")
+    (version "7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://fy.chalmers.se/~appro/linux/DVD+RW/tools/dvd+rw-tools-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1jkjvvnjcyxpql97xjjx0kwvy70kxpiznr2zpjy2hhci5s10zmpq"))
+              (patches (search-patches "dvd+rw-tools-add-include.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cdrtools" ,cdrtools)))
+    (native-inputs
+     `(("m4" ,m4)))
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
+         (add-before 'build 'embed-mkisofs
+           (lambda*  (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (zero? (system* "sed" "-i" "-e"
+                             (string-append
+                              "s,\"mkisofs\","
+                              "\"" (which "mkisofs") "\",")
+                             "growisofs.c")))))))
+    (home-page "http://fy.chalmers.se/~appro/linux/DVD+RW/")
+    (synopsis "DVD and Blu-ray Disc burning tools")
+    (description "dvd+rw-tools, mostly known for its command
+@command{growisofs}, is a collection of DVD and Blu-ray Disc burning tools.
+It requires another program, such as @command{mkisofs}, @command{genisoimage},
+or @command{xorrisofs} to create ISO 9660 images.")
+    (license gpl2)))
 
 (define-public dvdisaster
   (package

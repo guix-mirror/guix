@@ -1,0 +1,14 @@
+Without <limits.h>, INT_MAX is not defined.
+
+diff --git a/transport.hxx b/transport.hxx
+index 35a57a7..838add6 100644
+--- a/transport.hxx
++++ b/transport.hxx
+@@ -11,6 +11,7 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <string.h>
++#include <limits.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
