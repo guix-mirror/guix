@@ -37,6 +37,8 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
@@ -195,3 +197,33 @@ and many other languages.")
     (description "@code{wxpython} provides Python 2 bindings for wxWidgets.")
     (home-page "http://wxpython.org/")
     (license (package-license wxwidgets))))
+
+(define-public wxsvg
+  (package
+    (name "wxsvg")
+    (version "1.5.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/wxsvg/wxsvg/"
+                            version "/wxsvg-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0m3ff8mjiq4hvy8rmxyc9fkpf24xwxhvr3a6jmvr2q5zc41xhz7x"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("wxwidgets" ,wxwidgets-3.1)
+       ("cairo" ,cairo)
+       ("pango" ,pango)
+       ("libexif" ,libexif)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "C++ library to create, manipulate and render SVG files")
+    (description "wxSVG is a C++ library to create, manipulate and render
+@dfn{Scalable Vector Graphics} (SVG) files with the wxWidgets toolkit.")
+    (home-page "http://wxsvg.sourceforge.net")
+
+    ;; wxSVG is licenced under the "wxWindows library licence", which is
+    ;; the LGPL2.0+, with a few extra permissions.
+    (license (list l:lgpl2.0+ (l:fsf-free "file://COPYING")))))
