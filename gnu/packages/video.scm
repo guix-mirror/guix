@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +76,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -1192,6 +1194,33 @@ DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
 authentication and descrambling (if an external libdvdcss library is
 installed).")
     (license license:gpl2+)))
+
+(define-public dvdauthor
+  (package
+    (name "dvdauthor")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdauthor/dvdauthor-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1drfc47hikfzc9d7hjk34rw10iqw01d2vwmn91pv73ppx4nsj81h"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libdvdread" ,libdvdread)
+       ("libpng" ,libpng)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("freetype" ,freetype)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Generates a DVD-Video movie from a MPEG-2 stream")
+    (description "@command{dvdauthor} will generate a DVD-Video movie from a
+MPEG-2 stream containing VOB packets.")
+    (home-page "http://dvdauthor.sourceforge.net")
+    (license license:gpl3+)))
 
 (define-public libdvdnav
   (package
