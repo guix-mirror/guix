@@ -37,8 +37,12 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages man)
@@ -46,11 +50,16 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages xiph))
 
@@ -337,6 +346,70 @@ files.  Dvdisaster works at the image level so that the recovery does not
 depend on the file system of the medium.  The maximum error correction
 capacity is user-selectable.")
     (license gpl2+)))
+
+(define-public dvdstyler
+  (package
+    (name "dvdstyler")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdstyler/dvdstyler/"
+                            version "/DVDStyler-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1j432kszmwmsd3nz398h5514dbm5vsrn4rr3iil72ckjj1h3i00q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "XMLTO="
+                                              (assoc-ref %build-inputs "xmlto")
+                                              "/bin/xmlto"
+                                              " --searchpath "
+                                              (assoc-ref %build-inputs "docbook-xsl")
+                                              "/xml/xsl/docbook-xsl-1.79.1/htmlhelp:"
+                                              (assoc-ref %build-inputs "docbook-xml")
+                                              "/xml/dtd/docbook"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out") "/bin/dvdstyler")
+               `("PATH" ":" prefix
+                 (,(string-join
+                    (map (lambda (in) (string-append (assoc-ref inputs in) "/bin"))
+                         '("cdrtools" "dvdauthor" "dvd+rw-tools" "ffmpeg"))
+                    ":"))))
+             #t)))
+       #:tests? #f)) ; No tests.
+    (inputs ; TODO package bundled wxvillalib
+     `(("wxwidgets" ,wxwidgets-3.1)
+       ("wssvg" ,wxsvg)
+       ("dbus" ,dbus)
+       ("cdrtools" ,cdrtools)
+       ("dvd+rw-tools" ,dvd+rw-tools)
+       ("dvdauthor" ,dvdauthor)
+       ("eudev" ,eudev)
+       ("fontconfig" ,fontconfig)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("python" ,python-2)
+       ("xmlto" ,xmlto)
+       ("gettext" ,gnu-gettext)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("zip" ,zip)))
+    (synopsis "DVD authoring application")
+    (description "DVDStyler is a DVD authoring application which allows users
+to burn video files in many formats to DVD discs, complete with individually
+designed menus.  It can be used to create professional-looking DVD's with
+custom buttons, backgrounds and animations, from within a user-friendly
+graphical interface.")
+    (home-page "https://www.dvdstyler.org")
+    (license gpl2)))
 
 (define-public libcue
   (package
