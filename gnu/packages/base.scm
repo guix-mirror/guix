@@ -442,7 +442,7 @@ included.")
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
                           binutils
-                          (guile (canonical-package guile-2.0))
+                          (guile (canonical-package guile-2.2))
                           (bash (canonical-package bash))
                           (guile-for-build guile))
   "Return a package called NAME that contains a wrapper for the 'ld' program

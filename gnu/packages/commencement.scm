@@ -842,12 +842,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define-public ld-wrapper
   ;; The final 'ld' wrapper, which uses the final Guile and Binutils.
-  (package (inherit ld-wrapper-boot3)
-    (name "ld-wrapper")
-    (inputs `(("guile" ,guile-final)
-              ("bash"  ,bash-final)
-              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
-                      '("guile" "bash"))))))
+  (make-ld-wrapper "ld-wrapper"
+                   #:binutils binutils-final
+                   #:guile guile-final
+                   #:bash bash-final))
 
 (define %boot5-inputs
   ;; Now with UTF-8 locales.  Remember that the bootstrap binaries were built
