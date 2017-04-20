@@ -31,10 +31,10 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages libcanberra)
@@ -302,10 +302,10 @@ standards.")
     (license license:mpl2.0)))
 
 (define (mozilla-patch file-name changeset hash)
-  "Return an origin for CHANGESET from the mozilla-esr45 repository."
+  "Return an origin for CHANGESET from the mozilla-esr52 repository."
   (origin
     (method url-fetch)
-    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr45/raw-rev/"
+    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/"
                         changeset))
     (sha256 (base32 hash))
     (file-name file-name)))
@@ -313,7 +313,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "45.7.0-gnu1")
+    (version "52.0.2-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -322,77 +322,162 @@ standards.")
                           "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1mn73liylqzxk441f28wk326yglqs8zcwqs4zz51s8i2id2jsnv3"))
+        "0asaba04y6rwc7nx898p89jdxkbnsb3dxjvpdi8xb1rbgyms80c9"))
       (patches
        (list
         (search-patch "icecat-avoid-bundled-libraries.patch")
-        (search-patch "icecat-binutils.patch")
-        (mozilla-patch "icecat-CVE-2017-5398-pt01.patch" "1a39a54b5fea" "0k3sbf2w2yng2rpv6wl9zrm5cbsgq3pslr19xwrk8sk753as79fp")
-        (mozilla-patch "icecat-CVE-2017-5402.patch"      "9828c3bb7b73" "0zgks0v9sqhwwkmry4daswvjwk6aqln6abx0iac1vwqqpg6swff6")
-        (mozilla-patch "icecat-CVE-2017-5398-pt02.patch" "fa3268a1147e" "1jyd1hvp42pz5l15agmb1jhw74b38x8xnj9ih5v4pskv41bgmyg5")
-        (mozilla-patch "icecat-CVE-2017-5400.patch"      "347c10e4d6d1" "1w6yrm97l477q4ripbj0nimc87p4jscabvihpncxqbq9xzc4km7p")
-        (mozilla-patch "icecat-CVE-2017-5410.patch"      "fe4a2cda54ad" "0spcs93hpz13d8670jgvww80f0ynrbhwbh62fkv27lpr6wmqwqh1")
-        (mozilla-patch "icecat-CVE-2017-5401.patch"      "c38f8546be5f" "1sa22w9kzgynsn4c6zh4d66byskk5kffzbvlzrhyzvqjddypf9p8")
-        (mozilla-patch "icecat-CVE-2017-5398-pt03.patch" "41c80ecafa99" "0r33arr5wcgl00zgncasiyl65bmm6jy45clxnbb75nzjmsd1zx1s")
-        (mozilla-patch "icecat-CVE-2017-5405.patch"      "381552c888b4" "1sjhh390cx1jqx74lxk6qd8f8ccppqgagqfhc9pnbm2m67hxvkj9")
-        (mozilla-patch "icecat-CVE-2017-5407.patch"      "4ba337cdb998" "0vyknizid2z9nvl31m08c7fknizhv8dh8m54apm39k8lx77vf70p")
-        (mozilla-patch "icecat-CVE-2017-5398-pt04.patch" "886650fac531" "18fsr5dmav96ja0dah7mj34n8mjpckp0bbc32zjyaj5qx0m4h5cw")
-        (mozilla-patch "icecat-CVE-2017-5409.patch"      "0a22becb23cd" "19fshrq4qkj5s0mjrads6by84gy7rsq3k57gha6sw6rvx8chjaz6")
-        (mozilla-patch "icecat-CVE-2017-5398-pt05.patch" "a0ead6ef09eb" "1hpsq81hhhq2a2dcq2dfndiwx93vvp5rfq0cgv6kwk2bsrq77wqq")
-        (mozilla-patch "icecat-CVE-2017-5398-pt06.patch" "d3fede027d06" "1aw02p367cm0ayijdiiawlb7qhab6jwqwkakj317yd1cjnmkalwr")
-        (mozilla-patch "icecat-CVE-2017-5398-pt07.patch" "ffca0f060bb4" "0qwisfp7idjj5nc1vp1afrf5lj66l2gp7rllkjmrqpz6cyfc708v")
-        (mozilla-patch "icecat-CVE-2017-5398-pt08.patch" "4aa65b44dcb9" "07j6dz2b7hp1bkfvkxwgpn2wc3hqrgjgwpaz96fcpz8yadg2fssw")
-        (mozilla-patch "icecat-bug-1318914.patch"        "30e2382d800f" "0w8zky5i7zc5q943x37rdvi4wbcing0q7w9fcgvnnh5li2sbrsy8")
-        (mozilla-patch "icecat-CVE-2017-5408.patch"      "403d2300adc2" "06r4j48rc1fd9gvmvqy68mlqah5xfxpkvwmxk0gnqc364kpq9slk")
-        (mozilla-patch "icecat-CVE-2017-5398-pt09.patch" "546ab5e99568" "05rdb9bm3n4lj0zq5a95xnwsb0vzirb9mbc2wf9xbi4xlamsgvvw")
-        (mozilla-patch "icecat-bug-1311380.patch"        "ef6eeb7f8846" "1w19is5blbrwf3wlmy6wzgabih8sxp2kmkffqcj2g4jypfwyqn73")
-        (mozilla-patch "icecat-CVE-2017-5398-pt10.patch" "eec69810d80e" "1r20abhw7b38igsrdpkhcfwx9i9gmcxikv4y3sjr4wkbp684f7av")
-        (mozilla-patch "icecat-CVE-2017-5398-pt11.patch" "fec35ce6e68b" "1imdfrs8dxz44rhsmvydh29w5j64cij6g5ggrmhvz3386xvlil2v")
-        (mozilla-patch "icecat-CVE-2017-5398-pt12.patch" "725e2a217722" "06gfhi2ich279rjnxi15fb4igimsxnv5w6bx4g91js8wbvp2r3v0")
-        (mozilla-patch "icecat-CVE-2017-5398-pt13.patch" "d905a2e3a4d9" "1ibxi2s0czj47b739zmmjzbln8lpn27hdg4b17w58vhbhzkq31cx")
-        (mozilla-patch "icecat-CVE-2017-5398-pt14.patch" "0032560ae945" "0md3p5cix6nzbj5m199awc9gk52pygy5s9lx3a38vh3xvd92lsbj")
-        (mozilla-patch "icecat-CVE-2017-5398-pt15.patch" "91dda1e79ad8" "0b5h8fhagczfqkdgby982w6qgkw9y11zxxpdbn89rwmjpyp9nghx")
-        (mozilla-patch "icecat-CVE-2017-5404.patch"      "556dd9e4a9e3" "0mbdx4xn1xs67n47ys9m42lc5ny96rz21ala848yajpdlxsz680g")
-        (mozilla-patch "icecat-bug-1341137-pt1.patch"    "e86e0423dad1" "0dk1v7lcs61nx76qxcibha3ygqri15ldcvwwsrsayff9fq6k0v4y")
-        (mozilla-patch "icecat-bug-1341137-pt2.patch"    "9aebee8b8cb9" "0m7p5iprhhwdv89aqqg7fla5szw6v7x2sll4ns0zg60pk4vm6izq")
-        (mozilla-patch "icecat-bug-1341137-pt3.patch"    "69f3d44bdb48" "1ad7rw6nmg3c49ylqxlqqkb6cm2f0ygfzrigs6b60a2zkjqhbl0h")
-        (mozilla-patch "icecat-bug-1341137-pt4.patch"    "22546e2cee64" "0gbwxa3p7qkq53hwnvxcqhx8h34qmnjdxy0h3ajik4mw76vrna9s")
-        (mozilla-patch "icecat-bug-1341137-pt5.patch"    "e5083d8a855a" "1247vbpqzf007nigbxxqd6nwgr1dxd4p8cd0dr45afqh19vhlapj")
-        (mozilla-patch "icecat-bug-1339122.patch"        "b0d156c7445e" "026jp5bb565yvhkmmicgygcn1lmak85p0466yl1vnjlx1rc8n724")
-        (mozilla-patch "icecat-bug-1319087.patch"        "9cd44507fd65" "0mcfvby53r2150libazgrgaqrdyvl0g6cr1f01dsya3cgmc9mkcn")
-        (mozilla-patch "icecat-bug-1342661.patch"        "d449995ef7d9" "1kz8k2jxvhqpjgrsj7r0kqq79036lrkfnx5pvdnsl59np9128j81") ; CVE-2017-5443
-        (mozilla-patch "icecat-bug-1343261.patch"        "9b5374019b58" "0v5w50r5ys4jjy1lpks280cq8paw7wdy9mrk7szzq7nlcxz90is7") ; CVE-2017-5429 (pt1)
-        (mozilla-patch "icecat-bug-1343552-pt1.patch"    "08bc7a3330e4" "1hsvffscqc4zflni866ilylgi3a13wz0n882z85xplbhwhc9lcfj") ; CVE-2017-5447 (pt1)
-        (mozilla-patch "icecat-bug-1343552-pt2.patch"    "8c61ebe37f1b" "1fjsr6bzfyd1zqzz2pglwh2ckys95h21wy3j4rlwkz66057z53qq") ; CVE-2017-5447 (pt2)
-        (mozilla-patch "icecat-bug-1340718.patch"        "bfa75fc20c2b" "08gksd06lwbb5ykdrk9gh2cb9bximwxhbxl3rprz64jj2bnmd3dq")
-        (mozilla-patch "icecat-bug-1345461.patch"        "bcd5e51251dd" "1ms2ad8j04lz761cvdwi9rj5qv3qbjmg0zwyp3fykcf01a323ygd") ; CVE-2017-5436
-        (mozilla-patch "icecat-bug-1343505.patch"        "290f10412f92" "1dsj22fkz60zfa6isnxj54clg32dwzapwh5f1vz6jsin9r67ik2p") ; CVE-2017-5446
-        (mozilla-patch "icecat-bug-1346648.patch"        "9369ede30cc1" "1wrdn2aixbzifz7wyqnfi65gaiva8i746pi53z6w62lmn1hwd3ji") ; CVE-2017-5448
-        (mozilla-patch "icecat-bug-1347979.patch"        "4ae2261bfab0" "1yi3jicwjy7w8f0sv5di4rx05bfpkhcwj3r6dhl5315yz4ifqy30") ; CVE-2017-5442
-        (mozilla-patch "icecat-bug-1343795.patch"        "dcf468969700" "0syfq35s2r86ajmnqsxlfanvxd9ax57qkfmxpkvmk447s3mxsk08") ; CVE-2017-5441
-        (mozilla-patch "icecat-bug-1347168.patch"        "5a6390274b64" "1lg5px4sncalh82y61ni9rlg50d83jmmrrvn0944x4zfrzlfaz8x") ; CVE-2017-5433
-        (mozilla-patch "icecat-bug-1341096.patch"        "64158495e5ae" "1lyh8m159hhzrxj5hr0yib2sb8rkd20qxpykrf398v18s3yc08cx") ; CVE-2017-5429 (pt2)
-        (mozilla-patch "icecat-bug-1346654.patch"        "f359ec604627" "0j6rzbnzlz8x9sj2r79d1zr4p89c5zq7y49xa4kn6am5ay3ws0ri") ; CVE-2017-5432
-        (mozilla-patch "icecat-bug-1344461.patch"        "6f14d2ef7981" "0n24hqvjj7vxqdvxhk38swnmvcv7h7vvn5invbidhv22m0qqzs2c") ; CVE-2017-5444
-        (mozilla-patch "icecat-bug-1292534.patch"        "c709d4b36145" "18cdck3fr4a1ygszb6qk07g6fi3kv6i697pjfcipvqrk358qb0hq") ; CVE-2017-5469
-        (mozilla-patch "icecat-bug-1336830.patch"        "18e355831dd5" "042487xhq9zkky3pxiqy1rpy69z0j20w0jnl7kwg2j1bzfbnniip") ; CVE-2017-5439
-        (mozilla-patch "icecat-bug-1336832.patch"        "ebeb0b45a84b" "17ch2aqsrnkiwbnkf6x7a1cpi8jgfjhwr6wp0bsa89s8v1dax6w4") ; CVE-2017-5440
-        (mozilla-patch "icecat-bug-1349946.patch"        "ccbecbe17a45" "19vwmhvqarpzai8mcq6i7szkrp1h9m8v5lyimkmmdlmagrivjw7f") ; CVE-2017-5434
-        (mozilla-patch "icecat-bug-1350683.patch"        "00ed655efad1" "0nfk9345lshim8xl29qka5man73jgxcppv3pzfrgjhk97z7h6ifq") ; CVE-2017-5435
-        (mozilla-patch "icecat-bug-1342823.patch"        "609145968cfe" "1y5kw8khzxnx5cbrv4zmdd1nzha85r3cmxn3inami9fx8vikxjq8") ; CVE-2017-5429 (pt3)
-        (mozilla-patch "icecat-bug-1336828.patch"        "982cfe33c513" "0amj3qx5399mrdcqakvfn5pabp562i1s87a8zd65jyqs4mwgcjap") ; CVE-2017-5438
-        (mozilla-patch "icecat-bug-1348894.patch"        "eed8086d0af7" "18p567nhj7nvh740fhh3l0mqx0b7370b45005j43ll08rf2nhygl") ; CVE-2017-5429 (pt4)
-        (mozilla-patch "icecat-bug-1344467.patch"        "38664f88d8f5" "0zdkmiqjr6h1bfs4qw74p5bnw74kcx9fxr4mcnshpavv2gvc6dn4") ; CVE-2017-5445
-        (mozilla-patch "icecat-bug-1350844.patch"        "c071fab59d05" "16hf5c4appca8vwxl5yvl5ig5bw8cb8hl8apvknsn5rdsjwjlrpr") ; CVE-2017-5429 (pt5)
-        (mozilla-patch "icecat-bug-1352926.patch"        "8fade3eebca2" "165v18545g4br1j6nbbhq2h9098iqvqpbd54zmgwwk9c973qhp3c") ; CVE-2017-5429 (pt6)
-        (mozilla-patch "icecat-bug-1343642.patch"        "6172686bf59c" "0iwihvx11am28cbmgg68llf3mr4ghrclimr51vms1nq9ji767wdb") ; CVE-2017-5460
-        (mozilla-patch "icecat-bug-1349340.patch"        "260b50fb6d39" "0lq08bkj1ihhwmf0yhxcnvngzym222q3n66ql9fbda4n7prlfhzl") ; CVE-2017-5429 (pt7)
-        (mozilla-patch "icecat-bug-1353088.patch"        "44a90ca714b9" "1rb27bnrm9a5nnwrsxx7z36yhhz8x6lv0df98jv1128zvd373blp") ; CVE-2017-5429 (pt8)
-        (mozilla-patch "icecat-bug-1347617.patch"        "e40b00161221" "0nm6jqbkb6rdahzd39gnhmy1gwawa5jbd7i80c7g1igj3x8ab50y") ; CVE-2017-5465
-        (mozilla-patch "icecat-bug-1278157.patch"        "a7803c36d797" "10l8jbqlmfkvi4jj0vhkl0a9vdsh3niy5rjr26br3633nyyr4747")
-        (mozilla-patch "icecat-bug-1348941.patch"        "4fe9b979b84d" "069rzn60vn90gcck2wakr6m83q0cy32x5r54ccia9nc26a01p6p5") ; CVE-2017-5429 (pt9)
-        (mozilla-patch "icecat-bug-1347075.patch"        "a017569d3535" "1j7q02q2ybpfx9cr6dn9x27jva1d6dzs4pdxx2a1xmk5va03lrmq") ; CVE-2017-5464
-        (mozilla-patch "icecat-bug-1333858.patch"        "413dc18f25c8" "0g1q1y22m5gds8p07nq5c8f84jc152x4sac40b17gawj1005n5v9"))) ; CVE-2017-5459
+        (mozilla-patch "icecat-CVE-2017-5443.patch"      "6daaaff9f1f6" "0jvb6y5fiwr13fyx58k49n81kv6h03vcch502g57y6nsx2wsqng6")
+        (mozilla-patch "icecat-bug-1319087.patch"        "82297fcc6f19" "02qcbg2r2smswgnwj7fs5bcrr3rlqbpsh2nmcbsjyblp5fk1ag36")
+        (mozilla-patch "icecat-CVE-2017-5429-pt01.patch" "dd526ebe7e58" "1rj0pz6iql59zrynz48njcfg8i0v55bjdndplss9wl37lfydl7ca")
+        (mozilla-patch "icecat-CVE-2017-5447-pt1.patch"  "3bc981f85a17" "0am9k3mii2r05lp6xpizxp356mb8xrbqs9kmx0wx5wyy08wjzmks")
+        (mozilla-patch "icecat-CVE-2017-5447-pt2.patch"  "4f752b0e5920" "183s5dwzd57b299grvyvn139fsp9am0smd3yb4shw8g0iwzz61nf")
+        (mozilla-patch "icecat-CVE-2017-5449.patch"      "1714eda3de9b" "0ncngdpzvffvpw4c1mi0dda5l02lwyil4rnq3i6salnwlrq9x32z")
+        (mozilla-patch "icecat-CVE-2017-5455.patch"      "b10922304d81" "0rglbavb8rx7hl53ksgypazz27263b1yn97gznpdsq89zhirfw3m")
+        (mozilla-patch "icecat-CVE-2017-5446.patch"      "d98de46f8f27" "040agykr4w4wsbi0xm3rrrjxk48iwz8l1hn11vfv45nzsx2f1hzq")
+        ;; The next patch is for CVE-2017-5436 in the bundled graphite2.
+        ;; TODO: apply additional fixes from our system graphite2 to the
+        ;; bundled copy, or upgrade it in place.
+        (mozilla-patch "icecat-CVE-2017-5436.patch"      "e6132f638311" "07w9pijx42psgmkj2i6i87lf30gl0yyb5caz6wz7fm8phi8wwy9p")
+        (mozilla-patch "icecat-bug-1342395.patch"        "0e0e8abe2153" "1xlnq2fd50kf0rz9dibz5vlaa9zj2pifjvky2fdykcan62xz75hy")
+        (mozilla-patch "icecat-bug-1342841.patch"        "623afac083f8" "1pv86j0dxdmi7g3rx4zqplz4gxq5lfyzpdssq83naypcxic6zafb")
+        (mozilla-patch "icecat-bug-1344644.patch"        "cac0735c228f" "0695f0hvxnzgcirgxx3axn5nhkywqxjcvnrlhg7jwfann4mnbsfn")
+        (mozilla-patch "icecat-bug-1322660.patch"        "9d6d60e64255" "0ds74ilhyc9qkkjgkm0xk7ay3926971rzwfh2avhhkfargn7idib")
+        (mozilla-patch "icecat-bug-1343330.patch"        "6f23bd449bc7" "1igz6yhx803hygf7cii8bchx7bfw1niq8s0nc5l9i5rb8ml2b7f0")
+        (mozilla-patch "icecat-bug-1346961.patch"        "3a2dc54cf986" "0dfp3s7d43zx3svajbkhvi73b71hhr7vrc9yz0iz37pykg40c4hn")
+        (mozilla-patch "icecat-bug-1318070.patch"        "a68d6d9b87d0" "1yqgkgv7i0xy5dm0pgg1cbav4qglsdk8brzcjcpfz65bmn1pqrhh")
+        (mozilla-patch "icecat-CVE-2017-5448.patch"      "6684a3c7f834" "0agyynvcjk28d7l2l4cqz67ddg9xw7ymiirb0npabd1si9zj27xb")
+        (mozilla-patch "icecat-bug-1336345.patch"        "590416f46ec8" "1q2svqjd735rickr9i3kdkd0la6ikdphhmzr19h1r84nrl6a87ia")
+        (mozilla-patch "icecat-bug-1336356.patch"        "00ba83ac39be" "1h6qsfv4r9mlc2ihjm9kmzi76aijdnnyx1g2r30ia87xha106pnk")
+        (mozilla-patch "icecat-bug-1342363.patch"        "10285b4a6b71" "0l2ww19y6qbarcp9brjgbpf4vi3k38r6ak8is5736vqz0c17dim0")
+        (mozilla-patch "icecat-bug-1343787.patch"        "28287b7f0938" "1w85s9rqh0dyfx6qn5plypbypz9casig03b6yiy9bpiq7ckrxz56")
+        (mozilla-patch "icecat-bug-1292803.patch"        "adbf7b59a405" "1l1p0b5rc05czk6kr3k3k99m1fkwphj2jrd092gdbib8q4m4cvzv")
+        (mozilla-patch "icecat-bug-1313869.patch"        "eba25396310b" "1ws0dr0kwclzbc2m0sihd3aqvbbg57ycia0fg6y294k6qipcxv38")
+        (mozilla-patch "icecat-bug-1141756-pt1.patch"    "f7c262517722" "0r1zzbxf47q5w8vcy402yin105ngam3csb2q7h7n8axm97307ykp")
+        (mozilla-patch "icecat-bug-1141756-pt2.patch"    "420396d5e26d" "0yv1pmpydzkirfwrxrgbw98dm4a9a4s0izha0wabrp4lb3655jv5")
+        (mozilla-patch "icecat-bug-1343210.patch"        "ed9521749d6f" "1j2zzi00qyqjgh15ingvl6f88zlk4imp31m5jmf7w5f9jqi5ly3k")
+        (mozilla-patch "icecat-bug-1342442.patch"        "775b6f85ef81" "00h9dgds7jv9n4cznj5qhh8liaf1b3wvnlqc2z7a3kj07ijllwzb")
+        (mozilla-patch "icecat-bug-1344527.patch"        "d4612b14c907" "1n3a0mp351a7xgvshm6688gh89hg0xci3y621zs2pyqsfm114366")
+        (mozilla-patch "icecat-CVE-2017-5442.patch"      "5f1aa2336998" "1y2marhrglc66vchd6z0jdmhg0pmkxp1cwim63bp9l6pj7lxyjma")
+        (mozilla-patch "icecat-CVE-2017-5430-pt01.patch" "512604631b23" "171nzxr4av4818d0fyg9hcsdxkai61sghl45xnsr2al34l28wsw3")
+        (mozilla-patch "icecat-CVE-2017-5430-pt02.patch" "16772200ad6f" "087j16rcbs5kgvpa096kd6jarwwwfrhwph54wzjn671wr1vnsvvd")
+        (mozilla-patch "icecat-CVE-2017-5441.patch"      "c744e9d57250" "0m70157lczf17hxb2pabsl3grhcjqallbdfpsd58q8q6fk99k6x3")
+        (mozilla-patch "icecat-CVE-2017-5433.patch"      "b4fc7a4cb5e0" "12q6mr5prpgqg5xnrww09qjm3jx2amb8zig62cd46ba8n9z2j9ab")
+        (mozilla-patch "icecat-CVE-2017-5429-pt02.patch" "21eac0b4fd2f" "1a6v0hwcc26gnlxygplc11dfzc8bykhh44j4gsz88kl5c5jqhlk9")
+        (mozilla-patch "icecat-CVE-2017-5432.patch"      "62df7046e959" "1qvxbpkf87g4vnl8hxqvwb1ydrpkqq3rbkivr8q4029rvgalf4rf")
+        (mozilla-patch "icecat-bug-1350599.patch"        "f6a978b2fcec" "0rkbbmw52mxgrmn1xny4jkn3slwb5jsqs4yr07ffhz7r801jy9iz")
+        (mozilla-patch "icecat-bug-1332839.patch"        "2ad0f87f5dba" "04458jidri521hgf3r63pl736zz4gmgv6b8spa32anfb7gryj8fy")
+        (mozilla-patch "icecat-bug-1337548.patch"        "29a1ad09a6ec" "0pld81bpc34w6g2ara54sx30msas55kwzr537pvxxc002lpvzs57")
+        (mozilla-patch "icecat-CVE-2017-5430-pt03.patch" "5dec7534760f" "1xh0y7srl7nznb6szpfiykd6r1ibyxrdvasc36w0chqjdmq7xr32")
+        (mozilla-patch "icecat-bug-1343851.patch"        "e104d53316d7" "1yhv3qvzzi3kr881ji1dnm8ydnr3snh2vzl3c4vdzmvrjx8q5rcb")
+        (mozilla-patch "icecat-bug-1345222.patch"        "864644fadcb0" "0qpplxyfn87bigzdkwlrhj9isd5gfafhjgqfckb239a09wwrblf3")
+        (mozilla-patch "icecat-bug-1348584.patch"        "7cee9ad555af" "0856bpa3n71a3y5m4gilcdb9ghb60p545xkv9zbr245r20mj32ds")
+        (mozilla-patch "icecat-bug-1346720.patch"        "6a597a9cd494" "091a5sanw3w3gl0jcmf8d60m59vwbh5v36vnar20m0hl7xrv4v7p")
+        (mozilla-patch "icecat-CVE-2017-5430-pt04.patch" "09693629803f" "18fhmsghq0232mhh8j10cy0a4979nmkbh43jlcyrg3l63l7795k4")
+        (mozilla-patch "icecat-CVE-2017-5430-pt05.patch" "2b8268ea97a9" "0l0f54krxdmqbgldikwjncxvn6irihcljldd3z039himrvplisjg")
+        (mozilla-patch "icecat-bug-1347700-pt1.patch"    "ee706896916c" "0m85x80y98c154hyis08kcy81kbw3v34na1v862vxzs939d3mc0n")
+        (mozilla-patch "icecat-bug-1347700-pt2.patch"    "08ecc2d92f81" "1s6411ccifw9l22hhmf32nhm8r5hbclnhy7jm2n228sqfr4h971g")
+        (mozilla-patch "icecat-bug-1337682.patch"        "15af6a323161" "1nxbwd0574gscnkxfyhzv3yqvxiccb2d0rmba9vi6i62646l2pd5")
+        (mozilla-patch "icecat-CVE-2017-5451.patch"      "d91260f0069a" "15w4rzz51hps2fr8djf5z1rzdwxshclk936mxv5anx1skkwms0y8")
+        (mozilla-patch "icecat-CVE-2017-5444.patch"      "7740cf7e121b" "1706mx4zmnib336p2wmfp9ncyl66lk2da82f28xvcw262mg1c8lw")
+        (mozilla-patch "icecat-bug-1347164-pt1.patch"    "b35a6d6dcdca" "077r0pns58fw3xd3qnbhib4q21vvw0aynpa8iyn1pycg8mppmd0f")
+        (mozilla-patch "icecat-bug-1347164-pt2.patch"    "a42fc05969b9" "1ijq8ccsk5k56h77sv5kqv48w7csj3vbakzq98awgbvypzfdyhss")
+        (mozilla-patch "icecat-bug-1347164-pt3.patch"    "f78ac1ac0a37" "0kj6jq482cqwyngy1kmb69zpq35xah8h33kml8i4l7andiyaq3zm")
+        (mozilla-patch "icecat-bug-1347164-pt4.patch"    "795a3d48a775" "18lw99hmrr93k95hk6v6bx5rcf22aa902x2yf5p6wxdqg56nc0zp")
+        (mozilla-patch "icecat-bug-1338699.patch"        "94ce63191069" "0rdivablincah3gbgl4wzjmqlraazivmr8bhqxdpy8dk0a6fvv4s")
+        (mozilla-patch "icecat-bug-1342301.patch"        "e640e758a7cd" "17f36vvf82n6shlaip7ji8qsy9861f9a5r79h000p3wb3bb7lbfs")
+        (mozilla-patch "icecat-bug-1342170.patch"        "df7ed78b7c0a" "1kq256i66hcm2k9d37i5ws354ksv3bbglmscdjv2v5f7wg3y967v")
+        (mozilla-patch "icecat-bug-1342634.patch"        "d72e56823bbb" "0c186d77lyyg0hjxw15d44rybw6yr5aw8g9m3311xfdn5wiygijb")
+        (mozilla-patch "icecat-bug-1348796-pt1.patch"    "cef01720769e" "0h57372lxanjs5zw9b3vwr2x36yz9gj73swyg50aqp13j4rcbpmy")
+        (mozilla-patch "icecat-bug-1348796-pt2.patch"    "7d3584b75f20" "1a4hvpsvn39832g54hsxhqs24cq8v4nd69jqskkgc1ybs09ncmr3")
+        (mozilla-patch "icecat-bug-1192800.patch"        "e56b0938ea0f" "1hlbxhjzj65s6p2v6f66zdfb3gw5yx77msgq5idsv9jip2w88mpq")
+        (mozilla-patch "icecat-bug-1309438.patch"        "1f30d97563c8" "0rvq729fg9j959ha9qvw5wv7r6vw70qvpy7ynifgqhgrpa749n70")
+        (mozilla-patch "icecat-bug-1315332.patch"        "66495c8d9459" "0vzlx8i0cidpymm6ar07h3yk63fxf64f0b2vb0pihd72h0jzd5s9")
+        (mozilla-patch "icecat-bug-1346439.patch"        "a9fcc2dc324a" "13991jijwa84yczkmc212s23w269r8b1a4yiygqgwaily29l1dc5")
+        (mozilla-patch "icecat-CVE-2017-5469.patch"      "3dcc5f5c2df4" "0b36m6rgxc05h39l6wkzi6dlmq9brcigk7xjrifs4786f0z564hz")
+        (mozilla-patch "icecat-CVE-2017-5430-pt06.patch" "ac0ca89b5a6b" "1646y9y2wmq8pxb081x3076dq9ana7hh5fxwbsnn17v5wqhi8gfb")
+        (mozilla-patch "icecat-CVE-2017-5467.patch"      "6ed26e6c1a09" "0r1n1dwb4l8xwlns0aifyka6mldb6cy2crhh2qkap64cpj3bzl9s")
+        (mozilla-patch "icecat-CVE-2017-5439.patch"      "2fde528ca7b6" "0iv0sjhnh7br0z3pcpk346wbj162ynacfk3p9309hg6kr1cd92fp")
+        (mozilla-patch "icecat-CVE-2017-5440.patch"      "d88bd03d1234" "1pls63djh4w5023ag3fwjk79cpx816ilgajl5l1qlqyacl8c0v4p")
+        (mozilla-patch "icecat-bug-1349987.patch"        "3282e8f6a121" "1dyc84h7v0l9gndmbiwfqk33f703zr3fv96mwbn58msdf20ma9l2")
+        (mozilla-patch "icecat-CVE-2017-5434.patch"      "ee0a7b55e470" "01vs4p56p0ii0fvmg0kn7gaz6gwf2kwmv6v4pa6v68hwxx1phaag")
+        (mozilla-patch "icecat-CVE-2017-5430-pt07.patch" "a4e1e04c88ee" "0q07qwzxf2iisrhknjbn1zksv2rr6qzzh6w8ibzlj1sqbdg3h852")
+        (mozilla-patch "icecat-bug-1335043.patch"        "a49419f75b9c" "0pkh5yimnj3p1sd2g9vndgcn11zdx6yhpa88s8vk7fqbs8gf1fz3")
+        (mozilla-patch "icecat-bug-1299500-pt01.patch"   "5fdd36b4400a" "1gdrsbf03wf9v90f1bd2sp9ac38a9lzpzfrv8l8f7gvy70acjxmb")
+        (mozilla-patch "icecat-bug-1299500-pt02.patch"   "34776df5ce44" "15mlf59ii0rk97j8mlf3wz1q0w28ma5mll47dvci6cv3dziai9f1")
+        (mozilla-patch "icecat-bug-1299500-pt03.patch"   "26189af0f504" "1wh1s2xd1w03zi5jdaagk6j5i8v9xsm9360xmv446wdraygkqbci")
+        (mozilla-patch "icecat-bug-1299500-pt04.patch"   "798a8fe17e7b" "0vlalanffq3paa7zab003v1d377x5pvcsy8nc8fr5pdlvi622jll")
+        (mozilla-patch "icecat-bug-1299500-pt05.patch"   "daf2e4f2bd5c" "1rxbjbyr1a6dxjb0qj6900g3kqjphir40pis4qcfl8q811y18jwk")
+        (mozilla-patch "icecat-bug-1299500-pt06.patch"   "1187091c3134" "0r8zz4zbglxg6sl0ybz9lyq1c5w2nqp0xcn2d3rz9bvyj8byqc7m")
+        (mozilla-patch "icecat-bug-1299500-pt07.patch"   "a908f2c2fe30" "1fvwy3fxfrdi9y8hmf4f9aa72i0g6s55s8cp0w22gllsl1f6gvyf")
+        (mozilla-patch "icecat-bug-1299500-pt08.patch"   "e95a26cf7a42" "0pd0kcn7dqd1gy1si85as5zzc96v7vq0v8n3g3gjzms5rdnk085l")
+        (mozilla-patch "icecat-bug-1299500-pt09.patch"   "d63f3b14e571" "0cqd7dal6prsrj7bn2d699idbq4fzjry9vqlbmm9dkyn5683sdy1")
+        (search-patch  "icecat-bug-1299500-pt10.patch") ; Adapted for GNU IceCat, based on:
+                                                        ;"08f2bc167ae8" "07d1i23ffvi74a5558bb0645vbrap6qlrpcwfyb7dm3llbfnfycy")
+        (mozilla-patch "icecat-bug-1299500-pt11.patch"   "263f27805689" "0nczkvyvlpdjif3xfvj7g2mfz6j06w99x2sblqfmqq6mwrlavpq0")
+        (mozilla-patch "icecat-CVE-2017-5456.patch"      "538e0b382cc2" "0wq2ywn4a7i4ypcx03hl23a4xx3lavz7y505m9kw43fx15r4070r")
+        (mozilla-patch "icecat-bug-1280079.patch"        "6fbcb6a4b91e" "0qcwz9js1bwlnwyv3vhkm0hvahd043lm2bijqsmm0jy20dbslga4")
+        (mozilla-patch "icecat-CVE-2017-5435.patch"      "a362e1205ba4" "127i4ybfb4dk5axp4dxcl7ag7zyx7b517myvs6q4yd8981d1jjd3")
+        (mozilla-patch "icecat-bug-1341960.patch"        "b24ce30e8cfa" "0a521wn8hbaliawmxs21b8wc1gkha8iih62j4zyrfg5rm7ff6p6s")
+        (mozilla-patch "icecat-CVE-2017-5454.patch"      "ac40d4a4e414" "0dnzz95vpq32bsh6hajk4hrcrxwd4w6m7kayl2iziryny86jgak2")
+        (mozilla-patch "icecat-CVE-2017-5429-pt03.patch" "e469af8e9ccc" "0yn8zqakr9yw0jvysxyc8if09kqf4fr5rq4p9qdkb1p81p4dpmp5")
+        (mozilla-patch "icecat-bug-1351094.patch"        "4c1383e76adc" "0wdldx88qabyhrwnnii44pggmfgqylzxy6ckwzgq86r2yipi4rsq")
+        (mozilla-patch "icecat-bug-1336527.patch"        "b9f53baeabb3" "0y1l641ffbr4i85p0wc1ir6bcsy6h94bchbfc7ppxfijva4fjgvd")
+        (mozilla-patch "icecat-bug-1345716.patch"        "2569af645a98" "1d6lx85ij90j6q6ixwp0h3w7y424yvkz0njsi0my727akbli5rsn")
+        (mozilla-patch "icecat-bug-1208957.patch"        "2b68880d8f6b" "1pl0vkv7clyjchi9kg4995z82sr8xv7cbz1kvsg1v66md6pmp4s4")
+        (mozilla-patch "icecat-bug-1208957.patch"        "bc646835442b" "0f29r5yvlb5w84nvvn6j9r9dq5314jgygjmsna3grzigpkb88gyj")
+        (mozilla-patch "icecat-bug-1347944.patch"        "47cb652ddc25" "0n7871958zwndwz53xvzwjv41v5ar1vxaam8kzr5dkbqmprddimx")
+        (mozilla-patch "icecat-bug-1347632.patch"        "7d8f7a52a108" "0gkbkzkz989j7pk3ia1rfvyjg3si8hnnadwkb2rw13qjxdzhx2zn")
+        (mozilla-patch "icecat-CVE-2017-5438.patch"      "154c93b9435b" "00f8lr5s8h68392bb45zi0xfgqrgfkdxbzwdypp10d89784fvjvd")
+        (mozilla-patch "icecat-bug-1347486.patch"        "15dbaf157058" "1mwgfnx1zsvhp0pgmc8577yw6lnf7g3ikdfj0r21fgffrn76bp69")
+        (mozilla-patch "icecat-bug-1218437.patch"        "e13692bfd5f5" "10jrbs26m8l1vchw6svssrb5h8p82acrcmkx92ybvv4qbaq2bcl0")
+        (mozilla-patch "icecat-bug-1345853.patch"        "5fa27dc4c4a3" "1sqqa4hir2bsnnwnlr34has62kpncmw6l9mylwprd09fxmzzgrd7")
+        (mozilla-patch "icecat-CVE-2017-5429-pt04.patch" "00c051cd38c7" "1d4aa4nqyjc01mg3jvdjjp7z05c2qhdjj85dhdrd9c18gfiyv4fi")
+        (mozilla-patch "icecat-bug-1349921.patch"        "c6897adc4037" "0acvcdy8awdmpz84243jzf82agrm73wqa198fjbns1p1v3s425z2")
+        (mozilla-patch "icecat-bug-1338623.patch"        "edcafd42dd52" "1xqgjy7a62jsyz1b5mibrcnd7zpb4gdaas0a6z5dwfvz52j4xa16")
+        (mozilla-patch "icecat-bug-1294799.patch"        "0617b074ec3d" "19h7dj44shvdzzj87svpv5q97cikxyxhiwfzf9rnqj1b7fw0xrdh")
+        (mozilla-patch "icecat-bug-1345049.patch"        "88466b911357" "16pgd13mw9a0snyhq6vxmjc7kr9mikvhazkgbc6vpykwi0i0z85b")
+        (mozilla-patch "icecat-bug-1339999.patch"        "b7cb8f8b0877" "0zv1kxcva699ahb9s36l4d9mlrkm0b7hmh6g1422j6iijn136vxb")
+        (mozilla-patch "icecat-bug-1350868.patch"        "ddd6c44790c0" "182ii4wsz2vdd1q4dszd5hka8i2n0ghmqk7l39bd02d3zfibhhvc")
+        (mozilla-patch "icecat-bug-1342360.patch"        "416681a239ef" "0ngs8xgmdhz9ag4dlrqhr0vmanqxr9q2vf16jpm3cimyc06zjxz4")
+        (mozilla-patch "icecat-CVE-2017-5429-pt05.patch" "a76e626ae6db" "0zn2j8fmhp7502kx1jhrvh85vsys5x6x6gw3v4gl0h8px354v6yw")
+        (mozilla-patch "icecat-CVE-2017-5429-pt06.patch" "0ce4196ab86e" "0isczy8261qz2zsdxax4j51gypz0gi39q7nfwxg88sl81kc5vym8")
+        (mozilla-patch "icecat-CVE-2017-5429-pt07.patch" "39da731d80ed" "0vswnv1hqa7r8iz6y5ja7i6w3cyq5xrcd66c1q29ac6n4gn7x338")
+        (mozilla-patch "icecat-CVE-2017-5430-pt08.patch" "1b148cf9c545" "0ilrib0c2c7mfycpz2hq3vrfdf6sf8lcdbfjk6r4xyxv54vh3lwk")
+        (mozilla-patch "icecat-bug-1325841.patch"        "74e9f13c554f" "0glzcgjsy71y78zaccn33w8djs96i6dd3gafyzkihnkpfddd5cij")
+        (mozilla-patch "icecat-CVE-2017-5445.patch"      "d7d87adfe186" "02p705si2j69ya8n5a916x58nycs07ja0sfpxrwl16f4n2plc91h")
+        (mozilla-patch "icecat-bug-1346424.patch"        "5ede402f494f" "0kbx8yn8ppv7099ic6nhw32f7h42pnwk6dpvb179ilw90ah902q7")
+        (mozilla-patch "icecat-CVE-2017-5430-pt09.patch" "da44c5cfab2e" "16i4dz5sfkhh3a0khrcf8zn5w20rkf4aqwygjj3cp4qhdh7wnr75")
+        (mozilla-patch "icecat-CVE-2017-5430-pt10.patch" "0f966927bd55" "07pkhc6l6ylwrzgfm7i1galrvjawqqrhvhk6jcw4b30sfhi0bxq1")
+        (mozilla-patch "icecat-CVE-2017-5429-pt08.patch" "f0f591f82cc0" "18p091503vpfpp4l3d7hkqj78zavv6qj1lynhlfx67zdp3xqcf8r")
+        (mozilla-patch "icecat-CVE-2017-5464.patch"      "1852dc0beba4" "1zdnkrsqjfv1q2jhj4829ypiwyg78n4jv54yn3b74vwcf5zvzx8m")
+        (mozilla-patch "icecat-bug-1083140.patch"        "6913f0537208" "0vaf61ryp0bzkz6l1w73alhglibbgm0jcgccxvvm43ni67pcxqbq")
+        ;; The patch commented out below updates the bundled tzdata,
+        ;; but we can't use it because it contains a GIT binary patch.
+        ;; TODO: Consider updating the bundled tzdata, or unbundling it.
+        ;; (mozilla-patch "icecat-bug-1343493.patch"       "35496444b380" "1wa79az7121xw078cgpczxavrqy0fsp4ib2nb69giha6acxcaqas")
+        (mozilla-patch "icecat-CVE-2017-5430-pt11.patch" "64495dfa29db" "0m7vklnwnaf7sw97m87bm4lb9pjmlh1vvrbaf1931db8nhd6m737")
+        (mozilla-patch "icecat-bug-1350783.patch"        "26cd34db3c14" "15vq3lrilg3n9j80cdjmk7xib2iq5gcx9ypq8xs7f5ya9ibasqlx")
+        (mozilla-patch "icecat-CVE-2017-5429-pt09.patch" "6cd77a0d7ac0" "0kxlbl5m3gffxqrv7ky3swsbyg1ykj0wjhlfl9amsb4g8gra3zkj")
+        (mozilla-patch "icecat-CVE-2017-5460-pt1.patch"  "a803be74843c" "1ywwakzjkfr714i9pfn152n86c6rp427chzdys8phdkcvp5d5p45")
+        (mozilla-patch "icecat-CVE-2017-5460-pt2.patch"  "73762c1392ae" "18jy9ccqvn6l6hznvq5xsqm1pc7i81svc2grgv21wfwg9sd6zwwh")
+        (mozilla-patch "icecat-bug-1337392-pt1.patch"    "4ab6d5c43036" "07pygzngssra9wnmqqrs24d6gc5kfh20fkzvpcasxh4f2hi21z9b")
+        (mozilla-patch "icecat-bug-1337392-pt2.patch"    "13f2d85da9a7" "1iwfz7dp5i93bhjspy4kyz0vqrl8x8ndg5kxdyzwb1b339xim9qy")
+        (mozilla-patch "icecat-CVE-2017-5429-pt10.patch" "7a30cddfcd54" "1773pijh6gi086l930cn1a0k7kvy7f3cnirfblw98sq7h9qfyy33")
+        (mozilla-patch "icecat-bug-1345873-pt1.patch"    "75cea353ad78" "14cig2y7d3p033hx3096gxzlqwgddq8d0ig0g3l8p1b0xwvvyryl")
+        (mozilla-patch "icecat-bug-1345873-pt2.patch"    "b08ef5a82f89" "0afz01jv850x09df85d7ycqkcdlafi4w2xi5k155lk2b92w8lhpj")
+        (mozilla-patch "icecat-bug-1340163.patch"        "f3f2a995a239" "1ydsj4ja475jscalkw6ggdxgbsp5l2mam5109k0y7c98abzqraxk")
+        (mozilla-patch "icecat-bug-1348174-pt1.patch"    "330904d6f0dc" "19wnp4d8481w86xkk78n7c7wrr99rq6cq3v09hd8am4n0mzwzaja")
+        (mozilla-patch "icecat-bug-1348174-pt2.patch"    "c61b99483c4b" "0mjsahi8ly24415ri2sylas6g0kb8wawi095idqiq019c3r7q9cq")
+        (mozilla-patch "icecat-bug-1348601.patch"        "1848bd238064" "1f5kadhn6w1rs26sdrcc3mq0zzlmmsm6ymqhshkzn57nrj6akm7b")
+        (mozilla-patch "icecat-bug-1345991.patch"        "2008a4b89d9a" "07fkg9r2rxbk362ckv2h8inhd2dadvzigshm6zsjfjs2fyzp95hp")
+        (mozilla-patch "icecat-bug-1344498-pt1.patch"    "9acd0103d67f" "1f0j667g05h9ydmc924cs8mzif1n7s56wixsgnyqc3s231dswhml")
+        (mozilla-patch "icecat-bug-1344498-pt2.patch"    "49aadb25b1ec" "0s618m802b1x5pyqh5mj1azaxch7ggxq9503b7mwhg90vz8qw7ki")
+        (mozilla-patch "icecat-bug-1344205.patch"        "34b453085dc0" "02h1bh24f9i5sm3my07m2q58cpzqfhagwwv11l9fidxcm9dmzmrd")
+        (mozilla-patch "icecat-bug-1349862.patch"        "864ff0c36b6b" "1i3wmigv982x9hzkfg25jhyvkynmar69x6cj6r4g9zkk5f5ypdh5")
+        (mozilla-patch "icecat-CVE-2017-5459.patch"      "5ec6fbedb420" "07flhha4rkjbry5590yr5by36ypb1k33qm3rzkbmw0vk5gyak8dp")
+        (mozilla-patch "icecat-CVE-2017-5465.patch"      "2b95de78a92c" "0vvq1fz84yyw7za929x6ki25paivlwd4ng1ddkcb2bw6da6yp12k")
+        (mozilla-patch "icecat-CVE-2017-5466.patch"      "a5ec5e70abf1" "1jjviyk6db8iccd7997mwmgs188fsyrzivap3ffjf8m6j4mf9cra")
+        (mozilla-patch "icecat-bug-1347646.patch"        "1b50711a46ce" "1i3505zzgf0mvg2405y2gzq36xc8ic2ga8w6d3n9kqryxj0mc7bh")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -424,6 +509,7 @@ standards.")
                       ;;
                       ;; TODO: Use system graphite2.
                       ;;
+                      "dom/devicestorage"  ; Removed in ESR 52.1, awkward to patch out
                       "modules/freetype2"
                       "modules/zlib"
                       "modules/libbz2"
@@ -450,9 +536,8 @@ standards.")
        ("dbus-glib" ,dbus-glib)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
        ("pango" ,pango)
        ("freetype" ,freetype)
        ("hunspell" ,hunspell)
@@ -466,6 +551,7 @@ standards.")
        ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
+       ("ffmpeg" ,ffmpeg)
        ("libvpx" ,libvpx)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
@@ -477,14 +563,15 @@ standards.")
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
-       ("yasm" ,yasm)
        ("zip" ,zip)
        ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
+       ("yasm" ,yasm)
        ("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf-2.13)
        ("which" ,which)))
     (arguments
      `(#:tests? #f          ; no check target
@@ -496,17 +583,11 @@ standards.")
        ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
        #:validate-runpath? #f
 
-       #:configure-flags '("--enable-default-toolkit=cairo-gtk2"
-                           "--enable-pango"
+       #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
                            "--enable-gio"
-                           "--enable-svg"
-                           "--enable-canvas"
-                           "--enable-mathml"
                            "--enable-startup-notification"
                            "--enable-pulseaudio"
-                           "--enable-gstreamer=1.0"
 
-                           "--disable-gnomevfs"
                            "--disable-gconf"
                            "--disable-gnomeui"
 
@@ -564,16 +645,6 @@ standards.")
                          #t))
               #t)))
          (add-after
-          'unpack 'remove-h264parse-from-blacklist
-          (lambda _
-            ;; Remove h264parse from gstreamer format helper blacklist.  It
-            ;; was put there to work around a bug in a pre-1.0 version of
-            ;; gstreamer.  See:
-            ;; https://www.mozilla.org/en-US/security/advisories/mfsa2015-47/
-            (substitute* "dom/media/gstreamer/GStreamerFormatHelper.cpp"
-              (("^  \"h264parse\",\n") ""))
-            #t))
-         (add-after
           'unpack 'use-skia-by-default
           (lambda _
             ;; Use the bundled Skia library by default, since IceCat appears
@@ -596,10 +667,11 @@ standards.")
             ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
             ;; work.  More investigation is needed.
             (substitute* "toolkit/library/moz.build"
-              (("^# This needs to be last")
-               "OS_LIBS += [
+              (("^# This library needs to be last" all)
+               (string-append "OS_LIBS += [
     'GL', 'gnome-2', 'canberra', 'Xss', 'cups', 'gssapi_krb5',
-    'gstreamer-1.0', 'gstapp-1.0', 'gstvideo-1.0' ]\n\n"))
+    'avcodec', 'avutil', 'pulse' ]\n\n"
+                              all)))
             #t))
          (replace
           'configure
@@ -616,6 +688,7 @@ standards.")
                             ,@configure-flags)))
               (setenv "SHELL" bash)
               (setenv "CONFIG_SHELL" bash)
+              (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
               (mkdir "../build")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))

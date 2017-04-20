@@ -1,0 +1,1639 @@
+Based on the following HG changeset, but adapted to GNU IceCat and
+also assumes that the dom/devicestorage subtree is deleted by our
+snippet.  Note that the other parts of this patchset are downloaded
+directly from the upstream mozilla-esr52 mercurial repository.
+
+# HG changeset patch
+# User Andrea Marchesini <amarchesini@mozilla.com>
+# Date 1489000545 -3600
+# Node ID 08f2bc167ae82a6f86e427283d8b972ba794b846
+# Parent  d63f3b14e5718b62c0adad2eab81b785250f3d4a
+Bug 1299500 - Get rid of DeviceStorage API - part 10 - DeviceStorage, r=ehsan, r=billm, a=jcristau
+
+diff --git a/dom/bindings/Bindings.conf b/dom/bindings/Bindings.conf
+--- a/dom/bindings/Bindings.conf
++++ b/dom/bindings/Bindings.conf
+@@ -228,21 +228,16 @@ DOMInterfaces = {
+ 'DeviceAcceleration': {
+     'headerFile': 'mozilla/dom/DeviceMotionEvent.h',
+ },
+ 
+ 'DeviceRotationRate': {
+     'headerFile': 'mozilla/dom/DeviceMotionEvent.h',
+ },
+ 
+-'DeviceStorage': {
+-    'nativeType': 'nsDOMDeviceStorage',
+-    'headerFile': 'DeviceStorage.h',
+-},
+-
+ 'Document': {
+     'nativeType': 'nsIDocument',
+     'binaryNames': {
+         'documentURI': 'documentURIFromJS',
+         'URL': 'documentURIFromJS'
+     }
+ },
+ 
+diff --git a/dom/filesystem/DeviceStorageFileSystem.cpp b/dom/filesystem/DeviceStorageFileSystem.cpp
+--- a/dom/filesystem/DeviceStorageFileSystem.cpp
++++ b/dom/filesystem/DeviceStorageFileSystem.cpp
+@@ -1,26 +1,24 @@
+ /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+ /* vim: set ts=8 sts=2 et sw=2 tw=80: */
+ /* This Source Code Form is subject to the terms of the Mozilla Public
+  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "mozilla/dom/DeviceStorageFileSystem.h"
+ 
+-#include "DeviceStorage.h"
+ #include "mozilla/Preferences.h"
+ #include "mozilla/dom/Directory.h"
+ #include "mozilla/dom/File.h"
+ #include "mozilla/dom/FileSystemUtils.h"
+ #include "mozilla/ipc/BackgroundParent.h"
+ #include "mozilla/Unused.h"
+ #include "nsCOMPtr.h"
+ #include "nsDebug.h"
+-#include "nsDeviceStorage.h"
+ #include "nsIFile.h"
+ #include "nsPIDOMWindow.h"
+ #include "nsGlobalWindow.h"
+ 
+ using namespace mozilla::ipc;
+ 
+ namespace mozilla {
+ namespace dom {
+@@ -37,44 +35,16 @@ DeviceStorageFileSystem::DeviceStorageFi
+     if (mozilla::Preferences::GetBool("device.storage.prompt.testing", false)) {
+       mPermissionCheckType = ePermissionCheckNotRequired;
+     } else {
+       mPermissionCheckType = ePermissionCheckRequired;
+     }
+   } else {
+     AssertIsOnBackgroundThread();
+   }
+-
+-  // Get the permission name required to access the file system.
+-  DebugOnly<nsresult> rv =
+-    DeviceStorageTypeChecker::GetPermissionForType(mStorageType, mPermission);
+-  NS_WARNING_ASSERTION(NS_SUCCEEDED(rv), "GetPermissionForType failed");
+-
+-  // Get the local path of the file system root.
+-  nsCOMPtr<nsIFile> rootFile;
+-  DeviceStorageFile::GetRootDirectoryForType(aStorageType,
+-                                             aStorageName,
+-                                             getter_AddRefs(rootFile));
+-
+-  Unused <<
+-    NS_WARN_IF(!rootFile ||
+-               NS_FAILED(rootFile->GetPath(mLocalOrDeviceStorageRootPath)));
+-
+-  if (!XRE_IsParentProcess()) {
+-    return;
+-  }
+-
+-  // DeviceStorageTypeChecker is a singleton object and must be initialized on
+-  // the main thread. We initialize it here so that we can use it on the worker
+-  // thread.
+-  if (NS_IsMainThread()) {
+-    DebugOnly<DeviceStorageTypeChecker*> typeChecker =
+-      DeviceStorageTypeChecker::CreateOrGet();
+-    MOZ_ASSERT(typeChecker);
+-  }
+ }
+ 
+ DeviceStorageFileSystem::~DeviceStorageFileSystem()
+ {
+   AssertIsOnOwningThread();
+ }
+ 
+ already_AddRefed<FileSystemBase>
+diff --git a/dom/ipc/ContentChild.cpp b/dom/ipc/ContentChild.cpp
+--- a/dom/ipc/ContentChild.cpp
++++ b/dom/ipc/ContentChild.cpp
+@@ -168,44 +168,41 @@
+ #include "mozilla/X11Util.h"
+ #endif
+ 
+ #ifdef ACCESSIBILITY
+ #include "nsAccessibilityService.h"
+ #endif
+ 
+ #include "mozilla/dom/File.h"
+-#include "mozilla/dom/devicestorage/DeviceStorageRequestChild.h"
+ #include "mozilla/dom/PPresentationChild.h"
+ #include "mozilla/dom/PresentationIPCService.h"
+ #include "mozilla/ipc/InputStreamUtils.h"
+ 
+ #ifdef MOZ_WEBSPEECH
+ #include "mozilla/dom/PSpeechSynthesisChild.h"
+ #endif
+ 
+ #include "ProcessUtils.h"
+ #include "URIUtils.h"
+ #include "nsContentUtils.h"
+ #include "nsIPrincipal.h"
+-#include "nsDeviceStorage.h"
+ #include "DomainPolicy.h"
+ #include "mozilla/dom/ipc/StructuredCloneData.h"
+ #include "mozilla/dom/time/DateCacheCleaner.h"
+ #include "mozilla/net/NeckoMessageUtils.h"
+ #include "mozilla/widget/PuppetBidiKeyboard.h"
+ #include "mozilla/RemoteSpellCheckEngineChild.h"
+ #include "GMPServiceChild.h"
+ #include "gfxPlatform.h"
+ #include "nscore.h" // for NS_FREE_PERMANENT_DATA
+ #include "VRManagerChild.h"
+ 
+ using namespace mozilla;
+ using namespace mozilla::docshell;
+-using namespace mozilla::dom::devicestorage;
+ using namespace mozilla::dom::ipc;
+ using namespace mozilla::dom::workers;
+ using namespace mozilla::media;
+ using namespace mozilla::embedding;
+ using namespace mozilla::gmp;
+ using namespace mozilla::hal_sandbox;
+ using namespace mozilla::ipc;
+ using namespace mozilla::layers;
+@@ -1806,29 +1803,16 @@ ContentChild::GetCPOWManager()
+ }
+ 
+ bool
+ ContentChild::RecvPTestShellConstructor(PTestShellChild* actor)
+ {
+   return true;
+ }
+ 
+-PDeviceStorageRequestChild*
+-ContentChild::AllocPDeviceStorageRequestChild(const DeviceStorageParams& aParams)
+-{
+-  return new DeviceStorageRequestChild();
+-}
+-
+-bool
+-ContentChild::DeallocPDeviceStorageRequestChild(PDeviceStorageRequestChild* aDeviceStorage)
+-{
+-  delete aDeviceStorage;
+-  return true;
+-}
+-
+ PNeckoChild*
+ ContentChild::AllocPNeckoChild()
+ {
+   return new NeckoChild();
+ }
+ 
+ bool
+ ContentChild::DeallocPNeckoChild(PNeckoChild* necko)
+@@ -2531,38 +2515,16 @@ ContentChild::RecvVolumes(nsTArray<Volum
+   if (vs) {
+     vs->RecvVolumesFromParent(aVolumes);
+   }
+ #endif
+   return true;
+ }
+ 
+ bool
+-ContentChild::RecvFilePathUpdate(const nsString& aStorageType,
+-                                 const nsString& aStorageName,
+-                                 const nsString& aPath,
+-                                 const nsCString& aReason)
+-{
+-  if (nsDOMDeviceStorage::InstanceCount() == 0) {
+-    // No device storage instances in this process. Don't try and
+-    // and create a DeviceStorageFile since it will fail.
+-
+-    return true;
+-  }
+-
+-  RefPtr<DeviceStorageFile> dsf = new DeviceStorageFile(aStorageType, aStorageName, aPath);
+-
+-  nsString reason;
+-  CopyASCIItoUTF16(aReason, reason);
+-  nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
+-  obs->NotifyObservers(dsf, "file-watcher-update", reason.get());
+-  return true;
+-}
+-
+-bool
+ ContentChild::RecvFileSystemUpdate(const nsString& aFsName,
+                                    const nsString& aVolumeName,
+                                    const int32_t& aState,
+                                    const int32_t& aMountGeneration,
+                                    const bool& aIsMediaPresent,
+                                    const bool& aIsSharing,
+                                    const bool& aIsFormatting,
+                                    const bool& aIsFake,
+diff --git a/dom/ipc/ContentChild.h b/dom/ipc/ContentChild.h
+--- a/dom/ipc/ContentChild.h
++++ b/dom/ipc/ContentChild.h
+@@ -193,22 +193,16 @@ public:
+                                             const IPCTabContext& aContext,
+                                             const uint32_t& aChromeFlags,
+                                             const ContentParentId& aCpID,
+                                             const bool& aIsForApp,
+                                             const bool& aIsForBrowser) override;
+ 
+   virtual bool DeallocPBrowserChild(PBrowserChild*) override;
+ 
+-  virtual PDeviceStorageRequestChild*
+-  AllocPDeviceStorageRequestChild(const DeviceStorageParams&) override;
+-
+-  virtual bool
+-  DeallocPDeviceStorageRequestChild(PDeviceStorageRequestChild*) override;
+-
+   virtual PBlobChild*
+   AllocPBlobChild(const BlobConstructorParams& aParams) override;
+ 
+   virtual bool DeallocPBlobChild(PBlobChild* aActor) override;
+ 
+   virtual PCrashReporterChild*
+   AllocPCrashReporterChild(const mozilla::dom::NativeThreadId& id,
+                            const uint32_t& processType) override;
+@@ -436,21 +430,16 @@ public:
+ 
+   virtual bool
+   RecvInitBlobURLs(nsTArray<BlobURLRegistrationData>&& aRegistations) override;
+ 
+   virtual bool RecvLastPrivateDocShellDestroyed() override;
+ 
+   virtual bool RecvVolumes(InfallibleTArray<VolumeInfo>&& aVolumes) override;
+ 
+-  virtual bool RecvFilePathUpdate(const nsString& aStorageType,
+-                                  const nsString& aStorageName,
+-                                  const nsString& aPath,
+-                                  const nsCString& aReason) override;
+-
+   virtual bool RecvFileSystemUpdate(const nsString& aFsName,
+                                     const nsString& aVolumeName,
+                                     const int32_t& aState,
+                                     const int32_t& aMountGeneration,
+                                     const bool& aIsMediaPresent,
+                                     const bool& aIsSharing,
+                                     const bool& aIsFormatting,
+                                     const bool& aIsFake,
+diff --git a/dom/ipc/ContentParent.cpp b/dom/ipc/ContentParent.cpp
+--- a/dom/ipc/ContentParent.cpp
++++ b/dom/ipc/ContentParent.cpp
+@@ -23,17 +23,16 @@
+ 
+ #include "chrome/common/process_watcher.h"
+ 
+ #include "mozilla/a11y/PDocAccessible.h"
+ #include "AppProcessChecker.h"
+ #include "AudioChannelService.h"
+ #include "BlobParent.h"
+ #include "CrashReporterParent.h"
+-#include "DeviceStorageStatics.h"
+ #include "GMPServiceParent.h"
+ #include "HandlerServiceParent.h"
+ #include "IHistory.h"
+ #include "imgIContainer.h"
+ #include "mozIApplication.h"
+ #if defined(XP_WIN) && defined(ACCESSIBILITY)
+ #include "mozilla/a11y/AccessibleWrap.h"
+ #endif
+@@ -50,17 +49,16 @@
+ #include "mozilla/dom/GetFilesHelper.h"
+ #include "mozilla/dom/GeolocationBinding.h"
+ #include "mozilla/dom/Notification.h"
+ #include "mozilla/dom/PContentBridgeParent.h"
+ #include "mozilla/dom/PContentPermissionRequestParent.h"
+ #include "mozilla/dom/PCycleCollectWithLogsParent.h"
+ #include "mozilla/dom/PMemoryReportRequestParent.h"
+ #include "mozilla/dom/ServiceWorkerRegistrar.h"
+-#include "mozilla/dom/devicestorage/DeviceStorageRequestParent.h"
+ #include "mozilla/dom/power/PowerManagerService.h"
+ #include "mozilla/dom/Permissions.h"
+ #include "mozilla/dom/PresentationParent.h"
+ #include "mozilla/dom/PPresentationParent.h"
+ #include "mozilla/dom/PushNotifier.h"
+ #include "mozilla/dom/FlyWebPublishedServerIPC.h"
+ #include "mozilla/dom/quota/QuotaManagerService.h"
+ #include "mozilla/dom/time/DateCacheCleaner.h"
+@@ -272,17 +270,16 @@ using base::ChildPrivileges;
+ using base::KillProcess;
+ #ifdef MOZ_ENABLE_PROFILER_SPS
+ using mozilla::ProfileGatherer;
+ #endif
+ 
+ #ifdef MOZ_CRASHREPORTER
+ using namespace CrashReporter;
+ #endif
+-using namespace mozilla::dom::devicestorage;
+ using namespace mozilla::dom::power;
+ using namespace mozilla::media;
+ using namespace mozilla::embedding;
+ using namespace mozilla::gfx;
+ using namespace mozilla::gmp;
+ using namespace mozilla::hal;
+ using namespace mozilla::ipc;
+ using namespace mozilla::layers;
+@@ -2775,22 +2772,16 @@ ContentParent::Observe(nsISupports* aSub
+     Unused << SendCycleCollect();
+   }
+   else if (!strcmp(aTopic, "child-mmu-request")){
+     Unused << SendMinimizeMemoryUsage();
+   }
+   else if (!strcmp(aTopic, "last-pb-context-exited")) {
+     Unused << SendLastPrivateDocShellDestroyed();
+   }
+-  else if (!strcmp(aTopic, "file-watcher-update")) {
+-    nsCString creason;
+-    CopyUTF16toUTF8(aData, creason);
+-    DeviceStorageFile* file = static_cast<DeviceStorageFile*>(aSubject);
+-    Unused << SendFilePathUpdate(file->mStorageType, file->mStorageName, file->mPath, creason);
+-  }
+ #ifdef MOZ_WIDGET_GONK
+   else if(!strcmp(aTopic, NS_VOLUME_STATE_CHANGED)) {
+     nsCOMPtr<nsIVolume> vol = do_QueryInterface(aSubject);
+     if (!vol) {
+       return NS_ERROR_NOT_AVAILABLE;
+     }
+ 
+     nsString volName;
+@@ -3021,35 +3012,16 @@ ContentParent::AllocPBrowserParent(const
+ }
+ 
+ bool
+ ContentParent::DeallocPBrowserParent(PBrowserParent* frame)
+ {
+   return nsIContentParent::DeallocPBrowserParent(frame);
+ }
+ 
+-PDeviceStorageRequestParent*
+-ContentParent::AllocPDeviceStorageRequestParent(const DeviceStorageParams& aParams)
+-{
+-  RefPtr<DeviceStorageRequestParent> result = new DeviceStorageRequestParent(aParams);
+-  if (!result->EnsureRequiredPermissions(this)) {
+-    return nullptr;
+-  }
+-  result->Dispatch();
+-  return result.forget().take();
+-}
+-
+-bool
+-ContentParent::DeallocPDeviceStorageRequestParent(PDeviceStorageRequestParent* doomed)
+-{
+-  DeviceStorageRequestParent *parent = static_cast<DeviceStorageRequestParent*>(doomed);
+-  NS_RELEASE(parent);
+-  return true;
+-}
+-
+ PBlobParent*
+ ContentParent::AllocPBlobParent(const BlobConstructorParams& aParams)
+ {
+   return nsIContentParent::AllocPBlobParent(aParams);
+ }
+ 
+ bool
+ ContentParent::DeallocPBlobParent(PBlobParent* aActor)
+@@ -3871,35 +3843,16 @@ ContentParent::RecvAsyncMessage(const ns
+                                 InfallibleTArray<CpowEntry>&& aCpows,
+                                 const IPC::Principal& aPrincipal,
+                                 const ClonedMessageData& aData)
+ {
+   return nsIContentParent::RecvAsyncMessage(aMsg, Move(aCpows), aPrincipal,
+                                             aData);
+ }
+ 
+-bool
+-ContentParent::RecvFilePathUpdateNotify(const nsString& aType,
+-                                        const nsString& aStorageName,
+-                                        const nsString& aFilePath,
+-                                        const nsCString& aReason)
+-{
+-  RefPtr<DeviceStorageFile> dsf = new DeviceStorageFile(aType,
+-                                                        aStorageName,
+-                                                        aFilePath);
+-
+-  nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
+-  if (!obs) {
+-    return false;
+-  }
+-  obs->NotifyObservers(dsf, "file-watcher-update",
+-                       NS_ConvertASCIItoUTF16(aReason).get());
+-  return true;
+-}
+-
+ static int32_t
+ AddGeolocationListener(nsIDOMGeoPositionCallback* watcher,
+                        nsIDOMGeoPositionErrorCallback* errorCallBack,
+                        bool highAccuracy)
+ {
+   nsCOMPtr<nsIDOMGeoGeolocation> geo = do_GetService("@mozilla.org/geolocation;1");
+   if (!geo) {
+     return -1;
+@@ -4943,35 +4896,16 @@ ContentParent::RecvBeginDriverCrashGuard
+ bool
+ ContentParent::RecvEndDriverCrashGuard(const uint32_t& aGuardType)
+ {
+   mDriverCrashGuard = nullptr;
+   return true;
+ }
+ 
+ bool
+-ContentParent::RecvGetDeviceStorageLocation(const nsString& aType,
+-                                            nsString* aPath)
+-{
+-#ifdef MOZ_WIDGET_ANDROID
+-  mozilla::AndroidBridge::GetExternalPublicDirectory(aType, *aPath);
+-  return true;
+-#else
+-  return false;
+-#endif
+-}
+-
+-bool
+-ContentParent::RecvGetDeviceStorageLocations(DeviceStorageLocationInfo* info)
+-{
+-    DeviceStorageStatics::GetDeviceStorageLocationsForIPC(info);
+-    return true;
+-}
+-
+-bool
+ ContentParent::RecvGetAndroidSystemInfo(AndroidSystemInfo* aInfo)
+ {
+ #ifdef MOZ_WIDGET_ANDROID
+   nsSystemInfo::GetAndroidSystemInfo(aInfo);
+   return true;
+ #else
+   MOZ_CRASH("wrong platform!");
+   return false;
+diff --git a/dom/ipc/ContentParent.h b/dom/ipc/ContentParent.h
+--- a/dom/ipc/ContentParent.h
++++ b/dom/ipc/ContentParent.h
+@@ -726,22 +726,16 @@ private:
+                                               const IPCTabContext& aContext,
+                                               const uint32_t& aChromeFlags,
+                                               const ContentParentId& aCpId,
+                                               const bool& aIsForApp,
+                                               const bool& aIsForBrowser) override;
+ 
+   virtual bool DeallocPBrowserParent(PBrowserParent* frame) override;
+ 
+-  virtual PDeviceStorageRequestParent*
+-  AllocPDeviceStorageRequestParent(const DeviceStorageParams&) override;
+-
+-  virtual bool
+-  DeallocPDeviceStorageRequestParent(PDeviceStorageRequestParent*) override;
+-
+   virtual PBlobParent*
+   AllocPBlobParent(const BlobConstructorParams& aParams) override;
+ 
+   virtual bool DeallocPBlobParent(PBlobParent* aActor) override;
+ 
+   virtual bool
+   RecvPBlobConstructor(PBlobParent* aActor,
+                        const BlobConstructorParams& params) override;
+@@ -927,21 +921,16 @@ private:
+                               const IPC::Principal& aPrincipal,
+                               nsTArray<StructuredCloneData>* aRetvals) override;
+ 
+   virtual bool RecvAsyncMessage(const nsString& aMsg,
+                                 InfallibleTArray<CpowEntry>&& aCpows,
+                                 const IPC::Principal& aPrincipal,
+                                 const ClonedMessageData& aData) override;
+ 
+-  virtual bool RecvFilePathUpdateNotify(const nsString& aType,
+-                                        const nsString& aStorageName,
+-                                        const nsString& aFilePath,
+-                                        const nsCString& aReason) override;
+-
+   virtual bool RecvAddGeolocationListener(const IPC::Principal& aPrincipal,
+                                           const bool& aHighAccuracy) override;
+   virtual bool RecvRemoveGeolocationListener() override;
+ 
+   virtual bool RecvSetGeolocationHigherAccuracy(const bool& aEnable) override;
+ 
+   virtual bool RecvConsoleMessage(const nsString& aMessage) override;
+ 
+@@ -1047,21 +1036,16 @@ private:
+                                     const uint32_t& aDropEffect) override;
+ 
+   virtual bool RecvProfile(const nsCString& aProfile) override;
+ 
+   virtual bool RecvGetGraphicsDeviceInitData(ContentDeviceData* aOut) override;
+ 
+   void StartProfiler(nsIProfilerStartParams* aParams);
+ 
+-  virtual bool RecvGetDeviceStorageLocation(const nsString& aType,
+-                                            nsString* aPath) override;
+-
+-  virtual bool RecvGetDeviceStorageLocations(DeviceStorageLocationInfo* info) override;
+-
+   virtual bool RecvGetAndroidSystemInfo(AndroidSystemInfo* aInfo) override;
+ 
+   virtual bool RecvNotifyBenchmarkResult(const nsString& aCodecName,
+                                          const uint32_t& aDecodeFPS) override;
+ 
+   virtual bool RecvNotifyPushObservers(const nsCString& aScope,
+                                        const IPC::Principal& aPrincipal,
+                                        const nsString& aMessageId) override;
+diff --git a/dom/ipc/PContent.ipdl b/dom/ipc/PContent.ipdl
+--- a/dom/ipc/PContent.ipdl
++++ b/dom/ipc/PContent.ipdl
+@@ -10,17 +10,16 @@ include protocol PBrowser;
+ include protocol PCompositorBridge;
+ include protocol PContentBridge;
+ include protocol PContentPermissionRequest;
+ include protocol PCycleCollectWithLogs;
+ include protocol PCrashReporter;
+ include protocol PPSMContentDownloader;
+ include protocol PExternalHelperApp;
+ include protocol PHandlerService;
+-include protocol PDeviceStorageRequest;
+ include protocol PFileDescriptorSet;
+ include protocol PHal;
+ include protocol PHeapSnapshotTempFileHelper;
+ include protocol PProcessHangMonitor;
+ include protocol PImageBridge;
+ include protocol PMedia;
+ include protocol PMemoryReportRequest;
+ include protocol PNecko;
+@@ -111,130 +110,16 @@ struct FontListEntry {
+     nsCString filepath;
+     uint16_t  weight;
+     int16_t   stretch;
+     uint8_t   italic;
+     uint8_t   index;
+     bool      isHidden;
+ };
+ 
+-struct DeviceStorageFreeSpaceParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageUsedSpaceParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageAvailableParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageStatusParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageFormatParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageMountParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageUnmountParams
+-{
+-  nsString type;
+-  nsString storageName;
+-};
+-
+-struct DeviceStorageAddParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString relpath;
+-  PBlob blob;
+-};
+-
+-struct DeviceStorageAppendParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString relpath;
+-  PBlob blob;
+-};
+-
+-struct DeviceStorageCreateFdParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString relpath;
+-};
+-
+-struct DeviceStorageGetParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString rootDir;
+-  nsString relpath;
+-};
+-
+-struct DeviceStorageDeleteParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString relpath;
+-};
+-
+-struct DeviceStorageEnumerationParams
+-{
+-  nsString type;
+-  nsString storageName;
+-  nsString rootdir;
+-  uint64_t since;
+-};
+-
+-union DeviceStorageParams
+-{
+-  DeviceStorageAddParams;
+-  DeviceStorageAppendParams;
+-  DeviceStorageCreateFdParams;
+-  DeviceStorageGetParams;
+-  DeviceStorageDeleteParams;
+-  DeviceStorageEnumerationParams;
+-  DeviceStorageFreeSpaceParams;
+-  DeviceStorageUsedSpaceParams;
+-  DeviceStorageAvailableParams;
+-  DeviceStorageStatusParams;
+-  DeviceStorageFormatParams;
+-  DeviceStorageMountParams;
+-  DeviceStorageUnmountParams;
+-};
+-
+-struct DeviceStorageLocationInfo {
+-  nsString music;
+-  nsString pictures;
+-  nsString videos;
+-  nsString sdcard;
+-  nsString apps;
+-  nsString crashes;
+-};
+-
+ union PrefValue {
+   nsCString;
+   int32_t;
+   bool;
+ };
+ 
+ union MaybePrefValue {
+   PrefValue;
+@@ -355,17 +240,16 @@ nested(upto inside_cpow) sync protocol P
+     parent opens PGMPService;
+     child opens PBackground;
+ 
+     manages PBlob;
+     manages PBrowser;
+     manages PContentPermissionRequest;
+     manages PCrashReporter;
+     manages PCycleCollectWithLogs;
+-    manages PDeviceStorageRequest;
+     manages PPSMContentDownloader;
+     manages PExternalHelperApp;
+     manages PFileDescriptorSet;
+     manages PHal;
+     manages PHandlerService;
+     manages PHeapSnapshotTempFileHelper;
+     manages PMedia;
+     manages PMemoryReportRequest;
+@@ -538,19 +422,16 @@ child:
+     /**
+      * Send BlobURLRegistrationData to child process.
+      */
+     async InitBlobURLs(BlobURLRegistrationData[] registrations);
+ 
+     // Notify child that last-pb-context-exited notification was observed
+     async LastPrivateDocShellDestroyed();
+ 
+-    async FilePathUpdate(nsString storageType, nsString storageName, nsString filepath,
+-                         nsCString reasons);
+-
+     // Note: Any changes to this structure should also be changed in
+     // VolumeInfo above.
+     async FileSystemUpdate(nsString fsName, nsString mountPoint, int32_t fsState,
+                            int32_t mountGeneration, bool isMediaPresent,
+                            bool isSharing, bool isFormatting, bool isFake,
+                            bool isUnmounting, bool isRemovable, bool isHotSwappable);
+ 
+     // Notify volume is removed.
+@@ -738,17 +619,16 @@ parent:
+      * process. |newPluginEpoch| is the current epoch in the chrome process. If
+      * |pluginEpoch == newPluginEpoch|, then |plugins| will be left empty.
+      */
+     sync FindPlugins(uint32_t pluginEpoch) returns (nsresult aResult, PluginTag[] plugins, uint32_t newPluginEpoch);
+ 
+     async PJavaScript();
+ 
+     async PRemoteSpellcheckEngine();
+-    async PDeviceStorageRequest(DeviceStorageParams params);
+ 
+     sync PCrashReporter(NativeThreadId tid, uint32_t processType);
+ 
+     /**
+      * Is this token compatible with the provided version?
+      *
+      * |version| The offered version to test
+      * Returns |True| if the offered version is compatible
+@@ -921,21 +801,16 @@ parent:
+     async FirstIdle();
+ 
+     async AudioChannelServiceStatus(bool aActiveTelephonyChannel,
+                                     bool aContentOrNormalChannel,
+                                     bool aAnyActiveChannel);
+ 
+     async AudioChannelChangeDefVolChannel(int32_t aChannel, bool aHidden);
+ 
+-    async FilePathUpdateNotify(nsString aType,
+-                               nsString aStorageName,
+-                               nsString aFilepath,
+-                               nsCString aReason);
+-
+     // called by the child (test code only) to propagate volume changes to the parent
+     async CreateFakeVolume(nsString fsName, nsString mountPoint);
+     async SetFakeVolumeState(nsString fsName, int32_t fsState);
+     async RemoveFakeVolume(nsString fsName);
+ 
+     sync KeywordToURI(nsCString keyword)
+         returns (nsString providerName, OptionalInputStreamParams postData, OptionalURIParams uri);
+ 
+@@ -1108,22 +983,16 @@ parent:
+                       float aFullZoom)
+       returns (nsresult rv,
+                bool windowOpened,
+                FrameScriptInfo[] frameScripts,
+                nsCString urlToLoad,
+                TextureFactoryIdentifier textureFactoryIdentifier,
+                uint64_t layersId);
+ 
+-    sync GetDeviceStorageLocation(nsString type)
+-        returns (nsString path);
+-
+-    sync GetDeviceStorageLocations()
+-	returns (DeviceStorageLocationInfo info);
+-
+     sync GetAndroidSystemInfo()
+         returns (AndroidSystemInfo info);
+ 
+     /**
+      * Tells the parent to ungrab the pointer on the default display.
+      *
+      * This is for GTK platforms where we have to ensure the pointer ungrab happens in the
+      * chrome process as that's the process that receives the pointer event.
+diff --git a/dom/ipc/moz.build b/dom/ipc/moz.build
+--- a/dom/ipc/moz.build
++++ b/dom/ipc/moz.build
+@@ -120,17 +120,16 @@ if CONFIG['MOZ_CONTENT_SANDBOX'] and CON
+         'mozsandbox',
+     ]
+ 
+ LOCAL_INCLUDES += [
+     '/caps',
+     '/chrome',
+     '/docshell/base',
+     '/dom/base',
+-    '/dom/devicestorage',
+     '/dom/events',
+     '/dom/filesystem',
+     '/dom/geolocation',
+     '/dom/media/webspeech/synth/ipc',
+     '/dom/security',
+     '/dom/storage',
+     '/dom/workers',
+     '/embedding/components/printingui/ipc',
+diff --git a/dom/moz.build b/dom/moz.build
+--- a/dom/moz.build
++++ b/dom/moz.build
+@@ -42,17 +42,16 @@ DIRS += [
+     'base',
+     'archivereader',
+     'bindings',
+     'battery',
+     'browser-element',
+     'cache',
+     'canvas',
+     'crypto',
+-    'devicestorage',
+     'encoding',
+     'events',
+     'fetch',
+     'filehandle',
+     'filesystem',
+     'flyweb',
+     'gamepad',
+     'geolocation',
+diff --git a/dom/webidl/DeviceStorage.webidl b/dom/webidl/DeviceStorage.webidl
+deleted file mode 100644
+--- a/dom/webidl/DeviceStorage.webidl
++++ /dev/null
+@@ -1,95 +0,0 @@
+-/* -*- Mode: IDL; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+-/* This Source Code Form is subject to the terms of the Mozilla Public
+- * License, v. 2.0. If a copy of the MPL was not distributed with this
+- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+-
+-dictionary DeviceStorageEnumerationParameters {
+-  Date since;
+-};
+-
+-[Pref="device.storage.enabled"]
+-interface DeviceStorage : EventTarget {
+-  attribute EventHandler onchange;
+-
+-  [Throws]
+-  DOMRequest? add(Blob? aBlob);
+-  [Throws]
+-  DOMRequest? addNamed(Blob? aBlob, DOMString aName);
+-
+-  /**
+-   * Append data to a given file.
+-   * If the file doesn't exist, a "NotFoundError" event will be dispatched.
+-   * In the same time, it is a request.onerror case.
+-   * If the file exists, it will be opened with the following permission:
+-   *                                                "PR_WRONLY|PR_CREATE_FILE|PR_APPEND".
+-   * The function will return null when blob file is null and other unexpected situations.
+-   * @parameter aBlob: A Blob object representing the data to append
+-   * @parameter aName: A string representing the full name (path + file name) of the file
+-   *                   to append data to.
+-   */
+-  [Throws]
+-  DOMRequest? appendNamed(Blob? aBlob, DOMString aName);
+-
+-  [Throws]
+-  DOMRequest get(DOMString aName);
+-  [Throws]
+-  DOMRequest getEditable(DOMString aName);
+-  [Throws]
+-  DOMRequest delete(DOMString aName);
+-
+-  [Throws]
+-  DOMCursor enumerate(optional DeviceStorageEnumerationParameters options);
+-  [Throws]
+-  DOMCursor enumerate(DOMString path,
+-                      optional DeviceStorageEnumerationParameters options);
+-  [Throws]
+-  DOMCursor enumerateEditable(optional DeviceStorageEnumerationParameters options);
+-  [Throws]
+-  DOMCursor enumerateEditable(DOMString path,
+-                              optional DeviceStorageEnumerationParameters options);
+-
+-  [Throws]
+-  DOMRequest freeSpace();
+-  [Throws]
+-  DOMRequest usedSpace();
+-  [Throws]
+-  DOMRequest available();
+-  [Throws]
+-  DOMRequest storageStatus();
+-  [Throws]
+-  DOMRequest format();
+-  [Throws]
+-  DOMRequest mount();
+-  [Throws]
+-  DOMRequest unmount();
+-
+-  // Note that the storageName is just a name (like sdcard), and doesn't
+-  // include any path information.
+-  readonly attribute DOMString storageName;
+-
+-  // Indicates if the storage area denoted by storageName is capable of
+-  // being mounted and unmounted.
+-  readonly attribute boolean canBeMounted;
+-
+-  // Indicates if the storage area denoted by storageName is capable of
+-  // being shared and unshared.
+-  readonly attribute boolean canBeShared;
+-
+-  // Indicates if the storage area denoted by storageName is capable of
+-  // being formatted.
+-  readonly attribute boolean canBeFormatted;
+-
+-  // Determines if this storage area is the one which will be used by default
+-  // for storing new files.
+-  readonly attribute boolean default;
+-
+-  // Indicates if the storage area denoted by storageName is removable
+-  readonly attribute boolean isRemovable;
+-
+-  // True if the storage area is close to being full
+-  readonly attribute boolean lowDiskSpace;
+-
+-  [NewObject]
+-  // XXXbz what type does this really return?
+-  Promise<any> getRoot();
+-};
+diff --git a/dom/webidl/moz.build b/dom/webidl/moz.build
+--- a/dom/webidl/moz.build
++++ b/dom/webidl/moz.build
+@@ -104,17 +104,16 @@ WEBIDL_FILES = [
+     'DataTransfer.webidl',
+     'DataTransferItem.webidl',
+     'DataTransferItemList.webidl',
+     'DecoderDoctorNotification.webidl',
+     'DedicatedWorkerGlobalScope.webidl',
+     'DelayNode.webidl',
+     'DesktopNotification.webidl',
+     'DeviceMotionEvent.webidl',
+-    'DeviceStorage.webidl',
+     'Directory.webidl',
+     'Document.webidl',
+     'DocumentFragment.webidl',
+     'DocumentTimeline.webidl',
+     'DocumentType.webidl',
+     'DOMCursor.webidl',
+     'DOMError.webidl',
+     'DOMException.webidl',
+diff --git a/layout/build/nsLayoutStatics.cpp b/layout/build/nsLayoutStatics.cpp
+--- a/layout/build/nsLayoutStatics.cpp
++++ b/layout/build/nsLayoutStatics.cpp
+@@ -122,17 +122,16 @@ using namespace mozilla::system;
+ #include "mozilla/dom/CustomElementRegistry.h"
+ #include "mozilla/dom/time/DateCacheCleaner.h"
+ #include "mozilla/EventDispatcher.h"
+ #include "mozilla/IMEStateManager.h"
+ #include "mozilla/dom/HTMLVideoElement.h"
+ #include "TouchManager.h"
+ #include "MediaDecoder.h"
+ #include "MediaPrefs.h"
+-#include "mozilla/dom/devicestorage/DeviceStorageStatics.h"
+ #include "mozilla/ServoBindings.h"
+ #include "mozilla/StaticPresData.h"
+ #include "mozilla/dom/WebIDLGlobalNameHash.h"
+ 
+ using namespace mozilla;
+ using namespace mozilla::net;
+ using namespace mozilla::dom;
+ using namespace mozilla::dom::ipc;
+@@ -303,18 +302,16 @@ nsLayoutStatics::Initialize()
+   nsStyleContext::Initialize();
+   mozilla::LayerAnimationInfo::Initialize();
+ #endif
+ 
+   MediaDecoder::InitStatics();
+ 
+   PromiseDebugging::Init();
+ 
+-  mozilla::dom::devicestorage::DeviceStorageStatics::Initialize();
+-
+   mozilla::dom::WebCryptoThreadPool::Initialize();
+ 
+   // NB: We initialize servo in nsAppRunner.cpp, because we need to do it after
+   // creating the hidden DOM window to support some current stylo hacks. We
+   // should move initialization back here once those go away.
+ 
+ #ifndef MOZ_WIDGET_ANDROID
+   // On Android, we instantiate it when constructing AndroidBridge.
+diff --git a/mobile/android/components/ContentPermissionPrompt.js b/mobile/android/components/ContentPermissionPrompt.js
+--- a/mobile/android/components/ContentPermissionPrompt.js
++++ b/mobile/android/components/ContentPermissionPrompt.js
+@@ -8,20 +8,16 @@ const Cu = Components.utils;
+ const Cc = Components.classes;
+ 
+ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+ Cu.import("resource://gre/modules/Services.jsm");
+ 
+ const kEntities = {
+   "contacts": "contacts",
+   "desktop-notification": "desktopNotification2",
+-  "device-storage:music": "deviceStorageMusic",
+-  "device-storage:pictures": "deviceStoragePictures",
+-  "device-storage:sdcard": "deviceStorageSdcard",
+-  "device-storage:videos": "deviceStorageVideos",
+   "geolocation": "geolocation",
+   "flyweb-publish-server": "flyWebPublishServer",
+ };
+ 
+ // For these types, prompt for permission if action is unknown.
+ const PROMPT_FOR_UNKNOWN = [
+   "desktop-notification",
+   "geolocation",
+diff --git a/mobile/android/geckoview/src/main/java/org/mozilla/gecko/GeckoAppShell.java b/mobile/android/geckoview/src/main/java/org/mozilla/gecko/GeckoAppShell.java
+--- a/mobile/android/geckoview/src/main/java/org/mozilla/gecko/GeckoAppShell.java
++++ b/mobile/android/geckoview/src/main/java/org/mozilla/gecko/GeckoAppShell.java
+@@ -2198,54 +2198,16 @@ public class GeckoAppShell
+         return null;
+     }
+ 
+     @WrapForJNI
+     private static String connectionGetMimeType(URLConnection connection) {
+         return connection.getContentType();
+     }
+ 
+-    /**
+-     * Retrieve the absolute path of an external storage directory.
+-     *
+-     * @param type The type of directory to return
+-     * @return Absolute path of the specified directory or null on failure
+-     */
+-    @WrapForJNI(calledFrom = "gecko")
+-    private static String getExternalPublicDirectory(final String type) {
+-        final String state = Environment.getExternalStorageState();
+-        if (!Environment.MEDIA_MOUNTED.equals(state) &&
+-            !Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+-            // External storage is not available.
+-            return null;
+-        }
+-
+-        if ("sdcard".equals(type)) {
+-            // SD card has a separate path.
+-            return Environment.getExternalStorageDirectory().getAbsolutePath();
+-        }
+-
+-        final String systemType;
+-        if ("downloads".equals(type)) {
+-            systemType = Environment.DIRECTORY_DOWNLOADS;
+-        } else if ("pictures".equals(type)) {
+-            systemType = Environment.DIRECTORY_PICTURES;
+-        } else if ("videos".equals(type)) {
+-            systemType = Environment.DIRECTORY_MOVIES;
+-        } else if ("music".equals(type)) {
+-            systemType = Environment.DIRECTORY_MUSIC;
+-        } else if ("apps".equals(type)) {
+-            File appInternalStorageDirectory = getApplicationContext().getFilesDir();
+-            return new File(appInternalStorageDirectory, "mozilla").getAbsolutePath();
+-        } else {
+-            return null;
+-        }
+-        return Environment.getExternalStoragePublicDirectory(systemType).getAbsolutePath();
+-    }
+-
+     @WrapForJNI(calledFrom = "gecko")
+     private static int getMaxTouchPoints() {
+         PackageManager pm = getApplicationContext().getPackageManager();
+         if (pm.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
+             // at least, 5+ fingers.
+             return 5;
+         } else if (pm.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) {
+             // at least, 2+ fingers.
+diff --git a/netwerk/test/mochitests/signed_web_packaged_app.sjs b/netwerk/test/mochitests/signed_web_packaged_app.sjs
+--- a/netwerk/test/mochitests/signed_web_packaged_app.sjs
++++ b/netwerk/test/mochitests/signed_web_packaged_app.sjs
+@@ -35,19 +35,16 @@ Content-Type: application/x-web-app-mani
+       "src": "scripts/library.js",
+       "integrity": "TN2ByXZiaBiBCvS4MeZ02UyNi44vED+KjdjLInUl4o8="
+     }
+   ],
+   "moz-permissions": [
+     {
+       "systemXHR": {
+         "description": "Needed to download stuff"
+-      },
+-      "devicestorage:pictures": {
+-        "description": "Need to load pictures"
+       }
+     }
+   ],
+   "package-identifier": "09bc9714-7ab6-4320-9d20-fde4c237522c",
+   "description": "A great app!"
+ }\r
+ --NKWXJUAFXB\r
+ Content-Location: page2.html\r
+diff --git a/toolkit/components/jsdownloads/src/DownloadIntegration.jsm b/toolkit/components/jsdownloads/src/DownloadIntegration.jsm
+--- a/toolkit/components/jsdownloads/src/DownloadIntegration.jsm
++++ b/toolkit/components/jsdownloads/src/DownloadIntegration.jsm
+@@ -268,53 +268,16 @@ this.DownloadIntegration = {
+     // Add the view used for detecting changes to downloads to be persisted.
+     // We must do this after the list of persistent downloads has been loaded,
+     // even if the load operation failed. We wait for a complete initialization
+     // so other callers cannot modify the list without being detected. The
+     // DownloadAutoSaveView is kept alive by the underlying DownloadList.
+     yield new DownloadAutoSaveView(list, this._store).initialize();
+   }),
+ 
+-#ifdef MOZ_WIDGET_GONK
+-  /**
+-    * Finds the default download directory which can be either in the
+-    * internal storage or on the sdcard.
+-    *
+-    * @return {Promise}
+-    * @resolves The downloads directory string path.
+-    */
+-  _getDefaultDownloadDirectory: Task.async(function* () {
+-    let directoryPath;
+-    let win = Services.wm.getMostRecentWindow("navigator:browser");
+-    let storages = win.navigator.getDeviceStorages("sdcard");
+-    let preferredStorageName;
+-    // Use the first one or the default storage.
+-    storages.forEach((aStorage) => {
+-      if (aStorage.default || !preferredStorageName) {
+-        preferredStorageName = aStorage.storageName;
+-      }
+-    });
+-
+-    // Now get the path for this storage area.
+-    if (preferredStorageName) {
+-      let volume = volumeService.getVolumeByName(preferredStorageName);
+-      if (volume && volume.state === Ci.nsIVolume.STATE_MOUNTED){
+-        directoryPath = OS.Path.join(volume.mountPoint, "downloads");
+-        yield OS.File.makeDir(directoryPath, { ignoreExisting: true });
+-      }
+-    }
+-    if (directoryPath) {
+-      return directoryPath;
+-    } else {
+-      throw new Components.Exception("No suitable storage for downloads.",
+-                                     Cr.NS_ERROR_FILE_UNRECOGNIZED_PATH);
+-    }
+-  }),
+-#endif
+-
+   /**
+    * Determines if a Download object from the list of persistent downloads
+    * should be saved into a file, so that it can be restored across sessions.
+    *
+    * This function allows filtering out downloads that the host application is
+    * not interested in persisting across sessions, for example downloads that
+    * finished successfully.
+    *
+@@ -377,18 +340,16 @@ this.DownloadIntegration = {
+ #ifdef MOZ_WIDGET_ANDROID
+     // Android doesn't have a $HOME directory, and by default we only have
+     // write access to /data/data/org.mozilla.{$APP} and /sdcard
+     directoryPath = gEnvironment.get("DOWNLOADS_DIRECTORY");
+     if (!directoryPath) {
+       throw new Components.Exception("DOWNLOADS_DIRECTORY is not set.",
+                                      Cr.NS_ERROR_FILE_UNRECOGNIZED_PATH);
+     }
+-#elifdef MOZ_WIDGET_GONK
+-    directoryPath = this._getDefaultDownloadDirectory();
+ #else
+     // For Linux, use XDG download dir, with a fallback to Home/Downloads
+     // if the XDG user dirs are disabled.
+     try {
+       directoryPath = this._getDirectory("DfltDwnld");
+     } catch(e) {
+       directoryPath = yield this._createDownloadsDirectory("Home");
+     }
+@@ -405,19 +366,16 @@ this.DownloadIntegration = {
+   /**
+    * Returns the user downloads directory asynchronously.
+    *
+    * @return {Promise}
+    * @resolves The downloads directory string path.
+    */
+   getPreferredDownloadsDirectory: Task.async(function* () {
+     let directoryPath = null;
+-#ifdef MOZ_WIDGET_GONK
+-    directoryPath = this._getDefaultDownloadDirectory();
+-#else
+     let prefValue = 1;
+ 
+     try {
+       prefValue = Services.prefs.getIntPref("browser.download.folderList");
+     } catch(e) {}
+ 
+     switch(prefValue) {
+       case 0: // Desktop
+@@ -435,17 +393,16 @@ this.DownloadIntegration = {
+         } catch(ex) {
+           // Either the preference isn't set or the directory cannot be created.
+           directoryPath = yield this.getSystemDownloadsDirectory();
+         }
+         break;
+       default:
+         directoryPath = yield this.getSystemDownloadsDirectory();
+     }
+-#endif
+     return directoryPath;
+   }),
+ 
+   /**
+    * Returns the temporary downloads directory asynchronously.
+    *
+    * @return {Promise}
+    * @resolves The downloads directory string path.
+diff --git a/toolkit/components/jsdownloads/src/DownloadPlatform.cpp b/toolkit/components/jsdownloads/src/DownloadPlatform.cpp
+--- a/toolkit/components/jsdownloads/src/DownloadPlatform.cpp
++++ b/toolkit/components/jsdownloads/src/DownloadPlatform.cpp
+@@ -185,28 +185,16 @@ nsresult DownloadPlatform::DownloadDone(
+       if (sourceCFURL) {
+         ::CFRelease(sourceCFURL);
+       }
+       if (referrerCFURL) {
+         ::CFRelease(referrerCFURL);
+       }
+     }
+ #endif
+-    if (mozilla::Preferences::GetBool("device.storage.enabled", true)) {
+-      // Tell DeviceStorage that a new file may have been added.
+-      nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
+-      nsCOMPtr<nsISupportsString> pathString
+-        = do_CreateInstance(NS_SUPPORTS_STRING_CONTRACTID);
+-      if (obs && pathString) {
+-        if (NS_SUCCEEDED(pathString->SetData(path))) {
+-          (void)obs->NotifyObservers(pathString, "download-watcher-notify",
+-                                     u"modified");
+-        }
+-      }
+-    }
+   }
+ 
+ #endif
+ 
+   return NS_OK;
+ }
+ 
+ nsresult DownloadPlatform::MapUrlToZone(const nsAString& aURL,
+diff --git a/toolkit/components/jsdownloads/test/unit/common_test_Download.js b/toolkit/components/jsdownloads/test/unit/common_test_Download.js
+--- a/toolkit/components/jsdownloads/test/unit/common_test_Download.js
++++ b/toolkit/components/jsdownloads/test/unit/common_test_Download.js
+@@ -2315,103 +2315,16 @@ add_task(function* test_toSerializable_s
+   let download2 = yield Downloads.createDownload(reserialized);
+ 
+   do_check_eq(download1.startTime.constructor.name, "Date");
+   do_check_eq(download2.startTime.constructor.name, "Date");
+   do_check_eq(download1.startTime.toJSON(), download2.startTime.toJSON());
+ });
+ 
+ /**
+- * This test will call the platform specific operations within
+- * DownloadPlatform::DownloadDone. While there is no test to verify the
+- * specific behaviours, this at least ensures that there is no error or crash.
+- */
+-add_task(function* test_platform_integration()
+-{
+-  let downloadFiles = [];
+-  let oldDeviceStorageEnabled = false;
+-  try {
+-     oldDeviceStorageEnabled = Services.prefs.getBoolPref("device.storage.enabled");
+-  } catch (e) {
+-    // This happens if the pref doesn't exist.
+-  }
+-  let downloadWatcherNotified = false;
+-  let observer = {
+-    observe: function(subject, topic, data) {
+-      do_check_eq(topic, "download-watcher-notify");
+-      do_check_eq(data, "modified");
+-      downloadWatcherNotified = true;
+-    }
+-  }
+-  Services.obs.addObserver(observer, "download-watcher-notify", false);
+-  Services.prefs.setBoolPref("device.storage.enabled", true);
+-  let downloadDoneCalled = false;
+-  let monitorFn = base => ({
+-    __proto__: base,
+-    downloadDone() {
+-      return super.downloadDone(...arguments).then(() => {
+-        downloadDoneCalled = true;
+-      });
+-    },
+-  });
+-  Integration.downloads.register(monitorFn);
+-  DownloadIntegration.allowDirectories = true;
+-  function cleanup() {
+-    for (let file of downloadFiles) {
+-      file.remove(true);
+-    }
+-    Services.obs.removeObserver(observer, "download-watcher-notify");
+-    Services.prefs.setBoolPref("device.storage.enabled", oldDeviceStorageEnabled);
+-    Integration.downloads.unregister(monitorFn);
+-    DownloadIntegration.allowDirectories = false;
+-  }
+-
+-  for (let isPrivate of [false, true]) {
+-    downloadDoneCalled = false;
+-
+-    // Some platform specific operations only operate on files outside the
+-    // temporary directory or in the Downloads directory (such as setting
+-    // the Windows searchable attribute, and the Mac Downloads icon bouncing),
+-    // so use the system Downloads directory for the target file.
+-    let targetFilePath = yield DownloadIntegration.getSystemDownloadsDirectory();
+-    targetFilePath = OS.Path.join(targetFilePath,
+-                                  "test" + (Math.floor(Math.random() * 1000000)));
+-    let targetFile = new FileUtils.File(targetFilePath);
+-    downloadFiles.push(targetFile);
+-
+-    let download;
+-    if (gUseLegacySaver) {
+-      download = yield promiseStartLegacyDownload(httpUrl("source.txt"),
+-                                                  { isPrivate, targetFile });
+-    }
+-    else {
+-      download = yield Downloads.createDownload({
+-        source: { url: httpUrl("source.txt"), isPrivate },
+-        target: targetFile,
+-      });
+-      download.start().catch(() => {});
+-    }
+-
+-    // Wait for the whenSucceeded promise to be resolved first.
+-    // downloadDone should be called before the whenSucceeded promise is resolved.
+-    yield download.whenSucceeded().then(function () {
+-      do_check_true(downloadDoneCalled);
+-      do_check_true(downloadWatcherNotified);
+-    });
+-
+-    // Then, wait for the promise returned by "start" to be resolved.
+-    yield promiseDownloadStopped(download);
+-
+-    yield promiseVerifyTarget(download.target, TEST_DATA_SHORT);
+-  }
+-
+-  cleanup();
+-});
+-
+-/**
+  * Checks that downloads are added to browsing history when they start.
+  */
+ add_task(function* test_history()
+ {
+   mustInterruptResponses();
+ 
+   // We will wait for the visit to be notified during the download.
+   yield PlacesTestUtils.clearHistory();
+diff --git a/toolkit/content/devicestorage.properties b/toolkit/content/devicestorage.properties
+deleted file mode 100644
+--- a/toolkit/content/devicestorage.properties
++++ /dev/null
+@@ -1,4 +0,0 @@
+-# Extensions we recognize for DeviceStorage storage areas
+-pictures=*.jpe; *.jpg; *.jpeg; *.gif; *.png; *.bmp;
+-music=*.mp3; *.oga; *.ogg; *.m4a; *.m4b; *.m4p; *.m4r; *.3gp; *.3gpp; *.mp4; *.m3u; *.pls; *.opus; *.amr; *.wav; *.lcka; *.mka; *.flac;
+-videos=*.mp4; *.mpeg; *.mpg; *.ogv; *.ogx; *.webm; *.3gp; *.3gpp; *.3g2; *.ogg; *.m4v; *.ts; *.m2ts; *.avi; *.divx; *.mkv;
+diff --git a/toolkit/content/jar.mn b/toolkit/content/jar.mn
+--- a/toolkit/content/jar.mn
++++ b/toolkit/content/jar.mn
+@@ -40,17 +40,16 @@ toolkit.jar:
+    content/global/browser-content.js
+ *   content/global/buildconfig.html
+    content/global/contentAreaUtils.js
+ #ifndef MOZ_ICECATMOBILE
+    content/global/customizeToolbar.css
+    content/global/customizeToolbar.js
+    content/global/customizeToolbar.xul
+ #endif
+-   content/global/devicestorage.properties
+ #ifndef MOZ_ICECATMOBILE
+    content/global/editMenuOverlay.js
+ *  content/global/editMenuOverlay.xul
+    content/global/finddialog.js
+ *  content/global/finddialog.xul
+    content/global/findUtils.js
+ #endif
+    content/global/filepicker.properties
+@@ -113,9 +112,9 @@ toolkit.jar:
+    content/global/bindings/videocontrols.css   (widgets/videocontrols.css)
+ *  content/global/bindings/wizard.xml          (widgets/wizard.xml)
+ #ifdef XP_MACOSX
+    content/global/macWindowMenu.js
+ #endif
+    content/global/svg/svgBindings.xml          (/layout/svg/resources/content/svgBindings.xml)
+    content/global/gmp-sources/eme-adobe.json   (gmp-sources/eme-adobe.json)
+    content/global/gmp-sources/openh264.json    (gmp-sources/openh264.json)
+-   content/global/gmp-sources/widevinecdm.json (gmp-sources/widevinecdm.json)
+\ No newline at end of file
++   content/global/gmp-sources/widevinecdm.json (gmp-sources/widevinecdm.json)
+diff --git a/uriloader/exthandler/nsExternalHelperAppService.cpp b/uriloader/exthandler/nsExternalHelperAppService.cpp
+--- a/uriloader/exthandler/nsExternalHelperAppService.cpp
++++ b/uriloader/exthandler/nsExternalHelperAppService.cpp
+@@ -101,20 +101,16 @@
+ 
+ #ifdef MOZ_WIDGET_ANDROID
+ #include "IceCatMobileJNIWrappers.h"
+ #endif
+ 
+ #include "mozilla/Preferences.h"
+ #include "mozilla/ipc/URIUtils.h"
+ 
+-#ifdef MOZ_WIDGET_GONK
+-#include "nsDeviceStorage.h"
+-#endif
+-
+ using namespace mozilla;
+ using namespace mozilla::ipc;
+ 
+ // Download Folder location constants
+ #define NS_PREF_DOWNLOAD_DIR        "browser.download.dir"
+ #define NS_PREF_DOWNLOAD_FOLDERLIST "browser.download.folderList"
+ enum {
+   NS_FOLDER_VALUE_DESKTOP = 0
+@@ -321,65 +317,16 @@ static nsresult GetDownloadDirectory(nsI
+   }
+ 
+   if (!dir) {
+     // If not, we default to the OS X default download location.
+     nsresult rv = NS_GetSpecialDirectory(NS_OSX_DEFAULT_DOWNLOAD_DIR,
+                                          getter_AddRefs(dir));
+     NS_ENSURE_SUCCESS(rv, rv);
+   }
+-#elif defined(MOZ_WIDGET_GONK)
+-  // On Gonk, store the files on the sdcard in the downloads directory.
+-  // We need to check with the volume manager which storage point is
+-  // available.
+-
+-  // Pick the default storage in case multiple (internal and external) ones
+-  // are available.
+-  nsString storageName;
+-  nsDOMDeviceStorage::GetDefaultStorageName(NS_LITERAL_STRING("sdcard"),
+-                                            storageName);
+-
+-  RefPtr<DeviceStorageFile> dsf(
+-    new DeviceStorageFile(NS_LITERAL_STRING("sdcard"),
+-                          storageName,
+-                          NS_LITERAL_STRING("downloads")));
+-  NS_ENSURE_TRUE(dsf->mFile, NS_ERROR_FILE_ACCESS_DENIED);
+-
+-  // If we're not checking for availability we're done.
+-  if (aSkipChecks) {
+-    dsf->mFile.forget(_directory);
+-    return NS_OK;
+-  }
+-
+-  // Check device storage status before continuing.
+-  nsString storageStatus;
+-  dsf->GetStatus(storageStatus);
+-
+-  // If we get an "unavailable" status, it means the sd card is not present.
+-  // We'll also catch internal errors by looking for an empty string and assume
+-  // the SD card isn't present when this occurs.
+-  if (storageStatus.EqualsLiteral("unavailable") ||
+-      storageStatus.IsEmpty()) {
+-    return NS_ERROR_FILE_NOT_FOUND;
+-  }
+-
+-  // If we get a status other than 'available' here it means the card is busy
+-  // because it's mounted via USB or it is being formatted.
+-  if (!storageStatus.EqualsLiteral("available")) {
+-    return NS_ERROR_FILE_ACCESS_DENIED;
+-  }
+-
+-  bool alreadyThere;
+-  nsresult rv = dsf->mFile->Exists(&alreadyThere);
+-  NS_ENSURE_SUCCESS(rv, rv);
+-  if (!alreadyThere) {
+-    rv = dsf->mFile->Create(nsIFile::DIRECTORY_TYPE, 0770);
+-    NS_ENSURE_SUCCESS(rv, rv);
+-  }
+-  dir = dsf->mFile;
+ #elif defined(ANDROID)
+   // We ask Java for the temporary download directory. The directory will be
+   // different depending on whether we have the permission to write to the
+   // public download directory or not.
+   // In the case where we do not have the permission we will start the
+   // download to the app cache directory and later move it to the final
+   // destination after prompting for the permission.
+   jni::String::LocalRef downloadDir;
+diff --git a/widget/android/AndroidBridge.cpp b/widget/android/AndroidBridge.cpp
+--- a/widget/android/AndroidBridge.cpp
++++ b/widget/android/AndroidBridge.cpp
+@@ -1119,42 +1119,8 @@ nsresult AndroidBridge::InputStreamRead(
+ 
+     if (read <= 0) {
+         *aRead = 0;
+         return NS_OK;
+     }
+     *aRead = read;
+     return NS_OK;
+ }
+-
+-nsresult AndroidBridge::GetExternalPublicDirectory(const nsAString& aType, nsAString& aPath) {
+-    if (XRE_IsContentProcess()) {
+-        nsString key(aType);
+-        nsAutoString path;
+-        if (AndroidBridge::sStoragePaths.Get(key, &path)) {
+-            aPath = path;
+-            return NS_OK;
+-        }
+-
+-        // Lazily get the value from the parent.
+-        dom::ContentChild* child = dom::ContentChild::GetSingleton();
+-        if (child) {
+-          nsAutoString type(aType);
+-          child->SendGetDeviceStorageLocation(type, &path);
+-          if (!path.IsEmpty()) {
+-            AndroidBridge::sStoragePaths.Put(key, path);
+-            aPath = path;
+-            return NS_OK;
+-          }
+-        }
+-
+-        ALOG_BRIDGE("AndroidBridge::GetExternalPublicDirectory no cache for %s",
+-              NS_ConvertUTF16toUTF8(aType).get());
+-        return NS_ERROR_NOT_AVAILABLE;
+-    }
+-
+-    auto path = GeckoAppShell::GetExternalPublicDirectory(aType);
+-    if (!path) {
+-        return NS_ERROR_NOT_AVAILABLE;
+-    }
+-    aPath = path->ToString();
+-    return NS_OK;
+-}
+diff --git a/widget/android/AndroidBridge.h b/widget/android/AndroidBridge.h
+--- a/widget/android/AndroidBridge.h
++++ b/widget/android/AndroidBridge.h
+@@ -197,18 +197,16 @@ public:
+     static jmethodID GetStaticMethodID(JNIEnv* env, jclass jClass, const char* methodName, const char* methodType);
+ 
+     static jni::Object::LocalRef ChannelCreate(jni::Object::Param);
+ 
+     static void InputStreamClose(jni::Object::Param obj);
+     static uint32_t InputStreamAvailable(jni::Object::Param obj);
+     static nsresult InputStreamRead(jni::Object::Param obj, char *aBuf, uint32_t aCount, uint32_t *aRead);
+ 
+-    static nsresult GetExternalPublicDirectory(const nsAString& aType, nsAString& aPath);
+-
+ protected:
+     static nsDataHashtable<nsStringHashKey, nsString> sStoragePaths;
+ 
+     static AndroidBridge* sBridge;
+ 
+     AndroidBridge();
+     ~AndroidBridge();
+ 
+diff --git a/widget/android/GeneratedJNIWrappers.cpp b/widget/android/GeneratedJNIWrappers.cpp
+--- a/widget/android/GeneratedJNIWrappers.cpp
++++ b/widget/android/GeneratedJNIWrappers.cpp
+@@ -274,24 +274,16 @@ auto GeckoAppShell::GetExceptionStackTra
+ constexpr char GeckoAppShell::GetExtensionFromMimeType_t::name[];
+ constexpr char GeckoAppShell::GetExtensionFromMimeType_t::signature[];
+ 
+ auto GeckoAppShell::GetExtensionFromMimeType(mozilla::jni::String::Param a0) -> mozilla::jni::String::LocalRef
+ {
+     return mozilla::jni::Method<GetExtensionFromMimeType_t>::Call(GeckoAppShell::Context(), nullptr, a0);
+ }
+ 
+-constexpr char GeckoAppShell::GetExternalPublicDirectory_t::name[];
+-constexpr char GeckoAppShell::GetExternalPublicDirectory_t::signature[];
+-
+-auto GeckoAppShell::GetExternalPublicDirectory(mozilla::jni::String::Param a0) -> mozilla::jni::String::LocalRef
+-{
+-    return mozilla::jni::Method<GetExternalPublicDirectory_t>::Call(GeckoAppShell::Context(), nullptr, a0);
+-}
+-
+ constexpr char GeckoAppShell::GetHWDecoderCapability_t::name[];
+ constexpr char GeckoAppShell::GetHWDecoderCapability_t::signature[];
+ 
+ auto GeckoAppShell::GetHWDecoderCapability() -> bool
+ {
+     return mozilla::jni::Method<GetHWDecoderCapability_t>::Call(GeckoAppShell::Context(), nullptr);
+ }
+ 
+diff --git a/widget/android/GeneratedJNIWrappers.h b/widget/android/GeneratedJNIWrappers.h
+--- a/widget/android/GeneratedJNIWrappers.h
++++ b/widget/android/GeneratedJNIWrappers.h
+@@ -724,36 +724,16 @@ public:
+         static const mozilla::jni::CallingThread callingThread =
+                 mozilla::jni::CallingThread::GECKO;
+         static const mozilla::jni::DispatchTarget dispatchTarget =
+                 mozilla::jni::DispatchTarget::CURRENT;
+     };
+ 
+     static auto GetExtensionFromMimeType(mozilla::jni::String::Param) -> mozilla::jni::String::LocalRef;
+ 
+-    struct GetExternalPublicDirectory_t {
+-        typedef GeckoAppShell Owner;
+-        typedef mozilla::jni::String::LocalRef ReturnType;
+-        typedef mozilla::jni::String::Param SetterType;
+-        typedef mozilla::jni::Args<
+-                mozilla::jni::String::Param> Args;
+-        static constexpr char name[] = "getExternalPublicDirectory";
+-        static constexpr char signature[] =
+-                "(Ljava/lang/String;)Ljava/lang/String;";
+-        static const bool isStatic = true;
+-        static const mozilla::jni::ExceptionMode exceptionMode =
+-                mozilla::jni::ExceptionMode::ABORT;
+-        static const mozilla::jni::CallingThread callingThread =
+-                mozilla::jni::CallingThread::GECKO;
+-        static const mozilla::jni::DispatchTarget dispatchTarget =
+-                mozilla::jni::DispatchTarget::CURRENT;
+-    };
+-
+-    static auto GetExternalPublicDirectory(mozilla::jni::String::Param) -> mozilla::jni::String::LocalRef;
+-
+     struct GetHWDecoderCapability_t {
+         typedef GeckoAppShell Owner;
+         typedef bool ReturnType;
+         typedef bool SetterType;
+         typedef mozilla::jni::Args<> Args;
+         static constexpr char name[] = "getHWDecoderCapability";
+         static constexpr char signature[] =
+                 "()Z";
+diff --git a/xpcom/reflect/xptinfo/ShimInterfaceInfo.cpp b/xpcom/reflect/xptinfo/ShimInterfaceInfo.cpp
+--- a/xpcom/reflect/xptinfo/ShimInterfaceInfo.cpp
++++ b/xpcom/reflect/xptinfo/ShimInterfaceInfo.cpp
+@@ -155,17 +155,16 @@
+ #include "mozilla/dom/CSSValueBinding.h"
+ #include "mozilla/dom/CSSValueListBinding.h"
+ #include "mozilla/dom/CustomEventBinding.h"
+ #ifdef MOZ_WEBRTC
+ #include "mozilla/dom/DataChannelBinding.h"
+ #endif
+ #include "mozilla/dom/DataContainerEventBinding.h"
+ #include "mozilla/dom/DataTransferBinding.h"
+-#include "mozilla/dom/DeviceStorageBinding.h"
+ #include "mozilla/dom/DOMCursorBinding.h"
+ #include "mozilla/dom/DOMExceptionBinding.h"
+ #include "mozilla/dom/DOMParserBinding.h"
+ #include "mozilla/dom/DOMRequestBinding.h"
+ #include "mozilla/dom/DocumentBinding.h"
+ #include "mozilla/dom/DocumentFragmentBinding.h"
+ #include "mozilla/dom/DocumentTypeBinding.h"
+ #include "mozilla/dom/DocumentBinding.h"
+
