@@ -271,7 +271,6 @@ operating systems.")
        (method url-fetch)
        (uri (string-append "https://github.com/" name "/" name
                            "/archive/" name "-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "09f1abad0vdn08x80hadjccjpnzcbn5fjpj749gb819biyqkl0y2"))))
