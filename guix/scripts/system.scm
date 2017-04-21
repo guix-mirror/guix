@@ -365,7 +365,7 @@ it atomically, and then run OS's activation script."
 
 (define* (profile-boot-parameters #:optional (profile %system-profile)
                                   (numbers (generation-numbers profile)))
-  "Return a list of 'menu-entry' for the generations of PROFILE specified by
+  "Return a list of 'boot-parameters' for the generations of PROFILE specified by
 NUMBERS, which is a list of generation numbers."
   (define (system->boot-parameters system number time)
     (unless-file-not-found
@@ -456,9 +456,9 @@ open connection to the store."
          ;; from the actual past values for this generation's entry.
          (grub-config (grub-configuration (device root-device)))
          ;; Make the specified system generation the default entry.
-         (entries (profile-grub-entries %system-profile (list number)))
+         (entries (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-grub-entries %system-profile old-generations))
+         (old-entries (profile-boot-parameters %system-profile old-generations))
          (grub.cfg (run-with-store store
                      (grub-configuration-file grub-config
                                               entries
@@ -642,7 +642,7 @@ output when building a system derivation, such as a disk image."
                       (operating-system-bootcfg os
                                                 (if (eq? 'init action)
                                                     '()
-                                                    (profile-grub-entries)))))
+                                                    (profile-boot-parameters)))))
 
        ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
