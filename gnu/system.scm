@@ -278,7 +278,7 @@ value of the SYSTEM-SERVICE-TYPE service."
         (mlet %store-monad
             ((kernel  ->  (operating-system-kernel os))
              (initrd      (operating-system-initrd-file os))
-             (params      (operating-system-parameters-file os)))
+             (params      (operating-system-boot-parameters-file os)))
           (return `(("kernel" ,kernel)
                     ("parameters" ,params)
                     ("initrd" ,initrd)
@@ -769,7 +769,7 @@ device in a <menu-entry>."
     ((label) (file-system-device fs))
     (else #f)))
 
-(define (operating-system-parameters-file os)
+(define (operating-system-boot-parameters-file os)
   "Return a file that describes the boot parameters of OS.  The primary use of
 this file is the reconstruction of GRUB menu entries for old configurations."
   (mlet %store-monad ((initrd   (operating-system-initrd-file os))
