@@ -7323,14 +7323,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "16.2.0")
+    (version "17.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp"))
+         "1pdg1gpmkzj8yasg6cmkhcivxcdp4c12nif88y4qvsxq5ffzxas8"))
        (patches
         (search-patches "python-pyopenssl-skip-network-test.patch"))))
     (build-system python-build-system)
@@ -7348,7 +7348,7 @@ message digests and key derivation functions.")
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
