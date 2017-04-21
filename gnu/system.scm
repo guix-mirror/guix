@@ -769,27 +769,49 @@ device in a <menu-entry>."
     ((label) (file-system-device fs))
     (else #f)))
 
-(define (operating-system-boot-parameters-file os)
-  "Return a file that describes the boot parameters of OS.  The primary use of
-this file is the reconstruction of GRUB menu entries for old configurations."
-  (mlet %store-monad ((initrd   (operating-system-initrd-file os))
-                      (root ->  (operating-system-root-file-system os))
-                      (store -> (operating-system-store-file-system os))
-                      (label -> (kernel->boot-label
-                                 (operating-system-kernel os))))
-    (gexp->file "parameters"
-                #~(boot-parameters
-                   (version 0)
-                   (label #$label)
-                   (root-device #$(file-system-device root))
-                   (kernel #$(operating-system-kernel-file os))
-                   (kernel-arguments
-                    #$(operating-system-user-kernel-arguments os))
-                   (initrd #$initrd)
-                   (store
-                    (device #$(fs->boot-device store))
-                    (mount-point #$(file-system-mount-point store))))
-                #:set-load-path? #f)))
+(define (operating-system-boot-parameters os system root-device)
+  "Return a monadic <boot-parameters> record that describes the boot parameters of OS.
+SYSTEM is optional.  If given, adds kernel arguments for that system to <boot-parameters>."
+  (mlet* %store-monad
+      ((initrd (operating-system-initrd-file os))
+       (store -> (operating-system-store-file-system os))
+       (label -> (kernel->boot-label (operating-system-kernel os))))
+    (return (boot-parameters
+             (label label)
+             (root-device root-device)
+             (kernel (operating-system-kernel-file os))
+             (kernel-arguments
+              (operating-system-user-kernel-arguments os))
+             (initrd initrd)
+             (store-device (fs->boot-device store))
+             (store-mount-point (file-system-mount-point store))))))
+
+(define* (operating-system-boot-parameters-file os #:optional (system.drv #f))
+   "Return a file that describes the boot parameters of OS.  The primary use of
+this file is the reconstruction of GRUB menu entries for old configurations.
+SYSTEM.DRV is optional.  If given, adds kernel arguments for that system to the
+returned file (since the returned file is then usually stored into the
+content-addressed \"system\" directory, it's usually not a good idea
+to give it because the content hash would change by the content hash
+being stored into the \"parameters\" file)."
+  (mlet* %store-monad ((root -> (operating-system-root-file-system os))
+                       (device -> (file-system-device root))
+                       (params (operating-system-boot-parameters os
+                                                                 system.drv
+                                                                 device)))
+     (gexp->file "parameters"
+                 #~(boot-parameters
+                    (version 0)
+                    (label #$(boot-parameters-label params))
+                    (root-device #$(boot-parameters-root-device params))
+                    (kernel #$(boot-parameters-kernel params))
+                    (kernel-arguments
+                     #$(boot-parameters-kernel-arguments params))
+                    (initrd #$(boot-parameters-initrd params))
+                    (store
+                     (device #$(boot-parameters-store-device params))
+                     (mount-point #$(boot-parameters-store-mount-point params))))
+                 #:set-load-path? #f)))
 
 
 ;;;
