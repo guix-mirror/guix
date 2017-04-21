@@ -64,11 +64,12 @@
     (synopsis "UPnP protocol client library")
     (description
      "The MiniUPnPc client library facilitates access to the services provided
-by any Universal Plug and Play (UPnP) Internet Gateway Device (IGD) present on
-the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.  It is
-useful whenever an application needs to listen for incoming connections while
-running behind a UPnP-enabled router or firewall.  Such applications include
-peer-to-peer applications, active-mode FTP clients, DCC file transfers over
-IRC, instant messaging, network games, and most server software.")
+by any @dfn{Universal Plug and Play} (UPnP) @dfn{Internet Gateway Device} (IGD)
+present on the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.
+
+It is useful whenever an application needs to listen for incoming connections
+while running behind a UPnP-enabled router or firewall.  Such applications
+include peer-to-peer applications, active-mode FTP clients, DCC file transfers
+over IRC, instant messaging, network games, and most server software.")
     (license
      (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
