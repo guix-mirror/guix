@@ -33,6 +33,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
+            remote-daemon-channel
             connect-to-remote-daemon
             send-files
             retrieve-files
@@ -88,11 +89,11 @@ Throw an error on failure."
                 (message (format #f (_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
 
-(define* (connect-to-remote-daemon session
-                                   #:optional
-                                   (socket-name "/var/guix/daemon-socket/socket"))
-  "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
-an SSH session.  Return a <nix-server> object."
+(define* (remote-daemon-channel session
+                                #:optional
+                                (socket-name
+                                 "/var/guix/daemon-socket/socket"))
+  "Return an input/output port (an SSH channel) to the daemon at SESSION."
   (define redirect
     ;; Code run in SESSION to redirect the remote process' stdin/stdout to the
     ;; daemon's socket, à la socat.  The SSH protocol supports forwarding to
@@ -127,13 +128,20 @@ an SSH session.  Return a <nix-server> object."
              (_
               (primitive-exit 1)))))))
 
-  (let ((channel
-         (open-remote-pipe* session OPEN_BOTH
-                            ;; Sort-of shell-quote REDIRECT.
-                            "guile" "-c"
-                            (object->string
-                             (object->string redirect)))))
-    (open-connection #:port channel)))
+  (open-remote-pipe* session OPEN_BOTH
+                     ;; Sort-of shell-quote REDIRECT.
+                     "guile" "-c"
+                     (object->string
+                      (object->string redirect))))
+
+(define* (connect-to-remote-daemon session
+                                   #:optional
+                                   (socket-name
+                                    "/var/guix/daemon-socket/socket"))
+  "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
+an SSH session.  Return a <nix-server> object."
+  (open-connection #:port (remote-daemon-channel session)))
+
 
 (define (store-import-channel session)
   "Return an output port to which archives to be exported to SESSION's store
