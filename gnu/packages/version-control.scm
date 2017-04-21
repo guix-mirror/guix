@@ -169,7 +169,7 @@ as well as the classic centralized workflow.")
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
-                     ;; nars; see <http://bugs.gnu.org/21949>.
+                     ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
       #:tests? #f ; FIXME: Many tests are failing
@@ -307,7 +307,7 @@ as well as the classic centralized workflow.")
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
-   (home-page "http://git-scm.com/")))
+   (home-page "https://git-scm.com/")))
 
 ;; Some dependent packages directly access internal interfaces which
 ;; have changed in 2.12
@@ -834,7 +834,7 @@ machine.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://ftp.gnu.org/non-gnu/cvs/source/feature/"
+                   "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
              (sha256
               (base32
