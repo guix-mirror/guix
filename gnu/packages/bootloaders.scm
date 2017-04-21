@@ -63,17 +63,13 @@
 (define-public grub
   (package
     (name "grub")
-    (version "2.02rc1")
+    (version "2.02")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "ftp://alpha.gnu.org/gnu/grub/grub-"
-                   "2.02~rc1"
-                   ".tar.xz"))
-             (file-name (string-append name "-" version ".tar.xz"))
+             (uri (string-append "mirror://gnu/grub/grub-" version ".tar.xz"))
              (sha256
               (base32
-               "0y02v19x9sb5jvj740f604vvi5j1rx8pily1jk0l64bdp7lkjlj4"))))
+               "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
