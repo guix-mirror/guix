@@ -369,9 +369,7 @@ it atomically, and then run OS's activation script."
 NUMBERS, which is a list of generation numbers."
   (define (system->boot-parameters system number time)
     (unless-file-not-found
-     (let* ((file             (string-append system "/parameters"))
-            (params           (call-with-input-file file
-                                read-boot-parameters)))
+     (let* ((params           (read-boot-parameters-file system)))
        params)))
   (let* ((systems (map (cut generation-file-name profile <>)
                        numbers))
@@ -387,9 +385,7 @@ NUMBERS, which is a list of generation numbers."
 NUMBERS, which is a list of generation numbers."
   (define (system->grub-entry system number time)
     (unless-file-not-found
-     (let* ((file             (string-append system "/parameters"))
-            (params           (call-with-input-file file
-                                read-boot-parameters))
+     (let* ((params           (read-boot-parameters-file system))
             (label            (boot-parameters-label params))
             (root             (boot-parameters-root-device params))
             (root-device      (if (bytevector? root)
@@ -447,9 +443,8 @@ generation as its default entry.  STORE is an open connection to the store."
   "Re-install grub for existing system profile generation NUMBER.  STORE is an
 open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
-         (file (string-append generation "/parameters"))
          (params (unless-file-not-found
-                  (call-with-input-file file read-boot-parameters)))
+                  (read-boot-parameters-file generation)))
          (root-device (boot-parameters-root-device params))
          ;; We don't currently keep track of past menu entries' details.  The
          ;; default values will allow the system to boot, even if they differ
@@ -533,8 +528,7 @@ list of services."
   "Display a summary of system generation NUMBER in a human-readable format."
   (unless (zero? number)
     (let* ((generation  (generation-file-name profile number))
-           (param-file  (string-append generation "/parameters"))
-           (params      (call-with-input-file param-file read-boot-parameters))
+           (params      (read-boot-parameters-file generation))
            (label       (boot-parameters-label params))
            (root        (boot-parameters-root-device params))
            (root-device (if (bytevector? root)

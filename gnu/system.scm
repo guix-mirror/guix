@@ -109,7 +109,7 @@
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
-            read-boot-parameters
+            read-boot-parameters-file
 
             local-host-aliases
             %setuid-programs
@@ -906,5 +906,25 @@ being stored into the \"parameters\" file)."
      (warning (G_ "unrecognized boot parameters for '~a'~%")
               system)
      #f)))
+
+(define (read-boot-parameters-file system)
+  "Read boot parameters from SYSTEM's (system or generation) \"parameters\"
+file and returns the corresponding <boot-parameters> object or #f if the
+format is unrecognized.
+The object has its kernel-arguments extended in order to make it bootable."
+  (let* ((file (string-append system "/parameters"))
+         (params (call-with-input-file file read-boot-parameters))
+         (root (boot-parameters-root-device params))
+         (root-device (if (bytevector? root)
+                          (uuid->string root)
+                          root))
+         (kernel-arguments (boot-parameters-kernel-arguments params)))
+    (if params
+      (boot-parameters
+        (inherit params)
+        (kernel-arguments (bootable-kernel-arguments kernel-arguments
+                                                     system
+                                                     root-device)))
+      #f)))
 
 ;;; system.scm ends here
