@@ -28,14 +28,14 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.0.20161216")
+    (version "2.0.20170421")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "0gpxva9jkjvqwawff5y51r6bmsmdhixl3i5bmzlqsqpwsq449q81"))))
+        (base32 "0n11m2wq812zms5b21h8ihw1kbyaihj9nqjiida0hskf4dmw4m13"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -45,8 +45,7 @@
      ;; the configure phase.
      '(#:make-flags
        (list
-        (string-append
-         "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
+        (string-append "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
         (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
         "CC=gcc"
 
