@@ -351,6 +351,18 @@
   (message nix-protocol-error-message)
   (status  nix-protocol-error-status))
 
+(define-syntax-rule (system-error-to-connection-error file exp ...)
+  "Catch 'system-error' exceptions and translate them to
+'&nix-connection-error'."
+  (catch 'system-error
+    (lambda ()
+      exp ...)
+    (lambda args
+      (let ((errno (system-error-errno args)))
+        (raise (condition (&nix-connection-error
+                           (file file)
+                           (errno errno))))))))
+
 (define (open-unix-domain-socket file)
   "Connect to the Unix-domain socket at FILE and return it.  Raise a
 '&nix-connection-error' upon error."
@@ -359,16 +371,9 @@
              (socket PF_UNIX SOCK_STREAM 0)))
         (a (make-socket-address PF_UNIX file)))
 
-    (catch 'system-error
-      (lambda ()
-        (connect s a)
-        s)
-      (lambda args
-        ;; Translate the error to something user-friendly.
-        (let ((errno (system-error-errno args)))
-          (raise (condition (&nix-connection-error
-                             (file file)
-                             (errno errno)))))))))
+    (system-error-to-connection-error file
+      (connect s a)
+      s)))
 
 (define (connect-to-daemon uri)
   "Connect to the daemon at URI, a string that may be an actual URI or a file
@@ -1350,3 +1355,7 @@ must be an absolute store file name, or a derivation file name."
             ;; Return the first that works.
             (any (cut log-file store <>) derivers))
            (_ #f)))))
+
+;;; Local Variables:
+;;; eval: (put 'system-error-to-connection-error 'scheme-indent-function 1)
+;;; End:
