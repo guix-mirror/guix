@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +18,10 @@
 
 (define-module (guix ssh)
   #:use-module (guix store)
-  #:autoload   (guix ui) (N_)
+  #:use-module ((guix ui) #:select (_ N_))
+  #:use-module (ssh session)
+  #:use-module (ssh auth)
+  #:use-module (ssh key)
   #:use-module (ssh channel)
   #:use-module (ssh popen)
   #:use-module (ssh session)
@@ -29,7 +32,8 @@
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
-  #:export (connect-to-remote-daemon
+  #:export (open-ssh-session
+            connect-to-remote-daemon
             send-files
             retrieve-files
             remote-store-host
@@ -42,6 +46,47 @@
 ;;; over SSH, using Guile-SSH.
 ;;;
 ;;; Code:
+
+(define %compression
+  "zlib@openssh.com,zlib")
+
+(define* (open-ssh-session host #:key user port
+                           (compression %compression))
+  "Open an SSH session for HOST and return it.  When USER and PORT are #f, use
+default values or whatever '~/.ssh/config' specifies; otherwise use them.
+Throw an error on failure."
+  (let ((session (make-session #:user user
+                               #:host host
+                               #:port port
+                               #:timeout 10       ;seconds
+                               ;; #:log-verbosity 'protocol
+
+                               ;; We need lightweight compression when
+                               ;; exchanging full archives.
+                               #:compression compression
+                               #:compression-level 3)))
+
+    ;; Honor ~/.ssh/config.
+    (session-parse-config! session)
+
+    (match (connect! session)
+      ('ok
+       ;; Use public key authentication, via the SSH agent if it's available.
+       (match (userauth-public-key/auto! session)
+         ('success
+          session)
+         (x
+          (disconnect! session)
+          (raise (condition
+                  (&message
+                   (message (format #f (_ "SSH authentication failed for '~a': ~a~%")
+                                    host (get-error session)))))))))
+      (x
+       ;; Connection failed or timeout expired.
+       (raise (condition
+               (&message
+                (message (format #f (_ "SSH connection to '~a' failed: ~a~%")
+                                 host (get-error session))))))))))
 
 (define* (connect-to-remote-daemon session
                                    #:optional
