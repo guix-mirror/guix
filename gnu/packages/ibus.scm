@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -190,7 +190,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "1.2.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -199,7 +199,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04didxd39vlry6nqy7xqynwc68ndajnhw334wahfmp7zjbbscs7p"))))
+                "17fibx9psrxfiznm4yw8klgbnh3ksyisx0pm1n59kxkrq61v8y0b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -218,10 +218,10 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
         ,(origin
            (method url-fetch)
            (uri (string-append "mirror://sourceforge/libpinyin/"
-                               "models/model10.text.tar.gz"))
+                               "models/model14.text.tar.gz"))
            (sha256
             (base32
-             "0g489wqcfklxphhxpkh8i4qf9y8scmnmdbfrzdbrgf3rignbwyiw"))))))
+             "0qqk30nflj07zjhs231c95ln4yj4ipzwxxiwrxazrg4hb8bhypqq"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
