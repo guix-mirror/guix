@@ -750,33 +750,13 @@ populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
-       (store-fs -> (operating-system-store-file-system os))
-       (label ->    (kernel->boot-label (operating-system-kernel os)))
-       (kernel ->   (operating-system-kernel-file os))
-       (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entries ->  (list (menu-entry
-                           (label label)
-
-                           ;; The device where the kernel and initrd live.
-                           (device (fs->boot-device store-fs))
-                           (device-mount-point
-                            (file-system-mount-point store-fs))
-
-                           (linux kernel)
-                           (linux-arguments
-                            (cons* (string-append "--root=" root-device)
-                                   #~(string-append "--system=" #$system)
-                                   #~(string-append "--load=" #$system
-                                                    "/boot")
-                                   (operating-system-kernel-arguments os
-                                                                      system
-                                                                      root-device)))
-                           (initrd initrd)))))
-    (grub-configuration-file (operating-system-bootloader os) entries
-                             #:old-entries old-entries)))
+       (entry (operating-system-boot-parameters os system root-device)))
+    (grub-configuration-file (operating-system-bootloader os)
+                             (list entry)
+                              #:old-entries old-entries)))
 
 (define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the
