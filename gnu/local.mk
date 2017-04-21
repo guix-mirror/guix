@@ -578,7 +578,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
-  %D%/packages/patches/gcc-libiberty-printf-decl.patch		\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
@@ -624,12 +623,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphite2-fix-32-bit-wrap-arounds.patch	\
   %D%/packages/patches/graphite2-non-linear-classes-even-number.patch \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
-  %D%/packages/patches/grub-CVE-2015-8370.patch			\
-  %D%/packages/patches/grub-gets-undeclared.patch		\
-  %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
-  %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
@@ -784,7 +779,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
-  %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
@@ -932,7 +926,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
-  %D%/packages/patches/soprano-find-clucene.patch		\
   %D%/packages/patches/spice-CVE-2016-9577.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
@@ -981,7 +974,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
-  %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
@@ -1012,8 +1004,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
-  %D%/packages/patches/xf86-video-intel-compat-api.patch	\
-  %D%/packages/patches/xf86-video-intel-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
