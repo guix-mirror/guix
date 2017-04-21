@@ -112,7 +112,7 @@ against computation cost.  The current best converter provides a
 signal-to-noise ratio of 145dB with -3dB passband extending from DC to 96% of
 the theoretical best bandwidth for a given pair of input and output sample
 rates.")
-    (license l:gpl2+)))
+    (license l:bsd-2)))
 
 (define-public pulseaudio
   (package
