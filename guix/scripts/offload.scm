@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,7 +148,7 @@ its key type as a symbol, and the actual base64-encoded string."
          (string->symbol (string-drop type 4))))
 
   (match (string-tokenize host-key)
-    ((type key _)
+    ((type key x)
      (values (type->symbol type) key))
     ((type key)
      (values (type->symbol type) key))))
@@ -403,7 +403,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
        (if (eof-object? line)
            +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
            (match (string-tokenize line)
-             ((one five fifteen . _)
+             ((one five fifteen . x)
               (let* ((raw        (string->number five))
                      (jobs       (build-machine-parallel-builds machine))
                      (normalized (/ raw jobs)))
@@ -411,9 +411,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
  (normalized: ~s)~%"
                         (build-machine-name machine) raw normalized)
                 normalized))
-             (_
+             (x
               +inf.0)))))        ;something's fishy about MACHINE, so avoid it
-    (_
+    (x
      +inf.0)))                      ;failed to connect to MACHINE, so avoid it
 
 (define (machine-lock-file machine hint)
@@ -503,7 +503,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
       (()
        ;; We'll never be able to match REQS.
        (display "# decline\n"))
-      ((_ ...)
+      ((x ...)
        (let ((machine (choose-build-machine candidates)))
          (if machine
              (begin
@@ -671,7 +671,7 @@ machine."
                                          build-machine-name)))
                        ((file) (values file (const #t)))
                        (()     (values %machine-file (const #t)))
-                       (_      (leave (_ "wrong number of arguments~%"))))))
+                       (x      (leave (_ "wrong number of arguments~%"))))))
          (check-machine-availability (or file %machine-file) pred))))
     (("--version")
      (show-version-and-exit "guix offload"))
