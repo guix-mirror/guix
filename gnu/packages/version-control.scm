@@ -933,11 +933,11 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                 "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
     (home-page "http://invisible-island.net/diffstat/")
-    (synopsis "Make histograms from the output of 'diff'")
+    (synopsis "Make histograms from the output of @command{diff}")
     (description
-     "Diffstat reads the output of 'diff' and displays a histogram of the
-insertions, deletions, and modifications per-file.  It is useful for reviewing
-large, complex patch files.")
+     "Diffstat reads the output of @command{diff} and displays a histogram of
+the insertions, deletions, and modifications per file.  It is useful for
+reviewing large, complex patch files.")
     (license (license:x11-style "file://COPYING"))))
 
 (define-public cssc
