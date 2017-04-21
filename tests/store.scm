@@ -48,6 +48,14 @@
 
 (test-begin "store")
 
+(test-assert "open-connection with file:// URI"
+  (let ((store (open-connection (string-append "file://"
+                                               (%daemon-socket-uri)))))
+    (and (add-text-to-store store "foo" "bar")
+         (begin
+           (close-connection store)
+           #t))))
+
 (test-equal "connection handshake error"
   EPROTO
   (let ((port (%make-void-port "rw")))

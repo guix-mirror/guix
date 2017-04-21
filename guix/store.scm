@@ -39,7 +39,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
-  #:export (%daemon-socket-file
+  #:use-module (web uri)
+  #:export (%daemon-socket-uri
             %gc-roots-directory
             %default-substitute-urls
 
@@ -216,8 +217,8 @@
 (define %default-socket-path
   (string-append %state-directory "/daemon-socket/socket"))
 
-(define %daemon-socket-file
-  ;; File name of the socket the daemon listens too.
+(define %daemon-socket-uri
+  ;; URI or file name of the socket the daemon listens too.
   (make-parameter (or (getenv "GUIX_DAEMON_SOCKET")
                       %default-socket-path)))
 
@@ -369,10 +370,29 @@
                              (file file)
                              (errno errno)))))))))
 
-(define* (open-connection #:optional (file (%daemon-socket-file))
+(define (connect-to-daemon uri)
+  "Connect to the daemon at URI, a string that may be an actual URI or a file
+name."
+  (define connect
+    (match (string->uri uri)
+      (#f                                         ;URI is a file name
+       open-unix-domain-socket)
+      ((? uri? uri)
+       (match (uri-scheme uri)
+         ((or #f 'file 'unix)
+          (lambda (_)
+            (open-unix-domain-socket (uri-path uri))))
+         (x
+          (raise (condition (&nix-connection-error
+                             (file (uri->string uri))
+                             (errno ENOTSUP)))))))))
+
+  (connect uri))
+
+(define* (open-connection #:optional (uri (%daemon-socket-uri))
                           #:key port (reserve-space? #t) cpu-affinity)
-  "Connect to the daemon over the Unix-domain socket at FILE, or, if PORT is
-not #f, use it as the I/O port over which to communicate to a build daemon.
+  "Connect to the daemon at URI (a string), or, if PORT is not #f, use it as
+the I/O port over which to communicate to a build daemon.
 
 When RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
 space on the file system so that the garbage collector can still operate,
@@ -383,10 +403,10 @@ for this connection will be pinned.  Return a server object."
              ;; One of the 'write-' or 'read-' calls below failed, but this is
              ;; really a connection error.
              (raise (condition
-                     (&nix-connection-error (file (or port file))
+                     (&nix-connection-error (file (or port uri))
                                             (errno EPROTO))
                      (&message (message "build daemon handshake failed"))))))
-    (let ((port (or port (open-unix-domain-socket file))))
+    (let ((port (or port (connect-to-daemon uri))))
       (write-int %worker-magic-1 port)
       (let ((r (read-int port)))
         (and (eqv? r %worker-magic-2)

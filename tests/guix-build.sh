@@ -36,6 +36,14 @@ guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' |	\
 guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
+# Passing a URI.
+GUIX_DAEMON_SOCKET="file://$NIX_STATE_DIR/daemon-socket/socket"	\
+guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
+
+( if GUIX_DAEMON_SOCKET="weird://uri"					\
+     guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)';	\
+  then exit 1; fi )
+
 # Check --sources option with its arguments
 module_dir="t-guix-build-$$"
 mkdir "$module_dir"

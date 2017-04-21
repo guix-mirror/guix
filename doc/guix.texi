@@ -3666,10 +3666,30 @@ accidental modifications.
 @end quotation
 
 The @code{(guix store)} module provides procedures to connect to the
-daemon, and to perform RPCs.  These are described below.
+daemon, and to perform RPCs.  These are described below.  By default,
+@code{open-connection}, and thus all the @command{guix} commands,
+connect to the local daemon or to the URI specified by the
+@code{GUIX_DAEMON_SOCKET} environment variable.
 
-@deffn {Scheme Procedure} open-connection [@var{file}] [#:reserve-space? #t]
-Connect to the daemon over the Unix-domain socket at @var{file}.  When
+@defvr {Environment Variable} GUIX_DAEMON_SOCKET
+When set, the value of this variable should be a file name or a URI
+designating the daemon endpoint.  When it is a file name, it denotes a
+Unix-domain socket to connect to.  In addition to file names, the
+supported URI schemes are:
+
+@table @code
+@item file
+@itemx unix
+These are for Unix-domain sockets.
+@code{file:///var/guix/daemon-socket/socket} is equivalent to
+@file{/var/guix/daemon-socket/socket}.
+@end table
+
+Additional URI schemes may be supported in the future.
+@end defvr
+
+@deffn {Scheme Procedure} open-connection [@var{uri}] [#:reserve-space? #t]
+Connect to the daemon over the Unix-domain socket at @var{uri} (a string).  When
 @var{reserve-space?} is true, instruct it to reserve a little bit of
 extra space on the file system so that the garbage collector can still
 operate should the disk become full.  Return a server object.
