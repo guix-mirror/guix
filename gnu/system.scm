@@ -73,7 +73,7 @@
             operating-system-hosts-file
             operating-system-kernel
             operating-system-kernel-file
-            operating-system-user-kernel-arguments
+            operating-system-kernel-arguments
             operating-system-initrd
             operating-system-users
             operating-system-groups
@@ -121,6 +121,14 @@
 ;;; This module supports whole-system configuration.
 ;;;
 ;;; Code:
+
+(define (bootable-kernel-arguments kernel-arguments system.drv root-device)
+  "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
+booted from ROOT-DEVICE"
+  (cons* (string-append "--root=" root-device)
+         #~(string-append "--system=" #$system.drv)
+         #~(string-append "--load=" #$system.drv "/boot")
+         kernel-arguments))
 
 ;; System-wide configuration.
 ;; TODO: Add per-field docstrings/stexi.
@@ -181,6 +189,13 @@
 
   (sudoers-file operating-system-sudoers-file     ; file-like
                 (default %sudoers-specification)))
+
+(define (operating-system-kernel-arguments os system.drv root-device)
+  "Return all the kernel arguments, including the ones not specified
+directly by the user."
+  (bootable-kernel-arguments (operating-system-user-kernel-arguments os)
+                             system.drv
+                             root-device))
 
 
 ;;;
@@ -756,7 +771,9 @@ populate the \"old entries\" menu."
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system
                                                     "/boot")
-                                   (operating-system-user-kernel-arguments os)))
+                                   (operating-system-kernel-arguments os
+                                                                      system
+                                                                      root-device)))
                            (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
@@ -781,7 +798,9 @@ SYSTEM is optional.  If given, adds kernel arguments for that system to <boot-pa
              (root-device root-device)
              (kernel (operating-system-kernel-file os))
              (kernel-arguments
-              (operating-system-user-kernel-arguments os))
+              (if system
+               (operating-system-kernel-arguments os system root-device)
+               (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (store-device (fs->boot-device store))
              (store-mount-point (file-system-mount-point store))))))
