@@ -1297,7 +1297,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (version "0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.2f30.org/releases/"
+              (uri (string-append "https://dl.2f30.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -1312,7 +1312,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libgit2" ,libgit2)))
-    (home-page "http://2f30.org")
+    (home-page "https://2f30.org/")
     (synopsis "Static git page generator")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")
