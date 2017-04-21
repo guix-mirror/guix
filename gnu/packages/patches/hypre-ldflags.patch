@@ -1,9 +1,0 @@
---- hypre-2.10.1/src/lib/Makefile.orig	2016-03-11 16:04:03.740259228 -0600
-+++ hypre-2.10.1/src/lib/Makefile	2016-03-11 16:04:57.296260190 -0600
-@@ -107,5 +107,5 @@
- 
- libHYPRE.so: ${FILES_HYPRE}
- 	@echo  "Building $@ ... "
--	${BUILD_CC_SHARED} -o ${SONAME} ${FILES_HYPRE} ${SOLIBS} ${SHARED_SET_SONAME}${SONAME} ${SHARED_OPTIONS}
-+	${BUILD_CC_SHARED} ${LDFLAGS} -o ${SONAME} ${FILES_HYPRE} ${SOLIBS} ${SHARED_SET_SONAME}${SONAME} ${SHARED_OPTIONS}
- 	ln -s ${SONAME} $@
