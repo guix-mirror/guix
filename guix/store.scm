@@ -375,6 +375,39 @@
       (connect s a)
       s)))
 
+(define (open-inet-socket host port)
+  "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
+'&nix-connection-error' upon error."
+  (let ((sock (with-fluids ((%default-port-encoding #f))
+                ;; This trick allows use of the `scm_c_read' optimization.
+                (socket PF_UNIX SOCK_STREAM 0))))
+    (define addresses
+      (getaddrinfo host
+                   (if (number? port) (number->string port) port)
+                   (if (number? port)
+                       (logior AI_ADDRCONFIG AI_NUMERICSERV)
+                       AI_ADDRCONFIG)))
+
+    (let loop ((addresses addresses))
+      (match addresses
+        ((ai rest ...)
+         (let ((s (socket (addrinfo:fam ai)
+                          ;; TCP/IP only
+                          SOCK_STREAM IPPROTO_IP)))
+
+           (catch 'system-error
+             (lambda ()
+               (connect s (addrinfo:addr ai))
+               s)
+             (lambda args
+               ;; Connection failed, so try one of the other addresses.
+               (close s)
+               (if (null? rest)
+                   (raise (condition (&nix-connection-error
+                                      (file host)
+                                      (errno (system-error-errno args)))))
+                   (loop rest))))))))))
+
 (define (connect-to-daemon uri)
   "Connect to the daemon at URI, a string that may be an actual URI or a file
 name."
@@ -387,6 +420,14 @@ name."
          ((or #f 'file 'unix)
           (lambda (_)
             (open-unix-domain-socket (uri-path uri))))
+         ('guix
+          (lambda (_)
+            (unless (uri-port uri)
+              (raise (condition (&nix-connection-error
+                                 (file (uri->string uri))
+                                 (errno EBADR))))) ;bah!
+
+            (open-inet-socket (uri-host uri) (uri-port uri))))
          (x
           (raise (condition (&nix-connection-error
                              (file (uri->string uri))

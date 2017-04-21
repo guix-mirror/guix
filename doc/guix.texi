@@ -3683,6 +3683,19 @@ supported URI schemes are:
 These are for Unix-domain sockets.
 @code{file:///var/guix/daemon-socket/socket} is equivalent to
 @file{/var/guix/daemon-socket/socket}.
+
+@item guix
+These URIs denote connections over TCP/IP, without encryption nor
+authentication of the remote host.  The URI must always specify both the
+host name and port number:
+
+@example
+guix://master.guix.example.org:1234
+@end example
+
+This setup is suitable on local networks, such as clusters, where only
+trusted nodes may connect to the build daemon at
+@code{master.guix.example.org}.
 @end table
 
 Additional URI schemes may be supported in the future.
