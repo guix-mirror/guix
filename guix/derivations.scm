@@ -1238,16 +1238,15 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                       ;; Guile sets it, but remove it to avoid conflicts when
                       ;; building Guile-using packages.
                       (unsetenv "LD_LIBRARY_PATH")))
-         (builder  (add-data-to-store store
+         (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
 
                                       ;; Explicitly use UTF-8 for determinism,
                                       ;; and also because UTF-8 output is faster.
                                       (with-fluids ((%default-port-encoding
                                                      "UTF-8"))
-                                        (call-with-values
-                                            open-bytevector-output-port
-                                          (lambda (port get-bv)
+                                        (call-with-output-string
+                                          (lambda (port)
                                             (write prologue port)
                                             (write
                                              `(exit
@@ -1255,8 +1254,7 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                                                   ((_ ...)
                                                    (remove module-form? exp))
                                                   (_ `(,exp))))
-                                             port)
-                                            (get-bv))))
+                                             port))))
 
                                       ;; The references don't really matter
                                       ;; since the builder is always used in
