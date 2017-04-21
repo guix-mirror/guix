@@ -369,8 +369,13 @@ it atomically, and then run OS's activation script."
 NUMBERS, which is a list of generation numbers."
   (define (system->boot-parameters system number time)
     (unless-file-not-found
-     (let* ((params           (read-boot-parameters-file system)))
-       params)))
+     (let* ((params           (read-boot-parameters-file system))
+            (label            (boot-parameters-label params)))
+       (boot-parameters
+         (inherit params)
+         (label (string-append label " (#"
+                               (number->string number) ", "
+                               (seconds->string time) ")"))))))
   (let* ((systems (map (cut generation-file-name profile <>)
                        numbers))
          (times   (map (lambda (system)
