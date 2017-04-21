@@ -3941,3 +3941,43 @@ fabulous Orb of Zot.")
                    license:expat
                    license:zlib
                    license:asl2.0))))
+
+(define-public lugaru
+  (package
+    (name "lugaru")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/osslugaru/lugaru/downloads/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "15zgcshy22q51rm72zi6y9z7qlgnz5iw3gczjdlir4bqmxy4gspk"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSYSTEM_INSTALL=ON")
+       ;; no test target
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("vorbis" ,libvorbis)
+       ("zlib" ,zlib)))
+    (home-page "https://osslugaru.gitlab.io")
+    (synopsis "Cross-platform third-person action game")
+    (description "Lugaru is a third-person action game.  The main character,
+Turner, is an anthropomorphic rebel bunny rabbit with impressive combat skills.
+In his quest to find those responsible for slaughtering his village, he uncovers
+a far-reaching conspiracy involving the corrupt leaders of the rabbit republic
+and the starving wolves from a nearby den.  Turner takes it upon himself to
+fight against their plot and save his fellow rabbits from slavery.")
+    (license (list license:gpl2+ ; code
+                   ;; assets:
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0))))
