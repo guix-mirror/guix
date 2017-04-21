@@ -411,6 +411,11 @@
 (define (connect-to-daemon uri)
   "Connect to the daemon at URI, a string that may be an actual URI or a file
 name."
+  (define (not-supported)
+    (raise (condition (&nix-connection-error
+                       (file uri)
+                       (errno ENOTSUP)))))
+
   (define connect
     (match (string->uri uri)
       (#f                                         ;URI is a file name
@@ -428,10 +433,21 @@ name."
                                  (errno EBADR))))) ;bah!
 
             (open-inet-socket (uri-host uri) (uri-port uri))))
+         ((? symbol? scheme)
+          ;; Try to dynamically load a module for SCHEME.
+          ;; XXX: Errors are swallowed.
+          (match (false-if-exception
+                  (resolve-interface `(guix store ,scheme)))
+            ((? module? module)
+             (match (false-if-exception
+                     (module-ref module 'connect-to-daemon))
+               ((? procedure? connect)
+                (lambda (_)
+                  (connect uri)))
+               (x (not-supported))))
+            (#f (not-supported))))
          (x
-          (raise (condition (&nix-connection-error
-                             (file (uri->string uri))
-                             (errno ENOTSUP)))))))))
+          (not-supported))))))
 
   (connect uri))
 

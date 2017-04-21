@@ -187,7 +187,8 @@ if HAVE_GUILE_SSH
 
 MODULES +=					\
   guix/ssh.scm					\
-  guix/scripts/copy.scm
+  guix/scripts/copy.scm				\
+  guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
 

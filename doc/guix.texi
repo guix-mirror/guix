@@ -3696,9 +3696,30 @@ guix://master.guix.example.org:1234
 This setup is suitable on local networks, such as clusters, where only
 trusted nodes may connect to the build daemon at
 @code{master.guix.example.org}.
+
+@item ssh
+@cindex SSH access to build daemons
+These URIs allow you to connect to a remote daemon over
+SSH@footnote{This feature requires Guile-SSH (@pxref{Requirements}).}.
+A typical URL might look like this:
+
+@example
+ssh://charlie@@guix.example.org:22
+@end example
+
+As for @command{guix copy}, the usual OpenSSH client configuration files
+are honored (@pxref{Invoking guix copy}).
 @end table
 
 Additional URI schemes may be supported in the future.
+
+@c XXX: Remove this note when the protocol incurs fewer round trips
+@c and when (guix derivations) no longer relies on file system access.
+@quotation Note
+The ability to connect to remote build daemons is considered
+experimental as of @value{VERSION}.  Please get in touch with us to
+share any problems or suggestions you may have (@pxref{Contributing}).
+@end quotation
 @end defvr
 
 @deffn {Scheme Procedure} open-connection [@var{uri}] [#:reserve-space? #t]
