@@ -205,12 +205,12 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'autogen
-          (lambda _ (zero? (system* "autoreconf" "-vif"))))
+           (lambda _ (zero? (system* "autoreconf" "-vif"))))
          (add-after 'unpack 'unpack-model
-          (lambda* (#:key inputs #:allow-other-keys)
-            (zero? (system* "tar" "-xvf"
-                            (assoc-ref inputs "model")
-                            "-C" "data")))))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "tar" "-xvf"
+                             (assoc-ref inputs "model")
+                             "-C" "data")))))))
     (inputs
      `(("glib" ,glib)
        ("bdb" ,bdb)
