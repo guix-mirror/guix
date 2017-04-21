@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -59,6 +59,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -264,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170306")
+    (version "20170421")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +274,7 @@ operating systems.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qwcbjm9j1hgzmybw15w53pvfbqcdf47d4sw21s6r2yaj8kx1hag"))))
+         "09f1abad0vdn08x80hadjccjpnzcbn5fjpj749gb819biyqkl0y2"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -292,6 +293,7 @@ operating systems.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
@@ -338,8 +340,7 @@ operating systems.")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
-It adds a large amount of features to mutt, and they all find their way
-into mutt, so it is not a fork but a large set of feature patches.")))
+It adds a large amount of new and improved features to mutt.")))
 
 (define-public gmime
   (package
