@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -239,8 +240,11 @@ provide serif, sans and monospaced variants.")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
 package provides the TrueType (TTF) files.")
     (license
-     (license:x11-style
-      "http://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
+     (license:fsdg-compatible
+      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
+      "The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself."))))
 
 (define-public font-cantarell
   (package
