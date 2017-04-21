@@ -750,7 +750,16 @@ standards.")
                       (copy-file file (string-append icons "/icecat.png"))))
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
-                    "mozicon128.png" "default256.png")))))))))
+                    "mozicon128.png" "default256.png"))))))
+         ;; This fixes the file chooser crash that happens with GTK 3.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program (car (find-files lib "^icecat$"))
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
