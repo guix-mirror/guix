@@ -3805,7 +3805,7 @@ predicts the locations of structural units in the sequences.")
 (define-public proteinortho
   (package
     (name "proteinortho")
-    (version "5.15")
+    (version "5.16")
     (source
      (origin
       (method url-fetch)
@@ -3815,7 +3815,7 @@ predicts the locations of structural units in the sequences.")
         version "_src.tar.gz"))
       (sha256
        (base32
-        "05wacnnbx56avpcwhzlcf6b7s77swcpv3qnwz5sh1z54i51gg2ki"))))
+        "0z4f5cg0cs8ai62hfvp4q6w66q2phcc55nhs4xj5cyhxxivjv2ai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
