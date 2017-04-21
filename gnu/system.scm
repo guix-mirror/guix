@@ -73,7 +73,7 @@
             operating-system-hosts-file
             operating-system-kernel
             operating-system-kernel-file
-            operating-system-kernel-arguments
+            operating-system-user-kernel-arguments
             operating-system-initrd
             operating-system-users
             operating-system-groups
@@ -129,7 +129,7 @@
   operating-system?
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
-  (kernel-arguments operating-system-kernel-arguments
+  (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <grub-configuration>
 
@@ -756,7 +756,7 @@ populate the \"old entries\" menu."
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system
                                                     "/boot")
-                                   (operating-system-kernel-arguments os)))
+                                   (operating-system-user-kernel-arguments os)))
                            (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
@@ -784,7 +784,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                    (root-device #$(file-system-device root))
                    (kernel #$(operating-system-kernel-file os))
                    (kernel-arguments
-                    #$(operating-system-kernel-arguments os))
+                    #$(operating-system-user-kernel-arguments os))
                    (initrd #$initrd)
                    (store
                     (device #$(fs->boot-device store))
