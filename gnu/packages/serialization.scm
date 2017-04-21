@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,8 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages perl))
 
 (define-public cereal
   (package
@@ -287,3 +289,24 @@ it a convenient format to store user input files.")
      "Cap'n Proto is a very fast data interchange format and capability-based
 RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faster.")
     (license license:expat)))
+
+(define-public libbson
+  (package
+    (name "libbson")
+    (version "1.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/mongodb/libbson/releases/"
+                             "download/" version "/libbson-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1fj4554msq0rrz14snbj908dzqj46gh7jg9w9j0akn2b7q911m5a"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)))
+    (home-page "http://mongoc.org/libbson/current/index.html")
+    (synopsis "C BSON library")
+    (description "Libbson can create and parse BSON documents.  It can also
+convert JSON documents to BSON and the opposite.  BSON stands for Binary JSON,
+it is comparable to protobuf.")
+    (license license:asl2.0)))
