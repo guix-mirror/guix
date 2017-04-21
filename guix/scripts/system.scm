@@ -384,43 +384,6 @@ NUMBERS, which is a list of generation numbers."
                        systems)))
     (filter-map system->boot-parameters systems numbers times)))
 
-(define* (profile-grub-entries #:optional (profile %system-profile)
-                                  (numbers (generation-numbers profile)))
-  "Return a list of 'menu-entry' for the generations of PROFILE specified by
-NUMBERS, which is a list of generation numbers."
-  (define (system->grub-entry system number time)
-    (unless-file-not-found
-     (let* ((params           (read-boot-parameters-file system))
-            (label            (boot-parameters-label params))
-            (root             (boot-parameters-root-device params))
-            (root-device      (if (bytevector? root)
-                                  (uuid->string root)
-                                  root))
-            (kernel           (boot-parameters-kernel params))
-            (kernel-arguments (boot-parameters-kernel-arguments params))
-            (initrd           (boot-parameters-initrd params)))
-       (menu-entry
-        (label (string-append label " (#"
-                              (number->string number) ", "
-                              (seconds->string time) ")"))
-        (device (boot-parameters-store-device params))
-        (device-mount-point (boot-parameters-store-mount-point params))
-        (linux kernel)
-        (linux-arguments
-         (cons* (string-append "--root=" root-device)
-                (string-append "--system=" system)
-                (string-append "--load=" system "/boot")
-                kernel-arguments))
-        (initrd initrd)))))
-
-  (let* ((systems (map (cut generation-file-name profile <>)
-                       numbers))
-         (times   (map (lambda (system)
-                         (unless-file-not-found
-                          (stat:mtime (lstat system))))
-                       systems)))
-    (filter-map system->grub-entry systems numbers times)))
-
 
 ;;;
 ;;; Roll-back.
