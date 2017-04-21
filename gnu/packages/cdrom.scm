@@ -26,7 +26,7 @@
 (define-module (gnu packages cdrom)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+))
+  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+ cddl1.0))
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -196,6 +196,63 @@ target drive is CDDA capable.  In addition to simple reading, cdparanoia adds
 extra-robust data verification, synchronization, error handling and scratch
 reconstruction capability.")
     (license gpl2))) ; libraries under lgpl2.1
+
+(define-public cdrtools
+  (package
+    (name "cdrtools")
+    (version "3.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/cdrtools/cdrtools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "03w6ypsmwwy4d7vh6zgwpc60v541vc5ywp8bdb758hbc4yv2wa7d"))
+              (patches (search-patches "cdrtools-3.01-mkisofs-isoinfo.patch"))))
+    (build-system gnu-build-system)
+    ;; XXX cdrtools bundles a modified, relicensed early version of cdparanoia.
+    (inputs
+     `(("linux-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-linux-headers
+           (lambda _
+             (substitute* "autoconf/configure"
+               (("/usr/src/linux")
+                (assoc-ref %build-inputs "linux-headers")))
+             #t))
+         (add-before 'build 'substitute-dirs
+           (lambda _
+             (substitute* (append (find-files "DEFAULTS" "^Defaults\\.")
+                                  (find-files "DEFAULTS_ENG" "^Defaults\\.")
+                                  (find-files "TEMPLATES" "^Defaults\\."))
+               (("/opt/schily") (assoc-ref %outputs "out")))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero?
+              (system* "make" "CONFIG_SHELL=sh" "CCOM=gcc" "RM=rm"))))
+         (replace 'install
+           (lambda _
+             (zero?
+              (system* "make"
+                       "RM=rm" "LN=ln" "SYMLINK=ln -s"
+                       (string-append "INS_BASE=" (assoc-ref %outputs "out"))
+                       (string-append "INS_RBASE=" (assoc-ref %outputs "out"))
+                       "install" )))))
+       #:tests? #f))  ; no tests
+   (synopsis "Command line utilities to manipulate and burn CD/DVD/BD images")
+   (description "cdrtools is a collection of command line utilities to create
+CD's, DVD's or Blue Ray discs.  The most important components are
+@command{cdrecord}, a burning program, @command{cdda2wav}, a CD audio ripper
+which uses libparanoia, and @command{mkisofs}, which can create various disc
+images.")
+   (home-page "http://cdrtools.sourceforge.net/private/cdrecord.html")
+
+   ;; mkisofs is GPL, the other programs are CDDL.
+   (license (list cddl1.0 gpl2))))
 
 (define-public dvdisaster
   (package

@@ -517,6 +517,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
+  %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
   %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
