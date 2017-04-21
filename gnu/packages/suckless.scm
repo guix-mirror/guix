@@ -586,16 +586,16 @@ environment variable.")
      "This is a standalone implementation of fortify source.  It provides
 compile time buffer checks.  It is libc-agnostic and simply overlays the
 system headers by using the @code{#include_next} extension found in GCC.  It was
-initially intended to be used on musl based Linux distributions.
+initially intended to be used on musl-based Linux distributions.
 
 @itemize
 @item It is portable, works on *BSD, Linux, Solaris and possibly others.
 @item It will only trap non-conformant programs.  This means that fortify
   level 2 is treated in the same way as level 1.
 @item Avoids making function calls when undefined behaviour has already been
-  invoked.  This is handled by using __builtin_trap().
-@item Support for out-of-bounds read interfaces, such as send(), write(),
-  fwrite() etc.
+  invoked.  This is handled by using @code{__builtin_trap()}.
+@item Support for out-of-bounds read interfaces, such as @code{send()},
+  @code{write()}, @code{fwrite()}, etc.
 @item No ABI is enforced.  All of the fortify check functions are inlined
   into the resulting binary.
 @end itemize\n")
