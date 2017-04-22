@@ -241,6 +241,16 @@ in the Mozilla clients.")
                   `((setenv "USE_64" "1")))
                  (_
                   '()))
+             ;; The timeout values in "increase-test-timeouts" are still
+             ;; too low, so apply this workaround on armhf for now to avoid
+             ;; rebuilding on all platforms. This should be incorporated in
+             ;; the patch for the next update.
+             ;; https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00472.html
+             ,@(if (string-prefix? "armhf" (or (%current-target-system)
+                                               (%current-system)))
+                   `((substitute* "nss/gtests/ssl_gtest/tls_connect.cc"
+                       (("25000\\);") "300000);")))
+                   '())
              #t))
          (replace 'check
            (lambda _
