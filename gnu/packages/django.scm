@@ -322,3 +322,28 @@ use, simply add the field to one of your models.")
 
 (define-public python2-django-jsonfield
   (package-with-python2 python-django-jsonfield))
+
+(define-public python-dj-database-url
+  (package
+    (name "python-dj-database-url")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dj-database-url" version))
+              (sha256
+               (base32
+                "024zbkc5rli4hia9lz9g8kf1zxhb2gwawj5abf67i7gf8n22v0x6"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kennethreitz/dj-database-url")
+    (synopsis "Use Database URLs in your Django Application")
+    (description
+      "This simple Django utility allows you to utilize the 12factor inspired
+DATABASE_URL environment variable to configure your Django application.
+
+The dj_database_url.config method returns a Django database connection
+dictionary, populated with all the data specified in your URL.  There is also a
+conn_max_age argument to easily enable Django’s connection pool.")
+    (license license:bsd-2)))
+
+(define-public python2-dj-database-url
+  (package-with-python2 python-dj-database-url))
