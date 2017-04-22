@@ -598,3 +598,27 @@ name is purely coincidental.")
 
 (define-public python2-django-appconf
   (package-with-python2 python-django-appconf))
+
+(define-public python-django-statici18n
+  (package
+    (name "python-django-statici18n")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-statici18n" version))
+              (sha256
+               (base32
+                "0alcf4g1nv69njhq5k3qw4mfl2k6dc18bik5nk0g1mnp3m8zyz7k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("django-appconf" ,python-django-appconf)))
+    (home-page "https://github.com/zyegfryed/django-statici18n")
+    (synopsis "Generate JavaScript catalog to static files")
+    (description
+      "A Django app that provides helper for generating JavaScript catalog to
+static files.")
+    (license license:bsd-3)))
+
+(define-public python2-django-statici18n
+  (package-with-python2 python-django-statici18n))
