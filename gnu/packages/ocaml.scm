@@ -1007,7 +1007,8 @@ instances and printing them.")
     (native-inputs
      `(("findlib" ,ocaml-findlib)))
     (propagated-inputs
-     `(("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml-ounit)
+       ("qcheck" ,ocaml-qcheck)))
     (arguments
      `(#:tests? #f ; No test target.
        #:make-flags
