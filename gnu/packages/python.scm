@@ -14493,3 +14493,43 @@ current test, while only declaring the test-specific fields")
 
 (define-public python2-factory-boy
   (package-with-python2 python-factory-boy))
+
+(define-public python-translate-toolkit
+  (package
+    (name "python-translate-toolkit")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+       (sha256
+        (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-chardet" ,python-chardet)
+       ("python-diff-match-patch" ,python-diff-match-patch)
+       ("python-levenshtein" ,python-levenshtein)
+       ("python-lxml" ,python-lxml)
+       ("python-six" ,python-six)
+       ("python-vobject" ,python-vobject)
+       ("python-pyyaml" ,python-pyyaml)))
+    (arguments
+     ;; TODO: tests are not run, because they end with
+     ;; TypeError: parse() missing 2 required positional arguments: 'tree' and
+     ;; 'parse_funcs'
+     ;; during test setup.
+     `(#:tests? #f))
+    (home-page "http://toolkit.translatehouse.org")
+    (synopsis "Tools and API for translation and localization engineering")
+    (description
+     "Tools and API for translation and localization engineering.  It contains
+several utilities, as well as an API for building localization tools.")
+    (license license:gpl2+)))
+
+(define-public python2-translate-toolkit
+  (package-with-python2 python-translate-toolkit))
