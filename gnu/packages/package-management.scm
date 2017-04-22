@@ -91,6 +91,12 @@
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
        #:parallel-tests? #f           ;work around <http://bugs.gnu.org/21097>
+
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+
        #:phases (modify-phases %standard-phases
                   (add-before
                    'configure 'copy-bootstrap-guile
@@ -139,19 +145,24 @@
                       ;; correct value, so set it.
                       (setenv "SHELL" (which "sh"))
                       #t))
-                  (add-after
-                   'install 'wrap-program
+                  (add-after 'install 'wrap-program
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      ;; Make sure the 'guix' command finds GnuTLS and
                      ;; Guile-JSON automatically.
                      (let* ((out    (assoc-ref outputs "out"))
+                            (guile  (assoc-ref inputs "guile"))
                             (json   (assoc-ref inputs "guile-json"))
                             (ssh    (assoc-ref inputs "guile-ssh"))
                             (gnutls (assoc-ref inputs "gnutls"))
+                            (effective
+                             (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
                             (path   (string-append
-                                     json "/share/guile/site/2.0:"
-                                     ssh "/share/guile/site/2.0:"
-                                     gnutls "/share/guile/site/2.0")))
+                                     json "/share/guile/site/" effective ":"
+                                     ssh "/share/guile/site/" effective ":"
+                                     gnutls "/share/guile/site/" effective)))
 
                        (wrap-program (string-append out "/bin/guix")
                          `("GUILE_LOAD_PATH" ":" prefix (,path))
