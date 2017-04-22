@@ -5571,6 +5571,7 @@ features useful for text console applications.")
         (replace 'check
           (lambda _
             (zero? (system* "./admin/runtests")))))))
+    (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
     (native-inputs
