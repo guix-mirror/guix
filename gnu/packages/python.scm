@@ -14386,3 +14386,31 @@ this it tries to be opinion-free and very extendable.")
 
 (define-public python2-elasticsearch
   (package-with-python2 python-elasticsearch))
+
+(define-public python-levenshtein
+  (package
+    (name "python-levenshtein")
+    (version "0.12.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "python-Levenshtein" version))
+      (sha256
+       (base32
+        "1c9ybqcja31nghfcc8xxbbz9h60s9qi12b9hr4jyl69xbvg12fh3"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ztane/python-Levenshtein")
+    (synopsis "Fast computation of Levenshtein distance and string similarity")
+    (description
+     "The Levenshtein Python C extension module contains functions for fast computation of
+@enumerate
+@item Levenshtein (edit) distance, and edit operations
+@item string similarity
+@item approximate median strings, and generally string averaging
+@item string sequence and set similarity
+@end enumerate
+It supports both normal and Unicode strings.")
+    (license license:gpl2+)))
+
+(define-public python2-levenshtein
+  (package-with-python2 python-levenshtein))
