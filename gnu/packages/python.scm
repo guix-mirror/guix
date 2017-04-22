@@ -14165,3 +14165,29 @@ pytest report.")
 
 (define-public python2-pytest-warnings
   (package-with-python2 python-pytest-warnings))
+
+(define-public python-pytest-catchlog
+  (package
+    (name "python-pytest-catchlog")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-catchlog" version ".zip"))
+       (sha256
+        (base32
+         "1w7wxh27sbqwm4jgwrjr9c2gy384aca5jzw9c0wzhl0pmk2mvqab"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("pytest" ,python-pytest-3.0)))
+    (home-page "https://github.com/eisensheng/pytest-catchlog")
+    (synopsis "Pytest plugin to catch log messages")
+    (description
+     "Python-pytest-catchlog is a pytest plugin to catch log messages.  This is
+a fork of pytest-capturelog.")
+    (license license:expat)))
+
+(define-public python2-pytest-catchlog
+  (package-with-python2 python-pytest-catchlog))
