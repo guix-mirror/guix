@@ -4150,13 +4150,13 @@ estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.7-14")
+    (version "1.8-0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "167m142rwwfy8b9hnfc3fi28dcsdjk61g1crqhll6sh5xmgnfn28"))))
+                "0mqklbx92ifwa0awm7gpm4r9dvwa09p55zjxjnypiqsxy532r4h9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
