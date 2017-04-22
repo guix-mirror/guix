@@ -572,3 +572,29 @@ the order of added relations.")
 
 (define-public python2-django-sortedm2m
   (package-with-python2 python-django-sortedm2m))
+
+(define-public python-django-appconf
+  (package
+    (name "python-django-appconf")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-appconf" version))
+              (sha256
+               (base32
+                "0qdjdx35g66xjsc50v0c5h3kg6njs8df33mbjx6j4k1vd3m9lkba"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/django-compressor/django-appconf")
+    (synopsis "Handle configuration defaults of packaged Django apps")
+    (description
+      "This app precedes Django's own AppConfig classes that act as \"objects
+[to] store metadata for an application\" inside Django's app loading mechanism.
+In other words, they solve a related but different use case than
+django-appconf and can't easily be used as a replacement.  The similarity in
+name is purely coincidental.")
+    (license license:bsd-3)))
+
+(define-public python2-django-appconf
+  (package-with-python2 python-django-appconf))
