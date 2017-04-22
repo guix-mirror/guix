@@ -545,3 +545,30 @@ settings.py and easily use them in your project.")
 
 (define-public python2-django-rq
   (package-with-python2 python-django-rq))
+
+(define-public python-django-sortedm2m
+  (package
+    (name "python-django-sortedm2m")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-sortedm2m" version))
+              (sha256
+               (base32
+                "0axf765i7b3c2s83nlph47asi8s071dhq8l7y382v1pw785s22vi"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/gregmuellegger/django-sortedm2m")
+    (synopsis "Drop-in replacement for django's own ManyToManyField")
+    (description
+      "Sortedm2m is a drop-in replacement for django's own ManyToManyField.
+The provided SortedManyToManyField behaves like the original one but remembers
+the order of added relations.")
+    (license license:bsd-3)))
+
+(define-public python2-django-sortedm2m
+  (package-with-python2 python-django-sortedm2m))
