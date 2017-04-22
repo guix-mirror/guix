@@ -33,6 +33,13 @@
 ;;;
 ;;; Code:
 
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
+
 (define (obsolete? date now ttl)
   "Return #t if DATE is obsolete compared to NOW + TTL seconds."
   (time>? (subtract-duration now (make-time time-duration 0 ttl))

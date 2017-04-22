@@ -24,6 +24,13 @@
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (ice-9 match))
 
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
+
 (test-begin "cache")
 
 (test-equal "remove-expired-cache-entries"
