@@ -1108,14 +1108,14 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.5.3")
+    (version "2.6.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "python-dateutil" version))
       (sha256
        (base32
-        "1v9j9fmf8g911yg6k01xa2db6dx3wv73zkk7fncsj7vagjqgs20l"))))
+        "1lhq0hxjc3cfha101q02ld5ijlpfyjn2w1yh7wvpiy367pgzi8k2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
