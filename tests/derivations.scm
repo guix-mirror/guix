@@ -707,12 +707,13 @@
          (drv (build-expression->derivation %store "foo" exp)))
     (match (derivation-builder-arguments drv)
       ((... builder)
-       (call-with-input-file builder
-         (lambda (port)
-           (list (port-encoding port)
-                 (->bool
-                  (string-contains (get-string-all port)
-                                   "(λ (α) (+ α 1))")))))))))
+       (with-fluids ((%default-port-encoding "UTF-8"))
+         (call-with-input-file builder
+           (lambda (port)
+             (list (port-encoding port)
+                   (->bool
+                    (string-contains (get-string-all port)
+                                     "(λ (α) (+ α 1))"))))))))))
 
 (test-assert "build-expression->derivation and derivation-prerequisites"
   (let ((drv (build-expression->derivation %store "fail" #f)))
