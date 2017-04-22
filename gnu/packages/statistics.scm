@@ -5013,20 +5013,22 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-73")
+    (version "6.0-76")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "1jzaqwv4glyqqnfbpalgajd0ag866247vvdh5i83ffqs1yhs984h"))))
+         "1w31xzpmj8p6r6s7s1vwnjxainq54bbh4cqm177ba0myv69hh8cc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
        ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
        ("r-modelmetrics" ,r-modelmetrics)
+       ("r-nlme" ,r-nlme)
        ("r-plyr" ,r-plyr)
        ("r-reshape2" ,r-reshape2)))
     (home-page "https://github.com/topepo/caret")
