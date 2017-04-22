@@ -3151,14 +3151,14 @@ the way current RNG settings can be changed.")
 (define-public r-rtsne
   (package
     (name "r-rtsne")
-    (version "0.11")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rtsne" version))
        (sha256
         (base32
-         "0zi4nxgpiv1gpdmcnqdhz5kymzp8m5xj02zpf290p1yyydl76bhy"))))
+         "17crbdi80q4g2pwp9v7j3bdaznk96qlrqx01zvj3wwqippizyfqw"))))
     (properties `((upstream-name . "Rtsne")))
     (build-system r-build-system)
     (propagated-inputs
