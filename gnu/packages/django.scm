@@ -129,13 +129,13 @@ with arguments to the field constructor.")
 (define-public python-pytest-django
   (package
     (name "python-pytest-django")
-    (version "2.9.1")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-django" version))
               (sha256
                (base32
-                "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb"))))
+                "02932m2sr8x22m4az8syr8g835g4ak77varrnw71n6xakmdcr303"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; FIXME: How to run tests?
@@ -144,7 +144,7 @@ with arguments to the field constructor.")
          (add-after 'unpack 'patch-setuppy
            (lambda _
              (substitute* "setup.py"
-                          (("setuptools_scm==1.8.0") "setuptools_scm"))
+                          (("setuptools_scm==1.11.1") "setuptools_scm"))
              #t)))))
     (native-inputs
      `(("python-django" ,python-django)
