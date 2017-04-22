@@ -509,3 +509,39 @@ project.")
 
 (define-public python2-django-redis
   (package-with-python2 python-django-redis))
+
+(define-public python-django-rq
+  (package
+    (name "python-django-rq")
+    (version "0.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-rq" version))
+              (sha256
+               (base32
+                "04v8ilfdp10bk31fxgh4cn083gsn5m06342cnpm5d10nd8hc0vky"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (and (zero? (system* "redis-server" "--daemonize" "yes"))
+                  (zero? (system* "django-admin.py" "test" "django_rq"
+                                  "--settings=django_rq.test_settings"
+                                  "--pythonpath="))))))))
+    (native-inputs
+     `(("redis" ,redis)))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-rq" ,python-rq)))
+    (home-page "https://github.com/ui/django-rq")
+    (synopsis "Django integration with RQ")
+    (description
+      "Django integration with RQ, a Redis based Python queuing library.
+Django-RQ is a simple app that allows you to configure your queues in django's
+settings.py and easily use them in your project.")
+    (license license:expat)))
+
+(define-public python2-django-rq
+  (package-with-python2 python-django-rq))
