@@ -14461,3 +14461,35 @@ efficient, unlike some Python versions of the same algorithms available on the
 Web.  This package is an extraction of the stemming code included in the Whoosh
 search engine.")
     (license license:public-domain)))
+
+(define-public python-factory-boy
+  (package
+    (name "python-factory-boy")
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "factory_boy" version))
+       (sha256
+        (base32 "1fvin6san5xsjh2c4y18caj2lnmwxlylyqm8mh1yc6rp38wlwr56"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests are not included in the tarball.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("faker" ,python-faker)))
+    (home-page "https://github.com/benhoyt/scandir")
+    (synopsis "Versatile test fixtures replacement")
+    (description
+     "Factory_boy is a fixtures replacement based on thoughtbot’s factory_girl.
+
+As a fixtures replacement tool, it aims to replace static, hard to maintain
+fixtures with easy-to-use factories for complex object.
+
+Instead of building an exhaustive test setup with every possible combination
+of corner cases, factory_boy allows you to use objects customized for the
+current test, while only declaring the test-specific fields")
+    (license license:expat)))
+
+(define-public python2-factory-boy
+  (package-with-python2 python-factory-boy))
