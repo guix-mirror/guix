@@ -14191,3 +14191,28 @@ a fork of pytest-capturelog.")
 
 (define-public python2-pytest-catchlog
   (package-with-python2 python-pytest-catchlog))
+
+(define-public python-utils
+  (package
+    (name "python-utils")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "python-utils" version))
+              (sha256
+               (base32
+                "1mcsy6q5am4ya72rgkpb6kax6vv7c93cfkkas89xnpa4sj9zf28p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pytest-runner" ,python-pytest-runner)
+       ("pytest" ,python-pytest)
+       ("six" ,python-six)))
+    (home-page "https://github.com/WoLpH/python-utils")
+    (synopsis "Convenient utilities not included with the standard Python install")
+    (description
+      "Python Utils is a collection of small Python functions and classes which
+make common patterns shorter and easier.")
+    (license license:bsd-2)))
+
+(define-public python2-utils
+  (package-with-python2 python-utils))
