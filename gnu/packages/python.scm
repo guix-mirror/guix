@@ -14414,3 +14414,27 @@ It supports both normal and Unicode strings.")
 
 (define-public python2-levenshtein
   (package-with-python2 python-levenshtein))
+
+(define-public python-scandir
+  (package
+    (name "python-scandir")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scandir" version))
+       (sha256
+        (base32 "0yjrgp0mxp3d8bjkq2m1ac2ys8n76wykksvgyjrnil9gr3fx7a5d"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/benhoyt/scandir")
+    (synopsis "Directory iteration function")
+    (description
+     "Directory iteration function like os.listdir(), except that instead of
+returning a list of bare filenames, it yields DirEntry objects that include
+file type and stat information along with the name.  Using scandir() increases
+the speed of os.walk() by 2-20 times (depending on the platform and file
+system) by avoiding unnecessary calls to os.stat() in most cases.")
+    (license license:bsd-3)))
+
+(define-public python2-scandir
+  (package-with-python2 python-scandir))
