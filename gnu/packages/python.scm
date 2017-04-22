@@ -14327,3 +14327,30 @@ perform the operations required for synchronizing plain text.")
 
 (define-public python2-dirsync
   (package-with-python2 python-dirsync))
+
+(define-public python-nosexcover
+  (package
+    (name "python-nosexcover")
+    (version "1.0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "nosexcover" version))
+              (sha256
+               (base32
+                "10xqr12qv62k2flxwqhh8cr00cjhn7sfjrm6p35gd1x5bmjkr319"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "http://github.com/cmheisel/nose-xcover")
+    (synopsis "Extends nose.plugins.cover to add Cobertura-style XML reports")
+    (description "Nose-xcover is a companion to the built-in
+@code{nose.plugins.cover}.  This plugin will write out an XML coverage report
+to a file named coverage.xml.
+
+It will honor all the options you pass to the Nose coverage plugin,
+especially -cover-package.")
+    (license license:expat)))
+
+(define-public python2-nosexcover
+  (package-with-python2 python-nosexcover))
