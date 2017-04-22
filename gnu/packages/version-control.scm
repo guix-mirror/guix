@@ -11,6 +11,8 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,7 +169,7 @@ as well as the classic centralized workflow.")
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
-                     ;; nars; see <http://bugs.gnu.org/21949>.
+                     ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
       #:tests? #f ; FIXME: Many tests are failing
@@ -305,21 +307,21 @@ as well as the classic centralized workflow.")
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
-   (home-page "http://git-scm.com/")))
+   (home-page "https://git-scm.com/")))
 
 ;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.10
-(define-public git@2.9
+;; have changed in 2.12
+(define-public git@2.10
   (package
     (inherit git)
-    (version "2.9.3")
+    (version "2.10.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))))
+              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))))
 
 (define-public libgit2
   (package
@@ -411,11 +413,11 @@ write native speed custom Git applications in any language with bindings.")
     (home-page "https://www.agwa.name/projects/git-crypt")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of
-files in a git repository. Files which you choose to protect are encrypted when
-committed, and decrypted when checked out. git-crypt lets you freely share a
-repository containing a mix of public and private content. git-crypt gracefully
+files in a git repository.  Files which you choose to protect are encrypted when
+committed, and decrypted when checked out.  git-crypt lets you freely share a
+repository containing a mix of public and private content.  git-crypt gracefully
 degrades, so developers without the secret key can still clone and commit to a
-repository with encrypted files. This lets you store your secret material (such
+repository with encrypted files.  This lets you store your secret material (such
 as keys or passwords) in the same repository as your code, without requiring you
 to lock down your entire repository.")
     (license license:gpl3+)))
@@ -423,7 +425,7 @@ to lock down your entire repository.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -431,7 +433,7 @@ to lock down your entire repository.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0kbh835p7dl4h88qv55fyfh1za09cgnqh63rii325w9215hm95x8"))))
+                "142qcgs8dwnzhymn0a7xx47p9fc2z5wrb86ah4a9iz0mpqlsz288"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -467,7 +469,7 @@ to lock down your entire repository.")
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)))
     (inputs
-     `(("git:src" ,(package-source git@2.9))
+     `(("git:src" ,(package-source git@2.10))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -685,14 +687,14 @@ and offers an easy and intuitive interface.")
 (define-public neon
   (package
     (name "neon")
-    (version "0.30.1")
+    (version "0.30.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.webdav.org/neon/neon-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1pawhk02x728xn396a1kcivy9gqm94srmgad6ymr9l0qvk02dih0"))))
+               "1jpvczcx658vimqm7c8my2q41fnmjaf1j03g7bsli6rjxk6xh2yv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -712,22 +714,25 @@ and offers an easy and intuitive interface.")
                            "--with-ssl=openssl")))
     (home-page "http://www.webdav.org/neon/")
     (synopsis "HTTP and WebDAV client library")
-    (description "Neon is an HTTP and WebDAV client library, with a
-C interface.  Features:
-High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
-DELETE, etc.);
-low-level interface to the HTTP request/response engine, allowing the use
-of arbitrary HTTP methods, headers, etc.;
-authentication support including Basic and Digest support, along with
-GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
-SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
-verifying server certificates, handling client certificates, and examining
-certificate properties, smartcard-based client certificates are also
-supported via a PKCS#11 wrapper interface;
-abstract interface to parsing XML using libxml2 or expat, and wrappers for
-simplifying handling XML HTTP response bodies;
-WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
-property manipulation.")
+    (description
+     "Neon is an HTTP and WebDAV client library, with a C interface and the
+following features:
+@enumerate
+@item High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
+  DELETE, etc.);
+@item low-level interface to the HTTP request/response engine, allowing the use
+  of arbitrary HTTP methods, headers, etc.;
+@item authentication support including Basic and Digest support, along with
+  GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
+@item SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
+  verifying server certificates, handling client certificates, and examining
+  certificate properties, smartcard-based client certificates are also
+  supported via a PKCS#11 wrapper interface;
+@item abstract interface to parsing XML using libxml2 or expat, and wrappers for
+  simplifying handling XML HTTP response bodies;
+@item WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
+  property manipulation.
+@end enumerate\n")
     (license license:gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
 (define-public subversion
@@ -829,7 +834,7 @@ machine.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://ftp.gnu.org/non-gnu/cvs/source/feature/"
+                   "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
              (sha256
               (base32
@@ -914,22 +919,25 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 (define-public diffstat
   (package
     (name "diffstat")
-    (version "1.58")
+    (version "1.61")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://invisible-island.net/diffstat/diffstat-"
-                    version ".tgz"))
+              (uri
+               (list
+                 (string-append "ftp://invisible-island.net/diffstat/"
+                                name "-" version ".tgz")
+                 (string-append "http://invisible-mirror.net/archives/diffstat/"
+                                name "-" version ".tgz")))
               (sha256
                (base32
-                "14rpf5c05ff30f6vn6pn6pzy0k4g4is5im656ahsxff3k58i7mgs"))))
+                "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
     (home-page "http://invisible-island.net/diffstat/")
-    (synopsis "Make histograms from the output of 'diff'")
+    (synopsis "Make histograms from the output of @command{diff}")
     (description
-     "Diffstat reads the output of 'diff' and displays a histogram of the
-insertions, deletions, and modifications per-file.  It is useful for reviewing
-large, complex patch files.")
+     "Diffstat reads the output of @command{diff} and displays a histogram of
+the insertions, deletions, and modifications per file.  It is useful for
+reviewing large, complex patch files.")
     (license (license:x11-style "file://COPYING"))))
 
 (define-public cssc
@@ -1289,7 +1297,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (version "0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.2f30.org/releases/"
+              (uri (string-append "https://dl.2f30.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -1304,7 +1312,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libgit2" ,libgit2)))
-    (home-page "http://2f30.org")
+    (home-page "https://2f30.org/")
     (synopsis "Static git page generator")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")

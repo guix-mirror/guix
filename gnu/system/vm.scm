@@ -494,7 +494,7 @@ it is mostly useful when FULL-BOOT?  is true."
               (string-append "--system=" #$os-drv)
               (string-append "--load=" #$os-drv "/boot")
               #$@(if graphic? #~() #~("console=ttyS0"))
-              #+@(operating-system-kernel-arguments os)))
+              #+@(operating-system-user-kernel-arguments os)))
 
     (define qemu-exec
       #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))

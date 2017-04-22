@@ -60,7 +60,9 @@ MODULES =					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/graph.scm				\
+  guix/cache.scm				\
   guix/cve.scm					\
+  guix/workers.scm				\
   guix/zlib.scm					\
   guix/build-system.scm				\
   guix/build-system/ant.scm			\
@@ -185,7 +187,8 @@ if HAVE_GUILE_SSH
 
 MODULES +=					\
   guix/ssh.scm					\
-  guix/scripts/copy.scm
+  guix/scripts/copy.scm				\
+  guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
 
@@ -295,7 +298,9 @@ SCM_TESTS =					\
   tests/size.scm				\
   tests/graph.scm				\
   tests/challenge.scm				\
+  tests/cache.scm				\
   tests/cve.scm					\
+  tests/workers.scm				\
   tests/zlib.scm				\
   tests/file-systems.scm			\
   tests/system.scm				\

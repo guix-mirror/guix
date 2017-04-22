@@ -2379,7 +2379,7 @@ can play and record audio files.")
 (define-public soxr
   (package
     (name "soxr")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
@@ -2387,7 +2387,7 @@ can play and record audio files.")
         (string-append "mirror://sourceforge/soxr/soxr-" version
                        "-Source.tar.xz"))
        (sha256
-        (base32 "1hmadwqfpg15vhwq9pa1sl5xslibrjpk6hpq2s9hfmx1s5l6ihfw"))))
+        (base32 "0xf2w3piwz9gfr1xqyrj4k685q5dy53kq3igv663i4f4y4sg9rjl"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
     (home-page "https://sourceforge.net/p/soxr/wiki/Home/")
@@ -2433,7 +2433,7 @@ portions of LAME.")
 (define-public portaudio
   (package
     (name "portaudio")
-    (version "19.20140130")
+    (version "190600.20161030")
     (source
      (origin
        (method url-fetch)
@@ -2442,7 +2442,7 @@ portions of LAME.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))
+        (base32 "04qmin6nj144b8qb9kkd9a52xfvm0qdgm8bg8jbl7s3frmyiv8pm"))
        (patches (search-patches "portaudio-audacity-compat.patch"))))
     (build-system gnu-build-system)
     (inputs

@@ -45,6 +45,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/adns.scm				\
   %D%/packages/algebra.scm			\
   %D%/packages/aidc.scm				\
+  %D%/packages/android.scm			\
   %D%/packages/animation.scm			\
   %D%/packages/anthy.scm			\
   %D%/packages/apl.scm				\
@@ -342,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sdl.scm				\
   %D%/packages/search.scm			\
   %D%/packages/security-token.scm		\
+  %D%/packages/selinux.scm			\
   %D%/packages/serialization.scm		\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
@@ -552,6 +554,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-conflicting-declaration.patch	\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/expat-CVE-2016-0718-fix-regression.patch	\
+  %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
@@ -576,7 +579,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
-  %D%/packages/patches/gcc-libiberty-printf-decl.patch		\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
@@ -616,14 +618,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
+  %D%/packages/patches/graphite2-CVE-2017-5436.patch		\
+  %D%/packages/patches/graphite2-check-code-point-limit.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
+  %D%/packages/patches/graphite2-fix-32-bit-wrap-arounds.patch	\
+  %D%/packages/patches/graphite2-non-linear-classes-even-number.patch \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
-  %D%/packages/patches/grub-CVE-2015-8370.patch			\
-  %D%/packages/patches/grub-gets-undeclared.patch		\
-  %D%/packages/patches/grub-freetype.patch			\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
-  %D%/packages/patches/guile-arm-fixes.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
@@ -650,14 +652,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hubbub-sort-entities.patch		\
+  %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
-  %D%/packages/patches/hypre-doc-tables.patch			\
-  %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-binutils.patch			\
-  %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
-  %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
-  %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
+  %D%/packages/patches/icecat-bug-1299500-pt10.patch		\
+  %D%/packages/patches/icu4c-CVE-2017-7867-CVE-2017-7868.patch	\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
@@ -688,6 +687,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
+  %D%/packages/patches/libbase-fix-includes.patch		\
+  %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libdrm-symbol-check.patch		\
@@ -783,7 +784,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
-  %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
@@ -804,6 +804,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
+  %D%/packages/patches/nss-disable-long-b64-tests.patch		\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2017-0358.patch		\
@@ -858,6 +859,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/polkit-drop-test.patch			\
+  %D%/packages/patches/policycoreutils-make-sepolicy-use-python3.patch	\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
@@ -899,14 +901,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
-  %D%/packages/patches/qemu-CVE-2016-10155.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5525.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5526.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5552.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5578.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5579.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5856.patch			\
-  %D%/packages/patches/qemu-CVE-2017-5898.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -938,7 +932,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
-  %D%/packages/patches/soprano-find-clucene.patch		\
   %D%/packages/patches/spice-CVE-2016-9577.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
@@ -987,7 +980,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
-  %D%/packages/patches/util-linux-CVE-2017-2616.patch		\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
@@ -1018,8 +1010,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
-  %D%/packages/patches/xf86-video-intel-compat-api.patch	\
-  %D%/packages/patches/xf86-video-intel-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
   %D%/packages/patches/xfce4-panel-plugins.patch		\

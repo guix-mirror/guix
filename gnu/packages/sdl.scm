@@ -140,7 +140,7 @@ system, such as sound redirection over the network.")
 (define-public sdl-gfx
   (package
     (name "sdl-gfx")
-    (version "2.0.24")
+    (version "2.0.26")
     (source (origin
               (method url-fetch)
               (uri
@@ -148,7 +148,7 @@ system, such as sound redirection over the network.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "064islldm4r42lgj9fr4kbk66r7jmmakk9745hhyb1kmw71kib9h"))))
+                "0ijljhs0v99dj6y27hc10z6qchyp8gdp4199y6jzngy6dzxlzsvw"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL graphics primitives library")

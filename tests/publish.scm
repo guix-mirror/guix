@@ -314,4 +314,58 @@ References: ~%"
                               (call-with-input-string "" port-sha256))))))
     (response-code (http-get uri))))
 
+(unless (zlib-available?)
+  (test-skip 1))
+(test-equal "with cache"
+  (list #t
+        `(("StorePath" . ,%item)
+          ("URL" . ,(string-append "nar/gzip/" (basename %item)))
+          ("Compression" . "gzip"))
+        200                                       ;nar/gzip/…
+        #t                                        ;Content-Length
+        200)                                      ;nar/…
+  (call-with-temporary-directory
+   (lambda (cache)
+     (define (wait-for-file file)
+       (let loop ((i 20))
+         (or (file-exists? file)
+             (begin
+               (pk 'wait-for-file file)
+               (sleep 1)
+               (loop (- i 1))))))
+
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6797" "-C2"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6797)
+       (let* ((base     "http://localhost:6797/")
+              (part     (store-path-hash-part %item))
+              (url      (string-append base part ".narinfo"))
+              (nar-url  (string-append base "/nar/gzip/" (basename %item)))
+              (cached   (string-append cache "/gzip/" (basename %item)
+                                       ".narinfo"))
+              (nar      (string-append cache "/gzip/"
+                                       (basename %item) ".nar"))
+              (response (http-get url)))
+         (and (= 404 (response-code response))
+              (wait-for-file cached)
+              (let ((body         (http-get-port url))
+                    (compressed   (http-get nar-url))
+                    (uncompressed (http-get (string-append base "nar/"
+                                                           (basename %item)))))
+                (list (file-exists? nar)
+                      (filter (lambda (item)
+                                (match item
+                                  (("Compression" . _) #t)
+                                  (("StorePath" . _)  #t)
+                                  (("URL" . _) #t)
+                                  (_ #f)))
+                              (recutils->alist body))
+                      (response-code compressed)
+                      (= (response-content-length compressed)
+                         (stat:size (stat nar)))
+                      (response-code uncompressed)))))))))
+
 (test-end "publish")

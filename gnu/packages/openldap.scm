@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +27,10 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module ((guix licenses) #:select (openldap2.8))
+  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -74,3 +77,35 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "http://www.openldap.org/")))
+
+(define-public nss-pam-ldapd
+  (package
+    (name "nss-pam-ldapd")
+    (version "0.9.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://arthurdejong.org/nss-pam-ldapd/"
+                                  "nss-pam-ldapd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sw36w6zkzvabvjckqick032j5p5xi0qi3sgnh0znzxz31jqvf0d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-pam-seclib-dir="
+                            (assoc-ref %outputs "out") "/lib/security/")
+             (string-append "--with-ldap-conf-file="
+                            (assoc-ref %outputs "out") "/etc/nslcd.conf"))))
+    (inputs
+     `(("linux-pam" ,linux-pam)
+       ("openldap" ,openldap)
+       ("python" ,python-2)))
+    (home-page "https://arthurdejong.org/nss-pam-ldapd")
+    (synopsis "NSS and PAM modules for LDAP")
+    (description "nss-pam-ldapd provides a @dfn{Name Service Switch} (NSS)
+module that allows your LDAP server to provide user account, group, host name,
+alias, netgroup, and basically any other information that you would normally
+get from @file{/etc} flat files or NIS.  It also provides a @dfn{Pluggable
+Authentication Module} (PAM) to do identity and authentication management with
+an LDAP server.")
+    (license lgpl2.1+)))

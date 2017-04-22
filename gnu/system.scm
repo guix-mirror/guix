@@ -73,7 +73,7 @@
             operating-system-hosts-file
             operating-system-kernel
             operating-system-kernel-file
-            operating-system-kernel-arguments
+            operating-system-user-kernel-arguments
             operating-system-initrd
             operating-system-users
             operating-system-groups
@@ -129,7 +129,7 @@
   operating-system?
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
-  (kernel-arguments operating-system-kernel-arguments
+  (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <grub-configuration>
 
@@ -278,7 +278,7 @@ value of the SYSTEM-SERVICE-TYPE service."
         (mlet %store-monad
             ((kernel  ->  (operating-system-kernel os))
              (initrd      (operating-system-initrd-file os))
-             (params      (operating-system-parameters-file os)))
+             (params      (operating-system-boot-parameters-file os)))
           (return `(("kernel" ,kernel)
                     ("parameters" ,params)
                     ("initrd" ,initrd)
@@ -385,7 +385,7 @@ explicitly appear in OS."
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.0 bash coreutils findutils grep sed
+              (list guile-2.0 bash coreutils-8.27 findutils grep sed
                     diffutils patch gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
@@ -756,7 +756,7 @@ populate the \"old entries\" menu."
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system
                                                     "/boot")
-                                   (operating-system-kernel-arguments os)))
+                                   (operating-system-user-kernel-arguments os)))
                            (initrd initrd)))))
     (grub-configuration-file (operating-system-bootloader os) entries
                              #:old-entries old-entries)))
@@ -769,7 +769,7 @@ device in a <menu-entry>."
     ((label) (file-system-device fs))
     (else #f)))
 
-(define (operating-system-parameters-file os)
+(define (operating-system-boot-parameters-file os)
   "Return a file that describes the boot parameters of OS.  The primary use of
 this file is the reconstruction of GRUB menu entries for old configurations."
   (mlet %store-monad ((initrd   (operating-system-initrd-file os))
@@ -784,7 +784,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                    (root-device #$(file-system-device root))
                    (kernel #$(operating-system-kernel-file os))
                    (kernel-arguments
-                    #$(operating-system-kernel-arguments os))
+                    #$(operating-system-user-kernel-arguments os))
                    (initrd #$initrd)
                    (store
                     (device #$(fs->boot-device store))

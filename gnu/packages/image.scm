@@ -598,7 +598,7 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.4.9")
+    (version "1.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -606,7 +606,7 @@ compose, and analyze GIF images.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "08809xxk2555yj6glixzw9a0x3x8cx55imd89kj3r0h152bn8a3x"))))
+                "0wm2q2xlkbm71k7mw2jyzbxgzylrkcj5yh6nq58w5gybhp98qs9z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkgconfig" ,pkg-config)))

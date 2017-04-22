@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
   #:use-module (ice-9 match)
@@ -97,8 +98,8 @@
 
 (test-assert "options->transformation, with-input"
   (let* ((p (dummy-package "guix.scm"
-              (inputs `(("foo" ,coreutils)
-                        ("bar" ,grep)
+              (inputs `(("foo" ,(specification->package "coreutils"))
+                        ("bar" ,(specification->package "grep"))
                         ("baz" ,(dummy-package "chbouib"
                                   (native-inputs `(("x" ,grep)))))))))
          (t (options->transformation '((with-input . "coreutils=busybox")

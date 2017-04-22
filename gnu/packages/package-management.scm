@@ -91,6 +91,12 @@
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
        #:parallel-tests? #f           ;work around <http://bugs.gnu.org/21097>
+
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+
        #:phases (modify-phases %standard-phases
                   (add-before
                    'configure 'copy-bootstrap-guile
@@ -139,19 +145,24 @@
                       ;; correct value, so set it.
                       (setenv "SHELL" (which "sh"))
                       #t))
-                  (add-after
-                   'install 'wrap-program
+                  (add-after 'install 'wrap-program
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      ;; Make sure the 'guix' command finds GnuTLS and
                      ;; Guile-JSON automatically.
                      (let* ((out    (assoc-ref outputs "out"))
+                            (guile  (assoc-ref inputs "guile"))
                             (json   (assoc-ref inputs "guile-json"))
                             (ssh    (assoc-ref inputs "guile-ssh"))
                             (gnutls (assoc-ref inputs "gnutls"))
+                            (effective
+                             (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
                             (path   (string-append
-                                     json "/share/guile/site/2.0:"
-                                     ssh "/share/guile/site/2.0:"
-                                     gnutls "/share/guile/site/2.0")))
+                                     json "/share/guile/site/" effective ":"
+                                     ssh "/share/guile/site/" effective ":"
+                                     gnutls "/share/guile/site/" effective)))
 
                        (wrap-program (string-append out "/bin/guix")
                          `("GUILE_LOAD_PATH" ":" prefix (,path))
@@ -224,9 +235,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "aabece2ef8f87c35ceb3678f39fcfd244b15bb0f"))
+  (let ((commit "25a49294caf2386e65fc1b12a2508324be0b1cc2"))
     (package (inherit guix-0.12.0)
-      (version (string-append "0.12.0-7." (string-take commit 4)))
+      (version (string-append "0.12.0-9." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -236,7 +247,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0n8rrwwax9g6i38vq4y2xwb30irkv4c53mqcm5hqv78rb33x8z1l"))
+                  "0p4rh0629j89v4ka5dsp70a1xrfhg7sxjjq54p68vw7x5dkann4a"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.12.0)

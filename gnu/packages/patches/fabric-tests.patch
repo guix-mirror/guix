@@ -1,0 +1,15 @@
+The `fab` excecutable doesn't exist during the test phase as it is created
+dynamically during installation. Refer to the equivalent Python module
+directly.
+
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -93,7 +93,7 @@
+     # perform when they are allowed to bubble all the way to the top. So, we
+     # invoke a subprocess and look at its stderr instead.
+     with quiet():
+-        result = local("fab -f tests/support/aborts.py kaboom", capture=True)
++        result = local("python -m fabric -f tests/support/aborts.py kaboom", capture=True)
+     # When error in #1318 is present, this has an extra "It burns!" at end of
+     # stderr string.
+     eq_(result.stderr, "Fatal error: It burns!\n\nAborting.")

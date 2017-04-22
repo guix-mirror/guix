@@ -627,6 +627,10 @@
    #~(foo #$@(list (with-imported-modules '((foo)) #~+)
                    (with-imported-modules '((bar)) #~-)))))
 
+(test-equal "gexp-modules and literal Scheme object"
+  '()
+  (gexp-modules #t))
+
 (test-assertm "gexp->derivation #:modules"
   (mlet* %store-monad
       ((build ->  #~(begin

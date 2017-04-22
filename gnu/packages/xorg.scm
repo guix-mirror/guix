@@ -2995,7 +2995,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
      (origin
        (method url-fetch)
@@ -3005,11 +3005,11 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1h9izq510m2pvg77d0y9krc0cvvbhp2y3xlrrz6id7y47jdzkpsd"))))
+         "0k0xah72ryjwak4dc4crszxrlkmi9x1s7p3sd4la642n77yi1pmf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://nouveau.freedesktop.org")
+    (home-page "https://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
      "This package provides modern, high-quality Xorg drivers for NVIDIA
@@ -5105,13 +5105,16 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
-;;; This package is intended to be used when building GTK+.
+;; This package is intended to be used when building GTK+.
+;; Note: It's currently marked as "hidden" to avoid having two non-eq?
+;; packages with the same name and version.
 (define-public xorg-server-1.19.3
-  (package
-    (inherit xorg-server)
-    (name "xorg-server")
-    (version "1.19.3")
-    (source
+  (hidden-package
+   (package
+     (inherit xorg-server)
+     (name "xorg-server")
+     (version "1.19.3")
+     (source
       (origin
         (method url-fetch)
         (uri (string-append
@@ -5119,7 +5122,7 @@ draggable titlebars and borders.")
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))))
+          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg")))))))
 
 (define-public xorg-server-xwayland
   (package

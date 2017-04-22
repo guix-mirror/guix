@@ -262,14 +262,14 @@ available, greatly increasing its breadth and scope.")
 (define-public r-boot
   (package
     (name "r-boot")
-    (version "1.3-18")
+    (version "1.3-19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "boot" version))
        (sha256
         (base32
-         "0pi348vvgzn1ny54yxhw6kq6nl7rx9bpr9ji1a6wqs8ah5zj7z8j"))))
+         "16hsw4bw9pkfc2lqxfwycm1sbvbrm4linvm0ci71n8sxc7srvkis"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/boot")
     (synopsis "Bootstrap functions for R")
@@ -283,14 +283,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-45")
+    (version "7.3-47")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "13lp5919h2bnpmf8rbmkar8a41yx62fnx66pkvljvqf60wa29qsx"))))
+         "1gy6z7ly9wn86rfn9xrmqiqq1ijw3pkasrr2299kbzsgx2mwsi7d"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -514,14 +514,14 @@ single hidden layer, and for multinomial log-linear models.")
 (define-public r-rpart
   (package
     (name "r-rpart")
-    (version "4.1-10")
+    (version "4.1-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rpart" version))
        (sha256
         (base32
-         "119dvh2cpab4vq9blvbkil5hgq6w018amiwlda3ii0fki39axpf5"))))
+         "165djqj7lk81jr7z5fwccq3h7ayys26hx1kj9hndvg2rkyaq1arq"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/rpart")
     (synopsis "Recursive partitioning and regression trees")
@@ -1124,13 +1124,13 @@ considerably faster, produces smaller files, and leaves text as is.")
 (define-public r-assertthat
   (package
     (name "r-assertthat")
-    (version "0.1")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "assertthat" version))
               (sha256
                (base32
-                "0dwsqajyglfscqilj843qfqn1ndbqpswa7b4l1d633qjk9d68qqk"))))
+                "1wp5znk3xy338x6hknppk702jn596yr735d9i7c3wabm3sdzfgnp"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/assertthat")
     (synopsis "Easy pre and post assertions")
@@ -1279,13 +1279,13 @@ data derived from /etc/mime.types in UNIX-type systems.")
 (define-public r-markdown
   (package
     (name "r-markdown")
-    (version "0.7.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "markdown" version))
               (sha256
                (base32
-                "00j1hlib3il50azs2vlcyhi0bjpx1r50mxr9w9dl5g1bwjjc71hb"))))
+                "1vcgsh2m2f5kfgappgg71nbf04ff0j1sbk668krjs3r2n89dk3sk"))))
     (build-system r-build-system)
     ;; Skip check phase because the tests require the r-knitr package to be
     ;; installed. This prevents installation failures. Knitr normally
@@ -1417,13 +1417,13 @@ understand the language at a deeper level.")
 (define-public r-memoise
   (package
     (name "r-memoise")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "memoise" version))
               (sha256
                (base32
-                "0sq2dhpvxy17v1baj256r0jnygdy3m5a8x4zh6vhv29957qnq6zx"))))
+                "034qfc2xlh30x1q2vya239w34a3ir3y2fwnx2agbgbi6592zjxmj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)))
@@ -2443,13 +2443,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.7.700.0.0")
+    (version "0.7.800.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "03cvl2xgmvh4sylw7ff7s020y7k2wzyj34l0zngm09qs44pa9q0m"))))
+                "025lh504nw7ir1f2xsqnvfkq9rg0rb2xzfn3a2s0b2a9snqdzzwr"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3151,14 +3151,14 @@ the way current RNG settings can be changed.")
 (define-public r-rtsne
   (package
     (name "r-rtsne")
-    (version "0.11")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rtsne" version))
        (sha256
         (base32
-         "0zi4nxgpiv1gpdmcnqdhz5kymzp8m5xj02zpf290p1yyydl76bhy"))))
+         "17crbdi80q4g2pwp9v7j3bdaznk96qlrqx01zvj3wwqippizyfqw"))))
     (properties `((upstream-name . "Rtsne")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3431,13 +3431,13 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.40.0")
+    (version "0.41.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "1hz5fnxz30m3cc7x7ha1swx4pn8c2244z6ka6v9m3l5lpdgc1367"))))
+                "01l430avj5ggmdsla2kiriix72g0dlzx9klniq321bs0za808v3c"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3481,13 +3481,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.52.1")
+    (version "0.52.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "0ihxnbbc1czfbccm8mrh7hjwdik3y90964xhbjday6fci0xjcsi5"))))
+                "19fjf19cr0p3j9pj17myz39zpi5bh7ci72db3la9my09n6k6mnir"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
@@ -4150,13 +4150,13 @@ estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.7-14")
+    (version "1.8-0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "167m142rwwfy8b9hnfc3fi28dcsdjk61g1crqhll6sh5xmgnfn28"))))
+                "0mqklbx92ifwa0awm7gpm4r9dvwa09p55zjxjnypiqsxy532r4h9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4371,14 +4371,14 @@ published by the statistics blog FiveThirtyEight.")
 (define-public r-compquadform
   (package
     (name "r-compquadform")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "CompQuadForm" version))
        (sha256
         (base32
-         "0bsgbdblxpv57mbwnf51xyiydp2bqyxkg4zzwqki85cv5xqlrq1n"))))
+         "1i30hrqdk64q17vsn918c3q79brchgx2wzh1gbsgbn0dh1ncabq4"))))
     (properties `((upstream-name . "CompQuadForm")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/CompQuadForm")
@@ -4879,19 +4879,20 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.29")
+    (version "5.33")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
         (base32
-         "098gy8xv9kcl5y0cm93b8chr5sm6crrdxi20bkx9lmwmybl3himv"))))
+         "1dirmxa4cd05nb0yv0ga6ivw5hkr2zr2cb2lixl1nb6amqn024is"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
-     `(("r-matrixmodels" ,r-matrixmodels)
+     `(("r-matrix" ,r-matrix)
+       ("r-matrixmodels" ,r-matrixmodels)
        ("r-sparsem" ,r-sparsem)))
     (home-page "http://www.r-project.org")
     (synopsis "Quantile regression")
@@ -4932,20 +4933,22 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-12")
+    (version "1.1-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "0j60l5kgx1wvw2wm3jwfqwi63hammaq8gfcxzwa4h552likvaxi9"))))
+         "13j4a721rx0272pdxrz6nabjv56xb6srklq5w4z1abc82lyvda2z"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-rcppeigen" ,r-rcppeigen)))
     (propagated-inputs
-     `(("r-minqa" ,r-minqa)
+     `(("r-lattice" ,r-lattice)
+       ("r-matrix" ,r-matrix)
+       ("r-minqa" ,r-minqa)
        ("r-nloptr" ,r-nloptr)
        ("r-mass" ,r-mass)
        ("r-nlme" ,r-nlme)))
@@ -5010,20 +5013,22 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-73")
+    (version "6.0-76")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "1jzaqwv4glyqqnfbpalgajd0ag866247vvdh5i83ffqs1yhs984h"))))
+         "1w31xzpmj8p6r6s7s1vwnjxainq54bbh4cqm177ba0myv69hh8cc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
        ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-lattice" ,r-lattice)
        ("r-modelmetrics" ,r-modelmetrics)
+       ("r-nlme" ,r-nlme)
        ("r-plyr" ,r-plyr)
        ("r-reshape2" ,r-reshape2)))
     (home-page "https://github.com/topepo/caret")

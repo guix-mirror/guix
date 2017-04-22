@@ -3666,10 +3666,64 @@ accidental modifications.
 @end quotation
 
 The @code{(guix store)} module provides procedures to connect to the
-daemon, and to perform RPCs.  These are described below.
+daemon, and to perform RPCs.  These are described below.  By default,
+@code{open-connection}, and thus all the @command{guix} commands,
+connect to the local daemon or to the URI specified by the
+@code{GUIX_DAEMON_SOCKET} environment variable.
 
-@deffn {Scheme Procedure} open-connection [@var{file}] [#:reserve-space? #t]
-Connect to the daemon over the Unix-domain socket at @var{file}.  When
+@defvr {Environment Variable} GUIX_DAEMON_SOCKET
+When set, the value of this variable should be a file name or a URI
+designating the daemon endpoint.  When it is a file name, it denotes a
+Unix-domain socket to connect to.  In addition to file names, the
+supported URI schemes are:
+
+@table @code
+@item file
+@itemx unix
+These are for Unix-domain sockets.
+@code{file:///var/guix/daemon-socket/socket} is equivalent to
+@file{/var/guix/daemon-socket/socket}.
+
+@item guix
+These URIs denote connections over TCP/IP, without encryption nor
+authentication of the remote host.  The URI must always specify both the
+host name and port number:
+
+@example
+guix://master.guix.example.org:1234
+@end example
+
+This setup is suitable on local networks, such as clusters, where only
+trusted nodes may connect to the build daemon at
+@code{master.guix.example.org}.
+
+@item ssh
+@cindex SSH access to build daemons
+These URIs allow you to connect to a remote daemon over
+SSH@footnote{This feature requires Guile-SSH (@pxref{Requirements}).}.
+A typical URL might look like this:
+
+@example
+ssh://charlie@@guix.example.org:22
+@end example
+
+As for @command{guix copy}, the usual OpenSSH client configuration files
+are honored (@pxref{Invoking guix copy}).
+@end table
+
+Additional URI schemes may be supported in the future.
+
+@c XXX: Remove this note when the protocol incurs fewer round trips
+@c and when (guix derivations) no longer relies on file system access.
+@quotation Note
+The ability to connect to remote build daemons is considered
+experimental as of @value{VERSION}.  Please get in touch with us to
+share any problems or suggestions you may have (@pxref{Contributing}).
+@end quotation
+@end defvr
+
+@deffn {Scheme Procedure} open-connection [@var{uri}] [#:reserve-space? #t]
+Connect to the daemon over the Unix-domain socket at @var{uri} (a string).  When
 @var{reserve-space?} is true, instruct it to reserve a little bit of
 extra space on the file system so that the garbage collector can still
 operate should the disk become full.  Return a server object.
@@ -6522,6 +6576,13 @@ archive}), the daemon may download substitutes from it:
 guix-daemon --substitute-urls=http://example.org:8080
 @end example
 
+By default, @command{guix publish} compresses archives on the fly as it
+serves them.  This ``on-the-fly'' mode is convenient in that it requires
+no setup and is immediately available.  However, when serving lots of
+clients, we recommend using the @option{--cache} option, which enables
+caching of the archives before they are sent to clients---see below for
+details.
+
 As a bonus, @command{guix publish} also serves as a content-addressed
 mirror for source files referenced in @code{origin} records
 (@pxref{origin Reference}).  For instance, assuming @command{guix
@@ -6559,10 +6620,46 @@ disable compression.  The range 1 to 9 corresponds to different gzip
 compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
 The default is 3.
 
-Compression occurs on the fly and the compressed streams are not
+Unless @option{--cache} is used, compression occurs on the fly and
+the compressed streams are not
 cached.  Thus, to reduce load on the machine that runs @command{guix
-publish}, it may be a good idea to choose a low compression level, or to
-run @command{guix publish} behind a caching proxy.
+publish}, it may be a good idea to choose a low compression level, to
+run @command{guix publish} behind a caching proxy, or to use
+@option{--cache}.  Using @option{--cache} has the advantage that it
+allows @command{guix publish} to add @code{Content-Length} HTTP header
+to its responses.
+
+@item --cache=@var{directory}
+@itemx -c @var{directory}
+Cache archives and meta-data (@code{.narinfo} URLs) to @var{directory}
+and only serve archives that are in cache.
+
+When this option is omitted, archives and meta-data are created
+on-the-fly.  This can reduce the available bandwidth, especially when
+compression is enabled, since this may become CPU-bound.  Another
+drawback of the default mode is that the length of archives is not known
+in advance, so @command{guix publish} does not add a
+@code{Content-Length} HTTP header to its responses, which in turn
+prevents clients from knowing the amount of data being downloaded.
+
+Conversely, when @option{--cache} is used, the first request for a store
+item (@i{via} a @code{.narinfo} URL) returns 404 and triggers a
+background process to @dfn{bake} the archive---computing its
+@code{.narinfo} and compressing the archive, if needed.  Once the
+archive is cached in @var{directory}, subsequent requests succeed and
+are served directly from the cache, which guarantees that clients get
+the best possible bandwidth.
+
+The ``baking'' process is performed by worker threads.  By default, one
+thread per CPU core is created, but this can be customized.  See
+@option{--workers} below.
+
+When @option{--ttl} is used, cached entries are automatically deleted
+when they have expired.
+
+@item --workers=@var{N}
+When @option{--cache} is used, request the allocation of @var{N} worker
+threads to ``bake'' archives.
 
 @item --ttl=@var{ttl}
 Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
@@ -6573,6 +6670,9 @@ This allows the user's Guix to keep substitute information in cache for
 @var{ttl}.  However, note that @code{guix publish} does not itself
 guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
+
+Additionally, when @option{--cache} is used, cached entries that have
+not been accessed for @var{ttl} may be deleted.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files
@@ -9099,6 +9199,23 @@ compression ratio at the expense of increased CPU usage.
 @item @code{nar-path} (default: @code{"nar"})
 The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
 publish, @code{--nar-path}}, for details.
+
+@item @code{cache} (default: @code{#f})
+When it is @code{#f}, disable caching and instead generate archives on
+demand.  Otherwise, this should be the name of a directory---e.g.,
+@code{"/var/cache/guix/publish"}---where @command{guix publish} caches
+archives and meta-data ready to be sent.  @xref{Invoking guix publish,
+@option{--cache}}, for more information on the tradeoffs involved.
+
+@item @code{workers} (default: @code{#f})
+When it is an integer, this is the number of worker threads used for
+caching; when @code{#f}, the number of processors is used.
+@xref{Invoking guix publish, @option{--workers}}, for more information.
+
+@item @code{ttl} (default: @code{#f})
+When it is an integer, this denotes the @dfn{time-to-live} of the
+published archives.  @xref{Invoking guix publish, @option{--ttl}}, for
+more information.
 @end table
 @end deftp
 
@@ -12591,18 +12708,25 @@ remote servers.  Run @command{man smtpd.conf} for more information.
 
 @subsubheading Exim Service
 
+@cindex mail transfer agent (MTA)
+@cindex MTA (mail transfer agent)
+@cindex SMTP
+
 @deffn {Scheme Variable} exim-service-type
-This is the type of the @uref{https://exim.org, Exim} service, whose value
-should be an @code{exim-configuration} object as in this example:
+This is the type of the @uref{https://exim.org, Exim} mail transfer
+agent (MTA), whose value should be an @code{exim-configuration} object
+as in this example:
 
 @example
 (service exim-service-type
          (exim-configuration
-           (config-file (local-file "./my-exim.conf"))
-           (aliases '(("postmaster" "bob")
-                      ("bob" "bob@@example.com" "bob@@example2.com")))))
+           (config-file (local-file "./my-exim.conf"))))
 @end example
 @end deffn
+
+In order to use an @code{exim-service-type} service you must also have a
+@code{mail-aliases-service-type} service present in your
+@code{operating-system} (even if it has no aliases).
 
 @deftp {Data Type} exim-configuration
 Data type representing the configuration of exim.
@@ -12618,15 +12742,36 @@ provided in @code{package}. The resulting configuration file is loaded
 after setting the @code{exim_user} and @code{exim_group} configuration
 variables.
 
-@item @code{aliases} (default: @code{'()})
-List of aliases to use when delivering mail on this system. The
-@code{car} of each list is used to match incoming mail, with the
-@code{cdr} of each list designating how to deliver it. There may be many
-delivery methods provided, in which case the mail is delivered to them
-all.
-
 @end table
 @end deftp
+
+@subsubheading Mail Aliases Service
+
+@cindex email aliases
+@cindex aliases, for email addresses
+
+@deffn {Scheme Variable} mail-aliases-service-type
+This is the type of the service which provides @code{/etc/aliases},
+specifying how to deliver mail to users on this system.
+
+@example
+(service mail-aliases-service-type
+         '(("postmaster" "bob")
+           ("bob" "bob@@example.com" "bob@@example2.com")))
+@end example
+@end deffn
+
+The configuration for a @code{mail-aliases-service-type} service is an
+association list denoting how to deliver mail that comes to this
+system. Each entry is of the form @code{(alias addresses ...)}, with
+@code{alias} specifying the local alias and @code{addresses} specifying
+where to deliver this user's mail.
+
+The aliases aren't required to exist as users on the local system. In
+the above example, there doesn't need to be a @code{postmaster} entry in
+the @code{operating-system}'s @code{user-accounts} in order to deliver
+the @code{postmaster} mail to @code{bob} (which subsequently would
+deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
 
 @node Messaging Services
 @subsubsection Messaging Services

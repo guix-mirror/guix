@@ -28,6 +28,7 @@
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix base64)
+  #:use-module (guix cache)
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
@@ -440,12 +441,6 @@ or is signed by an unauthorized key."
 the cache STR originates form."
   (call-with-input-string str (cut read-narinfo <> cache-uri)))
 
-(define (obsolete? date now ttl)
-  "Return #t if DATE is obsolete compared to NOW + TTL seconds."
-  (time>? (subtract-duration now (make-time time-duration 0 ttl))
-          (make-time time-monotonic 0 date)))
-
-
 (define (narinfo-cache-file cache-url path)
   "Return the name of the local file that contains an entry for PATH.  The
 entry is stored in a sub-directory specific to CACHE-URL."
@@ -718,43 +713,28 @@ was found."
     ((answer) answer)
     (_        #f)))
 
-(define (remove-expired-cached-narinfos directory)
-  "Remove expired narinfo entries from DIRECTORY.  The sole purpose of this
-function is to make sure `%narinfo-cache-directory' doesn't grow
-indefinitely."
-  (define now
-    (current-time time-monotonic))
+(define (cached-narinfo-expiration-time file)
+  "Return the expiration time for FILE, which is a cached narinfo."
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file file
+        (lambda (port)
+          (match (read port)
+            (('narinfo ('version 2) ('cache-uri uri)
+                       ('date date) ('ttl ttl) ('value #f))
+             (+ date %narinfo-negative-ttl))
+            (('narinfo ('version 2) ('cache-uri uri)
+                       ('date date) ('ttl ttl) ('value value))
+             (+ date ttl))
+            (x
+             0)))))
+    (lambda args
+      ;; FILE may have been deleted.
+      0)))
 
-  (define (expired? file)
-    (catch 'system-error
-      (lambda ()
-        (call-with-input-file file
-          (lambda (port)
-            (match (read port)
-              (('narinfo ('version 2) ('cache-uri _)
-                         ('date date) ('ttl _) ('value #f))
-               (obsolete? date now %narinfo-negative-ttl))
-              (('narinfo ('version 2) ('cache-uri _)
-                         ('date date) ('ttl ttl) ('value _))
-               (obsolete? date now ttl))
-              (_ #t)))))
-      (lambda args
-        ;; FILE may have been deleted.
-        #t)))
-
-  (for-each (lambda (file)
-              (let ((file (string-append directory "/" file)))
-                (when (expired? file)
-                  ;; Wrap in `false-if-exception' because FILE might have been
-                  ;; deleted in the meantime (TOCTTOU).
-                  (false-if-exception (delete-file file)))))
-            (scandir directory
-                     (lambda (file)
-                       (= (string-length file) 32)))))
-
-(define (narinfo-cache-directories)
+(define (narinfo-cache-directories directory)
   "Return the list of narinfo cache directories (one per cache URL.)"
-  (map (cut string-append %narinfo-cache-directory "/" <>)
+  (map (cut string-append directory "/" <>)
        (scandir %narinfo-cache-directory
                 (lambda (item)
                   (and (not (member item '("." "..")))
@@ -762,25 +742,15 @@ indefinitely."
                         (string-append %narinfo-cache-directory
                                        "/" item)))))))
 
-(define (maybe-remove-expired-cached-narinfo)
-  "Remove expired narinfo entries from the cache if deemed necessary."
-  (define now
-    (current-time time-monotonic))
-
-  (define expiry-file
-    (string-append %narinfo-cache-directory "/last-expiry-cleanup"))
-
-  (define last-expiry-date
-    (or (false-if-exception
-         (call-with-input-file expiry-file read))
-        0))
-
-  (when (obsolete? last-expiry-date now
-                   %narinfo-expired-cache-entry-removal-delay)
-    (for-each remove-expired-cached-narinfos
-              (narinfo-cache-directories))
-    (call-with-output-file expiry-file
-      (cute write (time-second now) <>))))
+(define* (cached-narinfo-files #:optional
+                               (directory %narinfo-cache-directory))
+  "Return the list of cached narinfo files under DIRECTORY."
+  (append-map (lambda (directory)
+                (map (cut string-append directory "/" <>)
+                     (scandir directory
+                              (lambda (file)
+                                (= (string-length file) 32)))))
+              (narinfo-cache-directories directory)))
 
 (define (progress-report-port report-progress port)
   "Return a port that calls REPORT-PROGRESS every time something is read from
@@ -1013,7 +983,12 @@ default value."
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
-  (maybe-remove-expired-cached-narinfo)
+  (maybe-remove-expired-cache-entries %narinfo-cache-directory
+                                      cached-narinfo-files
+                                      #:entry-expiration
+                                      cached-narinfo-expiration-time
+                                      #:cleanup-period
+                                      %narinfo-expired-cache-entry-removal-delay)
   (check-acl-initialized)
 
   ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly

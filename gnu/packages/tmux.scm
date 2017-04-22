@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "2.3")
+    (version "2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -40,7 +41,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "0aw5fcav8pa70ym391n4g6mh5vir34x35xhb09zdwhhg5w9kwcam"))))
+               "0jdkk7vncwabrp85lw3msh2y02dc2k0qz5h4hka9s38x4c9nnzbm"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -1121,6 +1121,24 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
            license:gpl2                 ; datapath
            license:bsd-2 license:bsd-3
            license:asl2.0))))           ; all other
+
+(define-public python-ipy
+  (package
+    (name "python-ipy")
+    (version "0.83")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "IPy" version))
+              (sha256
+               (base32
+                "1f6sdrxclifky4gvkf4gvyv5hx3fjh8vzspnfrqki6qm5d9mmnk1"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/autocracy/python-ipy/")
+    (synopsis "Python class and tools for handling IP addresses and networks")
+    (description "The @code{IP} class allows a comfortable parsing and
+handling for most notations in use for IPv4 and IPv6 addresses and
+networks.")
+    (license license:bsd-3)))
 
 (define-public speedtest-cli
   (package

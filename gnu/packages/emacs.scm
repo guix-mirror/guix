@@ -97,14 +97,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "25.1")
+    (version "25.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0cwgyiyymnx4xdg99dm2drfxcyhy2jmyf0rkr9fwj9mwwf77kwhr"))
+               "1ykkq0xl28ljdg61bm6gzy04ww86ajms98gix72qg6cpr6a53dar"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -1406,7 +1406,13 @@ type, for example: packages, buffers, files, etc.")
              (magit-popup (assoc-ref %build-inputs "magit-popup"))
              (site-lisp   "/share/emacs/site-lisp"))
          (list (string-append "--with-guix-site-dir="
-                              guix "/share/guile/site/2.0")
+                              (car (find-files (string-append guix
+                                                           "/share/guile/site")
+                                               (lambda (file stat)
+                                                 (string-prefix?
+                                                  "2."
+                                                  (basename file)))
+                                               #:directories? #t)))
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
                               dash site-lisp "/guix.d/dash-"
@@ -4475,7 +4481,7 @@ It should enable you to implement low-level X11 applications.")
                    (format #t "#!~a ~@
                      export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
-                     exec ~a --exit-with-session ~a --eval '~s' ~%"
+                     exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
                            (string-append (assoc-ref inputs "xhost") "/bin/xhost")
                            (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")

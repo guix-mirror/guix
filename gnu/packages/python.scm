@@ -37,6 +37,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7322,14 +7323,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "16.2.0")
+    (version "17.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp"))
+         "1pdg1gpmkzj8yasg6cmkhcivxcdp4c12nif88y4qvsxq5ffzxas8"))
        (patches
         (search-patches "python-pyopenssl-skip-network-test.patch"))))
     (build-system python-build-system)
@@ -7347,7 +7348,7 @@ message digests and key derivation functions.")
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
@@ -13965,3 +13966,36 @@ recognize TestCases.")
        (sha256
         (base32
          "17jlkdpqw22z1nyml5ybslilqkzmnk0dxxjml8bfghav1l5hbwd2"))))))
+
+(define-public python-fudge
+  (package
+    (name "python-fudge")
+    ;; 0.9.6 is the latest version suitable for testing the "fabric" Python 2
+    ;; package, which is currently the only use of this package.
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fudge" version))
+       (sha256
+        (base32
+         "185ia3vr3qk4f2s1a9hdxb8ci4qc0x0xidrad96pywg8j930qs9l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))     ;XXX: Tests require the NoseJS Python package.
+    (home-page "https://github.com/fudge-py/fudge")
+    (synopsis "Replace real objects with fakes/mocks/stubs while testing")
+    (description
+     "Fudge is a Python module for using fake objects (mocks and stubs) to
+test real ones.
+
+In readable Python code, you declare the methods available on your fake object
+and how they should be called.  Then you inject that into your application and
+start testing.  This declarative approach means you don’t have to record and
+playback actions and you don’t have to inspect your fakes after running code.
+If the fake object was used incorrectly then you’ll see an informative
+exception message with a traceback that points to the culprit.")
+    (license license:expat)))
+
+(define-public python2-fudge
+  (package-with-python2 python-fudge))

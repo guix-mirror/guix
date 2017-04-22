@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -94,6 +96,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
@@ -222,14 +225,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1b8dggq5x1b77a9i9250b3jhv2iddfzhr9rix1yfzckdms65mr8b"))
+               "0dgjjryp1ggbc6ivy9cfz5jl3gnbahb6d6hcwn7c7wk5npqpn18x"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -262,16 +265,15 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170306")
+    (version "20170421")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/" name "/" name
                            "/archive/" name "-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qwcbjm9j1hgzmybw15w53pvfbqcdf47d4sw21s6r2yaj8kx1hag"))))
+         "09f1abad0vdn08x80hadjccjpnzcbn5fjpj749gb819biyqkl0y2"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -290,6 +292,7 @@ operating systems.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
@@ -336,8 +339,7 @@ operating systems.")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
-It adds a large amount of features to mutt, and they all find their way
-into mutt, so it is not a fork but a large set of feature patches.")))
+It adds a large amount of new and improved features to mutt.")))
 
 (define-public gmime
   (package
@@ -2284,3 +2286,58 @@ tools and applications:
 @item pilot, the standalone file system navigator
 @end enumerate\n")
     (license asl2.0)))
+
+(define-public balsa
+  (package
+    (name "balsa")
+    (version "2.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pawsa.fedorapeople.org/balsa/balsa-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "15jkwp3ylbwd8iha4dr37z1xb6mkk31ym90vv3h2a5xk2rmym5mq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '(;; Balsa tries to install additional MIME icons
+         ;; under gtk+ directory.
+         "--enable-extra-mimeicons=no"
+         "--with-gtksourceview"
+         "--with-canberra"
+         "--with-spell-checker=gtkspell"
+         "--with-gpgme"
+         "--with-sqlite"
+         "--with-compface"
+         "--with-ldap")))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("enchant" ,enchant)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gmime" ,gmime)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("gtkspell3" ,gtkspell3)
+       ("libcanberra" ,libcanberra)
+       ("libesmtp" ,libesmtp)
+       ("libnotify" ,libnotify)
+       ("openldap" ,openldap)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
+    (native-inputs
+     `(("compface" ,compface)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (home-page "https://pawsa.fedorapeople.org/balsa")
+    (synopsis "E-mail client for GNOME")
+    (description "Balsa is a highly configurable and robust mail client for
+the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
+mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
+the use of a local MTA such as Sendemail.")
+    (license gpl3+)))

@@ -180,7 +180,7 @@ of index files."
          (nginx-upstream-configuration-servers upstream)))
    "    }\n"))
 
-(define (default-nginx-config log-directory run-directory server-list upstream-list)
+(define (default-nginx-config nginx log-directory run-directory server-list upstream-list)
   (mixed-text-file "nginx.conf"
                "user nginx nginx;\n"
                "pid " run-directory "/pid;\n"
@@ -192,6 +192,7 @@ of index files."
                "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
                "    scgi_temp_path " run-directory "/scgi_temp;\n"
                "    access_log " log-directory "/access.log;\n"
+               "    include " nginx "/share/nginx/conf/mime.types;\n"
                "\n"
                (string-join
                 (filter (lambda (section) (not (null? section)))
@@ -235,7 +236,7 @@ of index files."
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$(or config-file
-                             (default-nginx-config log-directory
+                             (default-nginx-config nginx log-directory
                                run-directory server-blocks upstream-blocks))
                   "-t")))))
 
@@ -250,7 +251,7 @@ of index files."
                    (zero?
                     (system* #$nginx-binary "-c"
                              #$(or config-file
-                                   (default-nginx-config log-directory
+                                   (default-nginx-config nginx log-directory
                                      run-directory server-blocks upstream-blocks))
                              #$@args))))))
 

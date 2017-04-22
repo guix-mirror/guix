@@ -2084,7 +2084,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.37")
+    (version "0.8.38")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2093,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zn7q8m41ayfnjvf9snrsnq00mm68alf9rhdadx5q1sk23lyvp2l"))))
+                "0q2z6z5f7c0kbbzpjamkcyqg0rc6h5rxfp97qbmb0wxaycr7jajq"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -3805,7 +3805,7 @@ predicts the locations of structural units in the sequences.")
 (define-public proteinortho
   (package
     (name "proteinortho")
-    (version "5.15")
+    (version "5.16")
     (source
      (origin
       (method url-fetch)
@@ -3815,7 +3815,7 @@ predicts the locations of structural units in the sequences.")
         version "_src.tar.gz"))
       (sha256
        (base32
-        "05wacnnbx56avpcwhzlcf6b7s77swcpv3qnwz5sh1z54i51gg2ki"))))
+        "0z4f5cg0cs8ai62hfvp4q6w66q2phcc55nhs4xj5cyhxxivjv2ai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -8275,14 +8275,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-seqminer
   (package
     (name "r-seqminer")
-    (version "5.7")
+    (version "5.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seqminer" version))
        (sha256
         (base32
-         "0p75wyl70cvp36mwg5y74nv573j1gdqi15ac2a7xf61jmsq7ycpy"))))
+         "0sfkxrc9gy5a8fadzyzfzh7l5grasm8cj6cd2nnpv85ws6mqr6qd"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))

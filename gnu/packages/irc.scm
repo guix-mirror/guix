@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,14 +142,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.7")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://weechat.org/files/src/weechat-"
+              (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1crdwlxj5liik32svflfac0s87vm6p8xm208yndigzsbg8rli4sr"))
+                "0c0waxrxq2v0r7981y1ajh9k78jfl223smwrj4v9c5z27iwh8ziz"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
@@ -190,12 +191,13 @@ SILC and ICB protocols via plugins.")
                         #t))))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
-Internet Relay Chat client, which is designed to be light and fast.
-The client uses a curses frontend, and there are remote interfaces
-for Web, Qt, Android and Emacs.  In WeeChat everything can be done
-with a keyboard, though it also supports mouse.  It is customizable
-and extensible with plugins and scripts.")
-    (home-page "http://www.weechat.org/")
+@dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.
+The client uses a curses frontend, and there are remote interfaces for Web,
+Qt, Android, and Emacs.
+
+Everything in WeeChat can be done with the keyboard, though it also supports
+using a mouse.  It is customizable and extensible with plugins and scripts.")
+    (home-page "https://www.weechat.org/")
     (license license:gpl3)))
 
 (define-public ircii

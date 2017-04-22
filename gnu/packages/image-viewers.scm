@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
@@ -44,6 +46,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages))
@@ -359,4 +362,43 @@ imaging.  It supports several HDR and LDR image formats, and it can:
 @item Tone-map HDR images;
 @item Copy EXIF data between sets of images.
 @end itemize\n")
+    (license license:gpl2+)))
+
+;; CBR and RAR are currently unsupported, due to non-free dependencies.
+;; For optional PDF support, you can install the mupdf package.
+(define-public mcomix
+  (package
+    (name "mcomix")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/mcomix/MComix-" version
+                           "/mcomix-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0fzsf9pklhfs1rzwzj64c0v30b74nk94p93h371rpg45qnfiahvy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("p7zip" ,p7zip)
+       ("python2-pillow" ,python2-pillow)
+       ("python2-pygtk" ,python2-pygtk)))
+    (arguments
+     ;; Python 2.5 or newer (Python 3 and up is not supported)
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((p7zip (assoc-ref inputs "p7zip")))
+               ;; insert absolute path to 7z executable
+               (substitute* "mcomix/archive/sevenzip_external.py"
+                 (("_7z_executable = -1")
+                  (string-append "_7z_executable = u'" p7zip "/bin/7z'"))))
+             #t)))))
+    (home-page "https://sourceforge.net/p/mcomix/wiki/Home/")
+    (synopsis "Image viewer for comics")
+    (description "MComix is a customizable image viewer that specializes as
+a comic and manga reader.  It supports a variety of container formats
+including CBZ, CB7, CBT, LHA.")
     (license license:gpl2+)))

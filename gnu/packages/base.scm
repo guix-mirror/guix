@@ -7,6 +7,7 @@
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -360,6 +361,22 @@ manipulation functions of the GNU system.  Most of these tools offer extended
 functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
+
+;; We add version 8.27 here for use in (gnu system) due to a time
+;; zone bug in `date' versions 8.25 - 8.26.
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=23035
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26238
+(define-public coreutils-8.27
+  (package
+    (inherit coreutils)
+    (version "8.27")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.

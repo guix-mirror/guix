@@ -7,20 +7,14 @@ diff --git a/tests/test_ssl.py b/tests/test_ssl.py
 index ee849fd..60048b8 100644
 --- a/tests/test_ssl.py
 +++ b/tests/test_ssl.py
-@@ -1180,40 +1180,6 @@ class ContextTests(TestCase, _LoopbackMixin):
-             TypeError, context.load_verify_locations, None, None, None
-         )
- 
--    @pytest.mark.skipif(
--        platform == "win32",
--        reason="set_default_verify_paths appears not to work on Windows.  "
--        "See LP#404343 and LP#404344."
--    )
+@@ -1113,33 +1113,6 @@ class TestContext(object):
+         reason="set_default_verify_paths appears not to work on Windows.  "
+         "See LP#404343 and LP#404344."
+     )
 -    def test_set_default_verify_paths(self):
 -        """
--        :py:obj:`Context.set_default_verify_paths` causes the
--        platform-specific CA certificate locations to be used for
--        verification purposes.
+-        `Context.set_default_verify_paths` causes the platform-specific CA
+-        certificate locations to be used for verification purposes.
 -        """
 -        # Testing this requires a server with a certificate signed by one
 -        # of the CAs in the platform CA location.  Getting one of those
@@ -43,8 +37,7 @@ index ee849fd..60048b8 100644
 -        clientSSL.set_connect_state()
 -        clientSSL.do_handshake()
 -        clientSSL.send(b"GET / HTTP/1.0\r\n\r\n")
--        self.assertTrue(clientSSL.recv(1024))
--
-     def test_set_default_verify_paths_signature(self):
+-        assert clientSSL.recv(1024)
+ 
+     def test_add_extra_chain_cert_invalid_cert(self):
          """
-         :py:obj:`Context.set_default_verify_paths` takes no arguments and

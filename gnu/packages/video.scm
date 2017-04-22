@@ -457,14 +457,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.4")
+    (version "3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ymg1mkg1n0770gmjfqp79p5ijxq04smfrsrrxc8pjc0y0agyf3f"))))
+               "17anx7rnbi63if1ndr61836lf76dpn47n0y424hc48bj05y7z7jr"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -577,7 +577,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
-         "--enable-x11grab"
 
          "--enable-runtime-cpudetect"
 

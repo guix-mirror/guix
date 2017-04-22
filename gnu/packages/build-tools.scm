@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,9 @@
   #:use-module (guix download)
   #:use-module (gnu packages)
   #:use-module (gnu packages python)
-  #:use-module (guix build-system gnu))
+  #:use-module (gnu packages ninja)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public bam
   (package
@@ -62,3 +65,28 @@ describe the build process.  It takes its inspiration for the script files
 from scons.  While scons focuses on being 100% correct when building, bam
 makes a few sacrifices to acquire fast full and incremental build times.")
     (license license:bsd-3)))
+
+(define-public meson
+  (package
+    (name "meson")
+    (version "0.39.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jwgd6sl7zl7h16id3405gwk6vlkk86ggwrp0k47njwkxmryq8d4"))))
+    (build-system python-build-system)
+    (inputs `(("ninja", ninja)))
+    (home-page "https://mesonbuild.com/")
+    (synopsis "Build system designed to be fast and user-friendly")
+    (description
+     "The Meson build system is focused on user-friendliness and speed.
+It can compile code written in C, C++, Fortran, Java, Rust, and other
+languages.  Meson provides features comparable to those of the
+Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
+files}, are written in a custom domain-specific language (DSL) that resembles
+Python.")
+    (license license:asl2.0)))
