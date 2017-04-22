@@ -3376,15 +3376,13 @@ mining and data analysis.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.5.2")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/rq/rq-"
-             version ".tar.gz"))
+       (uri (pypi-uri "rq" version))
        (sha256
-        (base32 "0b0z5hn8wkfg300hx7816csgv3bcfamlr29fi3yzgqmpqxwj3fix"))))
+        (base32 "0gaq5pnh0zy46r8jvygi0ifbvz3pq6i7xla78ijcgjw0x77qzsdh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
