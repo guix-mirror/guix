@@ -14216,3 +14216,27 @@ make common patterns shorter and easier.")
 
 (define-public python2-utils
   (package-with-python2 python-utils))
+
+(define-public python-webassets
+  (package
+    (name "python-webassets")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "webassets" version))
+       (sha256
+        (base32
+         "1nrqkpb7z46h2b77xafxihqv3322cwqv6293ngaky4j3ff4cing7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/miracle2k/webassets")
+    (synopsis "Media asset management")
+    (description "Merges, minifies and compresses Javascript and CSS files,
+supporting a variety of different filters, including YUI, jsmin, jspacker or
+CSS tidy.  Also supports URL rewriting in CSS files.")
+    (license license:bsd-2)))
