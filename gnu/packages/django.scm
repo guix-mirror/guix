@@ -377,3 +377,38 @@ project aims to bulk update given objects using one query over Django ORM.")
 
 (define-public python2-django-bulk-update
   (package-with-python2 python-django-bulk-update))
+
+(define-public python-django-contact-form
+  (package
+    (name "python-django-contact-form")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-contact-form" version))
+              (sha256
+               (base32
+                "0az590y56k5ahv4sixrkn54d3a8ig2q2z9pl6s3m4f533mx2gj17"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; the next version will need "make test"
+             (and (zero? (system* "flake8" "contact_form"))
+                  (zero? (system* "coverage" "run" "contact_form/runtests.py"))
+                  (zero? (system* "coverage" "report" "-m" "--fail-under" "0"))))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/ubernostrum/django-contact-form")
+    (synopsis "Contact form for Django")
+    (description
+      "This application provides simple, extensible contact-form functionality
+for Django sites.")
+    (license license:bsd-3)))
+
+(define-public python2-django-contact-form
+  (package-with-python2 python-django-contact-form))
