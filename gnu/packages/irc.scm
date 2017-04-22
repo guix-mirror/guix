@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,11 +191,12 @@ SILC and ICB protocols via plugins.")
                         #t))))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
-Internet Relay Chat client, which is designed to be light and fast.
-The client uses a curses frontend, and there are remote interfaces
-for Web, Qt, Android and Emacs.  In WeeChat everything can be done
-with a keyboard, though it also supports mouse.  It is customizable
-and extensible with plugins and scripts.")
+@dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.
+The client uses a curses frontend, and there are remote interfaces for Web,
+Qt, Android, and Emacs.
+
+Everything in WeeChat can be done with the keyboard, though it also supports
+using a mouse.  It is customizable and extensible with plugins and scripts.")
     (home-page "http://www.weechat.org/")
     (license license:gpl3)))
 
