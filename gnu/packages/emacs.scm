@@ -1406,7 +1406,13 @@ type, for example: packages, buffers, files, etc.")
              (magit-popup (assoc-ref %build-inputs "magit-popup"))
              (site-lisp   "/share/emacs/site-lisp"))
          (list (string-append "--with-guix-site-dir="
-                              guix "/share/guile/site/2.0")
+                              (car (find-files (string-append guix
+                                                           "/share/guile/site")
+                                               (lambda (file stat)
+                                                 (string-prefix?
+                                                  "2."
+                                                  (basename file)))
+                                               #:directories? #t)))
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
                               dash site-lisp "/guix.d/dash-"
