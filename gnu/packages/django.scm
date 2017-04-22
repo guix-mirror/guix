@@ -291,3 +291,34 @@ merging, minifying and compiling CSS and Javascript files.")
 
 (define-public python2-django-assets
   (package-with-python2 python-django-assets))
+
+(define-public python-django-jsonfield
+  (package
+    (name "python-django-jsonfield")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jsonfield" version))
+              (sha256
+               (base32
+                "19x4lak0hg9c20r7mvf27w7i8r6i4sg2g0ypmlmp2665fnk76zvy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             (substitute* "jsonfield/tests.py"
+               (("django.forms.util") "django.forms.utils")))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/bradjasper/django-jsonfield")
+    (synopsis "Store validated JSON in your model")
+    (description
+      "Django-jsonfield is a reusable Django field that allows you to store
+validated JSON in your model.  It silently takes care of serialization.  To
+use, simply add the field to one of your models.")
+    (license license:expat)))
+
+(define-public python2-django-jsonfield
+  (package-with-python2 python-django-jsonfield))
