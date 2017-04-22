@@ -3173,7 +3173,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4c")
+    (version "9.4g")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3184,7 +3184,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1ri5fllnhqjm3dlnl1xbb9mlv79iigc940vbvcnk0v5k6p58pavq"))))
+                "09j9gnx701x28zfkrv3rjqlr56p89hyxk78gkpmmdfjgcq076pc2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3239,14 +3239,14 @@ throwing people around in pseudo-randomly generated buildings.")
                           (string-append
                            "hyperrogue"
                            (string-join (string-split ,version #\.) "")
-                           "-win/sounds/credits.txt") "-d" sounds))
+                           "/sounds/credits.txt") "-d" sounds))
                 ;; Extract sounds and music into sounds directory.
                 (zero?
                  (system* "unzip" "-j" data
                           (string-append
                            "hyperrogue"
                            (string-join (string-split ,version #\.) "")
-                           "-win/*.ogg") "-d" sounds)))))))))
+                           "/*.ogg") "-d" sounds)))))))))
     (native-inputs
      `(("hyperrogue-data"
         ,(origin
@@ -3258,7 +3258,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1cyyrsnrixygg3zyz97hpsm6jzwbhydiwk3kl0lm7qjnw2nzkhhh"))))
+             "1r57db4hm7fjcd27p8b6cdsnq2cgkym2kp9lrw7ha2asdf8w6gkb"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
