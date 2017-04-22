@@ -14568,3 +14568,27 @@ for Python.  The design goals are:
 
 (define-public python2-mysqlclient
   (package-with-python2 python-mysqlclient))
+
+(define-public python-hiredis
+  (package
+    (name "python-hiredis")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hiredis" version))
+       (sha256
+        (base32
+         "1dfm2k9l9zar9nw9fwmm74zrgraxdxs04vx9li56fjcf289qx5fa"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/redis/hiredis-py")
+    (synopsis "Python extension that wraps protocol parsing code in hiredis")
+    (description "Python-hiredis is a python extension that wraps protocol
+parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies.")
+    (license license:bsd-3)))
+
+(define-public python2-hiredis
+  (package-with-python2 python-hiredis))
