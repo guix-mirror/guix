@@ -14240,3 +14240,27 @@ make common patterns shorter and easier.")
 supporting a variety of different filters, including YUI, jsmin, jspacker or
 CSS tidy.  Also supports URL rewriting in CSS files.")
     (license license:bsd-2)))
+
+(define-public python-sphinx-me
+  (package
+    (name "python-sphinx-me")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-me" version))
+       (sha256
+        (base32
+         "06jzgp213zihnvpcy2y5jy3ykid3apc2ncp2pg6a2g05lhiziglq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/stephenmcd/sphinx-me")
+    (synopsis "Create a Sphinx documentation shell")
+    (description
+      "Create a Sphinx documentation shell for your project and include the
+README file as the documentation index.  It handles extracting the required
+meta data such as the project name, author and version from your project for
+use in your Sphinx docs.")
+    (license license:bsd-2)))
+
+(define-public python2-sphinx-me
+  (package-with-python2 python-sphinx-me))
