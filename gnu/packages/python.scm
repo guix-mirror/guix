@@ -14533,3 +14533,38 @@ several utilities, as well as an API for building localization tools.")
 
 (define-public python2-translate-toolkit
   (package-with-python2 python-translate-toolkit))
+
+(define-public python-mysqlclient
+  (package
+    (name "python-mysqlclient")
+    (version "1.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mysqlclient" version))
+       (sha256
+        (base32
+         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("mariadb" ,mariadb)
+       ("nose" ,python-nose)
+       ("mock" ,python-mock)
+       ("py.test" ,python-pytest)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("libz" ,zlib)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/PyMySQL/mysqlclient-python")
+    (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
+    (description "MySQLdb is an interface to the popular MySQL database server
+for Python.  The design goals are:
+@enumerate
+@item Compliance with Python database API version 2.0 [PEP-0249],
+@item Thread-safety,
+@item Thread-friendliness (threads will not block each other).
+@end enumerate")
+    (license license:gpl2)))
+
+(define-public python2-mysqlclient
+  (package-with-python2 python-mysqlclient))
