@@ -14141,3 +14141,27 @@ for Flask.")
 
 (define-public python2-mwclient
   (package-with-python2 python-mwclient))
+
+(define-public python-pytest-warnings
+  (package
+    (name "python-pytest-warnings")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-warnings" version))
+       (sha256
+        (base32
+         "0gf2dpahpl5igb7jh1sr9acj3z3gp7zahqdqb69nk6wx01c8kc1g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("pytest" ,python-pytest-3.0)))
+    (home-page "https://github.com/fschulze/pytest-warnings")
+    (synopsis "Pytest plugin to list Python warnings in pytest report")
+    (description
+     "Python-pytest-warnings is a pytest plugin to list Python warnings in
+pytest report.")
+    (license license:expat)))
+
+(define-public python2-pytest-warnings
+  (package-with-python2 python-pytest-warnings))
