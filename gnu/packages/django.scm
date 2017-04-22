@@ -622,3 +622,75 @@ static files.")
 
 (define-public python2-django-statici18n
   (package-with-python2 python-django-statici18n))
+
+(define-public pootle
+  (package
+    (name "pootle")
+    (version "2.8.0rc5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Pootle" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0m6qcpkcy22dk3ad5y2k8851kqg2w6vrkywgy4vabwbacd7r1mvn"))))
+    (build-system python-build-system)
+    (arguments
+     `(; pootle supports only python2.
+       #:python ,python-2
+       ;; tests are not run and fail with "pytest_pootle/data/po/.tmp: No such
+       ;; file or directory". If we create this directory,
+       ;; pytest_pootle/data/po/terminology.po is missing.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-requirements
+           (lambda _
+             (substitute* "Pootle.egg-info/requires.txt"
+               (("1.7.3") "1.8.0")
+               (("2.0.0") "2.1.0"))
+             (substitute* "requirements/tests.txt"
+               (("==3.0.6") ">=3.0.6"))
+             (substitute* "requirements/base.txt"
+               (("1.7.3") "1.8.0")
+               (("2.0.0") "2.1.0")))))))
+    (propagated-inputs
+     `(("django-allauth" ,python2-django-allauth)
+       ("django-assets" ,python2-django-assets)
+       ("django-bulk-update" ,python2-django-bulk-update)
+       ("django-contact-form" ,python2-django-contact-form)
+       ("django-contrib-comments" ,python2-django-contrib-comments)
+       ("django-overextends" ,python2-django-overextends)
+       ("django-redis" ,python2-django-redis)
+       ("django-rq" ,python2-django-rq)
+       ("django-sortedm2m" ,python2-django-sortedm2m)
+       ("django-statici18n" ,python2-django-statici18n)
+       ("babel" ,python2-babel)
+       ("cssmin" ,python2-cssmin)
+       ("diff-match-patch" ,python2-diff-match-patch)
+       ("dirsync" ,python2-dirsync)
+       ("elasticsearch" ,python2-elasticsearch)
+       ("jsonfield" ,python2-django-jsonfield)
+       ("lxml" ,python2-lxml)
+       ("dateutil" ,python2-dateutil)
+       ("levenshtein" ,python2-levenshtein)
+       ("mysqlclient" ,python2-mysqlclient)
+       ("psycopg2" ,python2-psycopg2)
+       ("pytz" ,python2-pytz)
+       ("rq" ,python2-rq)
+       ("scandir" ,python2-scandir)
+       ("stemming" ,python2-stemming)
+       ("translate-toolkit" ,python2-translate-toolkit)))
+    (native-inputs
+     `(("python2-pytest-warnings" ,python2-pytest-warnings)
+       ("python2-pytest-django" ,python2-pytest-django)
+       ("python2-pytest-catchlog" ,python2-pytest-catchlog)
+       ("python2-pytest-cov" ,python2-pytest-cov)
+       ("python2-factory-boy" ,python2-factory-boy)))
+    (home-page "http://pootle.translatehouse.org/")
+    (synopsis "Community localization server")
+    (description
+      "Pootle is an online translation and localization tool.  It works to
+lower the barrier of entry, providing tools to enable teams to work towards
+higher quality while welcoming newcomers.")
+    (license license:gpl3+)))
