@@ -14262,3 +14262,23 @@ use in your Sphinx docs.")
 
 (define-public python2-sphinx-me
   (package-with-python2 python-sphinx-me))
+
+(define-public python-cssmin
+  (package
+    (name "python-cssmin")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cssmin" version))
+        (sha256
+         (base32
+          "1dk723nfm2yf8cp4pj785giqlwv42l0kj8rk40kczvq1hk6g04p0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/zacharyvoase/cssmin")
+    (synopsis "Python port of the YUI CSS Compressor")
+    (description "Python port of the YUI CSS Compressor.")
+    (license (list license:expat license:bsd-3))))
+
+(define-public python2-cssmin
+  (package-with-python2 python-cssmin))
