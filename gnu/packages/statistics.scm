@@ -4371,14 +4371,14 @@ published by the statistics blog FiveThirtyEight.")
 (define-public r-compquadform
   (package
     (name "r-compquadform")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "CompQuadForm" version))
        (sha256
         (base32
-         "0bsgbdblxpv57mbwnf51xyiydp2bqyxkg4zzwqki85cv5xqlrq1n"))))
+         "1i30hrqdk64q17vsn918c3q79brchgx2wzh1gbsgbn0dh1ncabq4"))))
     (properties `((upstream-name . "CompQuadForm")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/CompQuadForm")
