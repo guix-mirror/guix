@@ -1124,13 +1124,13 @@ considerably faster, produces smaller files, and leaves text as is.")
 (define-public r-assertthat
   (package
     (name "r-assertthat")
-    (version "0.1")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "assertthat" version))
               (sha256
                (base32
-                "0dwsqajyglfscqilj843qfqn1ndbqpswa7b4l1d633qjk9d68qqk"))))
+                "1wp5znk3xy338x6hknppk702jn596yr735d9i7c3wabm3sdzfgnp"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/assertthat")
     (synopsis "Easy pre and post assertions")
