@@ -774,3 +774,29 @@ render model libraries.")
 educational use.  As such, there is an emphasis on capabilities that improve
 the 'showing the effect of'-style of operation.")
     (license license:gpl2+)))
+
+(define-public volk
+  (package
+    (name "volk")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://libvolk.org/releases/volk-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1bz3ywc6y5wmz3i8p4z2wbzhns8bc0ywdkl9qnxpcvfcscarbdlh"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)))
+    (native-inputs
+     `(("python-2", python-2)
+       ("python2-cheetah" ,python2-cheetah)))
+    (home-page "http://libvolk.org/")
+    (synopsis "Vector-Optimized Library of Kernels")
+    (description
+     "@code{volk} contains procedures with machine-specific optimizations
+for mathematical functions.  It also provides an machine-independent
+interface to select the best such procedures to use on a given system.")
+    (license license:gpl3+)))
