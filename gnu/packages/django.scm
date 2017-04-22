@@ -412,3 +412,28 @@ for Django sites.")
 
 (define-public python2-django-contact-form
   (package-with-python2 python-django-contact-form))
+
+(define-public python-django-contrib-comments
+  (package
+    (name "python-django-contrib-comments")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-contrib-comments" version))
+              (sha256
+               (base32
+                "0bxsgw8jrkhg6r5s0z6ksfi4w8yknaqb1s9acmxd9pm3pnsnp5kx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/django/django-contrib-comments")
+    (synopsis "Comments framework")
+    (description
+      "Django used to include a comments framework; since Django 1.6 it's been
+separated to a separate project.  This is that project.  This framework can be
+used to attach comments to any model, so you can use it for comments on blog
+entries, photos, book chapters, or anything else.")
+    (license license:bsd-3)))
+
+(define-public python2-django-contrib-comments
+  (package-with-python2 python-django-contrib-comments))
