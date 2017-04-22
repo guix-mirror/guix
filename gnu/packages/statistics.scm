@@ -1417,13 +1417,13 @@ understand the language at a deeper level.")
 (define-public r-memoise
   (package
     (name "r-memoise")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "memoise" version))
               (sha256
                (base32
-                "0sq2dhpvxy17v1baj256r0jnygdy3m5a8x4zh6vhv29957qnq6zx"))))
+                "034qfc2xlh30x1q2vya239w34a3ir3y2fwnx2agbgbi6592zjxmj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)))
