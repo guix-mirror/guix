@@ -8275,14 +8275,14 @@ unmodeled, or latent sources of noise.")
 (define-public r-seqminer
   (package
     (name "r-seqminer")
-    (version "5.7")
+    (version "5.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seqminer" version))
        (sha256
         (base32
-         "0p75wyl70cvp36mwg5y74nv573j1gdqi15ac2a7xf61jmsq7ycpy"))))
+         "0sfkxrc9gy5a8fadzyzfzh7l5grasm8cj6cd2nnpv85ws6mqr6qd"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
