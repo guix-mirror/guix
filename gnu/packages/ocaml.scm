@@ -969,6 +969,29 @@ It provides support for ANSI C syntax, old-C K&R style syntax and the standard
 GNU CC attributes.  It provides also a C pretty printer as an example of use.")
     (license license:lgpl2.1)))
 
+(define-public ocaml-qcheck
+  (package
+    (name "ocaml-qcheck")
+    (version "0.5.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/c-cube/qcheck/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zs1pg5cb1iry554v3cdmmiglsrwmsqa9x8zxmzb118fnk5d3ha6"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (home-page "https://github.com/c-cube/qcheck")
+    (synopsis "QuickCheck inspired property-based testing for OCaml")
+    (description "QuickCheck inspired property-based testing for OCaml. This
+module allows to check invariants (properties of some types) over randomly
+generated instances of the type. It provides combinators for generating
+instances and printing them.")
+    (license license:lgpl3+)))
+
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
