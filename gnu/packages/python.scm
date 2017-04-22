@@ -14438,3 +14438,26 @@ system) by avoiding unnecessary calls to os.stat() in most cases.")
 
 (define-public python2-scandir
   (package-with-python2 python-scandir))
+
+(define-public python2-stemming
+  (package
+    (name "python2-stemming")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stemming" version))
+       (sha256
+        (base32 "0ldwa24gnnxhniv0fhygkpc2mwgd93q10ag8rvzayv6hw418frsr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://bitbucket.org/mchaput/stemming/overview")
+    (synopsis "Python implementations of various stemming algorithms")
+    (description
+     "Python implementations of the Porter, Porter2, Paice-Husk, and Lovins
+stemming algorithms for English.  These implementations are straightforward and
+efficient, unlike some Python versions of the same algorithms available on the
+Web.  This package is an extraction of the stemming code included in the Whoosh
+search engine.")
+    (license license:public-domain)))
