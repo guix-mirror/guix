@@ -2995,7 +2995,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
      (origin
        (method url-fetch)
@@ -3005,11 +3005,11 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1h9izq510m2pvg77d0y9krc0cvvbhp2y3xlrrz6id7y47jdzkpsd"))))
+         "0k0xah72ryjwak4dc4crszxrlkmi9x1s7p3sd4la642n77yi1pmf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://nouveau.freedesktop.org")
+    (home-page "https://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
      "This package provides modern, high-quality Xorg drivers for NVIDIA
