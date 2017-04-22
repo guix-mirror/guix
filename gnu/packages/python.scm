@@ -14282,3 +14282,24 @@ use in your Sphinx docs.")
 
 (define-public python2-cssmin
   (package-with-python2 python-cssmin))
+
+(define-public python-diff-match-patch
+  (package
+    (name "python-diff-match-patch")
+    (version "20121119")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "diff-match-patch" version))
+        (sha256
+         (base32
+          "0k1f3v8nbidcmmrk65m7h8v41jqi37653za9fcs96y7jzc8mdflx"))))
+    (build-system python-build-system)
+    (home-page "https://code.google.com/p/google-diff-match-patch")
+    (synopsis "Synchronize plain text")
+    (description "Diff Match and Patch libraries offer robust algorithms to
+perform the operations required for synchronizing plain text.")
+    (license license:asl2.0)))
+
+(define-public python2-diff-match-patch
+  (package-with-python2 python-diff-match-patch))
