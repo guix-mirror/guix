@@ -25,6 +25,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages python))
 
 (define-public python-django
@@ -471,3 +472,40 @@ project.")
 
 (define-public python2-django-overextends
   (package-with-python2 python-django-overextends))
+
+(define-public python-django-redis
+  (package
+    (name "python-django-redis")
+    (version "4.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-redis" version))
+              (sha256
+               (base32
+                "0yyyxv8n9l9dhs893jsqwg2cxqkkc79g719n9dzzzqgkzialv1c1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (and (zero? (system* "redis-server" "--daemonize" "yes"))
+                  (with-directory-excursion "tests"
+                    (zero? (system* "python" "runtests.py")))))))))
+    (native-inputs
+     `(("python-fakeredis" ,python-fakeredis)
+       ("python-hiredis" ,python-hiredis)
+       ("python-mock" ,python-mock)
+       ("python-msgpack" ,python-msgpack)
+       ("redis" ,redis)))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-redis" ,python-redis)))
+    (home-page "https://github.com/niwibe/django-redis")
+    (synopsis "Full featured redis cache backend for Django")
+    (description
+      "Full featured redis cache backend for Django.")
+    (license license:bsd-3)))
+
+(define-public python2-django-redis
+  (package-with-python2 python-django-redis))
