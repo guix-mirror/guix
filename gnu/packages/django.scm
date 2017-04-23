@@ -347,3 +347,33 @@ conn_max_age argument to easily enable Django’s connection pool.")
 
 (define-public python2-dj-database-url
   (package-with-python2 python-dj-database-url))
+
+(define-public python-django-bulk-update
+  (package
+    (name "python-django-bulk-update")
+    (version "1.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-bulk-update" version))
+              (sha256
+               (base32
+                "0mbng9m7swfc0dnidipbzlxfhlfjrv755dlnha5s4m9mgdxb1fhc"))))
+    (build-system python-build-system)
+    (arguments
+     ;; tests don't support django 1.10, but the module seems to work.
+     `(#:tests? #f))
+    (native-inputs
+     `(("six" ,python-six)
+       ("jsonfield" ,python-django-jsonfield)
+       ("python-dj-database-url" ,python-dj-database-url)))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://github.com/aykut/django-bulk-update")
+    (synopsis "Simple bulk update over Django ORM or with helper function")
+    (description
+      "Simple bulk update over Django ORM or with helper function.  This
+project aims to bulk update given objects using one query over Django ORM.")
+    (license license:expat)))
+
+(define-public python2-django-bulk-update
+  (package-with-python2 python-django-bulk-update))
