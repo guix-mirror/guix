@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -46,10 +48,13 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages zip)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
 
@@ -1158,6 +1163,78 @@ or junctions, and always follows hard links.")
                    ;; libzpaq.cpp contains a mix of public-domain and
                    ;; expat-licenced (or ‘MIT’) code.
                    license:expat))))
+
+(define-public unshield
+  (package
+    (name "unshield")
+    (version "1.4.2")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "http://github.com/twogood/unshield/archive/"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0x7ps644yp5dka2zhb8w0ifqmw3d255jafpzfwv8xbcpgq6fmm2x"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("openssl" ,openssl)
+       ;; test data that is otherwise downloaded with curl
+       ("unshield-avigomanager11b22.zip"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/\"
+unshield-avigomanager11b22.zip?dl=1"))
+           (sha256
+            (base32 "0fwq7lih04if68wpwpsk5wjqyvh32db76a41sq6gbx4dn1lc3ddn"))
+           (file-name "unshield-avigomanager11b22.zip")))
+       ("unshield-the-feeble-files-spanish.zip"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/\"
+unshield-the-feeble-files-spanish.zip?dl=1"))
+           (sha256
+            (base32 "1k5cw6vnpja8yjlnhx5124xrw9i8s1l539hfdqqrqz3l5gn0bnyd"))
+           (file-name "unshield-the-feeble-files-spanish.zip")))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:out-of-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each (lambda (i)
+                         (copy-file (assoc-ref inputs i)
+                                    (string-append "test/v0/" i)))
+                       '("unshield-avigomanager11b22.zip"
+                         "unshield-the-feeble-files-spanish.zip"))
+             (substitute* (find-files "test/" "/*\\.sh")
+               ;; Tests expect the unshield binary in a specific
+               ;; location.
+               (("/var/tmp/unshield/bin/unshield")
+                (string-append (getcwd) "/src/unshield"))
+               ;; We no longer need to download the data.
+               ((".?URL=.*$") "")
+               (("curl -(|f)sSL -o test.zip .*") ""))
+             (substitute* "test/v0/avigomanager.sh"
+               (("test.zip")
+                (string-append (getcwd)
+                  "/test/v0/unshield-avigomanager11b22.zip")))
+             (substitute* "test/v0/the-feeble-files-spanish.sh"
+               (("test.zip")
+                (string-append (getcwd)
+                               "/test/v0/unshield-the-feeble-files-spanish.zip")))
+             #t))
+         (replace 'check
+           (lambda _
+            (zero? (system* "./run-tests.sh")))))))
+    (home-page "https://github.com/twogood/unshield")
+    (synopsis "Extract CAB files from InstallShield installers")
+    (description
+     "@command{unshield} is a tool and library for extracting @file{.cab}
+ archives from InstallShield installers.")
+    (license license:expat)))
 
 (define-public unrar
   (package
