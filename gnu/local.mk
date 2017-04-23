@@ -529,6 +529,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
+  %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
+  %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
+  %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
+  %D%/packages/patches/cool-retro-term-remove-non-free-fonts.patch	\
   %D%/packages/patches/coreutils-cut-huge-range-test.patch	\
   %D%/packages/patches/coreutils-fix-cross-compilation.patch    \
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
