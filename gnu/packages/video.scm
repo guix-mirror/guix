@@ -36,7 +36,6 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -1614,20 +1613,7 @@ be used for realtime video capture via Linux-specific APIs.")
                 "043f8mfdh4ll0hpivpyg3iniirckwsgri0gzamyrba1yhf2c2ibr"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                              (%current-system)))
-                  '("arm" "mips"))
-           '(#:phases
-             (modify-phases %standard-phases
-             (add-after 'unpack 'remove-architecture-specific-instructions
-               ;; non-Intel platforms fail to build with the architecture
-               ;; specific compiler flags included by default.
-               (lambda _
-                 (substitute* "libobs/CMakeLists.txt"
-                              (("if\\(NOT MSVC\\)") "if(MSVC)"))
-                 #t))))
-           '())))
+     `(#:tests? #f)) ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1654,6 +1640,7 @@ video recording and live streaming.  OBS supports capturing audio and video
 from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public libvdpau
