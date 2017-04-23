@@ -14,6 +14,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1122,3 +1123,25 @@ files.  It is designed to be fast and to handle large input files.")
      "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
 libxls cannot write Excel files.")
     (license license:bsd-2)))
+
+(define-public freexl
+  (package
+    (name "freexl")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
+                                  name  "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17a0yrjb0gln7819j0vp7y25imhvwpil2b0rm44mwgzml0a4i6mk"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gaia-gis.it/fossil/freexl/index")
+    (synopsis "Read Excel files")
+    (description
+     "FreeXL is a C library to extract valid data from within an Excel (.xls)
+spreadsheet.")
+    ;; Any of these licenses may be picked.
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:mpl1.1))))
