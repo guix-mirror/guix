@@ -29,6 +29,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
@@ -2692,6 +2694,69 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 your way through an underground cave system in search of the Grue.  Can you
 capture it and get out alive?")
     (license license:agpl3+)))
+
+(define-public lierolibre
+  (package
+    (name "lierolibre")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/lierolibre/trunk/"
+                                  version "/+download/lierolibre-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1cf1gvsn4qq190lrf9k5bpjnqwlcfw7pajvdnh7z5r4jqw0rsbl9"))
+              (patches
+               (search-patches "lierolibre-check-unaligned-access.patch"
+                               "lierolibre-try-building-other-arch.patch"
+                               "lierolibre-remove-arch-warning.patch"
+                               "lierolibre-newer-libconfig.patch"
+                               "lierolibre-is-free-software.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-compiled files.
+                  (delete-file "data/LIERO.CHR")
+                  (delete-file "data/LIERO.SND")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("imagemagick" ,imagemagick)
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)
+       ("sox" ,sox)))
+    (inputs
+     `(("boost" ,boost)
+       ("libconfig" ,libconfig)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/lierolibre/lierolibre")
+    (synopsis "Old-school earthworm action game")
+    (description
+     "lierolibre is an earthworm action game where you fight another player
+(or the computer) underground using a wide array of weapons.
+
+Features:
+@itemize
+@item 2 worms, 40 weapons, great playability, two game modes: Kill'em All
+and Game of Tag, plus AI-players without true intelligence!
+@item Dat nostalgia.
+@item Extensions via a hidden F1 menu:
+@itemize
+@item Replays
+@item Game controller support
+@item Powerlevel palettes
+@end itemize
+@item Ability to write game variables to plain text files.
+@item Ability to load game variables from both EXE and plain text files.
+@item Scripts to extract and repack graphics, sounds and levels.
+@end itemize
+
+To switch between different window sizes, use F6, F7 and F8, to switch to
+fullscreen, use F5 or Alt+Enter.")
+    ;; Code mainly BSD-2, some parts under Boost 1.0. All assets are WTFPL2.
+    (license (list license:bsd-2 license:boost1.0 license:wtfpl2))))
 
 (define-public warzone2100
   (package

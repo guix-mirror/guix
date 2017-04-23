@@ -776,6 +776,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
+  %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
+  %D%/packages/patches/lierolibre-is-free-software.patch	\
+  %D%/packages/patches/lierolibre-newer-libconfig.patch		\
+  %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
+  %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
