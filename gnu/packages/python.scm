@@ -14592,3 +14592,31 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
 
 (define-public python2-hiredis
   (package-with-python2 python-hiredis))
+
+(define-public python-fakeredis
+  (package
+    (name "python-fakeredis")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fakeredis" version))
+       (sha256
+        (base32
+         "0zncahj3byyasyfx9i7k991ph0n0lq8v3a21pqri5qxn9564bk9r"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/jamesls/fakeredis")
+    (synopsis "Fake implementation of redis API for testing purposes")
+    (description "Fakeredis is a pure python implementation of the redis-py
+python client that simulates talking to a redis server.  This was created for a
+single purpose: to write unittests.  Setting up redis is not hard, but many time
+ you want to write unittests that do not talk to an external server (such as
+redis).  This module now allows tests to simply use this module as a reasonable
+substitute for redis.")
+    (license license:bsd-3)))
+
+(define-public python2-fakeredis
+  (package-with-python2 python-fakeredis))
