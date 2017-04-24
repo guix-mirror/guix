@@ -1733,6 +1733,7 @@ making @dfn{screencasts}.")
               (uri (svn-reference
                     (url "svn://svn.icculus.org/smpeg/trunk/")
                     (revision 401))) ; last revision before smpeg2 (for SDL 2.0)
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
