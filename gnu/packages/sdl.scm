@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,8 @@
 
 (define-module (gnu packages sdl)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
@@ -150,16 +152,19 @@ system, such as sound redirection over the network.")
                (base32
                 "0ijljhs0v99dj6y27hc10z6qchyp8gdp4199y6jzngy6dzxlzsvw"))))
     (build-system gnu-build-system)
+    (arguments
+     `(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("x86_64" "i686"))
+        ;; mmx is supported only on Intel processors.
+        '()
+        '(#:configure-flags '("--disable-mmx")))))
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL graphics primitives library")
     (description "SDL_gfx provides graphics drawing primitives, rotozoom and
 other supporting functions for SDL.")
     (home-page "http://www.ferzkopp.net/joomla/software-mainmenu-14/4-ferzkopps-linux-software/19-sdlgfx")
-    (license zlib)
-
-    ;; The code apparently includes Intel assembly, which fails to build on
-    ;; MIPS, at least.
-    (supported-systems '("i686-linux" "x86_64-linux"))))
+    (license zlib)))
 
 (define-public sdl-image
   (package
