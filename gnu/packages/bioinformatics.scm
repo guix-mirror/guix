@@ -1460,9 +1460,12 @@ multiple sequence alignments.")
                (setenv "HOME" "/tmp")
                (and (zero? (system* "make" "-C" "pysam_data"))
                     (zero? (system* "make" "-C" "cbcf_data"))
+                    ;; Running nosetests without explicitly asking for a
+                    ;; single process leads to a crash.  Running with multiple
+                    ;; processes fails because the tests are not designed to
+                    ;; run in parallel.
                     (zero? (system* "nosetests" "-v"
-                                    "--processes"
-                                    (number->string (parallel-job-count)))))))))))
+                                    "--processes" "1")))))))))
     (propagated-inputs
      `(("htslib"            ,htslib))) ; Included from installed header files.
     (inputs
