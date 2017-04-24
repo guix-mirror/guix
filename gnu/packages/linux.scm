@@ -1510,19 +1510,20 @@ user-space processes.")
 (define-public unionfs-fuse
   (package
     (name "unionfs-fuse")
-    (version "0.26")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://podgorny.cz/unionfs-fuse/releases/unionfs-fuse-"
-                    version ".tar.xz"))
+                    "https://github.com/rpodgorny/unionfs-fuse/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qpnr4czgc62vsfnmv933w62nq3xwcbnvqch72qakfgca75rsp4d"))))
+                "0hsn8l1iblvx27bpd4dvnvnbh9ri3sv2f9xzpsnfz3379kb7skgj"))))
     (build-system cmake-build-system)
     (inputs `(("fuse" ,fuse)))
     (arguments '(#:tests? #f))                    ; no tests
-    (home-page "http://podgorny.cz/moin/UnionFsFuse")
+    (home-page "https://github.com/rpodgorny/unionfs-fuse")
     (synopsis "User-space union file system")
     (description
      "UnionFS-FUSE is a flexible union file system implementation in user
