@@ -848,7 +848,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.24.0")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -856,7 +856,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "059zblcj98fhrns1rwa66mf4km68czpam4nnk8q9qny31bx58654"))
+                "1khb7c4fdj1aak46lwyb3lq14w5jpxzws0zp6bdc87ljsvx3yhh7"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -906,6 +906,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
        #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-cdda"
+                               "--enable-dvdread"
+                               "--enable-dvdnav"
                                "--enable-zsh-comp"
                                "--disable-build-date")
        ;; No check function defined.
