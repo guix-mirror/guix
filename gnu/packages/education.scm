@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -100,6 +102,49 @@ of categories with some of the activities available in that category.
 @item other: learn to tell time, puzzle of famous paintings, vector drawing, cartoon making, ...
 @end enumerate
 ")
+    (license license:gpl3+)))
+
+(define-public gcompris-qt
+  (package
+    (name "gcompris-qt")
+    (version "0.70")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://gcompris.net/download/qt/src/gcompris-qt-"
+               version ".tar.xz"))
+        (sha256
+         (base32
+          "01r7i8dmwb2nlfyp0y0mzs8yydmvn5gq7xn1w7g21lysak1mliwa"))))
+    (build-system cmake-build-system)
+    (arguments
+      ;; Qml_box2d is unmaintained and not actually required for building
+     '(#:configure-flags (list "-DQML_BOX2D_MODULE=disabled")
+       #:tests? #f)) ; no test target
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("gettext" ,gettext-minimal)
+       ("perl" ,perl)))
+    (inputs
+     `(("python-2" ,python-2)
+       ("qt" ,qt))) ; Cannot find qtquick at runtime with modular qt.
+    (home-page "http://gcompris.net/index-en.html")
+    (synopsis "Educational games for small children")
+    (description
+     "Gcompris offers a large collection of educational games for small
+children, designed to be a unified interface to integrate more educational
+games.  Language-oriented games contain vocabulary, sounds, and voices for
+many different languages.
+Currently available boards include:
+@enumerate
+@item learning how to use a mouse and keyboard
+@item learning simple arithmetic
+@item learning how to read an analog clock
+@item recognize letters after hearing their names
+@item reading practice
+@item small games (memory games, jigsaw puzzles, ...)
+@end enumerate\n")
     (license license:gpl3+)))
 
 (define-public tipp10
