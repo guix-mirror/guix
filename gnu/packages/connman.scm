@@ -135,7 +135,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
 (define-public cmst
   (package
     (name "cmst")
-    (version "2016.10.03")
+    (version "2017.03.18")
     (source
      (origin
        (method url-fetch)
@@ -143,7 +143,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
              "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
              version "/cmst-" version ".tar.gz"))
        (sha256
-        (base32 "1xpn4sqnxzpsjjwh9hva9sn55xlryiz2f2mwpyj2l31janj7a082"))))
+        (base32 "16g9byxr1rkmrnzi6sjplpmkr8h6pqj7418jz30czqviw5qlkqwl"))))
     (inputs
      `(("qt" ,qt)))
     (native-inputs
