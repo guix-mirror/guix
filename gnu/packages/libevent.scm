@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,9 @@
                                       ;; https://github.com/libevent/libevent/issues/452
                                       "libevent-2.1-skip-failing-test.patch"))))
     (build-system gnu-build-system)
+    (arguments
+      ;; This skips some of the tests which fail on armhf and aarch64.
+     '(#:configure-flags '("--disable-libevent-regress")))
     (inputs
      `(("python" ,python-2)))           ; for 'event_rpcgen.py'
     (native-inputs
@@ -87,7 +91,8 @@ loop.")
                 "libevent-2.0-CVE-2016-10195.patch"
                 "libevent-2.0-CVE-2016-10196.patch"
                 "libevent-2.0-CVE-2016-10197.patch"
-                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))))
+                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))
+    (arguments '())))
 
 (define-public libev
   (package
