@@ -945,6 +945,7 @@ the GNOME desktop environment.")
 (define-public libcroco
   (package
     (name "libcroco")
+    (replacement libcroco/fixed)
     (version "0.6.11")
     (source (origin
               (method url-fetch)
@@ -971,6 +972,19 @@ XML/CSS rendering engine.")
 
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
+
+(define libcroco/fixed
+  (package
+    (inherit libcroco)
+    (replacement #f)
+    (source
+      (origin
+        (inherit (package-source libcroco))
+        (patches
+          (append
+            (origin-patches (package-source libcroco))
+            (search-patches "libcroco-CVE-2017-7960.patch"
+                            "libcroco-CVE-2017-7961.patch")))))))
 
 (define-public libgsf
   (package

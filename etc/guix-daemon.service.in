@@ -13,7 +13,9 @@ StandardOutput=syslog
 StandardError=syslog
 
 # See <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00608.html>.
-TasksMax=1024
+# Some package builds (for example, go@1.8.1) may require even more than
+# 1024 tasks.
+TasksMax=8192
 
 [Install]
 WantedBy=multi-user.target

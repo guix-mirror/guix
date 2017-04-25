@@ -376,7 +376,14 @@ functionality beyond that which is outlined in the POSIX standard.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))))
+                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))
+    (arguments
+     (if (string-prefix? "arm" (or (%current-target-system)
+                                   (%current-system)))
+         (substitute-keyword-arguments (package-arguments coreutils)
+           ((#:phases phases)
+            `(alist-delete 'patch-cut-test ,phases)))
+         (package-arguments coreutils)))))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.

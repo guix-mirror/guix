@@ -691,6 +691,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
+  %D%/packages/patches/libcroco-CVE-2017-7960.patch		\
+  %D%/packages/patches/libcroco-CVE-2017-7961.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libetonyek-build-with-mdds-1.2.patch     \
   %D%/packages/patches/libevent-dns-tests.patch			\
@@ -997,6 +999,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wicd-urwid-1.3.patch			\
   %D%/packages/patches/wicd-wpa2-ttls.patch			\
   %D%/packages/patches/wmctrl-64-fix.patch			\
+  %D%/packages/patches/wmfire-update-for-new-gdk-versions.patch	\
   %D%/packages/patches/woff2-libbrotli.patch			\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\

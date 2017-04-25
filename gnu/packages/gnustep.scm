@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -244,7 +245,9 @@ display, and can run a user-specified program on mouse click.")
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "101grahd80n97y2dczb629clmcgiavdpbbwy78kk5wgs362m12z3"))))
+                "101grahd80n97y2dczb629clmcgiavdpbbwy78kk5wgs362m12z3"))
+              (patches
+               (search-patches "wmfire-update-for-new-gdk-versions.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)

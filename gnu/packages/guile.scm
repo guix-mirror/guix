@@ -1441,16 +1441,16 @@ is no support for parsing block and inline level HTML.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "20160726.53127f6")
+    (version "20170402.91d042e")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/TaylanUB/scheme-bytestructures")
-                    (commit "53127f608caf64b34fa41c389b2743b546fbe9da")))
+                    (commit "91d042e3427e1d7740b604b6296c616cf2eec13d")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0l4nx1vp9fkrgrgwjiycj7nx6wfjfd39rqamv4pmq7issi8mrywq"))))
+                "04lgh0nk6ddnwgh20hnz4pyhczaik0xbd50kikjsxcwcl46shavb"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

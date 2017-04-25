@@ -1,0 +1,144 @@
+This patch comes from Debian and was modified by Kei Kebreau <kei@openmailbox.org>.
+Link: https://anonscm.debian.org/cgit/pkg-wmaker/wmfire.git/plain/debian/patches/gdk_updates.patch?h=debian/1.2.4-2&id=a272234fc5eecdbfc469adb12133196bc62f3059
+
+Description: Update for newer versions of GDK.
+ In particular, the icon window was not receiving enter and leave events from
+ the pointer.  To fix this, we get rid of the second GdkWindow iconwin entirely
+ and set win to be its own icon.
+ .
+ This also removes the need for the "broken window manager" fix, so we remove it
+ and all references to it.
+Author: Doug Torrance <dtorrance@piedmont.edu>
+
+diff -ur wmfire-1.2.4.old/src/wmfire.c wmfire-1.2.4/src/wmfire.c
+--- wmfire-1.2.4.old/src/wmfire.c	2017-04-23 14:26:58.449487117 -0400
++++ wmfire-1.2.4/src/wmfire.c	2017-04-23 14:32:10.785238671 -0400
+@@ -77,7 +77,6 @@
+ typedef struct {
+ 	Display *display;	/* X11 display */
+ 	GdkWindow *win;		/* Main window */
+-	GdkWindow *iconwin;	/* Icon window */
+ 	GdkGC *gc;		/* Drawing GC */
+ 	GdkPixmap *pixmap;	/* Main pixmap */
+ 	GdkBitmap *mask;	/* Dockapp mask */
+@@ -141,7 +140,6 @@
+ int cmap = 0;
+ int lock = 0;
+ int proximity = 0;
+-int broken_wm = 0;
+ 
+ /******************************************/
+ /* Main                                   */
+@@ -262,12 +260,8 @@
+ 		usleep(REFRESH);
+ 
+ 		/* Draw the rgb buffer to screen */
+-		if (!broken_wm)
+-			gdk_draw_rgb_image(bm.iconwin, bm.gc, 4, 4, XMAX, YMAX, GDK_RGB_DITHER_NONE, bm.rgb, XMAX * 3);
+-		else
+-			gdk_draw_rgb_image(bm.win, bm.gc, 4, 4, XMAX, YMAX, GDK_RGB_DITHER_NONE, bm.rgb, XMAX * 3);
++                gdk_draw_rgb_image(bm.win, bm.gc, 4, 4, XMAX, YMAX, GDK_RGB_DITHER_NONE, bm.rgb, XMAX * 3);
+ 	}
+-
+ 	return 0;
+ }
+ 
+@@ -556,9 +550,7 @@
+ #define MASK GDK_BUTTON_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_POINTER_MOTION_HINT_MASK
+ 
+ 	GdkWindowAttr attr;
+-	GdkWindowAttr attri;
+ 	Window win;
+-	Window iconwin;
+ 
+ 	GdkPixmap *icon;
+ 
+@@ -578,10 +570,6 @@
+ 	attr.wmclass_class = "wmfire";
+ 	attr.window_type = GDK_WINDOW_TOPLEVEL;
+ 
+-	/* Make a copy for the iconwin - parameters are the same */
+-	memcpy(&attri, &attr, sizeof (GdkWindowAttr));
+-	attri.window_type = GDK_WINDOW_CHILD;
+-
+ 	sizehints.flags = USSize;
+ 	sizehints.width = 64;
+ 	sizehints.height = 64;
+@@ -592,18 +580,11 @@
+ 		exit(1);
+ 	}
+ 
+-	bm.iconwin = gdk_window_new(bm.win, &attri, GDK_WA_TITLE | GDK_WA_WMCLASS);
+-	if (!bm.iconwin) {
+-		fprintf(stderr, "FATAL: Cannot make icon window\n");
+-		exit(1);
+-	}
+-
+ 	win = GDK_WINDOW_XWINDOW(bm.win);
+-	iconwin = GDK_WINDOW_XWINDOW(bm.iconwin);
+ 	XSetWMNormalHints(GDK_WINDOW_XDISPLAY(bm.win), win, &sizehints);
+ 
+ 	wmhints.initial_state = WithdrawnState;
+-	wmhints.icon_window = iconwin;
++	wmhints.icon_window = win;
+ 	wmhints.icon_x = 0;
+ 	wmhints.icon_y = 0;
+ 	wmhints.window_group = win;
+@@ -613,10 +594,8 @@
+ 
+ 	bm.pixmap = gdk_pixmap_create_from_xpm_d(bm.win, &(bm.mask), NULL, master_xpm);
+ 	gdk_window_shape_combine_mask(bm.win, bm.mask, 0, 0);
+-	gdk_window_shape_combine_mask(bm.iconwin, bm.mask, 0, 0);
+ 
+ 	gdk_window_set_back_pixmap(bm.win, bm.pixmap, False);
+-	gdk_window_set_back_pixmap(bm.iconwin, bm.pixmap, False);
+ 
+ #if 0
+         gdk_window_set_type_hint(bm.win, GDK_WINDOW_TYPE_HINT_DOCK);
+@@ -626,7 +605,6 @@
+ #endif
+ 
+ 	icon = gdk_pixmap_create_from_xpm_d(bm.win, NULL, NULL, icon_xpm);
+-	gdk_window_set_icon(bm.win, bm.iconwin, icon, NULL);
+ 
+ 	gdk_window_show(bm.win);
+ 
+@@ -721,9 +699,6 @@
+ 		case 'l':
+ 			lock = 1;
+ 			break;
+-		case 'b':
+-			broken_wm = 1;
+-			break;
+ 		case 'h':
+ 		default:
+ 			do_help();
+@@ -766,6 +741,5 @@
+ 	for (i = 0; i < NFLAMES; i++)
+ 		fprintf(stderr, "%d:%s ", i + 1, fire[i].text);
+ 	fprintf(stderr, "\n\t-l\t\t\tlock flame colour and monitor\n");
+-	fprintf(stderr, "\t-b\t\t\tactivate broken window manager fix\n");
+ 	fprintf(stderr, "\t-h\t\t\tprints this help\n");
+ }
+Only in wmfire-1.2.4/src: wmfire.c~
+diff -ur wmfire-1.2.4.old/wmfire.1 wmfire-1.2.4/wmfire.1
+--- wmfire-1.2.4.old/wmfire.1	2017-04-23 14:26:58.449487117 -0400
++++ wmfire-1.2.4/wmfire.1	2017-04-23 14:41:20.697186114 -0400
+@@ -8,7 +8,6 @@
+ 
+ .SH SYNOPSIS
+ .B wmfire
+-[-b]
+ [-c CPU]
+ [-f COLOUR]
+ [-F FILE]
+@@ -54,9 +53,6 @@
+ 
+ .SH OPTIONS
+ .TP
+-.B -b
+-Activate broken window manager fix (if grey box diplayed)
+-.TP
+ .B -c [0..3]
+ .br
+ Monitor SMP CPU number X

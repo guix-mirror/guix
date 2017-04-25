@@ -62,7 +62,6 @@ documents written in the UTF-8 encoding and its ability to use multiple
 dictionaries, including personal ones.")
     (license lgpl2.1+)))
 
-
 ;;;
 ;;; Dictionaries.
 ;;;
@@ -190,3 +189,11 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "1zxr8958v37v260fkqd4pg37ns5h5kyqm54hn1hg70wq5cz8h512")))
+
+(define-public aspell-dict-pt-br
+  (aspell-dictionary "pt-br" "Brazilian Portuguese"
+                     #:version "20090702-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))

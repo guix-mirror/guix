@@ -1230,6 +1230,25 @@ or XEmacs.")
 the Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-google-maps
+  (package
+    (name "emacs-google-maps")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jd/google-maps.el/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "014bxapm4d8vjxbzrfjdpsavxyfx981mlcb10aq5rmigr6il8ybs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/jd/google-maps.el")
+    (synopsis "Access Google Maps from Emacs")
+    (description "The @code{google-maps} package allows to display Google
+Maps directly inside Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")

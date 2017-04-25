@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
@@ -369,6 +369,63 @@ and Bitstream Vera Sans Mono).
 
 The Liberation Fonts are sponsored by Red Hat.")
     (license license:silofl1.1)))
+
+(define-public font-linuxlibertine
+  (package
+    (name "font-linuxlibertine")
+    (version "5.3.0")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "mirror://sourceforge/linuxlibertine/"
+                                  "linuxlibertine/" version
+                                  "/LinLibertineSRC_" version "_2012_07_02.tgz"))
+              (sha256
+               (base32
+                "0x7cz6hvhpil1rh03rax9zsfzm54bh7r4bbrq8rz673gl9h47v0v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((compile
+                    (lambda (name ext)
+                      (zero? (system*
+                              "fontforge" "-lang=ff"
+                              "-c" (string-append "Open('" name "');"
+                                                  "Generate('"
+                                                  (basename name "sfd") ext
+                                                  "')"))))))
+               (every (lambda (name)
+                        (and (compile name "ttf")
+                             (compile name "otf")))
+                      (find-files "." "\\.sfd$")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((font-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fonts/truetype")))
+               (mkdir-p font-dir)
+               (for-each (cut install-file <> font-dir)
+                         (find-files "." "\\.(otf|ttf)$"))
+               #t))))))
+    (native-inputs
+     `(("fontforge" ,fontforge)))
+    (home-page "http://www.linuxlibertine.org/")
+    (synopsis "Serif and sans serif typefaces")
+    (description "The Linux Libertine fonts is a set of typefaces containing
+both a Serif version (\"Linux Libertine\") and a Sans Serif (\"Linux
+Biolinum\") designed to be used together as an alternative for Times/Times New
+Roman and Helvetica/Arial.  The Serif typeface comes in two shapes and two
+weights, and with a Small Capitals version of the regular typeface.  Linux
+Biolinum is available in both Regular and Bold weights.")
+    ;; The fonts are released under either of these licenses.
+    (license (list license:gpl2+ license:silofl1.1))))
 
 (define-public font-terminus
   (package

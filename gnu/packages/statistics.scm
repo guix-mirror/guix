@@ -106,7 +106,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r-minimal
   (package
     (name "r-minimal")
-    (version "3.3.3")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -114,7 +114,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0v7wpj89b0i3ad3fi1wak5c93hywmbxv8sdnixhq8l17782nidss"))))
+                "14cb8bwi3akvdb6934kqic2862f2qgav6cq4g0h7gi2p4ka9x3i8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-2017a)
@@ -184,13 +184,15 @@ be output in text, PostScript, PDF or HTML.")
           ;; making "help()" print nothing at all.
           (lambda _ (setenv "PAGER" "cat") #t))
          (add-before 'check 'set-timezone
-          ;; Some tests require the timezone to be set.
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "TZ" "UTC")
-            (setenv "TZDIR"
-                    (string-append (assoc-ref inputs "tzdata")
-                                   "/share/zoneinfo"))
-            #t))
+           ;; Some tests require the timezone to be set.  However, the
+           ;; timezone may not just be "UTC", or else a brittle regression
+           ;; test in reg-tests-1d will fail.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
          (add-after 'build 'make-info
           (lambda _ (zero? (system* "make" "info"))))
          (add-after 'build 'install-info

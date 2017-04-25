@@ -36,7 +36,6 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -849,7 +848,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.24.0")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -857,7 +856,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "059zblcj98fhrns1rwa66mf4km68czpam4nnk8q9qny31bx58654"))
+                "1khb7c4fdj1aak46lwyb3lq14w5jpxzws0zp6bdc87ljsvx3yhh7"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -907,6 +906,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
        #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-cdda"
+                               "--enable-dvdread"
+                               "--enable-dvdnav"
                                "--enable-zsh-comp"
                                "--disable-build-date")
        ;; No check function defined.
@@ -1614,20 +1616,7 @@ be used for realtime video capture via Linux-specific APIs.")
                 "043f8mfdh4ll0hpivpyg3iniirckwsgri0gzamyrba1yhf2c2ibr"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                              (%current-system)))
-                  '("arm" "mips"))
-           '(#:phases
-             (modify-phases %standard-phases
-             (add-after 'unpack 'remove-architecture-specific-instructions
-               ;; non-Intel platforms fail to build with the architecture
-               ;; specific compiler flags included by default.
-               (lambda _
-                 (substitute* "libobs/CMakeLists.txt"
-                              (("if\\(NOT MSVC\\)") "if(MSVC)"))
-                 #t))))
-           '())))
+     `(#:tests? #f)) ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1654,6 +1643,7 @@ video recording and live streaming.  OBS supports capturing audio and video
 from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public libvdpau
@@ -1746,6 +1736,7 @@ making @dfn{screencasts}.")
               (uri (svn-reference
                     (url "svn://svn.icculus.org/smpeg/trunk/")
                     (revision 401))) ; last revision before smpeg2 (for SDL 2.0)
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))

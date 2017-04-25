@@ -21,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages screen)
+  #:use-module (srfi srfi-1)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -170,6 +171,7 @@ window manager as well as the Tmux terminal multiplexer.")
 it to a new terminal.  Started a long-running process over @code{ssh}, but have
 to leave and don't want to interrupt it?  Just start a @code{screen}, use
 reptyr to grab it, and then kill the @code{ssh} session and head on home.")
-    ;; Reptyr currently does not support mips.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    ;; Reptyr currently does not support mips or aarch64.
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "aarch64-linux")))
     (license expat)))
