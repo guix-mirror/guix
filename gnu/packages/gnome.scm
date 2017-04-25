@@ -1897,10 +1897,10 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.46.1.a")
+    (version "0.48.2.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
-       ("gperf" ,gperf-3.0)
+       ("gperf" ,gperf)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
@@ -1912,7 +1912,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c0czhsn28b5h4pk3kx89jjbdc5d2qkxhl4ywqvxfivphf2nicbp"))))
+                "0m0bqcppa9vzysxizbymwifpii1lgg1cjy7yphvb1ivxz1pk7bal"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
