@@ -150,7 +150,14 @@
                                          "/share/gir-1.0")
                           (string-append "--with-typelibdir="
                                          (assoc-ref %outputs "out")
-                                         "/lib/girepository-1.0"))))
+                                         "/lib/girepository-1.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'embed-growisofs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "plugins/growisofs/burn-growisofs.c"
+               (("\"growisofs") (string-append "\"" (which "growisofs"))))
+             #t )))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
@@ -159,7 +166,8 @@
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("dvd+rw-tools" ,dvd+rw-tools)
+       ("glib" ,glib)
        ("gnome-doc-utils" ,gnome-doc-utils)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
