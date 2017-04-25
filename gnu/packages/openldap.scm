@@ -27,6 +27,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -114,6 +115,7 @@
     (inputs
      `(("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
+       ("mit-krb5" ,mit-krb5)
        ("python" ,python-2)))
     (home-page "https://arthurdejong.org/nss-pam-ldapd")
     (synopsis "NSS and PAM modules for LDAP")
