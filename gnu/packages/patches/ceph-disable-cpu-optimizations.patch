@@ -15,16 +15,16 @@ don't add anything for i686.
  #
  # SIMD_COMPILE_FLAGS
  #
-@@ -56,7 +51,7 @@
-   if(HAVE_ARM_NEON)
+@@ -73,7 +68,7 @@
      set(SIMD_COMPILE_FLAGS "${SIMD_COMPILE_FLAGS} -mfpu=neon")
    endif()
+ 
 -elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "i386|i686|amd64|x86_64|AMD64")
 +elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "amd64|x86_64|AMD64")
    set(HAVE_INTEL 1)
    CHECK_C_COMPILER_FLAG(-msse HAVE_INTEL_SSE)
    if(HAVE_INTEL_SSE)
-@@ -66,24 +61,4 @@
+@@ -83,26 +78,6 @@
    if(HAVE_INTEL_SSE2)
      set(SIMD_COMPILE_FLAGS "${SIMD_COMPILE_FLAGS} -msse2")
    endif()
@@ -48,4 +48,6 @@ don't add anything for i686.
 -  if(HAVE_INTEL_SSE4_2)
 -    set(SIMD_COMPILE_FLAGS "${SIMD_COMPILE_FLAGS} -msse4.2")
 -  endif()
- endif()
+ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(powerpc|ppc)64le")
+   set(HAVE_PPC64LE 1)
+   message(STATUS " we are ppc64le")

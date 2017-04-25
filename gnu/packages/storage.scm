@@ -48,14 +48,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "12.0.1")
+    (version "12.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mgd7iqx9zgwims2bb8dbzhzv0p6z9vjxavbv8dampa34fzac3xc"))
+                "0l9v072ba28i984y5rwny9i11nmpyx5bl7awxg48plyadm2l3g14"))
               (patches
                (search-patches "ceph-skip-unittest_blockdev.patch"
                                "ceph-skip-collect-sys-info-test.patch"
@@ -223,6 +223,7 @@
                (substitute* "src/test/osd/CMakeLists.txt"
                  (("^add_ceph_test\\(osd-bench\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-config\\.sh.*$") "\n")
+                 (("add_ceph_test\\(osd-dup\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-markdown\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-reactivate\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-reuse-id\\.sh.*$") "\n")
