@@ -1768,4 +1768,33 @@ HTML (via SXML) or any other format for rendering.")
       (home-page "http://dthompson.us/software/guile-syntax-highlight")
       (license license:lgpl3+))))
 
+(define-public guile-sjson
+  (package
+    (name "guile-sjson")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dustycloud.org/misc/sjson-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "09hnh2brc7ihh8dv4g5hdmdj8rs8p9l3pmlgafkx145grdg7wprx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _ (zero? (system* "sh" "bootstrap.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://gitlab.com/dustyweb/guile-sjson")
+    (synopsis "S-expression based json reader/writer for Guile")
+    (description "guile-sjson is a json reader/writer for Guile.
+It has a nice, simple s-expression based syntax.")
+    (license license:lgpl3+)))
+
 ;;; guile.scm ends here
