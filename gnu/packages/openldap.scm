@@ -94,8 +94,23 @@
      `(#:configure-flags
        (list (string-append "--with-pam-seclib-dir="
                             (assoc-ref %outputs "out") "/lib/security/")
-             (string-append "--with-ldap-conf-file="
-                            (assoc-ref %outputs "out") "/etc/nslcd.conf"))))
+             ;; nslcd cannot be convinced to look at run-time for its
+             ;; configuration file at a location that differs from the
+             ;; configured location.
+             "--with-ldap-conf-file=/etc/nslcd.conf")
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is necessary because we tell nslcd with configure flags that
+         ;; it should look for its configuration file at /etc/nslcd.conf.  The
+         ;; build system tries to install a default configuration to that very
+         ;; location.
+         (add-after 'unpack 'override-nslcd.conf-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("\\$\\(DESTDIR\\)\\$\\(NSLCD_CONF_PATH\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/etc/nslcd.conf.example")))
+             #t)))))
     (inputs
      `(("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
