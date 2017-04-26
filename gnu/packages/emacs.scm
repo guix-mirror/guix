@@ -2327,7 +2327,10 @@ in @code{html-mode}.")
     (native-inputs
      `(("texinfo" ,texinfo)))
     (arguments
-     `(#:phases
+     `(#:include '("\\.el$" "\\.lisp$" "\\.asd$" "contrib")
+       #:exclude '("^slime-tests.el" "^contrib/test/"
+                   "^contrib/Makefile$" "^contrib/README.md$")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'install 'configure
            (lambda* _
