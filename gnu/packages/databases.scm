@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
@@ -1469,3 +1471,42 @@ for ODBC.")
 
 (define-public python2-pyodbc-c
   (package-with-python2 python-pyodbc-c))
+
+(define-public mdbtools
+  (package
+    (name "mdbtools")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/brianb/mdbtools/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "05hbmxcq173kzb899gdi3bz2qcc1vi3n1qbbkwpsvrq7ggf11wyw"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("txt2man" ,txt2man)
+       ("which" ,which)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
+    (home-page "http://mdbtools.sourceforge.net/")
+    (synopsis "Read Microsoft Access databases")
+    (description "MDB Tools is a set of tools and applications to read the
+proprietary MDB file format used in Microsoft's Access database package.  This
+includes programs to export schema and data from Microsoft's Access database
+file format to other databases such as MySQL, Oracle, Sybase, PostgreSQL,
+etc., and an SQL engine for performing simple SQL queries.")
+    (license (list license:lgpl2.0
+                   license:gpl2+))))
