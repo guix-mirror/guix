@@ -1191,7 +1191,10 @@ as a library for other Emacs packages.")
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
-    (arguments `(#:emacs ,emacs))
+    (arguments
+     `(#:emacs ,emacs
+       #:include '("\\.el$" "^images/" "^latex/" "\\.info$")
+       #:exclude '("^tests/" "^latex/README")))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/auctex/")
