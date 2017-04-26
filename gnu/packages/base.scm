@@ -666,6 +666,16 @@ store.")
                         ;; 4.7.1.
                         ((" -lgcc_s") ""))
 
+                      ;; Apply patch only on i686.
+                      ;; TODO: Move the patch to 'patches' in the next update cycle.
+                      ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                       (%current-system)))
+                            `(zero? (system* "patch" "-p1" "--force"
+                                             "--input"
+                                             (assoc-ref native-inputs
+                                                        "glibc-memchr-overflow-i686.patch")))
+                            '())
+
                       ;; Have `system' use that Bash.
                       (substitute* "sysdeps/posix/system.c"
                         (("#define[[:blank:]]+SHELL_PATH.*$")
@@ -709,7 +719,15 @@ store.")
    ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)
-                    ("gettext" ,gettext-minimal)))
+                    ("gettext" ,gettext-minimal)
+
+                    ;; Apply this patch only on i686 to avoid a full rebuild.
+                    ;; TODO: Move to 'patches' in the next update cycle.
+                    ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                     (%current-system)))
+                          `(("glibc-memchr-overflow-i686.patch"
+                             ,(search-patch "glibc-memchr-overflow-i686.patch")))
+                          '())))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
