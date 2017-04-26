@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -850,3 +852,33 @@ calendar applications.  It also includes a panel clock plugin and an
 international clock application capable of simultaneously showing clocks from
 several different time zones.")
     (license gpl2+)))
+
+(define-public xfce4-notifyd
+  (package
+    (name "xfce4-notifyd")
+    (version "0.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ybcfqfynr33g5hp2lgq17s8qyx7rq6fd2iwrpwcvm6kml6prjpl"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("libnotify" ,libnotify)))
+    (home-page "https://goodies.xfce.org/projects/applications/xfce4-notifyd")
+    (synopsis "Show notification bubbles on Xfce")
+    (description
+     "The Xfce Notify Daemon (xfce4-notifyd for short) is a smallish program
+that implements the “server-side” portion of the Freedesktop desktop
+notifications specification.  Applications that wish to pop up a notification
+bubble in a standard way can implicitly make use of xfce4-notifyd to do so by
+sending standard messages over D-Bus using the
+@code{org.freedesktop.Notifications} interface.")
+    (license gpl2)))
