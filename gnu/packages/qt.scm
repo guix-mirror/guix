@@ -1347,7 +1347,7 @@ contain over 620 classes.")
 (define-public qtkeychain
   (package
     (name "qtkeychain")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
@@ -1355,7 +1355,7 @@ contain over 620 classes.")
                             "archive/v" version ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "0fka5q5cdzlf79igcjgbnb2smvwbwfasqawkzkbr34whispgm6lz"))))
+         (base32 "0bxi5pfhxdvwk8yxa06lk2d7lcibmfqhahbin82bqf3m341zd4ml"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
@@ -1370,7 +1370,8 @@ contain over 620 classes.")
            (lambda _
              (substitute* "CMakeLists.txt"
               (("\\$\\{qt_translations_dir\\}")
-               "${CMAKE_INSTALL_PREFIX}/share/qt/translations")))))))
+               "${CMAKE_INSTALL_PREFIX}/share/qt/translations"))
+             #t)))))
     (home-page "https://github.com/frankosterfeld/qtkeychain")
     (synopsis "Qt API to store passwords")
     (description
