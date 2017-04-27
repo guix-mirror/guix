@@ -41,7 +41,8 @@ Copyright @copyright{} 2017 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
-Copyright @copyright{} 2017 George Clemmer
+Copyright @copyright{} 2017 George Clemmer@*
+Copyright @copyright{} 2017 Andy Wingo
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -235,6 +236,7 @@ Services
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
@@ -9393,6 +9395,7 @@ declaration.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
@@ -15090,6 +15093,84 @@ capability also has to be configured on the front-end as well.
 @end table
 @end deftp
 
+@node Certificate Services
+@subsubsection Certificate Services
+
+@cindex Web
+@cindex HTTP, HTTPS
+@cindex Let's Encrypt
+@cindex TLS certificates
+The @code{(gnu services certbot)} module provides a service to
+automatically obtain a valid TLS certificate from the Let's Encrypt
+certificate authority.  These certificates can then be used to serve
+content securely over HTTPS or other TLS-based protocols, with the
+knowledge that the client will be able to verify the server's
+authenticity.
+
+@url{https://letsencrypt.org/, Let's Encrypt} provides the
+@code{certbot} tool to automate the certification process.  This tool
+first securely generates a key on the server.  It then makes a request
+to the Let's Encrypt certificate authority (CA) to sign the key.  The CA
+checks that the request originates from the host in question by using a
+challenge-response protocol, requiring the server to provide its
+response over HTTP.  If that protocol completes successfully, the CA
+signs the key, resulting in a certificate.  That certificate is valid
+for a limited period of time, and therefore to continue to provide TLS
+services, the server needs to periodically ask the CA to renew its
+signature.
+
+The certbot service automates this process: the initial key
+generation, the initial certification request to the Let's Encrypt
+service, the web server challenge/response integration, writing the
+certificate to disk, and the automated periodic renewals.
+
+@defvr {Scheme Variable} certbot-service-type
+A service type for the @code{certbot} Let's Encrypt client.
+@end defvr
+
+@deftp {Data Type} certbot-configuration
+Data type representing the configuration of the @code{certbot} serice.
+This type has the following parameters:
+
+@table @asis
+@item @code{package} (default: @code{certbot})
+The certbot package to use.
+
+@item @code{webroot} (default: @code{/var/www})
+The directory from which to serve the Let's Encrypt challenge/response
+files.
+
+@item @code{hosts} (default: @code{()})
+A list of hosts for which to generate certificates and request
+signatures.
+
+@item @code{default-location} (default: @i{see below})
+The default @code{nginx-location-configuration}.  Because @code{certbot}
+needs to be able to serve challenges and responses, it needs to be able
+to run a web server.  It does so by extending the @code{nginx} web
+service with an @code{nginx-server-configuration} listening on the
+@var{hosts} on port 80, and which has a
+@code{nginx-location-configuration} for the @code{/.well-known/} URI
+path subspace used by Let's Encrypt.  @xref{Web Services}, for more on
+these nginx configuration data types.
+
+Requests to other URL paths will be matched by the
+@code{default-location}, which if present is added to all
+@code{nginx-server-configuration}s.
+
+By default, the @code{default-location} will issue a redirect from
+@code{http://@var{host}/...} to @code{https://@var{host}/...}, leaving
+you to define what to serve on your site via @code{https}.
+
+Pass @code{#f} to not issue a default location.
+@end table
+@end deftp
+
+The public key and its signatures will be written to
+@code{/etc/letsencrypt/live/@var{host}/fullchain.pem}, for each
+@var{host} in the configuration.  The private key is written to
+@code{/etc/letsencrypt/live/@var{host}/privkey.pem}.
+
 
 @node DNS Services
 @subsubsection DNS Services
@@ -15493,6 +15574,7 @@ The list of knot-zone-configuration used by this configuration.
 
 @end table
 @end deftp
+
 
 @node VPN Services
 @subsubsection VPN Services

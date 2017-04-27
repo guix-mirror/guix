@@ -444,6 +444,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/audio.scm                        \
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
+  %D%/services/certbot.scm			\
   %D%/services/configuration.scm		\
   %D%/services/cuirass.scm			\
   %D%/services/cups.scm				\
