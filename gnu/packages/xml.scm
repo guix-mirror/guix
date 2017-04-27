@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
@@ -1145,3 +1145,32 @@ spreadsheet.")
     (license (list license:gpl2+
                    license:lgpl2.1+
                    license:mpl1.1))))
+
+(define-public xerces-c
+  (package
+    (name "xerces-c")
+    (version "3.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/xerces/c/3/sources/"
+                                  "xerces-c-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hb29c0smqlpxj0zdm09s983z5jx37szlliccnvgh0qq91wwqwwr"))))
+    (build-system gnu-build-system)
+    (arguments
+     (let ((system (or (%current-target-system)
+                       (%current-system))))
+       (if (string-prefix? "x86_64" system)
+           '()
+           '(#:configure-flags '("--disable-sse2")))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://xerces.apache.org/xerces-c/")
+    (synopsis "Validating XML parser library for C++")
+    (description "Xerces-C++ is a validating XML parser written in a portable
+subset of C++.  Xerces-C++ makes it easy to give your application the ability
+to read and write XML data.  A shared library is provided for parsing,
+generating, manipulating, and validating XML documents using the DOM, SAX, and
+SAX2 APIs.")
+    (license license:asl2.0)))
