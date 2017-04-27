@@ -850,6 +850,30 @@ sharing of scientific data.")
                 "--disable-shared" "--with-pic"
                 ,flags))))))
 
+(define-public netcdf-fortran
+  (package
+    (name "netcdf-fortran")
+    (version "4.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0xaxdcg1p83zmypwml3swsnr3ccn38inwldyr1l3wa4dbwbrblxj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-tests? #f))
+    (inputs
+     `(("netcdf" ,netcdf)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (synopsis "Fortran interface for the netCDF library")
+    (description (package-description netcdf))
+    (home-page (package-home-page netcdf))
+    (license (package-license netcdf))))
+
 (define-public nlopt
   (package
     (name "nlopt")
