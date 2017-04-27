@@ -114,105 +114,99 @@
 (define (config-domain-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
 of domain names."
- (string-join
-  (map (match-lambda
+ (map (match-lambda
         ('default "_ ")
-        ((? string? str) (string-append str " ")))
-       names)))
+        ((? string? str) (list str " ")))
+      names))
 
 (define (config-index-strings names)
  "Return a string denoting the nginx config representation of NAMES, a list
 of index files."
- (string-join
-  (map (match-lambda
-        ((? string? str) (string-append str " ")))
-       names)))
+ (map (match-lambda
+        ((? string? str) (list str " ")))
+      names))
 
-(define nginx-location-config
+(define emit-nginx-location-config
   (match-lambda
     (($ <nginx-location-configuration> uri body)
-     (string-append
+     (list
       "      location " uri " {\n"
-      "        " (string-join body "\n    ") "\n"
+      (map (lambda (x) (list "        " x "\n")) body)
       "      }\n"))
     (($ <nginx-named-location-configuration> name body)
-     (string-append
+     (list
       "      location @" name " {\n"
-      "        " (string-join body "\n    ") "\n"
+      (map (lambda (x) (list "        " x "\n")) body)
       "      }\n"))))
 
-(define (default-nginx-server-config server)
-  (string-append
-   "    server {\n"
-   (if (nginx-server-configuration-http-port server)
-       (string-append "      listen "
-                      (number->string (nginx-server-configuration-http-port server))
-                      ";\n")
-       "")
-   (if (nginx-server-configuration-https-port server)
-       (string-append "      listen "
-                      (number->string (nginx-server-configuration-https-port server))
-                      " ssl;\n")
-       "")
-   "      server_name " (config-domain-strings
-                         (nginx-server-configuration-server-name server))
-                        ";\n"
-   (if (nginx-server-configuration-ssl-certificate server)
-       (let ((certificate (nginx-server-configuration-ssl-certificate server)))
-         ;; lstat fails when the certificate file does not exist: it aborts
-         ;; and lets the user fix their configuration.
-         (lstat certificate)
-         (string-append "      ssl_certificate " certificate ";\n"))
-       "")
-   (if (nginx-server-configuration-ssl-certificate-key server)
-       (let ((key (nginx-server-configuration-ssl-certificate-key server)))
-         (lstat key)
-         (string-append "      ssl_certificate_key " key ";\n"))
-       "")
-   "      root " (nginx-server-configuration-root server) ";\n"
-   "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
-   "      server_tokens " (if (nginx-server-configuration-server-tokens? server)
-                              "on" "off") ";\n"
-   "\n"
-   (string-join
-    (map nginx-location-config (nginx-server-configuration-locations server))
-    "\n")
+(define (emit-nginx-server-config server)
+  (let ((http-port (nginx-server-configuration-http-port server))
+        (https-port (nginx-server-configuration-https-port server))
+        (server-name (nginx-server-configuration-server-name server))
+        (ssl-certificate (nginx-server-configuration-ssl-certificate server))
+        (ssl-certificate-key
+         (nginx-server-configuration-ssl-certificate-key server))
+        (root (nginx-server-configuration-root server))
+        (index (nginx-server-configuration-index server))
+        (server-tokens? (nginx-server-configuration-server-tokens? server))
+        (locations (nginx-server-configuration-locations server)))
+    (define-syntax-parameter <> (syntax-rules ()))
+    (define-syntax-rule (and/l x tail ...)
+      (let ((x* x))
+        (if x*
+            (syntax-parameterize ((<> (identifier-syntax x*)))
+              (list tail ...))
+            '())))
+    (list
+     "    server {\n"
+     (and/l http-port  "      listen " (number->string <>) ";\n")
+     (and/l https-port "      listen " (number->string <>) " ssl;\n")
+     "      server_name " (config-domain-strings server-name) ";\n"
+     (and/l ssl-certificate     "      ssl_certificate " <> ";\n")
+     (and/l ssl-certificate-key "      ssl_certificate_key " <> ";\n")
+     "      root " root ";\n"
+     "      index " (config-index-strings index) ";\n"
+     "      server_tokens " (if server-tokens? "on" "off") ";\n"
+     "\n"
+     (map emit-nginx-location-config locations)
+     "\n"
+     "    }\n")))
+
+(define (emit-nginx-upstream-config upstream)
+  (list
+   "    upstream " (nginx-upstream-configuration-name upstream) " {\n"
+   (map (lambda (server)
+          (simple-format #f "      server ~A;\n" server))
+        (nginx-upstream-configuration-servers upstream))
    "    }\n"))
 
-(define (nginx-upstream-config upstream)
-  (string-append
-   "    upstream " (nginx-upstream-configuration-name upstream) " {\n"
-   (string-concatenate
-    (map (lambda (server)
-           (simple-format #f "      server ~A;\n" server))
-         (nginx-upstream-configuration-servers upstream)))
-   "    }\n"))
+(define (flatten . lst)
+  "Return a list that recursively concatenates all sub-lists of LST."
+  (define (flatten1 head out)
+    (if (list? head)
+        (fold-right flatten1 out head)
+        (cons head out)))
+  (fold-right flatten1 '() lst))
 
 (define (default-nginx-config nginx log-directory run-directory server-list upstream-list)
-  (mixed-text-file "nginx.conf"
-               "user nginx nginx;\n"
-               "pid " run-directory "/pid;\n"
-               "error_log " log-directory "/error.log info;\n"
-               "http {\n"
-               "    client_body_temp_path " run-directory "/client_body_temp;\n"
-               "    proxy_temp_path " run-directory "/proxy_temp;\n"
-               "    fastcgi_temp_path " run-directory "/fastcgi_temp;\n"
-               "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
-               "    scgi_temp_path " run-directory "/scgi_temp;\n"
-               "    access_log " log-directory "/access.log;\n"
-               "    include " nginx "/share/nginx/conf/mime.types;\n"
-               "\n"
-               (string-join
-                (filter (lambda (section) (not (null? section)))
-                        (map nginx-upstream-config upstream-list))
-                "\n")
-               "\n"
-               (let ((http (map default-nginx-server-config server-list)))
-                 (do ((http http (cdr http))
-                      (block "" (string-append (car http) "\n" block )))
-                     ((null? http) block)))
-               "}\n"
-               "events {}\n"))
+  (apply mixed-text-file "nginx.conf"
+         (flatten
+          "user nginx nginx;\n"
+          "pid " run-directory "/pid;\n"
+          "error_log " log-directory "/error.log info;\n"
+          "http {\n"
+          "    client_body_temp_path " run-directory "/client_body_temp;\n"
+          "    proxy_temp_path " run-directory "/proxy_temp;\n"
+          "    fastcgi_temp_path " run-directory "/fastcgi_temp;\n"
+          "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
+          "    scgi_temp_path " run-directory "/scgi_temp;\n"
+          "    access_log " log-directory "/access.log;\n"
+          "    include " nginx "/share/nginx/conf/mime.types;\n"
+          "\n"
+          (map emit-nginx-upstream-config upstream-list)
+          (map emit-nginx-server-config server-list)
+          "}\n"
+          "events {}\n")))
 
 (define %nginx-accounts
   (list (user-group (name "nginx") (system? #t))
