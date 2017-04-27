@@ -244,6 +244,7 @@ Services
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
+* Version Control Services::    Providing remote access to Git repositories.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -9403,6 +9404,7 @@ declaration.
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
+* Version Control Services::    Providing remote access to Git repositories.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -17430,6 +17432,68 @@ Defaults to @samp{3}
 @end deftypevr
 
 
+@node Version Control Services
+@subsubsection Version Control Services
+
+The @code{(gnu services version-control)} module provides a service to
+allow remote access to local Git repositories.
+
+@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
+
+Return a service that runs @command{git daemon}, a simple TCP server to
+expose repositories over the Git protocol for anonymous access.
+
+The optional @var{config} argument should be a
+@code{<git-daemon-configuration>} object, by default it allows read-only
+access to exported@footnote{By creating the magic file
+"git-daemon-export-ok" in the repository directory.} repositories under
+@file{/srv/git}.
+
+@end deffn
+
+@deftp {Data Type} git-daemon-configuration
+Data type representing the configuration for @code{git-daemon-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to allow access for all Git repositories, even if they do not
+have the @file{git-daemon-export-ok} file.
+
+@item @code{base-path} (default: @file{/srv/git})
+Whether to remap all the path requests as relative to the given path.
+If you run git daemon with @var{(base-path "/srv/git")} on example.com,
+then if you later try to pull @code{git://example.com/hello.git}, git
+daemon will interpret the path as @code{/srv/git/hello.git}.
+
+@item @code{user-path} (default: @var{#f})
+Whether to allow @code{~user} notation to be used in requests.  When
+specified with empty string, requests to @code{git://host/~alice/foo} is
+taken as a request to access @code{foo} repository in the home directory
+of user @code{alice}.  If @var{(user-path "path")} is specified, the
+same request is taken as a request to access @code{path/foo} repository
+in the home directory of user @code{alice}.
+
+@item @code{listen} (default: @var{'()})
+Whether to listen on specific IP addresses or hostnames, defaults to
+all.
+
+@item @code{port} (default: @var{#f})
+Whether to listen on an alternative port, which defaults to 9418.
+
+@item @code{whitelist} (default: @var{'()})
+If not empty, only allow access to this list of directories.
+
+@item @code{extra-options} (default: @var{'()})
+Extra options will be passed to @code{git daemon}, please run
+@command{man git-daemon} for more information.
+
+@end table
+@end deftp
+
+
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
 
@@ -17591,66 +17655,6 @@ The following is an example @code{dicod-service} configuration.
                     %dicod-database:gcide))))
 @end example
 
-@subsubsection Version Control
-
-The @code{(gnu services version-control)} module provides the following services:
-
-@subsubheading Git daemon service
-
-@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
-
-Return a service that runs @command{git daemon}, a simple TCP server to
-expose repositories over the Git protocol for anonymous access.
-
-The optional @var{config} argument should be a
-@code{<git-daemon-configuration>} object, by default it allows read-only
-access to exported@footnote{By creating the magic file
-"git-daemon-export-ok" in the repository directory.} repositories under
-@file{/srv/git}.
-
-@end deffn
-
-@deftp {Data Type} git-daemon-configuration
-Data type representing the configuration for @code{git-daemon-service}.
-
-@table @asis
-@item @code{package} (default: @var{git})
-Package object of the Git distributed version control system.
-
-@item @code{export-all?} (default: @var{#f})
-Whether to allow access for all Git repositories, even if they do not
-have the @file{git-daemon-export-ok} file.
-
-@item @code{base-path} (default: @file{/srv/git})
-Whether to remap all the path requests as relative to the given path.
-If you run git daemon with @var{(base-path "/srv/git")} on example.com,
-then if you later try to pull @code{git://example.com/hello.git}, git
-daemon will interpret the path as @code{/srv/git/hello.git}.
-
-@item @code{user-path} (default: @var{#f})
-Whether to allow @code{~user} notation to be used in requests.  When
-specified with empty string, requests to @code{git://host/~alice/foo} is
-taken as a request to access @code{foo} repository in the home directory
-of user @code{alice}.  If @var{(user-path "path")} is specified, the
-same request is taken as a request to access @code{path/foo} repository
-in the home directory of user @code{alice}.
-
-@item @code{listen} (default: @var{'()})
-Whether to listen on specific IP addresses or hostnames, defaults to
-all.
-
-@item @code{port} (default: @var{#f})
-Whether to listen on an alternative port, which defaults to 9418.
-
-@item @code{whitelist} (default: @var{'()})
-If not empty, only allow access to this list of directories.
-
-@item @code{extra-options} (default: @var{'()})
-Extra options will be passed to @code{git daemon}, please run
-@command{man git-daemon} for more information.
-
-@end table
-@end deftp
 
 @subsubheading Cgit Service
 
