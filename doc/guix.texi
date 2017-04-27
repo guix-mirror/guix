@@ -13731,7 +13731,8 @@ Local accounts with lower values will silently fail to authenticate.
 @cindex web
 @cindex www
 @cindex HTTP
-The @code{(gnu services web)} module provides the following service:
+The @code{(gnu services web)} module provides the nginx web server and
+also a fastcgi wrapper daemon.
 
 @deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
        [#:log-directory ``/var/log/nginx''] @
@@ -13880,6 +13881,56 @@ blocks can be used in a similar way to the
 @code{nginx-location-configuration body}.  One restriction is that the
 body of a named location block cannot contain location blocks.
 
+@end table
+@end deftp
+
+@cindex fastcgi
+@cindex fcgiwrap
+FastCGI is an interface between the front-end and the back-end of a web
+service.  It is a somewhat legacy facility; new web services should
+generally just talk HTTP between the front-end and the back-end.
+However there are a number of back-end services such as PHP or the
+optimized HTTP Git repository access that use FastCGI, so we have
+support for it in Guix.
+
+To use FastCGI, you configure the front-end web server (e.g., nginx) to
+dispatch some subset of its requests to the fastcgi backend, which
+listens on a local TCP or UNIX socket.  There is an intermediary
+@code{fcgiwrap} program that sits between the actual backend process and
+the web server.  The front-end indicates which backend program to run,
+passing that information to the @code{fcgiwrap} process.
+
+@defvr {Scheme Variable} fcgiwrap-service-type
+A service type for the @code{fcgiwrap} FastCGI proxy.
+@end defvr
+
+@deftp {Data Type} fcgiwrap-configuration
+Data type representing the configuration of the @code{fcgiwrap} serice.
+This type has the following parameters:
+@table @asis
+@item @code{package} (default: @code{fcgiwrap})
+The fcgiwrap package to use.
+
+@item @code{socket} (default: @code{tcp:127.0.0.1:9000})
+The socket on which the @code{fcgiwrap} process should listen, as a
+string.  Valid @var{socket} values include
+@code{unix:@var{/path/to/unix/socket}},
+@code{tcp:@var{dot.ted.qu.ad}:@var{port}} and
+@code{tcp6:[@var{ipv6_addr}]:port}.
+
+@item @code{user} (default: @code{fcgiwrap})
+@itemx @code{group} (default: @code{fcgiwrap})
+The user and group names, as strings, under which to run the
+@code{fcgiwrap} process.  The @code{fastcgi} service will ensure that if
+the user asks for the specific user or group names @code{fcgiwrap} that
+the corresponding user and/or group is present on the system.
+
+It is possible to configure a FastCGI-backed web service to pass HTTP
+authentication information from the front-end to the back-end, and to
+allow @code{fcgiwrap} to run the back-end process as a corresponding
+local user.  To enable this capability on the back-end., run
+@code{fcgiwrap} as the @code{root} user and group.  Note that this
+capability also has to be configured on the front-end as well.
 @end table
 @end deftp
 

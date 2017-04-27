@@ -41,7 +41,11 @@
             nginx-named-location-configuration
             nginx-named-location-configuration?
             nginx-service
-            nginx-service-type))
+            nginx-service-type
+
+            fcgiwrap-configuration
+            fcgiwrap-configuration?
+            fcgiwrap-service-type))
 
 ;;; Commentary:
 ;;;
@@ -305,3 +309,55 @@ files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
             (server-blocks server-list)
             (upstream-blocks upstream-list)
             (file config-file))))
+
+(define-record-type* <fcgiwrap-configuration> fcgiwrap-configuration
+  make-fcgiwrap-configuration
+  fcgiwrap-configuration?
+  (package       fcgiwrap-configuration-package ;<package>
+                 (default fcgiwrap))
+  (socket        fcgiwrap-configuration-socket
+                 (default "tcp:127.0.0.1:9000"))
+  (user          fcgiwrap-configuration-user
+                 (default "fcgiwrap"))
+  (group         fcgiwrap-configuration-group
+                 (default "fcgiwrap")))
+
+(define fcgiwrap-accounts
+  (match-lambda
+    (($ <fcgiwrap-configuration> package socket user group)
+     (filter identity
+             (list
+              (and (equal? group "fcgiwrap")
+                   (user-group
+                    (name "fcgiwrap")
+                    (system? #t)))
+              (and (equal? user "fcgiwrap")
+                   (user-account
+                    (name "fcgiwrap")
+                    (group group)
+                    (system? #t)
+                    (comment "Fcgiwrap Daemon")
+                    (home-directory "/var/empty")
+                    (shell (file-append shadow "/sbin/nologin")))))))))
+
+(define fcgiwrap-shepherd-service
+  (match-lambda
+    (($ <fcgiwrap-configuration> package socket user group)
+     (list (shepherd-service
+            (provision '(fcgiwrap))
+            (documentation "Run the fcgiwrap daemon.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      '(#$(file-append package "/sbin/fcgiwrap")
+			  "-s" #$socket)
+		      #:user #$user #:group #$group))
+            (stop #~(make-kill-destructor)))))))
+
+(define fcgiwrap-service-type
+  (service-type (name 'fcgiwrap)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          fcgiwrap-shepherd-service)
+		       (service-extension account-service-type
+                                          fcgiwrap-accounts)))
+                (default-value (fcgiwrap-configuration))))
