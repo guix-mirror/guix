@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -861,6 +862,33 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                                       ;;(string-append "GSSAPI=" gss)
                                       (string-append "ZLIB=" zlib)
                                       (string-append "PREFIX=" out))))))
+         (add-before 'check 'disable-broken-tests
+           (lambda _
+             ;; These tests rely on SSL certificates that expired 2017-04-18.
+             ;; While there are newer certs available upstream, we don't want
+             ;; this package to suddenly "expire" some time in the future.
+             ;; https://bugs.gnu.org/26671
+             (let ((broken-tests
+                    '("test_ssl_trust_rootca"
+                      "test_ssl_certificate_chain_with_anchor"
+                      "test_ssl_certificate_chain_all_from_server"
+                      "test_ssl_no_servercert_callback_allok"
+                      "test_ssl_large_response"
+                      "test_ssl_large_request"
+                      "test_ssl_client_certificate"
+                      "test_ssl_future_server_cert"
+                      "test_setup_ssltunnel"
+                      "test_ssltunnel_basic_auth"
+                      "test_ssltunnel_basic_auth_server_has_keepalive_off"
+                      "test_ssltunnel_basic_auth_proxy_has_keepalive_off"
+                      "test_ssltunnel_basic_auth_proxy_close_conn_on_200resp"
+                      "test_ssltunnel_digest_auth")))
+               (for-each
+                (lambda (test)
+                  (substitute* "test/test_context.c"
+                    (((string-append "SUITE_ADD_TEST\\(suite, " test "\\);")) "")))
+                broken-tests)
+               #t)))
          (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
          (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
     (home-page "https://serf.apache.org/")
