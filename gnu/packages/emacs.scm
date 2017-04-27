@@ -4519,3 +4519,45 @@ It should enable you to implement low-level X11 applications.")
     (description "EXWM is a full-featured tiling X window manager for Emacs
 built on top of XELB.")
     (license license:gpl3+)))
+
+(define-public emacs-gnuplot
+  (package
+    (name "emacs-gnuplot")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/bruceravel/gnuplot-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0glzymrn138lwig7p4cj17x4if5jisr6l4g6wcbxisqkqgc1h01i"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (arguments
+     (let ((elisp-dir (string-append "/share/emacs/site-lisp/guix.d"
+                                     "/gnuplot-" version)))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "EMACS=" (assoc-ref %build-inputs "emacs")
+                              "/bin/emacs")
+               (string-append "--with-lispdir=" %output ,elisp-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'generate-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-generate-autoloads
+                "gnuplot"
+                (string-append (assoc-ref outputs "out") ,elisp-dir))
+               #t))))))
+    (home-page "https://github.com/bruceravel/gnuplot-mode")
+    (synopsis "Emacs major mode for interacting with gnuplot")
+    (description "@code{emacs-gnuplot} is an emacs major mode for interacting
+with gnuplot.")
+    (license license:gpl2+)))
