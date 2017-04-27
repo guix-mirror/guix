@@ -809,17 +809,14 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 (define-public serf
   (package
     (name "serf")
-    (version "1.3.8")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://archive.apache.org/dist/serf/serf-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
-       (patches (search-patches "serf-comment-style-fix.patch"
-                                "serf-deflate-buckets-test-fix.patch"))
-       (patch-flags '("-p0"))))
+        (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("scons" ,scons)
