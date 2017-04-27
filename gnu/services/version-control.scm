@@ -55,7 +55,11 @@
             %cgit-configuration-nginx
             cgit-configuration-nginx-config
 
-            cgit-service-type))
+            cgit-service-type
+
+            git-http-configuration
+            git-http-configuration?
+            git-http-nginx-location-configuration))
 
 ;;; Commentary:
 ;;;
@@ -256,3 +260,49 @@ access to exported repositories under @file{/srv/git}."
           (service-extension nginx-service-type
                              cgit-configuration-nginx-config)))
    (default-value (cgit-configuration))))
+
+
+;;;
+;;; HTTP access.  Add the result of calling
+;;; git-http-nginx-location-configuration to an nginx-server-configuration's
+;;; "locations" field.
+;;;
+
+(define-record-type* <git-http-configuration>
+  git-http-configuration
+  make-git-http-configuration
+  git-http-configuration?
+  (package          git-http-configuration-package        ;package
+                    (default git))
+  (git-root         git-http-configuration-git-root       ;string
+                    (default "/srv/git"))
+  (export-all?      git-http-configuration-export-all?    ;boolean
+                    (default #f))
+  (uri-path         git-http-configuration-uri-path       ;string
+                    (default "/git/"))
+  (fcgiwrap-socket  git-http-configuration-fcgiwrap-socket ;string
+                    (default "127.0.0.1:9000")))
+
+(define* (git-http-nginx-location-configuration #:optional
+                                                (config
+                                                 (git-http-configuration)))
+  (match config
+    (($ <git-http-configuration> package git-root export-all?
+                                 uri-path fcgiwrap-socket)
+     (nginx-location-configuration
+      (uri (string-append "~ /" (string-trim-both uri-path #\/) "(/.*)"))
+      (body
+       (list
+        (list "fastcgi_pass " fcgiwrap-socket ";")
+        (list "fastcgi_param SCRIPT_FILENAME "
+              package "/libexec/git-core/git-http-backend"
+              ";")
+        "fastcgi_param QUERY_STRING $query_string;"
+        "fastcgi_param REQUEST_METHOD $request_method;"
+        "fastcgi_param CONTENT_TYPE $content_type;"
+        "fastcgi_param CONTENT_LENGTH $content_length;"
+        (if export-all?
+            "fastcgi_param GIT_HTTP_EXPORT_ALL \"\";"
+            "")
+        (list "fastcgi_param GIT_PROJECT_ROOT " git-root ";")
+        "fastcgi_param PATH_INFO $1;"))))))

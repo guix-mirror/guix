@@ -17436,7 +17436,11 @@ Defaults to @samp{3}
 @subsubsection Version Control Services
 
 The @code{(gnu services version-control)} module provides a service to
-allow remote access to local Git repositories.
+allow remote access to local Git repositories.  There are two options:
+the @code{git-daemon-service}, which provides access to repositories via
+the @code{git://} unsecured TCP-based protocol, or extending the
+@code{nginx} web server to proxy some requests to
+@code{git-http-backend}.
 
 @deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
 
@@ -17493,6 +17497,81 @@ Extra options will be passed to @code{git daemon}, please run
 @end table
 @end deftp
 
+The @code{git://} protocol lacks authentication.  When you pull from a
+repository fetched via @code{git://}, you don't know that the data you
+receive was modified is really coming from the specified host, and you
+have your connection is subject to eavesdropping.  It's better to use an
+authenticated and encrypted transport, such as @code{https}.  Although Git allows you
+to serve repositories using unsophisticated file-based web servers,
+there is a faster protocol implemented by the @code{git-http-backend}
+program.  This program is the back-end of a proper Git web service.  It
+is designed to sit behind a FastCGI proxy.  @xref{Web Services}, for more
+on running the necessary @code{fcgiwrap} daemon.
+
+Guix has a separate configuration data type for serving Git repositories
+over HTTP.
+
+@deftp {Data Type} git-http-configuration
+Data type representing the configuration for @code{git-http-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{git-root} (default: @file{/srv/git})
+Directory containing the Git repositories to expose to the world.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to expose access for all Git repositories in @var{git-root},
+even if they do not have the @file{git-daemon-export-ok} file.
+
+@item @code{uri-path} (default: @file{/git/})
+Path prefix for Git access.  With the default @code{/git/} prefix, this
+will map @code{http://@var{server}/git/@var{repo}.git} to
+@code{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
+with this prefix are not passed on to this Git instance.
+
+@item @code{fcgiwrap-socket} (default: @code{127.0.0.1:9000})
+The socket on which the @code{fcgiwrap} daemon is listening.  @xref{Web
+Services}.
+@end table
+@end deftp
+
+There is no @code{git-http-service-type}, currently; instead you can
+create an @code{nginx-location-configuration} from a
+@code{git-http-configuration} and then add that location to a web
+server.
+
+@deffn {Scheme Procedure} git-http-nginx-location-configuration @
+       [config=(git-http-configuration)]
+Compute an @code{nginx-location-configuration} that corresponds to the
+given Git http configuration.  An example nginx service definition to
+serve the default @file{/srv/git} over HTTPS might be:
+
+@example
+(service nginx-service-type
+         (nginx-configuration
+          (server-blocks
+           (list
+            (nginx-server-configuration
+             (http-port #f)
+             (server-name "git.my-host.org")
+             (ssl-certificate
+              "/etc/letsencrypt/live/git.my-host.org/fullchain.pem")
+             (ssl-certificate-key
+              "/etc/letsencrypt/live/git.my-host.org/privkey.pem")
+             (locations
+              (list
+               (git-http-nginx-location-configuration
+                (git-http-configuration (uri-path "/"))))))))))
+@end example
+
+This example assumes that you are using Let's Encrypt to get your TLS
+certificate.  @xref{Certificate Services}.  The default @code{certbot}
+service will redirect all HTTP traffic on @code{git.my-host.org} to
+HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
+system services.  @xref{Web Services}.
+@end deffn
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
