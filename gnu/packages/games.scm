@@ -84,6 +84,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -3742,6 +3743,65 @@ settings.link.libs:Add(\"wavpack\")\n"))
 16 players in a variety of game modes, including Team Deathmatch and Capture
 The Flag.  You can even design your own maps!")
     (license license:bsd-3)))
+
+(define-public enigma
+  (package
+    (name "enigma")
+    (version "1.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/enigma-game/"
+                                  "Release%20" version "/enigma-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "00ffh9pypj1948pg3q9sjp1nmiabh52p5c8wpg9n1dcfgl3cywnq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-system-enet")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-sdl
+           (lambda _
+             (substitute* "configure"
+               (("SDL_ttf.h") "SDL/SDL_ttf.h"))
+             (substitute* '("tools/ttf2bmf.cc"
+                            "lib-src/enigma-core/ecl_font.cc"
+                            "lib-src/enigma-core/ecl_video.cc"
+                            "lib-src/enigma-core/ecl_buffer.hh"
+                            "src/SoundEngine.cc"
+                            "src/SoundEngine.hh"
+                            "src/MusicManager.cc"
+                            "src/MusicManager.hh"
+                            "src/d_models.cc"
+                            "src/main.cc"
+                            "src/network.cc")
+               (("#include \"SDL_(image|ttf|mixer|types|syswm|mutex).h\"" line header)
+                (string-append "#include \"SDL/SDL_" header ".h\"")))
+             (substitute* "src/main.cc"
+               (("#include <SDL_(image|ttf|mixer).h>" line header)
+                (string-append "#include \"SDL/SDL_" header ".h\"")))
+             #t)))))
+    (inputs
+     `(("xerces-c" ,xerces-c)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
+       ("curl" ,curl)
+       ("enet" ,enet)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("imagemagick" ,imagemagick)))
+    (home-page "http://www.nongnu.org/enigma")
+    (synopsis "Puzzle game with a dexterity component")
+    (description "Enigma is a puzzle game with 550 unique levels.  The object
+of the game is to find and uncover pairs of identically colored ‘Oxyd’ stones.
+Simple?  Yes.  Easy?  Certainly not!  Hidden traps, vast mazes, laser beams,
+and most of all, countless hairy puzzles usually block your direct way to the
+Oxyd stones.  Enigma’s game objects (and there are hundreds of them, lest you
+get bored) interact in many unexpected ways, and since many of them follow the
+laws of physics (Enigma’s special laws of physics, that is), controlling them
+with the mouse isn’t always trivial.")
+    (license license:gpl2+)))
 
 (define-public fillets-ng
   (package
