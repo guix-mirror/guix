@@ -333,14 +333,14 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "0.2.3")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
                                   "libvirt-glib-" version ".tar.gz"))
               (sha256
                (base32
-                "1pahj8qa7k2307sd57rwqwq1hijya02v0sxk91hl3cw48niimcf3"))))
+                "0iwa5sdbii52pjpdm5j37f67sdmf0kpcky4liwhy1nf43k85i4fa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
