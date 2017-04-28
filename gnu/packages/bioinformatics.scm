@@ -6117,16 +6117,21 @@ authoring books and technical documents with R Markdown.")
 (define-public r-biocstyle
   (package
    (name "r-biocstyle")
-   (version "2.2.1")
+   (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "0sl99xw940ixrm6v24lgaw3ljh56g59a6rdz7g160hx84z9f8n2n"))))
+                "1n2c8rj920wmk3q2khmjfnhn5i4b3lmhx1whnghk0zk3jf88hvbi"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bookdown" ,r-bookdown)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-yaml" ,r-yaml)))
     (home-page "http://bioconductor.org/packages/BiocStyle")
     (synopsis "Bioconductor formatting styles")
     (description "This package provides standard formatting styles for
