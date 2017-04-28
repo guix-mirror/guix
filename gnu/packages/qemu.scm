@@ -381,13 +381,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "2.0.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "0h0x5lpsx97bvw20pzfcsdmmivximddq4qmn8fk0n55dqv0wn5kq"))))
+                "0g80vhjss1a48w60zw0pd5fhpwfjw2dqhh0fbs730brkxj6xv1dc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -395,9 +395,10 @@ three libraries:
          (add-after 'unpack 'patch-nosetests-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "setup.py"
-               (("sys.executable, \"/usr/bin/nosetests\"")
-                (string-append "\"" (which "bash") "\", \""
-                               (which "nosetests") "\"")))
+               (("\"/usr/bin/nosetests\"")
+                (string-append "\"" (which "nosetests") "\""))
+               (("self\\.spawn\\(\\[sys\\.executable, nose\\]\\)")
+                (format #f "self.spawn([\"~a\", nose])" (which "bash"))))
              #t)))))
     (inputs
      `(("libvirt" ,libvirt)))
