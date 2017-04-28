@@ -3429,15 +3429,15 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "0.9")
+    (version "1.0")
     (home-page "https://github.com/clbr/radeontop/")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (uri (string-append home-page "archive/v" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07fnimn6wwablmdjw0av11hk9a6xilbryh09izq4b2ic4b8md2p7"))))
+                "1z38nibirqxrbsfyhfcrnzlcw16cqjp4ds6qnjfxalwayf9fm5x9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -3457,6 +3457,7 @@ developers.")
     (inputs
      `(("libdrm" ,libdrm)
        ("libpciaccess" ,libpciaccess)
+       ("libxcb" ,libxcb)
        ("ncurses" ,ncurses)))
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
