@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,9 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
-  #:export (shepherd-error?
+  #:export (%shepherd-socket-file
+
+            shepherd-error?
             service-not-found-error?
             service-not-found-error-service
             action-not-found-error?
@@ -58,9 +61,9 @@
 ;;; Code:
 
 (define %shepherd-socket-file
-  "/var/run/shepherd/socket")
+  (make-parameter "/var/run/shepherd/socket"))
 
-(define* (open-connection #:optional (file %shepherd-socket-file))
+(define* (open-connection #:optional (file (%shepherd-socket-file)))
   "Open a connection to the daemon, using the Unix-domain socket at FILE, and
 return the socket."
   ;; The protocol is sexp-based and UTF-8-encoded.
