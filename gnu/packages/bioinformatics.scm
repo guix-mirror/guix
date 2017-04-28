@@ -8331,14 +8331,14 @@ number detection tools.")
 (define-public r-sva
   (package
     (name "r-sva")
-    (version "3.22.0")
+    (version "3.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "sva" version))
        (sha256
         (base32
-         "1wc1fjm6dzlsqqagm43y57w8jh8nsh0r0m8z1p6ximcb5gxqh7hn"))))
+         "04pxl61iyc845wmqca1qv8kbb8zcp0qp72zgvgki3zzmrph9a362"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genefilter" ,r-genefilter)
