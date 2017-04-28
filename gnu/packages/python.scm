@@ -9373,6 +9373,7 @@ interface to the Amazon Web Services (AWS) API.")
       ("python-botocore" ,python-botocore)
       ("python-s3transfer" ,python-s3transfer)
       ("python-docutils" ,python-docutils)
+      ("python-pyyaml" ,python-pyyaml)
       ("python-rsa" ,python-rsa)))
    (arguments
     ;; FIXME: The 'pypi' release does not contain tests.
