@@ -6736,19 +6736,20 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.4.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "1kbj8sg2ik9f8d6g95wz0py62jldg01qy5rsdpg1cxw95nf7dzi3"))))
+                "1szjbzzz4pyip891nji71caalxh0rhqiv7rpv6q54swlrqpfkqkw"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
