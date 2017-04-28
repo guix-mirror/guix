@@ -6555,13 +6555,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.36.2")
+    (version "1.38.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "0574lmyisn3nv9aicz9x3iivx990da4q2j4i0f1jz0mpj9v3vc2w"))))
+                "1xffm98s817mfc827cnr0by6167nlrl1glxzjawzz0rkghs41g27"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
