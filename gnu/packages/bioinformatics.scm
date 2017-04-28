@@ -7931,13 +7931,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.18.0")
+    (version "2.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "0pb04li55ysag30s7rap7nnivc0rqmgsmpj43kin0rxdabfn1w0k"))))
+                "1p6f5i6l44phl772a38x9cav2sya37bkqbkjzdc4pmyfzkv1j6hy"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
