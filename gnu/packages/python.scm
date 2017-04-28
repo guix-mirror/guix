@@ -5523,6 +5523,17 @@ features useful for text console applications.")
         (base32
          "1x3nh3fycqfn43jp5j5pb4q4y2jxp4mdka4absaa3bc0078qd758"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (replace 'check
+          (lambda _
+            (zero? (system* "./admin/runtests")))))))
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)))
+    (native-inputs
+     `(("python-psycopg2" ,python-psycopg2)
+       ("python-django" ,python-django)))
     (home-page "https://github.com/necaris/python3-openid")
     (synopsis "OpenID support for servers and consumers")
     (description "This library provides OpenID authentication for Python, both
