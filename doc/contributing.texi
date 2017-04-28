@@ -248,7 +248,10 @@ please do read it.
 
 Some special forms introduced in Guix, such as the @code{substitute*}
 macro, have special indentation rules.  These are defined in the
-@file{.dir-locals.el} file, which Emacs automatically uses.
+@file{.dir-locals.el} file, which Emacs automatically uses.  Also note
+that Emacs-Guix provides @code{guix-devel-mode} mode that indents and
+highlights Guix code properly (@pxref{Development,,, emacs-guix, The
+Emacs-Guix Reference Manual}).
 
 @cindex indentation, of code
 @cindex formatting, of code
