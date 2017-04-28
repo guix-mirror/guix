@@ -7497,14 +7497,14 @@ Biostrings objects.")
 (define-public r-motifrg
   (package
     (name "r-motifrg")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifRG" version))
        (sha256
         (base32
-         "1pa97aj6c5f3gx4bgriw110764dj3m9h104ddi8rv2bpy41yd98d"))))
+         "0lxxpqyljiyk73vyq6ss46q13g81pm24q87mkzdsqlr5zx427ch6"))))
     (properties `((upstream-name . "motifRG")))
     (build-system r-build-system)
     (propagated-inputs
