@@ -5389,14 +5389,14 @@ data types as well.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.52.1")
+    (version "1.54.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "0yymz8qxgnbybvfhqrgkd1hh9dhwxdii1yxkhr1zicjgb35xixxb"))))
+         "03hmbvp3i6lvd307fqdg7akxi2qp322rlky3bzw0zccgm0i0221g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
