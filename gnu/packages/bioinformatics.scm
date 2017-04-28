@@ -8540,19 +8540,20 @@ analysis.")
 (define-public r-vsn
   (package
     (name "r-vsn")
-    (version "3.42.3")
+    (version "3.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "vsn" version))
        (sha256
         (base32
-         "0mgl0azys2g90simf8wx6jdwd7gyg3m4pf12n6w6507jixm2cg97"))))
+         "0qhg3a4sc62pfdxcpvmk831rk138xh4zx4f1s39jhxpqqhmr7jvk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affy" ,r-affy)
        ("r-biobase" ,r-biobase)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-hexbin" ,r-hexbin)
        ("r-lattice" ,r-lattice)
        ("r-limma" ,r-limma)))
     (home-page "http://bioconductor.org/packages/release/bioc/html/vsn.html")
