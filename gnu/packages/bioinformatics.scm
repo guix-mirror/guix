@@ -5535,14 +5535,14 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
 (define-public r-rbgl
   (package
     (name "r-rbgl")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RBGL" version))
        (sha256
         (base32
-         "1q14m8w6ih56v680kf3d9wh1qbgp7af33kz3cxafdf1vvzx9km08"))))
+         "11db6kvz453ypj9ds3xpjqzwrrjck84ijn4wlhkfyz2dzdgd5ryv"))))
     (properties `((upstream-name . "RBGL")))
     (build-system r-build-system)
     (propagated-inputs `(("r-graph" ,r-graph)))
