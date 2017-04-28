@@ -122,11 +122,11 @@ package definition."
 (define %cran-url "http://cran.r-project.org/web/packages/")
 (define %bioconductor-url "http://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.4.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.5.  Bioconductor packages should be
 ;; updated together.
 (define %bioconductor-svn-url
   (string-append "https://readonly:readonly@"
-                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_4/"
+                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_5/"
                  "madman/Rpacks/"))
 
 
