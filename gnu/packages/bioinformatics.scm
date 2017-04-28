@@ -6356,18 +6356,19 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.10.3")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "18g24cf6b3vi13w85ki2mam6i2gl4yxr1zchyga34xc3dkdngzrw"))))
+                "1bwwhscjl376a5p43mx8ijrqajxmgypbqhv049pgagl22hkkf0y3"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodbdata" ,r-genomeinfodbdata)
        ("r-iranges" ,r-iranges)
        ("r-rcurl" ,r-rcurl)
        ("r-s4vectors" ,r-s4vectors)))
