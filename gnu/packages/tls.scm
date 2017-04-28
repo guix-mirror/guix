@@ -470,7 +470,9 @@ required structures.")
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
      ;; and libc would return ENOSYS, which is not properly handled.
      ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
-     '(#:configure-flags '("ac_cv_func_getentropy=no")))
+     '(#:configure-flags '("ac_cv_func_getentropy=no"
+                           ;; Provide a TLS-enabled netcat.
+                           "--enable-nc")))
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
       ;; and are not actually "search paths."  In practice it works OK in
@@ -484,9 +486,10 @@ required structures.")
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
-    (description "LibreSSL is a version of the TLS/crypto stack forked
-from OpenSSL in 2014, with the goals of modernizing the codebase, improving
-security, and applying best practice development processes.")
+    (description "LibreSSL is a version of the TLS/crypto stack, forked from
+OpenSSL in 2014 with the goals of modernizing the codebase, improving security,
+and applying best practice development processes.  This package also includes a
+netcat implementation that supports TLS.")
     ;; Files taken from OpenSSL keep their license, others are under various
     ;; non-copyleft licenses.
     (license (list license:openssl
