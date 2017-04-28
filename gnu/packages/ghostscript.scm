@@ -130,6 +130,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
    (name "ghostscript")
+   (replacement ghostscript/fixed)
    (version "9.14.0")
    (source (origin
             (method url-fetch)
@@ -209,10 +210,22 @@ output file formats and printers.")
 
 (define-public ghostscript/x
   (package (inherit ghostscript)
+    (replacement #f)
     (name (string-append (package-name ghostscript) "-with-x"))
     (inputs `(("libxext" ,libxext)
               ("libxt" ,libxt)
               ,@(package-inputs ghostscript)))))
+
+(define ghostscript/fixed
+  (package
+    (inherit ghostscript)
+    (source
+      (origin
+        (inherit (package-source ghostscript))
+        (patches
+          (append
+            (origin-patches (package-source ghostscript))
+            (search-patches "ghostscript-CVE-2017-8291.patch")))))))
 
 (define-public ijs
   (package

@@ -603,6 +603,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-CVE-2016-7978.patch		\
   %D%/packages/patches/ghostscript-CVE-2016-7979.patch		\
   %D%/packages/patches/ghostscript-CVE-2016-8602.patch		\
+  %D%/packages/patches/ghostscript-CVE-2017-8291.patch		\
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
