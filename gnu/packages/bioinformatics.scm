@@ -7591,14 +7591,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "1vk3ng61dhi3pbia1lp3gl3mlr3i1vb2lkq83qb53i9dzz128wh9"))))
+         "0jj5h81z5gyf4j3lp2l3zsm6pgbmalgrngr8qdpygc20phndpp0b"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     (propagated-inputs
