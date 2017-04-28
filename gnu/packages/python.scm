@@ -10033,13 +10033,13 @@ programmatically interfacing with your system's $EDITOR.")
 (define-public python-sphinxcontrib-programoutput
   (package
     (name "python-sphinxcontrib-programoutput")
-    (version "0.8")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "sphinxcontrib-programoutput" version))
               (sha256
                (base32
-                "098as6z1s0gb4dh5xcr1fd2vpm91zj93jzvgawspxf5s4hqs0xhp"))))
+                "153hhnlbx4688zj9wd64819ps5znc2jlyp5crkgzvn5hxgy99vpx"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing and the upstream is gone.
