@@ -2187,7 +2187,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20160913")
+    (version "20170420")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2196,7 +2196,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1sc813qi4gl6mf7xp8rrarvyigzhxv3qdrryqsy42yxsb2jcwbrw"))
+                "0k06vri29ayaq7mzsik3yywh6zdar2nfpkav2sp6g2rjl6k6vi5z"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
