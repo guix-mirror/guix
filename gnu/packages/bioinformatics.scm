@@ -6678,6 +6678,36 @@ binary variant call (BCF) and compressed indexed tab-delimited (tabix)
 files.")
     (license license:expat)))
 
+(define-public r-delayedarray
+  (package
+    (name "r-delayedarray")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "DelayedArray" version))
+              (sha256
+               (base32
+                "0pcsk0f2dg2ldzprs1cccqrk53jrysmm6ccgjj5wh6z3x17g7g2r"))))
+    (properties
+     `((upstream-name . "DelayedArray")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)))
+    (home-page "http://bioconductor.org/packages/DelayedArray")
+    (synopsis "Delayed operations on array-like objects")
+    (description
+     "Wrapping an array-like object (typically an on-disk object) in a
+@code{DelayedArray} object allows one to perform common array operations on it
+without loading the object in memory.  In order to reduce memory usage and
+optimize performance, operations on the object are either delayed or executed
+using a block processing mechanism.  Note that this also works on in-memory
+array-like objects like @code{DataFrame} objects (typically with Rle columns),
+@code{Matrix} objects, and ordinary arrays and data frames.")
+    (license license:artistic2.0)))
+
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
