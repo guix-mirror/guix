@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1694,8 +1695,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "1")
-        (commit "96dfb3bdba39a37cf6aefb18e335118a6115f963"))
+  (let ((revision "2")
+        (commit "06f9fc3d9ac95798d4a51e6310f7b594ce5597e0"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1705,18 +1706,13 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0v73251kmh1vs7gp3jh4pk4rikl4d8illwi0gnhwa55ij1mn9apl"))
+                  "0rcq0f8dhl89ia7336bq8y279q5ada0b1kabcqw9zl3125k3cp4v"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        ;; Install .go files to "site-ccache", not "ccache".
-                        (substitute* "Makefile.am"
-                          (("/ccache")
-                           "/site-ccache"))
-
                         (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs
        `(("autoconf" ,autoconf)
