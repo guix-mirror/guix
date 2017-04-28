@@ -7549,13 +7549,13 @@ two-dimensional genome scans.")
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "zlibbioc" version))
               (sha256
                (base32
-                "0hbk90q5hl0fycfvy5nxxa4hxgglag9lzp7i0fg849bqygg5nbyq"))))
+                "1kdgwwlh39mgwzj3zq71za4iv40sq625ghnyrndv5wrivrcr2igv"))))
     (properties
      `((upstream-name . "zlibbioc")))
     (build-system r-build-system)
