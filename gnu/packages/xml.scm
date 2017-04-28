@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
