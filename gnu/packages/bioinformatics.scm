@@ -6329,6 +6329,25 @@ naming and share the same rich and consistent \"Vector API\" as much as
 possible.")
     (license license:artistic2.0)))
 
+(define-public r-genomeinfodbdata
+  (package
+    (name "r-genomeinfodbdata")
+    (version "0.99.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomeInfoDbData" version))
+              (sha256
+               (base32
+                "120qvhb0pvkzd65lsgja62vyrgc37si6fh68q4cg4w5x9f04jw25"))))
+    (properties
+     `((upstream-name . "GenomeInfoDbData")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/GenomeInfoDbData")
+    (synopsis "Species and taxonomy ID look up tables for GenomeInfoDb")
+    (description "This package contains data for mapping between NCBI taxonomy
+ID and species.  It is used by functions in the GenomeInfoDb package.")
+    (license license:artistic2.0)))
+
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
