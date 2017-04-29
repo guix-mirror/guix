@@ -46,6 +46,7 @@
   (delay
     (package (inherit ghostscript)
       (name "ghostscript-with-cups")
+      (replacement #f)
       (inputs `(("cups" ,cups-minimal)
                 ,@(package-inputs ghostscript))))))
 
