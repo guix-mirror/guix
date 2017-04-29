@@ -30,7 +30,7 @@
 (define-public lsof
   (package
    (name "lsof")
-   (version "4.88")
+   (version "4.89")
    (source (origin
             (method url-fetch)
             (uri (list (string-append %ftp-base "lsof_"
@@ -52,7 +52,7 @@
                         version ".tar.bz2")))
             (sha256
              (base32
-              "16y9wm26rg81mihnzcbdg8h8vhxmq8kn62ssxb8cqydp4q79nvzy"))))
+              "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)))
    (arguments
