@@ -72,13 +72,9 @@
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
-              (mkdir out)
-              (mkdir (string-append out "/bin"))
-              (copy-file "lsof" (string-append out "/bin/lsof"))
-              (mkdir (string-append out "/share"))
-              (mkdir (string-append out "/share/man"))
-              (mkdir (string-append out "/share/man/man8"))
-              (copy-file "lsof.8" (string-append out "/share/man/man8/lsof.8"))))))))
+              (install-file "lsof" (string-append out "/bin"))
+              (install-file "lsof.8" (string-append out "/share/man/man8")))
+            #t)))))
    (synopsis "Display information about open files")
    (description
     "Lsof stands for LiSt Open Files, and it does just that.
