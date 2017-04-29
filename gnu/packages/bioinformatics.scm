@@ -6340,7 +6340,11 @@ possible.")
     (version "0.99.0")
     (source (origin
               (method url-fetch)
-              (uri (bioconductor-uri "GenomeInfoDbData" version))
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/release/"
+                                  "data/annotation/src/contrib/GenomeInfoDbData_"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "120qvhb0pvkzd65lsgja62vyrgc37si6fh68q4cg4w5x9f04jw25"))))
