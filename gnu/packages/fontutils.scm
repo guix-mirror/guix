@@ -48,6 +48,7 @@
 (define-public freetype
   (package
    (name "freetype")
+   (replacement freetype/fixed)
    (version "2.7.1")
    (source (origin
             (method url-fetch)
@@ -72,6 +73,15 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
+
+(define freetype/fixed
+  (package
+    (inherit freetype)
+    (source
+      (origin
+        (inherit (package-source freetype))
+        (patches (search-patches "freetype-CVE-2017-8105.patch"
+                                 "freetype-CVE-2017-8287.patch"))))))
 
 (define-public ttfautohint
   (package
