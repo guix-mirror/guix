@@ -44,6 +44,9 @@
                         "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/lsof_"
                         version ".tar.bz2")
                        (string-append
+                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/OLD/lsof_"
+                        version ".tar.bz2")
+                       (string-append
                         "ftp://sunsite.ualberta.ca/pub/Mirror/lsof/lsof_"
                         version ".tar.bz2")))
             (sha256
