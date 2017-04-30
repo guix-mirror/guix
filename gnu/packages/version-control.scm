@@ -628,7 +628,13 @@ also walk each side of a merge and test those changes individually.")
                         ;; invokes Perl.
                         (substitute* (find-files "." ".*")
                           ((" perl -")
-                           (string-append " " perl " -"))))))
+                           (string-append " " perl " -")))
+
+                        ;; Avoid references to the store in authorized_keys.
+                        ;; This works because gitolite-shell is in the PATH.
+                        (substitute* "src/triggers/post-compile/ssh-authkeys"
+                          (("\\$glshell \\$user")
+                           "gitolite-shell $user")))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
