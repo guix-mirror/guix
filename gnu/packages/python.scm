@@ -5509,7 +5509,18 @@ features useful for text console applications.")
     (license license:lgpl2.1+)))
 
 (define-public python2-urwid
-  (package-with-python2 python-urwid))
+  (let ((python2-urwid (package-with-python2 python-urwid)))
+    (package
+      (inherit python2-urwid)
+      (arguments
+       (append
+        '(#:phases
+          (modify-phases %standard-phases
+            ;; Disable the vterm tests because of non-deterministic failures
+            ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
+            (add-after 'unpack 'delete-test_vterm.py
+              (delete-file "urwid/tests/test_vterm.py"))))
+        (package-arguments python-urwid))))))
 
 (define-public python-openid
   (package
