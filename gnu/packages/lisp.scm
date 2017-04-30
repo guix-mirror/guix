@@ -518,7 +518,7 @@ interface.")
       ;; https://github.com/JeffBezanson/femtolisp/issues/25
       (supported-systems
        (fold delete %supported-systems
-             '("armhf-linux" "mips64el-linux")))
+             '("armhf-linux" "mips64el-linux" "aarch64-linux")))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags '("CC=gcc" "release")
