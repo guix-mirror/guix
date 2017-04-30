@@ -27,13 +27,13 @@
 (define-public radicale
   (package
     (name "radicale")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Radicale" version))
              (sha256
               (base32
-               "1c5lv8qca21mndkx350wxv34qypqh6gb4rhzms4anr642clq3jg2"))))
+               "1g20p3998f46ywda7swv0py63wjbrhvk0nrafajlbb6wgzxjmqpb"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The tests are not distributed in the PyPi release.
