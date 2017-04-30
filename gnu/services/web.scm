@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -154,12 +154,16 @@ of index files."
                          (nginx-server-configuration-server-name server))
                         ";\n"
    (if (nginx-server-configuration-ssl-certificate server)
-       (string-append "      ssl_certificate "
-                      (nginx-server-configuration-ssl-certificate server) ";\n")
+       (let ((certificate (nginx-server-configuration-ssl-certificate server)))
+         ;; lstat fails when the certificate file does not exist: it aborts
+         ;; and lets the user fix their configuration.
+         (lstat certificate)
+         (string-append "      ssl_certificate " certificate ";\n"))
        "")
    (if (nginx-server-configuration-ssl-certificate-key server)
-       (string-append "      ssl_certificate_key "
-                      (nginx-server-configuration-ssl-certificate-key server) ";\n")
+       (let ((key (nginx-server-configuration-ssl-certificate-key server)))
+         (lstat certificate)
+         (string-append "      ssl_certificate_key " key ";\n"))
        "")
    "      root " (nginx-server-configuration-root server) ";\n"
    "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
