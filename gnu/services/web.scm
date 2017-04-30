@@ -237,6 +237,9 @@ of index files."
          (mkdir-p (string-append #$run-directory "/fastcgi_temp"))
          (mkdir-p (string-append #$run-directory "/uwsgi_temp"))
          (mkdir-p (string-append #$run-directory "/scgi_temp"))
+         ;; Start-up logs. Once configuration is loaded, nginx switches to
+         ;; log-directory.
+         (mkdir-p (string-append #$run-directory "/logs"))
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$(or config-file

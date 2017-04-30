@@ -13316,6 +13316,15 @@ used to specify the list of @dfn{server blocks} required on the host and
 blocks} to configure.  For this to work, use the default value for
 @var{config-file}.
 
+At startup, @command{nginx} has not yet read its configuration file, so it
+uses a default file to log error messages.  If it fails to load its
+configuration file, that is where error messages are logged.  After the
+configuration file is loaded, the default error log file changes as per
+configuration.  In our case, startup error messages can be found in
+@file{/var/run/nginx/logs/error.log}, and after configuration in
+@file{/var/log/nginx/error.log}.  The second location can be changed with the
+@var{log-directory} configuration option.
+
 @end deffn
 
 @deffn {Scheme Variable} nginx-service-type
