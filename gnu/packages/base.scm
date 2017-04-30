@@ -670,10 +670,13 @@ store.")
                       ;; TODO: Move the patch to 'patches' in the next update cycle.
                       ,@(if (string-prefix? "i686" (or (%current-target-system)
                                                        (%current-system)))
-                            `(zero? (system* "patch" "-p1" "--force"
-                                             "--input"
-                                             (assoc-ref native-inputs
-                                                        "glibc-memchr-overflow-i686.patch")))
+                            `((unless (zero? (system* "patch" "-p1" "--force"
+                                                      "--input"
+                                                      (or (assoc-ref native-inputs
+                                                                     "glibc-memchr-overflow-i686.patch")
+                                                          (assoc-ref inputs
+                                                                     "glibc-memchr-overflow-i686.patch"))))
+                                (error "patch failed for glibc-memchr-overflow-i686.patch")))
                             '())
 
                       ;; Have `system' use that Bash.
