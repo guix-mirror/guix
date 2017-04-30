@@ -426,7 +426,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.3")
+   (version "2.36.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -434,7 +434,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))
+              "034279k49ydawnagqd7b1rz741n20k4y3grybzwp26zd146bjpj5"))
             (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -693,9 +693,9 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
       ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-1.19.2)))
+      ("xorg-server" ,xorg-server-1.19.3)))
    (arguments
-    `(#:disallowed-references (,xorg-server-1.19.2)
+    `(#:disallowed-references (,xorg-server-1.19.3)
       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="

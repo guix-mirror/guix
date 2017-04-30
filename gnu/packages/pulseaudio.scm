@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
@@ -44,15 +45,14 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (replacement libsndfile-1.0.28)
-    (version "1.0.27")
+    (version "1.0.28")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1h7s61nhf7vklh9sdsbbqzb6x287q4x4j1jc5gmjragl4wprb4d3"))))
+               "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
@@ -75,31 +75,17 @@ SPARC.  Hopefully the design of the library will also make it easy to extend
 for reading and writing new sound file formats.")
     (license l:gpl2+)))
 
-(define libsndfile-1.0.28
-  (package
-    (inherit libsndfile)
-    (version "1.0.28")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
-                            version ".tar.gz"))
-        (sha256
-         (base32
-          "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))))
-
 (define-public libsamplerate
   (package
     (name "libsamplerate")                     ; aka. Secret Rabbit Code (SRC)
-    (replacement libsamplerate-0.1.9)
-    (version "0.1.8")
+    (version "0.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/SRC/libsamplerate-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01hw5xjbjavh412y63brcslj5hi9wdgkjd3h9csx5rnm8vglpdck"))))
+               "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -126,19 +112,6 @@ signal-to-noise ratio of 145dB with -3dB passband extending from DC to 96% of
 the theoretical best bandwidth for a given pair of input and output sample
 rates.")
     (license l:gpl2+)))
-
-(define libsamplerate-0.1.9
-  (package
-    (inherit libsamplerate)
-    (version "0.1.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "http://www.mega-nerd.com/SRC/libsamplerate-"
-                            version ".tar.gz"))
-        (sha256
-         (base32
-          "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))))
 
 (define-public pulseaudio
   (package
