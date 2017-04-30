@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,15 +22,19 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages image)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public dillo
   (package
@@ -60,4 +65,65 @@
     (description "Dillo is a minimalistic web browser particularly intended for
 older or slower computers and embedded systems.")
     (home-page "http://www.dillo.org")
+    (license license:gpl3+)))
+
+(define-public qutebrowser
+  (package
+    (name "qutebrowser")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/The-Compiler/"
+                           "qutebrowser/releases/download/v" version "/"
+                           "qutebrowser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05qryn56w2pbqhir4pl99idx7apx2xqw9f8wmbrhj59b1xgr3x2p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)))
+    (inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-cssutils" ,python-cssutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-markupsafe" ,python-markupsafe)
+       ("python-pygments" ,python-pygments)
+       ("python-pypeg2" ,python-pypeg2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-pyqt" ,python-pyqt)
+       ("qtwebkit" ,qtwebkit)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-more
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (app (string-append out "/share/applications"))
+                    (hicolor (string-append out "/share/icons/hicolor")))
+               (system* "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
+               (install-file "doc/qutebrowser.1"
+                             (string-append out "/share/man/man1"))
+
+               (for-each
+                (lambda (i)
+                  (let ((src  (format #f "icons/qutebrowser-~dx~d.png" i i))
+                        (dest (format #f "~a/~dx~d/apps/qutebrowser.png"
+                                      hicolor i i)))
+                    (mkdir-p (dirname dest))
+                    (copy-file src dest)))
+                '(16 24 32 48 64 128 256 512))
+               (install-file "icons/qutebrowser.svg"
+                             (string-append hicolor "/scalable/apps"))
+               
+               (substitute* "qutebrowser.desktop"
+                 (("Exec=qutebrowser")
+                  (string-append "Exec=" out "/bin/qutebrowser")))
+               (install-file "qutebrowser.desktop" app)
+               #t))))))
+    (home-page "https://qutebrowser.org/")
+    (synopsis "Minimal, keyboard-focused, vim-like web browser")
+    (description "qutebrowser is a keyboard-focused browser with a minimal
+GUI.  It is based on PyQt5 and QtWebKit.")
     (license license:gpl3+)))

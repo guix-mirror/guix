@@ -80,7 +80,6 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages qt)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
@@ -4492,64 +4491,3 @@ functions of Tidy.")
 Features include the ability to stop SQL injections, XSS and CSRF attacks and
 exploit attempts.")
     (license l:gpl2)))
-
-(define-public qutebrowser
-  (package
-    (name "qutebrowser")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/The-Compiler/"
-                           "qutebrowser/releases/download/v" version "/"
-                           "qutebrowser-" version ".tar.gz"))
-       (sha256
-        (base32
-         "05qryn56w2pbqhir4pl99idx7apx2xqw9f8wmbrhj59b1xgr3x2p"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("asciidoc" ,asciidoc)))
-    (inputs
-     `(("python-colorama" ,python-colorama)
-       ("python-cssutils" ,python-cssutils)
-       ("python-jinja2" ,python-jinja2)
-       ("python-markupsafe" ,python-markupsafe)
-       ("python-pygments" ,python-pygments)
-       ("python-pypeg2" ,python-pypeg2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-pyqt" ,python-pyqt)
-       ("qtwebkit" ,qtwebkit)))
-    (arguments
-     `(#:tests? #f                      ;no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-more
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (app (string-append out "/share/applications"))
-                    (hicolor (string-append out "/share/icons/hicolor")))
-               (system* "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
-               (install-file "doc/qutebrowser.1"
-                             (string-append out "/share/man/man1"))
-
-               (for-each
-                (lambda (i)
-                  (let ((src  (format #f "icons/qutebrowser-~dx~d.png" i i))
-                        (dest (format #f "~a/~dx~d/apps/qutebrowser.png"
-                                      hicolor i i)))
-                    (mkdir-p (dirname dest))
-                    (copy-file src dest)))
-                '(16 24 32 48 64 128 256 512))
-               (install-file "icons/qutebrowser.svg"
-                             (string-append hicolor "/scalable/apps"))
-
-               (substitute* "qutebrowser.desktop"
-                 (("Exec=qutebrowser")
-                  (string-append "Exec=" out "/bin/qutebrowser")))
-               (install-file "qutebrowser.desktop" app)
-               #t))))))
-    (home-page "https://qutebrowser.org/")
-    (synopsis "Minimal, keyboard-focused, vim-like web browser")
-    (description "qutebrowser is a keyboard-focused browser with a minimal
-GUI.  It is based on PyQt5 and QtWebKit.")
-    (license l:gpl3+)))
