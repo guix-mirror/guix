@@ -3955,7 +3955,7 @@ customizable by the user.")
 (define-public emacs-mu4e-alert
   (package
     (name "emacs-mu4e-alert")
-    (version "0.4")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -3965,7 +3965,7 @@ customizable by the user.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1m63vyb2v5r9swmqv56q80jca8172nk5vaxl7bcm5zbfs8zsvr4b"))))
+         "07qc834qnxn8xi4bw5nawj8g91bmkzw0r0vahkgysp7r9xrf57gj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-alert" ,emacs-alert)
