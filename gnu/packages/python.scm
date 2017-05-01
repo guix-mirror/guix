@@ -14054,3 +14054,29 @@ exception message with a traceback that points to the culprit.")
 
 (define-public python2-fudge
   (package-with-python2 python-fudge))
+
+(define-public python-oauth2client
+  (package
+    (name "python-oauth2client")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oauth2client" version))
+       (sha256
+        (base32
+         "1irqqap2zibysf8dba8sklfqikia579srd0phm5n754ni0h59gl0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-rsa" ,python-rsa)
+       ("python-six" ,python-six)))
+    (home-page "http://github.com/google/oauth2client/")
+    (synopsis "OAuth 2.0 client library")
+    (description "@code{python-oauth2client} provides an OAuth 2.0 client
+library for Python")
+    (license license:asl2.0)))
