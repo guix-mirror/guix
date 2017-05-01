@@ -512,7 +512,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.22.1")
+    (version "3.24.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -520,15 +520,10 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0713mcrym5ykhl5smqxi6m9578gz3nkibmkmc794amss7gdkkm7k"))))
+               "13yw0i68dgqp9alyliy3zifszh7rikkpi1xbz5binvxxgfpraf04"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
-
-       ;; FIXME: Tests fail with:
-       ;;   ImportError: No module named gi.repository
-       ;; Where should that module come from?
-       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
