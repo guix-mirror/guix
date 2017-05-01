@@ -24,8 +24,10 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages autotools))
 
 (define-public log4cpp
@@ -89,4 +91,28 @@ This library provides logging APIs based on C++-style streams and various
 helper macros.  You can log a message by simply streaming things to log at a
 particular severity level.  It allows logging to be controlled from the
 command line.")
+    (license license:bsd-3)))
+
+(define-public tailon
+  (package
+    (name "tailon")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "08clrwpfdxcv2z2b5ardpmim4alahbw4l7631dhw62xhbcf6wjzz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-sockjs-tornado" ,python-sockjs-tornado)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://tailon.readthedocs.io/")
+    (synopsis
+     "Webapp for looking at and searching through log files")
+    (description
+     "Tailon provides a web interface around the tail, grep, awk and sed
+commands, displaying the results via a web interface.")
     (license license:bsd-3)))
