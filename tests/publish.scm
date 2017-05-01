@@ -122,13 +122,15 @@ URL: nar/~a
 Compression: none
 NarHash: sha256:~a
 NarSize: ~d
-References: ~a~%"
+References: ~a
+FileSize: ~a~%"
                   %item
                   (basename %item)
                   (bytevector->nix-base32-string
                    (path-info-hash info))
                   (path-info-nar-size info)
-                  (basename (first (path-info-references info)))))
+                  (basename (first (path-info-references info)))
+                  (path-info-nar-size info)))
          (signature (base64-encode
                      (string->utf8
                       (canonical-sexp->string
@@ -152,11 +154,13 @@ URL: nar/~a
 Compression: none
 NarHash: sha256:~a
 NarSize: ~d
-References: ~%"
+References: ~%\
+FileSize: ~a~%"
                   item
                   (uri-encode (basename item))
                   (bytevector->nix-base32-string
                    (path-info-hash info))
+                  (path-info-nar-size info)
                   (path-info-nar-size info)))
          (signature (base64-encode
                      (string->utf8
@@ -323,6 +327,7 @@ References: ~%"
           ("Compression" . "gzip"))
         200                                       ;nar/gzip/…
         #t                                        ;Content-Length
+        #t                                        ;FileSize
         200)                                      ;nar/…
   (call-with-temporary-directory
    (lambda (cache)
@@ -351,10 +356,11 @@ References: ~%"
               (response (http-get url)))
          (and (= 404 (response-code response))
               (wait-for-file cached)
-              (let ((body         (http-get-port url))
-                    (compressed   (http-get nar-url))
-                    (uncompressed (http-get (string-append base "nar/"
-                                                           (basename %item)))))
+              (let* ((body         (http-get-port url))
+                     (compressed   (http-get nar-url))
+                     (uncompressed (http-get (string-append base "nar/"
+                                                            (basename %item))))
+                     (narinfo      (recutils->alist body)))
                 (list (file-exists? nar)
                       (filter (lambda (item)
                                 (match item
@@ -362,9 +368,12 @@ References: ~%"
                                   (("StorePath" . _)  #t)
                                   (("URL" . _) #t)
                                   (_ #f)))
-                              (recutils->alist body))
+                              narinfo)
                       (response-code compressed)
                       (= (response-content-length compressed)
+                         (stat:size (stat nar)))
+                      (= (string->number
+                          (assoc-ref narinfo "FileSize"))
                          (stat:size (stat nar)))
                       (response-code uncompressed)))))))))
 

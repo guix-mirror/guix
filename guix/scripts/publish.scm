@@ -240,10 +240,12 @@ compression disabled~%"))
 
 (define* (narinfo-string store store-path key
                          #:key (compression %no-compression)
-                         (nar-path "nar"))
+                         (nar-path "nar") file-size)
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
-narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
+narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs.
+Optionally, FILE-SIZE can specify the size in bytes of the compressed NAR; it
+informs the client of how much needs to be downloaded."
   (let* ((path-info  (query-path-info store store-path))
          (compression (actual-compression store-path compression))
          (url        (encode-and-join-uri-path
@@ -257,6 +259,8 @@ narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
+         (file-size  (or file-size
+                         (and (eq? compression %no-compression) size)))
          (references (string-join
                       (map basename (path-info-references path-info))
                       " "))
@@ -268,10 +272,13 @@ URL: ~a
 Compression: ~a
 NarHash: sha256:~a
 NarSize: ~d
-References: ~a~%"
+References: ~a~%~a"
                              store-path url
                              (compression-type compression)
-                             hash size references))
+                             hash size references
+                             (if file-size
+                                 (format #f "FileSize: ~a~%" file-size)
+                                 "")))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
          (info       (if (not deriver)
@@ -465,7 +472,8 @@ requested using POOL."
           (display (narinfo-string store item
                                    (%private-key)
                                    #:nar-path nar-path
-                                   #:compression compression)
+                                   #:compression compression
+                                   #:file-size (stat:size (stat nar)))
                    port))))))
 
 ;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
