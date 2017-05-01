@@ -14080,3 +14080,29 @@ exception message with a traceback that points to the culprit.")
     (description "@code{python-oauth2client} provides an OAuth 2.0 client
 library for Python")
     (license license:asl2.0)))
+
+(define-public python-flask-oidc
+  (package
+    (name "python-flask-oidc")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flask-oidc" version))
+       (sha256
+        (base32
+         "1ay5j0mf174bix7i67hclr95gv16z81fpx0dijvi0gydvdj3ddy2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-itsdangerous" ,python-itsdangerous)
+       ("python-oauth2client" ,python-oauth2client)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/puiterwijk/flask-oidc")
+    (synopsis "OpenID Connect extension for Flask")
+    (description "@code{python-flask-oidc} provides an OpenID Connect extension
+for Flask.")
+    (license license:bsd-2)))
