@@ -16281,9 +16281,9 @@ distribution:
 
 @smallexample
 $ guix lint -c cve
-gnu/packages/base.scm:652:2: glibc-2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
-gnu/packages/gcc.scm:334:2: gcc-4.9.3: probably vulnerable to CVE-2015-5276
-gnu/packages/image.scm:312:2: openjpeg-2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
+gnu/packages/base.scm:652:2: glibc@@2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
+gnu/packages/gcc.scm:334:2: gcc@@4.9.3: probably vulnerable to CVE-2015-5276
+gnu/packages/image.scm:312:2: openjpeg@@2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
 @dots{}
 @end smallexample
 

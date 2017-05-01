@@ -306,7 +306,7 @@ return its return value."
 ;;; Package specification.
 ;;;
 
-(define* (%find-package spec name version #:key fallback?)
+(define* (%find-package spec name version)
   (match (find-best-packages-by-name name version)
     ((pkg . pkg*)
      (unless (null? pkg*)
@@ -314,10 +314,6 @@ return its return value."
        (warning (_ "choosing ~a@~a from ~a~%")
                 (package-name pkg) (package-version pkg)
                 (location->string (package-location pkg))))
-     (when fallback?
-       (warning (_ "deprecated NAME-VERSION syntax; \
-use NAME@VERSION instead~%")))
-
      (match (package-superseded pkg)
        ((? package? new)
         (info (_ "package '~a' has been superseded by '~a'~%")
@@ -328,16 +324,7 @@ use NAME@VERSION instead~%")))
     (x
      (if version
          (leave (_ "~A: package not found for version ~a~%") name version)
-         (if (not fallback?)
-             ;; XXX: Fallback to the older specification style with an hyphen
-             ;; between NAME and VERSION, for backward compatibility.
-             (call-with-values
-                 (lambda ()
-                   (hyphen-separated-name->name+version name))
-               (cut %find-package spec <> <> #:fallback? #t))
-
-             ;; The fallback case didn't find anything either, so bail out.
-             (leave (_ "~A: unknown package~%") name))))))
+         (leave (_ "~A: unknown package~%") name)))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
