@@ -218,6 +218,7 @@ Services
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
@@ -8737,6 +8738,7 @@ declaration.
 * Messaging Services::          Messaging services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
@@ -13516,6 +13518,414 @@ you don't have a key or you don't want to use HTTPS.
 
 @item @code{server-tokens?} (default: @code{#f})
 Whether the server should add its configuration to response.
+
+@end table
+@end deftp
+
+@node DNS Services
+@subsubsection DNS Services
+@cindex DNS (domain name system)
+@cindex domain name system (DNS)
+
+The @code{(gnu services dns)} module provides services related to the
+@dfn{domain name system} (DNS).  It provides a server service for hosting
+an @emph{authoritative} DNS server for multiple zones, slave or master.
+This service uses @uref{https://www.knot-dns.cz/, Knot DNS}.
+
+An example configuration of an authoritative server for two zones, one master
+and one slave, is:
+
+@lisp
+(define-zone-entries example.org.zone
+;; Name TTL Class Type Data
+  ("@@"  ""  "IN"  "A"  "127.0.0.1")
+  ("@@"  ""  "IN"  "NS" "ns")
+  ("ns" ""  "IN"  "A"  "127.0.0.1"))
+
+(define master-zone
+  (knot-zone-configuration
+    (domain "example.org")
+    (zone (zone-file
+            (origin "example.org")
+            (entries example.org.zone)))))
+
+(define slave-zone
+  (knot-zone-configuration
+    (domain "plop.org")
+    (dnssec-policy "default")
+    (master (list "plop-master"))))
+
+(define plop-master
+  (knot-remote-configuration
+    (id "plop-master")
+    (address (list "208.76.58.171"))))
+
+(operating-system
+  ;; ...
+  (services (cons* (service knot-service-type
+                     (knot-confifguration
+                       (remotes (list plop-master))
+                       (zones (list master-zone slave-zone))))
+                   ;; ...
+                   %base-services)))
+@end lisp
+
+@deffn {Scheme Variable} knot-service-type
+This is the type for the Knot DNS server.
+
+Knot DNS is an authoritative DNS server, meaning that it can serve multiple
+zones, that is to say domain names you would buy from a registrar.  This server
+is not a resolver, meaning that it can only resolve names for which it is
+authoritative.  This server can be configured to serve zones as a master server
+or a slave server as a per-zone basis.  Slave zones will get their data from
+masters, and will serve it as an authoritative server.  From the point of view
+of a resolver, there is no difference between master and slave.
+
+The following data types are used to configure the Knot DNS server:
+@end deffn
+
+@deftp {Data Type} knot-key-configuration
+Data type representing a key.
+This type has the following parameters:
+
+@table @asis
+@item @code{id} (default: @code{""})
+An identifier for other configuration fields to refer to this key. IDs must
+be unique and must not be empty.
+
+@item @code{algorithm} (default: @code{#f})
+The algorithm to use.  Choose between @code{#f}, @code{'hmac-md5},
+@code{'hmac-sha1}, @code{'hmac-sha224}, @code{'hmac-sha256}, @code{'hmac-sha384}
+and @code{'hmac-sha512}.
+
+@item @code{secret} (default: @code{""})
+The secret key itself.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-acl-configuration
+Data type representing an Access Control List (ACL) configuration.
+This type has the following parameters:
+
+@table @asis
+@item @code{id} (default: @code{""})
+An identifier for ether configuration fields to refer to this key. IDs must be
+unique and must not be empty.
+
+@item @code{address} (default: @code{'()})
+An ordered list of IP addresses, network subnets, or network ranges represented
+with strings.  The query must match one of them.  Empty value means that
+address match is not required.
+
+@item @code{key} (default: @code{'()})
+An ordered list of references to keys represented with strings.  The string
+must match a key ID defined in a @code{knot-key-configuration}.  No key means
+that a key is not require to match that ACL.
+
+@item @code{action} (default: @code{'()})
+An ordered list of actions that are permitted or forbidden by this ACL.  Possible
+values are lists of zero or more elements from @code{'transfer}, @code{'notify}
+and @code{'update}.
+
+@item @code{deny?} (default: @code{#f})
+When true, the ACL defines restrictions.  Listed actions are forbidden.  When
+false, listed actions are allowed.
+
+@end table
+@end deftp
+
+@deftp {Data Type} zone-entry
+Data type represnting a record entry in a zone file.
+This type has the following parameters:
+
+@table @asis
+@item @code{name} (default: @code{"@@"})
+The name of the record.  @code{"@@"} refers to the origin of the zone.  Names
+are relative to the origin of the zone.  For example, in the @code{example.org}
+zone, @code{"ns.example.org"} actually refers to @code{ns.example.org.example.org}.
+Names ending with a dot are absolute, which means that @code{"ns.example.org."}
+refers to @code{ns.example.org}.
+
+@item @code{ttl} (default: @code{""})
+The Time-To-Live (TTL) of this record.  If not set, the default TTL is used.
+
+@item @code{class} (default: @code{"IN"})
+The class of the record.  Knot currently supports only @code{"IN"} and
+partially @code{"CH"}.
+
+@item @code{type} (default: @code{"A"})
+The type of the record.  Common types include A (IPv4 address), AAAA (IPv6
+address), NS (Name Server) and MX (Mail eXchange).  Many other types are
+defined.
+
+@item @code{data} (default: @code{""})
+The data contained in the record.  For instance an IP address associated with
+an A record, or a domain name associated with an NS record.  Remember that
+domain names are relative to the origin unless they end with a dot.
+
+@end table
+@end deftp
+
+@deftp {Data Type} zone-file
+Data type representing the content of a zone file.
+This type has the following parameters:
+
+@table @asis
+@item @code{entries} (default: @code{'()})
+The list of entries.  The SOA record is taken care of, so you don't need to
+put it in the list of entries.  This list should probably contain an entry
+for your primary authoritative DNS server.  Other than using a list of entries
+directly, you can use @code{define-zone-entries} to define a object containing
+the list of entries more easily, that you can later pass to the @code{entries}
+field of the @code{zone-file}.
+
+@item @code{origin} (default: @code{""})
+The name of your zone.  This parameter cannot be empty.
+
+@item @code{ns} (default: @code{"ns"})
+The domain of your primary authoritative DNS server.  The name is relative to
+the origin, unless it ends with a dot.  It is mandatory that this primary
+DNS server corresponds to an NS record in the zone and that it is associated
+to an IP address in the list of entries.
+
+@item @code{mail} (default: @code{"hostmaster"})
+An email address people can contact you at, as the owner of the zone.  This
+is translated as @code{<mail>@@<origin>}.
+
+@item @code{serial} (default: @code{1})
+The serial number of the zone.  As this is used to keep track of changes by
+both slaves and resolvers, it is mandatory that it @emph{never} decreases.
+Always increment it when you make a change in your zone.
+
+@item @code{refresh} (default: @code{"2d"})
+The frequency at which slaves will do a zone transfer.  This value can be
+a number of seconds or a number of some unit between:
+@itemize
+@item m: minute
+@item h: hour
+@item d: day
+@item w: week
+@end itemize
+
+@item @code{retry} (default: @code{"15m"})
+The period after which a slave will retry to contact its master when it fails
+to do so a first time.
+
+@item @code{expiry} (default: @code{"2w"})
+Default TTL of records.  Existing records are considered correct for at most
+this amount of time.  After this period, resolvers will invalidate their cache
+and check again that it still exists.
+
+@item @code{nx} (default: @code{"1h"})
+Default TTL of inexistant records.  This delay is usually short because you want
+your new domains to reach everyone quickly.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-remote-configuration
+Data type representing a remote configuration.
+This type has the following parameters:
+
+@table @asis
+@item @code{id} (default: @code{""})
+An identifier for other configuration fields to refer to this remote. IDs must
+be unique and must not be empty.
+
+@item @code{address} (default: @code{'()})
+An ordered list of destination IP addresses.  Addresses are tried in sequence.
+An optional port can be given with the @@ separator.  For instance:
+@code{(list "1.2.3.4" "2.3.4.5@@53")}.  Default port is 53.
+
+@item @code{via} (default: @code{'()})
+An ordered list of source IP addresses.  An empty list will have Knot choose
+an appropriate source IP.  An optional port can be given with the @@ separator.
+The default is to choose at random.
+
+@item @code{key} (default: @code{#f})
+A reference to a key, that is a string containing the identifier of a key
+defined in a @code{knot-key-configuration} field.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-keystore-configuration
+Data type representing a keystore to hold dnssec keys.
+This type has the following parameters:
+
+@table @asis
+@item @code{id} (default: @code{""})
+The id of the keystore.  It must not be empty.
+
+@item @code{backend} (default: @code{'pem})
+The backend to store the keys in.  Can be @code{'pem} or @code{'pkcs11}.
+
+@item @code{config} (default: @code{"/var/lib/knot/keys/keys"})
+The configuration string of the backend.  An example for the PKCS#11 is:
+@code{"pkcs11:token=knot;pin-value=1234 /gnu/store/.../lib/pkcs11/libsofthsm2.so"}.
+For the pem backend, the string reprensents a path in the filesystem.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-policy-configuration
+Data type representing a dnssec policy.  Knot DNS is able to automatically
+sign your zones.  It can either generate and manage your keys automatically or
+use keys that you generate.
+
+Dnssec is usually implemented using two keys: a Key Signing Key (KSK) that is
+used to sign the second, and a Zone Signing Key (ZSK) that is used to sign the
+zone.  In order to be trusted, the KSK needs to be present in the parent zone
+(usually a top-level domain).  If your registrar supports dnssec, you will
+have to send them your KSK's hash so they can add a DS record in their zone.
+This is not automated and need to be done each time you change your KSK.
+
+The policy also defines the lifetime of keys.  Usually, ZSK can be changed
+easily and use weaker cryptographic functions (they use lower parameters) in
+order to sign records quickly, so they are changed often.  The KSK however
+requires manual interaction with the registrar, so they are changed less often
+and use stronger parameters because they sign only one record.
+
+This type has the following parameters:
+
+@table @asis
+@item @code{id} (default: @code{""})
+The id of the policy.  It must not be empty.
+
+@item @code{keystore} (default: @code{"default"})
+A reference to a keystore, that is a string containing the identifier of a
+keystore defined in a @code{knot-keystore-configuration} field.  The
+@code{"default"} identifier means the default keystore (a kasp database that
+was setup by this service).
+
+@item @code{manual?} (default: @code{#f})
+Whether the key management is manual or automatic.
+
+@item @code{single-type-signing?} (default: @code{#f})
+When @code{#t}, use the Single-Type Signing Scheme.
+
+@item @code{algorithm} (default: @code{"ecdsap256sha256"})
+An algorithm of signing keys and issued signatures.
+
+@item @code{ksk-size} (default: @code{256})
+The length of the KSK.  Note that this value is correct for the default
+algorithm, but would be unsecure for other algorithms.
+
+@item @code{zsk-size} (default: @code{256})
+The length of the ZSK.  Note that this value is correct for the default
+algorithm, but would be unsecure for other algorithms.
+
+@item @code{dnskey-ttl} (default: @code{'default})
+The TTL value for DNSKEY records added into zone apex.  The special
+@code{'default} value means same as the zone SOA TTL.
+
+@item @code{zsk-lifetime} (default: @code{"30d"})
+The period between ZSK publication and the next rollover initiation.
+
+@item @code{propagation-delay} (default: @code{"1d"})
+An extra delay added for each key rollover step.  This value should be high
+enough to cover propagation of data from the master server to all slaves.
+
+@item @code{rrsig-lifetime} (default: @code{"14d"})
+A validity period of newly issued signatures.
+
+@item @code{rrsig-refresh} (default: @code{"7d"})
+A period how long before a signature expiration the signature will be refreshed.
+
+@item @code{nsec3?} (default: @code{#f})
+When @code{#t}, NSEC3 will be used instead of NSEC.
+
+@item @code{nsec3-iterations} (default: @code{5})
+The number of additional times the hashing is performed.
+
+@item @code{nsec3-salt-length} (default: @code{8})
+The length of a salt field in octets, which is appended to the original owner
+name before hashing.
+
+@item @code{nsec3-salt-lifetime} (default: @code{"30d"})
+The validity period of newly issued salt field.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-zone-configuration
+Data type representing a zone served by Knot.
+This type has the following parameters:
+
+@table @asis
+@item @code{domain} (default: @code{""})
+The domain served by this configuration.  It must not be empty.
+
+@item @code{file} (default: @code{""})
+The file where this zone is saved.  This parameter is ignored by master zones.
+Empty means default location that depends on the domain name.
+
+@item @code{zone} (default: @code{(zone-file)})
+The content of the zone file.  This parameter is ignored by slave zones.  It
+must contain a zone-file record.
+
+@item @code{master} (default: @code{'()})
+A list of master remotes.  When empty, this zone is a master.  When set, this
+zone is a slave.  This is a list of remotes identifiers.
+
+@item @code{ddns-master} (default: @code{#f})
+The main master.  When empty, it defaults to the first master in the list of
+masters.
+
+@item @code{notify} (default: @code{'()})
+A list of slave remote identifiers.
+
+@item @code{acl} (default: @code{'()})
+A list of acl identifiers.
+
+@item @code{semantic-checks?} (default: @code{#f})
+When set, this adds more semantic checks to the zone.
+
+@item @code{disable-any?} (default: @code{#f})
+When set, this forbids queries of the ANY type.
+
+@item @code{zonefile-sync} (default: @code{0})
+The delay between a modification in memory and on disk.  0 means immediate
+synchronization.
+
+@item @code{serial-policy} (default: @code{'increment})
+A policy between @code{'increment} and @code{'unixtime}.
+
+@end table
+@end deftp
+
+@deftp {Data Type} knot-configuration
+Data type representing the Knot configuration.
+This type has the following parameters:
+
+@table @asis
+@item @code{knot} (default: @code{knot})
+The Knot package.
+
+@item @code{run-directory} (default: @code{"/var/run/knot"})
+The run directory.  This directory will be used for pid file and sockets.
+
+@item @code{listen-v4} (default: @code{"0.0.0.0"})
+An ip address on which to listen.
+
+@item @code{listen-v6} (default: @code{"::"})
+An ip address on which to listen.
+
+@item @code{listen-port} (default: @code{53})
+A port on which to listen.
+
+@item @code{keys} (default: @code{'()})
+The list of knot-key-configuration used by this configuration.
+
+@item @code{acls} (default: @code{'()})
+The list of knot-acl-configuration used by this configuration.
+
+@item @code{remotes} (default: @code{'()})
+The list of knot-remote-configuration used by this configuration.
+
+@item @code{zones} (default: @code{'()})
+The list of knot-zone-configuration used by this configuration.
 
 @end table
 @end deftp
