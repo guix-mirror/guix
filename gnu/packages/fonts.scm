@@ -583,6 +583,44 @@ encoded in the user defined area of the Big-5 code.
     (license (license:non-copyleft
               "http://data.gov.tw/license")))) ; CC-BY 4.0 compatible
 
+(define-public font-cns11643-swjz
+  (package
+    (name "font-cns11643-swjz")
+    (version "1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.moedict.tw/fonts/truetype/cns11643/ebas927.ttf")
+       (sha256
+        (base32
+         "1qkljldbmb53zp1rcmpsb8rzy67rnsqcjxi549m9743ifk4isl78"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((font-dir (string-append %output
+                                        "/share/fonts/truetype/cns11643"))
+               (source (assoc-ref %build-inputs "source")))
+           (mkdir-p font-dir)
+           (copy-file source
+                      (string-append font-dir "/" "ebas927.ttf"))
+           #t))))
+    (home-page
+     (string-append "http://www.cns11643.gov.tw/AIDB/download.do"
+                    "?name=%E5%AD%97%E5%9E%8B%E4%B8%8B%E8%BC%89"))
+    (synopsis "TrueType seal script font")
+    (description
+     "@code{Shuowen Jiezi} is a TrueType seal script font based on the ancient
+text of the same name published by the Executive Yuan of Taiwan.  6721 glyphs
+are included, at Unicode compatible code points corresponding to their modern
+variants.")
+    ;; Original text only available in Chinese. More info at
+    ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26703#11
+    (license (license:non-copyleft
+              "http://www.cns11643.gov.tw/AIDB/copyright.do"))))
+
 (define-public font-wqy-zenhei
   (package
     (name "font-wqy-zenhei")
