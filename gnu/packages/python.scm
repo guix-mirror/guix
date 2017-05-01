@@ -4217,6 +4217,38 @@ routines such as routines for numerical integration and optimization.")
   (package-with-python2
    (strip-python2-variant python-scipy)))
 
+(define-public python-sockjs-tornado
+  (package
+    (name "python-sockjs-tornado")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sockjs-tornado" version))
+       (sha256
+        (base32
+         "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; There are no tests, and running the test phase requires missing
+       ;; dependencies
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-tornado" ,python-tornado)))
+    (home-page "http://github.com/mrjoes/sockjs-tornado/")
+    (synopsis
+     "SockJS python server implementation on top of Tornado framework")
+    (description
+     "SockJS-tornado provides the server side counterpart to a SockJS client
+library, through the Tornado framework.
+
+SockJS provides a low latency, full duplex, cross-domain communication channel
+between a web browser and web server.")
+    (license license:expat)))
+
+(define-public python2-sockjs-tornado
+  (package-with-python2 python-sockjs-tornado))
+
 (define-public python-socksipy-branch
   (package
     (name "python-socksipy-branch")
