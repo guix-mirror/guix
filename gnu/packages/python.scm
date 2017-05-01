@@ -6148,13 +6148,13 @@ It is written entirely in Python.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.3")
+    (version "4.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "1gzgwayl6hmc9jfcl88bni4jcsk2jcca9dn1rvrfsvnijcjx7hn9"))))
+        (base32 "1zbkgcdfq81k298awrm8p0xwbwwn2p3nbizdglzfbkskhai082fv"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: Two tests error out with:
