@@ -5271,7 +5271,7 @@ Cuffdiff or Ballgown programs.")
 (define-public vcftools
   (package
     (name "vcftools")
-    (version "0.1.14")
+    (version "0.1.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5279,7 +5279,7 @@ Cuffdiff or Ballgown programs.")
                     version "/vcftools-" version ".tar.gz"))
               (sha256
                (base32
-                "10l5c07z9p4i9pr4gl54b2c9h6ndhqlbq1rashg2zcgwkbfrkmvn"))))
+                "1qw30c45wihgy632rbz4rh3njnwj4msj46l1rsgdhyg6bgypmr1i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
