@@ -7761,7 +7761,19 @@ provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
 etc.  The example above adds tcpdump to those, taken from the @code{(gnu
-packages admin)} module (@pxref{Package Modules}).
+packages admin)} module (@pxref{Package Modules}).  The
+@code{(list package output)} syntax can be used to add a specific output
+of a package:
+
+@lisp
+(use-modules (gnu packages))
+(use-modules (gnu packages dns))
+
+(operating-system
+  ;; ...
+  (packages (cons (list bind "utils")
+                  %base-packages)))
+@end lisp
 
 @findex specification->package
 Referring to packages by variable name, like @var{tcpdump} above, has
