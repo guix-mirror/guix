@@ -162,7 +162,7 @@ of index files."
        "")
    (if (nginx-server-configuration-ssl-certificate-key server)
        (let ((key (nginx-server-configuration-ssl-certificate-key server)))
-         (lstat certificate)
+         (lstat key)
          (string-append "      ssl_certificate_key " key ";\n"))
        "")
    "      root " (nginx-server-configuration-root server) ";\n"
