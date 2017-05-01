@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,8 @@
             zpl2.1
             zlib
             fsf-free
-            wtfpl2))
+            wtfpl2
+            fsdg-compatible))
 
 (define-record-type <license>
   (license name uri comment)
@@ -485,6 +487,15 @@ which may be a file:// URI pointing the package's tree."
   "Return a license that does not fit any of the ones above or a collection
 of licenses, approved as free by the FSF.  More details can be found at URI."
   (license "FSF-free"
+           uri
+           comment))
+
+(define* (fsdg-compatible uri #:optional (comment ""))
+  "Return a license that does not fit any of the ones above or a collection
+of licenses, not necessarily free, but in accordance with FSDG as Non-functional
+Data.  More details can be found at URI.  See also
+https://www.gnu.org/distros/free-system-distribution-guidelines.en.html#non-functional-data."
+  (license "FSDG-compatible"
            uri
            comment))
 
