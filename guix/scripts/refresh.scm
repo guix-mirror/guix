@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -315,6 +315,10 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
   "List all the things that would need to be rebuilt if PACKAGES are changed."
   ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
   ;; because it includes implicit dependencies.
+  (define (full-name package)
+    (string-append (package-name package) "@"
+                   (package-version package)))
+
   (mlet %store-monad ((edges (node-back-edges %bag-node-type
                                               (all-packages))))
     (let* ((dependents (node-transitive-edges packages edges))
@@ -327,12 +331,12 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
                  (N_ "No dependents other than itself: ~{~a~}~%"
                      "No dependents other than themselves: ~{~a~^ ~}~%"
                      (length packages))
-                 (map package-full-name packages)))
+                 (map full-name packages)))
 
         ((x)
          (format (current-output-port)
                  (_ "A single dependent package: ~a~%")
-                 (package-full-name x)))
+                 (full-name x)))
         (lst
          (format (current-output-port)
                  (N_ "Building the following package would ensure ~d \
@@ -341,7 +345,7 @@ dependent packages are rebuilt: ~*~{~a~^ ~}~%"
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                      (length covering))
                  (length covering) (length dependents)
-                 (map package-full-name covering))))
+                 (map full-name covering))))
       (return #t))))
 
 
