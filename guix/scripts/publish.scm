@@ -455,7 +455,8 @@ requested using POOL."
        (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
          (lambda (port)
            (write-file item port))
-         #:level (compression-level compression))
+         #:level (compression-level compression)
+         #:buffer-size (* 128 1024))
        (rename-file (string-append nar ".tmp") nar))
       ('none
        ;; When compression is disabled, we retrieve files directly from the
