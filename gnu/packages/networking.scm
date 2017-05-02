@@ -739,7 +739,7 @@ definitions and structure manipulators for Perl.")
     "Programmable DNS resolver class for offline emulation of DNS")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
 offline emulation of DNS.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-netaddr-ip
  (package
@@ -772,7 +772,7 @@ offline emulation of DNS.")
   (synopsis
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-net-patricia
  (package
@@ -846,7 +846,7 @@ offline emulation of DNS.")
     "Look up location and network information by IP Address in Perl")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
 information by IP Address.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-io-socket-inet6
  (package
@@ -876,7 +876,7 @@ information by IP Address.")
     "Perl object interface for AF_INET/AF_INET6 domain sockets")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public proxychains-ng
   (package

@@ -22,7 +22,7 @@
   #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
-  #:use-module ((guix licenses) #:select (gpl2 gpl3))
+  #:use-module ((guix licenses) #:select (gpl2 gpl3 perl-license))
   #:use-module (guix download))
 
 (define-public perl-lingua-en-findnumber
@@ -45,7 +45,7 @@
     (description "This module provides a regular expression for finding
 numbers in English text.  It also provides functions for extracting and
 manipulating such numbers.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-en-inflect
   (package
@@ -68,7 +68,7 @@ manipulating such numbers.")
 words.  Plural forms of all nouns, most verbs, and some adjectives are
 provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
 -> \"brethren\", \"dogma\" -> \"dogmata\", etc.) are also provided.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-en-inflect-number
   (package
@@ -90,7 +90,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
     (description "This module extends the functionality of Lingua::EN::Inflect
 with three new functions for determining plurality of a word and forcefully
 converting a word to singular or plural.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-en-inflect-phrase
   (package
@@ -117,7 +117,7 @@ converting a word to singular or plural.")
     (synopsis "Inflect short English phrases")
     (description "This module attempts to pluralize or singularize short
 English phrases.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-en-number-isordinal
   (package
@@ -141,7 +141,7 @@ English phrases.")
     (synopsis "Detect if English number is ordinal or cardinal")
     (description "This module will tell you if a number, either in words or as
 digits, is a cardinal or ordinal number.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-en-tagger
   (package
@@ -190,7 +190,7 @@ using a set of regular expressions.")
     (synopsis "Convert English text to numbers")
     (description "This module converts English text into numbers.  It supports
 both ordinal and cardinal numbers, negative numbers, and very large numbers.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-pt-stemmer
   (package
@@ -210,7 +210,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
     (description "This module implements a Portuguese stemming algorithm
 proposed in the paper A Stemming Algorithm for the Portuguese Language by
 Moreira, V. and Huyck, C.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-stem
   (package
@@ -240,7 +240,7 @@ Moreira, V. and Huyck, C.")
     (synopsis "Stemming of words in various languages")
     (description "This routine applies stemming algorithms to its parameters,
 returning the stemmed words as appropriate to the selected locale.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-stem-fr
   (package
@@ -259,7 +259,7 @@ returning the stemmed words as appropriate to the selected locale.")
     (synopsis "Porter's stemming algorithm for French")
     (description "This module uses a modified version of the Porter Stemming
 Algorithm to return a stemmed French word.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-stem-it
   (package
@@ -278,7 +278,7 @@ Algorithm to return a stemmed French word.")
     (synopsis "Porter's stemming algorithm for Italian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Italian word.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-stem-ru
   (package
@@ -297,7 +297,7 @@ parameters, returning the stemmed Italian word.")
     (synopsis "Porter's stemming algorithm for Russian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Russian (KOI8-R only) word.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-lingua-stem-snowball-da
   (package
@@ -337,7 +337,7 @@ Lingua::Stem::Snowball::Se.")
     (synopsis "Porters stemming algorithm for Norwegian")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
 stemmer at http://snowball.tartarus.org.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-snowball-swedish
   (package
@@ -357,7 +357,7 @@ stemmer at http://snowball.tartarus.org.")
     (synopsis "Porters stemming algorithm for Swedish")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
 stemmer at http://snowball.sourceforge.net.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-string-toidentifier-en
   (package
@@ -383,7 +383,7 @@ converting an arbitrary string into a readable representation using the ASCII
 subset of \"\\w\" for use as an identifier in a computer program.  The intent
 is to make unique identifier names from which the content of the original
 string can be easily inferred by a human just by reading the identifier.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-text-german
   (package
@@ -402,4 +402,4 @@ string can be easily inferred by a human just by reading the identifier.")
     (synopsis "German grundform reduction")
     (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")
-    (license (package-license perl))))
+    (license perl-license)))

@@ -5720,7 +5720,7 @@ programs that cannot use the window system directly.")
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
 in many cases better than @code{Xlib}), and provides an object oriented
 interface to its methods (using @code{Mouse}).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-x11-protocol
   (package
@@ -5748,7 +5748,7 @@ perl programs to display windows and graphics on X11 servers.")
     ;; distribution, has another, less restrictive copying policy, as do some
     ;; of the extension modules in the directory Protocol/Ext: see those files
     ;; for details)."
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public xcompmgr
   (package

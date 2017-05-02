@@ -301,7 +301,7 @@ servers that may need it).")
     (description "Starman is a PSGI perl web server that has unique features
 such as high performance, preforking, signal support, superdaemon awareness,
 and UNIX socket support.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public jansson
   (package
@@ -979,7 +979,7 @@ language known as SASS.")
     (synopsis "Compile a log format string to perl-code")
     (description "This module provides methods to compile a log format string
 to perl-code, for faster generation of access_log lines.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-authen-sasl
   (package
@@ -1000,7 +1000,7 @@ to perl-code, for faster generation of access_log lines.")
     (home-page "http://search.cpan.org/dist/Authen-SASL")
     (synopsis "SASL authentication framework")
     (description "Authen::SASL provides an SASL authentication framework.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-action-renderview
   (package
@@ -1026,7 +1026,7 @@ to perl-code, for faster generation of access_log lines.")
     (synopsis "Sensible default Catalyst action")
     (description "This Catalyst action implements a sensible default end
 action, which will forward to the first available view.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-action-rest
   (package
@@ -1061,7 +1061,7 @@ REST requests.  It takes a normal Catalyst action, and changes the dispatch to
 append an underscore and method name.  First it will try dispatching to an
 action with the generated name, and failing that it will try to dispatch to a
 regular method.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-authentication-store-dbix-class
   (package
@@ -1096,7 +1096,7 @@ regular method.")
     (description "The Catalyst::Authentication::Store::DBIx::Class class
 provides access to authentication information stored in a database via
 DBIx::Class.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-component-instancepercontext
   (package
@@ -1120,7 +1120,7 @@ DBIx::Class.")
     (synopsis "Create only one instance of Moose component per context")
     (description "Catalyst::Component::InstancePerContext returns a new
 instance of a component on each request.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-devel
   (package
@@ -1162,7 +1162,7 @@ to run them.  Catalyst-Devel includes the Catalyst::Helper system, which
 autogenerates scripts and tests; Module::Install::Catalyst, a Module::Install
 extension for Catalyst; and requirements for a variety of development-related
 modules.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-dispatchtype-regex
   (package
@@ -1192,7 +1192,7 @@ core.  It is recommend that you use Chained methods or other techniques
 instead.  As part of the refactoring, the dispatch priority of Regex vs Regexp
 vs LocalRegex vs LocalRegexp may have changed.  Priority is now influenced by
 when the dispatch type is first seen in your application.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-model-dbic-schema
   (package
@@ -1237,7 +1237,7 @@ when the dispatch type is first seen in your application.")
   (synopsis "DBIx::Class::Schema Model Class")
   (description "This is a Catalyst Model for DBIx::Class::Schema-based
 Models.")
-  (license (package-license perl))))
+  (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-accesslog
   (package
@@ -1262,7 +1262,7 @@ Models.")
     (description "This Catalyst plugin enables you to create \"access logs\"
 from within a Catalyst application instead of requiring a webserver to do it
 for you.  It will work even with Catalyst debug logging turned off.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-authentication
   (package
@@ -1296,7 +1296,7 @@ for you.  It will work even with Catalyst debug logging turned off.")
 Catalyst apps.  It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-authorization-roles
   (package
@@ -1325,7 +1325,7 @@ system authorises them to do).")
     (synopsis "Role-based authorization for Catalyst")
     (description "Catalyst::Plugin::Authorization::Roles provides role-based
 authorization for Catalyst based on Catalyst::Plugin::Authentication.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-captcha
   (package
@@ -1349,7 +1349,7 @@ authorization for Catalyst based on Catalyst::Plugin::Authentication.")
     (synopsis "Captchas for Catalyst")
     (description "This plugin creates and validates Captcha images for
 Catalyst.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-configloader
   (package
@@ -1377,7 +1377,7 @@ Catalyst.")
     (description "This module will attempt to load find and load configuration
 files of various types.  Currently it supports YAML, JSON, XML, INI and Perl
 formats.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-session
   (package
@@ -1408,7 +1408,7 @@ formats.")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
 management in web applications together: the state, and the store.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-session-state-cookie
   (package
@@ -1437,7 +1437,7 @@ management in web applications together: the state, and the store.")
 ID needs to be stored on the client, and the session data needs to be stored
 on the server.  This plugin stores the session ID on the client using the
 cookie mechanism.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-session-store-fastmmap
   (package
@@ -1467,7 +1467,7 @@ cookie mechanism.")
     (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
 storage plugin for Catalyst that uses an mmap'ed file to act as a shared
 memory interprocess cache.  It is based on Cache::FastMmap.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-stacktrace
   (package
@@ -1492,7 +1492,7 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
 including a stack trace of your application up to the point where the error
 occurred.  Each stack frame is displayed along with the package name, line
 number, file name, and code context surrounding the line number.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-plugin-static-simple
   (package
@@ -1522,7 +1522,7 @@ looking at the file extension in the URL (such as .css or .png or .js).  The
 plugin uses the lightweight MIME::Types module to map file extensions to
 IANA-registered MIME types, and will serve your static files with the correct
 MIME type directly to the browser, without being processed through Catalyst.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-runtime
   (package
@@ -1587,7 +1587,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
 It is designed to make it easy to manage the various tasks you need to do to
 run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-traitfor-request-proxybase
   (package
@@ -1618,7 +1618,7 @@ run an application on the web, either by doing them itself, or by letting you
 flexibility in your application's deployment configurations when deployed
 behind a proxy.  Using this module, the request base ($c->req->base) is
 replaced with the contents of the X-Request-Base header.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-view-download
   (package
@@ -1644,7 +1644,7 @@ replaced with the contents of the X-Request-Base header.")
     (description "The purpose of this module is to provide a method for
 downloading data into many supportable formats.  For example, downloading a
 table based report in a variety of formats (CSV, HTML, etc.).")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-view-json
   (package
@@ -1669,7 +1669,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
     (synopsis "Catalyst JSON view")
     (description "Catalyst::View::JSON is a Catalyst View handler that returns
 stash data in JSON format.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalyst-view-tt
   (package
@@ -1696,7 +1696,7 @@ stash data in JSON format.")
   (synopsis "Template View Class")
   (description "This module is a Catalyst view class for the Template
 Toolkit.")
-  (license (package-license perl))))
+  (license l:perl-license)))
 
 (define-public perl-catalystx-component-traits
   (package
@@ -1729,7 +1729,7 @@ Catalyst component base class that reads the optional \"traits\" parameter
 from app and component config and instantiates the component subclass with
 those traits using \"new_with_traits\" in MooseX::Traits from
 MooseX::Traits::Pluggable.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalystx-roleapplicator
   (package
@@ -1752,7 +1752,7 @@ MooseX::Traits::Pluggable.")
     (synopsis "Apply roles to Catalyst classes")
     (description "CatalystX::RoleApplicator applies roles to Catalyst
 application classes.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-catalystx-script-server-starman
   (package
@@ -1779,7 +1779,7 @@ application classes.")
     (synopsis "Catalyst development server with Starman")
     (description "This module provides a Catalyst extension to replace the
 development server with Starman.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-cgi
   (package
@@ -1807,7 +1807,7 @@ processing and preparing HTTP requests and responses.  Major features include
 processing form submissions, file uploads, reading and writing cookies, query
 string generation and manipulation, and processing and preparing HTTP
 headers.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-cgi-simple
   (package
@@ -1830,7 +1830,7 @@ headers.")
     (description "CGI::Simple provides a relatively lightweight drop in
 replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
 parameter parsing, file upload, cookie handling and header generation.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-cgi-struct
   (package
@@ -1875,7 +1875,7 @@ inputs, in a manner reminiscent of how PHP does.")
     (synopsis "Date conversion routines")
     (description "This module provides functions that deal with the date
 formats used by the HTTP protocol.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-digest-md5-file
   (package
@@ -1896,7 +1896,7 @@ formats used by the HTTP protocol.")
     (synopsis "MD5 sums for files and urls")
     (description "Digest::MD5::File is a Perl extension for getting MD5 sums
 for files and urls.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-encode-locale
   (package
@@ -1911,7 +1911,7 @@ for files and urls.")
               (base32
                "1h8fvcdg3n20c2yp7107yhdkkx78534s9hnvn7ps8hpmf4ks0vqp"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl locale encoding determination")
     (description
      "The POSIX locale system is used to specify both the language
@@ -1949,7 +1949,7 @@ with Encode::decode(locale => $string).")
     (description "@code{Feed::Find} implements feed auto-discovery for finding
 syndication feeds, given a URI.  It will discover the following feed formats:
 RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-file-listing
   (package
@@ -1966,7 +1966,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-date" ,perl-http-date)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl directory listing parser")
     (description
      "The File::Listing module exports a single function called parse_dir(),
@@ -2028,7 +2028,7 @@ Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
     (synopsis "Perl extension providing access to the GSSAPIv2 library")
     (description "This is a Perl extension for using GSSAPI C bindings as
 described in RFC 2744.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-html-element-extended
   (package
@@ -2050,7 +2050,7 @@ described in RFC 2744.")
     (description
      "HTML::Element::Extended is a Perl extension for manipulating a table
 composed of HTML::Element style components.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-html-form
   (package
@@ -2075,7 +2075,7 @@ composed of HTML::Element style components.")
     (synopsis "Perl class representing an HTML form element")
     (description "Objects of the HTML::Form class represents a single HTML
 <form> ... </form> instance.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-html-lint
   (package
@@ -2121,7 +2121,7 @@ syntactic legitmacy.")
     (description
      "HTML::TableExtract is a Perl module for extracting the content contained
 in tables within an HTML document, either as text or encoded element trees.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-html-tree
   (package
@@ -2147,7 +2147,7 @@ in tables within an HTML document, either as text or encoded element trees.")
     (synopsis "Work with HTML in a DOM-like tree structure")
     (description "This distribution contains a suite of modules for
 representing, creating, and extracting information from HTML syntax trees.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-html-parser
   (package
@@ -2165,7 +2165,7 @@ representing, creating, and extracting information from HTML syntax trees.")
     (inputs
      `(("perl-html-tagset" ,perl-html-tagset)
        ("perl-http-message" ,perl-http-message)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl HTML parser class")
     (description
      "Objects of the HTML::Parser class will recognize markup and separate
@@ -2187,7 +2187,7 @@ are invoked.")
               (base32
                "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl data tables useful in parsing HTML")
     (description
      "The HTML::Tagset module contains several data tables useful in various
@@ -2218,7 +2218,7 @@ It extends standard HTML with a few new HTML-esque tags: @code{<TMPL_VAR>},
 these new tags is called a template.  Using this module you fill in the values
 for the variables, loops and branches declared in the template.  This allows
 you to separate design from the data.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-body
   (package
@@ -2243,7 +2243,7 @@ you to separate design from the data.")
     (description "HTTP::Body parses chunks of HTTP POST data and supports
 application/octet-stream, application/json, application/x-www-form-urlencoded,
 and multipart/form-data.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-cookiejar
   (package
@@ -2287,7 +2287,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl HTTP cookie jars")
     (description
      "The HTTP::Cookies class is for objects that represent a cookie jar,
@@ -2311,7 +2311,7 @@ object knows about.")
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl simple http server class")
     (description
      "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
@@ -2332,7 +2332,7 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
               (base32
                "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl date conversion routines")
     (description
      "The HTTP::Date module provides functions that deal with date formats
@@ -2358,7 +2358,7 @@ used by the HTTP protocol (and then some more).")
        ("perl-io-html" ,perl-io-html)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
@@ -2379,7 +2379,7 @@ used by the HTTP protocol (and then some more).")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl http content negotiation")
     (description
      "The HTTP::Negotiate module provides a complete implementation of the
@@ -2412,7 +2412,7 @@ fields in the request.")
 received and returns a 'hint' as to what is required, or returns the
 HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
 supported.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-parser-xs
   (package
@@ -2431,7 +2431,7 @@ supported.")
     (synopsis "Fast HTTP request parser")
     (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
 parser.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-request-ascgi
   (package
@@ -2453,7 +2453,7 @@ parser.")
     (synopsis "Set up a CGI environment from an HTTP::Request")
     (description "This module provides a convenient way to set up a CGI
 environment from an HTTP::Request.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-server-simple
   (package
@@ -2479,7 +2479,7 @@ environment from an HTTP::Request.")
     (description "HTTP::Server::Simple is a simple standalone HTTP daemon with
 no non-core module dependencies.  It can be used for building a standalone
 http-based UI to your existing tools.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-http-tiny
   (package
@@ -2505,7 +2505,7 @@ http-based UI to your existing tools.")
     (description "This is a very simple HTTP/1.1 client, designed for doing
 simple requests without the overhead of a large framework like LWP::UserAgent.
 It supports proxies and redirection.  It also correctly resumes after EINTR.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-io-html
   (package
@@ -2520,7 +2520,7 @@ It supports proxies and redirection.  It also correctly resumes after EINTR.")
               (base32
                "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl module to open an HTML file with automatic charset detection")
     (description
      "IO::HTML provides an easy way to open a file containing HTML while
@@ -2546,7 +2546,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
     (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
     (description "This module provides a protocol-independent way to use IPv4
 and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-io-socket-ssl
   (package
@@ -2573,7 +2573,7 @@ necessary functionality into the familiar IO::Socket interface and providing
 secure defaults whenever possible.  This way existing applications can be made
 SSL-aware without much effort, at least if you do blocking I/O and don't use
 select or poll.")
-    (license (package-license perl))
+    (license l:perl-license)
     (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
 
 (define-public perl-libwww
@@ -2601,7 +2601,7 @@ select or poll.")
        ("perl-net-http" ,perl-net-http)
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl modules for the WWW")
     (description
      "The libwww-perl collection is a set of Perl modules which provides a
@@ -2625,7 +2625,7 @@ help you implement simple HTTP servers.")
               (base32
                "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description
      "The LWP::MediaTypes module provides functions for handling media (also
@@ -2657,7 +2657,7 @@ exists it is used instead.")
     (synopsis "HTTPS support for LWP::UserAgent")
     (description "The LWP::Protocol::https module provides support for using
 https schemed URLs with LWP.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-lwp-useragent-determined
   (package
@@ -2680,7 +2680,7 @@ https schemed URLs with LWP.")
 except that when you use it to get a web page but run into a
 possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
 and retry a few times.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-net-amazon-s3
   (package
@@ -2723,7 +2723,7 @@ and retry a few times.")
     (home-page "http://search.cpan.org/dist/Net-Amazon-S3")
     (synopsis "Perl interface to Amazon S3")
     (description "This module provides a Perlish interface to Amazon S3.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-net-http
   (package
@@ -2741,7 +2741,7 @@ and retry a few times.")
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-uri" ,perl-uri)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl low-level HTTP connection (client)")
     (description
      "The Net::HTTP class is a low-level HTTP client.  An instance of the
@@ -2775,7 +2775,7 @@ children (Net::Server::PreForkSimple), or as a managed preforking server which
 maintains the number of children based on server load (Net::Server::PreFork).
 In all but the inetd type, the server provides the ability to connect to one
 or to multiple server ports.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-net-smtp-ssl
   (package
@@ -2795,7 +2795,7 @@ or to multiple server ports.")
     (home-page "http://search.cpan.org/dist/Net-SMTP-SSL")
     (synopsis "SSL support for Net::SMTP")
     (description "SSL support for Net::SMTP.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack
   (package
@@ -2833,7 +2833,7 @@ or to multiple server ports.")
 contains middleware components, a reference server, and utilities for Web
 application frameworks.  Plack is like Ruby's Rack or Python's Paste for
 WSGI.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack-middleware-fixmissingbodyinredirect
   (package
@@ -2858,7 +2858,7 @@ WSGI.")
     (synopsis "Plack::Middleware which sets body for redirect response")
     (description "This module sets the body in redirect response, if it's not
 already set.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack-middleware-methodoverride
   (package
@@ -2884,7 +2884,7 @@ already set.")
 something else: by adding either a header named X-HTTP-Method-Override to the
 request, or a query parameter named x-tunneled-method to the URI, the client
 can say what method it actually meant.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack-middleware-removeredundantbody
   (package
@@ -2907,7 +2907,7 @@ can say what method it actually meant.")
     (synopsis "Plack::Middleware which removes body for HTTP response")
     (description "This module removes the body in an HTTP response if it's not
 required.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack-middleware-reverseproxy
   (package
@@ -2930,7 +2930,7 @@ required.")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
 which are changed by reverse-proxy.  You can specify the reverse proxy address
 and stop fake requests using 'enable_if' directive in your app.psgi.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-plack-test-externalserver
   (package
@@ -2952,7 +2952,7 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
     (description "This module allows your to run your Plack::Test tests
 against an external server instead of just against a local application through
 either mocked HTTP or a locally spawned server.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-test-tcp
   (package
@@ -2973,7 +2973,7 @@ either mocked HTTP or a locally spawned server.")
     (home-page "http://search.cpan.org/dist/Test-TCP")
     (synopsis "Testing TCP programs")
     (description "Test::TCP is test utilities for TCP/IP programs.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-test-www-mechanize
   (package
@@ -3038,7 +3038,7 @@ WWW::Mechanize that incorporates features for web application testing.")
     (description "The Test::WWW::Mechanize::Catalyst module meshes the
 Test::WWW:Mechanize module and the Catalyst web application framework to allow
 testing of Catalyst applications without needing to start up a web server.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-test-www-mechanize-psgi
   (package
@@ -3065,7 +3065,7 @@ from web application framework code.  Test::WWW::Mechanize is a subclass of
 WWW::Mechanize that incorporates features for web application testing.  The
 Test::WWW::Mechanize::PSGI module meshes the two to allow easy testing of PSGI
 applications.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-uri
   (package
@@ -3079,7 +3079,7 @@ applications.")
               (base32
                "05a1ck1bhvqkkk690xhsxf7276dnagk96qkh2jy4prrrgw6wm3lw"))))
     (build-system perl-build-system)
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description
      "The URI module implements the URI class.  Objects of this class
@@ -3110,7 +3110,7 @@ and updated by RFC 2732.")
     (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
 notably syndication feeds (RSS, Atom, and others), in an intelligent, bandwidth-
 and time-saving way.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-uri-find
   (package
@@ -3135,7 +3135,7 @@ and time-saving way.")
 considers a URI) in plain text.  It only finds URIs which include a
 scheme (http:// or the like), for something a bit less strict, consider
 URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-uri-ws
   (package
@@ -3156,7 +3156,7 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
     (synopsis "WebSocket support for URI package")
     (description "With this module, the URI package provides the same set of
 methods for WebSocket URIs as it does for HTTP URIs.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-uri-template
   (package
@@ -3180,7 +3180,7 @@ methods for WebSocket URIs as it does for HTTP URIs.")
     (synopsis "Object for handling URI templates")
     (description "This perl module provides a wrapper around URI templates as described in
 RFC 6570.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-www-curl
   (package
@@ -3203,7 +3203,7 @@ RFC 6570.")
     (description
      "This is a Perl extension interface for the libcurl file downloading
 library.")
-    (license (package-license perl))
+    (license l:perl-license)
     (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
 
 (define-public perl-www-mechanize
@@ -3233,7 +3233,7 @@ library.")
     (synopsis "Web browsing in a Perl object")
     (description "WWW::Mechanize is a Perl module for stateful programmatic
 web browsing, used for automating interaction with websites.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-www-opensearch
   (package
@@ -3261,7 +3261,7 @@ web browsing, used for automating interaction with websites.")
     (description
      "@code{WWW::OpenSearch} is a module to search @url{A9's OpenSearch,
 http://opensearch.a9.com} compatible search engines.")
-    (license (package-license perl))))
+    (license l:perl-license)))
 
 (define-public perl-www-robotrules
   (package
@@ -3278,7 +3278,7 @@ http://opensearch.a9.com} compatible search engines.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-uri" ,perl-uri)))
-    (license (package-license perl))
+    (license l:perl-license)
     (synopsis "Perl database of robots.txt-derived permissions")
     (description
      "The WWW::RobotRules module parses /robots.txt files as specified in

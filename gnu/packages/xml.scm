@@ -189,7 +189,7 @@ There are two base classes. @code{Graph::Reader} is the base class for classes
 which read a graph file and create an instance of the Graph class.
 @code{Graph::Writer} is the base class for classes which take an instance of
 the @code{Graph} class and write it out in a specific file format.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-atom
   (package
@@ -221,7 +221,7 @@ the @code{Graph} class and write it out in a specific file format.")
     (description
      "Atom is a syndication, API, and archiving format for weblogs and other data.
 @code{XML::Atom} implements the feed format as well as a client for the API.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-descent
   (package
@@ -249,7 +249,7 @@ the @code{Graph} class and write it out in a specific file format.")
 
 XML grammar is recursive - so it's nice to be able to write recursive
 parsers for it.  @code{XML::Descent} allows such parsers to be created.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-parser
   (package
@@ -269,7 +269,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
                    (list (string-append "EXPATLIBPATH=" expat "/lib")
                          (string-append "EXPATINCPATH=" expat "/include")))))
     (inputs `(("expat" ,expat)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl bindings to the Expat XML parsing library")
     (description
      "This module provides ways to parse XML documents.  It is built on top of
@@ -303,7 +303,7 @@ to @code{XML::Parser} in much the same way that Gisle Aas'
 @code{HTML::TokeParser} provides a procedural interface to @code{HTML::Parser}.
 @code{XML::TokeParser} splits its XML input up into \"tokens\", each
 corresponding to an @code{XML::Parser} event.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-libxml
   (package
@@ -320,7 +320,7 @@ corresponding to an @code{XML::Parser} event.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl SAX parser using XML::Parser")
     (description
      "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
@@ -351,7 +351,7 @@ module.")
 library which provides interfaces for parsing and manipulating XML files.  This
 module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-libxml-simple
   (package
@@ -373,7 +373,7 @@ XML parser and the high performance DOM implementation.")
     (description
      "This package provides the same API as @code{XML::Simple} but is based on
 @code{XML::LibXML}.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-libxslt
   (package
@@ -396,7 +396,7 @@ XML parser and the high performance DOM implementation.")
     (synopsis "Perl bindings to GNOME libxslt library")
     (description "This Perl module is an interface to the GNOME project's
 libxslt library.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-namespacesupport
   (package
@@ -417,7 +417,7 @@ libxslt library.")
 names (unames) from within any application that may need them.  It also helps
 maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-rss
   (package
@@ -452,7 +452,7 @@ checks.")
 RDF Site Summary (RSS) files.  This distribution also contains many examples
 that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
 1.0 version, and more.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-sax
   (package
@@ -486,7 +486,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
 building Perl SAX2 XML parsers, filters, and drivers.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-sax-base
   (package
@@ -508,7 +508,7 @@ PerlSAX drivers and filters.  It's default behaviour is to pass the input
 directly to the output unchanged.  It can be useful to use this module as a
 base class so you don't have to, for example, implement the characters()
 callback.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-simple
   (package
@@ -526,7 +526,7 @@ callback.")
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-sax" ,perl-xml-sax)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl module for easy reading/writing of XML files")
     (description
      "The XML::Simple module provides a simple API layer on top of an
@@ -549,7 +549,7 @@ parser modules).")
     (build-system perl-build-system)
     (inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl regular expressions for XML tokens")
     (description
      "XML::RegExp contains regular expressions for the following XML tokens:
@@ -575,7 +575,7 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
        ("perl-libxml" ,perl-libxml)
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-regexp" ,perl-xml-regexp)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis
      "Perl module for building DOM Level 1 compliant document structures")
     (description
@@ -607,7 +607,7 @@ that conforms to the API of the Document Object Model.")
      "The @code{XML::Compile} module suite has extensive regression testing.
 This module provide functions which simplify writing tests for
 @code{XML::Compile} related distributions.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile
   (package
@@ -632,7 +632,7 @@ This module provide functions which simplify writing tests for
      "@code{XML::Compile} can be used to translate a Perl data-structure into
 XML or XML into a Perl data-structure, both directions under rigid control by
 a schema.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-cache
   (package
@@ -655,7 +655,7 @@ a schema.")
     (synopsis "Cache compiled XML translators")
     (description
      "This package provides methods to cache compiled XML translators.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-soap
   (package
@@ -683,7 +683,7 @@ a schema.")
 implementation is @url{SOAP1.1,
 http://www.w3.org/TR/2000/NOTE-SOAP-20000508/}, which is still most often
 used.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-wsdl11
   (package
@@ -709,7 +709,7 @@ used.")
 messages to be send and received over SOAP connections.  This involves
 encoding of the message to be send into XML, sending the message to the
 server, collect the answer, and finally decoding the XML to Perl.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-feed
   (package
@@ -748,7 +748,7 @@ server, collect the answer, and finally decoding the XML to Perl.")
 Atom feeds.  It also implements feed auto-discovery for finding feeds, given a URI.
 @code{XML::Feed} supports the following syndication feed formats:
 RSS 0.91, RSS 1.0, RSS 2.0, Atom")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-xpath
   (package
@@ -772,7 +772,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
      "This module aims to comply exactly to the @url{XPath specification,
 https://www.w3.org/TR/xpath} and yet allow extensions to be added in
 the form of functions.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public pugixml
   (package

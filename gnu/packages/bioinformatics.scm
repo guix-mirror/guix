@@ -721,7 +721,7 @@ objects are made from the Sequence objects, Sequence objects have access to
 Annotation and SeqFeature objects and databases, Blast objects can be
 converted to Alignment objects, and so on.  This means that the objects
 provide a coordinated and extensible framework to do computational biology.")
-      (license (package-license perl)))))
+      (license license:perl-license))))
 
 (define-public python-biopython
   (package

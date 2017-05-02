@@ -32,7 +32,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
-  #:use-module ((guix licenses) #:select (non-copyleft)))
+  #:use-module ((guix licenses) #:select (non-copyleft perl-license)))
 
 (define-public gd
   (package
@@ -139,7 +139,7 @@ most common applications of GD involve website development.")
     (description "GD.pm is an autoloadable interface module for libgd, a
 popular library for creating and manipulating PNG files.  With this library
 you can create PNG images on the fly or modify existing files.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-gd-securityimage
   (package
@@ -166,4 +166,4 @@ security (captcha) images.  The final output is the actual graphic data, the
 mime type of the graphic, and the created random string.  The module also has
 some \"styles\" that are used to create the background (or foreground) of the
 image.")
-    (license (package-license perl))))
+    (license perl-license)))

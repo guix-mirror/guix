@@ -790,7 +790,7 @@ extremely small.")
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
     (home-page "http://search.cpan.org/dist/DBI")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class
   (package
@@ -844,7 +844,7 @@ still providing access to as many of the capabilities of the database as
 possible, including retrieving related records from multiple tables in a
 single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 \"ORDER BY\" and \"HAVING\" support.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-cursor-cached
   (package
@@ -869,7 +869,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
 built-in caching support.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-introspectablem2m
   (package
@@ -894,7 +894,7 @@ relationships are actually just a collection of convenience methods installed
 to bridge two relationships.  This DBIx::Class component can be used to store
 all relevant information about these non-relationships so they can later be
 introspected and examined.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-schema-loader
   (package
@@ -949,7 +949,7 @@ introspected and examined.")
     (description "DBIx::Class::Schema::Loader automates the definition of a
 DBIx::Class::Schema by scanning database table definitions and setting up the
 columns, primary keys, unique constraints and relationships.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-pg
   (package
@@ -973,7 +973,7 @@ columns, primary keys, unique constraints and relationships.")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-mysql
   (package
@@ -997,7 +997,7 @@ columns, primary keys, unique constraints and relationships.")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-sqlite
   (package
@@ -1019,7 +1019,7 @@ columns, primary keys, unique constraints and relationships.")
 the entire thing in the distribution.  So in order to get a fast transaction
 capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
-    (license (package-license perl))
+    (license license:perl-license)
     (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
 
 (define-public perl-sql-abstract
@@ -1052,7 +1052,7 @@ been modified to make the SQL easier to generate from Perl data structures.
 The underlying idea is for this module to do what you mean, based on the data
 structures you provide it, so that you don't have to modify your code every
 time your data changes.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-sql-splitstatement
   (package
@@ -1078,7 +1078,7 @@ time your data changes.")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
 non-standard extensions, into the atomic statements it is composed of.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-sql-tokenizer
   (package
@@ -1098,7 +1098,7 @@ non-standard extensions, into the atomic statements it is composed of.")
     (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
 claim to be a parser or query verifier.  It just creates sane tokens from a
 valid SQL query.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public unixodbc
   (package
@@ -1301,7 +1301,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
     "Perl5 access to Berkeley DB version 1.x")
   (description
     "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public lmdb
   (package

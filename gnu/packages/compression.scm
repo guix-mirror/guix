@@ -611,7 +611,7 @@ decompression of some loosely related file formats used by Microsoft.")
     (synopsis "Low-level interface to bzip2 compression library")
     (description "This module provides a Perl interface to the bzip2
 compression library.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-compress-raw-zlib
   (package
@@ -646,7 +646,7 @@ GZIP_OS_CODE = AUTO_DETECT"
     (synopsis "Low-level interface to zlib compression library")
     (description "This module provides a Perl interface to the zlib
 compression library.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-io-compress
   (package
@@ -668,7 +668,7 @@ compression library.")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
 writing of compressed data created with the zlib and bzip2 libraries.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public lz4
   (package

@@ -192,7 +192,7 @@ MTP, and much more.")
     (description "This package provides the @code{exiftool} command and the
 @code{Image::ExifTool} Perl library to manipulate EXIF tags of digital images
 and a wide variety of other metadata.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public libpano13
   (package

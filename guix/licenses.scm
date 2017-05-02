@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
             ncsa
             nmap
             openldap2.8 openssl
+            perl-license
             psfl public-domain
             qpl
             repoze
@@ -406,6 +408,12 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:OpenLDAPv2.8"
            "https://www.gnu.org/licenses/license-list#newOpenLDAP"))
               ;; lists OpenLDAPv2.7, which is virtually identical
+
+(define perl-license
+  ;; The license of Perl, GPLv1+ or Artistic (we ignore the latter here).
+  ;; We define this alias to avoid circular dependencies introduced by the use
+  ;; of the '(package-license perl)' idiom.
+  gpl1+)
 
 (define psfl
   (license "Python Software Foundation License"

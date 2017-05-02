@@ -634,7 +634,7 @@ web pages on SSL servers (for symmetry, the same API is offered for accessing
 http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
-    (license (package-license perl))
+    (license license:perl-license)
     (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
 
 (define-public perl-crypt-openssl-rsa
@@ -663,7 +663,7 @@ servers or clients for more complicated applications.")
     "RSA encoding and decoding, using the openSSL libraries")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
 OpenSSL libraries).")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define perl-crypt-arguments
    `(#:phases (modify-phases %standard-phases
@@ -699,7 +699,7 @@ OpenSSL libraries).")
   (description "Crypt::OpenSSL::Bignum provides multiprecision integer
 arithmetic in Perl.")
   ;; At your option either gpl1+ or the Artistic License
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-crypt-openssl-random
  (package
@@ -724,7 +724,7 @@ arithmetic in Perl.")
     "OpenSSL/LibreSSL pseudo-random number generator access")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
 number generator")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public acme-client
   (package

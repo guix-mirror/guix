@@ -171,4 +171,4 @@ recreates the stored directory structure by default.")
     (description "The Archive::Zip module allows a Perl program to create,
 manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
-    (license (package-license perl))))
+    (license license:perl-license)))

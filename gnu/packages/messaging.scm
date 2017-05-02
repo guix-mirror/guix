@@ -1001,7 +1001,7 @@ for @uref{https://torproject.org,tor} router) and many more.")
     (synopsis "Perl implementation of PSYC protocol")
     (home-page "http://perlpsyc.psyc.eu/")
     (license (list license:gpl2
-                   (package-license perl)
+                   license:perl-license
                    ;; contrib/irssi-psyc.pl:
                    license:public-domain
                    ;; bin/psycplay states AGPL with no version:
