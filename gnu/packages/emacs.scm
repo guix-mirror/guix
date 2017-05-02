@@ -890,14 +890,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.2")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
+                "0dicgkl8l83n4cah5vk7c242abbwpyzlih451blgw37f3rijs480"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
