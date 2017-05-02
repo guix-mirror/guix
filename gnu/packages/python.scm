@@ -14106,3 +14106,37 @@ library for Python")
     (description "@code{python-flask-oidc} provides an OpenID Connect extension
 for Flask.")
     (license license:bsd-2)))
+
+(define-public python-mwclient
+  (package
+    (name "python-mwclient")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       ;; The PyPI version wouldn't contain tests.
+       (uri (string-append "https://github.com/mwclient/mwclient/archive/"
+                           "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-oauthlib"
+        ,python-requests-oauthlib)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-responses" ,python-responses)))
+    (home-page "https://github.com/btongminh/mwclient")
+    (synopsis "MediaWiki API client")
+    (description "This package provides a MediaWiki API client.")
+    (license license:expat)))
+
+(define-public python2-mwclient
+  (package-with-python2 python-mwclient))
