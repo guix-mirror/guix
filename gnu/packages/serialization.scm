@@ -92,7 +92,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -108,7 +108,7 @@ such as compact binary encodings, XML, or JSON.")
              (close-output-port p))))
        (sha256
         (base32
-         "0bpjfh9vz0n2k93mph3x15clmigkgs223xfn8h12ymrh5gsi5ica"))))
+         "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("googletest" ,googletest)
