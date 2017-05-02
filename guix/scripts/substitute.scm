@@ -980,6 +980,10 @@ default value."
                  (and number (max 20 (- number 1))))))
       80))
 
+(define (validate-uri uri)
+  (unless (string->uri uri)
+    (leave (_ "~a: invalid URI~%") uri)))
+
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
@@ -1000,6 +1004,9 @@ default value."
   ;; Say hello (see above.)
   (newline)
   (force-output (current-output-port))
+
+  ;; Sanity-check %CACHE-URLS so we can provide a meaningful error message.
+  (for-each validate-uri %cache-urls)
 
   ;; Attempt to install the client's locale, mostly so that messages are
   ;; suitably translated.
