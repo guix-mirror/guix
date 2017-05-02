@@ -1237,6 +1237,10 @@ be used internally by the daemon's build hook."
 (define-alias store-return state-return)
 (define-alias store-bind state-bind)
 
+;; Instantiate templates for %STORE-MONAD since it's syntactically different
+;; from %STATE-MONAD.
+(template-directory instantiations %store-monad)
+
 (define (preserve-documentation original proc)
   "Return PROC with documentation taken from ORIGINAL."
   (set-object-property! proc 'documentation
