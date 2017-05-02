@@ -379,7 +379,7 @@ check-local:
 
 endif !CAN_RUN_TESTS
 
-check-system: $(GOBJECTS)
+check-system: $(GOBJECTS) $(BOOTSTRAP_GUILE_TARBALLS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env			\
 	   $(GUILE) --no-auto-compile				\
 	   -e '(@@ (run-system-tests) run-system-tests)'	\

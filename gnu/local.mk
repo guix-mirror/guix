@@ -1087,12 +1087,14 @@ nodist_bootstrap_mips64el_linux_DATA =					\
 set-bootstrap-executable-permissions:
 	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}
 
-DISTCLEANFILES =				\
+BOOTSTRAP_GUILE_TARBALLS =			\
   $(nodist_bootstrap_x86_64_linux_DATA)		\
   $(nodist_bootstrap_i686_linux_DATA)		\
   $(nodist_bootstrap_armhf_linux_DATA)		\
-  $(nodist_bootstrap_aarch64_linux_DATA)		\
+  $(nodist_bootstrap_aarch64_linux_DATA)	\
   $(nodist_bootstrap_mips64el_linux_DATA)
+
+DISTCLEANFILES = $(BOOTSTRAP_GUILE_TARBALLS)
 
 # Method to download a file from an external source.
 DOWNLOAD_FILE =								\
