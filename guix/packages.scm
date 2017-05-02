@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
@@ -105,6 +105,7 @@
             package-cross-derivation
             package-output
             package-grafts
+            package/inherit
 
             transitive-input-references
 
@@ -788,6 +789,16 @@ package and returns its new name after rewrite."
       (new new)))
 
   (package-mapping rewrite (cut assq <> replacements)))
+
+(define-syntax-rule (package/inherit p overrides ...)
+  "Like (package (inherit P) OVERRIDES ...), except that the same
+transformation is done to the package replacement, if any.  P must be a bare
+identifier, and will be bound to either P or its replacement when evaluating
+OVERRIDES."
+  (let loop ((p p))
+    (package (inherit p)
+      overrides ...
+      (replacement (and=> (package-replacement p) loop)))))
 
 
 ;;;
