@@ -396,7 +396,21 @@ host name without trailing dot."
     ;;(set-log-level! 10)
     ;;(set-log-procedure! log)
 
-    (handshake session)
+    (catch 'gnutls-error
+      (lambda ()
+        (handshake session))
+      (lambda (key err proc . rest)
+        (cond ((eq? err error/warning-alert-received)
+               ;; Like Wget, do no stop upon non-fatal alerts such as
+               ;; 'alert-description/unrecognized-name'.
+               (format (current-error-port)
+                       "warning: TLS warning alert received: ~a~%"
+                       (alert-description->string (alert-get session)))
+               (handshake session))
+              (else
+               ;; XXX: We'd use 'gnutls_error_is_fatal' but (gnutls) doesn't
+               ;; provide a binding for this.
+               (apply throw key err proc rest)))))
 
     ;; Verify the server's certificate if needed.
     (when verify-certificate?
