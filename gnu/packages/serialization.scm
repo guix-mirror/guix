@@ -136,14 +136,15 @@ serialization.")
 (define-public libmpack
   (package
     (name "libmpack")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tarruda/libmpack/"
                                   "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "08kfdl55yf66xk57aqsbf8n45f2jsw2v7qwnaan08ciim77j3sv5"))))
+               (base32
+                "0ml922gv8y99lbldqb9ykpjndla0hlprdjyl79yskkhwv2ai7sac"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
