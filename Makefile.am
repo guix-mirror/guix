@@ -28,6 +28,10 @@ nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
 
+# Modules that are not compiled but are installed nonetheless, such as
+# build-side modules with unusual dependencies.
+MODULES_NOT_COMPILED =
+
 include gnu/local.mk
 
 MODULES =					\
@@ -222,8 +226,8 @@ EXAMPLES =					\
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
-nobase_dist_guilemodule_DATA =                  \
-  $(MODULES) $(AUX_FILES) $(EXAMPLES)            \
+nobase_dist_guilemodule_DATA =					\
+  $(MODULES) $(MODULES_NOT_COMPILED) $(AUX_FILES) $(EXAMPLES)	\
   $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = guix/config.scm
 nobase_nodist_guileobject_DATA = $(GOBJECTS)
@@ -400,7 +404,6 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
-  gnu/build/svg.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\

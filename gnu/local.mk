@@ -475,6 +475,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/ssh.scm				\
   %D%/tests/web.scm
 
+# Modules that do not need to be compiled.
+MODULES_NOT_COMPILED +=				\
+  %D%/build/svg.scm
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
 dist_patch_DATA =						\
