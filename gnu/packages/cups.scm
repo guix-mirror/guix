@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,9 +45,8 @@
 ;; Delay to avoid module circularity problems.
 (define ghostscript/cups
   (delay
-    (package (inherit ghostscript)
+    (package/inherit ghostscript
       (name "ghostscript-with-cups")
-      (replacement #f)
       (inputs `(("cups" ,cups-minimal)
                 ,@(package-inputs ghostscript))))))
 
