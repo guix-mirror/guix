@@ -137,14 +137,14 @@ optimising the environment for the application in use and the task performed.")
 (define-public dmenu
   (package
     (name "dmenu")
-    (version "4.6")
+    (version "4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1cwnvamqqlgczvd5dv5rsgqbhv8kp0ddjnhmavb3q732i8028yja"))))
+                "1fgph549i0yw62x02jhfc8qmqk2rnzcnm46bxq6jig1cvkw3amm7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
