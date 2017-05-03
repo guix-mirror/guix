@@ -3658,7 +3658,7 @@ Light is the successor of lightscript.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'build 'setenv
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -3673,10 +3673,14 @@ Light is the successor of lightscript.")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man")))))
-         (delete 'check)
+         (delete 'check)                ; no tests
+         (add-before 'install 'fix-installation
+           (lambda _
+             ;; Stop the Makefile from trying to create system directories.
+             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))))
          (replace 'install
            (lambda _
-             (system "make install-tlp install-man")))
+             (zero? (system* "make" "install-tlp" "install-man"))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
