@@ -167,7 +167,7 @@ highlighting.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script.
-    (home-page "https://pragmatique.noblogs.org/software/fish-guix/downloads/")
+    (home-page "https://pragmatique.xyz/software/fish-guix.html")
     (synopsis "Fish completions for Guix")
     (description
      "Fish-guix provides completions for Guix for users of the fish shell.")
