@@ -22,17 +22,17 @@
   #:export (guix-container))
 
 (define (show-help)
-  (display (_ "Usage: guix container ACTION ARGS...
+  (display (G_ "Usage: guix container ACTION ARGS...
 Build and manipulate Linux containers.\n"))
   (newline)
-  (display (_ "The valid values for ACTION are:\n"))
+  (display (G_ "The valid values for ACTION are:\n"))
   (newline)
-  (display (_ "\
+  (display (G_ "\
    exec            execute a command inside of an existing container\n"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -50,7 +50,7 @@ Build and manipulate Linux containers.\n"))
     (match args
       (()
        (format (current-error-port)
-               (_ "guix container: missing action~%")))
+               (G_ "guix container: missing action~%")))
       ((or ("-h") ("--help"))
        (show-help)
        (exit 0))
@@ -60,4 +60,4 @@ Build and manipulate Linux containers.\n"))
        (if (member action %actions)
            (apply (resolve-action action) args)
            (format (current-error-port)
-                   (_ "guix container: invalid action~%")))))))
+                   (G_ "guix container: invalid action~%")))))))

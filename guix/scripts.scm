@@ -50,7 +50,7 @@ reporting."
              operand-proc seeds))
     (lambda (key proc msg args . rest)
       ;; XXX: MSG is not i18n'd.
-      (leave (_ "invalid argument: ~a~%")
+      (leave (G_ "invalid argument: ~a~%")
              (apply format #f msg args)))))
 
 (define (environment-build-options)
@@ -76,7 +76,7 @@ parameter of 'args-fold'."
     ;; Actual parsing takes place here.
     (apply args-fold* args options
            (lambda (opt name arg . rest)
-             (leave (_ "~A: unrecognized option~%") name))
+             (leave (G_ "~A: unrecognized option~%") name))
            argument-handler
            seeds))
 

@@ -132,45 +132,45 @@ and an output string."
                 (package->bag package)))))
 
 (define (show-help)
-  (display (_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
+  (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
 Build an environment that includes the dependencies of PACKAGE and execute
 COMMAND or an interactive shell in that environment.\n"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  create environment for the package that EXPR
                          evaluates to"))
-  (display (_ "
+  (display (G_ "
   -l, --load=FILE        create environment for the package that the code within
                          FILE evaluates to"))
-  (display (_ "
+  (display (G_ "
       --ad-hoc           include all specified packages in the environment instead
                          of only their inputs"))
-  (display (_ "
+  (display (G_ "
       --pure             unset existing environment variables"))
-  (display (_ "
+  (display (G_ "
       --search-paths     display needed environment variable definitions"))
-  (display (_ "
+  (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
-  (display (_ "
+  (display (G_ "
   -C, --container        run command within an isolated container"))
-  (display (_ "
+  (display (G_ "
   -N, --network          allow containers to access the network"))
-  (display (_ "
+  (display (G_ "
       --share=SPEC       for containers, share writable host file system
                          according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --expose=SPEC      for containers, expose read-only host file system
                          according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --bootstrap        use bootstrap binaries to build the environment"))
   (newline)
   (show-build-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -501,16 +501,16 @@ Otherwise, return the derivation for the Bash package."
   "Check if containers can be created and exit with an informative error
 message if any test fails."
   (unless (user-namespace-supported?)
-    (report-error (_ "cannot create container: user namespaces unavailable\n"))
-    (leave (_ "is your kernel version < 3.10?\n")))
+    (report-error (G_ "cannot create container: user namespaces unavailable\n"))
+    (leave (G_ "is your kernel version < 3.10?\n")))
 
   (unless (unprivileged-user-namespace-supported?)
-    (report-error (_ "cannot create container: unprivileged user cannot create user namespaces\n"))
-    (leave (_ "please set /proc/sys/kernel/unprivileged_userns_clone to \"1\"\n")))
+    (report-error (G_ "cannot create container: unprivileged user cannot create user namespaces\n"))
+    (leave (G_ "please set /proc/sys/kernel/unprivileged_userns_clone to \"1\"\n")))
 
   (unless (setgroups-supported?)
-    (report-error (_ "cannot create container: /proc/self/setgroups does not exist\n"))
-    (leave (_ "is your kernel version < 3.19?\n"))))
+    (report-error (G_ "cannot create container: /proc/self/setgroups does not exist\n"))
+    (leave (G_ "is your kernel version < 3.19?\n"))))
 
 (define (register-gc-root target root)
   "Make ROOT an indirect root to TARGET.  This is procedure is idempotent."

@@ -38,12 +38,12 @@
                   (show-version-and-exit "guix edit")))))
 
 (define (show-help)
-  (display (_ "Usage: guix edit PACKAGE...
+  (display (G_ "Usage: guix edit PACKAGE...
 Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -59,7 +59,7 @@ Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
   (let ((absolute-file-name (search-path path file)))
     (unless absolute-file-name
       ;; Shouldn't happen unless somebody fiddled with the 'location' field.
-      (leave (_ "file '~a' not found in search path ~s~%")
+      (leave (G_ "file '~a' not found in search path ~s~%")
              file path))
     absolute-file-name))
 
@@ -78,7 +78,7 @@ line."
     ;; Return the list of package names.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 cons
                 '()))
 
@@ -87,7 +87,7 @@ line."
            (packages (map specification->package specs)))
       (for-each (lambda (package)
                   (unless (package-location package)
-                    (leave (_ "source location of package '~a' is unknown~%")
+                    (leave (G_ "source location of package '~a' is unknown~%")
                            (package-full-name package))))
                 packages)
 
@@ -100,5 +100,5 @@ line."
             (exit (system (string-join (cons (%editor) file-names))))))
         (lambda args
           (let ((errno (system-error-errno args)))
-            (leave (_ "failed to launch '~a': ~a~%")
+            (leave (G_ "failed to launch '~a': ~a~%")
                    (%editor) (strerror errno))))))))

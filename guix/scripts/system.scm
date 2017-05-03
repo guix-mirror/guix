@@ -130,7 +130,7 @@ BODY..., and restore them."
                              #:prefix target
                              #:state-directory state
                              #:references refs)
-        (leave (_ "failed to register '~a' under '~a'~%")
+        (leave (G_ "failed to register '~a' under '~a'~%")
                item target))
 
       (return #t))))
@@ -163,7 +163,7 @@ TARGET, and register them."
 
       (munless (false-if-exception (install-grub grub.cfg device target))
         (delete-file temp-gc-root)
-        (leave (_ "failed to install GRUB on device '~a'~%") device))
+        (leave (G_ "failed to install GRUB on device '~a'~%") device))
 
       ;; Register GRUB.CFG as a GC root so that its dependencies (background
       ;; image, font, etc.) are not reclaimed.
@@ -181,7 +181,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
     (with-monad %store-monad
       (if (string=? target "/")
           (begin
-            (warning (_ "initializing the current root file system~%"))
+            (warning (G_ "initializing the current root file system~%"))
             (return #t))
           (begin
             ;; Make sure the target store exists.
@@ -195,7 +195,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   ;; <http://lists.gnu.org/archive/html/guix-devel/2015-05/msg00452.html>.
   (if (zero? (geteuid))
       (chown target 0 0)
-      (warning (_ "not running as 'root', so \
+      (warning (G_ "not running as 'root', so \
 the ownership of '~a' may be incorrect!~%")
                target))
 
@@ -236,21 +236,21 @@ expression in %STORE-MONAD."
           (values (run-with-store store (begin mbody ...))
                   store)))
       (lambda (key proc format-string format-args errno . rest)
-        (warning (_ "while talking to shepherd: ~a~%")
+        (warning (G_ "while talking to shepherd: ~a~%")
                  (apply format #f format-string format-args))
         (values #f store)))))
 
 (define (report-shepherd-error error)
   "Report ERROR, a '&shepherd-error' error condition object."
   (cond ((service-not-found-error? error)
-         (report-error (_ "service '~a' could not be found~%")
+         (report-error (G_ "service '~a' could not be found~%")
                        (service-not-found-error-service error)))
         ((action-not-found-error? error)
-         (report-error (_ "service '~a' does not have an action '~a'~%")
+         (report-error (G_ "service '~a' does not have an action '~a'~%")
                        (action-not-found-error-service error)
                        (action-not-found-error-action error)))
         ((action-exception-error? error)
-         (report-error (_ "exception caught while executing '~a' \
+         (report-error (G_ "exception caught while executing '~a' \
 on service '~a':~%")
                        (action-exception-error-action error)
                        (action-exception-error-service error))
@@ -258,10 +258,10 @@ on service '~a':~%")
                           (action-exception-error-key error)
                           (action-exception-error-arguments error)))
         ((unknown-shepherd-error? error)
-         (report-error (_ "something went wrong: ~s~%")
+         (report-error (G_ "something went wrong: ~s~%")
                        (unknown-shepherd-error-sexp error)))
         ((shepherd-error? error)
-         (report-error (_ "shepherd error~%")))
+         (report-error (G_ "shepherd error~%")))
         ((not error)                              ;not an error
          #t)))
 
@@ -278,7 +278,7 @@ unload."
                    to-unload))))
     (#f
      (with-monad %store-monad
-       (warning (_ "failed to obtain list of shepherd services~%"))
+       (warning (G_ "failed to obtain list of shepherd services~%"))
        (return #f)))))
 
 (define (upgrade-shepherd-services os)
@@ -298,7 +298,7 @@ bring the system down."
    (call-with-service-upgrade-info new-services
      (lambda (to-load to-unload)
         (for-each (lambda (unload)
-                    (info (_ "unloading service '~a'...~%") unload)
+                    (info (G_ "unloading service '~a'...~%") unload)
                     (unload-service unload))
                   to-unload)
 
@@ -306,7 +306,7 @@ bring the system down."
           (munless (null? to-load)
             (let ((to-load-names  (map shepherd-service-canonical-name to-load))
                   (to-start       (filter shepherd-service-auto-start? to-load)))
-              (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
+              (info (G_ "loading new services:~{ ~a~}...~%") to-load-names)
               (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
                                                to-load)))
                 ;; Here we assume that FILES are exactly those that were computed
@@ -330,7 +330,7 @@ it atomically, and then run OS's activation script."
       (switch-symlinks generation system)
       (switch-symlinks profile generation)
 
-      (format #t (_ "activating system...~%"))
+      (format #t (G_ "activating system...~%"))
 
       ;; The activation script may change $PATH, among others, so protect
       ;; against that.
@@ -441,7 +441,7 @@ generation as its default entry.  STORE is an open connection to the store."
         (begin
           (reinstall-grub store number)
           (switch-to-generation* %system-profile number))
-        (leave (_ "cannot switch to system generation '~a'~%") spec))))
+        (leave (G_ "cannot switch to system generation '~a'~%") spec))))
 
 (define (reinstall-grub store number)
   "Re-install grub for existing system profile generation NUMBER.  STORE is an
@@ -475,7 +475,7 @@ open connection to the store."
       (switch-symlinks temp-gc-root grub.cfg-path)
       (unless (false-if-exception (install-grub-config grub.cfg-path "/"))
         (delete-file temp-gc-root)
-        (leave (_ "failed to re-install GRUB configuration file: '~a'~%")
+        (leave (G_ "failed to re-install GRUB configuration file: '~a'~%")
                grub.cfg-path))
       (rename-file temp-gc-root gc-root))))
 
@@ -542,12 +542,12 @@ list of services."
                             root))
            (kernel      (boot-parameters-kernel params)))
       (display-generation profile number)
-      (format #t (_ "  file name: ~a~%") generation)
-      (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
+      (format #t (G_ "  file name: ~a~%") generation)
+      (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
-      (format #t (_ "  label: ~a~%") label)
-      (format #t (_ "  root device: ~a~%") root-device)
-      (format #t (_ "  kernel: ~a~%") kernel))))
+      (format #t (G_ "  label: ~a~%") label)
+      (format #t (G_ "  root device: ~a~%") root-device)
+      (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching
@@ -565,7 +565,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                (leave-on-EPIPE
                 (for-each display-system-generation numbers)))))
         (else
-         (leave (_ "invalid syntax: ~a~%") pattern))))
+         (leave (G_ "invalid syntax: ~a~%") pattern))))
 
 
 ;;;
@@ -604,9 +604,9 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
     (string-append (config-directory) "/latest"))
 
   (unless (file-exists? latest)
-    (warning (_ "~a not found: 'guix pull' was never run~%") latest)
-    (warning (_ "Consider running 'guix pull' before 'reconfigure'.~%"))
-    (warning (_ "Failing to do that may downgrade your system!~%"))))
+    (warning (G_ "~a not found: 'guix pull' was never run~%") latest)
+    (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
+    (warning (G_ "Failing to do that may downgrade your system!~%"))))
 
 (define* (perform-action action os
                          #:key bootloader? dry-run? derivations-only?
@@ -681,7 +681,7 @@ output when building a system derivation, such as a disk image."
                                 device "/"))))
             ((init)
              (newline)
-             (format #t (_ "initializing operating system under '~a'...~%")
+             (format #t (G_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
                       #:grub? bootloader?
@@ -725,61 +725,61 @@ output when building a system derivation, such as a disk image."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]
+  (display (G_ "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]
 Build the operating system declared in FILE according to ACTION.
 Some ACTIONS support additional ARGS.\n"))
   (newline)
-  (display (_ "The valid values for ACTION are:\n"))
+  (display (G_ "The valid values for ACTION are:\n"))
   (newline)
-  (display (_ "\
+  (display (G_ "\
    reconfigure      switch to a new operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    switch-generation switch to an existing operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    list-generations list the system generations\n"))
-  (display (_ "\
+  (display (G_ "\
    build            build the operating system without installing anything\n"))
-  (display (_ "\
+  (display (G_ "\
    container        build a container that shares the host's store\n"))
-  (display (_ "\
+  (display (G_ "\
    vm               build a virtual machine image that shares the host's store\n"))
-  (display (_ "\
+  (display (G_ "\
    vm-image         build a freestanding virtual machine image\n"))
-  (display (_ "\
+  (display (G_ "\
    disk-image       build a disk image, suitable for a USB stick\n"))
-  (display (_ "\
+  (display (G_ "\
    init             initialize a root file system to run GNU\n"))
-  (display (_ "\
+  (display (G_ "\
    extension-graph  emit the service extension graph in Dot format\n"))
-  (display (_ "\
+  (display (G_ "\
    shepherd-graph   emit the graph of shepherd services in Dot format\n"))
 
   (show-build-options-help)
-  (display (_ "
+  (display (G_ "
   -d, --derivation       return the derivation of the given system"))
-  (display (_ "
+  (display (G_ "
       --on-error=STRATEGY
                          apply STRATEGY when an error occurs while reading FILE"))
-  (display (_ "
+  (display (G_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
-  (display (_ "
+  (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
-  (display (_ "
+  (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
-  (display (_ "
+  (display (G_ "
   -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
                          and 'build', make FILE a symlink to the result, and
                          register it as a garbage collector root"))
-  (display (_ "
+  (display (G_ "
       --expose=SPEC      for 'vm', expose host file system according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -862,7 +862,7 @@ resulting from command-line parsing."
          (os          (if file
                           (load* file %user-module
                                  #:on-error (assoc-ref opts 'on-error))
-                          (leave (_ "no configuration file specified~%"))))
+                          (leave (G_ "no configuration file specified~%"))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
@@ -912,21 +912,21 @@ argument list and OPTS is the option alist."
      (let ((pattern (match args
                       (() "")
                       ((pattern) pattern)
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
     ;; The following commands need to use the store, but they do not need an
     ;; operating system configuration file.
     ((switch-generation)
      (let ((pattern (match args
                       ((pattern) pattern)
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (with-store store
          (set-build-options-from-command-line store opts)
          (switch-to-system-generation store pattern))))
     ((roll-back)
      (let ((pattern (match args
                       (() "")
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (with-store store
          (set-build-options-from-command-line store opts)
          (roll-back-system store))))
@@ -945,7 +945,7 @@ argument list and OPTS is the option alist."
               extension-graph shepherd-graph list-generations roll-back
               switch-generation)
              (alist-cons 'action action result))
-            (else (leave (_ "~a: unknown action~%") action))))))
+            (else (leave (G_ "~a: unknown action~%") action))))))
 
   (define (match-pair car)
     ;; Return a procedure that matches a pair with CAR.
@@ -960,14 +960,14 @@ argument list and OPTS is the option alist."
            (count  (length args))
            (action (assoc-ref opts 'action)))
       (define (fail)
-        (leave (_ "wrong number of arguments for action '~a'~%")
+        (leave (G_ "wrong number of arguments for action '~a'~%")
                action))
 
       (unless action
         (format (current-error-port)
-                (_ "guix system: missing command name~%"))
+                (G_ "guix system: missing command name~%"))
         (format (current-error-port)
-                (_ "Try 'guix system --help' for more information.~%"))
+                (G_ "Try 'guix system --help' for more information.~%"))
         (exit 1))
 
       (case action

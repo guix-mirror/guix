@@ -522,7 +522,7 @@ This is for backward-compatibility of fields that used to be strings and are
 now file-like objects.."
   (match thing
     ((? string?)
-     (warning (_ "using a string for file '~a' is deprecated; \
+     (warning (G_ "using a string for file '~a' is deprecated; \
 use 'plain-file' instead~%")
               file-name)
      (plain-file file-name thing))
@@ -538,7 +538,7 @@ and are now file-like objects."
   (with-monad %store-monad
     (match thing
       ((? procedure?)
-       (warning (_ "using a monadic value for '~a' is deprecated; \
+       (warning (G_ "using a monadic value for '~a' is deprecated; \
 use 'plain-file' instead~%")
                 file-name)
        thing)
@@ -680,7 +680,7 @@ hardware-related operations as necessary when booting a Linux container."
     (#f
      (raise (condition
              (&message
-              (message (format #f (_ "~a: invalid locale name") name))))))
+              (message (format #f (G_ "~a: invalid locale name") name))))))
     (def def)))
 
 (define (operating-system-locale-directory os)
@@ -862,7 +862,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
          (_                                       ;the old format
           "/")))))
     (x                                            ;unsupported format
-     (warning (_ "unrecognized boot parameters for '~a'~%")
+     (warning (G_ "unrecognized boot parameters for '~a'~%")
               system)
      #f)))
 

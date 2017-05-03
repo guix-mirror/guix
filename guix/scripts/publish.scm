@@ -64,35 +64,35 @@
             guix-publish))
 
 (define (show-help)
-  (format #t (_ "Usage: guix publish [OPTION]...
+  (format #t (G_ "Usage: guix publish [OPTION]...
 Publish ~a over HTTP.\n") %store-directory)
-  (display (_ "
+  (display (G_ "
   -p, --port=PORT        listen on PORT"))
-  (display (_ "
+  (display (G_ "
       --listen=HOST      listen on the network interface for HOST"))
-  (display (_ "
+  (display (G_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
-  (display (_ "
+  (display (G_ "
   -C, --compression[=LEVEL]
                          compress archives at LEVEL"))
-  (display (_ "
+  (display (G_ "
   -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
-  (display (_ "
+  (display (G_ "
       --workers=N        use N workers to bake items"))
-  (display (_ "
+  (display (G_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
-  (display (_ "
+  (display (G_ "
       --nar-path=PATH    use PATH as the prefix for nar URLs"))
-  (display (_ "
+  (display (G_ "
       --public-key=FILE  use FILE as the public key for signatures"))
-  (display (_ "
+  (display (G_ "
       --private-key=FILE use FILE as the private key for signatures"))
-  (display (_ "
+  (display (G_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -103,7 +103,7 @@ Publish ~a over HTTP.\n") %store-directory)
     (lambda ()
       (getaddrinfo host))
     (lambda (key error)
-      (leave (_ "lookup of host '~a' failed: ~a~%")
+      (leave (G_ "lookup of host '~a' failed: ~a~%")
              host (gai-strerror error)))))
 
 ;; Nar compression parameters.
@@ -148,7 +148,7 @@ if ITEM is already compressed."
                      (alist-cons 'address (addrinfo:addr info)
                                  result))
                     (()
-                     (leave (_ "lookup of host '~a' returned nothing")
+                     (leave (G_ "lookup of host '~a' returned nothing")
                             name)))))
         (option '(#\C "compression") #f #t
                 (lambda (opt name arg result)
@@ -161,7 +161,7 @@ if ITEM is already compressed."
                                      (compression 'gzip level)
                                      result)
                          (begin
-                           (warning (_ "zlib support is missing; \
+                           (warning (G_ "zlib support is missing; \
 compression disabled~%"))
                            result))))))
         (option '(#\c "cache") #t #f
@@ -175,7 +175,7 @@ compression disabled~%"))
                 (lambda (opt name arg result)
                   (let ((duration (string->duration arg)))
                     (unless duration
-                      (leave (_ "~a: invalid duration~%") arg))
+                      (leave (G_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
                                 result))))
         (option '("nar-path") #t #f
@@ -796,7 +796,7 @@ blocking."
         (setgid (passwd:gid user))
         (setuid (passwd:uid user))))
     (lambda (key proc message args . rest)
-      (leave (_ "user '~a' not found: ~a~%")
+      (leave (G_ "user '~a' not found: ~a~%")
              user (apply format #f message args)))))
 
 
@@ -808,9 +808,9 @@ blocking."
   (with-error-handling
     (let* ((opts    (args-fold* args %options
                                 (lambda (opt name arg result)
-                                  (leave (_ "~A: unrecognized option~%") name))
+                                  (leave (G_ "~A: unrecognized option~%") name))
                                 (lambda (arg result)
-                                  (leave (_ "~A: extraneous argument~%") arg))
+                                  (leave (G_ "~A: extraneous argument~%") arg))
                                 %default-options))
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))
@@ -837,12 +837,12 @@ blocking."
         (gather-user-privileges user))
 
       (when (zero? (getuid))
-        (warning (_ "server running as root; \
+        (warning (G_ "server running as root; \
 consider using the '--user' option!~%")))
 
       (parameterize ((%public-key public-key)
                      (%private-key private-key))
-        (format #t (_ "publishing ~a on ~a, port ~d~%")
+        (format #t (G_ "publishing ~a on ~a, port ~d~%")
                 %store-directory
                 (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
                 (sockaddr:port address))

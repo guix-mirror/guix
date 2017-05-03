@@ -132,7 +132,7 @@ extracted in the current directory, and will be deleted."
         (string-drop-right basename 8))
        (else
         (begin
-          (warning (_ "Unsupported archive format: \
+          (warning (G_ "Unsupported archive format: \
 cannot determine package dependencies"))
           #f)))))
 
@@ -215,7 +215,7 @@ cannot determine package dependencies"))
                     (delete-file req-file)
                     (rmdir dirname)))
                 (begin
-                  (warning (_ "'tar xf' failed with exit code ~a\n")
+                  (warning (G_ "'tar xf' failed with exit code ~a\n")
                            exit-code)
                   '())))
           '())))
@@ -279,7 +279,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
     (and package
          (guard (c ((missing-source-error? c)
                     (let ((package (missing-source-error-package c)))
-                      (leave (_ "no source release for pypi package ~a ~a~%")
+                      (leave (G_ "no source release for pypi package ~a ~a~%")
                              (assoc-ref* package "info" "name")
                              (assoc-ref* package "info" "version")))))
            (let ((name (assoc-ref* package "info" "name"))

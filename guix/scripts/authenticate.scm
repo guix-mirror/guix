@@ -56,7 +56,7 @@ both the hash and the actual signature."
                                             ".pub")
                            read-canonical-sexp)
                          (leave
-                          (_ "cannot find public key for secret key '~a'~%")
+                          (G_ "cannot find public key for secret key '~a'~%")
                           key-file)))
          (data       (read-hash-data port (key-type public-key)))
          (signature  (signature-sexp data secret-key public-key)))
@@ -76,11 +76,11 @@ to stdout upon success."
                 (let ((hash (hash-data->bytevector data)))
                   (display (bytevector->base16-string hash))
                   #t)                              ; success
-                (leave (_ "error: invalid signature: ~a~%")
+                (leave (G_ "error: invalid signature: ~a~%")
                        (canonical-sexp->string signature)))
-            (leave (_ "error: unauthorized public key: ~a~%")
+            (leave (G_ "error: unauthorized public key: ~a~%")
                    (canonical-sexp->string subject)))
-        (leave (_ "error: corrupt signature data: ~a~%")
+        (leave (G_ "error: corrupt signature data: ~a~%")
                (canonical-sexp->string signature)))))
 
 
@@ -118,12 +118,12 @@ to stdout upon success."
       (("rsautl" "-verify" "-inkey" _ "-pubin")
        (validate-signature (current-input-port)))
       (("--help")
-       (display (_ "Usage: guix authenticate OPTION...
+       (display (G_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
 be used internally by 'guix-daemon'.\n")))
       (("--version")
        (show-version-and-exit "guix authenticate"))
       (else
-       (leave (_ "wrong arguments"))))))
+       (leave (G_ "wrong arguments"))))))
 
 ;;; authenticate.scm ends here

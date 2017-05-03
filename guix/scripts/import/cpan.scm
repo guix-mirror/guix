@@ -38,11 +38,11 @@
   '())
 
 (define (show-help)
-  (display (_ "Usage: guix import cpan PACKAGE-NAME
+  (display (G_ "Usage: guix import cpan PACKAGE-NAME
 Import and convert the CPAN package for PACKAGE-NAME.\n"))
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -68,7 +68,7 @@ Import and convert the CPAN package for PACKAGE-NAME.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -83,10 +83,10 @@ Import and convert the CPAN package for PACKAGE-NAME.\n"))
       ((package-name)
        (let ((sexp (cpan->guix-package package-name)))
          (unless sexp
-           (leave (_ "failed to download meta-data for package '~a'~%")
+           (leave (G_ "failed to download meta-data for package '~a'~%")
                   package-name))
          sexp))
       (()
-       (leave (_ "too few arguments~%")))
+       (leave (G_ "too few arguments~%")))
       ((many ...)
-       (leave (_ "too many arguments~%"))))))
+       (leave (G_ "too many arguments~%"))))))

@@ -83,15 +83,15 @@ rather than \\n."
     (module-ref module proc)))
 
 (define (show-help)
-  (display (_ "Usage: guix import IMPORTER ARGS ...
+  (display (G_ "Usage: guix import IMPORTER ARGS ...
 Run IMPORTER with ARGS.\n"))
   (newline)
-  (display (_ "IMPORTER must be one of the importers listed below:\n"))
+  (display (G_ "IMPORTER must be one of the importers listed below:\n"))
   (newline)
   (format #t "~{   ~a~%~}" importers)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -100,7 +100,7 @@ Run IMPORTER with ARGS.\n"))
   (match args
     (()
      (format (current-error-port)
-             (_ "guix import: missing importer name~%")))
+             (G_ "guix import: missing importer name~%")))
     ((or ("-h") ("--help"))
      (show-help)
      (exit 0))
@@ -120,5 +120,5 @@ Run IMPORTER with ARGS.\n"))
                           (newline))
                         expressions))
              (x
-              (leave (_ "'~a' import failed~%") importer))))
-         (leave (_ "~a: invalid importer~%") importer)))))
+              (leave (G_ "'~a' import failed~%") importer))))
+         (leave (G_ "~a: invalid importer~%") importer)))))

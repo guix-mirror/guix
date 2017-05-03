@@ -39,41 +39,41 @@
   `((action . collect-garbage)))
 
 (define (show-help)
-  (display (_ "Usage: guix gc [OPTION]... PATHS...
+  (display (G_ "Usage: guix gc [OPTION]... PATHS...
 Invoke the garbage collector.\n"))
-  (display (_ "
+  (display (G_ "
   -C, --collect-garbage[=MIN]
                          collect at least MIN bytes of garbage"))
-  (display (_ "
+  (display (G_ "
   -F, --free-space=FREE  attempt to reach FREE available space in the store"))
-  (display (_ "
+  (display (G_ "
   -d, --delete           attempt to delete PATHS"))
-  (display (_ "
+  (display (G_ "
       --optimize         optimize the store by deduplicating identical files"))
-  (display (_ "
+  (display (G_ "
       --list-dead        list dead paths"))
-  (display (_ "
+  (display (G_ "
       --list-live        list live paths"))
   (newline)
-  (display (_ "
+  (display (G_ "
       --references       list the references of PATHS"))
-  (display (_ "
+  (display (G_ "
   -R, --requisites       list the requisites of PATHS"))
-  (display (_ "
+  (display (G_ "
       --referrers        list the referrers of PATHS"))
   (newline)
-  (display (_ "
+  (display (G_ "
       --verify[=OPTS]    verify the integrity of the store; OPTS is a
                          comma-separated combination of 'repair' and
                          'contents'"))
-  (display (_ "
+  (display (G_ "
       --list-failures    list cached build failures"))
-  (display (_ "
+  (display (G_ "
       --clear-failures   remove PATHS from the set of cached failures"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -97,7 +97,7 @@ Invoke the garbage collector.\n"))
                       (let ((amount (size->number arg)))
                         (if arg
                             (alist-cons 'min-freed amount result)
-                            (leave (_ "invalid amount of storage: ~a~%")
+                            (leave (G_ "invalid amount of storage: ~a~%")
                                    arg))))
                      (#f result)))))
         (option '(#\F "free-space") #t #f
@@ -161,7 +161,7 @@ Invoke the garbage collector.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -188,10 +188,10 @@ Invoke the garbage collector.\n"))
            (free  (* (file-system-block-size fs)
                      (file-system-blocks-available fs))))
       (if (> free space)
-          (info (_ "already ~h bytes available on ~a, nothing to do~%")
+          (info (G_ "already ~h bytes available on ~a, nothing to do~%")
                 free (%store-prefix))
           (let ((to-free (- space free)))
-            (info (_ "freeing ~h bytes~%") to-free)
+            (info (G_ "freeing ~h bytes~%") to-free)
             (collect-garbage store to-free)))))
 
   (with-error-handling
@@ -203,7 +203,7 @@ Invoke the garbage collector.\n"))
                               opts)))
       (define (assert-no-extra-arguments)
         (unless (null? paths)
-          (leave (_ "extraneous arguments: ~{~a ~}~%") paths)))
+          (leave (G_ "extraneous arguments: ~{~a ~}~%") paths)))
 
       (define (list-relatives relatives)
         (for-each (compose (lambda (path)
@@ -223,10 +223,10 @@ Invoke the garbage collector.\n"))
              (ensure-free-space store free-space))
             (min-freed
              (let-values (((paths freed) (collect-garbage store min-freed)))
-              (info (_ "freed ~h bytes~%") freed)))
+              (info (G_ "freed ~h bytes~%") freed)))
             (else
              (let-values (((paths freed) (collect-garbage store)))
-              (info (_ "freed ~h bytes~%") freed))))))
+              (info (G_ "freed ~h bytes~%") freed))))))
         ((delete)
          (delete-paths store (map direct-store-path paths)))
         ((list-references)

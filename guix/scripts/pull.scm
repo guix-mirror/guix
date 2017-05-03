@@ -75,18 +75,18 @@
   `((tarball-url . ,%snapshot-url)))
 
 (define (show-help)
-  (display (_ "Usage: guix pull [OPTION]...
+  (display (G_ "Usage: guix pull [OPTION]...
 Download and deploy the latest version of Guix.\n"))
-  (display (_ "
+  (display (G_ "
       --verbose          produce verbose output"))
-  (display (_ "
+  (display (G_ "
       --url=URL          download the Guix tarball from URL"))
-  (display (_ "
+  (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -153,7 +153,7 @@ store file name."
     (mbegin %store-monad
       (what-to-build (list tar gzip))
       (built-derivations (list tar gzip))
-      (format #t (_ "unpacking '~a'...~%") tarball)
+      (format #t (G_ "unpacking '~a'...~%") tarball)
 
       (let ((source (temporary-directory)))
         (with-directory-excursion source
@@ -205,24 +205,24 @@ contained therein."
           (if (and (file-exists? latest)
                    (string=? (readlink latest) source-dir))
               (begin
-                (display (_ "Guix already up to date\n"))
+                (display (G_ "Guix already up to date\n"))
                 (return #t))
               (begin
                 (switch-symlinks latest source-dir)
                 (format #t
-                        (_ "updated ~a successfully deployed under `~a'~%")
+                        (G_ "updated ~a successfully deployed under `~a'~%")
                         %guix-package-name latest)
                 (return #t))))
-        (leave (_ "failed to update Guix, check the build log~%")))))
+        (leave (G_ "failed to update Guix, check the build log~%")))))
 
 (define (guix-pull . args)
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
-                  (leave (_ "~A: unexpected argument~%") arg))
+                  (leave (G_ "~A: unexpected argument~%") arg))
                 %default-options))
 
   (define (use-le-certs? url)
@@ -245,7 +245,7 @@ contained therein."
                      (fetch-tarball store url)))
                  (fetch-tarball store url))))
         (unless tarball
-          (leave (_ "failed to download up-to-date source, exiting\n")))
+          (leave (G_ "failed to download up-to-date source, exiting\n")))
         (parameterize ((%guile-for-build
                         (package-derivation store
                                             (if (assoc-ref opts 'bootstrap?)

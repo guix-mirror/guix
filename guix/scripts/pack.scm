@@ -71,7 +71,7 @@ found."
               (($ <compressor> name*)
                (string=? name* name)))
             %compressors)
-      (leave (_ "~a: compressor not found~%") name)))
+      (leave (G_ "~a: compressor not found~%") name)))
 
 (define* (self-contained-tarball name profile
                                  #:key target
@@ -307,7 +307,7 @@ the image."
                                     `((,source -> ,target) ,@symlinks)
                                     (alist-delete 'symlinks result eq?))))
                      (x
-                      (leave (_ "~a: invalid symlink specification~%")
+                      (leave (G_ "~a: invalid symlink specification~%")
                              arg)))))
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
@@ -317,30 +317,30 @@ the image."
                  %standard-build-options)))
 
 (define (show-help)
-  (display (_ "Usage: guix pack [OPTION]... PACKAGE...
+  (display (G_ "Usage: guix pack [OPTION]... PACKAGE...
 Create a bundle of PACKAGE.\n"))
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
-  (display (_ "
+  (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
-  (display (_ "
+  (display (G_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
-  (display (_ "
+  (display (G_ "
   -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -379,7 +379,7 @@ Create a bundle of PACKAGE.\n"))
              (build-image (match (assq-ref %formats pack-format)
                             ((? procedure? proc) proc)
                             (#f
-                             (leave (_ "~a: unknown pack format")
+                             (leave (G_ "~a: unknown pack format")
                                     format))))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store

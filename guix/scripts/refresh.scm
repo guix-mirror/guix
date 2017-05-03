@@ -76,7 +76,7 @@
                      (alist-cons 'select (string->symbol arg)
                                  result))
                     (x
-                     (leave (_ "~a: invalid selection; expected `core' or `non-core'~%")
+                     (leave (G_ "~a: invalid selection; expected `core' or `non-core'~%")
                             arg)))))
         (option '(#\t "type") #t #f
                 (lambda (opt name arg result)
@@ -107,7 +107,7 @@
                      (alist-cons 'key-download (string->symbol arg)
                                  result))
                     (x
-                     (leave (_ "unsupported policy: ~a~%")
+                     (leave (G_ "unsupported policy: ~a~%")
                             arg)))))
 
         (option '(#\h "help") #f #f
@@ -119,41 +119,41 @@
                   (show-version-and-exit "guix refresh")))))
 
 (define (show-help)
-  (display (_ "Usage: guix refresh [OPTION]... [PACKAGE]...
+  (display (G_ "Usage: guix refresh [OPTION]... [PACKAGE]...
 Update package definitions to match the latest upstream version.
 
 When PACKAGE... is given, update only the specified packages.  Otherwise
 update all the packages of the distribution, or the subset thereof
 specified with `--select'.\n"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
-  (display (_ "
+  (display (G_ "
   -u, --update           update source files in place"))
-  (display (_ "
+  (display (G_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
-  (display (_ "
+  (display (G_ "
   -t, --type=UPDATER,... restrict to updates from the specified updaters
                          (e.g., 'gnu')"))
-  (display (_ "
+  (display (G_ "
   -L, --list-updaters    list available updaters and exit"))
-  (display (_ "
+  (display (G_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
-  (display (_ "
+  (display (G_ "
       --key-server=HOST  use HOST as the OpenPGP key server"))
-  (display (_ "
+  (display (G_ "
       --gpg=COMMAND      use COMMAND as the GnuPG 2.x command"))
-  (display (_ "
+  (display (G_ "
       --key-download=POLICY
                          handle missing OpenPGP keys according to POLICY:
                          'always', 'never', and 'interactive', which is also
                          used when 'key-download' is not specified"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -218,11 +218,11 @@ unavailable optional dependencies such as Guile-JSON."
   (or (find (lambda (updater)
               (eq? name (upstream-updater-name updater)))
             %updaters)
-      (leave (_ "~a: no such updater~%") name)))
+      (leave (G_ "~a: no such updater~%") name)))
 
 (define (list-updaters-and-exit)
   "Display available updaters and exit."
-  (format #t (_ "Available updaters:~%"))
+  (format #t (G_ "Available updaters:~%"))
   (newline)
 
   (let* ((packages (fold-packages cons '()))
@@ -234,22 +234,22 @@ unavailable optional dependencies such as Guile-JSON."
                 ;; TRANSLATORS: The parenthetical expression here is rendered
                 ;; like "(42% coverage)" and denotes the fraction of packages
                 ;; covered by the given updater.
-                (format #t (_ "  - ~a: ~a (~2,1f% coverage)~%")
+                (format #t (G_ "  - ~a: ~a (~2,1f% coverage)~%")
                         (upstream-updater-name updater)
-                        (_ (upstream-updater-description updater))
+                        (G_ (upstream-updater-description updater))
                         (* 100. (/ matches total)))
                 (+ covered matches)))
             0
             %updaters))
 
     (newline)
-    (format #t (_ "~2,1f% of the packages are covered by these updaters.~%")
+    (format #t (G_ "~2,1f% of the packages are covered by these updaters.~%")
             (* 100. (/ covered total))))
   (exit 0))
 
 (define (warn-no-updater package)
   (format (current-error-port)
-          (_ "~a: warning: no updater for ~a~%")
+          (G_ "~a: warning: no updater for ~a~%")
           (location->string (package-location package))
           (package-name package)))
 
@@ -270,14 +270,14 @@ warn about packages that have no matching updater."
           (if (and=> tarball file-exists?)
               (begin
                 (format (current-error-port)
-                        (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                        (G_ "~a: ~a: updating from version ~a to version ~a...~%")
                         (location->string loc)
                         (package-name package)
                         (package-version package) version)
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
                   (update-package-source package version hash)))
-              (warning (_ "~a: version ~a could not be \
+              (warning (G_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
                        (package-name package) version))))
       (when warn?
@@ -293,7 +293,7 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
        (let ((loc (or (package-field-location package 'version)
                       (package-location package))))
          (format (current-error-port)
-                 (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                 (G_ "~a: ~a would be upgraded from ~a to ~a~%")
                  (location->string loc)
                  (package-name package) (package-version package)
                  (upstream-source-version source)))))
@@ -335,7 +335,7 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
 
         ((x)
          (format (current-output-port)
-                 (_ "A single dependent package: ~a~%")
+                 (G_ "A single dependent package: ~a~%")
                  (full-name x)))
         (lst
          (format (current-output-port)
@@ -358,7 +358,7 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))

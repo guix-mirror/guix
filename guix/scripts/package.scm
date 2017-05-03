@@ -104,7 +104,7 @@ indirectly, or PROFILE."
 
   (define (rtfm)
     (format (current-error-port)
-            (_ "Try \"info '(guix) Invoking guix package'\" for \
+            (G_ "Try \"info '(guix) Invoking guix package'\" for \
 more information.~%"))
     (exit 1))
 
@@ -126,21 +126,21 @@ more information.~%"))
           ;; parent directory is root-owned and we're running
           ;; unprivileged.
           (format (current-error-port)
-                  (_ "error: while creating directory `~a': ~a~%")
+                  (G_ "error: while creating directory `~a': ~a~%")
                   %profile-directory
                   (strerror (system-error-errno args)))
           (format (current-error-port)
-                  (_ "Please create the `~a' directory, with you as the owner.~%")
+                  (G_ "Please create the `~a' directory, with you as the owner.~%")
                   %profile-directory)
           (rtfm))))
 
     ;; Bail out if it's not owned by the user.
     (unless (or (not s) (= (stat:uid s) (getuid)))
       (format (current-error-port)
-              (_ "error: directory `~a' is not owned by you~%")
+              (G_ "error: directory `~a' is not owned by you~%")
               %profile-directory)
       (format (current-error-port)
-              (_ "Please change the owner of `~a' to user ~s.~%")
+              (G_ "Please change the owner of `~a' to user ~s.~%")
               %profile-directory (or (getenv "USER")
                                      (getenv "LOGNAME")
                                      (getuid)))
@@ -175,17 +175,17 @@ denote ranges as interpreted by 'matching-generations'."
            =>
            (lambda (numbers)
              (when (memv current numbers)
-               (warning (_ "not removing generation ~a, which is current~%")
+               (warning (G_ "not removing generation ~a, which is current~%")
                         current))
 
              ;; Make sure we don't inadvertently remove the current
              ;; generation.
              (let ((numbers (delv current numbers)))
                (when (null-list? numbers)
-                 (leave (_ "no matching generation~%")))
+                 (leave (G_ "no matching generation~%")))
                (delete-generations store profile numbers))))
           (else
-           (leave (_ "invalid syntax: ~a~%") pattern)))))
+           (leave (G_ "invalid syntax: ~a~%") pattern)))))
 
 (define* (build-and-use-profile store profile manifest
                                 #:key
@@ -211,7 +211,7 @@ specified in MANIFEST, a manifest object."
      (dry-run? #t)
      ((and (file-exists? profile)
            (and=> (readlink* profile) (cut string=? prof <>)))
-      (format (current-error-port) (_ "nothing to be done~%")))
+      (format (current-error-port) (G_ "nothing to be done~%")))
      (else
       (let* ((number (generation-number profile))
 
@@ -269,7 +269,7 @@ synopsis or description matches all of REGEXPS."
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
   (define (supersede old new)
-    (info (_ "package '~a' has been superseded by '~a'~%")
+    (info (G_ "package '~a' has been superseded by '~a'~%")
           (manifest-entry-name old) (package-name new))
     (manifest-transaction-install-entry
      (package->manifest-entry new (manifest-entry-output old))
@@ -341,7 +341,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
          (settings (search-path-environment-variables entries profiles
                                                       #:kind kind)))
     (unless (null? settings)
-      (format #t (_ "The following environment variable definitions may be needed:~%"))
+      (format #t (G_ "The following environment variable definitions may be needed:~%"))
       (format #t "~{   ~a~%~}" settings))))
 
 
@@ -357,68 +357,68 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (substitutes? . #t)))
 
 (define (show-help)
-  (display (_ "Usage: guix package [OPTION]...
+  (display (G_ "Usage: guix package [OPTION]...
 Install, remove, or upgrade packages in a single transaction.\n"))
-  (display (_ "
+  (display (G_ "
   -i, --install PACKAGE ...
                          install PACKAGEs"))
-  (display (_ "
+  (display (G_ "
   -e, --install-from-expression=EXP
                          install the package EXP evaluates to"))
-  (display (_ "
+  (display (G_ "
   -f, --install-from-file=FILE
                          install the package that the code within FILE
                          evaluates to"))
-  (display (_ "
+  (display (G_ "
   -r, --remove PACKAGE ...
                          remove PACKAGEs"))
-  (display (_ "
+  (display (G_ "
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
-  (display (_ "
+  (display (G_ "
   -m, --manifest=FILE    create a new profile generation with the manifest
                          from FILE"))
-  (display (_ "
+  (display (G_ "
       --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"))
-  (display (_ "
+  (display (G_ "
       --roll-back        roll back to the previous generation"))
-  (display (_ "
+  (display (G_ "
       --search-paths[=KIND]
                          display needed environment variable definitions"))
-  (display (_ "
+  (display (G_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
-  (display (_ "
+  (display (G_ "
   -d, --delete-generations[=PATTERN]
                          delete generations matching PATTERN"))
-  (display (_ "
+  (display (G_ "
   -S, --switch-generation=PATTERN
                          switch to a generation matching PATTERN"))
-  (display (_ "
+  (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (newline)
-  (display (_ "
+  (display (G_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
-  (display (_ "
+  (display (G_ "
       --verbose          produce verbose output"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -s, --search=REGEXP    search in synopsis and description using REGEXP"))
-  (display (_ "
+  (display (G_ "
   -I, --list-installed[=REGEXP]
                          list installed packages matching REGEXP"))
-  (display (_ "
+  (display (G_ "
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
-  (display (_ "
+  (display (G_ "
       --show=PACKAGE     show details about PACKAGE"))
   (newline)
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -504,7 +504,7 @@ Install, remove, or upgrade packages in a single transaction.\n"))
                                  (#f
                                   'exact)
                                  (x
-                                  (leave (_ "~a: unsupported \
+                                  (leave (G_ "~a: unsupported \
 kind of search path~%")
                                          x)))))
                      (values (cons `(query search-paths ,kind)
@@ -697,7 +697,7 @@ processed, #f otherwise."
                      (list-generation display-profile-content (car numbers))
                      (diff-profiles profile numbers)))))
              (else
-              (leave (_ "invalid syntax: ~a~%")
+              (leave (G_ "invalid syntax: ~a~%")
                      pattern)))
        #t)
 
@@ -788,7 +788,7 @@ processed, #f otherwise."
     (let ((number (relative-generation-spec->number profile spec)))
       (if number
           (switch-to-generation* profile number)
-          (leave (_ "cannot switch to generation '~a'~%") spec)))))
+          (leave (G_ "cannot switch to generation '~a'~%") spec)))))
 
 (define* (delete-generations-action store profile pattern opts
                                     #:key dry-run?)
@@ -804,9 +804,9 @@ processed, #f otherwise."
          (bootstrap?   (assoc-ref opts 'bootstrap?))
          (substitutes? (assoc-ref opts 'substitutes?)))
     (if dry-run?
-        (format #t (_ "would install new manifest from '~a' with ~d entries~%")
+        (format #t (G_ "would install new manifest from '~a' with ~d entries~%")
                 file (length (manifest-entries manifest)))
-        (format #t (_ "installing new manifest from '~a' with ~d entries~%")
+        (format #t (G_ "installing new manifest from '~a' with ~d entries~%")
                 file (length (manifest-entries manifest))))
     (build-and-use-profile store profile manifest
                            #:bootstrap? bootstrap?
@@ -877,7 +877,7 @@ processed, #f otherwise."
     ;; Process non-option argument ARG by calling back ARG-HANDLER.
     (if arg-handler
         (arg-handler arg result)
-        (leave (_ "~A: extraneous argument~%") arg)))
+        (leave (G_ "~A: extraneous argument~%") arg)))
 
   (let ((opts (parse-command-line args %options (list %default-options #f)
                                   #:argument-handler handle-argument)))

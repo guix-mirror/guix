@@ -56,9 +56,9 @@ number (or #f) corresponding to SPEC."
        ((? integer? port)
         (values user host port))
        (x
-        (leave (_ "~a: invalid TCP port number~%") port))))
+        (leave (G_ "~a: invalid TCP port number~%") port))))
     (x
-     (leave (_ "~a: invalid SSH specification~%") spec))))
+     (leave (G_ "~a: invalid SSH specification~%") spec))))
 
 (define (send-to-remote-host target opts)
   "Send ITEMS to TARGET.  ITEMS is a list of store items or package names; for ;
@@ -109,18 +109,18 @@ package names, build the underlying packages before sending them."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix copy [OPTION]... ITEMS...
+  (display (G_ "Usage: guix copy [OPTION]... ITEMS...
 Copy ITEMS to or from the specified host over SSH.\n"))
-  (display (_ "
+  (display (G_ "
       --to=HOST          send ITEMS to HOST"))
-  (display (_ "
+  (display (G_ "
       --from=HOST        receive ITEMS from HOST"))
   (newline)
   (show-build-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -165,4 +165,4 @@ Copy ITEMS to or from the specified host over SSH.\n"))
            (target   (assoc-ref opts 'destination)))
       (cond (target (send-to-remote-host target opts))
             (source (retrieve-from-remote-host source opts))
-            (else   (leave (_ "use '--to' or '--from'~%")))))))
+            (else   (leave (G_ "use '--to' or '--from'~%")))))))

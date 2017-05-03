@@ -111,7 +111,7 @@
   (and (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
               (cut string-ci=? <> "yes"))
        (begin
-         (warning (_ "authentication and authorization of substitutes \
+         (warning (G_ "authentication and authorization of substitutes \
 disabled!~%"))
          #t)))
 
@@ -186,7 +186,7 @@ provide."
        (values port (stat:size (stat port)))))
     ((http https)
      (guard (c ((http-get-error? c)
-                (leave (_ "download from '~a' failed: ~a, ~s~%")
+                (leave (G_ "download from '~a' failed: ~a, ~s~%")
                        (uri->string (http-get-error-uri c))
                        (http-get-error-code c)
                        (http-get-error-reason c))))
@@ -199,9 +199,9 @@ provide."
                            %fetch-timeout
                            0)
            (begin
-             (warning (_ "while fetching ~a: server is somewhat slow~%")
+             (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
-             (warning (_ "try `--no-substitutes' if the problem persists~%"))
+             (warning (G_ "try `--no-substitutes' if the problem persists~%"))
 
              ;; Before Guile v2.0.9-39-gfe51c7b, EINTR was reported to the user,
              ;; and thus PORT had to be closed and re-opened.  This is not the
@@ -219,7 +219,7 @@ provide."
              (http-fetch uri #:text? #f #:port port
                          #:verify-certificate? #f))))))
     (else
-     (leave (_ "unsupported substitute URI scheme: ~a~%")
+     (leave (G_ "unsupported substitute URI scheme: ~a~%")
             (uri->string uri)))))
 
 (define-record-type <cache-info>
@@ -254,12 +254,12 @@ failure, return #f and #f."
                       #:verify-certificate? #f
                       #:timeout %fetch-timeout)))
            (guard (c ((http-get-error? c)
-                      (warning (_ "while fetching '~a': ~a (~s)~%")
+                      (warning (G_ "while fetching '~a': ~a (~s)~%")
                                (uri->string (http-get-error-uri c))
                                (http-get-error-code c)
                                (http-get-error-reason c))
                       (close-connection port)
-                      (warning (_ "ignoring substitute server at '~s'~%") url)
+                      (warning (G_ "ignoring substitute server at '~s'~%") url)
                       (values #f #f)))
              (values (read-cache-info (http-fetch uri
                                                   #:verify-certificate? #f
@@ -309,11 +309,11 @@ Otherwise return #f."
     ((version host-name sig)
      (let ((maybe-number (string->number version)))
        (cond ((not (number? maybe-number))
-              (leave (_ "signature version must be a number: ~s~%")
+              (leave (G_ "signature version must be a number: ~s~%")
                      version))
              ;; Currently, there are no other versions.
              ((not (= 1 maybe-number))
-              (leave (_ "unsupported signature version: ~a~%")
+              (leave (G_ "unsupported signature version: ~a~%")
                      maybe-number))
              (else
               (let ((signature (utf8->string (base64-decode sig))))
@@ -321,11 +321,11 @@ Otherwise return #f."
                   (lambda ()
                     (string->canonical-sexp signature))
                   (lambda (key proc err)
-                    (leave (_ "signature is not a valid \
+                    (leave (G_ "signature is not a valid \
 s-expression: ~s~%")
                            signature))))))))
     (x
-     (leave (_ "invalid format of the signature field: ~a~%") x))))
+     (leave (G_ "invalid format of the signature field: ~a~%") x))))
 
 (define (narinfo-maker str cache-url)
   "Return a narinfo constructor for narinfos originating from CACHE-URL.  STR
@@ -360,13 +360,13 @@ NARINFO, doesn't match HASH, a bytevector containing the hash of NARINFO."
     (signature-case (signature hash acl)
       (valid-signature #t)
       (invalid-signature
-       (leave (_ "invalid signature for '~a'~%") uri))
+       (leave (G_ "invalid signature for '~a'~%") uri))
       (hash-mismatch
-       (leave (_ "hash mismatch for '~a'~%") uri))
+       (leave (G_ "hash mismatch for '~a'~%") uri))
       (unauthorized-key
-       (leave (_ "'~a' is signed with an unauthorized key~%") uri))
+       (leave (G_ "'~a' is signed with an unauthorized key~%") uri))
       (corrupt-signature
-       (leave (_ "signature on '~a' is corrupt~%") uri)))))
+       (leave (G_ "signature on '~a' is corrupt~%") uri)))))
 
 (define* (read-narinfo port #:optional url
                        #:key size)
@@ -404,17 +404,17 @@ or is signed by an unauthorized key."
     (if (not hash)
         (if %allow-unauthenticated-substitutes?
             narinfo
-            (leave (_ "substitute at '~a' lacks a signature~%")
+            (leave (G_ "substitute at '~a' lacks a signature~%")
                    (uri->string (narinfo-uri narinfo))))
         (let ((signature (narinfo-signature narinfo)))
           (unless %allow-unauthenticated-substitutes?
             (assert-valid-signature narinfo signature hash acl)
             (when verbose?
               (format (current-error-port)
-                      (_ "Found valid signature for ~a~%")
+                      (G_ "Found valid signature for ~a~%")
                       (narinfo-path narinfo))
               (format (current-error-port)
-                      (_ "From ~a~%")
+                      (G_ "From ~a~%")
                       (uri->string (narinfo-uri narinfo)))))
           narinfo))))
 
@@ -448,7 +448,7 @@ entry is stored in a sub-directory specific to CACHE-URL."
   ;; "/gnu/store/foo".  Gracefully handle that.
   (match (store-path-hash-part path)
     (#f
-     (leave (_ "'~a' does not name a store item~%") path))
+     (leave (G_ "'~a' does not name a store item~%") path))
     ((? string? hash-part)
      (string-append %narinfo-cache-directory "/"
                     (bytevector->base32-string (sha256 (string->utf8 cache-url)))
@@ -596,7 +596,7 @@ if file doesn't exist, and the narinfo otherwise."
         (display #\cr (current-error-port))
         (force-output (current-error-port))
         (format (current-error-port)
-                (_ "updating list of substitutes from '~a'... ~5,1f%")
+                (G_ "updating list of substitutes from '~a'... ~5,1f%")
                 url (* 100. (/ done (length paths))))
         (set! done (+ 1 done)))))
 
@@ -651,7 +651,7 @@ if file doesn't exist, and the narinfo otherwise."
                           paths)))
          (filter-map (cut narinfo-from-file <> url) files)))
       (else
-       (leave (_ "~s: unsupported server URI scheme~%")
+       (leave (G_ "~s: unsupported server URI scheme~%")
               (if uri (uri-scheme uri) url)))))
 
   (let-values (((cache-info port)
@@ -661,7 +661,7 @@ if file doesn't exist, and the narinfo otherwise."
                        (%store-prefix))
              (do-fetch (string->uri url) port)    ;reuse PORT
              (begin
-               (warning (_ "'~a' uses different store '~a'; ignoring it~%")
+               (warning (G_ "'~a' uses different store '~a'; ignoring it~%")
                         url (cache-info-store-directory cache-info))
                (close-connection port)
                #f)))))
@@ -781,12 +781,12 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
        (lambda () exp ...)
        (match-lambda*
          (('getaddrinfo-error error)
-          (leave (_ "host name lookup error: ~a~%")
+          (leave (G_ "host name lookup error: ~a~%")
                  (gai-strerror error)))
          (('gnutls-error error proc . rest)
           (let ((error->string (module-ref (resolve-interface '(gnutls))
                                            'error->string)))
-            (leave (_ "TLS error in procedure '~a': ~a~%")
+            (leave (G_ "TLS error in procedure '~a': ~a~%")
                    proc (error->string error))))
          (args
           (apply throw args)))))))
@@ -797,19 +797,19 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix substitute [OPTION]...
+  (display (G_ "Usage: guix substitute [OPTION]...
 Internal tool to substitute a pre-built binary to a local build.\n"))
-  (display (_ "
+  (display (G_ "
       --query            report on the availability of substitutes for the
                          store file names passed on the standard input"))
-  (display (_ "
+  (display (G_ "
       --substitute STORE-FILE DESTINATION
                          download STORE-FILE and store it as a Nar in file
                          DESTINATION"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -875,7 +875,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
             ;; TRANSLATORS: The second part of this message looks like
             ;; "(4.1MiB installed)"; it shows the size of the package once
             ;; installed.
-            (_ "Downloading ~a~:[~*~; (~a installed)~]...~%")
+            (G_ "Downloading ~a~:[~*~; (~a installed)~]...~%")
             (uri->string uri)
             ;; Use the Nar size as an estimate of the installed size.
             (narinfo-size narinfo)
@@ -932,7 +932,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
 
   (let ((acl (acl->public-keys (current-acl))))
     (when (or (null? acl) (singleton? acl))
-      (warning (_ "ACL for archive imports seems to be uninitialized, \
+      (warning (G_ "ACL for archive imports seems to be uninitialized, \
 substitutes may be unavailable\n")))))
 
 (define (daemon-options)
@@ -982,7 +982,7 @@ default value."
 
 (define (validate-uri uri)
   (unless (string->uri uri)
-    (leave (_ "~a: invalid URI~%") uri)))
+    (leave (G_ "~a: invalid URI~%") uri)))
 
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
@@ -1040,7 +1040,7 @@ default value."
        (("--help")
         (show-help))
        (opts
-        (leave (_ "~a: unrecognized options~%") opts))))))
+        (leave (G_ "~a: unrecognized options~%") opts))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)

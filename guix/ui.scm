@@ -55,7 +55,7 @@
   #:use-module (texinfo)
   #:use-module (texinfo plain-text)
   #:use-module (texinfo string-utils)
-  #:export (_
+  #:export (G_
             N_
             P_
             report-error
@@ -117,7 +117,7 @@
   ;; Text domain for package synopses and descriptions.
   "guix-packages")
 
-(define _ (cut gettext <> %gettext-domain))
+(define G_ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
 
 (define (P_ msgid)
@@ -140,7 +140,7 @@ messages."
       (syntax-case x ()
         ((name (underscore fmt) args (... ...))
          (and (string? (syntax->datum #'fmt))
-              (free-identifier=? #'underscore #'_))
+              (free-identifier=? #'underscore #'G_))
          (with-syntax ((fmt*   (augmented-format-string #'fmt))
                        (prefix (datum->syntax x prefix)))
            #'(format (guix-warning-port) (gettext fmt*)
@@ -238,7 +238,7 @@ messages."
            (case on-error
              ((debug)
               (newline)
-              (display (_ "entering debugger; type ',bt' for a backtrace\n"))
+              (display (G_ "entering debugger; type ',bt' for a backtrace\n"))
               (start-repl #:debug (make-debug (stack->vector stack) 0
                                               (error-string frame args)
                                               #f)))
@@ -254,19 +254,19 @@ ARGS is the list of arguments received by the 'throw' handler."
   (match args
     (('system-error . rest)
      (let ((err (system-error-errno args)))
-       (report-error (_ "failed to load '~a': ~a~%") file (strerror err))))
+       (report-error (G_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
-       (format (current-error-port) (_ "~a: error: ~a~%")
+       (format (current-error-port) (G_ "~a: error: ~a~%")
                (location->string loc) message)))
     (('srfi-34 obj)
      (if (message-condition? obj)
-         (report-error (_ "~a~%")
+         (report-error (G_ "~a~%")
                        (gettext (condition-message obj)
                                 %gettext-domain))
-         (report-error (_ "exception thrown: ~s~%") obj)))
+         (report-error (G_ "exception thrown: ~s~%") obj)))
     ((error args ...)
-     (report-error (_ "failed to load '~a':~%") file)
+     (report-error (G_ "failed to load '~a':~%") file)
      (apply display-error frame (current-error-port) args))))
 
 (define (warn-about-load-error file args)         ;FIXME: factorize with ↑
@@ -275,20 +275,20 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
   (match args
     (('system-error . rest)
      (let ((err (system-error-errno args)))
-       (warning (_ "failed to load '~a': ~a~%") file (strerror err))))
+       (warning (G_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
-       (format (current-error-port) (_ "~a: warning: ~a~%")
+       (format (current-error-port) (G_ "~a: warning: ~a~%")
                (location->string loc) message)))
     (('srfi-34 obj)
      (if (message-condition? obj)
-         (warning (_ "failed to load '~a': ~a~%")
+         (warning (G_ "failed to load '~a': ~a~%")
                   file
                   (gettext (condition-message obj) %gettext-domain))
-         (warning (_ "failed to load '~a': exception thrown: ~s~%")
+         (warning (G_ "failed to load '~a': exception thrown: ~s~%")
                   file obj)))
     ((error args ...)
-     (warning (_ "failed to load '~a':~%") file)
+     (warning (G_ "failed to load '~a':~%") file)
      (apply display-error #f (current-error-port) args))))
 
 (define (install-locale)
@@ -297,7 +297,7 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (warning (_ "failed to install locale: ~a~%")
+      (warning (G_ "failed to install locale: ~a~%")
                (strerror (system-error-errno args))))))
 
 (define (initialize-guix)
@@ -320,9 +320,9 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
           ;; TRANSLATORS: Translate "(C)" to the copyright symbol
           ;; (C-in-a-circle), if this symbol is available in the user's
           ;; locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
-          (_ "(C)")
-          (_ "the Guix authors\n"))
-  (display (_"\
+          (G_ "(C)")
+          (G_ "the Guix authors\n"))
+  (display (G_"\
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -334,11 +334,11 @@ There is NO WARRANTY, to the extent permitted by law.
   ;; package.  Please add another line saying "Report translation bugs to
   ;; ...\n" with the address for translation bugs (typically your translation
   ;; team's web or email address).
-  (format #t (_ "
+  (format #t (G_ "
 Report bugs to: ~a.") %guix-bug-report-address)
-  (format #t (_ "
+  (format #t (G_ "
 ~a home page: <~a>") %guix-package-name %guix-home-page-url)
-  (display (_ "
+  (display (G_ "
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
 
@@ -383,13 +383,13 @@ nicely."
     (lambda ()
       (apply make-regexp regexp flags))
     (lambda (key proc message . rest)
-      (leave (_ "'~a' is not a valid regular expression: ~a~%")
+      (leave (G_ "'~a' is not a valid regular expression: ~a~%")
              regexp message))))
 
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
   (or (string->number str)
-      (leave (_ "~a: invalid number~%") str)))
+      (leave (G_ "~a: invalid number~%") str)))
 
 (define (size->number str)
   "Convert STR, a storage measurement representation such as \"1024\" or
@@ -406,7 +406,7 @@ interpreted."
                      str))
          (num    (string->number numstr)))
     (unless num
-      (leave (_ "invalid number: ~a~%") numstr))
+      (leave (G_ "invalid number: ~a~%") numstr))
 
     ((compose inexact->exact round)
      (* num
@@ -429,7 +429,7 @@ interpreted."
           ("YB"  (expt 10 24))
           (""    1)
           (x
-           (leave (_ "unknown unit: ~a~%") unit)))))))
+           (leave (G_ "unknown unit: ~a~%") unit)))))))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
@@ -446,62 +446,62 @@ interpreted."
                     (file     (location-file location))
                     (line     (location-line location))
                     (column   (location-column location)))
-               (leave (_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
+               (leave (G_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
                       file line column
                       (package-full-name package) input)))
             ((package-cross-build-system-error? c)
              (let* ((package (package-error-package c))
                     (loc     (package-location package))
                     (system  (package-build-system package)))
-               (leave (_ "~a: ~a: build system `~a' does not support cross builds~%")
+               (leave (G_ "~a: ~a: build system `~a' does not support cross builds~%")
                       (location->string loc)
                       (package-full-name package)
                       (build-system-name system))))
             ((gexp-input-error? c)
              (let ((input (package-error-invalid-input c)))
-               (leave (_ "~s: invalid G-expression input~%")
+               (leave (G_ "~s: invalid G-expression input~%")
                       (gexp-error-invalid-input c))))
             ((profile-not-found-error? c)
-             (leave (_ "profile '~a' does not exist~%")
+             (leave (G_ "profile '~a' does not exist~%")
                     (profile-error-profile c)))
             ((missing-generation-error? c)
-             (leave (_ "generation ~a of profile '~a' does not exist~%")
+             (leave (G_ "generation ~a of profile '~a' does not exist~%")
                     (missing-generation-error-generation c)
                     (profile-error-profile c)))
             ((nar-error? c)
              (let ((file (nar-error-file c))
                    (port (nar-error-port c)))
                (if file
-                   (leave (_ "corrupt input while restoring '~a' from ~s~%")
+                   (leave (G_ "corrupt input while restoring '~a' from ~s~%")
                           file (or (port-filename* port) port))
-                   (leave (_ "corrupt input while restoring archive from ~s~%")
+                   (leave (G_ "corrupt input while restoring archive from ~s~%")
                           (or (port-filename* port) port)))))
             ((nix-connection-error? c)
-             (leave (_ "failed to connect to `~a': ~a~%")
+             (leave (G_ "failed to connect to `~a': ~a~%")
                     (nix-connection-error-file c)
                     (strerror (nix-connection-error-code c))))
             ((nix-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (_ "build failed: ~a~%")
+             (leave (G_ "build failed: ~a~%")
                     (nix-protocol-error-message c)))
             ((derivation-missing-output-error? c)
-             (leave (_ "reference to invalid output '~a' of derivation '~a'~%")
+             (leave (G_ "reference to invalid output '~a' of derivation '~a'~%")
                     (derivation-missing-output c)
                     (derivation-file-name (derivation-error-derivation c))))
             ((file-search-error? c)
-             (leave (_ "file '~a' could not be found in these \
+             (leave (G_ "file '~a' could not be found in these \
 directories:~{ ~a~}~%")
                     (file-search-error-file-name c)
                     (file-search-error-search-path c)))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
-             (leave (_ "~a~%")
+             (leave (G_ "~a~%")
                     (gettext (condition-message c) %gettext-domain))))
     ;; Catch EPIPE and the likes.
     (catch 'system-error
       thunk
       (lambda (key proc format-string format-args . rest)
-        (leave (_ "~a: ~a~%") proc
+        (leave (G_ "~a: ~a~%") proc
                (apply format #f format-string format-args))))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
@@ -536,22 +536,22 @@ similar."
                (lambda ()
                  (call-with-input-string str read))
                (lambda args
-                 (leave (_ "failed to read expression ~s: ~s~%")
+                 (leave (G_ "failed to read expression ~s: ~s~%")
                         str args)))))
     (catch #t
       (lambda ()
         (eval exp (force %guix-user-module)))
       (lambda args
-        (report-error (_ "failed to evaluate expression '~a':~%") exp)
+        (report-error (G_ "failed to evaluate expression '~a':~%") exp)
         (match args
           (('syntax-error proc message properties form . rest)
-           (report-error (_ "syntax error: ~a~%") message))
+           (report-error (G_ "syntax error: ~a~%") message))
           (('srfi-34 obj)
            (if (message-condition? obj)
-               (report-error (_ "~a~%")
+               (report-error (G_ "~a~%")
                              (gettext (condition-message obj)
                                       %gettext-domain))
-               (report-error (_ "exception thrown: ~s~%") obj)))
+               (report-error (G_ "exception thrown: ~s~%") obj)))
           ((error args ...)
            (apply display-error #f (current-error-port) args))
           (what? #f))
@@ -563,7 +563,7 @@ error."
   (match (read/eval str)
     ((? package? p) p)
     (x
-     (leave (_ "expression ~s does not evaluate to a package~%")
+     (leave (G_ "expression ~s does not evaluate to a package~%")
             str))))
 
 (define (show-derivation-outputs derivation)
@@ -771,7 +771,7 @@ replacement if PORT is not Unicode-capable."
 (define (location->string loc)
   "Return a human-friendly, GNU-standard representation of LOC."
   (match loc
-    (#f (_ "<unknown location>"))
+    (#f (G_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
 
@@ -790,7 +790,7 @@ exists.  Honor the XDG specs,
       (lambda args
         (let ((err (system-error-errno args)))
           ;; ERR is necessarily different from EEXIST.
-          (leave (_ "failed to create configuration directory `~a': ~a~%")
+          (leave (G_ "failed to create configuration directory `~a': ~a~%")
                  dir (strerror err)))))))
 
 (define* (fill-paragraph str width #:optional (column 0))
@@ -921,7 +921,7 @@ WIDTH columns."
              (dependencies->recutils (filter package? inputs)))))
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
-              (_ "unknown")))
+              (G_ "unknown")))
 
   ;; Note: Starting from version 1.6 or recutils, hyphens are not allowed in
   ;; field identifiers.
@@ -935,7 +935,7 @@ WIDTH columns."
             ((? license? license)
              (license-name license))
             (x
-             (_ "unknown"))))
+             (G_ "unknown"))))
   (format port "synopsis: ~a~%"
           (string-map (match-lambda
                        (#\newline #\space)
@@ -1093,7 +1093,7 @@ DURATION-RELATION with the current time."
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
   (unless (zero? number)
-    (let ((header (format #f (_ "Generation ~a\t~a") number
+    (let ((header (format #f (G_ "Generation ~a\t~a") number
                           (date->string
                            (time-utc->date
                             (generation-time profile number))
@@ -1103,7 +1103,7 @@ DURATION-RELATION with the current time."
           ;; TRANSLATORS: The word "current" here is an adjective for
           ;; "Generation", as in "current generation".  Use the appropriate
           ;; gender where applicable.
-          (format #t (_ "~a\t(current)~%") header)
+          (format #t (G_ "~a\t(current)~%") header)
           (format #t "~a~%" header)))))
 
 (define (display-profile-content-diff profile gen1 gen2)
@@ -1146,7 +1146,7 @@ way."
               (profile-manifest (generation-file-name profile number))))))
 
 (define (display-generation-change previous current)
-  (format #t (_ "switched from generation ~a to ~a~%") previous current))
+  (format #t (G_ "switched from generation ~a to ~a~%") previous current))
 
 (define (roll-back* store profile)
   "Like 'roll-back', but display what is happening."
@@ -1162,7 +1162,7 @@ way."
 
 (define (delete-generation* store profile generation)
   "Like 'delete-generation', but display what is going on."
-  (format #t (_ "deleting ~a~%")
+  (format #t (G_ "deleting ~a~%")
           (generation-file-name profile generation))
   (delete-generation store profile generation))
 
@@ -1193,7 +1193,7 @@ optionally contain a version number and an output name, as in these examples:
 
 (define (show-guix-usage)
   (format (current-error-port)
-          (_ "Try `guix --help' for more information.~%"))
+          (G_ "Try `guix --help' for more information.~%"))
   (exit 1))
 
 (define (command-files)
@@ -1221,10 +1221,10 @@ optionally contain a version number and an output name, as in these examples:
     (member command '("substitute" "authenticate" "offload"
                       "perform-download")))
 
-  (format #t (_ "Usage: guix COMMAND ARGS...
+  (format #t (G_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))
   (newline)
-  (format #t (_ "COMMAND must be one of the sub-commands listed below:\n"))
+  (format #t (G_ "COMMAND must be one of the sub-commands listed below:\n"))
   (newline)
   ;; TODO: Display a synopsis of each command.
   (format #t "~{   ~a~%~}" (sort (remove internal? (commands))
@@ -1244,7 +1244,7 @@ found."
         (resolve-interface `(guix scripts ,command)))
       (lambda -
         (format (current-error-port)
-                (_ "guix: ~a: command not found~%") command)
+                (G_ "guix: ~a: command not found~%") command)
         (show-guix-usage))))
 
   (let ((command-main (module-ref module
@@ -1263,7 +1263,7 @@ and signal handling has already been set up."
   (match args
     (()
      (format (current-error-port)
-             (_ "guix: missing command name~%"))
+             (G_ "guix: missing command name~%"))
      (show-guix-usage))
     ((or ("-h") ("--help"))
      (show-guix-help))
@@ -1271,7 +1271,7 @@ and signal handling has already been set up."
      (show-version-and-exit "guix"))
     (((? option? o) args ...)
      (format (current-error-port)
-             (_ "guix: unrecognized option '~a'~%") o)
+             (G_ "guix: unrecognized option '~a'~%") o)
      (show-guix-usage))
     (("help" command)
      (apply run-guix-command (string->symbol command)

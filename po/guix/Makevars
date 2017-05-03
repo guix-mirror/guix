@@ -10,7 +10,7 @@ top_builddir = ../..
 # we use 'n_' instead of the more usual 'N_' for no-ops.
 XGETTEXT_OPTIONS =				\
   --from-code=UTF-8				\
-  --keyword=_ --keyword=N_:1,2			\
+  --keyword=G_ --keyword=N_:1,2			\
   --keyword=message				\
   --keyword=description				\
   --keyword=n_

@@ -54,7 +54,7 @@ actual output is different from that when we're doing a 'bmCheck' or
                        (mirrors "mirrors")
                        (content-addressed-mirrors "content-addressed-mirrors"))
     (unless url
-      (leave (_ "~a: missing URL~%") (derivation-file-name drv)))
+      (leave (G_ "~a: missing URL~%") (derivation-file-name drv)))
 
     (let* ((output     (or output output*))
            (url        (call-with-input-string url read))
@@ -62,7 +62,7 @@ actual output is different from that when we're doing a 'bmCheck' or
            (algo       (derivation-output-hash-algo drv-output))
            (hash       (derivation-output-hash drv-output)))
       (unless (and algo hash)
-        (leave (_ "~a is not a fixed-output derivation~%")
+        (leave (G_ "~a is not a fixed-output derivation~%")
                (derivation-file-name drv)))
 
       ;; We're invoked by the daemon, which gives us write access to OUTPUT.
@@ -86,7 +86,7 @@ actual output is different from that when we're doing a 'bmCheck' or
 
 (define (assert-low-privileges)
   (when (zero? (getuid))
-    (leave (_ "refusing to run with elevated privileges (UID ~a)~%")
+    (leave (G_ "refusing to run with elevated privileges (UID ~a)~%")
            (getuid))))
 
 (define (guix-perform-download . args)
@@ -115,7 +115,7 @@ of GnuTLS over HTTPS, before we have built GnuTLS.  See
        (show-version-and-exit))
       (x
        (leave
-        (_ "fixed-output derivation and output file name expected~%"))))))
+        (G_ "fixed-output derivation and output file name expected~%"))))))
 
 ;; Local Variables:
 ;; eval: (put 'derivation-let 'scheme-indent-function 2)

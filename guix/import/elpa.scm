@@ -82,7 +82,7 @@ NAMES (strings)."
         ;; Use a relatively small TTL for the archive itself.
         (parameterize ((%http-cache-ttl (* 6 3600)))
           (call-with-downloaded-file url read))
-        (leave (_ "~A: currently not supported~%") repo))))
+        (leave (G_ "~A: currently not supported~%") repo))))
 
 (define* (call-with-downloaded-file url proc #:optional (error-thunk #f))
   "Fetch URL, store the content in a temporary file and call PROC with that
@@ -94,7 +94,7 @@ return its value or leave if it's false."
     (lambda (key . args)
       (if error-thunk
           (error-thunk)
-          (leave (_ "~A: download failed~%") url)))))
+          (leave (G_ "~A: download failed~%") url)))))
 
 (define (is-elpa-package? name elpa-pkg-spec)
   "Return true if the string NAME corresponds to the name of the package

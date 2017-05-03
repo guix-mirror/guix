@@ -166,7 +166,7 @@ and 'interactive' (default)."
 
           (define (receive?)
             (let ((answer
-                   (begin (format #t (_ "~a~a~%")
+                   (begin (format #t (G_ "~a~a~%")
                                   "Would you like to download this key "
                                   "and add it to your keyring?")
                           (read-line))))

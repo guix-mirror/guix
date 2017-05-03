@@ -89,7 +89,7 @@
   "Search the patch FILE-NAME.  Raise an error if not found."
   (or (search-path (%patch-path) file-name)
       (raise (condition
-              (&message (message (format #f (_ "~a: patch not found")
+              (&message (message (format #f (G_ "~a: patch not found")
                                          file-name)))))))
 
 (define-syntax-rule (search-patches file-name ...)
@@ -105,7 +105,7 @@ found."
       (raise (condition
               (&message
                (message
-                (format #f (_ "could not find bootstrap binary '~a' \
+                (format #f (G_ "could not find bootstrap binary '~a' \
 for system '~a'")
                         file-name system)))))))
 
@@ -157,7 +157,7 @@ returned list is sorted in alphabetical order."
                             result)
                           (const #f)                   ; skip
                           (lambda (path stat errno result)
-                            (warning (_ "cannot access `~a': ~a~%")
+                            (warning (G_ "cannot access `~a': ~a~%")
                                      path (strerror errno))
                             result)
                           '()
@@ -310,21 +310,21 @@ return its return value."
   (match (find-best-packages-by-name name version)
     ((pkg . pkg*)
      (unless (null? pkg*)
-       (warning (_ "ambiguous package specification `~a'~%") spec)
-       (warning (_ "choosing ~a@~a from ~a~%")
+       (warning (G_ "ambiguous package specification `~a'~%") spec)
+       (warning (G_ "choosing ~a@~a from ~a~%")
                 (package-name pkg) (package-version pkg)
                 (location->string (package-location pkg))))
      (match (package-superseded pkg)
        ((? package? new)
-        (info (_ "package '~a' has been superseded by '~a'~%")
+        (info (G_ "package '~a' has been superseded by '~a'~%")
               (package-name pkg) (package-name new))
         new)
        (#f
         pkg)))
     (x
      (if version
-         (leave (_ "~A: package not found for version ~a~%") name version)
-         (leave (_ "~A: unknown package~%") name)))))
+         (leave (G_ "~A: package not found for version ~a~%") name version)
+         (leave (G_ "~A: unknown package~%") name)))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
@@ -352,6 +352,6 @@ version; if SPEC does not specify an output, return OUTPUT."
       (package
        (if (member sub-drv (package-outputs package))
            (values package sub-drv)
-           (leave (_ "package `~a' lacks output `~a'~%")
+           (leave (G_ "package `~a' lacks output `~a'~%")
                   (package-full-name package)
                   sub-drv))))))

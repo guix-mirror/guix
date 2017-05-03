@@ -121,7 +121,7 @@ found.  Return #f if no build log was found."
                  0
                  paths))))
       (lambda args
-        (leave (_ "failed to create GC root `~a': ~a~%")
+        (leave (G_ "failed to create GC root `~a': ~a~%")
                root (strerror (system-error-errno args)))))))
 
 (define register-root*
@@ -203,7 +203,7 @@ could not be found."
             (proc (specification->package old)
                   (specification->package new)))
            (x
-            (leave (_ "invalid replacement specification: ~s~%") spec))))
+            (leave (G_ "invalid replacement specification: ~s~%") spec))))
        specs))
 
 (define (transform-package-inputs replacement-specs)
@@ -260,13 +260,13 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
                   (parser 'with-graft)))))
 
 (define (show-transformation-options-help)
-  (display (_ "
+  (display (G_ "
       --with-source=SOURCE
                          use SOURCE when building the corresponding package"))
-  (display (_ "
+  (display (G_ "
       --with-input=PACKAGE=REPLACEMENT
                          replace dependency PACKAGE by REPLACEMENT"))
-  (display (_ "
+  (display (G_ "
       --with-graft=PACKAGE=REPLACEMENT
                          graft REPLACEMENT on packages that refer to PACKAGE")))
 
@@ -291,7 +291,7 @@ derivation, etc.), applies the transformations specified by OPTS."
             (((name . transform) obj)
              (let ((new (transform store obj)))
                (when (eq? new obj)
-                 (warning (_ "transformation '~a' had no effect on ~a~%")
+                 (warning (G_ "transformation '~a' had no effect on ~a~%")
                           name
                           (if (package? obj)
                               (package-full-name obj)
@@ -309,37 +309,37 @@ derivation, etc.), applies the transformations specified by OPTS."
   "Display on the current output port help about the standard command-line
 options handled by 'set-build-options-from-command-line', and listed in
 '%standard-build-options'."
-  (display (_ "
+  (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
-  (display (_ "
+  (display (G_ "
   -K, --keep-failed      keep build tree of failed builds"))
-  (display (_ "
+  (display (G_ "
   -k, --keep-going       keep going when some of the derivations fail"))
-  (display (_ "
+  (display (G_ "
   -n, --dry-run          do not build the derivations"))
-  (display (_ "
+  (display (G_ "
       --fallback         fall back to building when the substituter fails"))
-  (display (_ "
+  (display (G_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
-  (display (_ "
+  (display (G_ "
       --substitute-urls=URLS
                          fetch substitute from URLS if they are authorized"))
-  (display (_ "
+  (display (G_ "
       --no-grafts        do not graft packages"))
-  (display (_ "
+  (display (G_ "
       --no-build-hook    do not attempt to offload builds via the build hook"))
-  (display (_ "
+  (display (G_ "
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
-  (display (_ "
+  (display (G_ "
       --timeout=SECONDS  mark the build as failed after SECONDS of activity"))
-  (display (_ "
+  (display (G_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
-  (display (_ "
+  (display (G_ "
       --rounds=N         build N times in a row to detect non-determinism"))
-  (display (_ "
+  (display (G_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
-  (display (_ "
+  (display (G_ "
   -M, --max-jobs=N       allow at most N build jobs")))
 
 (define (set-build-options-from-command-line store opts)
@@ -445,14 +445,14 @@ options handled by 'set-build-options-from-command-line', and listed in
                   (let ((c (false-if-exception (string->number arg))))
                     (if c
                         (apply values (alist-cons 'cores c result) rest)
-                        (leave (_ "not a number: '~a' option argument: ~a~%")
+                        (leave (G_ "not a number: '~a' option argument: ~a~%")
                                name arg)))))
         (option '(#\M "max-jobs") #t #f
                 (lambda (opt name arg result . rest)
                   (let ((c (false-if-exception (string->number arg))))
                     (if c
                         (apply values (alist-cons 'max-jobs c result) rest)
-                        (leave (_ "not a number: '~a' option argument: ~a~%")
+                        (leave (G_ "not a number: '~a' option argument: ~a~%")
                                name arg)))))))
 
 
@@ -471,43 +471,43 @@ options handled by 'set-build-options-from-command-line', and listed in
     (verbosity . 0)))
 
 (define (show-help)
-  (display (_ "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...
+  (display (G_ "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...
 Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
-  (display (_ "
+  (display (G_ "
   -f, --file=FILE        build the package or derivation that the code within
                          FILE evaluates to"))
-  (display (_ "
+  (display (G_ "
   -S, --source           build the packages' source derivations"))
-  (display (_ "
+  (display (G_ "
       --sources[=TYPE]   build source derivations; TYPE may optionally be one
                          of \"package\", \"all\" (default), or \"transitive\""))
-  (display (_ "
+  (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
-  (display (_ "
+  (display (G_ "
   -d, --derivations      return the derivation paths of the given packages"))
-  (display (_ "
+  (display (G_ "
       --check            rebuild items to check for non-determinism issues"))
-  (display (_ "
+  (display (G_ "
       --repair           repair the specified items"))
-  (display (_ "
+  (display (G_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
-  (display (_ "
+  (display (G_ "
   -q, --quiet            do not show the build log"))
-  (display (_ "
+  (display (G_ "
       --log-file         return the log file names for the given derivations"))
   (newline)
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -534,7 +534,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                      ("transitive"
                       (alist-cons 'source package-transitive-sources result))
                      (else
-                      (leave (_ "invalid argument: '~a' option argument: ~a, ~
+                      (leave (G_ "invalid argument: '~a' option argument: ~a, ~
 must be one of 'package', 'all', or 'transitive'~%")
                              name arg)))))
          (option '("check") #f #f
@@ -587,7 +587,7 @@ must be one of 'package', 'all', or 'transitive'~%")
 build---packages, gexps, derivations, and so on."
   (define (validate-type x)
     (unless (or (package? x) (derivation? x) (gexp? x) (procedure? x))
-      (leave (_ "~s: not something we can build~%") x)))
+      (leave (G_ "~s: not something we can build~%") x)))
 
   (define (ensure-list x)
     (let ((lst (match x
@@ -641,7 +641,7 @@ build."
                         (match (package-source p)
                           (#f
                            (format (current-error-port)
-                                   (_ "~a: warning: \
+                                   (G_ "~a: warning: \
 package '~a' has no source~%")
                                    (location->string (package-location p))
                                    (package-name p))
@@ -675,7 +675,7 @@ needed."
                  (log-url store file #:base-urls urls))))
     (if log
         (format #t "~a~%" log)
-        (leave (_ "no build log for '~a'~%") file))))
+        (leave (G_ "no build log for '~a'~%") file))))
 
 
 ;;;
