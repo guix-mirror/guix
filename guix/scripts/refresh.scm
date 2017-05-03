@@ -28,18 +28,10 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix discovery)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
-  #:use-module ((guix gnu-maintenance)
-                #:select (%gnu-updater
-                          %gnome-updater
-                          %kde-updater
-                          %xorg-updater
-                          %kernel.org-updater))
-  #:use-module (guix import elpa)
-  #:use-module (guix import cran)
-  #:use-module (guix import hackage)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -163,61 +155,27 @@ specified with `--select'.\n"))
 ;;; Updates.
 ;;;
 
-(define-syntax maybe-updater
-  ;; Helper macro for 'list-updaters'.
-  (syntax-rules (=>)
-    ((_ ((module => updater) rest ...) result)
-     (maybe-updater (rest ...)
-                    (let ((iface (false-if-exception
-                                  (resolve-interface 'module)))
-                          (tail  result))
-                      (if iface
-                          (cons (module-ref iface 'updater) tail)
-                          tail))))
-    ((_ (updater rest ...) result)
-     (maybe-updater (rest ...)
-                    (cons updater result)))
-    ((_ () result)
-     (reverse result))))
-
-(define-syntax-rule (list-updaters updaters ...)
-  "Expand to '(list UPDATERS ...)' but only the subset of UPDATERS that are
-either unconditional, or have their requirement met.
-
-A conditional updater has this form:
-
-  ((SOME MODULE) => UPDATER)
-
-meaning that UPDATER is added to the list if and only if (SOME MODULE) could
-be resolved at run time.
-
-This is a way to discard at macro expansion time updaters that depend on
-unavailable optional dependencies such as Guile-JSON."
-  (maybe-updater (updaters ...) '()))
+(define (importer-modules)
+  "Return the list of importer modules."
+  (cons (resolve-interface '(guix gnu-maintenance))
+        (all-modules (map (lambda (entry)
+                            `(,entry . "guix/import"))
+                          %load-path))))
 
 (define %updaters
-  ;; List of "updaters" used by default.  They are consulted in this order.
-  (list-updaters %gnu-updater
-                 %gnome-updater
-                 %kde-updater
-                 %xorg-updater
-                 %kernel.org-updater
-                 %elpa-updater
-                 %cran-updater
-                 %bioconductor-updater
-                 ((guix import stackage) => %stackage-updater)
-                 %hackage-updater
-                 ((guix import cpan) => %cpan-updater)
-                 ((guix import pypi) => %pypi-updater)
-                 ((guix import gem) => %gem-updater)
-                 ((guix import github) => %github-updater)
-                 ((guix import crate) => %crate-updater)))
+  ;; The list of publically-known updaters.
+  (delay (fold-module-public-variables (lambda (obj result)
+                                         (if (upstream-updater? obj)
+                                             (cons obj result)
+                                             result))
+                                       '()
+                                       (importer-modules))))
 
 (define (lookup-updater-by-name name)
   "Return the updater called NAME."
   (or (find (lambda (updater)
               (eq? name (upstream-updater-name updater)))
-            %updaters)
+            (force %updaters))
       (leave (G_ "~a: no such updater~%") name)))
 
 (define (list-updaters-and-exit)
@@ -240,7 +198,7 @@ unavailable optional dependencies such as Guile-JSON."
                         (* 100. (/ matches total)))
                 (+ covered matches)))
             0
-            %updaters))
+            (force %updaters)))
 
     (newline)
     (format #t (G_ "~2,1f% of the packages are covered by these updaters.~%")
@@ -372,7 +330,7 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                        opts)
       (()
        ;; Use the default updaters.
-       %updaters)
+       (force %updaters))
       (lists
        (concatenate lists))))
 
