@@ -6,6 +6,8 @@
 *.tar.xz
 *.tmp
 *~
+.#*
+\#*\#
 ,*
 /ABOUT-NLS
 /INSTALL
