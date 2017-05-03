@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.3")
+    (version "2.5.4")
     (source
      (origin
       (method url-fetch)
@@ -440,7 +440,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "0c4awq45cl757fv7f7f75i5i0ibc6v7ns13n7xvfak7chv2lrqql"))))
+        "1ykf6dqlbafafhbdfmcj19pjj1z6wmsq0rmyqga1i0xv5x95nyhh"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -458,7 +458,7 @@ required structures.")
            (search-path-specification
             (variable "SSL_CERT_FILE")
             (files '("etc/ssl/certs/ca-certificates.crt")))))
-    (home-page "http://www.libressl.org/")
+    (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
     (description "LibreSSL is a version of the TLS/crypto stack forked
 from OpenSSL in 2014, with the goals of modernizing the codebase, improving
