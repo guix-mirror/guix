@@ -523,6 +523,10 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-5 "gfortran" '("fortran")
               %generic-search-paths))
 
+(define-public gfortran-6
+  (custom-gcc gcc-6 "gfortran" '("fortran")
+              %generic-search-paths))
+
 (define-public gfortran
   ;; Note: Update this when GCC changes!  We cannot use
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
