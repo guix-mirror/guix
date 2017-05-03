@@ -72,7 +72,7 @@ as 'HOME' and 'USER' are left untouched."
 (define (create-environment profile paths pure?)
   "Set the environment variables specified by PATHS for PROFILE.  When PURE?
 is #t, unset the variables in the current environment.  Otherwise, augment
-existing enviroment variables with additional search paths."
+existing environment variables with additional search paths."
   (when pure? (purify-environment))
   (for-each (match-lambda
               ((($ <search-path-specification> variable _ separator) . value)
