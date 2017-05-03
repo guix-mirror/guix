@@ -1471,6 +1471,8 @@ is no support for parsing block and inline level HTML.")
                                            effective))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc/scheme-bytestructures"))
+                (sld-files (with-directory-excursion source
+                             (find-files "bytestructures/r7" "\\.exports.sld$")))
                 (scm-files (filter (lambda (path)
                                      (not (string-prefix? "bytestructures/r7" path)))
                                    (with-directory-excursion source
@@ -1502,7 +1504,7 @@ is no support for parsing block and inline level HTML.")
                                                  file))
                            (error (format #f "Failed to compile ~s to ~s!"
                                           file go-file)))))
-                     scm-files)
+                     (append sld-files scm-files))
 
            ;; Also copy over the README.
            (install-file "README.md" doc)
