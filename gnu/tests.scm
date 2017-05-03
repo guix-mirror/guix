@@ -27,7 +27,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
-  #:use-module ((gnu packages) #:select (scheme-modules))
+  #:use-module ((guix discovery) #:select (scheme-modules))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (ice-9 match)

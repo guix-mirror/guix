@@ -24,12 +24,11 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix discovery)
   #:use-module (guix memoization)
-  #:use-module (guix combinators)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)))
-  #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -48,7 +47,6 @@
             %package-module-path
 
             fold-packages
-            scheme-modules                    ;XXX: for lack of a better place
 
             find-packages-by-name
             find-best-packages-by-name
@@ -140,92 +138,17 @@ for system '~a'")
               directory))
         %load-path)))
 
-(define* (scheme-files directory)
-  "Return the list of Scheme files found under DIRECTORY, recursively.  The
-returned list is sorted in alphabetical order."
-
-  ;; Sort entries so that 'fold-packages' works in a deterministic fashion
-  ;; regardless of details of the underlying file system.
-  (sort (file-system-fold (const #t)                   ; enter?
-                          (lambda (path stat result)   ; leaf
-                            (if (string-suffix? ".scm" path)
-                                (cons path result)
-                                result))
-                          (lambda (path stat result)   ; down
-                            result)
-                          (lambda (path stat result)   ; up
-                            result)
-                          (const #f)                   ; skip
-                          (lambda (path stat errno result)
-                            (warning (G_ "cannot access `~a': ~a~%")
-                                     path (strerror errno))
-                            result)
-                          '()
-                          directory
-                          stat)
-        string<?))
-
-(define file-name->module-name
-  (let ((not-slash (char-set-complement (char-set #\/))))
-    (lambda (file)
-      "Return the module name (a list of symbols) corresponding to FILE."
-      (map string->symbol
-           (string-tokenize (string-drop-right file 4) not-slash)))))
-
-(define* (scheme-modules directory #:optional sub-directory)
-  "Return the list of Scheme modules available under DIRECTORY.
-Optionally, narrow the search to SUB-DIRECTORY."
-  (define prefix-len
-    (string-length directory))
-
-  (filter-map (lambda (file)
-                (let* ((file   (substring file prefix-len))
-                       (module (file-name->module-name file)))
-                  (catch #t
-                    (lambda ()
-                      (resolve-interface module))
-                    (lambda args
-                      ;; Report the error, but keep going.
-                      (warn-about-load-error module args)
-                      #f))))
-              (scheme-files (if sub-directory
-                                (string-append directory "/" sub-directory)
-                                directory))))
-
-(define* (all-package-modules #:optional (path (%package-module-path)))
-  "Return the list of package modules found in PATH, a list of directories to
-search."
-  (fold-right (lambda (spec result)
-                (match spec
-                  ((? string? directory)
-                   (append (scheme-modules directory) result))
-                  ((directory . sub-directory)
-                   (append (scheme-modules directory sub-directory)
-                           result))))
-              '()
-              path))
-
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
 the initial value of RESULT.  It is guaranteed to never traverse the
 same package twice."
-  (identity   ; discard second return value
-   (fold2 (lambda (module result seen)
-            (fold2 (lambda (var result seen)
-                     (if (and (package? var)
-                              (not (vhash-assq var seen))
-                              (not (hidden-package? var)))
-                         (values (proc var result)
-                                 (vhash-consq var #t seen))
-                         (values result seen)))
-                   result
-                   seen
-                   (module-map (lambda (sym var)
-                                 (false-if-exception (variable-ref var)))
-                               module)))
-          init
-          vlist-null
-          (all-package-modules))))
+  (fold-module-public-variables (lambda (object result)
+                                  (if (and (package? object)
+                                           (not (hidden-package? object)))
+                                      (proc object result)
+                                      result))
+                                init
+                                (all-modules (%package-module-path))))
 
 (define find-packages-by-name
   (let ((packages (delay

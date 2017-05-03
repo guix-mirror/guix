@@ -50,6 +50,7 @@ MODULES =					\
   guix/sets.scm					\
   guix/modules.scm				\
   guix/download.scm				\
+  guix/discovery.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/monads.scm				\
@@ -279,6 +280,7 @@ SCM_TESTS =					\
   tests/records.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\
+  tests/discovery.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
