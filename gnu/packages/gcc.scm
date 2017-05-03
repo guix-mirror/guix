@@ -399,6 +399,19 @@ Go.  It also includes runtime support libraries for these languages.")
                 "17xjz30jb65hcf714vn9gcxvrrji8j20xm7n33qg1ywhyzryfsph"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
+(define-public gcc-7
+  (package
+    (inherit gcc-6)
+    (version "7.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05xwps0ci7wgxh50askpa2r9p8518qxdgh6ad7pnyk7n6p13d0ca"))
+              (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
