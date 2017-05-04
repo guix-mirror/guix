@@ -510,10 +510,18 @@ guix-binary.%.tar.xz:
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-dist-hook: gen-ChangeLog gen-AUTHORS
+dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
+
+EXTRA_DIST += $(top_srcdir)/.version
+BUILT_SOURCES += $(top_srcdir)/.version
+$(top_srcdir)/.version:
+	echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
+
+gen-tarball-version:
+	echo $(VERSION) > "$(distdir)/.tarball-version"
 
 gen-ChangeLog:
 	$(AM_V_GEN)if test -d .git; then		\
@@ -562,9 +570,10 @@ hydra-jobs.scm: $(GOBJECTS)
 	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
 	$(AM_V_at)mv "$@.tmp" "$@"
 
-.PHONY: gen-ChangeLog gen-AUTHORS clean-go make-go
+.PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
+.PHONY: clean-go make-go
 
 ## -------------- ##
 ## Silent rules.  ##
