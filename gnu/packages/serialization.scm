@@ -223,8 +223,8 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 (lua-major+minor ,(version-major+minor (package-version lua-5.2))))
            (list "CC=gcc"
                  "USE_SYSTEM_LUA=yes"
-                 (string-append "LUA_VERSION=" lua-version)
-                 (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+                 (string-append "MPACK_LUA_VERSION=" lua-version)
+                 (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                  (string-append "PREFIX="
                                 (assoc-ref %outputs "out"))
                  (string-append "LUA_CMOD_INSTALLDIR="
