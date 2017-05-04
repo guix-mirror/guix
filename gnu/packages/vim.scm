@@ -515,7 +515,7 @@ and powerline symbols, etc.")
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.1.7")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -524,7 +524,7 @@ and powerline symbols, etc.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zjbpc4rhv5bcr353xqnbrc36zjvn7qvh8xf6s7n1bdi3788by6q"))))
+         "1db27zm6cldm1aw0570vii1bxc16a34x8lissl1h9rizsbwn7qkj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
