@@ -68,7 +68,7 @@
                         arch "-linux"
                         "/20131110/guile-2.0.9.tar.xz"))))
 
-(define-public guix-0.12.0
+(define-public guix-release
   (package
     (name "guix")
     (version "0.12.0")
@@ -236,7 +236,7 @@ the Nix package manager.")
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
   (let ((commit "25a49294caf2386e65fc1b12a2508324be0b1cc2"))
-    (package (inherit guix-0.12.0)
+    (package (inherit guix-release)
       (version (string-append "0.12.0-9." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
@@ -250,7 +250,7 @@ the Nix package manager.")
                   "0p4rh0629j89v4ka5dsp70a1xrfhg7sxjjq54p68vw7x5dkann4a"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.12.0)
+       (substitute-keyword-arguments (package-arguments guix-release)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
