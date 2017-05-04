@@ -5875,6 +5875,11 @@ The @code{non-core} subset refers to the remaining packages.  It is
 typically useful in cases where an update of the core packages would be
 inconvenient.
 
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Select all the packages from the manifest in @var{file}. This is useful to
+check if any packages of the user manifest can be updated.
+
 @item --type=@var{updater}
 @itemx -t @var{updater}
 Select only packages handled by @var{updater} (may be a comma-separated
