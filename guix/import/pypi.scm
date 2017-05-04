@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -322,15 +323,17 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
-  (guard (c ((missing-source-error? c) #f))
-    (let* ((pypi-name (guix-package->pypi-name package))
-           (metadata (pypi-fetch pypi-name))
-           (version (assoc-ref* metadata "info" "version"))
-           (url (assoc-ref (latest-source-release metadata) "url")))
-      (upstream-source
-       (package (package-name package))
-       (version version)
-       (urls (list url))))))
+  (let* ((pypi-name    (guix-package->pypi-name package))
+         (pypi-package (pypi-fetch pypi-name)))
+    (and pypi-package
+         (guard (c ((missing-source-error? c) #f))
+           (let* ((metadata pypi-package)
+                  (version (assoc-ref* metadata "info" "version"))
+                  (url (assoc-ref (latest-source-release metadata) "url")))
+             (upstream-source
+              (package (package-name package))
+              (version version)
+              (urls (list url))))))))
 
 (define %pypi-updater
   (upstream-updater
