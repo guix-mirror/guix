@@ -581,9 +581,7 @@ encoding conversion errors."
            (let* ((max-len (read-int p))
                   (data    (make-bytevector max-len))
                   (len     (get-bytevector-n! user-port data 0 max-len)))
-             (write-int len p)
-             (put-bytevector p data 0 len)
-             (write-padding len p)
+             (write-bytevector data p)
              #f))
           ((= k %stderr-next)
            ;; Log a string.  Build logs are usually UTF-8-encoded, but they
