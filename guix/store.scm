@@ -23,7 +23,8 @@
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:use-module (guix base16)
-  #:autoload   (guix base32) (bytevector->base32-string)
+  #:use-module (guix base32)
+  #:use-module (guix hash)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
@@ -133,6 +134,9 @@
             interned-file
 
             %store-prefix
+            store-path
+            output-path
+            fixed-output-path
             store-path?
             direct-store-path?
             derivation-path?
@@ -1346,6 +1350,57 @@ connection, and return the result."
 (define %store-prefix
   ;; Absolute path to the Nix store.
   (make-parameter %store-directory))
+
+(define (compressed-hash bv size)                 ; `compressHash'
+  "Given the hash stored in BV, return a compressed version thereof that fits
+in SIZE bytes."
+  (define new (make-bytevector size 0))
+  (define old-size (bytevector-length bv))
+  (let loop ((i 0))
+    (if (= i old-size)
+        new
+        (let* ((j (modulo i size))
+               (o (bytevector-u8-ref new j)))
+          (bytevector-u8-set! new j
+                              (logxor o (bytevector-u8-ref bv i)))
+          (loop (+ 1 i))))))
+
+(define (store-path type hash name)               ; makeStorePath
+  "Return the store path for NAME/HASH/TYPE."
+  (let* ((s (string-append type ":sha256:"
+                           (bytevector->base16-string hash) ":"
+                           (%store-prefix) ":" name))
+         (h (sha256 (string->utf8 s)))
+         (c (compressed-hash h 20)))
+    (string-append (%store-prefix) "/"
+                   (bytevector->nix-base32-string c) "-"
+                   name)))
+
+(define (output-path output hash name)            ; makeOutputPath
+  "Return an output path for OUTPUT (the name of the output as a string) of
+the derivation called NAME with hash HASH."
+  (store-path (string-append "output:" output) hash
+              (if (string=? output "out")
+                  name
+                  (string-append name "-" output))))
+
+(define* (fixed-output-path name hash
+                            #:key
+                            (output "out")
+                            (hash-algo 'sha256)
+                            (recursive? #t))
+  "Return an output path for the fixed output OUTPUT defined by HASH of type
+HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
+'add-to-store'."
+  (if (and recursive? (eq? hash-algo 'sha256))
+      (store-path "source" hash name)
+      (let ((tag (string-append "fixed:" output ":"
+                                (if recursive? "r:" "")
+                                (symbol->string hash-algo) ":"
+                                (bytevector->base16-string hash) ":")))
+        (store-path (string-append "output:" output)
+                    (sha256 (string->utf8 tag))
+                    name))))
 
 (define (store-path? path)
   "Return #t if PATH is a store path."
