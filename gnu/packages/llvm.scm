@@ -268,6 +268,8 @@ code analysis tools.")
        (method url-fetch)
        (uri (string-append "http://llvm.org/releases/"
                            version "/llvm-" version ".src.tar.xz"))
+       (patches
+        (search-patches "llvm-3.5-fix-clang-build-with-gcc5.patch"))
        (sha256
         (base32
          "0xf5q17kkxsrm2gsi93h4pwlv663kji73r2g4asb97klsmb626a4"))))))
