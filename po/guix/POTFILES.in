@@ -7,6 +7,7 @@ gnu/services/shepherd.scm
 gnu/system/shadow.scm
 guix/scripts.scm
 guix/scripts/build.scm
+guix/discovery.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
 guix/scripts/gc.scm
