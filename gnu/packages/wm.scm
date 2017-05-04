@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pramatique.xyz>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -675,3 +675,80 @@ all of them.  Currently supported window managers include:
 Keybinder works with GTK-based applications using the X Window System.")
     (home-page "https://github.com/engla/keybinder")
     (license license:gpl2+)))
+
+(define-public spectrwm
+  (package
+    (name "spectrwm")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (let ((version-with-underscores
+                   (string-join (string-split version #\.) "_")))
+              (string-append "https://github.com/conformal/spectrwm/archive/"
+                             "SPECTRWM_" version-with-underscores ".tar.gz")))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "065b7j8s0lxw3p58fyf3c1mr5203pdm0kww42v245rlx0f005kl2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (let ((pkg-config (lambda (flag)
+                                        (string-append
+                                         "$(shell pkg-config " flag " "
+                                         "xft fontconfig x11 libpng)"))))
+                      (list
+                       "CC=gcc"
+                       (string-append "PREFIX=" %output)
+                       (string-append "INCS=-I. " (pkg-config "--cflags"))
+                       (string-append "LIBS=" (pkg-config "--libs") " -lm")))
+       #:tests? #f ;No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'change-dir
+           (lambda _
+             (chdir "linux") #t))
+         (add-after 'change-dir 'patch-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("-g") ""))))
+         (add-after 'change-dir 'fix-freetype-include
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr/include/freetype2")
+                (string-append (assoc-ref %build-inputs "freetype")
+                               "/include/freetype2")))))
+         (delete 'configure))))                   ;no 'configure' exists
+    (inputs
+     `(("freetype" ,freetype)
+       ("fontconfig" ,fontconfig)
+       ("libx11" ,libx11)
+       ("libxcursor" ,libxcursor)
+       ("libxrandr" ,libxrandr)
+       ("libxtst" ,libxtst)
+       ("libxft" ,libxft)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (native-inputs
+     `(("libxt" ,libxt)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Minimalistic automatic tiling window manager")
+    (description
+     "Spectrwm is a small dynamic tiling and reparenting window manager for X11.
+It is inspired by Xmonad and dwm.  Its major features include:
+
+@itemize
+@item Navigation anywhere on all screens with either the keyboard or mouse
+@item Customizable status bar
+@item Restartable without losing state
+@item Quick launch menu
+@item Many screen layouts possible with a few simple key strokes
+@item Move/resize floating windows
+@item Extended Window Manager Hints (EWMH) support
+@item Configureable tiling
+@item Adjustable tile gap allows for a true one pixel border
+@item Customizable colors and border width
+@end itemize\n")
+    (home-page "https://github.com/conformal/spectrwm")
+    (license license:isc)))
