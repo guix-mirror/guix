@@ -38,6 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7489,7 +7490,7 @@ a hash value.")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "python-termcolor" version))
+       (uri (pypi-uri "termcolor" version))
        (sha256
         (base32
          "0fv1vq14rpqwgazxg4981904lfyp84mnammw7y046491cv76jv8x"))))
