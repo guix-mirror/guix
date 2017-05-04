@@ -165,6 +165,14 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public lua-libmpack
   (package (inherit libmpack)
     (name "lua-libmpack")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libmpack/libmpack-lua/"
+                                  "archive/" (package-version libmpack) ".tar.gz"))
+              (file-name (string-append name "-" (package-version libmpack) ".tar.gz"))
+              (sha256
+               (base32
+                "153zrrbyxhf71dgzjjhrk56rfwk3nisslpgcqyg44v8fnz1xpk6i"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: tests require "busted", which is not yet available in Guix.
@@ -174,26 +182,35 @@ that implements both the msgpack and msgpack-rpc specifications.")
        (let* ((lua-version ,(package-version lua))
               (lua-major+minor ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
+               "FETCH=echo"  ; don't fetch anything from the web
+               "UNTGZ=echo"  ; and don't try to unpack it
                "USE_SYSTEM_LUA=yes"
-               (string-append "LUA_VERSION=" lua-version)
-               (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+               (string-append "MPACK_LUA_VERSION=" lua-version)
+               (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                (string-append "PREFIX="
                               (assoc-ref %outputs "out"))
                (string-append "LUA_CMOD_INSTALLDIR="
                               (assoc-ref %outputs "out")
-                              "/lib/lua/" lua-major+minor)
-               ;; This is unnecessary as of upstream commit 02886c13ff8a2,
-               ;; which is not part of the current release.
-               "CFLAGS=-DLUA_C89_NUMBERS -fPIC"))
+                              "/lib/lua/" lua-major+minor)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "binding/lua") #t)))))
+         (add-after 'unpack 'unpack-mpack-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This is broken because mpack-src is not a file, but all
+             ;; prerequisites are added to the inputs of the gcc invocation.
+             (substitute* "Makefile"
+               (("\\$\\(MPACK\\): mpack-src") "$(MPACK): "))
+             (mkdir-p "mpack-src")
+             (zero? (system* "tar" "-C" "mpack-src"
+                             "--strip-components=1"
+                             "-xvf" (assoc-ref inputs "libmpack"))))))))
     (inputs
      `(("lua" ,lua)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libmpack" ,(package-source libmpack))))
+    (home-page "https://github.com/libmpack/libmpack-lua")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
 (define-public lua5.2-libmpack
