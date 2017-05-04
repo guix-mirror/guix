@@ -27,7 +27,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
-  #:use-module ((guix discovery) #:select (scheme-modules))
+  #:use-module (guix discovery)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (ice-9 match)
@@ -263,17 +263,12 @@ the system under test."
 (define (fold-system-tests proc seed)
   "Invoke PROC on each system test, passing it the test and the previous
 result."
-  (fold (lambda (module result)
-          (fold (lambda (thing result)
-                  (if (system-test? thing)
-                      (proc thing result)
-                      result))
-                result
-                (module-map (lambda (sym var)
-                              (false-if-exception (variable-ref var)))
-                            module)))
-        '()
-        (test-modules)))
+  (fold-module-public-variables (lambda (obj result)
+                                  (if (system-test? obj)
+                                      (cons obj result)
+                                      result))
+                                '()
+                                (test-modules)))
 
 (define (all-system-tests)
   "Return the list of system tests."
