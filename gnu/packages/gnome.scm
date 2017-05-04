@@ -3740,7 +3740,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.22.7")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3748,7 +3748,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1167x5s0kawkqngjnzml0a11ib18raxqc4p11kacivj4jv0pwnx1"))))
+                "1p499ncsrbpfjna9h5v1cafr7fv1zb4cmihz05pgr07bb625y991"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -3771,6 +3771,7 @@ work and the interface is well tested.")
        ("glib-networking" ,glib-networking)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("json-glib" ,json-glib)
        ("iso-codes" ,iso-codes)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
