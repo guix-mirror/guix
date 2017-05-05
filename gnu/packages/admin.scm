@@ -84,14 +84,14 @@
 (define-public aide
   (package
     (name "aide")
-    (version "0.15.1")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/aide/aide/"
                                   version "/aide-" version ".tar.gz"))
               (sha256
                (base32
-                "1vsrc0s62kv1i84skm6k6zy868gayjck268qwj38rpspc8c5qgih"))))
+                "0ibkv4z2gk14fn014kq13rp2ysiq6nn2cflv2q5i7zf466hm6758"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -100,6 +100,7 @@
      `(("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
        ("libmhash" ,libmhash)
+       ("pcre" ,pcre)
        ("zlib" ,zlib)))
     (synopsis "File and directory integrity checker")
     (description
