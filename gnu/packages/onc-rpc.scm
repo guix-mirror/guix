@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,7 +67,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 (define-public rpcbind
   (package
     (name "rpcbind")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
       (method url-fetch)
@@ -75,7 +76,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0yyjzv4161rqxrgjcijkrawnk55rb96ha0pav48s03l2klx855wq"))))
+        "0rjc867mdacag4yqvs827wqhkh27135rp9asj06ixhf71m9rljh7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
