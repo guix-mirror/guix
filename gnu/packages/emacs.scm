@@ -1406,7 +1406,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1414,7 +1414,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1327zp140c7acckk0ajl88cgwr0lk9j3mb67nsq2janxrkwmj6br"))))
+                "0s7s90rfba8ccbilbvmbcwn4qp4m0jv9y58xq8avm39cygmjgyxz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1453,7 +1453,7 @@ type, for example: packages, buffers, files, etc.")
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
        ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://github.com/alezost/guix.el")
+    (home-page "https://alezost.github.io/guix.el/")
     (synopsis "Emacs interface for GNU Guix")
     (description
      "Emacs-Guix provides a visual interface, tools and features for the GNU
