@@ -943,14 +943,14 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 (define-public jalv-select
   (package
     (name "jalv-select")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brummer10/jalv_select/"
                                   "archive/V" version ".tar.gz"))
               (sha256
                (base32
-                "01y93l5c1f8za04a0y4b3v0nhsm1lhj6rny9xpdgd7jz6sl6w581"))))
+                "0zraagwr681b5s3qifxf399c7q93jz23c8sr42gmff9zqnvxc75q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
