@@ -68,207 +68,197 @@
                         arch "-linux"
                         "/20131110/guile-2.0.9.tar.xz"))))
 
-(define-public guix-release
-  (package
-    (name "guix")
-    (version "0.12.0")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1jgy5mlygmhxdqhrp6vr8w83ndcm5mk64xfravr8l2d7hq8y40b2"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list
-                          "--localstatedir=/var"
-                          "--sysconfdir=/etc"
-                          (string-append "--with-bash-completion-dir="
-                                         (assoc-ref %outputs "out")
-                                         "/etc/bash_completion.d")
-                          (string-append "--with-libgcrypt-prefix="
-                                         (assoc-ref %build-inputs
-                                                    "libgcrypt")))
-       #:parallel-tests? #f           ;work around <http://bugs.gnu.org/21097>
+(define-public guix
+  ;; Latest version of Guix, which may or may not correspond to a release.
+  (let ((version "0.12.0")
+        (commit "25a49294caf2386e65fc1b12a2508324be0b1cc2")
+        (revision 9))
+    (package
+      (name "guix")
 
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 popen)
-                  (ice-9 rdelim))
-
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'copy-bootstrap-guile
-                   (lambda* (#:key system inputs #:allow-other-keys)
-                     (define (boot-guile-version arch)
-                       (cond ((string=? "armhf" arch)   "2.0.11")
-                             ((string=? "aarch64" arch) "2.0.14")
-                             (else "2.0.9")))
-
-                     (define (copy arch)
-                       (let ((guile  (assoc-ref inputs
-                                                (string-append "boot-guile/"
-                                                               arch)))
-                             (target (string-append "gnu/packages/bootstrap/"
-                                                    arch "-linux/"
-                                                    "/guile-"
-                                                    (boot-guile-version arch)
-                                                    ".tar.xz")))
-                         (mkdir-p (dirname target)) ;XXX: eventually unneeded
-                         (copy-file guile target)))
-
-                     (copy "i686")
-                     (copy "x86_64")
-                     (copy "mips64el")
-                     (copy "armhf")
-                     (copy "aarch64")
-                     #t))
-                  (add-after
-                   'unpack 'disable-container-tests
-                   ;; XXX FIXME: These tests fail within the build container.
-                   (lambda _
-                     (substitute* "tests/syscalls.scm"
-                       (("^\\(test-(assert|equal) \"(clone|setns|pivot-root)\"" all)
-                        (string-append "(test-skip 1)\n" all)))
-                     (substitute* "tests/containers.scm"
-                       (("^\\(test-(assert|equal)" all)
-                        (string-append "(test-skip 1)\n" all)))
-                     (when (file-exists? "tests/guix-environment-container.sh")
-                       (substitute* "tests/guix-environment-container.sh"
-                         (("guix environment --version")
-                          "exit 77\n")))
-                     #t))
-                  (add-before 'check 'set-SHELL
-                    (lambda _
-                      ;; 'guix environment' tests rely on 'SHELL' having a
-                      ;; correct value, so set it.
-                      (setenv "SHELL" (which "sh"))
-                      #t))
-                  (add-after 'install 'wrap-program
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     ;; Make sure the 'guix' command finds GnuTLS and
-                     ;; Guile-JSON automatically.
-                     (let* ((out    (assoc-ref outputs "out"))
-                            (guile  (assoc-ref inputs "guile"))
-                            (json   (assoc-ref inputs "guile-json"))
-                            (ssh    (assoc-ref inputs "guile-ssh"))
-                            (gnutls (assoc-ref inputs "gnutls"))
-                            (effective
-                             (read-line
-                              (open-pipe* OPEN_READ
-                                          (string-append guile "/bin/guile")
-                                          "-c" "(display (effective-version))")))
-                            (path   (string-append
-                                     json "/share/guile/site/" effective ":"
-                                     ssh "/share/guile/site/" effective ":"
-                                     gnutls "/share/guile/site/" effective)))
-
-                       (wrap-program (string-append out "/bin/guix")
-                         `("GUILE_LOAD_PATH" ":" prefix (,path))
-                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
-
-                       #t))))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-
-                     ;; XXX: Keep the development inputs here even though
-                     ;; they're unnecessary, just so that 'guix environment
-                     ;; guix' always contains them.
-                     ("autoconf" ,(autoconf-wrapper))
-                     ("automake" ,automake)
-                     ("gettext" ,gettext-minimal)
-                     ("texinfo" ,texinfo)
-                     ("graphviz" ,graphviz)
-                     ("help2man" ,help2man)))
-    (inputs
-     (let ((boot-guile (lambda (arch hash)
-                         (origin
-                          (method url-fetch)
-                          (uri (boot-guile-uri arch))
-                          (sha256 hash)))))
-       `(("bzip2" ,bzip2)
-         ("gzip" ,gzip)
-         ("zlib" ,zlib)                           ;for 'guix publish'
-
-         ("sqlite" ,sqlite)
-         ("libgcrypt" ,libgcrypt)
-         ("guile" ,guile-2.0)
-
-         ("boot-guile/i686"
-          ,(boot-guile "i686"
-                       (base32
-                        "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp")))
-         ("boot-guile/x86_64"
-          ,(boot-guile "x86_64"
-                       (base32
-                        "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3")))
-         ("boot-guile/mips64el"
-          ,(boot-guile "mips64el"
-                       (base32
-                        "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr")))
-         ("boot-guile/armhf"
-          ,(boot-guile "armhf"
-                       (base32
-                        "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5")))
-         ("boot-guile/aarch64"
-          ,(boot-guile "aarch64"
-                       (base32
-                        "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
-    (propagated-inputs
-     `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
-       ("guile-json" ,guile-json)
-       ("guile-ssh" ,guile-ssh)))
-
-    (home-page "https://www.gnu.org/software/guix/")
-    (synopsis "Functional package manager for installed software packages and versions")
-    (description
-     "GNU Guix is a functional package manager for the GNU system, and is
-also a distribution thereof.  It includes a virtual machine image.  Besides
-the usual package management features, it also supports transactional
-upgrades and roll-backs, per-user profiles, and much more.  It is based on
-the Nix package manager.")
-    (license gpl3+)
-    (properties '((ftp-server . "alpha.gnu.org")))))
-
-(define guix-devel
-  ;; Development version of Guix.
-  ;;
-  ;; Note: use a very short commit id; with a longer one, the limit on
-  ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "25a49294caf2386e65fc1b12a2508324be0b1cc2"))
-    (package (inherit guix-release)
-      (version (string-append "0.12.0-9." (string-take commit 4)))
+      ;; Note: use a very short commit id; with a longer one, the limit on
+      ;; hash-bang lines would be exceeded while running the tests.
+      (version (if (zero? revision)
+                   version
+                   (string-append version "-"
+                                  (number->string revision)
+                                  "." (string-take commit 4))))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      ;; "git://git.sv.gnu.org/guix.git" temporarily
-                      ;; unavailable (XXX).
-                      (url "http://git.savannah.gnu.org/r/guix.git")
+                      (url "https://git.savannah.gnu.org/r/guix.git")
                       (commit commit)))
                 (sha256
                  (base32
                   "0p4rh0629j89v4ka5dsp70a1xrfhg7sxjjq54p68vw7x5dkann4a"))
                 (file-name (string-append "guix-" version "-checkout"))))
+      (build-system gnu-build-system)
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-release)
-         ((#:configure-flags flags)
-          ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
-          ;; reference to Graphviz, whose closure is pretty big (too big for
-          ;; the GuixSD installation image.)
-          `(cons "ac_cv_path_DOT_USER_PROGRAM=dot" ,flags))
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after
-              'unpack 'bootstrap
-              (lambda _
-                ;; Make sure 'msgmerge' can modify the PO files.
-                (for-each (lambda (po)
-                            (chmod po #o666))
-                          (find-files "." "\\.po$"))
+       `(#:configure-flags (list
+                            "--localstatedir=/var"
+                            "--sysconfdir=/etc"
+                            (string-append "--with-bash-completion-dir="
+                                           (assoc-ref %outputs "out")
+                                           "/etc/bash_completion.d")
+                            (string-append "--with-libgcrypt-prefix="
+                                           (assoc-ref %build-inputs
+                                                      "libgcrypt"))
 
-                (zero? (system* "sh" "bootstrap")))))))))))
+                            ;; Set 'DOT_USER_PROGRAM' to the empty string so
+                            ;; we don't keep a reference to Graphviz, whose
+                            ;; closure is pretty big (too big for the GuixSD
+                            ;; installation image.)
+                            "ac_cv_path_DOT_USER_PROGRAM=dot")
+         #:parallel-tests? #f         ;work around <http://bugs.gnu.org/21097>
 
-(define-public guix guix-devel)
+         #:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 popen)
+                    (ice-9 rdelim))
+
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        ;; Make sure 'msgmerge' can modify the PO files.
+                        (for-each (lambda (po)
+                                    (chmod po #o666))
+                                  (find-files "." "\\.po$"))
+
+                        (zero? (system* "sh" "bootstrap"))))
+                    (add-before
+                        'configure 'copy-bootstrap-guile
+                      (lambda* (#:key system inputs #:allow-other-keys)
+                        (define (boot-guile-version arch)
+                          (cond ((string=? "armhf" arch)   "2.0.11")
+                                ((string=? "aarch64" arch) "2.0.14")
+                                (else "2.0.9")))
+
+                        (define (copy arch)
+                          (let ((guile  (assoc-ref inputs
+                                                   (string-append "boot-guile/"
+                                                                  arch)))
+                                (target (string-append "gnu/packages/bootstrap/"
+                                                       arch "-linux/"
+                                                       "/guile-"
+                                                       (boot-guile-version arch)
+                                                       ".tar.xz")))
+                            (mkdir-p (dirname target)) ;XXX: eventually unneeded
+                            (copy-file guile target)))
+
+                        (copy "i686")
+                        (copy "x86_64")
+                        (copy "mips64el")
+                        (copy "armhf")
+                        (copy "aarch64")
+                        #t))
+                    (add-after
+                        'unpack 'disable-container-tests
+                      ;; XXX FIXME: These tests fail within the build container.
+                      (lambda _
+                        (substitute* "tests/syscalls.scm"
+                          (("^\\(test-(assert|equal) \"(clone|setns|pivot-root)\"" all)
+                           (string-append "(test-skip 1)\n" all)))
+                        (substitute* "tests/containers.scm"
+                          (("^\\(test-(assert|equal)" all)
+                           (string-append "(test-skip 1)\n" all)))
+                        (when (file-exists? "tests/guix-environment-container.sh")
+                          (substitute* "tests/guix-environment-container.sh"
+                            (("guix environment --version")
+                             "exit 77\n")))
+                        #t))
+                    (add-before 'check 'set-SHELL
+                      (lambda _
+                        ;; 'guix environment' tests rely on 'SHELL' having a
+                        ;; correct value, so set it.
+                        (setenv "SHELL" (which "sh"))
+                        #t))
+                    (add-after 'install 'wrap-program
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        ;; Make sure the 'guix' command finds GnuTLS and
+                        ;; Guile-JSON automatically.
+                        (let* ((out    (assoc-ref outputs "out"))
+                               (guile  (assoc-ref inputs "guile"))
+                               (json   (assoc-ref inputs "guile-json"))
+                               (ssh    (assoc-ref inputs "guile-ssh"))
+                               (gnutls (assoc-ref inputs "gnutls"))
+                               (effective
+                                (read-line
+                                 (open-pipe* OPEN_READ
+                                             (string-append guile "/bin/guile")
+                                             "-c" "(display (effective-version))")))
+                               (path   (string-append
+                                        json "/share/guile/site/" effective ":"
+                                        ssh "/share/guile/site/" effective ":"
+                                        gnutls "/share/guile/site/" effective)))
+
+                          (wrap-program (string-append out "/bin/guix")
+                            `("GUILE_LOAD_PATH" ":" prefix (,path))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+
+                          #t))))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+
+                       ;; XXX: Keep the development inputs here even though
+                       ;; they're unnecessary, just so that 'guix environment
+                       ;; guix' always contains them.
+                       ("autoconf" ,(autoconf-wrapper))
+                       ("automake" ,automake)
+                       ("gettext" ,gettext-minimal)
+                       ("texinfo" ,texinfo)
+                       ("graphviz" ,graphviz)
+                       ("help2man" ,help2man)))
+      (inputs
+       (let ((boot-guile (lambda (arch hash)
+                           (origin
+                             (method url-fetch)
+                             (uri (boot-guile-uri arch))
+                             (sha256 hash)))))
+         `(("bzip2" ,bzip2)
+           ("gzip" ,gzip)
+           ("zlib" ,zlib)                         ;for 'guix publish'
+
+           ("sqlite" ,sqlite)
+           ("libgcrypt" ,libgcrypt)
+           ("guile" ,guile-2.0)
+
+           ("boot-guile/i686"
+            ,(boot-guile "i686"
+                         (base32
+                          "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp")))
+           ("boot-guile/x86_64"
+            ,(boot-guile "x86_64"
+                         (base32
+                          "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3")))
+           ("boot-guile/mips64el"
+            ,(boot-guile "mips64el"
+                         (base32
+                          "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr")))
+           ("boot-guile/armhf"
+            ,(boot-guile "armhf"
+                         (base32
+                          "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5")))
+           ("boot-guile/aarch64"
+            ,(boot-guile "aarch64"
+                         (base32
+                          "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
+      (propagated-inputs
+       `(("gnutls" ,gnutls)                       ;for 'guix download' & co.
+         ("guile-json" ,guile-json)
+         ("guile-ssh" ,guile-ssh)))
+
+      (home-page "https://www.gnu.org/software/guix/")
+      (synopsis "Functional package manager for installed software packages and versions")
+      (description
+       "GNU Guix is a functional package manager for the GNU system, and is
+also a distribution thereof.  It includes a virtual machine image.  Besides
+the usual package management features, it also supports transactional
+upgrades and roll-backs, per-user profiles, and much more.  It is based on
+the Nix package manager.")
+      (license gpl3+)
+      (properties '((ftp-server . "alpha.gnu.org"))))))
+
+;; Alias for backward compatibility.
+(define-public guix-devel guix)
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
