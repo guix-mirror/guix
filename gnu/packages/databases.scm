@@ -372,7 +372,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.22")
+    (version "10.1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -380,11 +380,20 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kk674mx2bf22yivvzv1al5gdg9kyxar47m282bylb6kg8p5gc5w"))))
+                "1gq08dj9skr0gli1nj7a8wl92w8lmmqy0sbxvkmy79dz4i713n2l"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
+         ;; Linking with libarchive fails, like this:
+
+         ;; ld: /gnu/store/...-libarchive-3.2.2/lib/libarchive.a(archive_entry.o):
+         ;; relocation R_X86_64_32 against `.bss' can not be used when
+         ;; making a shared object; recompile with -fPIC
+
+         ;; For now, disable the features that that use libarchive (xtrabackup).
+         "-DWITH_LIBARCHIVE=OFF"
+
          "-DDEFAULT_CHARSET=utf8"
          "-DDEFAULT_COLLATION=utf8_general_ci"
          "-DMYSQL_DATADIR=/var/lib/mysql"
