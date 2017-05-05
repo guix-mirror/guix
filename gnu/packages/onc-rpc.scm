@@ -22,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu))
@@ -35,6 +36,7 @@
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
                                   version "/libtirpc-"
                                   version ".tar.bz2"))
+              (patches (search-patches "libtirpc-CVE-2017-8779.patch"))
               (sha256
                (base32
                 "17mqrdgsgp9m92pmq7bvr119svdg753prqqxmg4cnz5y657rfmji"))))
@@ -74,6 +76,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           version "/"
                           name "-" version ".tar.bz2"))
+      (patches (search-patches "rpcbind-CVE-2017-8779.patch"))
       (sha256
        (base32
         "0rjc867mdacag4yqvs827wqhkh27135rp9asj06ixhf71m9rljh7"))))
