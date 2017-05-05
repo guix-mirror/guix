@@ -287,14 +287,16 @@ designs.")
 (define-public ant
   (package
     (name "ant")
-    (version "1.9.6")
+    ;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x
+    ;; series requires Java 8.
+    (version "1.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1396wflczyxjxl603dhxjvd559f289lha9y2f04f71c7hapjl3am"))))
+                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
