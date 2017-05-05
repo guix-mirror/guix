@@ -4561,3 +4561,22 @@ built on top of XELB.")
     (description "@code{emacs-gnuplot} is an emacs major mode for interacting
 with gnuplot.")
     (license license:gpl2+)))
+
+(define-public emacs-transpose-frame
+  (package
+    (name "emacs-transpose-frame")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (sha256
+        (base32
+         "1f67yksgw9s6j0033hmqzaxx2a93jm11sd5ys7cc3li5gfh680m4"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/TransposeFrame")
+    (synopsis "Transpose window arrangement in current frame")
+    (description "@code{emacs-transpose-frame} provides some interactive
+functions which allows users to transpose windows arrangement in currently
+selected frame.")
+    (license license:bsd-2)))
