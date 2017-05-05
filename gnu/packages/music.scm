@@ -961,7 +961,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
          (add-after 'unpack 'ignore-PATH
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "jalv.select.cpp"
-               (("echo \\$PATH | tr ':' '\\\n' | xargs ls")
+               (("echo \\$PATH.*tr ':'.*xargs ls")
                 (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
              (substitute* "jalv.select.h"
                (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
