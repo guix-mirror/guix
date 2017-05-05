@@ -1866,7 +1866,7 @@ and hold, etc.")
 (define-public gxtuner
   (package
     (name "gxtuner")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brummer10/gxtuner/"
@@ -1874,7 +1874,7 @@ and hold, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1abpxiydn4c9wssz6895hnad9ipkcy3rkgzbnanvwb46nm44x6if"))))
+                "1hn5qjac7qd00v0sp7ijhhc3sb26ks9bni06nngivva21h61xrjr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1886,7 +1886,7 @@ and hold, etc.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("jack" ,jack-1)
        ("fftwf" ,fftwf)
        ("cairo" ,cairo)
