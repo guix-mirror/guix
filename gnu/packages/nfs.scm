@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages onc-rpc)
@@ -41,7 +41,7 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "1.3.4")
+    (version "2.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -49,7 +49,7 @@
                    "/nfs-utils-" version ".tar.xz"))
              (sha256
               (base32
-               "0xarqhwy757vazv9gqhyrgxsrx083yhvkkih01jh83fqm305naml"))))
+               "1vqrqzhg9nh2wj1icp7k8v9dibgnn521b45np79nnkmqf16bbbhg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -98,7 +98,6 @@
               ("libnfsidmap" ,libnfsidmap)
               ("sqlite" ,sqlite)
               ("lvm2" ,lvm2)
-              ("gss" ,gss)
               ("util-linux" ,util-linux)
               ("mit-krb5" ,mit-krb5)
               ("libtirpc" ,libtirpc)))
