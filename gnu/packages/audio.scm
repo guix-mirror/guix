@@ -1880,7 +1880,7 @@ and ALSA.")
     (arguments
      '(#:tests? #f)) ; no check target
     (inputs
-     `(("jack-2" ,jack-2)
+     `(("jack" ,jack-1)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
