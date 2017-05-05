@@ -766,9 +766,10 @@ device in a <menu-entry>."
     ((label) (file-system-device fs))
     (else #f)))
 
-(define (operating-system-boot-parameters os system root-device)
-  "Return a monadic <boot-parameters> record that describes the boot parameters of OS.
-SYSTEM is optional.  If given, adds kernel arguments for that system to <boot-parameters>."
+(define (operating-system-boot-parameters os system.drv root-device)
+  "Return a monadic <boot-parameters> record that describes the boot parameters
+of OS.  SYSTEM.DRV is either a derivation or #f.  If it's a derivation, adds
+kernel arguments for that derivation to <boot-parameters>."
   (mlet* %store-monad
       ((initrd (operating-system-initrd-file os))
        (store -> (operating-system-store-file-system os))
@@ -778,9 +779,9 @@ SYSTEM is optional.  If given, adds kernel arguments for that system to <boot-pa
              (root-device root-device)
              (kernel (operating-system-kernel-file os))
              (kernel-arguments
-              (if system
-               (operating-system-kernel-arguments os system root-device)
-               (operating-system-user-kernel-arguments os)))
+              (if system.drv
+                (operating-system-kernel-arguments os system.drv root-device)
+                (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (store-device (fs->boot-device store))
              (store-mount-point (file-system-mount-point store))))))
