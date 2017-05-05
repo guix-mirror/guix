@@ -382,6 +382,11 @@
 (define (open-inet-socket host port)
   "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
 '&nix-connection-error' upon error."
+  ;; Define 'TCP_NODELAY' on Guile 2.0.  The value is the same on all GNU
+  ;; systems.
+  (cond-expand (guile-2.2 #t)
+               (else      (define TCP_NODELAY 1)))
+
   (let ((sock (with-fluids ((%default-port-encoding #f))
                 ;; This trick allows use of the `scm_c_read' optimization.
                 (socket PF_UNIX SOCK_STREAM 0))))
@@ -402,6 +407,10 @@
            (catch 'system-error
              (lambda ()
                (connect s (addrinfo:addr ai))
+
+               ;; Setting this option makes a dramatic difference because it
+               ;; avoids the "ACK delay" on our RPC messages.
+               (setsockopt s IPPROTO_TCP TCP_NODELAY 1)
                s)
              (lambda args
                ;; Connection failed, so try one of the other addresses.
