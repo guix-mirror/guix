@@ -4599,3 +4599,26 @@ selected frame.")
 mode for binding key chords to commands.  A key chord is defined as two keys
 pressed simultaneously or a single key quickly pressed twice.")
     (license license:gpl2+)))
+
+(define-public emacs-evil-surround
+  (package
+    (name "emacs-evil-surround")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/timcharper/evil-surround/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p572jgic3q1ia1nz37kclir729ay6i2f4sa7wnaapyxly2lwb3r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/timcharper/evil-surround")
+    (synopsis "Easily modify surrounding parantheses and quotes")
+    (description "@code{emacs-evil-surround} allows easy deletion, change and
+addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
+    (license license:gpl3+)))
