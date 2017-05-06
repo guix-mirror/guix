@@ -524,7 +524,7 @@ security, and applying best practice development processes.")
                #t))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock-2)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
@@ -560,8 +560,7 @@ security, and applying best practice development processes.")
                 "1srvmjxz75dbafx7xfg1w3n9h3srr9p2ljnfsih9dwwd5cxh9i5q"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       ,@(substitute-keyword-arguments (package-arguments python-acme)
+     `(,@(substitute-keyword-arguments (package-arguments python-acme)
            ((#:phases phases)
             `(modify-phases ,phases
               (replace 'install-documentation
@@ -576,27 +575,27 @@ security, and applying best practice development processes.")
                     #t))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
-     `(("python2-nose" ,python2-nose)
-       ("python2-mock" ,python2-mock)
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock-2)
        ;; For documentation
-       ("python2-sphinx" ,python2-sphinx)
-       ("python2-sphinx-rtd-theme" ,python2-sphinx-rtd-theme)
-       ("python2-sphinx-repoze-autointerface" ,python2-sphinx-repoze-autointerface)
-       ("python2-sphinxcontrib-programoutput" ,python2-sphinxcontrib-programoutput)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-sphinx-repoze-autointerface" ,python-sphinx-repoze-autointerface)
+       ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("python2-acme" ,python2-acme)
-       ("python2-zope-interface" ,python2-zope-interface)
-       ("python2-pyrfc3339" ,python2-pyrfc3339)
-       ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-configobj" ,python2-configobj)
-       ("python2-configargparse" ,python2-configargparse)
-       ("python2-zope-component" ,python2-zope-component)
-       ("python2-parsedatetime" ,python2-parsedatetime)
-       ("python2-six" ,python2-six)
-       ("python2-psutil" ,python2-psutil)
-       ("python2-requests" ,python2-requests)
-       ("python2-pytz" ,python2-pytz)))
+     `(("python-acme" ,python-acme)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-pyrfc3339" ,python-pyrfc3339)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-configobj" ,python-configobj)
+       ("python-configargparse" ,python-configargparse)
+       ("python-zope-component" ,python-zope-component)
+       ("python-parsedatetime" ,python-parsedatetime)
+       ("python-six" ,python-six)
+       ("python-psutil" ,python-psutil)
+       ("python-requests" ,python-requests)
+       ("python-pytz" ,python-pytz)))
     (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
     (description "Certbot automatically receives and installs X.509 certificates
 to enable Transport Layer Security (TLS) on servers.  It interoperates with the
