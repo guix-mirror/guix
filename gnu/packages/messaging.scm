@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -166,35 +166,17 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.4")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ficrx56knz5y297qb0x5y02339yvyv734z7kpcx1ixvb0qr2dgs"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete dangling symlinks to a non-existent ‘/usr’.
-                  (with-directory-excursion "m4"
-                    (for-each (lambda (f) (delete-file f))
-                              '("intltool.m4" "libtool.m4" "lt~obsolete.m4"
-                                "ltoptions.m4" "ltsugar.m4" "ltversion.m4")))
-                  (delete-file-recursively "build-aux")
-                  (delete-file "po/Makefile.in.in")
-                  ;; This file is still required for autoreconf.
-                  (copy-file (string-append (assoc-ref inputs "intltool")
-                                            "/share/intltool/Makefile.in.in")
-                             "po/Makefile.in.in")))))
+                "1xnclfbrgbkqndxygi5f27q00jd7yy54jbd1061jmhxa6wzpibbd"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("autoconf-archive" ,autoconf-archive)
-                     ("automake" ,automake)
-                     ("intltool" ,intltool)
-                     ("libtool" ,libtool)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
               ("enchant" ,enchant)
@@ -208,13 +190,6 @@ identi.ca and status.net).")
               ("luajit" ,luajit)
               ("perl-xml-parser" ,perl-xml-parser)
               ("python-2" ,python-2)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Release 2.12.4 wasn't properly bootstrapped.  Later ones might be!
-         (add-after 'unpack 'bootstrap
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "autoreconf" "-fiv")))))))
     (synopsis "Graphical IRC Client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
