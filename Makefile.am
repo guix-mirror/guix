@@ -504,10 +504,10 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 # The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
 # so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
 guix-binary.%.tar.xz:
-	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
-	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
-	  -s "$*" --localstatedir guix glibc-utf8-locales	\
-	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;	\
+	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
+	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
+	  -s "$*" --localstatedir guix glibc-utf8-locales		\
+	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;		\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
