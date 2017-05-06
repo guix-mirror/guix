@@ -70,6 +70,8 @@
 
 (define-public guix
   ;; Latest version of Guix, which may or may not correspond to a release.
+  ;; Note: the 'update-guix-package.scm' script expects this definition to
+  ;; start precisely like this.
   (let ((version "0.12.0")
         (commit "25a49294caf2386e65fc1b12a2508324be0b1cc2")
         (revision 9))

@@ -416,6 +416,7 @@ EXTRA_DIST =						\
   build-aux/download.scm				\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
+  build-aux/update-guix-package.scm			\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
@@ -539,6 +540,12 @@ gen-AUTHORS:
 	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
 	fi
 
+update-guix-package:
+	git rev-parse HEAD
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`"
+
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
@@ -574,6 +581,7 @@ hydra-jobs.scm: $(GOBJECTS)
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
 .PHONY: clean-go make-go
+.PHONY: update-guix-package
 
 ## -------------- ##
 ## Silent rules.  ##
