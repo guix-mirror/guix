@@ -273,6 +273,10 @@ architecture.")
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; nothing to check, just files to copy
+
+      #:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (srfi srfi-1))
       #:phases
       (modify-phases %standard-phases
         (delete 'configure)
