@@ -4580,3 +4580,22 @@ with gnuplot.")
 functions which allows users to transpose windows arrangement in currently
 selected frame.")
     (license license:bsd-2)))
+
+(define-public emacs-key-chord
+  (package
+    (name "emacs-key-chord")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/key-chord.el")
+       (sha256
+        (base32
+         "03m44pqggfrd53nh9dvpdjgm0rvca34qxmd30hr33hzprzjambxg"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/key-chord.el")
+    (synopsis "Map pairs of simultaneously pressed keys to Emacs commands")
+    (description "@code{emacs-key-chord} provides @code{key-chord-mode}, a
+mode for binding key chords to commands.  A key chord is defined as two keys
+pressed simultaneously or a single key quickly pressed twice.")
+    (license license:gpl2+)))
