@@ -829,7 +829,10 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
        ;;("gss" ,gss)
        ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        ;; TODO: Add scons-build-system and use it here.
        (modify-phases %standard-phases
          (delete 'configure)
