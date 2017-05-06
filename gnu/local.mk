@@ -738,6 +738,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
   %D%/packages/patches/libtiff-CVE-2017-5225.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-7593.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-7594.patch		\
+  %D%/packages/patches/libtiff-multiple-UBSAN-crashes.patch	\
   %D%/packages/patches/libtiff-assertion-failure.patch		\
   %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
   %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\

@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -299,6 +299,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
+   (replacement libtiff/fixed)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
@@ -346,6 +347,19 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define libtiff/fixed
+  (package
+    (inherit libtiff)
+    (source
+     (origin
+       (inherit (package-source libtiff))
+       (patches
+        (append
+         (origin-patches (package-source libtiff))
+         (search-patches "libtiff-CVE-2017-7593.patch"
+                         "libtiff-CVE-2017-7594.patch"
+                         "libtiff-multiple-UBSAN-crashes.patch")))))))
 
 (define-public libwmf
   (package
