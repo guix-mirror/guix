@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -53,6 +53,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
@@ -173,15 +174,14 @@ utilities.")
 (define-public pcb
   (package
     (name "pcb")
-    (version "20140316")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://ftp.geda-project.org/pcb/pcb-" version "/pcb-"
-                    version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/pcb/pcb/pcb-" version
+                                  "/pcb-" version ".tar.gz"))
               (sha256
                (base32
-                "0l6944hq79qsyp60i5ai02xwyp8l47q7xdm3js0jfkpf72ag7i42"))))
+                "1i6sk8g8h9avms142wl07yv20m1cm4c3fq3v6hybrhdxs2n17plf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -200,7 +200,13 @@ utilities.")
                   (path (string-append (assoc-ref inputs "udev") "/lib")))
              (wrap-program (string-append out "/bin/pcb")
                `("LD_LIBRARY_PATH" ":" prefix (,path)))))
-         %standard-phases))))
+         (alist-cons-before
+          'check 'pre-check
+          (lambda _
+            (system "Xvfb :1 &")
+            (setenv "DISPLAY" ":1")
+            #t)
+          %standard-phases)))))
     (inputs
      `(("dbus" ,dbus)
        ("mesa" ,mesa)
@@ -216,7 +222,12 @@ utilities.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex)
+       ;; For tests
+       ("imagemagick" ,imagemagick)
+       ("gerbv" ,gerbv)
+       ("ghostscript" ,ghostscript)
+       ("xvfb" ,xorg-server)))
     (home-page "http://pcb.geda-project.org/")
     (synopsis "Design printed circuit board layouts")
     (description
