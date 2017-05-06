@@ -203,7 +203,7 @@ the image."
                       (guix build utils))
 
          (let ((inputs
-                '#$(append (list qemu parted e2fsprogs)
+                '#$(append (list qemu parted e2fsprogs dosfstools)
                            (map canonical-package
                                 (list sed grep coreutils findutils gawk))
                            (if register-closures? (list guix) '())))
