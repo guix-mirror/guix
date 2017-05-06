@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -681,8 +681,8 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "1")
-        (commit "bbde23732f8c7769b982f0c1bda9b99fbf93f932"))
+  (let ((revision "2")
+        (commit "25d90f4630b45e2b609d2e3daecb32cf5ff065fd"))
     (package
       (name "lchat")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -695,7 +695,7 @@ as -1, to be used instead of U+FFFD.
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "00q3rc0aa5416jvjvrj71x1wnr0331kxhvjjs7pyxgnq4xf36k63"))))
+           "0dvljyq3m7rxxkqv7rkmijak6vj8i4db3iq2z988bvf76chz268b"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; No tests
