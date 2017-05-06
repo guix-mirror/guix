@@ -758,8 +758,9 @@
                 (cut export-paths %store (list file) <>))))
     (delete-paths %store (list file))
 
-    ;; Flip a bit in the stream's payload.
-    (let* ((index (quotient (bytevector-length dump) 4))
+    ;; Flip a bit in the stream's payload.  INDEX here falls in the middle of
+    ;; the file contents in DUMP, regardless of the store prefix.
+    (let* ((index #x70)
            (byte  (bytevector-u8-ref dump index)))
       (bytevector-u8-set! dump index (logxor #xff byte)))
 
