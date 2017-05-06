@@ -213,10 +213,10 @@ actual /dev name based on DEVICE."
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
-(define* (format-partition partition type
-                           #:key label)
-  "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
-volume name."
+(define* (create-ext-file-system partition type
+                                 #:key label)
+  "Create an ext-family filesystem of TYPE on PARTITION.  If LABEL is true,
+use that as the volume name."
   (format #t "creating ~a partition...\n" type)
   (unless (zero? (apply system* (string-append "mkfs." type)
                         "-F" partition
@@ -224,6 +224,28 @@ volume name."
                             `("-L" ,label)
                             '())))
     (error "failed to create partition")))
+
+(define* (create-fat-file-system partition
+                                 #:key label)
+  "Create a FAT filesystem on PARTITION.  The number of File Allocation Tables
+will be determined based on filesystem size.  If LABEL is true, use that as the
+volume name."
+  (format #t "creating FAT partition...\n")
+  (unless (zero? (apply system* "mkfs.fat" partition
+                        (if label
+                            `("-n" ,label)
+                            '())))
+    (error "failed to create FAT partition")))
+
+(define* (format-partition partition type
+                           #:key label)
+  "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
+volume name."
+  (cond ((string-prefix? "ext" type)
+         (create-ext-file-system partition type #:label label))
+        ((or (string-prefix? "fat" type) (string= "vfat" type))
+         (create-fat-file-system partition #:label label))
+        (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
   "Format PARTITION, a <partition> object with a non-#f 'device' field, mount
