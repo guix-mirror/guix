@@ -197,13 +197,6 @@ MODULES +=					\
 
 endif HAVE_GUILE_SSH
 
-if HAVE_GUILE_GIT
-
-MODULES +=					\
-  guix/git.scm
-
-endif HAVE_GUILE_GIT
-
 if BUILD_DAEMON_OFFLOAD
 
 MODULES +=					\
