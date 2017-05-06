@@ -31,6 +31,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -116,6 +117,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
     (inputs
      `(("bc" ,bc)
        ("ncurses" ,ncurses)
+       ("groff" ,groff)               ;for 'fish --help'
        ("pcre2" ,pcre2)               ;don't use the bundled PCRE2
        ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
@@ -133,6 +135,8 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                "/bin/bc")))
              (substitute* "share/functions/fish_update_completions.fish"
                (("python") (which "python")))
+             (substitute* "share/functions/__fish_print_help.fish"
+               (("nroff") (which "nroff")))
              #t)))))
     (synopsis "The friendly interactive shell")
     (description
