@@ -74,41 +74,29 @@ endpoints.")
             (uri (string-append "https://www.unix-ag.uni-kl.de/~massar/vpnc/vpnc-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))
-            (patches (search-patches "vpnc-script.patch"))))
+                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))))
    (build-system gnu-build-system)
    (inputs `(("libgcrypt" ,libgcrypt)
              ("perl" ,perl)
-
-             ;; The following packages provide commands that 'vpnc-script'
-             ;; expects.
-             ("net-tools" ,net-tools)             ;ifconfig, route
-             ("iproute2" ,iproute)))              ;ip
+             ("vpnc-scripts" ,vpnc-scripts)))
    (arguments
     `(#:tests? #f ; there is no check target
       #:phases
       (modify-phases %standard-phases
-        (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* "Makefile"
-                (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
-              (substitute* "Makefile"
-                (("ETCDIR=/etc/vpnc") (string-append "ETCDIR=" out
-                                                     "/etc/vpnc"))))))
-        (add-after 'install 'wrap-vpnc-script
+        (add-after 'unpack 'use-store-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Wrap 'etc/vpnc/vpnc-script' so that it finds the commands it
-            ;; needs.  Assume coreutils/grep/sed are in $PATH.
-            (let ((out (assoc-ref outputs "out")))
-              (wrap-program (string-append out "/etc/vpnc/vpnc-script")
-                `("PATH" ":" prefix
-                  (,(string-append (assoc-ref inputs "net-tools")
-                                   "/sbin")
-                   ,(string-append (assoc-ref inputs "net-tools")
-                                   "/bin")
-                   ,(string-append (assoc-ref inputs "iproute2")
-                                   "/sbin"))))))))))
+            (let ((out          (assoc-ref outputs "out"))
+                  (vpnc-scripts (assoc-ref inputs  "vpnc-scripts")))
+              (substitute* "config.c"
+                (("/etc/vpnc/vpnc-script")
+                 (string-append vpnc-scripts "/etc/vpnc/vpnc-script")))
+              (substitute* "Makefile"
+                (("ETCDIR=.*")
+                 (string-append "ETCDIR=" out "/etc/vpnc\n"))
+                (("PREFIX=.*")
+                 (string-append "PREFIX=" out "\n")))
+              #t)))
+        (delete 'configure))))          ; no configure script
    (synopsis "Client for Cisco VPN concentrators")
    (description
     "vpnc is a VPN client compatible with Cisco's EasyVPN equipment.
