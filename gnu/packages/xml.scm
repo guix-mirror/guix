@@ -895,18 +895,19 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.msweet.org/files/project3/mxml-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/michaelrsweet/mxml/"
+                                  "releases/download/release-" version
+                                  "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "14pzhlfidj5v1qbxy7a59yn4jz9pnjrs2zwalz228jsq7ijm9vfd"))))
+                "14bqfq4lymhb31snz6wsvzhlavy0573v1nki1lbngiyxcj5zazr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))  ;no "check" target
-    (home-page "http://www.minixml.org/")
+    (home-page "https://michaelrsweet.github.io/mxml")
     (synopsis "Small XML parsing library")
     (description
      "Mini-XML is a small C library to read and write XML files and strings in
