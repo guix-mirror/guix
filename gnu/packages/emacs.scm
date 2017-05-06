@@ -1125,13 +1125,6 @@ than @code{electric-indent-mode}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (emacs-substitute-variables "ag.el"
-               ("ag-executable"
-                (string-append (assoc-ref inputs "the-silver-searcher")
-                               "/bin/ag")))
-             #t))
          (add-before 'install 'make-info
            (lambda _
              (with-directory-excursion "docs"
@@ -1142,14 +1135,14 @@ than @code{electric-indent-mode}.")
                     (info (string-append out "/share/info")))
                (install-file "docs/_build/texinfo/agel.info" info)
                #t))))))
-    (inputs
-     `(("the-silver-searcher" ,the-silver-searcher)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
-       ("s" ,emacs-s)))
+       ("s" ,emacs-s)
+       ;; We need to use 'ag' as the executable on remote systems.
+       ("the-silver-searcher" ,the-silver-searcher)))
     (home-page "https://github.com/Wilfred/ag.el")
     (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
     (description "This package provides the ability to use the silver
