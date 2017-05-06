@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Pjotr Prins <pjotr.public12@thebird.nl>
+;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,8 +34,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    ;; When updating, remember to update the hash of erlang-manpages!
-    (version "19.0")
+    (version "19.3")
     (source (origin
               (method url-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -46,7 +45,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dxyz6x1yfv33fd0xfry2ihylkyfa2d655q1vxvbz8dflyd64yqh"))))
+                "1b47jh549yywyp8fbs8a8j4ydr3zn982navzyqvlms6rg8vwb0pw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -61,7 +60,7 @@
                                version ".tar.gz"))
            (sha256
             (base32
-             "07j0l7ary936hil38xr3hvfw6j74pshkyyi98kc9cassbbcdd8y7"))))))
+             "0p6r3n3y7lbhv38sw8f2vi1xlmc137gyspk9ap086w1nszyjy6gq"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -162,9 +161,8 @@
                  (zero? (system* "tar" "xvf" manpages))
                  (rename-file "COPYRIGHT"
                               (string-append share "/misc/erlang/COPYRIGHT"))
-                 ;; Delete superfluous files.
-                 (for-each delete-file '("PR.template"
-                                         "README"))))))))))
+                 ;; Delete superfluous file.
+                 (delete-file "PR.template")))))))))
     (home-page "http://erlang.org/")
     (synopsis "The Erlang programming language")
     (description
