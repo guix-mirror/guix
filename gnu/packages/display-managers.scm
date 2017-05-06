@@ -36,6 +36,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xfce)
   #:use-module (gnu packages xorg))
 
 (define-public greenisland
@@ -265,6 +267,33 @@ create smooth, animated user interfaces.")
     (synopsis "Lightweight display manager")
     (description "The Light Display Manager (LightDM) is a cross-desktop
 display manager which supports different greeters.")
+    (license license:gpl3+)))
+
+(define-public lightdm-gtk-greeter
+  (package
+    (name "lightdm-gtk-greeter")
+    (version "2.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://launchpad.net/lightdm-gtk-greeter/"
+                    (version-major+minor version) "/" version
+                    "/+download/lightdm-gtk-greeter-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1436sdm83xqhxyr1rzqxhsl8if2xmidlvb341xcv6dv83lyxkrlf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("exo" ,exo)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("lightdm" ,lightdm)
+       ("gtk+" ,gtk+)))
+    (synopsis "GTK+ greeter for LightDM")
+    (home-page "https://launchpad.net/lightdm-gtk-greeter")
+    (description "This package provides a LightDM greeter implementation using
+GTK+, lets you select a desktop session and log in to it.")
     (license license:gpl3+)))
 
 (define-public slim
