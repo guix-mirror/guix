@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Pjotr Prins <pjotr.public12@thebird.nl>
+;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,7 +30,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.3.2")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elixir-lang/elixir"
@@ -38,9 +38,10 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0jsc6kl7f74yszcypdv3w3vhyc9qfqav8nwc41in082m0vpfy95y"))
-              ;; FIXME: Some tests had to be disabled as they fail in the
-              ;; build environment.  Common failures are:
+                "0gsmgx4h6rvxilcbsx2z6yirm6g2g5bsxdvr0608ng4bsv22wknb"))
+              ;; FIXME: 27 tests (out of 4K) had to be disabled as
+              ;; they fail in the build environment.  Common failures
+              ;; are:
               ;; - Mix.Shell.cmd() fails with error 130
               ;; - The git_repo fixture cannot be found
               ;; - Communication with spawned processes fails with EPIPE
