@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -32,11 +32,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -558,3 +560,35 @@ categories.")
      "C library for creating and parsing configuration files.")
     (license (list license:lgpl2.1         ; Main distribution.
                    license:asl1.1))))      ; src/readdir.{c,h}
+
+(define-public java-rsyntaxtextarea
+  (package
+    (name "java-rsyntaxtextarea")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bobbylight/"
+                                  "RSyntaxTextArea/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c5mqg2klj5rvf8fhycrli8rf6s37l9p7a8knw9gpp65r1c120q2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; FIXME: some tests fail because locale resources cannot be found.
+       ;; Even when I add them to the class path,
+       ;; RSyntaxTextAreaEditorKitDumbCompleteWordActionTest fails.
+       #:tests? #f
+       #:jar-name "rsyntaxtextarea.jar"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://bobbylight.github.io/RSyntaxTextArea/")
+    (synopsis "Syntax highlighting text component for Java Swing")
+    (description "RSyntaxTextArea is a syntax highlighting, code folding text
+component for Java Swing.  It extends @code{JTextComponent} so it integrates
+completely with the standard @code{javax.swing.text} package.  It is fast and
+efficient, and can be used in any application that needs to edit or view
+source code.")
+    (license license:bsd-3)))
