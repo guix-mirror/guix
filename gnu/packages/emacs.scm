@@ -4622,3 +4622,27 @@ pressed simultaneously or a single key quickly pressed twice.")
     (description "@code{emacs-evil-surround} allows easy deletion, change and
 addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-commentary
+  (package
+    (name "emacs-evil-commentary")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linktohack/evil-commentary/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdya0i921nwskwrzdsj0vrr3m7gm49dy6f6pk9p5nxaarfxk230"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/linktohack/evil-commentary")
+    (synopsis "Comment out code in evil mode")
+    (description "@code{emacs-evil-commentary} adds keybindings to easily
+comment out lines of code in evil mode.  It provides @code{gcc} to comment out
+lines, and @code{gc} to comment out the target of a motion.")
+    (license license:gpl3+)))
