@@ -92,7 +92,8 @@ POSIX regular expression API.")
               (sha256
                (base32
                 "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))
-              (patches (search-patches "pcre2-CVE-2017-7186.patch"))))
+              (patches (search-patches "pcre2-CVE-2017-7186.patch"
+                                       "pcre2-CVE-2017-8786.patch"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
