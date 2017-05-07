@@ -922,6 +922,24 @@ have been used.")
 (define-public python2-mock
   (package-with-python2 python-mock))
 
+;;; Some packages (notably, certbot and python-acme) rely on this newer version
+;;; of python-mock. However, a large number of packages fail to build with
+;;; mock@2, so we add a new variable for now. Also, there may be a dependency
+;;; cycle between mock and six, so we avoid creating python2-mock@2 for now.
+(define-public python-mock-2
+  (package
+    (inherit python-mock)
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mock" version))
+        (sha256
+         (base32
+          "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr-minimal)
+       ,@(package-propagated-inputs python-mock)))))
 
 (define-public python-setuptools
   (package
