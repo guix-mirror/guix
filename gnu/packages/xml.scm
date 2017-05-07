@@ -44,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -1174,4 +1175,34 @@ subset of C++.  Xerces-C++ makes it easy to give your application the ability
 to read and write XML data.  A shared library is provided for parsing,
 generating, manipulating, and validating XML documents using the DOM, SAX, and
 SAX2 APIs.")
+    (license license:asl2.0)))
+
+(define-public java-simple-xml
+  (package
+    (name "java-simple-xml")
+    (version "2.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/simple/simple-xml-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "build"
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "jar")))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://simple.sourceforge.net/")
+    (synopsis "XML serialization framework for Java")
+    (description "Simple is a high performance XML serialization and
+configuration framework for Java.  Its goal is to provide an XML framework
+that enables rapid development of XML configuration and communication systems.
+This framework aids the development of XML systems with minimal effort and
+reduced errors.  It offers full object serialization and deserialization,
+maintaining each reference encountered.")
     (license license:asl2.0)))
