@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,6 +155,41 @@ APNG patch provides APNG support to libpng.")
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+
+(define-public pngcrunch
+  (package
+   (name "pngcrunch")
+   (version "1.8.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/pmt/pngcrush/"
+                                version "/pngcrush-" version ".tar.xz"))
+            (sha256 (base32
+                     "1c7m316i91jp3h1dj1ppppdv6zilm2njk1wrpqy2zj0fcll06lwd"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:make-flags '("-f" "Makefile-nolib")
+      #:tests? #f ; no check target
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Makefile-nolib"
+              (("^(PNG(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "libpng") "/"))
+              (("^(Z(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "zlib") "/"))
+              ;; The Makefile is written by hand and not using $PREFIX
+              (("\\$\\(DESTDIR\\)/usr/")
+               (string-append (assoc-ref outputs "out") "/"))))))))
+   (inputs
+    `(("libpng" ,libpng)
+      ("zlib" , zlib)))
+   (home-page "https://pmt.sourceforge.net/pngcrush")
+   (synopsis "Utility to compress PNG files")
+   (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
+files.  It can compress them as much as 40% losslessly.")
+   (license license:zlib)))
 
 (define-public libjpeg
   (package
