@@ -4523,3 +4523,32 @@ JSON-encoded.")
 
 (define-public python2-httpbin
   (package-with-python2 python-httpbin))
+
+(define-public python-pytest-httpbin
+  (package
+    (name "python-pytest-httpbin")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-httpbin" version))
+       (sha256
+        (base32
+         "1y0v2v7xpzpyd4djwp7ad8ifnlxp8r1y6dfbxg5ckzvllkgridn5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-httpbin" ,python-httpbin)
+       ("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/kevin1024/pytest-httpbin")
+    (synopsis
+     "Test your HTTP library against a local copy of httpbin")
+    (description
+     "@code{Pytest-httpbin} creates a @code{pytest} fixture that is dependency-injected
+into your tests.  It automatically starts up a HTTP server in a separate thread running
+@code{httpbin} and provides your test with the URL in the fixture.")
+    (license l:expat)))
+
+(define-public python2-pytest-httpbin
+  (package-with-python2 python-pytest-httpbin))
