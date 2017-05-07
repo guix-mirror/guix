@@ -4494,3 +4494,32 @@ functions of Tidy.")
 Features include the ability to stop SQL injections, XSS and CSRF attacks and
 exploit attempts.")
     (license l:gpl2)))
+
+(define-public python-httpbin
+  (package
+    (name "python-httpbin")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpbin" version))
+       (sha256
+        (base32
+         "1dc92lnk846hpilslrqnr63x55cxll4qx88gif8fm521gv9cbyvr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-flask" ,python-flask)
+       ("python-itsdangerous" ,python-itsdangerous)
+       ("python-markupsafe" ,python-markupsafe)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/Runscope/httpbin")
+    (synopsis "HTTP request and response service")
+    (description "Testing an HTTP Library can become difficult sometimes.
+@code{RequestBin} is fantastic for testing POST requests, but doesn't let you control the
+response.  This exists to cover all kinds of HTTP scenarios.  All endpoint responses are
+JSON-encoded.")
+    (license l:isc)))
+
+(define-public python2-httpbin
+  (package-with-python2 python-httpbin))
