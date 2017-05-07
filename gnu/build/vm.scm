@@ -27,6 +27,7 @@
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (guix records)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -315,12 +316,41 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (mkdir-p directory)
     (symlink bootcfg (string-append directory "/bootcfg"))))
 
+(define (install-efi grub esp config-file)
+  "Write a self-contained GRUB EFI loader to the mounted ESP using CONFIG-FILE."
+  (let* ((system %host-type)
+         ;; Hard code the output location to a well-known path recognized by
+         ;; compliant firmware. See "3.5.1.1 Removable Media Boot Behaviour":
+         ;; http://www.uefi.org/sites/default/files/resources/UEFI%20Spec%202_6.pdf
+         (grub-mkstandalone (string-append grub "/bin/grub-mkstandalone"))
+         (efi-directory (string-append esp "/EFI/BOOT"))
+         ;; Map grub target names to boot file names.
+         (efi-targets (cond ((string-prefix? "x86_64" system)
+                             '("x86_64-efi" . "BOOTX64.EFI"))
+                            ((string-prefix? "i686" system)
+                             '("i386-efi" . "BOOTIA32.EFI"))
+                            ((string-prefix? "armhf" system)
+                             '("arm-efi" . "BOOTARM.EFI"))
+                            ((string-prefix? "aarch64" system)
+                             '("arm64-efi" . "BOOTAA64.EFI")))))
+    ;; grub-mkstandalone requires a TMPDIR to prepare the firmware image.
+    (setenv "TMPDIR" esp)
+
+    (mkdir-p efi-directory)
+    (unless (zero? (system* grub-mkstandalone "-O" (car efi-targets)
+                            "-o" (string-append efi-directory "/"
+                                                (cdr efi-targets))
+                            ;; Graft the configuration file onto the image.
+                            (string-append "boot/grub/grub.cfg=" config-file)))
+      (error "failed to create GRUB EFI image"))))
+
 (define* (initialize-hard-disk device
                                #:key
                                bootloader-package
                                bootcfg
                                bootcfg-location
                                bootloader-installer
+                               (grub-efi #f)
                                (partitions '()))
   "Initialize DEVICE as a disk containing all the <partition> objects listed
 in PARTITIONS, and using BOOTCFG as its bootloader configuration file.
@@ -332,8 +362,13 @@ passing it a directory name where it is mounted."
     "Return the first partition found with the boot flag set."
     (member 'boot (partition-flags partition)))
 
+  (define (partition-esp? partition)
+    "Return the first EFI System Partition."
+    (member 'esp (partition-flags partition)))
+
   (let* ((partitions (initialize-partition-table device partitions))
          (root       (find partition-bootable? partitions))
+         (esp        (find partition-esp? partitions))
          (target     "/fs"))
     (unless root
       (error "no bootable partition specified" partitions))
@@ -345,7 +380,33 @@ passing it a directory name where it is mounted."
     (mount (partition-device root) target (partition-file-system root))
     (install-boot-config bootcfg bootcfg-location target)
     (when bootloader-installer
+      (display "installing bootloader...\n")
       (bootloader-installer bootloader-package device target))
+
+    (when esp
+      ;; Mount the ESP somewhere and install GRUB UEFI image.
+      (let ((mount-point (string-append target "/boot/efi"))
+            (grub-config (string-append target "/tmp/grub-standalone.cfg")))
+        (display "mounting EFI system partition...\n")
+        (mkdir-p mount-point)
+        (mount (partition-device esp) mount-point
+               (partition-file-system esp))
+
+        ;; Create a tiny configuration file telling the embedded grub
+        ;; where to load the real thing.
+        (call-with-output-file grub-config
+          (lambda (port)
+            (format port
+                    "insmod part_msdos~@
+                    search --set=root --label gnu-disk-image~@
+                    configfile /boot/grub/grub.cfg~%")))
+
+        (display "creating EFI firmware image...")
+        (install-efi grub-efi mount-point grub-config)
+        (display "done.\n")
+
+        (delete-file grub-config)
+        (umount mount-point)))
 
     ;; Register BOOTCFG as a GC root.
     (register-bootcfg-root target bootcfg)

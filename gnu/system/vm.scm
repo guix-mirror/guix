@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,13 +229,26 @@ the image."
                                #:system-directory #$os-drv))
                   (partitions (list (partition
                                      (size #$(- disk-image-size
-                                                (* 10 (expt 2 20))))
+                                                (* 50 (expt 2 20))))
                                      (label #$file-system-label)
                                      (file-system #$file-system-type)
                                      (flags '(boot))
-                                     (initializer initialize)))))
+                                     (initializer initialize))
+                                    ;; Append a small EFI System Partition for
+                                    ;; use with UEFI bootloaders.
+                                    (partition
+                                     ;; The standalone grub image is about 10MiB, but
+                                     ;; leave some room for custom or multiple images.
+                                     (size (* 40 (expt 2 20)))
+                                     (label "GNU-ESP")             ;cosmetic only
+                                     ;; Use "vfat" here since this property is used
+                                     ;; when mounting. The actual FAT-ness is based
+                                     ;; on filesystem size (16 in this case).
+                                     (file-system "vfat")
+                                     (flags '(esp))))))
              (initialize-hard-disk "/dev/vda"
                                    #:partitions partitions
+                                   #:grub-efi #$grub-efi
                                    #:bootloader-package
                                    #$(bootloader-package bootloader)
                                    #:bootcfg #$bootcfg-drv
