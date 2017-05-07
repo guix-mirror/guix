@@ -100,10 +100,9 @@ POSIX regular expression API.")
              ("zlib" ,zlib)))
    (arguments
     `(#:configure-flags '("--enable-unicode"
-                          "--enable-pcregrep-libz"
-                          "--enable-pcregrep-libbz2"
-                          "--enable-pcretest-libreadline"
-                          "--enable-unicode-properties"
+                          "--enable-pcre2grep-libz"
+                          "--enable-pcre2grep-libbz2"
+                          "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
                           "--enable-jit")
