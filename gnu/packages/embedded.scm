@@ -676,7 +676,7 @@ upload binaries to a Parallax Propeller micro-controller.")
 (define-public spin2cpp
   (package
     (name "spin2cpp")
-    (version "3.4.0")
+    (version "3.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/totalspectrum/spin2cpp/"
@@ -684,7 +684,7 @@ upload binaries to a Parallax Propeller micro-controller.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00i8i0dspd5115ggkv5vx2xqb21l6y38wz0bakgby8n3b4k9xnk0"))))
+                "0v5vzh69bp1r2byrpz12rql1w24ff2v9msr31596zq6hd6n82lnh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;; The tests assume that a micro-controller is connected.
