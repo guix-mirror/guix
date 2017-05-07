@@ -199,6 +199,100 @@ directly by the user."
 
 
 ;;;
+;;; Boot parameters
+;;;
+
+(define-record-type* <boot-parameters>
+  boot-parameters make-boot-parameters boot-parameters?
+  (label            boot-parameters-label)
+  ;; Because we will use the 'store-device' to create the GRUB search command,
+  ;; the 'store-device' has slightly different semantics than 'root-device'.
+  ;; The 'store-device' can be a file system uuid, a file system label, or #f,
+  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
+  ;; understand that.  The 'root-device', on the other hand, corresponds
+  ;; exactly to the device field of the <file-system> object representing the
+  ;; OS's root file system, so it might be a device path like "/dev/sda3".
+  (root-device      boot-parameters-root-device)
+  (store-device     boot-parameters-store-device)
+  (store-mount-point boot-parameters-store-mount-point)
+  (kernel           boot-parameters-kernel)
+  (kernel-arguments boot-parameters-kernel-arguments)
+  (initrd           boot-parameters-initrd))
+
+(define (read-boot-parameters port)
+  "Read boot parameters from PORT and return the corresponding
+<boot-parameters> object or #f if the format is unrecognized."
+  (match (read port)
+    (('boot-parameters ('version 0)
+                       ('label label) ('root-device root)
+                       ('kernel linux)
+                       rest ...)
+     (boot-parameters
+      (label label)
+      (root-device root)
+
+      ;; In the past, we would store the directory name of the kernel instead
+      ;; of the absolute file name of its image.  Detect that and correct it.
+      (kernel (if (string=? linux (direct-store-path linux))
+                  (string-append linux "/"
+                                 (system-linux-image-file-name))
+                  linux))
+
+      (kernel-arguments
+       (match (assq 'kernel-arguments rest)
+         ((_ args) args)
+         (#f       '())))                         ;the old format
+
+      (initrd
+       (match (assq 'initrd rest)
+         (('initrd ('string-append directory file)) ;the old format
+          (string-append directory file))
+         (('initrd (? string? file))
+          file)))
+
+      (store-device
+       (match (assq 'store rest)
+         (('store ('device device) _ ...)
+          device)
+         (_                                       ;the old format
+          ;; Root might be a device path like "/dev/sda1", which is not a
+          ;; suitable GRUB device identifier.
+          (if (string-prefix? "/" root)
+              #f
+              root))))
+
+      (store-mount-point
+       (match (assq 'store rest)
+         (('store ('device _) ('mount-point mount-point) _ ...)
+          mount-point)
+         (_                                       ;the old format
+          "/")))))
+    (x                                            ;unsupported format
+     (warning (G_ "unrecognized boot parameters for '~a'~%")
+              system)
+     #f)))
+
+(define (read-boot-parameters-file system)
+  "Read boot parameters from SYSTEM's (system or generation) \"parameters\"
+file and returns the corresponding <boot-parameters> object or #f if the
+format is unrecognized.
+The object has its kernel-arguments extended in order to make it bootable."
+  (let* ((file (string-append system "/parameters"))
+         (params (call-with-input-file file read-boot-parameters))
+         (root (boot-parameters-root-device params))
+         (root-device (if (bytevector? root)
+                          (uuid->string root)
+                          root))
+         (kernel-arguments (boot-parameters-kernel-arguments params)))
+    (if params
+      (boot-parameters
+        (inherit params)
+        (kernel-arguments (bootable-kernel-arguments kernel-arguments
+                                                     system
+                                                     root-device)))
+      #f)))
+
+;;;
 ;;; Services.
 ;;;
 
@@ -812,100 +906,5 @@ being stored into the \"parameters\" file)."
                      (device #$(boot-parameters-store-device params))
                      (mount-point #$(boot-parameters-store-mount-point params))))
                  #:set-load-path? #f)))
-
-
-;;;
-;;; Boot parameters
-;;;
-
-(define-record-type* <boot-parameters>
-  boot-parameters make-boot-parameters boot-parameters?
-  (label            boot-parameters-label)
-  ;; Because we will use the 'store-device' to create the GRUB search command,
-  ;; the 'store-device' has slightly different semantics than 'root-device'.
-  ;; The 'store-device' can be a file system uuid, a file system label, or #f,
-  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
-  ;; understand that.  The 'root-device', on the other hand, corresponds
-  ;; exactly to the device field of the <file-system> object representing the
-  ;; OS's root file system, so it might be a device path like "/dev/sda3".
-  (root-device      boot-parameters-root-device)
-  (store-device     boot-parameters-store-device)
-  (store-mount-point boot-parameters-store-mount-point)
-  (kernel           boot-parameters-kernel)
-  (kernel-arguments boot-parameters-kernel-arguments)
-  (initrd           boot-parameters-initrd))
-
-(define (read-boot-parameters port)
-  "Read boot parameters from PORT and return the corresponding
-<boot-parameters> object or #f if the format is unrecognized."
-  (match (read port)
-    (('boot-parameters ('version 0)
-                       ('label label) ('root-device root)
-                       ('kernel linux)
-                       rest ...)
-     (boot-parameters
-      (label label)
-      (root-device root)
-
-      ;; In the past, we would store the directory name of the kernel instead
-      ;; of the absolute file name of its image.  Detect that and correct it.
-      (kernel (if (string=? linux (direct-store-path linux))
-                  (string-append linux "/"
-                                 (system-linux-image-file-name))
-                  linux))
-
-      (kernel-arguments
-       (match (assq 'kernel-arguments rest)
-         ((_ args) args)
-         (#f       '())))                         ;the old format
-
-      (initrd
-       (match (assq 'initrd rest)
-         (('initrd ('string-append directory file)) ;the old format
-          (string-append directory file))
-         (('initrd (? string? file))
-          file)))
-
-      (store-device
-       (match (assq 'store rest)
-         (('store ('device device) _ ...)
-          device)
-         (_                                       ;the old format
-          ;; Root might be a device path like "/dev/sda1", which is not a
-          ;; suitable GRUB device identifier.
-          (if (string-prefix? "/" root)
-              #f
-              root))))
-
-      (store-mount-point
-       (match (assq 'store rest)
-         (('store ('device _) ('mount-point mount-point) _ ...)
-          mount-point)
-         (_                                       ;the old format
-          "/")))))
-    (x                                            ;unsupported format
-     (warning (G_ "unrecognized boot parameters for '~a'~%")
-              system)
-     #f)))
-
-(define (read-boot-parameters-file system)
-  "Read boot parameters from SYSTEM's (system or generation) \"parameters\"
-file and returns the corresponding <boot-parameters> object or #f if the
-format is unrecognized.
-The object has its kernel-arguments extended in order to make it bootable."
-  (let* ((file (string-append system "/parameters"))
-         (params (call-with-input-file file read-boot-parameters))
-         (root (boot-parameters-root-device params))
-         (root-device (if (bytevector? root)
-                          (uuid->string root)
-                          root))
-         (kernel-arguments (boot-parameters-kernel-arguments params)))
-    (if params
-      (boot-parameters
-        (inherit params)
-        (kernel-arguments (bootable-kernel-arguments kernel-arguments
-                                                     system
-                                                     root-device)))
-      #f)))
 
 ;;; system.scm ends here
