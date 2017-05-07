@@ -73,18 +73,16 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.12.0")
-        (commit "25a49294caf2386e65fc1b12a2508324be0b1cc2")
-        (revision 9))
+        (commit "ba2260dbbc5a3c915e2cbd54d93f2f3af2a864c3")
+        (revision 10))
     (package
       (name "guix")
 
-      ;; Note: use a very short commit id; with a longer one, the limit on
-      ;; hash-bang lines would be exceeded while running the tests.
       (version (if (zero? revision)
                    version
                    (string-append version "-"
                                   (number->string revision)
-                                  "." (string-take commit 4))))
+                                  "." (string-take commit 7))))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -92,7 +90,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0p4rh0629j89v4ka5dsp70a1xrfhg7sxjjq54p68vw7x5dkann4a"))
+                  "0nkwbblsnl7kv2n8jf8c6rl3a7dynaqxizhhni18vbnmvza35c79"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -110,7 +108,12 @@
                             ;; we don't keep a reference to Graphviz, whose
                             ;; closure is pretty big (too big for the GuixSD
                             ;; installation image.)
-                            "ac_cv_path_DOT_USER_PROGRAM=dot")
+                            "ac_cv_path_DOT_USER_PROGRAM=dot"
+
+                            ;; To avoid problems with the length of shebangs,
+                            ;; choose a fixed-width and short directory name
+                            ;; for tests.
+                            "ac_cv_guix_test_root=/tmp/guix-tests")
          #:parallel-tests? #f         ;work around <http://bugs.gnu.org/21097>
 
          #:modules ((guix build gnu-build-system)
