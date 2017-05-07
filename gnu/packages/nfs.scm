@@ -57,43 +57,43 @@
          ,(string-append "--with-start-statd="
                          (assoc-ref %outputs "out") "/sbin/start-statd")
          ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5")))
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                      'configure 'adjust-command-file-names
-                    (lambda _
-                      ;; Remove assumptions of FHS from start-statd script
-                      (substitute* `("utils/statd/start-statd")
-                        (("^PATH=.*") "")
-                        (("^flock")
-                         (string-append
-                          (assoc-ref %build-inputs "util-linux")
-                          "/bin/flock"))
-                        (("^exec rpc.statd")
-                         (string-append "exec "
-                          (assoc-ref %outputs "out") "/sbin/rpc.statd")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'adjust-command-file-names
+           (lambda _
+             ;; Remove assumptions of FHS from start-statd script
+             (substitute* `("utils/statd/start-statd")
+               (("^PATH=.*") "")
+               (("^flock")
+                (string-append
+                 (assoc-ref %build-inputs "util-linux")
+                 "/bin/flock"))
+               (("^exec rpc.statd")
+                (string-append "exec "
+                 (assoc-ref %outputs "out") "/sbin/rpc.statd")))
 
-                      ;; This hook tries to write to /var
-                      ;; That needs to be done by a service too.
-                      (substitute* `("Makefile.in")
-                        (("^install-data-hook:")
-                         "install-data-hook-disabled-for-guix:"))
+             ;; This hook tries to write to /var
+             ;; That needs to be done by a service too.
+             (substitute* `("Makefile.in")
+               (("^install-data-hook:")
+                "install-data-hook-disabled-for-guix:"))
 
-                      ;; Replace some hard coded paths.
-                      (substitute* `("utils/nfsd/nfssvc.c")
-                        (("/bin/mount")
-                         (string-append
-                          (assoc-ref %build-inputs "util-linux")
-                          "/bin/mount")))
-                      (substitute* `("utils/statd/statd.c")
-                        (("/usr/sbin/")
-                         (string-append (assoc-ref %outputs "out") "/sbin/")))
-                      (substitute* `("utils/osd_login/Makefile.in"
-                                     "utils/mount/Makefile.in"
-                                     "utils/nfsdcltrack/Makefile.in")
-                        (("^sbindir = /sbin")
-                         (string-append "sbindir = "
-                                        (assoc-ref %outputs "out") "/sbin")))
-                      #t)))))
+             ;; Replace some hard coded paths.
+             (substitute* `("utils/nfsd/nfssvc.c")
+               (("/bin/mount")
+                (string-append
+                 (assoc-ref %build-inputs "util-linux")
+                 "/bin/mount")))
+             (substitute* `("utils/statd/statd.c")
+               (("/usr/sbin/")
+                (string-append (assoc-ref %outputs "out") "/sbin/")))
+             (substitute* `("utils/osd_login/Makefile.in"
+                            "utils/mount/Makefile.in"
+                            "utils/nfsdcltrack/Makefile.in")
+               (("^sbindir = /sbin")
+                (string-append "sbindir = "
+                               (assoc-ref %outputs "out") "/sbin")))
+             #t)))))
     (inputs `(("libevent" ,libevent)
               ("libnfsidmap" ,libnfsidmap)
               ("sqlite" ,sqlite)
