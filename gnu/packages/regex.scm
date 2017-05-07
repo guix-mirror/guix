@@ -41,7 +41,10 @@
                  "14i9pf9ap8h48j1584ifsq7c7a884cr1s4r7zvpcb9x1xr9232wh"))))
      (build-system gnu-build-system)
      (arguments
-      `(#:test-target "test"
+      `(#:modules ((guix build gnu-build-system)
+                   (guix build utils)
+                   (srfi srfi-1))
+        #:test-target "test"
         ;; There is no configure step, but the Makefile respects a prefix.
         ;; As ./configure does not know anything about the target CXX
         ;; we need to specify TARGET-g++ explicitly.
