@@ -145,6 +145,10 @@ absolute file name and STAT is the result of 'lstat'."
                            (reverse lines))
                           (line
                            (loop (cons line lines))))))
+         (inodes      (map (lambda (file)
+                             (let ((stat (lstat file)))
+                               (cons (stat:dev stat) (stat:ino stat))))
+                           files))
          (status      (close-pipe pipe)))
     (and (zero? status)
          (lambda (file stat)
@@ -155,8 +159,10 @@ absolute file name and STAT is the result of 'lstat'."
               (any (lambda (f) (parent-directory? f file))
                    files))
              ((or 'regular 'symlink)
-              (any (lambda (f) (string-suffix? f file))
-                   files))
+              ;; Comparing file names is always tricky business so we rely on
+              ;; inode numbers instead
+              (member (cons (stat:dev stat) (stat:ino stat))
+                      inodes))
              (_
               #f))))))
 
