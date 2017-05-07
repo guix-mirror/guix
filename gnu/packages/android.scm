@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Kai-Chung Yan <seamlikok@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +24,13 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls))
 
 ;; The Makefiles that we add are largely based on the Debian
@@ -297,4 +303,99 @@ various Android core host applications.")
 with an emulator instance or connected Android device.  It facilitates a variety
 of device actions, such as installing and debugging apps, and it provides access
 to a Unix shell that can run commands on the connected device or emulator.")
+    (license license:asl2.0)))
+
+(define-public git-repo
+  (package
+    (name "git-repo")
+    (version "1.12.37")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gerrit.googlesource.com/git-repo")
+             (commit (string-append "v" version))))
+       (file-name (string-append "git-repo-" version "-checkout"))
+       (sha256
+        (base32 "0qp7jqhblv7xblfgpcq4n18dyjdv8shz7r60c3vnjxx2fngkj2jd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; code says: "Python 3 support is … experimental."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-executable-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (git (assoc-ref inputs "git"))
+                    (gpg (assoc-ref inputs "gnupg"))
+                    (ssh (assoc-ref inputs "ssh")))
+               (substitute* '("repo" "git_command.py")
+                 (("^GIT = 'git' ")
+                  (string-append "GIT = '" git "/bin/git' ")))
+               (substitute* "repo"
+                 ((" cmd = \\['gpg',")
+                  (string-append " cmd = ['" gpg "/bin/gpg',")))
+               (substitute* "git_config.py"
+                 ((" command_base = \\['ssh',")
+                  (string-append " command_base = ['" ssh "/bin/ssh',")))
+               #t)))
+         (add-before 'build 'do-not-clone-this-source
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (repo-dir (string-append out "/share/" ,name)))
+               (substitute* "repo"
+                 (("^def _FindRepo\\(\\):.*")
+                  (format #f "
+def _FindRepo():
+  '''Look for a repo installation, starting at the current directory.'''
+  # Use the installed version of git-repo.
+  repo_main = '~a/main.py'
+  curdir = os.getcwd()
+  olddir = None
+  while curdir != '/' and curdir != olddir:
+    dot_repo = os.path.join(curdir, repodir)
+    if os.path.isdir(dot_repo):
+      return (repo_main, dot_repo)
+    else:
+      olddir = curdir
+      curdir = os.path.dirname(curdir)
+  return None, ''
+
+  # The remaining of this function is dead code.  It was used to
+  # find a git-checked-out version in the local project.\n" repo-dir))
+                 ;; Neither clone, check out, nor verify the git repository
+                 (("(^\\s+)_Clone\\(.*\\)") "")
+                 (("(^\\s+)_Checkout\\(.*\\)") "")
+                 ((" rev = _Verify\\(.*\\)") " rev = None"))
+               #t)))
+         (delete 'build) ; nothing to build
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "nose"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir (string-append out "/bin"))
+                    (repo-dir (string-append out "/share/" ,name)))
+               (mkdir-p bin-dir)
+               (mkdir-p repo-dir)
+               (copy-recursively "." repo-dir)
+               (delete-file-recursively (string-append repo-dir "/tests"))
+               (symlink (string-append repo-dir "/repo")
+                        (string-append bin-dir "/repo"))
+               #t))))))
+    (inputs
+     ;; TODO: Add git-remote-persistent-https once it is available in guix
+     `(("git" ,git)
+       ("gnupg" ,gnupg)
+       ("ssh", openssh)))
+    (native-inputs
+     `(("nose" ,python2-nose)))
+    (home-page "https://code.google.com/p/git-repo/")
+    (synopsis "Helps to manage many Git repositories.")
+    (description "Repo is a tool built on top of Git.  Repo helps manage many
+Git repositories, does the uploads to revision control systems, and automates
+parts of the development workflow.  Repo is not meant to replace Git, only to
+make it easier to work with Git.  The repo command is an executable Python
+script that you can put anywhere in your path.")
     (license license:asl2.0)))
