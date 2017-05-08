@@ -546,6 +546,83 @@ gen-AUTHORS:
 	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
 	fi
 
+
+#
+# Release management.
+#
+
+releasedir = release-$(PACKAGE_VERSION)
+
+PACKAGE_FULL_TARNAME = $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+
+# List of source tarballs produced.  This must be kept in sync with the
+# 'dist-' options of 'AM_INIT_AUTOMAKE' in 'configure.ac'.
+SOURCE_TARBALLS =					\
+  $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
+
+# Systems supported by Guix.
+SUPPORTED_SYSTEMS = x86_64-linux i686-linux armhf-linux
+
+# Guix binary tarballs.
+BINARY_TARBALLS =							\
+  $(foreach system,$(SUPPORTED_SYSTEMS),guix-binary.$(system).tar.xz)
+
+# Systems supported by GuixSD.
+GUIXSD_SUPPORTED_SYSTEMS = x86_64-linux #i686-linux
+
+# Prefix of the GuixSD installation image file name.
+GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
+
+# Size of the installation image (for x86_64 typically).
+GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
+
+# The release process works in several phases:
+#
+#   0. We assume the developer created a 'vX.Y' tag.
+#   1. Build the source tarball.
+#   2. Update the 'guix' package so that it corresponds to the 'vX.Y' tag.
+#   3. Build the binary tarballs for that 'guix' package.
+#   4. Update the 'guix' package again.
+#   5. Build the GuixSD installation images.  The images will run 'guix'
+#      corresponding to 'vX.Y' + 1 commit, and they will install 'vX.Y'.
+#
+# This 'release' target takes care of everything and copies the resulting
+# files to $(releasedir).
+release: distcheck
+	$(MKDIR_P) "$(releasedir)"
+	rm -f "$(releasedir)"/*
+	mv $(SOURCE_TARBALLS) "$(releasedir)"
+	cd po; git checkout .
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
+	git add $(top_srcdir)/gnu/packages/package-management.scm
+	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
+	rm -f $(BINARY_TARBALLS)
+	$(MAKE) $(BINARY_TARBALLS)
+	for system in $(SUPPORTED_SYSTEMS) ; do					\
+	  mv "guix-binary.$$system.tar.xz"					\
+	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
+	done
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`"
+	git add $(top_srcdir)/gnu/packages/package-management.scm
+	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
+	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
+	  image=`$(top_builddir)/pre-inst-env						\
+	    guix system disk-image							\
+	    --image-size=$(GUIXSD_INSTALLATION_IMAGE_SIZE)				\
+	    gnu/system/install.scm` ;							\
+	  if [ ! -f "$$image" ] ; then							\
+	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
+	    exit 1 ;									\
+	  fi ;										\
+	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
+	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
+	done
+
 update-guix-package:
 	git rev-parse HEAD
 	$(top_builddir)/pre-inst-env "$(GUILE)"			\
@@ -587,7 +664,7 @@ hydra-jobs.scm: $(GOBJECTS)
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
 .PHONY: clean-go make-go
-.PHONY: update-guix-package
+.PHONY: update-guix-package release
 
 ## -------------- ##
 ## Silent rules.  ##
