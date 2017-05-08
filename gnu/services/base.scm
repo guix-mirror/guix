@@ -1152,8 +1152,10 @@ the tty to run, among other things."
       (mkdir-p "/var/db/nscd")                    ;for the persistent cache
 
       ;; In libc 2.25 nscd uses inotify to watch /etc/resolv.conf, but only if
-      ;; that file exists when it is started.  Thus create it here.
-      (unless (file-exists? "/etc/resolv.conf")
+      ;; that file exists when it is started.  Thus create it here.  Note: on
+      ;; some systems, such as when NetworkManager is used, /etc/resolv.conf
+      ;; is a symlink, hence 'lstat'.
+      (unless (false-if-exception (lstat "/etc/resolv.conf"))
         (call-with-output-file "/etc/resolv.conf"
           (lambda (port)
             (display "# This is a placeholder.\n" port))))))
