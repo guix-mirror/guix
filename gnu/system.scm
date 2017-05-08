@@ -108,6 +108,7 @@
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
+            read-boot-parameters
             read-boot-parameters-file
 
             local-host-aliases
