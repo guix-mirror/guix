@@ -867,7 +867,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   %D%/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
-  %D%/packages/patches/perl-net-dns-resolver-programmable-Fix-broken-interface.patch	\
+  %D%/packages/patches/perl-net-dns-resolver-programmable-fix.patch	\
   %D%/packages/patches/perl-no-sys-dirs.patch			\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
   %D%/packages/patches/perl-reproducible-build-date.patch	\

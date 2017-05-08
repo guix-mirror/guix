@@ -727,8 +727,7 @@ definitions and structure manipulators for Perl.")
         (base32
           "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
       (patches
-        (search-patches
-          "perl-net-dns-resolver-programmable-Fix-broken-interface.patch"))))
+       (search-patches "perl-net-dns-resolver-programmable-fix.patch"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))
