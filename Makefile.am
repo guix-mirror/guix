@@ -391,8 +391,10 @@ check-system: $(GOBJECTS) $(BOOTSTRAP_GUILE_TARBALLS)
 	   -e '(@@ (run-system-tests) run-system-tests)'	\
 	   $(top_srcdir)/build-aux/run-system-tests.scm
 
-# Public key used to sign substitutes from hydra.gnu.org.
-dist_pkgdata_DATA = hydra.gnu.org.pub
+# Public key used to sign substitutes from hydra.gnu.org & co.
+dist_pkgdata_DATA =				\
+  hydra.gnu.org.pub				\
+  bayfront.guixsd.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix
