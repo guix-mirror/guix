@@ -1,4 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -25,6 +27,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -66,6 +69,57 @@
 older or slower computers and embedded systems.")
     (home-page "http://www.dillo.org")
     (license license:gpl3+)))
+
+(define-public links
+  (package
+    (name "links")
+    (version "2.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://links.twibright.com/download/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1f24y83wa1vzzjq5kp857gjqdpnmf8pb29yw7fam0m8wxxw0c3gp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The tarball uses a very old version of autconf. It doesn't
+             ;; understand extra flags like `--enable-fast-install', so
+             ;; we need to invoke it with just what it understands.
+             (let ((out (assoc-ref outputs "out")))
+               ;; 'configure' doesn't understand '--host'.
+               ,@(if (%current-target-system)
+                     `((setenv "CHOST" ,(%current-target-system)))
+                     '())
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         "--enable-graphics"))))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("zlib" ,zlib)
+              ("openssl" ,openssl)
+              ("libjpeg" ,libjpeg)
+              ("libtiff" ,libtiff)
+              ("libevent" ,libevent)
+              ("libpng" ,libpng)
+              ("libxt" ,libxt)))
+    (synopsis "Text and graphics mode web browser")
+    (description "Links is a graphics and text mode web browser, with many
+features including, tables, builtin image display, bookmarks, SSL and more.")
+    (home-page "http://links.twibright.com")
+    ;; The distribution contains a copy of GPLv2
+    ;; However, the copyright notices simply say:
+    ;; "This file is a part of the Links program, released under GPL."
+    ;; Therefore, under the provisions of Section 9, we can choose
+    ;; any version ever published by the FSF.
+    ;; One file (https.c) contains an exception permitting
+    ;; linking of the program with openssl.
+    (license license:gpl1+)))
 
 (define-public qutebrowser
   (package
