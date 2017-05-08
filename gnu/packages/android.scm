@@ -767,6 +767,54 @@ for Android.  More precicely the headers from include/android in
 platform/frameworks/native.")
     (license license:asl2.0)))
 
+(define-public libetc1
+  (package
+    (name "libetc1")
+    (version (android-platform-version))
+    (source (android-platform-frameworks-native version))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Makefile
+           (lambda _
+             ;; No useful makefile is shipped, so we create one.
+             (with-output-to-file "Makefile"
+               (lambda _
+                 (display
+                  (string-append
+                   "NAME = libETC1\n"
+                   "SOURCES = opengl/libs/ETC1/etc1.cpp\n"
+                   "CXXFLAGS += -fPIC\n"
+                   "CPPFLAGS += -Iopengl/include\n"
+                   "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0\n"
+                   "$(NAME).so.0: $(SOURCES)\n"
+                   "	$(CXX) $^ -o $@ $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)\n"
+                   "build: $(NAME).so.0"))
+                 #t))))
+         (add-after 'unpack 'remove-unused-stuff-to-reduce-warnings
+           (lambda _
+             (delete-file-recursively "opengl/libs/tools")))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (install-file "libETC1.so.0" lib)
+               (with-directory-excursion lib
+                 (symlink "libETC1.so.0" "libETC1.so"))
+               (copy-recursively "opengl/include/ETC1"
+                                 (string-append include "/ETC1"))))))))
+    (home-page "https://android.googlesource.com/platform/frameworks/native/")
+    (synopsis "ETC1 compression library")
+    (description "Ericsson Texture Compression (ETC) is a lossy texture
+compression technique developed in collaboration with Ericsson Research in
+early 2005.  libETC1 provides the encoding and decoding of ETC1 compression
+algorithm.")
+    (license license:asl2.0)))
+
 (define-public git-repo
   (package
     (name "git-repo")
