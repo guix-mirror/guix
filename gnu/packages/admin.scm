@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2088,3 +2089,44 @@ It is similar to Capistrano, except it's implemented in Python and doesn't
 expect you to be deploying Rails applications.  Fabric is a simple, Pythonic
 tool for remote execution and deployment.")
     (license license:bsd-2)))
+
+(define-public neofetch
+  (package
+    (name "neofetch")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dylanaraps/neofetch/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rgznkl7a5q7lnc6zxlwvinq20b7k46n949l1hiwifarv0jgwynv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there are no tests
+       #:make-flags
+       (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-target-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("\\$\\(DESTDIR\\)/etc/")
+                  "$(PREFIX)/etc/"))
+               (substitute* "neofetch"
+                 (("\"/etc/neofetch")
+                  (string-append "\"" out "/etc/neofetch"))
+                 (("\"/usr/share/neofetch")
+                  (string-append "\"" out "/usr/share/neofetch"))))
+             #t))
+         (delete 'configure))))
+    (home-page "https://github.com/dylanaraps/neofetch")
+    (synopsis "System info script")
+    (description "Neofetch is a CLI system information tool written in Bash.
+Neofetch displays information about your system next to an image, your OS
+logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
+used in screenshots to show other users what operating system or distribution
+you are running, what theme or icon set you are using, etc.")
+    (license license:expat)))
