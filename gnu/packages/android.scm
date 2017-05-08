@@ -193,6 +193,17 @@ use their packages mostly unmodified in our Android NDK build system.")
      (base32
       checksum))))
 
+(define (android-platform-frameworks-native version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/frameworks/native")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-frameworks-native-"
+                              version "-checkout"))
+    (sha256
+     (base32 "00dgx27wma7wzivniy8zyw2443fi2xx8gyxii081m0fwamqd3jrm"))))
+
 (define-public android-liblog
   (package
     (name "android-liblog")
@@ -730,6 +741,31 @@ it.
 @emph{Simply installing this package will not have any effect.}  It is meant
 to be passed to the @code{udev} service.")
     (license license:gpl3+)))
+
+(define-public android-platform-frameworks-native-headers
+  (package
+    (name "android-platform-frameworks-native-headers")
+    (version (android-platform-version))
+    (source (android-platform-frameworks-native version))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (include (string-append %output "/include/android")))
+           (mkdir-p include)
+           (copy-recursively (string-append source "/include/android")
+                             (string-append include)) ; "/android"))
+           ))))
+    (home-page "https://android.googlesource.com/platform/frameworks/native/")
+    (synopsis "Headers for Android development from
+android-platform-frameworks-native")
+    (description "This package contains headers used for developing software
+for Android.  More precicely the headers from include/android in
+platform/frameworks/native.")
+    (license license:asl2.0)))
 
 (define-public git-repo
   (package
