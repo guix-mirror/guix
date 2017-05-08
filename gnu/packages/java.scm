@@ -104,6 +104,45 @@ defined in The Java Language Specification into the bytecoded instruction set
 and binary format defined in The Java Virtual Machine Specification.")
     (license license:ibmpl1.0)))
 
+(define sablevm-classpath
+  (package
+    (name "sablevm-classpath")
+    (version "1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
+                                  version "/sablevm-classpath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qyhyfz8idghxdam16hdgpa24r2x4xbg9z8c8asa3chnd79h3zw2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-jikes"
+             "--disable-Werror"
+             "--disable-gmp"
+             "--disable-gtk-peer"
+             "--disable-plugin"
+             "--disable-dssi"
+             "--disable-alsa"
+             "--disable-gjdoc")))
+    (inputs
+     `(("gconf" ,gconf)
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("jikes" ,jikes)
+       ("fastjar" ,fastjar)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://sablevm.org/")
+    (synopsis "Java Virtual Machine")
+    (description "SableVM is a clean-room, highly portable and efficient Java
+virtual machine.  Its goals are to be reasonably small, fast, and compliant
+with the various specifications (JVM specification, JNI, invocation interface,
+etc.).  SableVM is no longer maintained.
+
+This package provides the classpath library.")
+    (license license:lgpl2.1+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
