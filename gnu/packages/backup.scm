@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,6 +187,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
+    (replacement libarchive-3.3.1)
     (version "3.2.2")
     (source
      (origin
@@ -240,6 +242,20 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
+
+(define libarchive-3.3.1
+  (package
+    (inherit libarchive)
+    (name "libarchive")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://libarchive.org/downloads/libarchive-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rr40hxlm9vy5z2zb5w7pyfkgd1a4s061qapm83s19accb8mpji9"))))))
 
 (define-public rdup
   (package
