@@ -847,9 +847,11 @@ populate the \"old entries\" menu."
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
        (entry (operating-system-boot-parameters os system root-device)))
-    ((@@ (gnu system grub) grub-configuration-file) (operating-system-bootloader os)
-                             (list entry)
-                              #:old-entries old-entries)))
+    ((module-ref (resolve-interface '(gnu system grub))
+                 'grub-configuration-file)
+     (operating-system-bootloader os)
+     (list entry)
+     #:old-entries old-entries)))
 
 (define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the
