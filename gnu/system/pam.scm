@@ -204,21 +204,27 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
         (env  (pam-entry ; to honor /etc/environment.
                (control "required")
                (module "pam_env.so"))))
-    (lambda* (name #:key allow-empty-passwords? motd)
+    (lambda* (name #:key allow-empty-passwords? (allow-root? #f) motd)
       "Return a standard Unix-style PAM service for NAME.  When
-ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When MOTD is true, it
-should be a file-like object used as the message-of-the-day."
+ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When ALLOW-ROOT? is
+true, allow root to run the command without authentication.  When MOTD is
+true, it should be a file-like object used as the message-of-the-day."
       ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
       (let ((name* name))
         (pam-service
          (name name*)
          (account (list unix))
-         (auth (list (if allow-empty-passwords?
-                         (pam-entry
-                          (control "required")
-                          (module "pam_unix.so")
-                          (arguments '("nullok")))
-                         unix)))
+         (auth (append (if allow-root?
+                           (list (pam-entry
+                                  (control "sufficient")
+                                  (module "pam_rootok.so")))
+                           '())
+                       (list (if allow-empty-passwords?
+                                 (pam-entry
+                                  (control "required")
+                                  (module "pam_unix.so")
+                                  (arguments '("nullok")))
+                                 unix))))
          (password (list (pam-entry
                           (control "required")
                           (module "pam_unix.so")
@@ -256,7 +262,12 @@ authenticate to run COMMAND."
           ;; These programs are setuid-root.
           (map (cut unix-pam-service <>
                     #:allow-empty-passwords? allow-empty-passwords?)
-               '("su" "passwd" "sudo"))
+               '("passwd" "sudo"))
+          ;; This is setuid-root, as well.  Allow root to run "su" without
+          ;; authenticating.
+          (list (unix-pam-service "su"
+                                  #:allow-empty-passwords? allow-empty-passwords?
+                                  #:allow-root? #t))
 
           ;; These programs are not setuid-root, and we want root to be able
           ;; to run them without having to authenticate (notably because
