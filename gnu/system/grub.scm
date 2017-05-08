@@ -144,15 +144,15 @@ denoting a file name."
                     (with-imported-modules '((gnu build svg))
                       #~(begin
                           ;; We need these two libraries.
-                          (add-to-load-path (string-append #$guile-rsvg
+                          (add-to-load-path (string-append #+guile-rsvg
                                                            "/share/guile/site/"
                                                            (effective-version)))
-                          (add-to-load-path (string-append #$guile-cairo
+                          (add-to-load-path (string-append #+guile-cairo
                                                            "/share/guile/site/"
                                                            (effective-version)))
 
                           (use-modules (gnu build svg))
-                          (svg->png #$svg #$output
+                          (svg->png #+svg #$output
                                     #:width #$width
                                     #:height #$height)))))
 
