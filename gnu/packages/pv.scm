@@ -29,13 +29,13 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.ivarch.com/programs/sources/pv-"
+      (uri (string-append "https://www.ivarch.com/programs/sources/pv-"
                           version ".tar.bz2"))
       (sha256
        (base32
         "13gg6r84pkvznpd1l11qw1jw9yna40gkgpni256khyx21m785khf"))))
     (build-system gnu-build-system)
-    (home-page "http://www.ivarch.com/programs/pv.shtml")
+    (home-page "https://www.ivarch.com/programs/pv.shtml")
     (synopsis "Pipeline progress indicator")
     (description
      "pv (Pipe Viewer) is a terminal-based tool for monitoring the progress
