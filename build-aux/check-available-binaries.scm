@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +41,9 @@
                         '("mips64el-linux-gnuabi64")))
            (total  (append native cross)))
 
-      (set-build-options store #:use-substitutes? #t)
+      (set-build-options store
+                         #:use-substitutes? #t
+                         #:substitute-urls %default-substitute-urls)
       (let* ((total     (map derivation->output-path total))
              (available (substitutable-paths store total))
              (missing   (lset-difference string=? total available)))
