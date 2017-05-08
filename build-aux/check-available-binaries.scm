@@ -38,7 +38,8 @@
                                %hydra-supported-systems))
            (cross  (map (cut package-cross-derivation store
                              %bootstrap-tarballs <>)
-                        '("mips64el-linux-gnuabi64")))
+                        '("mips64el-linux-gnu"
+                          "arm-linux-gnueabihf")))
            (total  (append native cross)))
 
       (set-build-options store
