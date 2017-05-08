@@ -837,14 +837,14 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.7.2")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
-               (base32 "081ixgj3skglq9i7v0jb835lmfx21zi4i5b7997igwr0lj174y9j"))))
+               (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
@@ -875,7 +875,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license (non-copyleft "file://COPYING"))))
+    (license bsd-3)))
 
 (define-public compface
   (package
