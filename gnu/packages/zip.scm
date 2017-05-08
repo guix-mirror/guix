@@ -48,6 +48,9 @@
                       (list "-f" "unix/Makefile"
                             (string-append "prefix=" out)
                             (string-append "MANDIR=" out "/share/man/man1")))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
