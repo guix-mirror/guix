@@ -60,6 +60,50 @@
   #:use-module (srfi srfi-11)
   #:use-module (ice-9 match))
 
+
+;;;
+;;; Java bootstrap toolchain.
+;;;
+
+;; The Java bootstrap begins with Jikes, a Java compiler written in C++.  We
+;; use it to build the SableVM standard library and virtual machine, which are
+;; written in a simpler dialect of Java and C, respectively.  This is
+;; sufficient to build an older version of Ant, which is needed to build an
+;; older version of ECJ, an incremental Java compiler, both of which are
+;; written in Java.
+;;
+;; ECJ is needed to build the latest release of GNU Classpath (0.99).
+;; Classpath (> 0.98) is a requirement for JamVM, a more modern implementation
+;; of the Java virtual machine.
+;;
+;; With JamVM we can build the latest development version of GNU Classpath,
+;; which has much more support for Java 1.6 than the latest release.  Since
+;; the previous build of JamVM is limited by the use of GNU Classpath 0.99 we
+;; rebuild it with the latest development version of GNU Classpath.
+;;
+;; Finally, we use the bootstrap toolchain to build the OpenJDK with the
+;; Icedtea 1.x build framework.  We then build the more recent JDKs Icedtea
+;; 2.x and Icedtea 3.x.
+
+(define jikes
+  (package
+    (name "jikes")
+    (version "1.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jikes/Jikes/"
+                                  version "/jikes-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qqldrp74pzpy5ly421srqn30qppmm9cvjiqdngk8hf47dv2rc0c"))))
+    (build-system gnu-build-system)
+    (home-page "http://jikes.sourceforge.net/")
+    (synopsis "Compiler for the Java language")
+    (description "Jikes is a compiler that translates Java source files as
+defined in The Java Language Specification into the bytecoded instruction set
+and binary format defined in The Java Virtual Machine Specification.")
+    (license license:ibmpl1.0)))
+
 (define-public java-swt
   (package
     (name "java-swt")
