@@ -48,7 +48,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
-  #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system locale)
@@ -848,7 +847,7 @@ populate the \"old entries\" menu."
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
        (entry (operating-system-boot-parameters os system root-device)))
-    (grub-configuration-file (operating-system-bootloader os)
+    ((@@ (gnu system grub) grub-configuration-file) (operating-system-bootloader os)
                              (list entry)
                               #:old-entries old-entries)))
 
