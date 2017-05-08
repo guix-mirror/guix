@@ -267,10 +267,9 @@ libssh library.")
     (license license:gpl3+)))
 
 (define-public guile2.2-ssh
-  ;; This is a snapshot of a unofficial copy of Guile-SSH, which hopefully
-  ;; reflects the upcoming release well enough.
-  (let ((commit "926a0843626f89e3db02d01a6b01cc1f0d9cefcf")
-        (revision "0"))
+  ;; Snapshot of Guile-SSH that works with Guile 2.2.
+  (let ((commit "ca717e9d1ffd172c4f20fdd6c7caba050f1f2ba9")
+        (revision "1"))
     (package
       (inherit guile-ssh)
       (name "guile2.2-ssh")
@@ -278,12 +277,12 @@ libssh library.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://notabug.org/civodul/guile-ssh/")
+                      (url (package-home-page guile-ssh))
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0hf28macq8d1w05g0xy2lw1s5vzmcrixh7m43x7qvvdd31c998ip"))))
+                  "1r7f10z6pc6sgbaqnrcccklqydnxi68nybz700skfn3ln5jlbygi"))))
       (inputs `(("guile" ,guile-2.2)
                 ,@(alist-delete "guile" (package-inputs guile-ssh)))))))
 
