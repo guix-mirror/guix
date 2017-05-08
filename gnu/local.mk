@@ -244,7 +244,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lua.scm				\
   %D%/packages/lxde.scm				\
   %D%/packages/lxqt.scm				\
-  %D%/packages/lynx.scm				\
   %D%/packages/m4.scm				\
   %D%/packages/machine-learning.scm		\
   %D%/packages/man.scm				\

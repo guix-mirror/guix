@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -27,7 +28,10 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -35,6 +39,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -120,6 +125,63 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     ;; One file (https.c) contains an exception permitting
     ;; linking of the program with openssl.
     (license license:gpl1+)))
+
+(define-public lynx
+  (package
+    (name "lynx")
+    (version "2.8.9dev.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://invisible-mirror.net/archives/lynx/tarballs"
+                    "/lynx" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1cqm1i7d209brkrpzaqqf2x951ra3l67dw8x9yg10vz7rpr9441a"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("perl" ,perl)))
+    (inputs `(("ncurses" ,ncurses)
+              ("libidn" ,libidn)
+              ("gnutls" ,gnutls)
+              ("libgcrypt" ,libgcrypt)
+              ("unzip" ,unzip)
+              ("zlib" ,zlib)
+              ("gzip" ,gzip)
+              ("bzip2" ,bzip2)))
+    (arguments
+     `(#:configure-flags
+       (let ((gnutls (assoc-ref %build-inputs "gnutls")))
+         `("--with-pkg-config"
+           "--with-screen=ncurses"
+           "--with-zlib"
+           "--with-bzlib"
+           ,(string-append "--with-gnutls=" gnutls)
+           ;; "--with-socks5"    ; XXX TODO
+           "--enable-widec"
+           "--enable-ascii-ctypes"
+           "--enable-local-docs"
+           "--enable-htmlized-cfg"
+           "--enable-gzip-help"
+           "--enable-nls"
+           "--enable-ipv6"))
+       #:tests? #f  ; no check target
+       #:phases (alist-replace
+                 'install
+                 (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                   (zero? (apply system* "make" "install-full" make-flags)))
+                 %standard-phases)))
+    (synopsis "Text Web Browser")
+    (description
+     "Lynx is a fully-featured World Wide Web (WWW) client for users running
+cursor-addressable, character-cell display devices.  It will display Hypertext
+Markup Language (HTML) documents containing links to files on the local
+system, as well as files on remote systems running http, gopher, ftp, wais,
+nntp, finger, or cso/ph/qi servers.  Lynx can be used to access information on
+the WWW, or to build information systems intended primarily for local
+access.")
+    (home-page "http://lynx.isc.org/")
+    (license license:gpl2)))
 
 (define-public qutebrowser
   (package

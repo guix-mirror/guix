@@ -30,7 +30,6 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
-  #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages linux))
