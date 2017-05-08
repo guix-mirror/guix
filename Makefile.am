@@ -493,13 +493,17 @@ endif BUILD_DAEMON
 ACLOCAL_AMFLAGS = -I m4
 
 # Pass an explicit '--localstatedir' so that configure does not error out if
-# it finds an existing installation with a different localstatedir.
+# it finds an existing installation with a different localstatedir.  Inherit
+# 'ac_cv_guix_test_root' so that "make check" in $(distdir) does not have to
+# repopulate the whole store, and to make sure $(GUIX_TEST_ROOT) is short
+# enough for shebangs.
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --localstatedir="$$dc_install_base/var"	\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
-  --enable-daemon
+  --enable-daemon				\
+  ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
 # The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
 # so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
