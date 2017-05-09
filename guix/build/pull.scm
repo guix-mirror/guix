@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build pull)
+  #:use-module (guix modules)
   #:use-module (guix build utils)
   #:use-module (system base compile)
   #:use-module (ice-9 ftw)
@@ -34,6 +35,27 @@
 ;;; Helpers for the 'guix pull' command to unpack and build Guix.
 ;;;
 ;;; Code:
+
+(define (depends-on-guile-ssh? file)
+  "Return true if FILE is a Scheme source file that depends, directly or
+indirectly, on Guile-SSH."
+  (find (match-lambda
+          (('ssh _ ...) #t)
+          (_ #f))
+        (source-module-closure file #:select? (const #t))))
+
+(define (all-scheme-files directory)
+  "Return a sorted list of Scheme files found in DIRECTORY."
+  ;; Load guix/ modules before gnu/ modules to get somewhat steadier
+  ;; progress reporting.
+  (sort (filter (cut string-suffix? ".scm" <>)
+                (find-files directory "\\.scm"))
+        (let ((guix (string-append directory "/guix"))
+              (gnu  (string-append directory "/gnu")))
+          (lambda (a b)
+            (or (and (string-prefix? guix a)
+                     (string-prefix? gnu  b))
+                (string<? a b))))))
 
 (define* (build-guix out source
                      #:key
@@ -55,7 +77,8 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
   (setvbuf (current-error-port) _IOLBF)
 
   (with-directory-excursion source
-    (format #t "copying and compiling to '~a'...~%" out)
+    (format #t "copying and compiling to '~a' with Guile ~a...~%"
+            out (version))
 
     ;; Copy everything under guix/ and gnu/ plus {guix,gnu}.scm.
     (copy-recursively "guix" (string-append out "/guix")
@@ -92,17 +115,12 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
 
     ;; Compile the .scm files.  Load all the files before compiling them to
     ;; work around <http://bugs.gnu.org/15602> (FIXME).
-    (let* ((files
-            ;; Load guix/ modules before gnu/ modules to get somewhat steadier
-            ;; progress reporting.
-            (sort (filter (cut string-suffix? ".scm" <>)
-                          (find-files out "\\.scm"))
-                  (let ((guix (string-append out "/guix"))
-                        (gnu  (string-append out "/gnu")))
-                    (lambda (a b)
-                      (or (and (string-prefix? guix a)
-                               (string-prefix? gnu  b))
-                          (string<? a b))))))
+    ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
+    (let* ((files (remove (if (false-if-exception
+                               (resolve-interface '(ssh session)))
+                              (const #f)
+                              depends-on-guile-ssh?)
+                          (all-scheme-files out)))
            (total (length files)))
       (let loop ((files files)
                  (completed 0))
