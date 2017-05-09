@@ -2292,6 +2292,31 @@ many basic Internet protocols.  The purpose of the library is to provide
 fundamental protocol access, not higher-level abstractions.")
     (license license:asl2.0)))
 
+(define-public java-osgi-annotation
+  (package
+    (name "java-osgi-annotation")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/osgi/org.osgi.annotation/" version "/"
+                                  "org.osgi.annotation-" version "-sources.jar"))
+              (sha256
+               (base32
+                "1q718mb7gqg726rh6pc2hcisn8v50nv35abbir0jypmffhiii85w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "osgi-annotation.jar"))
+    (home-page "http://www.osgi.org")
+    (synopsis "Annotation module of OSGi framework")
+    (description
+     "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the OSGi annotation module, providing additional services to help dynamic
+components.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
