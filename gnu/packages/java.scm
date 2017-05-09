@@ -2613,6 +2613,35 @@ module @code{org.eclipse.core.runtime}.")
 module @code{org.eclipse.core.filesystem}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-expressions
+  (package
+    (name "java-eclipse-core-expressions")
+    (version "3.5.100")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.expressions/"
+                                  version "/org.eclipse.core.expressions-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "18bw2l875gmygvpagpgk9l24qzbdjia4ag12nw6fi8v8yaq4987f"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-expressions.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/")
+    (synopsis "Eclipse core expression language")
+    (description "This package provides the Eclipse core expression language
+with the @code{org.eclipse.core.expressions} module.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
