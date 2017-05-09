@@ -2390,13 +2390,13 @@ For example, to download and deploy version 0.12.0 of Guix from the
 canonical Git repo:
 
 @example
-guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
+guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
 @end example
 
 It can also be used to deploy arbitrary Git revisions:
 
 @example
-guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
+guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
 @end example
 
 @item --bootstrap
@@ -2404,6 +2404,8 @@ Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
 @end table
 
+In addition, @command{guix pull} supports all the common build options
+(@pxref{Common Build Options}).
 
 @node Invoking guix pack
 @section Invoking @command{guix pack}

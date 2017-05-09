@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,6 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module (guix scripts build)
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion delete-file-recursively))
   #:use-module ((guix build download)
@@ -72,7 +73,12 @@
 
 (define %default-options
   ;; Alist of default option values.
-  `((tarball-url . ,%snapshot-url)))
+  `((tarball-url . ,%snapshot-url)
+    (system . ,(%current-system))
+    (substitutes? . #t)
+    (graft? . #t)
+    (max-silent-time . 3600)
+    (verbosity . 0)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
@@ -84,6 +90,7 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
+  (show-build-options-help)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
@@ -93,24 +100,29 @@ Download and deploy the latest version of Guix.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (list (option '("verbose") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'verbose? #t result)))
-        (option '("url") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'tarball-url arg
-                              (alist-delete 'tarball-url result))))
-        (option '("bootstrap") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'bootstrap? #t result)))
+  (cons* (option '("verbose") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'verbose? #t result)))
+         (option '("url") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'tarball-url arg
+                               (alist-delete 'tarball-url result))))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '("bootstrap") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'bootstrap? #t result)))
 
-        (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix pull")))))
+         (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix pull")))
+
+         %standard-build-options))
 
 (define what-to-build
   (store-lift show-what-to-build))
@@ -215,16 +227,8 @@ contained therein."
                 (return #t))))
         (leave (G_ "failed to update Guix, check the build log~%")))))
 
+
 (define (guix-pull . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (leave (G_ "~A: unexpected argument~%") arg))
-                %default-options))
-
   (define (use-le-certs? url)
     (string-prefix? "https://git.savannah.gnu.org/" url))
 
@@ -232,28 +236,31 @@ contained therein."
     (download-to-store store url "guix-latest.tar.gz"))
 
   (with-error-handling
-    (let* ((opts  (parse-options))
+    (let* ((opts  (parse-command-line args %options
+                                      (list %default-options)))
            (store (open-connection))
            (url   (assoc-ref opts 'tarball-url)))
-      (let ((tarball
-             (if (use-le-certs? url)
-                 (let* ((drv (package-derivation store le-certs))
-                        (certs (string-append (derivation->output-path drv)
-                                              "/etc/ssl/certs")))
-                   (build-derivations store (list drv))
-                   (parameterize ((%x509-certificate-directory certs))
-                     (fetch-tarball store url)))
-                 (fetch-tarball store url))))
-        (unless tarball
-          (leave (G_ "failed to download up-to-date source, exiting\n")))
-        (parameterize ((%guile-for-build
-                        (package-derivation store
-                                            (if (assoc-ref opts 'bootstrap?)
-                                                %bootstrap-guile
-                                                (canonical-package guile-2.0)))))
-          (run-with-store store
-            (build-and-install tarball (config-directory)
-                               #:verbose? (assoc-ref opts 'verbose?))))))))
+      (set-build-options-from-command-line store opts)
+      (unless (assoc-ref opts 'dry-run?)          ;XXX: not very useful
+        (let ((tarball
+               (if (use-le-certs? url)
+                   (let* ((drv (package-derivation store le-certs))
+                          (certs (string-append (derivation->output-path drv)
+                                                "/etc/ssl/certs")))
+                     (build-derivations store (list drv))
+                     (parameterize ((%x509-certificate-directory certs))
+                       (fetch-tarball store url)))
+                   (fetch-tarball store url))))
+          (unless tarball
+            (leave (G_ "failed to download up-to-date source, exiting\n")))
+          (parameterize ((%guile-for-build
+                          (package-derivation store
+                                              (if (assoc-ref opts 'bootstrap?)
+                                                  %bootstrap-guile
+                                                  (canonical-package guile-2.0)))))
+            (run-with-store store
+              (build-and-install tarball (config-directory)
+                                 #:verbose? (assoc-ref opts 'verbose?)))))))))
 
 ;; Local Variables:
 ;; eval: (put 'with-PATH 'scheme-indent-function 1)
