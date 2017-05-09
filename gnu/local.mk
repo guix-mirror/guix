@@ -790,6 +790,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
+  %D%/packages/patches/lxterminal-CVE-2016-10369.patch		\
   %D%/packages/patches/lz4-fix-test-failures.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
