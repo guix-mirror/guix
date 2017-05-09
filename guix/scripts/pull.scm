@@ -238,29 +238,29 @@ contained therein."
   (with-error-handling
     (let* ((opts  (parse-command-line args %options
                                       (list %default-options)))
-           (store (open-connection))
            (url   (assoc-ref opts 'tarball-url)))
-      (set-build-options-from-command-line store opts)
       (unless (assoc-ref opts 'dry-run?)          ;XXX: not very useful
-        (let ((tarball
-               (if (use-le-certs? url)
-                   (let* ((drv (package-derivation store le-certs))
-                          (certs (string-append (derivation->output-path drv)
-                                                "/etc/ssl/certs")))
-                     (build-derivations store (list drv))
-                     (parameterize ((%x509-certificate-directory certs))
-                       (fetch-tarball store url)))
-                   (fetch-tarball store url))))
-          (unless tarball
-            (leave (G_ "failed to download up-to-date source, exiting\n")))
-          (parameterize ((%guile-for-build
-                          (package-derivation store
-                                              (if (assoc-ref opts 'bootstrap?)
-                                                  %bootstrap-guile
-                                                  (canonical-package guile-2.0)))))
-            (run-with-store store
-              (build-and-install tarball (config-directory)
-                                 #:verbose? (assoc-ref opts 'verbose?)))))))))
+        (with-store store
+          (set-build-options-from-command-line store opts)
+          (let ((tarball
+                 (if (use-le-certs? url)
+                     (let* ((drv (package-derivation store le-certs))
+                            (certs (string-append (derivation->output-path drv)
+                                                  "/etc/ssl/certs")))
+                       (build-derivations store (list drv))
+                       (parameterize ((%x509-certificate-directory certs))
+                         (fetch-tarball store url)))
+                     (fetch-tarball store url))))
+            (unless tarball
+              (leave (G_ "failed to download up-to-date source, exiting\n")))
+            (parameterize ((%guile-for-build
+                            (package-derivation store
+                                                (if (assoc-ref opts 'bootstrap?)
+                                                    %bootstrap-guile
+                                                    (canonical-package guile-2.0)))))
+              (run-with-store store
+                (build-and-install tarball (config-directory)
+                                   #:verbose? (assoc-ref opts 'verbose?))))))))))
 
 ;; Local Variables:
 ;; eval: (put 'with-PATH 'scheme-indent-function 1)
