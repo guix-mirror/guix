@@ -561,14 +561,14 @@ SOURCE_TARBALLS =					\
   $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
 
 # Systems supported by Guix.
-SUPPORTED_SYSTEMS = x86_64-linux i686-linux armhf-linux
+SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux
 
 # Guix binary tarballs.
 BINARY_TARBALLS =							\
   $(foreach system,$(SUPPORTED_SYSTEMS),guix-binary.$(system).tar.xz)
 
 # Systems supported by GuixSD.
-GUIXSD_SUPPORTED_SYSTEMS = x86_64-linux #i686-linux
+GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
 
 # Prefix of the GuixSD installation image file name.
 GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
@@ -589,10 +589,14 @@ GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
 # This 'release' target takes care of everything and copies the resulting
 # files to $(releasedir).
 release: distcheck
+	cd po; git checkout .
+	@if ! git diff-index --quiet HEAD; then			\
+	  echo "There are uncommitted changes; stopping." >&2 ;	\
+	  exit 1 ;						\
+	fi
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
-	cd po; git checkout .
 	$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	   $(top_srcdir)/build-aux/update-guix-package.scm	\
 	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
@@ -622,6 +626,9 @@ release: distcheck
 	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
 	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
 	done
+	@echo
+	@echo "Congratulations!  All the release files are now in $(releasedir)."
+	@echo
 
 update-guix-package:
 	git rev-parse HEAD
