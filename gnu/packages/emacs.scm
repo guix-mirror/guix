@@ -1446,7 +1446,7 @@ type, for example: packages, buffers, files, etc.")
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,geiser)
