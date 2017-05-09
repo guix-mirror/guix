@@ -45,6 +45,7 @@
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages wget)
@@ -2735,6 +2736,34 @@ the module @code{org.eclipse.ant.core}.")
     (synopsis "Eclipse core resource management")
     (description "This package provides the Eclipse core resource management
 module @code{org.eclipse.core.resources}.")
+    (license license:epl1.0)))
+
+(define-public java-eclipse-compare-core
+  (package
+    (name "java-eclipse-compare-core")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.compare.core/"
+                                  version "/org.eclipse.compare.core-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "10g37r0pbiffyv2wk35c6g5lwzkdipkl0kkjp41v84dln46xm4dg"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-compare-core.jar"))
+    (inputs
+     `(("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)
+       ("java-icu4j" ,java-icu4j)))
+    (home-page "https://www.eclipse.org/")
+    (synopsis "Eclipse core compare support")
+    (description "This package provides the Eclipse core compare support
+module @code{org.eclipse.compare.core}.")
     (license license:epl1.0)))
 
 (define-public java-commons-cli
