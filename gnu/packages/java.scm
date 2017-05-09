@@ -2472,6 +2472,34 @@ specification.")
 registry.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-equinox-app
+  (package
+    (name "java-eclipse-equinox-app")
+    (version "1.3.400")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.equinox.app/"
+                                  version "/org.eclipse.equinox.app-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0nhvbp93y203ar7y59gb0mz3w2d3jlqhr0c9hii9bcfpmr7imdab"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-equinox-app.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)
+       ("java-osgi-service-event" ,java-osgi-service-event)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Equinox application container")
+    (description "This package provides the Equinox application container for
+Eclipse.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
