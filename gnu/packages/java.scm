@@ -2343,6 +2343,31 @@ and service platform for the Java programming language.  This package contains
 the OSGi Core module.")
     (license license:asl2.0)))
 
+(define-public java-eclipse-osgi
+  (package
+    (name "java-eclipse-osgi")
+    (version "3.11.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.osgi/"
+                                  version "/org.eclipse.osgi-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "00cqc6lb29n0zv68b4l842vzkwawvbr7gshfdygsk8sicvcq2c7b"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-equinox-osgi.jar"))
+    (inputs
+     `(("java-osgi-annotation" ,java-osgi-annotation)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Eclipse Equinox OSGi framework")
+    (description "This package provides an implementation of the OSGi Core
+specification.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
