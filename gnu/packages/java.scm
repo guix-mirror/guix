@@ -2642,6 +2642,35 @@ module @code{org.eclipse.core.filesystem}.")
 with the @code{org.eclipse.core.expressions} module.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-variables
+  (package
+    (name "java-eclipse-core-variables")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.variables/"
+                                  version "/org.eclipse.core.variables-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "12dirh03zi4n5x5cj07vzrhkmnqy6h9q10h9j605pagmpmifyxmy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-variables.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/platform")
+    (synopsis "Eclipse core variables")
+    (description "This package provides the Eclipse core variables module
+@code{org.eclipse.core.variables}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
