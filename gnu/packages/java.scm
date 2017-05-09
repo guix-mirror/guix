@@ -2317,6 +2317,32 @@ the OSGi annotation module, providing additional services to help dynamic
 components.")
     (license license:asl2.0)))
 
+(define-public java-osgi-core
+  (package
+    (name "java-osgi-core")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/osgi/org.osgi.core/" version "/"
+                                  "org.osgi.core-" version "-sources.jar"))
+              (sha256
+               (base32
+                "19bpf5jx32jq9789gyhin35q5v7flmw0p9mk7wbgqpxqfmxyiabv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "osgi-core.jar"))
+    (inputs
+     `(("java-osgi-annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Core module of OSGi framework")
+    (description
+     "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the OSGi Core module.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
