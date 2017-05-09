@@ -2671,6 +2671,38 @@ with the @code{org.eclipse.core.expressions} module.")
 @code{org.eclipse.core.variables}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-ant-core
+  (package
+    (name "java-eclipse-ant-core")
+    (version "3.4.100")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.ant.core/"
+                                  version "/org.eclipse.ant.core-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "11g3if794qjlk98mz9zch22rr56sd7z63vn4i7k2icr8cq5bfqg7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-ant-core.jar"))
+    (inputs
+     `(("java-eclipse-equinox-app" ,java-eclipse-equinox-app)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-core-variables" ,java-eclipse-core-variables)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/platform")
+    (synopsis "Ant build tool core libraries")
+    (description "This package provides the ant build tool core libraries with
+the module @code{org.eclipse.ant.core}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
