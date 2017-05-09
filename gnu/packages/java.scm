@@ -2420,6 +2420,31 @@ specification.")
     (description "This package provides the common Eclipse runtime.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-jobs
+  (package
+    (name "java-eclipse-core-jobs")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.jobs/"
+                                  version "/org.eclipse.core.jobs-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0395b8lh0km8vhzjnchvs1rii1qz48hyvb2wqfaq4yhklbwihq4b"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-jobs.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Eclipse jobs mechanism")
+    (description "This package provides the Eclipse jobs mechanism.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
