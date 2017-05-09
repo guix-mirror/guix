@@ -2527,6 +2527,34 @@ Eclipse.")
 the module @code{org.eclipse.equinox.preferences}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-contenttype
+  (package
+    (name "java-eclipse-core-contenttype")
+    (version "3.5.100")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.contenttype/"
+                                  version "/org.eclipse.core.contenttype-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1wcqcv7ijwv5rh748vz3x9pkmjl9w1r0k0026k56n8yjl4rrmspi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-contenttype.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "http://www.eclipse.org/")
+    (synopsis "Eclipse content mechanism")
+    (description "This package provides the Eclipse content mechanism in the
+@code{org.eclipse.core.contenttype} module.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
