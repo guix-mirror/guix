@@ -2800,6 +2800,31 @@ module @code{org.eclipse.compare.core}.")
 @code{org.eclipse.team.core}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-commands
+  (package
+    (name "java-eclipse-core-commands")
+    (version "3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.commands/"
+                                  version "/org.eclipse.core.commands-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0yjn482qndcfrsq3jd6vnhcylp16420f5aqkrwr8spsprjigjcr9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-commands.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)))
+    (home-page "https://www.eclipse.org/platform")
+    (synopsis "Eclipse core commands")
+    (description "This package provides Eclipse core commands in the module
+@code{org.eclipse.core.commands}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
