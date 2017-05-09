@@ -6113,3 +6113,38 @@ based on this library, allowing Perl programmers to easily validate HTML.")
 object.  It's meant as a replacement for @code{HTML::Lint}, which is written
 in Perl but is not nearly as capable as @code{HTML::Tidy}.")
     (license l:artistic2.0)))
+
+(define-public geomyidae
+  (package
+    (name "geomyidae")
+    (version "0.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://git.r-36.net/geomyidae/snapshot/"
+                           "geomyidae-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0qxgxp6psfrgfqhndyq2z54nb1qrmvvljddnxdwp207jbz366bja"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "http://git.r-36.net/geomyidae")
+    (synopsis "Small Gopher server")
+    (description
+     "Geomyidae is a server for distributed hypertext protocol Gopher.  Its
+features include:
+
+@enumerate
+@item Gopher menus (see @file{index.gph} for an example);
+@item directory listings (if no @file{index.gph} was found);
+@item CGI support (@file{.cgi} files are executed);
+@item search support in CGI files;
+@item logging with multiple log levels.
+@end enumerate\n")
+    (license l:expat)))
