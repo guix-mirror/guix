@@ -2555,6 +2555,37 @@ the module @code{org.eclipse.equinox.preferences}.")
 @code{org.eclipse.core.contenttype} module.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-runtime
+  (package
+    (name "java-eclipse-core-runtime")
+    (version "3.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.runtime/"
+                                  version "/org.eclipse.core.runtime-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "16mkf8jgj35pgzms7w1gyfq0gfm4ixw6c5xbbxzdj1la56c758ya"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-runtime.jar"))
+    (inputs
+     `(("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
+       ("java-eclipse-core-jobs" ,java-eclipse-core-jobs)
+       ("java-eclipse-equinox-app" ,java-eclipse-equinox-app)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/")
+    (synopsis "Eclipse core runtime")
+    (description "This package provides the Eclipse core runtime with the
+module @code{org.eclipse.core.runtime}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
