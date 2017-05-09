@@ -2445,6 +2445,33 @@ specification.")
     (description "This package provides the Eclipse jobs mechanism.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-equinox-registry
+  (package
+    (name "java-eclipse-equinox-registry")
+    (version "3.6.100")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.equinox.registry/"
+                                  version "/org.eclipse.equinox.registry-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1i9sgymh2fy5vdgk5y7s3qvrlbgh4l93ddqi3v4zmca7hwrlhf9k"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-equinox-registry.jar"))
+    (inputs
+     `(("java-eclipse-core-jobs" ,java-eclipse-core-jobs)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Eclipse extension registry support")
+    (description "This package provides support for the Eclipse extension
+registry.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
