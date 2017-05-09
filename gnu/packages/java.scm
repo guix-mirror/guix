@@ -2915,6 +2915,32 @@ and contributes the Eclipse default text editor.")
 development tools.")
     (license license:epl1.0)))
 
+(define-public java-javax-mail
+  (package
+    (name "java-javax-mail")
+    (version "1.5.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/sun/mail/javax.mail/"
+                                  version "/javax.mail-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0sdlfgsc2b5s89xv1261y8i0jijcja019k2x1c8ngfn582w4jly9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "javax-mail.jar"))
+    (home-page "https://javamail.java.net")
+    (synopsis "Reference implementation of the JavaMail API")
+    (description
+     "This package provides versions of the JavaMail API implementation, IMAP,
+SMTP, and POP3 service providers, some examples, and documentation for the
+JavaMail API.")
+    ;; GPLv2 only with "classpath exception".
+    (license license:gpl2)))
+
 (define-public java-log4j-api
   (package
     (name "java-log4j-api")
