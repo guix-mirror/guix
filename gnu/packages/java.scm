@@ -2766,6 +2766,40 @@ module @code{org.eclipse.core.resources}.")
 module @code{org.eclipse.compare.core}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-team-core
+  (package
+    (name "java-eclipse-team-core")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.team.core/"
+                                  version "/org.eclipse.team.core-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "02j2jzqgb26zx2d5ahxmvijw6j4r0la90zl5c3i65x6z19ciyam7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-team-core.jar"))
+    (inputs
+     `(("java-eclipse-compare-core" ,java-eclipse-compare-core)
+       ("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
+       ("java-eclipse-core-filesystem" ,java-eclipse-core-filesystem)
+       ("java-eclipse-core-jobs" ,java-eclipse-core-jobs)
+       ("java-eclipse-core-resources" ,java-eclipse-core-resources)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/platform")
+    (synopsis "Eclipse team support core")
+    (description "This package provides the Eclipse team support core module
+@code{org.eclipse.team.core}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
