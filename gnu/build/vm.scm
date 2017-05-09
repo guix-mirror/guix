@@ -285,15 +285,18 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (unless register-closures?
       (reset-timestamps target))))
 
-(define (register-grub.cfg-root target bootcfg)
+(define (register-bootcfg-root target bootcfg)
   "On file system TARGET, register BOOTCFG as a GC root."
   (let ((directory (string-append target "/var/guix/gcroots")))
     (mkdir-p directory)
-    (symlink bootcfg (string-append directory "/grub.cfg"))))
+    (symlink bootcfg (string-append directory "/bootcfg"))))
 
 (define* (initialize-hard-disk device
                                #:key
-                               grub.cfg
+                               bootloader-package
+                               bootcfg
+                               bootcfg-location
+                               bootloader-installer
                                (partitions '()))
   "Initialize DEVICE as a disk containing all the <partition> objects listed
 in PARTITIONS, and using BOOTCFG as its bootloader configuration file.
@@ -311,10 +314,12 @@ passing it a directory name where it is mounted."
     (display "mounting root partition...\n")
     (mkdir-p target)
     (mount (partition-device root) target (partition-file-system root))
-    (install-grub grub.cfg device target)
+    (install-boot-config bootcfg bootcfg-location target)
+    (when bootloader-installer
+      (bootloader-installer bootloader-package device target))
 
-    ;; Register GRUB.CFG as a GC root.
-    (register-grub.cfg-root target grub.cfg)
+    ;; Register BOOTCFG as a GC root.
+    (register-bootcfg-root target bootcfg)
 
     (umount target)))
 

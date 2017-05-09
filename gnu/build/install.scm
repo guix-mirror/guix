@@ -22,8 +22,7 @@
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (install-grub
-            install-grub-config
+  #:export (install-boot-config
             evaluate-populate-directive
             populate-root-file-system
             reset-timestamps
@@ -39,36 +38,17 @@
 ;;;
 ;;; Code:
 
-(define (install-grub grub.cfg device mount-point)
-  "Install GRUB with GRUB.CFG on DEVICE, which is assumed to be mounted on
-MOUNT-POINT.
-
-Note that the caller must make sure that GRUB.CFG is registered as a GC root
-so that the fonts, background images, etc. referred to by GRUB.CFG are not
-GC'd."
-  (install-grub-config grub.cfg mount-point)
-
-  ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or root
-  ;; partition.
-  (setenv "GRUB_ENABLE_CRYPTODISK" "y")
-
-  (unless (zero? (system* "grub-install" "--no-floppy"
-                          "--boot-directory"
-                          (string-append mount-point "/boot")
-                          device))
-    (error "failed to install GRUB")))
-
-(define (install-grub-config grub.cfg mount-point)
-  "Atomically copy GRUB.CFG into boot/grub/grub.cfg on the MOUNT-POINT.  Note
-that the caller must make sure that GRUB.CFG is registered as a GC root so
-that the fonts, background images, etc. referred to by GRUB.CFG are not GC'd."
-  (let* ((target (string-append mount-point "/boot/grub/grub.cfg"))
+(define (install-boot-config bootcfg bootcfg-location mount-point)
+  "Atomically copy BOOTCFG into BOOTCFG-LOCATION on the MOUNT-POINT.  Note
+that the caller must make sure that BOOTCFG is registered as a GC root so
+that the fonts, background images, etc. referred to by BOOTCFG are not GC'd."
+  (let* ((target (string-append mount-point bootcfg-location))
          (pivot  (string-append target ".new")))
     (mkdir-p (dirname target))
 
-    ;; Copy GRUB.CFG instead of just symlinking it, because symlinks won't
+    ;; Copy BOOTCFG instead of just symlinking it, because symlinks won't
     ;; work when /boot is on a separate partition.  Do that atomically.
-    (copy-file grub.cfg pivot)
+    (copy-file bootcfg pivot)
     (rename-file pivot target)))
 
 (define (evaluate-populate-directive directive target)
