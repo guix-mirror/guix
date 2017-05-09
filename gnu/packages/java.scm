@@ -2500,6 +2500,33 @@ registry.")
 Eclipse.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-equinox-preferences
+  (package
+    (name "java-eclipse-equinox-preferences")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.equinox.preferences/"
+                                  version "/org.eclipse.equinox.preferences-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0k7w6c141sqym4fy3af0qkwpy4pdh2vsjpjba6rp5fxyqa24v0a2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-equinox-preferences.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Eclipse preferences mechanism")
+    (description "This package provides the Eclipse preferences mechanism with
+the module @code{org.eclipse.equinox.preferences}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
