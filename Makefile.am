@@ -160,7 +160,6 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
-  guix/scripts/import/stackage.scm		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
@@ -185,7 +184,8 @@ MODULES +=					\
   guix/import/stackage.scm			\
   guix/scripts/import/crate.scm			\
   guix/scripts/import/gem.scm			\
-  guix/scripts/import/pypi.scm
+  guix/scripts/import/pypi.scm			\
+  guix/scripts/import/stackage.scm
 
 endif
 
