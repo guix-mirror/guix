@@ -2703,6 +2703,40 @@ with the @code{org.eclipse.core.expressions} module.")
 the module @code{org.eclipse.ant.core}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-resources
+  (package
+    (name "java-eclipse-core-resources")
+    (version "3.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.resources/"
+                                  version "/org.eclipse.core.resources-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1hrfxrll6cpcagfksk2na1ypvkcnsp0fk6n3vcsrn97qayf9mx9l"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-resources.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
+       ("java-eclipse-core-expressions" ,java-eclipse-core-expressions)
+       ("java-eclipse-core-filesystem" ,java-eclipse-core-filesystem)
+       ("java-eclipse-core-jobs" ,java-eclipse-core-jobs)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-ant-core" ,java-eclipse-ant-core)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/")
+    (synopsis "Eclipse core resource management")
+    (description "This package provides the Eclipse core resource management
+module @code{org.eclipse.core.resources}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
