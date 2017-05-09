@@ -213,7 +213,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.10.2")
+    (version "0.11.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
@@ -225,7 +225,16 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pkiq3fm15pr4w1r420rrwwfmi4jz492r6l6vzjk6v73xlyfyfl3"))))
+                "0r261i8kc3avbmbwgyzak2vnqwssjlgz37g2y2fwm80w9bmn2m7j"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; 'configure.ac' mistakenly tries to link files from examples/
+               ;; that are not instantiated yet.  Work around it.
+               '(substitute* "configure.ac"
+                  (("AC_CONFIG_LINKS\\(\\[examples/([^:]+):.*" _ file)
+                   (string-append "AC_CONFIG_FILES([examples/" file
+                                  "], [chmod +x examples/"
+                                  file "])\n"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -267,24 +276,11 @@ libssh library.")
     (license license:gpl3+)))
 
 (define-public guile2.2-ssh
-  ;; Snapshot of Guile-SSH that works with Guile 2.2.
-  (let ((commit "ca717e9d1ffd172c4f20fdd6c7caba050f1f2ba9")
-        (revision "1"))
-    (package
-      (inherit guile-ssh)
-      (name "guile2.2-ssh")
-      (version (string-append "0.10.2." revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url (package-home-page guile-ssh))
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1r7f10z6pc6sgbaqnrcccklqydnxi68nybz700skfn3ln5jlbygi"))))
-      (inputs `(("guile" ,guile-2.2)
-                ,@(alist-delete "guile" (package-inputs guile-ssh)))))))
+  (package
+    (inherit guile-ssh)
+    (name "guile2.2-ssh")
+    (inputs `(("guile" ,guile-2.2)
+              ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
 (define-public corkscrew
   (package
