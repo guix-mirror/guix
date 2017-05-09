@@ -2825,6 +2825,61 @@ module @code{org.eclipse.compare.core}.")
 @code{org.eclipse.core.commands}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-text
+  (package
+    (name "java-eclipse-text")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.text/"
+                                  version "/org.eclipse.text-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0scz70vzz5qs5caji9f5q01vkqnvip7dpri1q07l8wbbdcxn4cq1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-text.jar"
+       #:phases
+       (modify-phases %standard-phases
+         ;; When creating a new category we must make sure that the new list
+         ;; matches List<Position>.  By default it seems to be too generic
+         ;; (ArrayList<Object>), so we specialize it to ArrayList<Position>.
+         ;; Without this we get this error:
+         ;;
+         ;; [javac] .../src/org/eclipse/jface/text/AbstractDocument.java:376:
+         ;;      error: method put in interface Map<K,V> cannot be applied to given types;
+         ;; [javac] 			fPositions.put(category, new ArrayList<>());
+         ;; [javac] 			          ^
+         ;; [javac]   required: String,List<Position>
+         ;; [javac]   found: String,ArrayList<Object>
+         ;; [javac]   reason: actual argument ArrayList<Object> cannot be converted
+         ;;              to List<Position> by method invocation conversion
+         ;; [javac]   where K,V are type-variables:
+         ;; [javac]     K extends Object declared in interface Map
+         ;; [javac]     V extends Object declared in interface Map
+         ;;
+         ;; I don't know if this is a good fix.  I suspect it is not, but it
+         ;; seems to work.
+         (add-after 'unpack 'fix-compilation-error
+           (lambda _
+             (substitute* "src/org/eclipse/jface/text/AbstractDocument.java"
+               (("Positions.put\\(category, new ArrayList<>\\(\\)\\);")
+                "Positions.put(category, new ArrayList<Position>());"))
+             #t)))))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-core-commands" ,java-eclipse-core-commands)
+       ("java-icu4j" ,java-icu4j)))
+    (home-page "http://www.eclipse.org/platform")
+    (synopsis "Eclipse text library")
+    (description "Platform Text is part of the Platform UI project and
+provides the basic building blocks for text and text editors within Eclipse
+and contributes the Eclipse default text editor.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
