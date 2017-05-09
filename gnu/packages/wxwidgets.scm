@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,12 +71,16 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("--with-regex" "--with-libmspack"
          "--with-sdl"
          "--enable-webview"
          "--enable-webkit"
-         "--enable-webviewwebkit")
+         "--enable-webviewwebkit"
+         ,@(if (string=? "aarch64-linux"
+                         (%current-system))
+             '("--build=aarch64-unknown-linux-gnu")
+             '()))
        #:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
