@@ -2368,6 +2368,30 @@ the OSGi Core module.")
 specification.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-equinox-common
+  (package
+    (name "java-eclipse-equinox-common")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.equinox.common/"
+                                  version "/org.eclipse.equinox.common-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "12aazpkgw46r1qj0pr421jzwhbmsizd97r37krd7njnbrdgfzksc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-equinox-common.jar"))
+    (inputs
+     `(("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "http://www.eclipse.org/equinox/")
+    (synopsis "Common Eclipse runtime")
+    (description "This package provides the common Eclipse runtime.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
