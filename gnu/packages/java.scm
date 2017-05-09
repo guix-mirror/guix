@@ -2586,6 +2586,33 @@ the module @code{org.eclipse.equinox.preferences}.")
 module @code{org.eclipse.core.runtime}.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-core-filesystem
+  (package
+    (name "java-eclipse-core-filesystem")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/platform/org.eclipse.core.filesystem/"
+                                  version "/org.eclipse.core.filesystem-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0km1bhwjim4rfy3pkvjhvy31kgsyf2ncx0mlkmbf5n6g57pphdyj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-core-filesystem.jar"))
+    (inputs
+     `(("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)))
+    (home-page "https://www.eclipse.org/")
+    (synopsis "Eclipse core file system")
+    (description "This package provides the Eclipse core file system with the
+module @code{org.eclipse.core.filesystem}.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
