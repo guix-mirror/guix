@@ -57,6 +57,35 @@ indirectly, on Guile-SSH."
                      (string-prefix? gnu  b))
                 (string<? a b))))))
 
+(cond-expand
+  (guile-2.2 (use-modules (language tree-il optimize)
+                          (language cps optimize)))
+  (else #f))
+
+(define %default-optimizations
+  ;; Default optimization options (equivalent to -O2 on Guile 2.2).
+  (cond-expand
+    (guile-2.2 (append (tree-il-default-optimization-options)
+                       (cps-default-optimization-options)))
+    (else '())))
+
+(define %lightweight-optimizations
+  ;; Lightweight optimizations (like -O0, but with partial evaluation).
+  (let loop ((opts %default-optimizations)
+             (result '()))
+    (match opts
+      (() (reverse result))
+      ((#:partial-eval? _ rest ...)
+       (loop rest `(#t #:partial-eval? ,@result)))
+      ((kw _ rest ...)
+       (loop rest `(#f ,kw ,@result))))))
+
+(define (optimization-options file)
+  (if (string-contains file "gnu/packages/")
+      %lightweight-optimizations                  ;build faster
+      '()))
+
+
 (define* (build-guix out source
                      #:key
                      system
@@ -158,7 +187,7 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
              (parameterize ((current-warning-port (%make-void-port "w")))
                (compile-file file
                              #:output-file go
-                             #:opts %auto-compilation-options)))
+                             #:opts (optimization-options file))))
            (with-mutex mutex
              (set! completed (+ 1 completed))))
          files))))
