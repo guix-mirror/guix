@@ -2880,6 +2880,41 @@ provides the basic building blocks for text and text editors within Eclipse
 and contributes the Eclipse default text editor.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-jdt-core
+  (package
+    (name "java-eclipse-jdt-core")
+    (version "3.12.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jdt/org.eclipse.jdt.core/"
+                                  version "/org.eclipse.jdt.core-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "191xw4lc7mjjkprh4ji5vnpjvr5r4zvbpwkriy4bvsjqrz35vh1j"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-jdt-core.jar"))
+    (inputs
+     `(("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
+       ("java-eclipse-core-filesystem" ,java-eclipse-core-filesystem)
+       ("java-eclipse-core-jobs" ,java-eclipse-core-jobs)
+       ("java-eclipse-core-resources" ,java-eclipse-core-resources)
+       ("java-eclipse-core-runtime" ,java-eclipse-core-runtime)
+       ("java-eclipse-equinox-app" ,java-eclipse-equinox-app)
+       ("java-eclipse-equinox-common" ,java-eclipse-equinox-common)
+       ("java-eclipse-equinox-preferences" ,java-eclipse-equinox-preferences)
+       ("java-eclipse-equinox-registry" ,java-eclipse-equinox-registry)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)
+       ("java-eclipse-text" ,java-eclipse-text)))
+    (home-page "https://www.eclipse.org/jdt")
+    (synopsis "Java development tools core libraries")
+    (description "This package provides the core libraries of the Eclipse Java
+development tools.")
+    (license license:epl1.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
