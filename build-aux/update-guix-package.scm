@@ -124,10 +124,19 @@ COMMIT."
          ;; on a private branch.
          (reload-module
           (resolve-module '(gnu packages package-management)))
-         (pk source
-             (add-to-store store
-                           (origin-file-name (package-source guix))
-                           #t "sha256" source)))))
+
+         (let* ((source (add-to-store store
+                                      (origin-file-name (package-source guix))
+                                      #t "sha256" source))
+                (root   (store-path-package-name source)))
+
+           ;; Add an indirect GC root for SOURCE in the current directory.
+           (false-if-exception (delete-file root))
+           (symlink source root)
+           (add-indirect-root store root)
+
+           (format #t "source code for commit ~a: ~a (GC root: ~a)~%"
+                   commit source root)))))
     ((commit)
      ;; Automatically deduce the version and revision numbers.
      (main commit #f))))
