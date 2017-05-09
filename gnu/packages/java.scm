@@ -2343,6 +2343,34 @@ and service platform for the Java programming language.  This package contains
 the OSGi Core module.")
     (license license:asl2.0)))
 
+(define-public java-osgi-service-event
+  (package
+    (name "java-osgi-service-event")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/osgi/org.osgi.service.event/"
+                                  version "/org.osgi.service.event-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1nyhlgagwym75bycnjczwbnpymv2iw84zbhvvzk84g9q736i6qxm"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "osgi-service-event.jar"))
+    (inputs
+     `(("java-osgi-annotation" ,java-osgi-annotation)
+       ("java-osgi-core" ,java-osgi-core)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGi service event module")
+    (description
+     "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the OSGi @code{org.osgi.service.event} module.")
+    (license license:asl2.0)))
+
 (define-public java-eclipse-osgi
   (package
     (name "java-eclipse-osgi")
