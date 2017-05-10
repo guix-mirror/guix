@@ -4924,7 +4924,7 @@ devices using the GNOME desktop.")
 (define-public gnome-control-center
   (package
     (name "gnome-control-center")
-    (version "3.22.1")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4932,7 +4932,7 @@ devices using the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "06h9937sjfrzjf36pxqybg4wmkc5xdhbxgdkclnkjxiiqidjjsax"))))
+                "0g55i4w0a8qpfkl0vnzr3ng6adx8pdxqk8vzc3kvvx6xzlcqxk1h"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
