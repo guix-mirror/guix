@@ -1820,14 +1820,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.168")
+    (version "2.02.171")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "03b62hcsj9z37ckd8c21wwpm07s9zblq7grfh58yzcs1vp6x38r3"))
+                "0r4r9fsvpj9hjmf0zz7h4prz12r6y16jhjhsvk1sbfpsl88sf5dq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1883,7 +1883,7 @@ time.")
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
-    (home-page "http://sourceware.org/lvm2/")
+    (home-page "https://sourceware.org/lvm2/")
     (synopsis "Logical volume management for Linux")
     (description
      "LVM2 is the logical volume management tool set for Linux-based systems.
