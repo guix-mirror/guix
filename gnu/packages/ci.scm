@@ -187,23 +187,28 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "8c811abb3174b44601b8996a1fe1718f37d7bd14")
-        (revision "5"))
+  (let ((commit "870e8d6ad3415ac61c52e57095fcc6164023a0fc")
+        (revision "6"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://notabug.org/mthl/cuirass")
+                      (url "https://git.savannah.gnu.org/git/guix/guix-cuirass.git")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0kz2ys01xlmxagsfr9qf3p212vm31wfl76rvxa7ii5804aidlz5n"))))
+                  "0lp5a5p42k7lml15lbmmd7az9i0gw5kips3sh3awd2z79h0w2knw"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:phases
+       '(#:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (ice-9 rdelim)
+                    (ice-9 popen))
+
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'disable-repo-tests
              (λ _
@@ -221,9 +226,17 @@ their dependencies.")
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
                       (git    (assoc-ref inputs "git"))
                       (guix   (assoc-ref inputs "guix"))
-                      (mods   (string-append json "/share/guile/site/2.0:"
-                                             sqlite "/share/guile/site/2.0:"
-                                             guix "/share/guile/site/2.0")))
+                      (guile  (assoc-ref %build-inputs "guile"))
+                      (effective (read-line
+                                  (open-pipe* OPEN_READ
+                                              (string-append guile "/bin/guile")
+                                              "-c" "(display (effective-version))")))
+                      (mods   (string-append json "/share/guile/site/"
+                                             effective ":"
+                                             sqlite "/share/guile/site/"
+                                             effective ":"
+                                             guix "/share/guile/site/"
+                                             effective)))
                  ;; Make sure 'cuirass' can find the 'git' and 'evaluate'
                  ;; commands, as well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
@@ -233,8 +246,8 @@ their dependencies.")
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
                  #t))))))
       (inputs
-       `(("guile" ,guile-2.0)
-         ("guile-json" ,guile-json)
+       `(("guile" ,guile-2.2)
+         ("guile-json" ,guile2.2-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guix" ,guix)
          ("git" ,git)))
@@ -247,5 +260,5 @@ their dependencies.")
       (description
        "Cuirass is a continuous integration tool using GNU Guix.  It is
 intended as a replacement for Hydra.")
-      (home-page "https://notabug.org/mthl/cuirass")
+      (home-page "https://www.gnu.org/software/guix/")
       (license l:gpl3+))))
