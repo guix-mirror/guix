@@ -261,7 +261,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.22.2")
+    (version "3.24.1")
     (source
      (origin
       (method url-fetch)
@@ -270,7 +270,7 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "074yjz4g9gii045v2pl1ad34hcg92ci04ynxqcabwnf3lvvypmsi"))))
+        "1as5ri52n6wphvhqnxa813q15jri0x47hxsjikjcmb2big9vf2fy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
