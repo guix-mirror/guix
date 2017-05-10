@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -217,6 +218,29 @@ code analysis tools.")
   (clang-from-llvm llvm clang-runtime
                    "1prc72xmkgx8wrzmrr337776676nhsp1qd3mw2bvb22bzdnq7lsc"
                    #:patches '("clang-3.8-libc-search-path.patch")))
+
+(define-public llvm-3.9.1
+  (package (inherit llvm)
+    (name "llvm")
+    (version "3.9.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://llvm.org/releases/"
+                          version "/llvm-" version ".src.tar.xz"))
+      (sha256
+       (base32
+        "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))))
+
+(define-public clang-runtime-3.9.1
+  (clang-runtime-from-llvm
+   llvm-3.9.1
+   "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"))
+
+(define-public clang-3.9.1
+  (clang-from-llvm llvm-3.9.1 clang-runtime-3.9.1
+                   "0qsyyb40iwifhhlx9a3drf8z6ni6zwyk3bvh0kx2gs6yjsxwxi76"
+                   #:patches '()))
 
 (define-public llvm-3.7
   (package (inherit llvm)
