@@ -1008,6 +1008,7 @@ following patterns: \"1d\", \"1w\", \"1m\"."
            (make-time time-duration 0
                       (string->number (match:substring match 1)))))
         ((string-match "^([0-9]+)h$" str)
+         =>
          (lambda (match)
            (hours->duration 1 match)))
         ((string-match "^([0-9]+)d$" str)
