@@ -57,7 +57,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.4")
+    (version "1.18.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -65,7 +65,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "09c0ajszjarcs6d62zlgnf1aha2f921mfr0gxg6nwza36xzc1srr"))))
+                "0wxz00cijynamm0sx4ss4hp89zyz5y6zliv5zd905jn4nak2mw2n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -133,7 +133,7 @@
                            "--with-opengl=es"
                            "--enable-egl"
                            "--enable-harfbuzz")))
-    (home-page "https://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org/about-efl")
     (synopsis "Enlightenment Foundation Libraries")
     (description
      "Enlightenment Foundation Libraries is a set of libraries developed
