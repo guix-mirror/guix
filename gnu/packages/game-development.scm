@@ -187,6 +187,33 @@ and network communications.  A very thin client library can be embedded to
 provide connectivity for client applications written in any language.")
     (license license:gpl3+)))
 
+(define-public python-sge-pygame
+  (package
+    (name "python-sge-pygame")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sge-pygame" version))
+       (sha256
+        (base32
+         "1qhrcja1igqkjjn1w425ni5f41mijdq5dpq0ymkhl29xxrf8hnx8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pygame" ,python-pygame)
+       ("python-six" ,python-six)))
+    (home-page "http://stellarengine.nongnu.org")
+    (synopsis "2D game engine for Python")
+    (description
+     "The SGE Game Engine (\"SGE\", pronounced like \"Sage\") is a
+general-purpose 2D game engine.  It takes care of several details fro you so
+you can focus on the game itself.  This makes more rapid game development
+possible, and it also makes the SGE easy to learn.")
+    (license license:lgpl3+)))
+
+(define-public python2-sge-pygame
+  (package-with-python2 python-sge-pygame))
+
 (define-public tiled
   (package
     (name "tiled")
