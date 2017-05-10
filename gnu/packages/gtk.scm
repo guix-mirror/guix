@@ -50,6 +50,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -673,8 +674,12 @@ application suites.")
       ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
+      ("libxkbcommon" ,libxkbcommon)
       ("libxdamage" ,libxdamage)
-      ("pango" ,pango)))
+      ("mesa" ,mesa)
+      ("pango" ,pango)
+      ("wayland" ,wayland)
+      ("wayland-protocols" ,wayland-protocols)))
    (inputs
     `(("libxml2" ,libxml2)
       ;; XXX: colord depends on mozjs (through polkit), which fails on
@@ -700,7 +705,12 @@ application suites.")
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc/html"))
+                                             "/share/gtk-doc/html")
+                              ;; The header file <gdk/gdkwayland.h> is required
+                              ;; by gnome-control-center
+                              "--enable-wayland-backend"
+                              ;; This is necessary to build both backends.
+                              "--enable-x11-backend")
       #:phases (modify-phases %standard-phases
         (add-before 'configure 'pre-configure
           (lambda _
