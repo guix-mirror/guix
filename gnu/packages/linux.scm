@@ -659,7 +659,11 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
+                     ("texinfo" ,texinfo)       ;for the libext2fs Info manual
+
+                     ;; For tests.
+                     ("perl" ,perl)
+                     ("procps" ,procps)))
     (arguments
      '(;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
@@ -710,12 +714,7 @@ slabtop, and skill.")
                         (for-each (lambda (file)
                                     (chmod file #o666))
                                   archives)
-                        #t))))))
-
-       ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
-       ;; they fail because we get an extra line that says "Can't check if
-       ;; file system is mounted due to missing mtab file".
-       #:tests? #f))
+                        #t))))))))
     (home-page "http://e2fsprogs.sourceforge.net/")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
     (description
