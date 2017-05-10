@@ -1034,7 +1034,7 @@ Guile's foreign function interface.")
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
     (package
       (name "guile-sqlite3")
-      (version (string-append "0.0-0." (string-take commit 7)))
+      (version (string-append "0.0-1." (string-take commit 7)))
 
       ;; XXX: This used to be available read-only at
       ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
@@ -1062,7 +1062,7 @@ Guile's foreign function interface.")
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,guile-2.0)
+       `(("guile" ,guile-2.2)
          ("sqlite" ,sqlite)))
       (arguments
        '(#:phases (modify-phases %standard-phases
