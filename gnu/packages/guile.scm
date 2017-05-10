@@ -1838,14 +1838,14 @@ HTML (via SXML) or any other format for rendering.")
 (define-public guile-sjson
   (package
     (name "guile-sjson")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dustycloud.org/misc/sjson-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "09hnh2brc7ihh8dv4g5hdmdj8rs8p9l3pmlgafkx145grdg7wprx"))))
+                "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
