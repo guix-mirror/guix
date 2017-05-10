@@ -859,6 +859,8 @@ processed, #f otherwise."
                                   (manifest-transaction-install step2)))))
          (new      (manifest-perform-transaction manifest step3)))
 
+    (warn-about-old-distro)
+
     (unless (manifest-transaction-null? step3)
       (show-manifest-transaction store manifest step3
                                  #:dry-run? dry-run?)

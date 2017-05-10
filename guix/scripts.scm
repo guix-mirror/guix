@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
@@ -27,13 +27,16 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (args-fold*
             parse-command-line
             maybe-build
             build-package
-            build-package-source))
+            build-package-source
+            %distro-age-warning
+            warn-about-old-distro))
 
 ;;; Commentary:
 ;;;
@@ -135,5 +138,47 @@ Show what and how will/would be built."
                      #:use-substitutes? use-substitutes?
                      #:dry-run? dry-run?)
         (return (show-derivation-outputs derivation))))))
+
+(define %distro-age-warning
+  ;; The age (in seconds) above which we warn that the distro is too old.
+  (make-parameter (match (and=> (getenv "GUIX_DISTRO_AGE_WARNING")
+                                string->duration)
+                    (#f  (* 7 24 3600))
+                    (age (time-second age)))))
+
+(define* (warn-about-old-distro #:optional (old (%distro-age-warning))
+                                #:key (suggested-command
+                                       "guix package -u"))
+  "Emit a warning if Guix is older than OLD seconds."
+  (let-syntax ((false-if-not-found
+                (syntax-rules ()
+                  ((_ exp)
+                   (catch 'system-error
+                     (lambda ()
+                       exp)
+                     (lambda args
+                       (if (= ENOENT (system-error-errno args))
+                           #f
+                           (apply throw args))))))))
+    (define (seconds->days seconds)
+      (round (/ seconds (* 3600 24))))
+
+    (define age
+      (match (false-if-not-found
+              (lstat (string-append (config-directory) "/latest")))
+        (#f    #f)
+        (stat  (- (time-second (current-time time-utc))
+                  (stat:mtime stat)))))
+
+    (when (and age (>= age old))
+      (warning (N_ "Your Guix installation is ~a days old.\n"
+                   "Your Guix installation is ~a day old.\n"
+                   (seconds->days age))
+               (seconds->days age)))
+    (when (or (not age) (>= age old))
+      (warning (G_ "Consider running 'guix pull' followed by
+'~a' to get up-to-date packages and security updates.\n")
+               suggested-command)
+      (newline (guix-warning-port)))))
 
 ;;; scripts.scm ends here
