@@ -214,6 +214,41 @@ possible, and it also makes the SGE easy to learn.")
 (define-public python2-sge-pygame
   (package-with-python2 python-sge-pygame))
 
+(define-public python-tmx
+  (package
+    (name "python-tmx")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/python-tmx/tmx-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1is107sx3lr09dqjiyn10xqhyv5x54c2ryhys9mb9j3mxjbm227l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://python-tmx.nongnu.org")
+    (synopsis "Python library for the @code{Tiled} TMX format")
+    (description
+     "Python TMX reads and writes the @code{Tiled} TMX format in a simple way.
+This is useful for map editors or generic level editors, and it's also useful
+for using a map editor or generic level editor like Tiled to edit your game's
+levels.")
+    (license (list license:asl2.0
+                   ;; Documentation (only available in the source tarball) is
+                   ;; under the CC0 license.
+                   license:cc0))))
+
+(define-public python2-tmx
+  (let ((python2-tmx (package-with-python2 python-tmx)))
+    (package
+      (inherit python2-tmx)
+      (propagated-inputs
+       `(("python2-pathlib" ,python2-pathlib)
+         ,@(package-propagated-inputs python2-tmx))))))
+
 (define-public tiled
   (package
     (name "tiled")
