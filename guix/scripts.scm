@@ -171,8 +171,8 @@ Show what and how will/would be built."
                   (stat:mtime stat)))))
 
     (when (and age (>= age old))
-      (warning (N_ "Your Guix installation is ~a days old.\n"
-                   "Your Guix installation is ~a day old.\n"
+      (warning (N_ "Your Guix installation is ~a day old.\n"
+                   "Your Guix installation is ~a days old.\n"
                    (seconds->days age))
                (seconds->days age)))
     (when (or (not age) (>= age old))
