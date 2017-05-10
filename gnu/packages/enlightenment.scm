@@ -197,7 +197,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.21.6")
+    (version "0.21.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -205,7 +205,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0gan3c8jbvhcmvb2fpbprr3m6db0afg1dnrb87nbqb399nsi81zd"))))
+                "1xvngjdsa0p901vfhrh2qpa50k32hwwhc8bgi16a9b5d9byzfhvn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
@@ -221,7 +221,7 @@ Libraries with some extra bells and whistles.")
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (home-page "https://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
      "Enlightenment is resource friendly desktop environment with integrated
