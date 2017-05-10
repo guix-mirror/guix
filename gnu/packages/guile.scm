@@ -32,6 +32,7 @@
 (define-module (gnu packages guile)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin) ;;for tree
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
@@ -793,6 +794,74 @@ See http://minikanren.org/ for more on miniKanren generally.")
 
 (define-public guile2.2-minikanren
   (package-for-guile-2.2 guile-minikanren))
+
+(define-public guile-miniadapton
+  (let ((commit "1b5749422304567c96ac5367f2221dda9eff5880")
+        (revision "1"))
+    (package
+      (name "guile-miniadapton")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/fisherdj/miniAdapton.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "09q51zkw2fypad5xixskfzw2cjhjgs5cswdp3i7cpp651rb3zndh"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build utils)
+                    (ice-9 popen)
+                    (ice-9 rdelim)
+                    (srfi srfi-1)
+                    (guix build gnu-build-system))
+         #:tests? #f                    ; there is no test target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((cwd        (getcwd))
+                      (scm-files  (find-files "." "\\.scm$"))
+                      (effective  (read-line
+                                   (open-pipe* OPEN_READ
+                                               "guile" "-c"
+                                               "(display (effective-version))")))
+                      (module-dir (string-append (assoc-ref outputs "out")
+                                                 "/share/guile/site/"
+                                                 effective)))
+
+                 ;; Make installation directories.
+                 (mkdir-p module-dir)
+
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+
+                 ;; Compile .scm files and install.
+                 (every (lambda (file)
+                          (let ((go-file (string-append module-dir "/"
+                                                        (basename file ".scm") ".go")))
+                            ;; Install source module.
+                            (install-file file module-dir)
+                            ;; Compile and install module.
+                            (zero? (system* "guild" "compile" "-L" cwd
+                                            "-o" go-file file))))
+                        scm-files)))))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://github.com/fisherdj/miniAdapton")
+      (synopsis "Minimal implementation of incremental computation in Guile
+Scheme")
+      (description "This package provides a complete Scheme implementation of
+miniAdapton, which implements the core functionality of the Adapton system for
+incremental computation (also known as self-adjusting computation).  Like
+Adapton, miniAdapton allows programmers to safely combine mutation and
+memoization.  miniAdapton is built on top of an even simpler system,
+microAdapton.  Both miniAdapton and microAdapton are designed to be easy to
+understand, extend, and port to host languages other than Scheme.")
+      (license license:expat))))
 
 (define-public guile-irregex
   (package
