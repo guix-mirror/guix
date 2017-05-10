@@ -646,7 +646,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.42.13")
+    (version "1.43.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -655,45 +655,30 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1ix0b83zgw5n0p2grh2961c6796m92yr2jqc2sbr23x3lfsp8r71"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (substitute* "MCONFIG.in"
-                   (("INSTALL_SYMLINK = /bin/sh")
-                    "INSTALL_SYMLINK = sh"))
-
-                 ;; Do not include a timestamp in libext2fs.info.gz.
-                 (substitute* "doc/Makefile.in"
-                   (("gzip -9")
-                    "gzip -9n"))))))
+               "092absr4vrlqrkdf9nwh4ykj40ab6hhwrkdr6sjsccd54c8z5csl"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
     (arguments
-     '(;; Parallel building reliably yields a failure like this:
-       ;; "make[2]: *** No rule to make target '../lib/libss.so', needed by
-       ;; 'debugfs'.  Stop."
-       #:parallel-build? #f
-       ;; util-linux is the preferred source for some of the libraries and
+     '(;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
        ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
-       #:configure-flags '("--disable-libblkid"
-                           "--disable-libuuid" "--disable-uuidd"
-                           "--disable-fsck"
+       #:configure-flags (list "--disable-libblkid"
+                               "--disable-libuuid" "--disable-uuidd"
+                               "--disable-fsck"
 
-                           ;; Use symlinks instead of hard links for
-                           ;; 'fsck.extN' etc.  This makes the resulting nar
-                           ;; smaller and is preserved across copies.
-                           "--enable-symlink-install"
+                               ;; Use symlinks instead of hard links for
+                               ;; 'fsck.extN' etc.  This makes the resulting nar
+                               ;; smaller and is preserved across copies.
+                               "--enable-symlink-install"
 
-                           ;; Install libext2fs et al.
-                           "--enable-elf-shlibs")
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib")
 
-       #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                         (assoc-ref %outputs "out")
-                                         "/lib"))
+                               ;; Install libext2fs et al.
+                               "--enable-elf-shlibs")
 
        #:phases
        (modify-phases %standard-phases
@@ -703,6 +688,9 @@ slabtop, and skill.")
                (("/bin/sh (.*)parse-types.sh" _ dir)
                 (string-append (which "sh") " " dir
                                "parse-types.sh")))
+             (substitute* "MCONFIG.in"
+               (("INSTALL_SYMLINK = /bin/sh")
+                "INSTALL_SYMLINK = sh"))
              (substitute* (find-files "." "^Makefile.in$")
                (("#!/bin/sh")
                 (string-append "#!" (which "sh"))))
