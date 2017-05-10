@@ -32,18 +32,24 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
@@ -300,3 +306,71 @@ photographic equipment.")
     ;; licensed GPL3, and the database is license CC-BY-SA 3.0.  See the
     ;; README.md file for this clarification.
     (license (list license:lgpl3 license:gpl3 license:cc-by-sa3.0))))
+
+(define-public darktable
+  (package
+    (name "darktable")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/darktable-org/darktable/releases/"
+                    "download/release-"
+                    version "/darktable-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1n7rddkxwcifc3kcdlnar9w562xv4h78fqkkn27jihqzp3b4am5x"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags '("-DCMAKE_INSTALL_LIBDIR=lib")
+       #:make-flags
+       (list
+        (string-append "CPATH=" (assoc-ref %build-inputs "ilmbase")
+                       "/include/OpenEXR:" (or (getenv "CPATH") "")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath="
+                      (assoc-ref outputs "out") "/lib/darktable"))
+             #t)))))
+    (native-inputs
+     `(("llvm" ,llvm-3.9.1)
+       ("clang" ,clang-3.9.1)))
+    (inputs
+     `(("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("pugixml" ,pugixml)
+       ("gtk+" ,gtk+)
+       ("sqlite" ,sqlite)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("cairo" ,cairo)
+       ("lcms" ,lcms)
+       ("exiv2" ,exiv2)
+       ("libtiff" ,libtiff)
+       ("curl" ,curl)
+       ("libgphoto2" ,libgphoto2)
+       ("dbus-glib" ,dbus-glib)
+       ("openexr" ,openexr)
+       ("ilmbase" ,ilmbase)
+       ("libsoup" ,libsoup)
+       ("python-jsonschema" ,python-jsonschema)
+       ("intltool" ,intltool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("libwebp" ,libwebp)
+       ("lensfun" ,lensfun)
+       ("librsvg" ,librsvg)
+       ("json-glib" ,json-glib)
+       ("freeimage" ,freeimage)))
+    (home-page "https://www.darktable.org")
+    (synopsis "Virtual lighttable and darkroom for photographers")
+    (description "Darktable is a photography workflow application and RAW
+developer.  It manages your digital negatives in a database, lets you view
+them through a zoomable lighttable and enables you to develop raw images
+and enhance them.")
+    (license license:gpl3+)))
