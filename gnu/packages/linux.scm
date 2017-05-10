@@ -695,34 +695,34 @@ slabtop, and skill.")
                                          (assoc-ref %outputs "out")
                                          "/lib"))
 
-       #:phases (alist-cons-before
-                 'configure 'patch-shells
-                 (lambda _
-                   (substitute* "configure"
-                     (("/bin/sh (.*)parse-types.sh" _ dir)
-                      (string-append (which "sh") " " dir
-                                     "parse-types.sh")))
-                   (substitute* (find-files "." "^Makefile.in$")
-                     (("#!/bin/sh")
-                      (string-append "#!" (which "sh")))))
-                 (alist-cons-after
-                  'install 'install-libs
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (lib (string-append out "/lib")))
-                      (and (zero? (system* "make" "install-libs"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-shells
+           (lambda _
+             (substitute* "configure"
+               (("/bin/sh (.*)parse-types.sh" _ dir)
+                (string-append (which "sh") " " dir
+                               "parse-types.sh")))
+             (substitute* (find-files "." "^Makefile.in$")
+               (("#!/bin/sh")
+                (string-append "#!" (which "sh"))))
+             #t))
+           (add-after 'install 'install-libs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib")))
+                 (and (zero? (system* "make" "install-libs"))
 
-                           ;; Make the .a writable so that 'strip' works.
-                           ;; Failing to do that, due to debug symbols, we
-                           ;; retain a reference to the final
-                           ;; linux-libre-headers, which refer to the
-                           ;; bootstrap binaries.
-                           (let ((archives (find-files lib "\\.a$")))
-                             (for-each (lambda (file)
-                                         (chmod file #o666))
-                                       archives)
-                             #t))))
-                  %standard-phases))
+                      ;; Make the .a writable so that 'strip' works.
+                      ;; Failing to do that, due to debug symbols, we
+                      ;; retain a reference to the final
+                      ;; linux-libre-headers, which refer to the
+                      ;; bootstrap binaries.
+                      (let ((archives (find-files lib "\\.a$")))
+                        (for-each (lambda (file)
+                                    (chmod file #o666))
+                                  archives)
+                        #t))))))
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
        ;; they fail because we get an extra line that says "Can't check if
