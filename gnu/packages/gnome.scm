@@ -4315,24 +4315,21 @@ to display dialog boxes from the commandline and shell scripts.")
     (license license:lgpl2.0+)))
 
 (define-public mutter
-  ;; Uses the gnome 3.22 branch that only contains bug fixes.
-  (let ((commit "23c315ea7121e9bd108e2837d0b4beeba53c5e18"))
   (package
     (name "mutter")
-    (version (git-version "3.22.2" "1" commit))
+    (version "3.24.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.gnome.org/mutter")
-                    (commit commit)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1v1f9xyzjr1ihmfwpq9kzlv2lyr9qn63ck8zny699mbp5hsi11mb"))))
-     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
-     ;; versions of cogl and clutter.  As a result, many of the inputs,
-     ;; propagated-inputs, and configure flags used in cogl and clutter are
-     ;; needed here as well.
+                "093ax3ng7fv28qfkxpbvcx67mfiizwj5b4s17m5cmijwf3wpgamc"))))
+    ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
+    ;; versions of cogl and clutter.  As a result, many of the inputs,
+    ;; propagated-inputs, and configure flags used in cogl and clutter are
+    ;; needed here as well.
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -4341,8 +4338,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ;;      implicit declaration of function ?roundf?
        (list "--enable-compile-warnings=minimum"
 
-             "--disable-wayland"           ; TODO enable wayland
-             ;; "--enable-native-backend"  ; TODO enable the native backend
+             "--enable-native-backend"
 
              ;; The following flags are needed for the bundled clutter
              "--enable-x11-backend=yes"
@@ -4354,9 +4350,14 @@ to display dialog boxes from the commandline and shell scripts.")
                             "/lib/libGL.so"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+         ;; Replace references to systemd libraries to elogind references.
+         (add-before 'configure 'use-elogind
+           (lambda _
+             (substitute* (list "configure"
+                                "src/backends/native/meta-launcher.c"
+                                "src/core/main.c")
+               (("systemd") "elogind"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -4389,17 +4390,17 @@ to display dialog boxes from the commandline and shell scripts.")
        ("mesa" ,mesa)
        ("pango" ,pango)
        ("udev" ,eudev)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
        ("xinput" ,xinput)))
     (inputs
-     `(("gnome-desktop" ,gnome-desktop)
+     `(("elogind" ,elogind)
+       ("gnome-desktop" ,gnome-desktop)
        ("libcanberra-gtk" ,libcanberra)
        ("libgudev" ,libgudev)
        ("libice" ,libice)
        ("libsm" ,libsm)
        ("libxkbfile" ,libxkbfile)
        ("libxrandr" ,libxrandr)
+       ("libxtst" ,libxtst)
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
@@ -4411,7 +4412,7 @@ to display dialog boxes from the commandline and shell scripts.")
 desktop via OpenGL.  Mutter combines a sophisticated display engine using the
 Clutter toolkit with solid window-management logic inherited from the Metacity
 window manager.")
-    (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public gnome-online-accounts
   (package
