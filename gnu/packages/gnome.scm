@@ -2935,9 +2935,13 @@ throughout GNOME for API documentation).")
        ("cairo" ,cairo)
        ("pango" ,pango)
        ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("wayland" ,wayland)))
     (arguments
      `(#:configure-flags (list "--enable-cogl-gst"
+                               "--enable-wayland-egl-platform"
+                               "--enable-wayland-egl-server"
+
                                ;; Arrange to pass an absolute file name to
                                ;; dlopen for libGL.so.
                                (string-append "--with-gl-libname="
