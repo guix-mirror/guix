@@ -355,6 +355,13 @@ FileSize: ~a~%"
                                        (basename %item) ".nar"))
               (response (http-get url)))
          (and (= 404 (response-code response))
+
+              ;; We should get an explicitly short TTL for 404 in this case
+              ;; because it's going to become 200 shortly.
+              (match (assq-ref (response-headers response) 'cache-control)
+                ((('max-age . ttl))
+                 (< ttl 3600)))
+
               (wait-for-file cached)
               (let* ((body         (http-get-port url))
                      (compressed   (http-get nar-url))

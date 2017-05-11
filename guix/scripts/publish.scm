@@ -300,10 +300,15 @@ References: ~a~%~a"
                       (canonical-sexp->string (signed-string info)))))
     (format #f "~aSignature: 1;~a;~a~%" info (gethostname) signature)))
 
-(define (not-found request)
+(define* (not-found request
+                    #:key (phrase "Resource not found")
+                    ttl)
   "Render 404 response for REQUEST."
-  (values (build-response #:code 404)
-          (string-append "Resource not found: "
+  (values (build-response #:code 404
+                          #:headers (if ttl
+                                        `((cache-control (max-age . ,ttl)))
+                                        '()))
+          (string-append phrase ": "
                          (uri-path (request-uri request)))))
 
 (define (render-nix-cache-info)
@@ -434,7 +439,9 @@ requested using POOL."
                                                      (file-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
-           (not-found request))
+           (not-found request
+                      #:phrase "We're baking it"
+                      #:ttl 300))              ;should be available within 5m
           (else
            (not-found request)))))
 
