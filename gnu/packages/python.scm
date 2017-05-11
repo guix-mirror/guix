@@ -65,6 +65,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages file)
@@ -7332,14 +7333,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.7.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1x2mz4wggja5ih45c6cw0kzyad4jr8avg327dawjr1gnpdq1psa7"))))
+         "0hzvq0bfy21bc35p8z7zdxpv3hbvi7adg4axc1b5yd3hk16a1nh0"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7354,29 +7355,33 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.7.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0k6v7wq4h0yk9r0x0bl2x9fyrg4a6gj5qp4m9mgpk6m481yyygwm"))))
+         "1nmy4fw3zy7rlvarkhn33g9905rwpy9z7k5kv8j80f0s6ynfp24f"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)
+     `(("python-asn1crypto" ,python-asn1crypto)
+       ("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
-       ("python-pyasn1" ,python-pyasn1)
        ("python-idna" ,python-idna)
+       ;; Packaging is used to check the version of python-cffi in
+       ;; 'src/cryptography/hazmat/primitives/ciphers/base.py'. We should be
+       ;; able to remove this dependency in the next release of cryptography:
+       ;; python-cryptography:
+       ;; https://github.com/pyca/cryptography/commit/0417d00d9ff1e19bc3ab67d39bdd18e1674768c1
+       ("python-packaging" ,python-packaging)
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
      `(("python-cryptography-vectors" ,python-cryptography-vectors)
        ("python-hypothesis" ,python-hypothesis)
        ("python-pretend" ,python-pretend)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-pytz" ,python-pytz)
        ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/cryptography")
