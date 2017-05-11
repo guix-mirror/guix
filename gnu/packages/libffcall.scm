@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,27 +20,27 @@
 
 (define-module (gnu packages libffcall)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix utils) ; string-replace-substring
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix cvs-download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public libffcall
    (package
     (name "libffcall")
-    (version "1.10+cvs-2015-01-15")
+    (version "1.12")
     (source
      (origin
-       (method cvs-fetch)
-       (uri (cvs-reference
-             (root-directory
-              ":pserver:anonymous@cvs.savannah.gnu.org:/sources/libffcall")
-             (module "ffcall")
-             (revision "2015-01-15")))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/r/libffcall.git")
+             (commit (string-append
+                       "ffcall-" (string-replace-substring version "." "-")))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1lwdskc2w4rr98x9flr2726lmj4190l16r0izg7gqxy50801wwgd"))))
+         "0p7gg5k4ifcqpmrmdfmr2r4x909cn35g87iff539p6i8891fdfxf"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-build? #f))
     (synopsis "Foreign function calls from interpreters")
