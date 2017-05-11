@@ -4669,3 +4669,29 @@ strings to ANSI strings.  Turning a string into an ANSI string can be to add
 color to a text, add color in the background of a text or adding a style, such
 as bold, underscore or italic.")
     (license license:gpl3+)))
+
+;; Tests for emacs-commander have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-commander
+  (package
+    (name "emacs-commander")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/commander.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "196s2i15z7gwxa97l1wkxvjnfmj5n38wwm6d3g4zz15l2vqggc2y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/commander.el")
+    (synopsis "Emacs command line parser")
+    (description "@code{emacs-commander} provides command line parsing for
+Emacs.")
+    (license license:gpl3+)))
