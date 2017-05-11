@@ -4642,3 +4642,30 @@ addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
 comment out lines of code in evil mode.  It provides @code{gcc} to comment out
 lines, and @code{gc} to comment out the target of a motion.")
     (license license:gpl3+)))
+
+;; Tests for emacs-ansi have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-ansi
+  (package
+    (name "emacs-ansi")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/ansi.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13jj4vbi98j3p17hs99bmy7g21jd5h4v3wpxk4pkvhylm3bfwjw8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/ansi.el")
+    (synopsis "Convert strings to ANSI")
+    (description "@code{emacs-ansi} defines functions that turns simple
+strings to ANSI strings.  Turning a string into an ANSI string can be to add
+color to a text, add color in the background of a text or adding a style, such
+as bold, underscore or italic.")
+    (license license:gpl3+)))
