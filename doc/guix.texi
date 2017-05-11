@@ -6197,7 +6197,9 @@ provides a visual representation of the DAG.  By default,
 @uref{http://www.graphviz.org/, Graphviz}, so its output can be passed
 directly to the @command{dot} command of Graphviz.  It can also emit an
 HTML page with embedded JavaScript code to display a ``chord diagram''
-in a Web browser, using the @uref{https://d3js.org/, d3.js} library.
+in a Web browser, using the @uref{https://d3js.org/, d3.js} library, or
+emit Cypher queries to construct a graph in a graph database supporting
+the @uref{http://www.opencypher.org/, openCypher} query language.
 The general syntax is:
 
 @example
