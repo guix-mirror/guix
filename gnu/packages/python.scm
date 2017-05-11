@@ -2642,7 +2642,7 @@ version numbers.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)))
-    (home-page "https://fedorahosted.org/kitchen")
+    (home-page "https://github.com/fedora-infra/kitchen")
     (synopsis "Python API for snippets")
     (description "@code{kitchen} module provides a python API for all sorts of
 little useful snippets of code that everybody ends up writing for their projects
