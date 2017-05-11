@@ -81,8 +81,8 @@ files).  This assumes LIBRARY uses Libtool."
      '(#:configure-flags '("--disable-shared"
                            "--enable-static-cryptsetup"
 
-                           ;; 'libdevmapper.a' pulls in libpthread and libudev.
-                           "LIBS=-ludev -pthread")
+                           ;; 'libdevmapper.a' pulls in libpthread, libudev and libm.
+                           "LIBS=-ludev -pthread -lm")
 
        #:allowed-references ()                  ;this should be self-contained
 
