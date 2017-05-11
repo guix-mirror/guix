@@ -2876,6 +2876,16 @@ S-expression.")
                (base32
                 "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner")))))))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
