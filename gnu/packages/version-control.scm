@@ -315,14 +315,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git@2.10
   (package
     (inherit git)
-    (version "2.10.2")
+    (version "2.10.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))))
+              "02mb7yi49algsya3hnkcxdslwb6p1bi7c732z1g8kzq4hs838m7z"))))))
 
 (define-public libgit2
   (package
