@@ -92,7 +92,8 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public emacs
   (package
@@ -4695,3 +4696,64 @@ as bold, underscore or italic.")
     (description "@code{emacs-commander} provides command line parsing for
 Emacs.")
     (license license:gpl3+)))
+
+;; Tests for ert-runner have a circular dependency with ecukes, and therefore
+;; cannot be run
+(define-public ert-runner
+  (let ((dependencies
+         `(("emacs-ansi" ,emacs-ansi)
+           ("emacs-commander" ,emacs-commander)
+           ("emacs-dash" ,emacs-dash)
+           ("emacs-f" ,emacs-f)
+           ("emacs-s" ,emacs-s)
+           ("emacs-shut-up" ,emacs-shut-up))))
+    (package
+      (name "ert-runner")
+      (version "0.7.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
+                             version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
+      (build-system emacs-build-system)
+      (inputs dependencies)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "bin/ert-runner"
+                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+                    (string-append "ERT_RUNNER=\"" out
+                                   "/share/emacs/site-lisp/guix.d/"
+                                   ,name "-" ,version)))
+                 (install-file "bin/ert-runner" (string-append out "/bin"))
+                 (wrap-program (string-append out "/bin/ert-runner")
+                   (list "EMACSLOADPATH" ":" '=
+                         (append
+                          ,(match dependencies
+                             (((labels packages) ...)
+                              `(map (lambda (label package version)
+                                      (string-append (assoc-ref inputs label)
+                                                     "/share/emacs/site-lisp/guix.d/"
+                                                     (string-drop package 6)
+                                                     "-" version))
+                                    ',labels
+                                    ',(map package-name packages)
+                                    ',(map package-version packages))))
+                          ;; empty element to include the default load path as
+                          ;; determined by emacs' standard initialization
+                          ;; procedure
+                          (list ""))))
+                 #t))))))
+      (home-page "https://github.com/rejeep/ert-runner.el")
+      (synopsis "Opinionated Ert testing workflow")
+      (description "@code{ert-runner} is a tool for Emacs projects tested
+using ERT.  It assumes a certain test structure setup and can therefore make
+running tests easier.")
+      (license license:gpl3+))))
