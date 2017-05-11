@@ -1,5 +1,5 @@
 Fix static linking of 'lvm.static', which indirectly depend on libpthread
-via libdevmapper.a.
+and libm via libdevmapper.a.
 
 --- LVM2.2.02.166/tools/Makefile.in	2016-11-22 21:31:15.521045149 +0100
 +++ LVM2.2.02.166/tools/Makefile.in	2016-11-22 21:31:24.085082767 +0100
@@ -8,7 +8,7 @@ via libdevmapper.a.
  lvm.static: $(OBJECTS) lvm-static.o $(top_builddir)/lib/liblvm-internal.a  $(interfacebuilddir)/libdevmapper.a
  	$(CC) $(CFLAGS) $(LDFLAGS) -static -L$(interfacebuilddir) -o $@ \
 -	      $(OBJECTS) lvm-static.o $(LVMLIBS) $(STATIC_LIBS) $(LIBS)
-+	      $(OBJECTS) lvm-static.o $(LVMLIBS) $(STATIC_LIBS) $(LIBS) $(PTHREAD_LIBS)
++	      $(OBJECTS) lvm-static.o $(LVMLIBS) $(STATIC_LIBS) $(LIBS) $(PTHREAD_LIBS) $(M_LIBS)
  
  liblvm2cmd.a: $(top_builddir)/lib/liblvm-internal.a $(OBJECTS) lvmcmdlib.o lvm2cmd.o
  	cat $(top_builddir)/lib/liblvm-internal.a > $@
