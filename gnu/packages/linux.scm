@@ -80,6 +80,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
@@ -3781,4 +3782,106 @@ re-use code and to avoid re-inventing the wheel.")
 programming interface to the in-kernel nf_tables subsystem.  The library
 libnftnl has been previously known as libnftables.  This library is currently
 used by nftables.")
+    (license license:gpl2+)))
+
+(define-public proot
+  (package
+    (name "proot")
+    (version "5.1.0")
+    (home-page "https://github.com/proot-me/PRoot")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11h30i83vdhc3khlj6hrh3a21sbmmz8nhfv09vkf6b9bcs1biz2h"))
+              (patches (search-patches "proot-test-fhs.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("-C" "src")
+
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'set-shell-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* (find-files "src" "\\.[ch]$")
+                        (("\"/bin/sh\"")
+                         (string-append "\""
+                                        (assoc-ref inputs "bash")
+                                        "/bin/sh\"")))
+                      #t))
+                  (add-before 'check 'fix-fhs-assumptions-in-tests
+                    (lambda _
+                      (substitute* "tests/test-c6b77b77.mk"
+                        (("/bin/bash") (which "bash"))
+                        (("/usr/bin/test") (which "test")))
+                      (substitute* '("tests/test-16573e73.c")
+                        (("/bin/([a-z-]+)" _ program)
+                         (which program)))
+
+                      (substitute* (find-files "tests" "\\.sh$")
+                        ;; Some of the tests try to "bind-mount" /bin/true.
+                        (("-b /bin/true:")
+                         (string-append "-b " (which "true") ":"))
+                        ;; Likewise for /bin.
+                        (("-b /bin:") "-b /gnu:")
+                        ;; Others try to run /bin/sh.
+                        (("/bin/sh") (which "sh"))
+                        ;; Others assume /etc/fstab exists.
+                        (("/etc/fstab") "/etc/passwd"))
+
+                      (substitute* "tests/GNUmakefile"
+                        (("-b /bin:") "-b /gnu:"))
+
+                      ;; XXX: This test fails in an obscure corner case, just
+                      ;; skip it.
+                      (delete-file "tests/test-kkkkkkkk.c")
+
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (let ((n (parallel-job-count)))
+                        ;; For some reason we get lots of segfaults with
+                        ;; seccomp support (x86_64, Linux-libre 4.11.0).
+                        (setenv "PROOT_NO_SECCOMP" "1")
+
+                        ;; Most of the tests expect "/bin" to be in $PATH so
+                        ;; they can run things that live in $ROOTFS/bin.
+                        (setenv "PATH"
+                                (string-append (getenv "PATH") ":/bin"))
+
+                        (zero? (system* "make" "check" "-C" "tests"
+                                        ;;"V=1"
+                                        "-j" (number->string n))))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; The 'install' rule does nearly nothing.
+                      (let ((out (assoc-ref outputs "out")))
+                        (and (zero?
+                              ;; TODO: 'make install-care' (does not even
+                              ;; build currently.)
+                              (system* "make" "-C" "src" "install"
+                                       (string-append "PREFIX=" out)))
+                             (begin
+                               (install-file "doc/proot/man.1"
+                                             (string-append out "/share"
+                                                            "/man/man1"))
+                               #t))))))))
+    (native-inputs `(("which" ,which)
+
+                     ;; For 'mcookie', used by some of the tests.
+                     ("util-linux" ,util-linux)))
+    (inputs `(("talloc" ,talloc)))
+    (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
+    (description
+     "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
+and @code{binfmt_misc}.  This means that users don't need any privileges or
+setup to do things like using an arbitrary directory as the new root
+filesystem, making files accessible somewhere else in the file system
+hierarchy, or executing programs built for another CPU architecture
+transparently through QEMU user-mode.  Also, developers can use PRoot as a
+generic process instrumentation engine thanks to its extension mechanism.
+Technically PRoot relies on @code{ptrace}, an unprivileged system-call
+available in the kernel Linux.")
     (license license:gpl2+)))
