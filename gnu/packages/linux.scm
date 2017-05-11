@@ -2686,9 +2686,7 @@ Linux Device Mapper multipathing driver:
               (method url-fetch)
              (uri (list
                    (string-append "mirror://debian/pool/main/liba/libaio/"
-                                  name "_" version ".orig.tar.gz")
-                   (string-append "https://fedorahosted.org/releases/l/i/libaio/"
-                                  name "-" version ".tar.gz")))
+                                  name "_" version ".orig.tar.gz")))
              (sha256
               (base32
                "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
