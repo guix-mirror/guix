@@ -15225,6 +15225,32 @@ The @code{grub-theme} object describing the theme to use.
 
 @item @code{grub} (default: @code{grub})
 The GRUB package to use.
+
+@item @code{terminal-outputs} (default: @code{'gfxterm})
+The output terminals used for the GRUB boot menu, as a list of symbols.
+These values are accepted: @code{console}, @code{serial},
+@code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text}, @code{mda_text},
+@code{morse}, and @code{pkmodem}.  This field corresponds to the GRUB
+variable GRUB_TERMINAL_OUTPUT (@pxref{Simple configuration,,, grub,GNU
+GRUB manual}).
+
+@item @code{terminal-inputs} (default: @code{'()})
+The input terminals used for the GRUB boot menu, as a list of symbols.
+The default is the native platform terminal as determined by GRUB at
+run-time.  These values are accepted: @code{console}, @code{serial},
+@code{serial_@{0-3@}}, @code{at_keyboard}, and @code{usb_keyboard}.
+This field corresponds to the GRUB variable GRUB_TERMINAL_INPUT
+(@pxref{Simple configuration,,, grub,GNU GRUB manual}).
+
+@item @code{serial-unit} (default: @code{#f})
+The serial unit used by GRUB, as an integer from 0 to 3.  The default
+value is chosen by GRUB at run-time; currently GRUB chooses 0, which
+corresponds to COM1 (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
+
+@item @code{serial-speed} (default: @code{#f})
+The speed of the serial interface, as an integer.  The default value is
+chosen by GRUB at run-time; currently GRUB chooses 9600@tie{}bps
+(@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 @end table
 
 @end deftp

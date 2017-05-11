@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,17 +109,25 @@ denoting a file name."
 (define-record-type* <grub-configuration>
   grub-configuration make-grub-configuration
   grub-configuration?
-  (grub            grub-configuration-grub           ; package
-                   (default (@ (gnu packages bootloaders) grub)))
-  (device          grub-configuration-device)        ; string
-  (menu-entries    grub-configuration-menu-entries   ; list
-                   (default '()))
-  (default-entry   grub-configuration-default-entry  ; integer
-                   (default 0))
-  (timeout         grub-configuration-timeout        ; integer
-                   (default 5))
-  (theme           grub-configuration-theme          ; <grub-theme>
-                   (default %default-theme)))
+  (grub             grub-configuration-grub             ; package
+                    (default (@ (gnu packages bootloaders) grub)))
+  (device           grub-configuration-device)          ; string
+  (menu-entries     grub-configuration-menu-entries     ; list
+                    (default '()))
+  (default-entry    grub-configuration-default-entry    ; integer
+                    (default 0))
+  (timeout          grub-configuration-timeout          ; integer
+                    (default 5))
+  (theme            grub-configuration-theme            ; <grub-theme>
+                    (default %default-theme))
+  (terminal-outputs grub-configuration-terminal-outputs ; list of symbols
+                    (default '(gfxterm)))
+  (terminal-inputs  grub-configuration-terminal-inputs  ; list of symbols
+                    (default '()))
+  (serial-unit      grub-configuration-serial-unit      ; integer | #f
+                    (default #f))
+  (serial-speed     grub-configuration-serial-speed     ; integer | #f
+                    (default #f)))
 
 (define-record-type* <menu-entry>
   menu-entry make-menu-entry
@@ -199,10 +208,15 @@ system string---e.g., \"x86_64-linux\"."
     insmod vbe
     insmod vga
   fi
-
-  terminal_output gfxterm
 "
         ""))
+
+  (define (setup-gfxterm config font-file)
+    (if (memq 'gfxterm (grub-configuration-terminal-outputs config))
+      #~(format #f "if loadfont ~a; then
+  setup_gfxterm
+fi~%" #$font-file)
+      ""))
 
   (define (theme-colors type)
     (let* ((theme  (grub-configuration-theme config))
@@ -222,9 +236,8 @@ function setup_gfxterm {~a}
 # Set 'root' to the partition that contains /gnu/store.
 ~a
 
-if loadfont ~a; then
-  setup_gfxterm
-fi
+~a
+~a
 
 insmod png
 if background_image ~a; then
@@ -236,7 +249,8 @@ else
 fi~%"
                            #$setup-gfxterm-body
                            #$(grub-root-search store-device font-file)
-                           #$font-file
+                           #$(grub-setup-io config)
+                           #$(setup-gfxterm config font-file)
 
                            #$(strip-mount-point store-mount-point image)
                            #$(theme-colors grub-theme-color-normal)
@@ -246,6 +260,57 @@ fi~%"
 ;;;
 ;;; Configuration file.
 ;;;
+
+(define (grub-setup-io config)
+  "Return GRUB commands to configure the input / output interfaces.  The result
+is a string that can be inserted in grub.cfg."
+  (let* ((symbols->string (lambda (list)
+                           (string-join (map symbol->string list) " ")))
+         (outputs (grub-configuration-terminal-outputs config))
+         (inputs (grub-configuration-terminal-inputs config))
+         (unit (grub-configuration-serial-unit config))
+         (speed (grub-configuration-serial-speed config))
+
+         ;; Respectively, GRUB_TERMINAL_OUTPUT and GRUB_TERMINAL_INPUT,
+         ;; as documented in GRUB manual section "Simple Configuration
+         ;; Handling".
+         (valid-outputs '(console serial serial_0 serial_1 serial_2 serial_3
+                          gfxterm vga_text mda_text morse spkmodem))
+         (valid-inputs '(console serial serial_0 serial_1 serial_2 serial_3
+                         at_keyboard usb_keyboard))
+
+         (io (string-append
+               "terminal_output "
+               (symbols->string
+                 (map
+                   (lambda (output)
+                     (if (memq output valid-outputs) output #f)) outputs)) "\n"
+               (if (null? inputs)
+                 ""
+                 (string-append
+                   "terminal_input "
+                   (symbols->string
+                     (map
+                       (lambda (input)
+                         (if (memq input valid-inputs) input #f)) inputs)) "\n"))
+               ;; UNIT and SPEED are arguments to the same GRUB command
+               ;; ("serial"), so we process them together.
+               (if (or unit speed)
+                 (string-append
+                   "serial"
+                   (if unit
+                     ;; COM ports 1 through 4
+                     (if (and (exact-integer? unit) (<= unit 3) (>= unit 0))
+                       (string-append " --unit=" (number->string unit))
+                       #f)
+                     "")
+                   (if speed
+                     (if (exact-integer? speed)
+                       (string-append " --speed=" (number->string speed))
+                       #f)
+                     ""))
+                 ""))))
+    (format #f "~a" io)))
 
 (define (grub-root-search device file)
   "Return the GRUB 'search' command to look for DEVICE, which contains FILE,
