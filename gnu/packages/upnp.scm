@@ -34,6 +34,7 @@
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
+       (patches (search-patches "miniupnpc-CVE-2017-8798.patch"))
        (sha256
         (base32 "0n11m2wq812zms5b21h8ihw1kbyaihj9nqjiida0hskf4dmw4m13"))))
     (build-system gnu-build-system)
