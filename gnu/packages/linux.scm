@@ -468,7 +468,7 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "22.20")
+    (version "22.21")
     (source
      (origin
       (method url-fetch)
@@ -476,10 +476,10 @@ at login.  Local and dynamic reconfiguration are its key features.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "052mfraykmxnavpi8s78aljx8w87hyvpx8mvzsgpjsjz73i28wmi"))))
+        "0nhlm1vrrwn4a845p6y4nnnb4liq70n74zbdd5dq844jc6nkqclp"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://psmisc.sourceforge.net/")
+    (home-page "https://gitlab.com/psmisc/psmisc")
     (synopsis
      "Small utilities that use the proc file system")
     (description
