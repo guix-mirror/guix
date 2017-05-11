@@ -321,7 +321,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (version "2.00.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://fedorahosted.org/releases/l/i/"
+              (uri (string-append "https://releases.pagure.org/"
                                   "liberation-fonts/liberation-fonts-ttf-"
                                   version ".tar.gz"))
               (sha256
@@ -355,7 +355,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
      `(("source" ,source)
        ("tar" ,tar)
        ("gzip" ,gzip)))
-    (home-page "https://fedorahosted.org/liberation-fonts/")
+    (home-page "https://pagure.io/liberation-fonts/")
     (synopsis
      "Fonts compatible with Arial, Times New Roman, and Courier New")
     (description
