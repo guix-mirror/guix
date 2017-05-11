@@ -462,6 +462,35 @@ language.")
     ;; GPLv2 or later, with special linking exception.
     (license license:gpl2+)))
 
+(define jamvm-bootstrap
+  (package
+    (name "jamvm")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
+                                  "JamVM%20" version "/jamvm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-classpath-install-dir="
+                            (assoc-ref %build-inputs "classpath")))))
+    (inputs
+     `(("classpath" ,classpath-on-sablevm)
+       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
+       ("zlib" ,zlib)))
+    (home-page "http://jamvm.sourceforge.net/")
+    (synopsis "Small Java Virtual Machine")
+    (description "JamVM is a Java Virtual Machine conforming to the JVM
+specification edition 2 (blue book).  It is extremely small.  However, unlike
+other small VMs it supports the full spec, including object finalisation and
+JNI.")
+    (license license:gpl2+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
