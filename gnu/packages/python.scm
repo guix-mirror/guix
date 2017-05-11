@@ -1353,7 +1353,8 @@ Python 3.3+.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
-    (home-page "https://fedorahosted.org/dogtail/")
+    ;; Currently no offical homepage.
+    (home-page "https://pypi.python.org/pypi/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
