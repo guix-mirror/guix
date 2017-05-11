@@ -1685,7 +1685,7 @@ system.")
               ("bzip2" ,bzip2)
               ("pam" ,linux-pam)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "ftp://ftp.kernel.org/pub/linux/utils/kbd/")
+    (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
     (description
      "This package contains keytable files and keyboard utilities compatible
