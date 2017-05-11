@@ -289,11 +289,26 @@ menu spec-compliant desktop menus for LXDE.")
         (base32
          "0mj84fa3f4ak1jjslrwc2q3ci9zxrxpciggviza9bjb0168brn8w"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-lxsession
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Set the right file name for 'lxsession'.
+                      (let ((lxsession (assoc-ref inputs "lxsession")))
+                        (substitute* "startlxde.in"
+                          (("^exec .*/bin/lxsession")
+                           (string-append "exec " lxsession
+                                          "/bin/lxsession")))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("lxmenu-data" ,lxmenu-data)
        ("lxde-icon-theme" ,lxde-icon-theme)))
+    (inputs
+     `(("lxsession" ,lxsession)
+       ;; ("lxlock" ,lxlock) ;for 'lxde-screenlock.desktop'
+       ))
     (synopsis "Common files of the LXDE Desktop")
     (description
      "Lxde-common provides common files of the LXDE Desktop.")
