@@ -296,7 +296,8 @@ info --version")
                                 (setlocale LC_ALL before))
                              marionette))
 
-          (test-assert "/run/current-system is a GC root"
+          (test-eq "/run/current-system is a GC root"
+            'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
                                 (eval-when (expand load eval)
@@ -317,7 +318,8 @@ info --version")
 
                                 (let ((system (readlink "/run/current-system")))
                                   (guard (c ((nix-protocol-error? c)
-                                             (file-exists? system)))
+                                             (and (file-exists? system)
+                                                  'success!)))
                                     (with-store store
                                       (delete-paths store (list system))
                                       #f))))
