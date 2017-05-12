@@ -775,9 +775,9 @@ replacement if PORT is not Unicode-capable."
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
 
-(define (config-directory)
+(define* (config-directory #:key (ensure? #t))
   "Return the name of the configuration directory, after making sure that it
-exists.  Honor the XDG specs,
+exists if ENSURE? is true.  Honor the XDG specs,
 <http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>."
   (let ((dir (and=> (or (getenv "XDG_CONFIG_HOME")
                         (and=> (getenv "HOME")
@@ -785,7 +785,8 @@ exists.  Honor the XDG specs,
                     (cut string-append <> "/guix"))))
     (catch 'system-error
       (lambda ()
-        (mkdir-p dir)
+        (when ensure?
+          (mkdir-p dir))
         dir)
       (lambda args
         (let ((err (system-error-errno args)))

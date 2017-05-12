@@ -165,7 +165,8 @@ Show what and how will/would be built."
 
     (define age
       (match (false-if-not-found
-              (lstat (string-append (config-directory) "/latest")))
+              (lstat (string-append (config-directory #:ensure? #f)
+                                    "/latest")))
         (#f    #f)
         (stat  (- (time-second (current-time time-utc))
                   (stat:mtime stat)))))
