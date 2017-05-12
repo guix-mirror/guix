@@ -1487,15 +1487,37 @@ backported for previous versions of Python from 2.4 to 3.3.")
        (base32
         "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "tests/test_parse_type_parse.py"
+               ;; Newer Python versions don't have the problem this test tests.
+               (("self[.]assertRaises[(]parse.TooManyFields, p.parse, ''[)]")
+                ""))
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
-    (arguments '(#:tests? #f))            ;TODO: tests require pytest
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/jenisys/parse_type")
     (synopsis "Extended parse module")
     (description
      "Parse_type extends the python parse module.")
+    (properties
+     `((python2-variant . ,(delay python2-parse-type))))
     (license license:bsd-3)))
+
+(define-public python2-parse-type
+  (let ((base (package-with-python2
+                (strip-python2-variant python-parse-type))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-parse
   (package
