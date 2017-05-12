@@ -3885,3 +3885,25 @@ generic process instrumentation engine thanks to its extension mechanism.
 Technically PRoot relies on @code{ptrace}, an unprivileged system-call
 available in the kernel Linux.")
     (license license:gpl2+)))
+
+(define-public proot-static
+  (package
+    (inherit proot)
+    (name "proot-static")
+    (synopsis
+     "Unprivileged chroot, bind mount, and binfmt_misc (statically linked)")
+    (inputs `(("talloc" ,talloc/static)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments proot)
+       ((#:make-flags flags)
+        `(cons "LDFLAGS = -ltalloc -static -static-libgcc" ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'strip 'remove-store-references
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (with-directory-excursion out
+                   (remove-store-references "bin/proot")
+                   #t))))))
+       ((#:allowed-references _ '("out"))
+        '("out"))))))
