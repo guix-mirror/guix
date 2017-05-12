@@ -7206,15 +7206,15 @@ get a feel of what that means.)
 Support for the Logical Volume Manager (LVM) is missing.
 
 @item
-Few system services are currently supported out-of-the-box
-(@pxref{Services}).
+More and more system services are provided (@pxref{Services}), but some
+may be missing.
 
 @item
-More than 5,000 packages are available, but you may
+More than 5,300 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
-GNOME, Xfce, and Enlightenment are available (@pxref{Desktop Services}),
+GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
 as well as a number of X11 window managers.  However, some graphical
 applications may be missing, as well as KDE.
 @end itemize
