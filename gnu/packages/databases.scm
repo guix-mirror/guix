@@ -586,9 +586,15 @@ types are supported, as is encryption.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list "CC=gcc"
                           (string-append "INSTALL_PATH="
                                          (assoc-ref %outputs "out")))
+       ;; Many tests fail on 32-bit platforms. There are multiple reports about
+       ;; this upstream, but it's not going to be supported any time soon.
+       #:tests? (let ((system ,(or (%current-target-system)
+                                   (%current-system))))
+                  (or (string-prefix? "x86_64-linux" system)
+                      (string-prefix? "aarch64-linux" system)))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile
@@ -601,6 +607,13 @@ types are supported, as is encryption.")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
          (delete 'configure)
+         ;; The default target is only needed for tests and built on demand.
+         (delete 'build)
+         (add-before 'check 'disable-optimizations
+           (lambda _
+             ;; Prevent the build from passing '-march=native' to the compiler.
+             (setenv "PORTABLE" "1")
+             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
@@ -617,8 +630,6 @@ types are supported, as is encryption.")
            ;; targets for release builds so we build them here for clarity.
            ;; TODO: Add debug output.
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             ;; Prevent the build from adding machine-specific optimizations.
-             (setenv "PORTABLE" "1")
              (zero? (apply system* "make" "shared_lib" make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
