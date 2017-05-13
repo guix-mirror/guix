@@ -4584,6 +4584,7 @@ selected frame.")
      (origin
        (method url-fetch)
        (uri "https://www.emacswiki.org/emacs/download/key-chord.el")
+       (file-name (string-append "key-chord-" version ".el"))
        (sha256
         (base32
          "03m44pqggfrd53nh9dvpdjgm0rvca34qxmd30hr33hzprzjambxg"))))
