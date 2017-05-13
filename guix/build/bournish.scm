@@ -48,11 +48,19 @@ refers to."
       str))
 
 (define* (display-tabulated lst
-                             #:key (columns 3)
-                             (column-width (/ 78 columns)))
-  "Display the list of string LST in COLUMNS columns of COLUMN-WIDTH
-characters."
+                            #:key
+                            (terminal-width 80)
+                            (column-gap 2))
+  "Display the list of string LST in as many columns as needed given
+TERMINAL-WIDTH.  Use COLUMN-GAP spaces between two subsequent columns."
   (define len (length lst))
+  (define column-width
+    ;; The width of a column.  Assume all the columns have the same width
+    ;; (GNU ls is smarter than that.)
+    (+ column-gap (reduce max 0 (map string-length lst))))
+  (define columns
+    (max 1
+         (quotient terminal-width column-width)))
   (define pad
     (if (zero? (modulo len columns))
         0
