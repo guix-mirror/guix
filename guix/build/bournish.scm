@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -81,16 +81,30 @@ characters."
     (()
      (display-tabulated (scandir ".")))
     (files
-     (let ((files (filter (lambda (file)
-                            (catch 'system-error
-                              (lambda ()
-                                (lstat file))
-                              (lambda args
-                                (let ((errno (system-error-errno args)))
-                                  (format (current-error-port) "~a: ~a~%"
-                                          file (strerror errno))
-                                  #f))))
-                          files)))
+     (let ((files (append-map (lambda (file)
+                                (catch 'system-error
+                                  (lambda ()
+                                    (match (stat:type (lstat file))
+                                      ('directory
+                                       ;; Like GNU ls, list the contents of
+                                       ;; FILE rather than FILE itself.
+                                       (match (scandir file
+                                                       (match-lambda
+                                                         ((or "." "..") #f)
+                                                         (_ #t)))
+                                         (#f
+                                          (list file))
+                                         ((files ...)
+                                          (map (cut string-append file "/" <>)
+                                               files))))
+                                      (_
+                                       (list file))))
+                                  (lambda args
+                                    (let ((errno (system-error-errno args)))
+                                      (format (current-error-port) "~a: ~a~%"
+                                              file (strerror errno))
+                                      '()))))
+                              files)))
        (display-tabulated files)))))
 
 (define (ls-command . files)
