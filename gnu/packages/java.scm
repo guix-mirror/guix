@@ -143,6 +143,51 @@ etc.).  SableVM is no longer maintained.
 This package provides the classpath library.")
     (license license:lgpl2.1+)))
 
+(define sablevm
+  (package
+    (name "sablevm")
+    (version "1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
+                                  version "/sablevm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jyg4bsym6igz94wps5443c7wiwlzinqzkchcw972nz4kf1cql6g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-path-to-classpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("@datadir@/sablevm-classpath")
+                (string-append (assoc-ref inputs "classpath")
+                               "/share/sablevm-classpath")))
+             (substitute* "src/libsablevm/Makefile.in"
+               (("\\$\\(libdir\\)/sablevm-classpath")
+                (string-append (assoc-ref inputs "classpath")
+                               "/lib/sablevm-classpath"))
+               (("\\$\\(datadir\\)/sablevm-classpath")
+                (string-append (assoc-ref inputs "classpath")
+                               "/share/sablevm-classpath")))
+             #t)))))
+    (inputs
+     `(("classpath" ,sablevm-classpath)
+       ("jikes" ,jikes)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("libltdl" ,libltdl)))
+    (home-page "http://sablevm.org/")
+    (synopsis "Java Virtual Machine")
+    (description "SableVM is a clean-room, highly portable and efficient Java
+virtual machine.  Its goals are to be reasonably small, fast, and compliant
+with the various specifications (JVM specification, JNI, invocation interface,
+etc.).  SableVM is no longer maintained.
+
+This package provides the virtual machine.")
+    (license license:lgpl2.1+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
