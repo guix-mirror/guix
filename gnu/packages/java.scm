@@ -404,6 +404,64 @@ requirement for all GNU Classpath releases after version 0.93.")
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.")))
 
+;; Note: All the tool wrappers (e.g. for javah, javac, etc) fail with
+;; java.lang.UnsupportedClassVersionError.  They simply won't run on the old
+;; sablevm.  We use Classpath 0.99 to build JamVM, on which the Classpath
+;; tools do run.  Using these Classpath tools on JamVM we can then build the
+;; development version of GNU Classpath.
+(define classpath-on-sablevm
+  (package
+    (name "classpath")
+    (version "0.99")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/classpath/classpath-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-ecj-jar="
+                            (assoc-ref %build-inputs "ecj-bootstrap")
+                            "/share/java/ecj-bootstrap.jar")
+             (string-append "JAVAC="
+                            (assoc-ref %build-inputs "ecj-javac-wrapper")
+                            "/bin/javac")
+             (string-append "JAVA="
+                            (assoc-ref %build-inputs "sablevm")
+                            "/bin/java-sablevm")
+             "GCJ_JAVAC_TRUE=no"
+             "ac_cv_prog_java_works=yes"  ; trust me
+             "--disable-Werror"
+             "--disable-gmp"
+             "--disable-gtk-peer"
+             "--disable-gconf-peer"
+             "--disable-plugin"
+             "--disable-dssi"
+             "--disable-alsa"
+             "--disable-gjdoc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda _ (zero? (system* "make" "install-data")))))))
+    (native-inputs
+     `(("ecj-bootstrap" ,ecj-bootstrap)
+       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
+       ("fastjar" ,fastjar)
+       ("sablevm" ,sablevm)
+       ("sablevm-classpath" ,sablevm-classpath)
+       ("libltdl" ,libltdl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.gnu.org/software/classpath/")
+    (synopsis "Essential libraries for Java")
+    (description "GNU Classpath is a project to create core class libraries
+for use with runtimes, compilers and tools for the Java programming
+language.")
+    ;; GPLv2 or later, with special linking exception.
+    (license license:gpl2+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
