@@ -702,7 +702,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("classpath" ,classpath-devel)))))
 
 (define-public ant
-  (package
+  (package (inherit ant-bootstrap)
     (name "ant")
     ;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x
     ;; series requires Java 8.
@@ -714,45 +714,33 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
               (sha256
                (base32
                 "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
-    (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
-       #:phases
-       (alist-cons-after
-        'unpack 'remove-scripts
-        ;; Remove bat / cmd scripts for DOS as well as the antRun and runant
-        ;; wrappers.
-        (lambda _
-          (for-each delete-file
-                    (find-files "src/script"
-                                "(.*\\.(bat|cmd)|runant.*|antRun.*)")))
-        (alist-replace
-         'build
-         (lambda _
-           (setenv "JAVA_HOME" (string-append (assoc-ref %build-inputs "gcj")
-                                              "/lib/jvm"))
-           ;; Disable tests to avoid dependency on hamcrest-core, which needs
-           ;; Ant to build.  This is necessary in addition to disabling the
-           ;; "check" phase, because the dependency on "test-jar" would always
-           ;; result in the tests to be run.
-           (substitute* "build.xml"
-             (("depends=\"jars,test-jar\"") "depends=\"jars\""))
-           (zero? (system* "bash" "bootstrap.sh"
-                           (string-append "-Ddist.dir="
-                                          (assoc-ref %outputs "out")))))
-         (alist-delete
-          'configure
-          (alist-delete 'install %standard-phases))))))
+     (substitute-keyword-arguments (package-arguments ant-bootstrap)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'remove-scripts
+             ;; Remove bat / cmd scripts for DOS as well as the antRun and runant
+             ;; wrappers.
+             (lambda _
+               (for-each delete-file
+                         (find-files "src/script"
+                                     "(.*\\.(bat|cmd)|runant.*|antRun.*)"))
+               #t))
+           (replace 'build
+             (lambda _
+               (setenv "JAVA_HOME" (string-append (assoc-ref %build-inputs "gcj")
+                                                  "/lib/jvm"))
+               ;; Disable tests to avoid dependency on hamcrest-core, which needs
+               ;; Ant to build.  This is necessary in addition to disabling the
+               ;; "check" phase, because the dependency on "test-jar" would always
+               ;; result in the tests to be run.
+               (substitute* "build.xml"
+                 (("depends=\"jars,test-jar\"") "depends=\"jars\""))
+               (zero? (system* "bash" "bootstrap.sh"
+                               (string-append "-Ddist.dir="
+                                              (assoc-ref %outputs "out"))))))))))
     (native-inputs
-     `(("gcj" ,gcj)))
-    (home-page "http://ant.apache.org")
-    (synopsis "Build tool for Java")
-    (description
-     "Ant is a platform-independent build tool for Java.  It is similar to
-make but is implemented using the Java language, requires the Java platform,
-and is best suited to building Java projects.  Ant uses XML to describe the
-build process and its dependencies, whereas Make uses Makefile format.")
-    (license license:asl2.0)))
+     `(("gcj" ,gcj)))))
 
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
 ;; ecj-javac-on-jamvm-wrapper-final cannot build Icedtea 2.x directly, because
