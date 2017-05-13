@@ -39,6 +39,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
 (define-public chmlib
@@ -80,6 +81,7 @@
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")))
         (patches (search-patches "calibre-drop-unrar.patch"
+                                 "calibre-use-packaged-feedparser.patch"
                                  "calibre-dont-load-remote-icons.patch"
                                  "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
@@ -116,6 +118,7 @@
        ("python2-cssutils" ,python2-cssutils)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
+       ("python2-feedparser" ,python2-feedparser)
        ("python2-lxml" ,python2-lxml)
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
