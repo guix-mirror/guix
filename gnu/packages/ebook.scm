@@ -78,8 +78,12 @@
         (modules '((guix build utils)))
         (snippet
           '(begin
+            (delete-file-recursively "src/calibre/ebooks/markdown")
             (delete-file-recursively "src/unrar")
-            (delete-file "src/odf/thumbnail.py")))
+            (delete-file "src/odf/thumbnail.py")
+            (substitute* (find-files "." "\\.py")
+              (("calibre\\.ebooks\\.markdown") "markdown"))
+            #t))
         (patches (search-patches "calibre-drop-unrar.patch"
                                  "calibre-use-packaged-feedparser.patch"
                                  "calibre-dont-load-remote-icons.patch"
@@ -120,6 +124,7 @@
        ("python2-dbus" ,python2-dbus)
        ("python2-feedparser" ,python2-feedparser)
        ("python2-lxml" ,python2-lxml)
+       ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
        ("python2-pillow" ,python2-pillow)
