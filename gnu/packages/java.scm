@@ -248,6 +248,75 @@ and is best suited to building Java projects.  Ant uses XML to describe the
 build process and its dependencies, whereas Make uses Makefile format.")
     (license license:asl2.0)))
 
+;; Version 3.2.2 is the last version without a dependency on a full-fledged
+;; compiler for Java 1.5.
+(define ecj-bootstrap
+  (package
+    (name "ecj-bootstrap")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops/R-" version
+                                  "-200702121330/ecjsrc.zip"))
+              (sha256
+               (base32
+                "05hj82kxd23qaglsjkaqcj944riisjha7acf7h3ljhrjyljx8307"))))
+    ;; It would be so much easier if we could use the ant-build-system, but we
+    ;; cannot as we don't have ant at this point.  We use ecj for
+    ;; bootstrapping the JDK.
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CLASSPATH"
+                     (string-join
+                      (find-files (string-append (assoc-ref inputs "ant-bootstrap")
+                                                 "/lib")
+                                  "\\.jar$")
+                      ":"))
+             #t))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The unpack phase enters the "org" directory by mistake.
+             (chdir "..")
+
+             ;; Create a simple manifest to make ecj executable.
+             (with-output-to-file "manifest"
+               (lambda _
+                 (display "Manifest-Version: 1.0
+Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
+
+             ;; Compile it all!
+             (and (zero? (apply system* "javac-sablevm"
+                                (find-files "." "\\.java$")))
+                  (zero? (system* "fastjar" "cvfm"
+                                  "ecj-bootstrap.jar" "manifest" ".")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/java/")))
+               (mkdir-p share)
+               (install-file "ecj-bootstrap.jar" share)
+               #t))))))
+    (native-inputs
+     `(("ant-bootstrap" ,ant-bootstrap)
+       ("unzip" ,unzip)
+       ("sablevm" ,sablevm)
+       ("fastjar" ,fastjar)))
+    (home-page "https://eclipse.org")
+    (synopsis "Eclipse Java development tools core batch compiler")
+    (description "This package provides the Eclipse Java core batch compiler
+for bootstrapping purposes.  The @dfn{Eclipse compiler for Java} (ecj) is a
+requirement for all GNU Classpath releases after version 0.93.")
+    (license license:epl1.0)))
+
 (define-public java-swt
   (package
     (name "java-swt")
