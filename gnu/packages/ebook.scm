@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.76.0")
+    (version "2.85.1")
     (source
       (origin
         (method url-fetch)
@@ -70,7 +71,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1xfm586n6gm44mkyn25mbiyhj6w9ji9yl6fvmnr4zk1q6qcga3v8"))
+          "1g8s0kp1gj05yysfgqpp2lgrxvzc0fsny1hwzx5jh9hvqn0b53cc"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
