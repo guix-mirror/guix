@@ -28,6 +28,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux) ;alsa
@@ -316,6 +318,91 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
 for bootstrapping purposes.  The @dfn{Eclipse compiler for Java} (ecj) is a
 requirement for all GNU Classpath releases after version 0.93.")
     (license license:epl1.0)))
+
+(define ecj-javac-wrapper
+  (package (inherit ecj-bootstrap)
+    (name "ecj-javac-wrapper")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let ((backend 'sablevm))
+         (use-modules (guix build utils))
+         (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
+                (target (string-append bin "/javac"))
+                (guile  (string-append (assoc-ref %build-inputs "guile")
+                                       "/bin/guile"))
+                (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
+                                       "/share/java/ecj-bootstrap.jar"))
+                (java   (case backend
+                          ((sablevm)
+                           (string-append (assoc-ref %build-inputs "sablevm")
+                                          "/lib/sablevm/bin/java"))
+                          ((jamvm)
+                           (string-append (assoc-ref %build-inputs "jamvm")
+                                          "/bin/jamvm"))))
+                (bootcp (case backend
+                          ((sablevm)
+                           (let ((jvmlib (string-append
+                                          (assoc-ref %build-inputs "sablevm-classpath")
+                                          "/lib/sablevm")))
+                             (string-append jvmlib "/jre/lib/rt.jar")))
+                          ((jamvm)
+                           (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
+                                                        "/share/classpath")))
+                             (string-append jvmlib "/lib/glibj.zip:"
+                                            jvmlib "/lib/tools.zip"))))))
+           (mkdir-p bin)
+           (with-output-to-file target
+             (lambda _
+               (format #t "#!~a --no-auto-compile\n!#\n" guile)
+               (write
+                `(begin (use-modules (ice-9 match)
+                                     (ice-9 receive)
+                                     (ice-9 hash-table)
+                                     (srfi srfi-1)
+                                     (srfi srfi-26))
+                        (define defaults
+                          '(("-bootclasspath" ,bootcp)
+                            ("-source" "1.5")
+                            ("-target" "1.5")
+                            ("-cp"     ".")))
+                        (define (main args)
+                          (let ((classpath (getenv "CLASSPATH")))
+                            (setenv "CLASSPATH"
+                                    (string-append ,ecj
+                                                   (if classpath
+                                                       (string-append ":" classpath)
+                                                       ""))))
+                          (receive (vm-args other-args)
+                              ;; Separate VM arguments from arguments to ECJ.
+                              (partition (cut string-prefix? "-J" <>)
+                                         (fold (lambda (default acc)
+                                                 (if (member (first default) acc)
+                                                     acc (append default acc)))
+                                               args defaults))
+                            (apply system* ,java
+                                   (append
+                                    ;; Remove "-J" prefix
+                                    (map (cut string-drop <> 2) vm-args)
+                                    '("org.eclipse.jdt.internal.compiler.batch.Main")
+                                    (cons "-nowarn" other-args)))))
+                        ;; Entry point
+                        (let ((args (cdr (command-line))))
+                          (if (null? args)
+                              (format (current-error-port) "javac: no arguments given!\n")
+                              (main args)))))))
+           (chmod target #o755)
+           #t))))
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ("ecj-bootstrap" ,ecj-bootstrap)
+       ("sablevm" ,sablevm)
+       ("sablevm-classpath" ,sablevm-classpath)))
+    (description "This package provides a wrapper around the @dfn{Eclipse
+compiler for Java} (ecj) with a command line interface that is compatible with
+the standard javac executable.")))
 
 (define-public java-swt
   (package
