@@ -188,6 +188,66 @@ etc.).  SableVM is no longer maintained.
 This package provides the virtual machine.")
     (license license:lgpl2.1+)))
 
+(define ant-bootstrap
+  (package
+    (name "ant-bootstrap")
+    ;; The 1.10.x series requires Java 8.  1.9.0 and later use generics, which
+    ;; are not supported.  The 1.8.x series is the last to use only features
+    ;; supported by Jikes, but it cannot seem to be built with sablevm.
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.apache.org/dist/"
+                                  "ant/source/apache-ant-"
+                                  version "-src.tar.bz2"))
+              (sha256
+               (base32
+                "19pvqvgkxgpgsqm4lvbki5sm0z84kxmykdqicvfad47gc1r9mi2d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "JAVA_HOME"
+                     (string-append (assoc-ref inputs "sablevm")
+                                    "/lib/sablevm"))
+             (setenv "JAVACMD"
+                     (string-append (assoc-ref inputs "sablevm")
+                                    "/bin/java-sablevm"))
+             (setenv "JAVAC"
+                     (string-append (assoc-ref inputs "sablevm")
+                                    "/bin/javac-sablevm"))
+
+             ;; Use jikes instead of javac for <javac ...> tags in build.xml
+             (setenv "ANT_OPTS" "-Dbuild.compiler=jikes")
+
+             ;; jikes produces lots of warnings, but they are not very
+             ;; interesting, so we silence them.
+             (setenv "$BOOTJAVAC_OPTS" "-nowarn")
+
+             ;; Disable tests because we are bootstrapping and thus don't have
+             ;; any of the dependencies required to build and run the tests.
+             (substitute* "build.xml"
+               (("depends=\"jars,test-jar\"") "depends=\"jars\""))
+             (zero? (system* "bash" "bootstrap.sh"
+                             (string-append "-Ddist.dir="
+                                            (assoc-ref %outputs "out"))))))
+         (delete 'install))))
+    (native-inputs
+     `(("jikes" ,jikes)
+       ("sablevm" ,sablevm)))
+    (home-page "http://ant.apache.org")
+    (synopsis "Build tool for Java")
+    (description
+     "Ant is a platform-independent build tool for Java.  It is similar to
+make but is implemented using the Java language, requires the Java platform,
+and is best suited to building Java projects.  Ant uses XML to describe the
+build process and its dependencies, whereas Make uses Makefile format.")
+    (license license:asl2.0)))
+
 (define-public java-swt
   (package
     (name "java-swt")
