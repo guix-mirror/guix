@@ -1632,14 +1632,14 @@ environment variables.")
 (define-public ghc-x11
   (package
     (name "ghc-x11")
-    (version "1.6.1.2")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/X11/"
                            "X11-" version ".tar.gz"))
        (sha256
-        (base32 "1kzjcynm3rr83ihqx2y2d852jc49da4p18gv6jzm7g87z22x85jj"))))
+        (base32 "13lxq36856fzp61y4api78vssykyh8fm2aplr0nsj18ymdm1c6sl"))))
     (build-system haskell-build-system)
     (inputs
      `(("libx11" ,libx11)
