@@ -80,6 +80,7 @@
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")))
         (patches (search-patches "calibre-drop-unrar.patch"
+                                 "calibre-dont-load-remote-icons.patch"
                                  "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
