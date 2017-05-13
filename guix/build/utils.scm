@@ -32,7 +32,12 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:re-export (alist-cons
-               alist-delete)
+               alist-delete
+
+               ;; Note: Re-export 'delete' to allow for proper syntax matching
+               ;; in 'modify-phases' forms.  See
+               ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26805#16>.
+               delete)
   #:export (%store-directory
             store-file-name?
             strip-store-file-name
