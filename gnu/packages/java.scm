@@ -491,6 +491,51 @@ other small VMs it supports the full spec, including object finalisation and
 JNI.")
     (license license:gpl2+)))
 
+;; We need this because the tools provided by the latest release of GNU
+;; Classpath don't actually work with sablevm.
+(define classpath-jamvm-wrappers
+  (package (inherit classpath-on-sablevm)
+    (name "classpath-jamvm-wrappers")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((bash      (assoc-ref %build-inputs "bash"))
+                (jamvm     (assoc-ref %build-inputs "jamvm"))
+                (classpath (assoc-ref %build-inputs "classpath"))
+                (bin       (string-append (assoc-ref %outputs "out")
+                                          "/bin/")))
+           (mkdir-p bin)
+           (for-each (lambda (tool)
+                       (with-output-to-file (string-append bin tool)
+                         (lambda _
+                           (format #t "#!~a/bin/sh
+~a/bin/jamvm -classpath ~a/share/classpath/tools.zip \
+gnu.classpath.tools.~a.~a $@"
+                                   bash jamvm classpath tool
+                                   (if (string=? "native2ascii" tool)
+                                       "Native2ASCII" "Main"))))
+                       (chmod (string-append bin tool) #o755))
+                     (list "javah"
+                           "rmic"
+                           "rmid"
+                           "orbd"
+                           "rmiregistry"
+                           "native2ascii"))
+           #t))))
+    (native-inputs
+     `(("bash" ,bash)
+       ("jamvm" ,jamvm-bootstrap)
+       ("classpath" ,classpath-on-sablevm)))
+    (inputs '())
+    (synopsis "Executables from GNU Classpath")
+    (description "This package provides wrappers around the tools provided by
+the GNU Classpath library.  They are executed by the JamVM virtual
+machine.")))
+
 (define-public java-swt
   (package
     (name "java-swt")
