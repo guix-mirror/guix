@@ -265,7 +265,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
@@ -276,10 +276,13 @@ libssh library.")
     (license license:gpl3+)))
 
 (define-public guile2.2-ssh
+  (deprecated-package "guile2.2-ssh" guile-ssh))
+
+(define-public guile2.0-ssh
   (package
     (inherit guile-ssh)
-    (name "guile2.2-ssh")
-    (inputs `(("guile" ,guile-2.2)
+    (name "guile2.0-ssh")
+    (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
 (define-public corkscrew
