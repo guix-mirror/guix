@@ -2130,3 +2130,53 @@ logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
     (license license:expat)))
+
+(define-public nnn
+  (package
+    (name "nnn")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jarun/nnn/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hww4385f81lyy30fx2rb4wchfi79dpgl7yylnfxvf27a4h2mkhm"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)
+              ("readline" ,readline)))
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases
+       ;; We do not provide `ncurses.h' within an `ncursesw'
+       ;; sub-directory, so patch the source accordingly.  See
+       ;; <http://bugs.gnu.org/19018>.
+       ;; Thanks to gtypist maintainer.
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-curses-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("-lncursesw")
+                  "-lncurses"))
+               (substitute* "nnn.c"
+                 (("ncursesw\\/curses.h")
+                  "ncurses.h")))
+             #t))
+         (delete 'configure))
+       #:make-flags
+       (list
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out"))
+        (string-append "-Wl,-rpath="
+                       %output "/lib")
+        "CC=gcc")))
+    (home-page "https://github.com/jarun/nnn")
+    (synopsis "Terminal file browser")
+    (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
+lightweight terminal file browser with easy keyboard shortcuts for
+navigation, opening files and running tasks.  There is no config file and
+mime associations are hard-coded.  The incredible user-friendliness and speed
+make it a perfect utility on modern distros.")
+    (license license:bsd-2)))
