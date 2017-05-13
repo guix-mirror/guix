@@ -248,7 +248,7 @@
                           "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
       (propagated-inputs
        `(("gnutls" ,gnutls/guile-2.2)             ;for 'guix download' & co.
-         ("guile-json" ,guile2.2-json)
+         ("guile-json" ,guile-json)
          ("guile-ssh" ,guile2.2-ssh)))
 
       (home-page "https://www.gnu.org/software/guix/")

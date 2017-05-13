@@ -7891,7 +7891,7 @@ library implementing most of the pipeline's features.")
      `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
        ("guile-next" ,guile-2.2)
-       ("guile-json" ,guile2.2-json)
+       ("guile-json" ,guile-json)
        ("guile-redis" ,guile2.2-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

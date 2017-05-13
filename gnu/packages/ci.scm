@@ -247,7 +247,7 @@ their dependencies.")
                  #t))))))
       (inputs
        `(("guile" ,guile-2.2)
-         ("guile-json" ,guile2.2-json)
+         ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guix" ,guix)
          ("git" ,git)))

@@ -691,7 +691,7 @@ for Guile\".")
                     (("moddir =.*/share/guile/site" all)
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
-    (native-inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("guile" ,guile-2.2)))
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
@@ -707,7 +707,10 @@ specification.  These are the main features:
     (license license:lgpl3+)))
 
 (define-public guile2.2-json
-  (package-for-guile-2.2 guile-json))
+  (deprecated-package "guile2.2-json" guile-json))
+
+(define-public guile2.0-json
+  (package-for-guile-2.0 guile-json))
 
 (define-public guile-minikanren
   (package
