@@ -4564,6 +4564,7 @@ with gnuplot.")
      (origin
        (method url-fetch)
        (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (file-name (string-append "transpose-frame-" version ".el"))
        (sha256
         (base32
          "1f67yksgw9s6j0033hmqzaxx2a93jm11sd5ys7cc3li5gfh680m4"))))
