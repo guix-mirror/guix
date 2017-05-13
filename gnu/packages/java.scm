@@ -713,7 +713,13 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
+                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "lib/optional" "\\.jar$"))
+                  #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments ant-bootstrap)
        ((#:phases phases)
