@@ -14644,3 +14644,35 @@ substitute for redis.")
 
 (define-public python2-fakeredis
   (package-with-python2 python-fakeredis))
+
+(define-public python-behave-web-api
+  (package
+    (name "python-behave-web-api")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "behave-web-api" version))
+       (sha256
+        (base32
+         "03kpq2xsy1gab3jy0dccbxlsg7vwfy4lagss0qldwmx3xz6b3i19"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda _
+             (substitute* "setup.py"
+               (("'wheel'") "")                ; We don't use it.
+               (("'ordereddict==1.1'") ""))))))) ; Python >= 2.7 has it built-in.
+    (propagated-inputs
+     `(("behave" ,behave)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/jefersondaniel/behave-web-api")
+    (synopsis "Provides testing for JSON APIs with Behave for Python")
+    (description "This package provides testing utility modules for testing
+JSON APIs with Behave.")
+    (license license:expat)))
+
+(define-public python2-behave-web-api
+  (package-with-python2 python-behave-web-api))
