@@ -3488,6 +3488,7 @@ extensions.")
        (method url-fetch)
        ;; There is no versioned source.
        (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
+       (file-name (string-append "goto-chg-" version ".el"))
        (sha256
         (base32
          "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
