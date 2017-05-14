@@ -28,6 +28,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -81,6 +82,7 @@
             (delete-file-recursively "src/calibre/ebooks/markdown")
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")
+            (delete-file-recursively "resources/fonts/liberation")
             (substitute* (find-files "." "\\.py")
               (("calibre\\.ebooks\\.markdown") "markdown"))
             #t))
@@ -91,6 +93,7 @@
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("font-liberation" ,font-liberation)
        ("qtbase" ,qtbase) ; for qmake
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
@@ -147,7 +150,17 @@
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
-              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))))))))
+              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib")))))
+         (add-after 'install 'install-font-liberation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file (string-append
+                                             (assoc-ref outputs "out")
+                                             "/share/calibre/fonts/liberation")))
+                       (find-files (string-append
+                                    (assoc-ref inputs "font-liberation")
+                                    "/share/fonts/truetype")))
+             #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
     (description "Calibre is an ebook library manager.  It can view, convert
