@@ -7634,8 +7634,11 @@ good.
 @subsection Installing GuixSD in a Virtual Machine
 
 @cindex virtual machine, GuixSD installation
-If you'd like to install GuixSD in a virtual machine (VM) rather than on
-your beloved machine, this section is for you.
+@cindex virtual private server (VPS)
+@cindex VPS (virtual private server)
+If you'd like to install GuixSD in a virtual machine (VM) or on a
+virtual private server (VPS) rather than on your beloved machine, this
+section is for you.
 
 To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
 disk image, follow these steps:
@@ -15693,17 +15696,21 @@ example graph.
 @subsection Running GuixSD in a Virtual Machine
 
 @cindex virtual machine
-One way to run GuixSD in a virtual machine (VM) is to build a GuixSD
-virtual machine image using @command{guix system vm-image}
-(@pxref{Invoking guix system}).  The returned image is in qcow2 format,
-which the @uref{http://qemu.org/, QEMU emulator} can efficiently use.
+To run GuixSD in a virtual machine (VM), one can either use the
+pre-built GuixSD VM image distributed at
+@indicateurl{ftp://alpha.gnu.org/guix/guixsd-vm-image-@value{VERSION}.@var{system}.tar.xz}
+, or build their own virtual machine image using @command{guix system
+vm-image} (@pxref{Invoking guix system}).  The returned image is in
+qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
+efficiently use.
 
 @cindex QEMU
-To run the image in QEMU, copy it out of the store (@pxref{The Store})
-and give yourself permission to write to the copy.  When invoking QEMU,
-you must choose a system emulator that is suitable for your hardware
-platform.  Here is a minimal QEMU invocation that will boot the result
-of @command{guix system vm-image} on x86_64 hardware:
+If you built your own image, you must copy it out of the store
+(@pxref{The Store}) and give yourself permission to write to the copy
+before you can use it.  When invoking QEMU, you must choose a system
+emulator that is suitable for your hardware platform.  Here is a minimal
+QEMU invocation that will boot the result of @command{guix system
+vm-image} on x86_64 hardware:
 
 @example
 $ qemu-system-x86_64 \
