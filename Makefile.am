@@ -617,6 +617,7 @@ release: distcheck
 	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
+            --system=$$system								\
 	    --image-size=$(GUIXSD_INSTALLATION_IMAGE_SIZE)				\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
