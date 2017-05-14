@@ -15679,7 +15679,7 @@ to your system definition and start the VM using
 @command{`guix system vm config.scm` -net user}.  An important caveat of using
 @command{-net user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
-network connectivity, like for example @command{curl}.
+network connectivity, for example @command{guix download}.
 
 @subsubsection Connecting Through SSH
 
