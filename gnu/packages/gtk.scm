@@ -170,7 +170,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.4.3")
+   (version "1.4.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -178,7 +178,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "08akv3qzwnf48xajb60dfcchkmfdjkpp65a0xd8s98w81901g343"))))
+               "14yj514yfy373np3gxk930a443j1zgnwg6mm0kdzzjr0rn0qp9r1"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -508,7 +508,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.22.0")
+   (version "2.24.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -516,7 +516,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "02n8ybhg8344mpjwvkhnzvr0qbvvl6ryi2q9irwhi0ri46ps6pj1"))))
+              "1kdgc5gkw3fsgxvwwsg7djvqijpc3xmpp9bp6k6v60yrzcag6yb1"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments

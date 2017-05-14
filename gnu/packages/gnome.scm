@@ -512,7 +512,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.22.1")
+    (version "3.24.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -520,15 +520,10 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0713mcrym5ykhl5smqxi6m9578gz3nkibmkmc794amss7gdkkm7k"))))
+               "13yw0i68dgqp9alyliy3zifszh7rikkpi1xbz5binvxxgfpraf04"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
-
-       ;; FIXME: Tests fail with:
-       ;;   ImportError: No module named gi.repository
-       ;; Where should that module come from?
-       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
@@ -584,7 +579,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.22.0")
+    (version "3.24.0")
     (source
      (origin
       (method url-fetch)
@@ -593,7 +588,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1qgalzqwg0fl0n22vslqcsnsmj9kc54qj25ib16rxaf36jxcf1hg"))))
+        "145vpcljy4660cnk8zk91qf7ywa7hqfl5hhw025gy8hxcqzklmzn"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -2753,7 +2748,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.22.1")
+    (version "3.24.1")
     (source
      (origin
        (method url-fetch)
@@ -2762,7 +2757,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1finsr7yqvix6n3rdwclv4fpgagmz6xyrk3qzapkn9ljv76rfzdm"))))
+         "02vm0jwhs9rdi3dphxw7dxharx7ng0l12j6hfdmn3vjc7v3ds50v"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; Color management test can't reach the colord system service.
@@ -3513,7 +3508,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.20.5")
+   (version "3.24.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3521,7 +3516,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0fqvfc4y1lbv0awh8dbx9khfha0hdkmnj1lzw5jq0l7jmahwbrz6"))))
+              "1rr7zy8afqgl15j1zz8l37svyv6bw4r3l04yf70zlnf1w8bf27pm"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
@@ -4051,7 +4046,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.22.2")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4059,7 +4054,7 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yaxd0lqhajszilblkidqfkaffhzml10l7ib64023y36qgf8q597"))))
+                "0fkz9h9a6149crmf6311fsqlmv9wyrxk86470vxib941ppl4a581"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5282,7 +5277,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.22.1")
+    (version "3.24.0")
     (source
      (origin
        (method url-fetch)
@@ -5291,7 +5286,7 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09gfdrm1kaz2knyghhjb0ka1kklgbcbnqgy4c90bg0v3n899ij5z"))))
+         "1jkikis9k3psp6rb8axnqy86awdyg5rzfbcp9gx40a99b4hlrnnb"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)))
