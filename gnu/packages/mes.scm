@@ -26,9 +26,32 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
   #:use-module (guix packages))
+
+(define-public nyacc
+  (package
+    (name "nyacc")
+    (version "0.78.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/nyacc/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xrnl2hl9rpl50n8cihvclcd951zj640fj5kpi3d6ihwcqjcdi0a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("guile" ,guile-2.2)))
+    (synopsis "LALR(1) Parser Generator in Guile")
+    (description
+     "NYACC is an LALR(1) parser generator implemented in Guile.
+The syntax and nomenclature should be considered not stable.  It comes with
+extensive examples, including parsers for the Javascript and C99 languages.")
+    (home-page "https://savannah.nongnu.org/projects/nyacc")
+    (license (list gpl3+ lgpl3+))))
 
 (define-public mes
   (let ((commit   "a437c173b9da1949ad966fd50dd4f26e522a910a")
