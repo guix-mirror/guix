@@ -264,15 +264,17 @@ conflict with slocate compatibility.")
     ;; building: xpdf, catdoc, MP3::Tag, Spreadsheet::ParseExcel,
     ;; HTML::Entities.
     (inputs
-     `(("libxml" ,libxml2)
-       ("zlib" ,zlib)
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("perl-uri" ,perl-uri)
        ("perl-html-parser" ,perl-html-parser)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-mime-types" ,perl-mime-types)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(;; XXX: This fails to build with zlib (API mismatch) and tests fail
+       ;; with libxml2, so disable both.
+       #:configure-flags (list (string-append "--without-zlib")
+                               (string-append "--without-libxml2"))
+       #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-programs
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
