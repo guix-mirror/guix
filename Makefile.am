@@ -589,7 +589,10 @@ GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
 #
 # This 'release' target takes care of everything and copies the resulting
 # files to $(releasedir).
-release: distcheck
+#
+# XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
+# issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
+release: dist
 	cd po; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
