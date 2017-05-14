@@ -20,3 +20,8 @@ COPYRIGHT_HOLDER = Ludovic Courtès
 MSGID_BUGS_ADDRESS = ludo@gnu.org
 
 EXTRA_LOCALE_CATEGORIES =
+
+# Disable PO update upon "make dist", which sometimes fails when doing
+# "make distcheck -j4".
+# See <https://lists.gnu.org/archive/html/bug-gettext/2014-08/msg00005.html>.
+DIST_DEPENDS_ON_UPDATE_PO = no
