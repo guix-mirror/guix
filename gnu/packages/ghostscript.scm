@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -209,8 +209,7 @@ output file formats and printers.")
    (properties '((upstream-name . "gnu-ghostscript")))))
 
 (define-public ghostscript/x
-  (package (inherit ghostscript)
-    (replacement #f)
+  (package/inherit ghostscript
     (name (string-append (package-name ghostscript) "-with-x"))
     (inputs `(("libxext" ,libxext)
               ("libxt" ,libxt)
@@ -219,6 +218,7 @@ output file formats and printers.")
 (define ghostscript/fixed
   (package
     (inherit ghostscript)
+    (replacement #f)
     (source
       (origin
         (inherit (package-source ghostscript))

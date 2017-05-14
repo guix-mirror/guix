@@ -197,8 +197,9 @@ passwords that could be guessed by crack by filtering them out, at source.")
     (source (origin
               (method url-fetch)
               (uri (list
-                    (string-append "https://fedorahosted.org/releases/l/i/"
-                                   name "/" name "-" version ".tar.bz2")
+                    (string-append "https://github.com/" name "/" name
+                                   "/releases/download/" name  "-" version
+                                   "/" name "-" version ".tar.bz2")
                     (string-append "https://launchpad.net/libpwquality/trunk/"
                                    version "/+download/"
                                    name "-" version ".tar.bz2")))
@@ -212,7 +213,7 @@ passwords that could be guessed by crack by filtering them out, at source.")
     (inputs
      `(("cracklib" ,cracklib)))
     (synopsis "Password quality checker")
-    (home-page "https://fedorahosted.org/libpwquality/")
+    (home-page "https://github.com/libpwquality/libpwquality")
     (description
      "Libpwquality is a library for password quality checking and generation of
 random passwords that pass the checks.")

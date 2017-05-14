@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -308,7 +308,7 @@ with a ksysguardd daemon, which may also run on a remote system.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.1.1")
+    (version "2.1.3")
     (source
       (origin
         (method url-fetch)
@@ -316,14 +316,14 @@ with a ksysguardd daemon, which may also run on a remote system.")
                             "/src/qca-" version ".tar.xz"))
         (sha256
          (base32
-          "10z9icq28fww4qbzwra8d9z55ywbv74qk68nhiqfrydm21wkxplm"))))
+          "0lz3n652z208daxypdcxiybl0a9fnn6ida0q7fh5f42269mdhgq0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("openssl" ,openssl)
        ("qtbase" ,qtbase)))
-    (home-page "http://delta.affinix.com/qca/")
+    (home-page "https://userbase.kde.org/QCA")
     (synopsis "Libraries for the Qt Cryptographic Architecture")
     (description "The Qt Cryptographic Architecture (QCA) provides a
 straightforward and cross-platform API for a range of cryptographic features,

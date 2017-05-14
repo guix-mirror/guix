@@ -63,7 +63,8 @@
     (arguments
      `(#:modules ((ice-9 match)
                   (guix build gnu-build-system)
-                  (guix build utils))
+                  (guix build utils)
+                  (srfi srfi-1))
        #:tests? #f ; Tests are run by the all.bash script.
        #:phases
        (modify-phases %standard-phases

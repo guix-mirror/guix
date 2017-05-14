@@ -39,6 +39,7 @@
 (define %ant-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build ant-build-system)
+    (guix build java-utils)
     (guix build syscalls)
     ,@%gnu-build-system-modules))
 
@@ -93,11 +94,13 @@
 (define* (ant-build store name inputs
                     #:key
                     (tests? #t)
-                    (test-target "tests")
+                    (test-target "check")
                     (configure-flags ''())
                     (make-flags ''())
                     (build-target "jar")
                     (jar-name #f)
+                    (source-dir "src")
+                    (test-dir "src/test")
                     (phases '(@ (guix build ant-build-system)
                                 %standard-phases))
                     (outputs '("out"))
@@ -106,6 +109,7 @@
                     (guile #f)
                     (imported-modules %ant-build-system-modules)
                     (modules '((guix build ant-build-system)
+                               (guix build java-utils)
                                (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder
@@ -126,6 +130,8 @@
                   #:test-target ,test-target
                   #:build-target ,build-target
                   #:jar-name ,jar-name
+                  #:source-dir ,source-dir
+                  #:test-dir ,test-dir
                   #:phases ,phases
                   #:outputs %outputs
                   #:search-paths ',(map search-path-specification->sexp

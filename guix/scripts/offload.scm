@@ -130,14 +130,14 @@ determined."
            ;; Silently ignore missing file since this is a common case.
            (if (= ENOENT err)
                '()
-               (leave (_ "failed to open machine file '~a': ~a~%")
+               (leave (G_ "failed to open machine file '~a': ~a~%")
                       file (strerror err)))))
         (('syntax-error proc message properties form . rest)
          (let ((loc (source-properties->location properties)))
-           (leave (_ "~a: ~a~%")
+           (leave (G_ "~a: ~a~%")
                   (location->string loc) message)))
         (x
-         (leave (_ "failed to load machine file '~a': ~s~%")
+         (leave (G_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
 (define (host-key->type+key host-key)
@@ -161,7 +161,7 @@ can interpret meaningfully."
       (private-key-from-file file))
     (lambda (key proc str . rest)
       (raise (condition
-              (&message (message (format #f (_ "failed to load SSH \
+              (&message (message (format #f (G_ "failed to load SSH \
 private key from '~a': ~a")
                                          file str))))))))
 
@@ -204,7 +204,7 @@ private key from '~a': ~a")
                       (string=? (public-key->string server) key))
            ;; Key mismatch: something's wrong.  XXX: It could be that the server
            ;; provided its Ed25519 key when we where expecting its RSA key.
-           (leave (_ "server at '~a' returned host key '~a' of type '~a' \
+           (leave (G_ "server at '~a' returned host key '~a' of type '~a' \
 instead of '~a' of type '~a'~%")
                   (build-machine-name machine)
                   (public-key->string server) (get-key-type server)
@@ -213,13 +213,13 @@ instead of '~a' of type '~a'~%")
        (let ((auth (userauth-public-key! session private)))
          (unless (eq? 'success auth)
            (disconnect! session)
-           (leave (_ "SSH public key authentication failed for '~a': ~a~%")
+           (leave (G_ "SSH public key authentication failed for '~a': ~a~%")
                   (build-machine-name machine) (get-error session))))
 
        session)
       (x
        ;; Connection failed or timeout expired.
-       (leave (_ "failed to connect to '~a': ~a~%")
+       (leave (G_ "failed to connect to '~a': ~a~%")
               (build-machine-name machine) (get-error session))))))
 
 
@@ -346,7 +346,7 @@ MACHINE."
 
   (guard (c ((nix-protocol-error? c)
              (format (current-error-port)
-                     (_ "derivation '~a' offloaded to '~a' failed: ~a~%")
+                     (G_ "derivation '~a' offloaded to '~a' failed: ~a~%")
                      (derivation-file-name drv)
                      (build-machine-name machine)
                      (nix-protocol-error-message c))
@@ -530,11 +530,11 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   "Bail out if NODE is not running Guile."
   (match (node-guile-version node)
     (#f
-     (leave (_ "Guile could not be started on '~a'~%")
+     (leave (G_ "Guile could not be started on '~a'~%")
             name))
     ((? string? version)
      ;; Note: The version string already contains the word "Guile".
-     (info (_ "'~a' is running ~a~%")
+     (info (G_ "'~a' is running ~a~%")
            name (node-guile-version node)))))
 
 (define (assert-node-has-guix node name)
@@ -546,10 +546,10 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                          (add-text-to-store store "test"
                                             "Hello, build machine!"))))
     ((? string? str)
-     (info (_ "Guix is usable on '~a' (test returned ~s)~%")
+     (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
            name str))
     (x
-     (leave (_ "failed to use Guix module on '~a' (test returned ~s)~%")
+     (leave (G_ "failed to use Guix module on '~a' (test returned ~s)~%")
             name x))))
 
 (define %random-state
@@ -570,9 +570,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
           (send-files local (list item) remote))
 
         (if (valid-path? remote item)
-            (info (_ "'~a' successfully imported '~a'~%")
+            (info (G_ "'~a' successfully imported '~a'~%")
                   name item)
-            (leave (_ "'~a' was not properly imported on '~a'~%")
+            (leave (G_ "'~a' was not properly imported on '~a'~%")
                    item name))))))
 
 (define (assert-node-can-export node name daemon-socket)
@@ -583,9 +583,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
     (with-store store
       (if (and (retrieve-files store (list item) remote)
                (valid-path? store item))
-          (info (_ "successfully imported '~a' from '~a'~%")
+          (info (G_ "successfully imported '~a' from '~a'~%")
                 item name)
-          (leave (_ "failed to import '~a' from '~a'~%")
+          (leave (G_ "failed to import '~a' from '~a'~%")
                  item name)))))
 
 (define (check-machine-availability machine-file pred)
@@ -600,7 +600,7 @@ machine."
   (let ((machines (filter pred
                           (delete-duplicates (build-machines machine-file)
                                              build-machine=?))))
-    (info (_ "testing ~a build machines defined in '~a'...~%")
+    (info (G_ "testing ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (let* ((names    (map build-machine-name machines))
            (sockets  (map build-machine-daemon-socket machines))
@@ -633,8 +633,8 @@ machine."
   ;; We rely on protocol-level compression from libssh to optimize large data
   ;; transfers.  Warn if it's missing.
   (unless (zlib-support?)
-    (warning (_ "Guile-SSH lacks zlib support"))
-    (warning (_ "data transfers will *not* be compressed!")))
+    (warning (G_ "Guile-SSH lacks zlib support"))
+    (warning (G_ "data transfers will *not* be compressed!")))
 
   (match args
     ((system max-silent-time print-build-trace? build-timeout)
@@ -659,7 +659,7 @@ machine."
                                         #:max-silent-time max-silent-time
                                         #:build-timeout build-timeout))))
                    (else
-                    (leave (_ "invalid request line: ~s~%") line)))
+                    (leave (G_ "invalid request line: ~s~%") line)))
              (loop (read-line)))))))
     (("test" rest ...)
      (with-error-handling
@@ -671,20 +671,20 @@ machine."
                                          build-machine-name)))
                        ((file) (values file (const #t)))
                        (()     (values %machine-file (const #t)))
-                       (x      (leave (_ "wrong number of arguments~%"))))))
+                       (x      (leave (G_ "wrong number of arguments~%"))))))
          (check-machine-availability (or file %machine-file) pred))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")
-     (format #t (_ "Usage: guix offload SYSTEM PRINT-BUILD-TRACE
+     (format #t (G_ "Usage: guix offload SYSTEM PRINT-BUILD-TRACE
 Process build offload requests written on the standard input, possibly
 offloading builds to the machines listed in '~a'.~%")
              %machine-file)
-     (display (_ "
+     (display (G_ "
 This tool is meant to be used internally by 'guix-daemon'.\n"))
      (show-bug-report-information))
     (x
-     (leave (_ "invalid arguments: ~{~s ~}~%") x))))
+     (leave (G_ "invalid arguments: ~{~s ~}~%") x))))
 
 ;;; Local Variables:
 ;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)

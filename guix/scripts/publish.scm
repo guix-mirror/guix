@@ -64,35 +64,35 @@
             guix-publish))
 
 (define (show-help)
-  (format #t (_ "Usage: guix publish [OPTION]...
+  (format #t (G_ "Usage: guix publish [OPTION]...
 Publish ~a over HTTP.\n") %store-directory)
-  (display (_ "
+  (display (G_ "
   -p, --port=PORT        listen on PORT"))
-  (display (_ "
+  (display (G_ "
       --listen=HOST      listen on the network interface for HOST"))
-  (display (_ "
+  (display (G_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
-  (display (_ "
+  (display (G_ "
   -C, --compression[=LEVEL]
                          compress archives at LEVEL"))
-  (display (_ "
+  (display (G_ "
   -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
-  (display (_ "
+  (display (G_ "
       --workers=N        use N workers to bake items"))
-  (display (_ "
+  (display (G_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
-  (display (_ "
+  (display (G_ "
       --nar-path=PATH    use PATH as the prefix for nar URLs"))
-  (display (_ "
+  (display (G_ "
       --public-key=FILE  use FILE as the public key for signatures"))
-  (display (_ "
+  (display (G_ "
       --private-key=FILE use FILE as the private key for signatures"))
-  (display (_ "
+  (display (G_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -103,7 +103,7 @@ Publish ~a over HTTP.\n") %store-directory)
     (lambda ()
       (getaddrinfo host))
     (lambda (key error)
-      (leave (_ "lookup of host '~a' failed: ~a~%")
+      (leave (G_ "lookup of host '~a' failed: ~a~%")
              host (gai-strerror error)))))
 
 ;; Nar compression parameters.
@@ -148,7 +148,7 @@ if ITEM is already compressed."
                      (alist-cons 'address (addrinfo:addr info)
                                  result))
                     (()
-                     (leave (_ "lookup of host '~a' returned nothing")
+                     (leave (G_ "lookup of host '~a' returned nothing")
                             name)))))
         (option '(#\C "compression") #f #t
                 (lambda (opt name arg result)
@@ -161,7 +161,7 @@ if ITEM is already compressed."
                                      (compression 'gzip level)
                                      result)
                          (begin
-                           (warning (_ "zlib support is missing; \
+                           (warning (G_ "zlib support is missing; \
 compression disabled~%"))
                            result))))))
         (option '(#\c "cache") #t #f
@@ -175,7 +175,7 @@ compression disabled~%"))
                 (lambda (opt name arg result)
                   (let ((duration (string->duration arg)))
                     (unless duration
-                      (leave (_ "~a: invalid duration~%") arg))
+                      (leave (G_ "~a: invalid duration~%") arg))
                     (alist-cons 'narinfo-ttl (time-second duration)
                                 result))))
         (option '("nar-path") #t #f
@@ -240,10 +240,12 @@ compression disabled~%"))
 
 (define* (narinfo-string store store-path key
                          #:key (compression %no-compression)
-                         (nar-path "nar"))
+                         (nar-path "nar") file-size)
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
-narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
+narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs.
+Optionally, FILE-SIZE can specify the size in bytes of the compressed NAR; it
+informs the client of how much needs to be downloaded."
   (let* ((path-info  (query-path-info store store-path))
          (compression (actual-compression store-path compression))
          (url        (encode-and-join-uri-path
@@ -257,6 +259,8 @@ narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs."
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
+         (file-size  (or file-size
+                         (and (eq? compression %no-compression) size)))
          (references (string-join
                       (map basename (path-info-references path-info))
                       " "))
@@ -268,10 +272,13 @@ URL: ~a
 Compression: ~a
 NarHash: sha256:~a
 NarSize: ~d
-References: ~a~%"
+References: ~a~%~a"
                              store-path url
                              (compression-type compression)
-                             hash size references))
+                             hash size references
+                             (if file-size
+                                 (format #f "FileSize: ~a~%" file-size)
+                                 "")))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
          (info       (if (not deriver)
@@ -293,10 +300,15 @@ References: ~a~%"
                       (canonical-sexp->string (signed-string info)))))
     (format #f "~aSignature: 1;~a;~a~%" info (gethostname) signature)))
 
-(define (not-found request)
+(define* (not-found request
+                    #:key (phrase "Resource not found")
+                    ttl)
   "Render 404 response for REQUEST."
-  (values (build-response #:code 404)
-          (string-append "Resource not found: "
+  (values (build-response #:code 404
+                          #:headers (if ttl
+                                        `((cache-control (max-age . ,ttl)))
+                                        '()))
+          (string-append phrase ": "
                          (uri-path (request-uri request)))))
 
 (define (render-nix-cache-info)
@@ -427,7 +439,9 @@ requested using POOL."
                                                      (file-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
-           (not-found request))
+           (not-found request
+                      #:phrase "We're baking it"
+                      #:ttl 300))              ;should be available within 5m
           (else
            (not-found request)))))
 
@@ -448,7 +462,8 @@ requested using POOL."
        (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
          (lambda (port)
            (write-file item port))
-         #:level (compression-level compression))
+         #:level (compression-level compression)
+         #:buffer-size (* 128 1024))
        (rename-file (string-append nar ".tmp") nar))
       ('none
        ;; When compression is disabled, we retrieve files directly from the
@@ -465,7 +480,8 @@ requested using POOL."
           (display (narinfo-string store item
                                    (%private-key)
                                    #:nar-path nar-path
-                                   #:compression compression)
+                                   #:compression compression
+                                   #:file-size (stat:size (stat nar)))
                    port))))))
 
 ;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
@@ -787,7 +803,7 @@ blocking."
         (setgid (passwd:gid user))
         (setuid (passwd:uid user))))
     (lambda (key proc message args . rest)
-      (leave (_ "user '~a' not found: ~a~%")
+      (leave (G_ "user '~a' not found: ~a~%")
              user (apply format #f message args)))))
 
 
@@ -799,9 +815,9 @@ blocking."
   (with-error-handling
     (let* ((opts    (args-fold* args %options
                                 (lambda (opt name arg result)
-                                  (leave (_ "~A: unrecognized option~%") name))
+                                  (leave (G_ "~A: unrecognized option~%") name))
                                 (lambda (arg result)
-                                  (leave (_ "~A: extraneous argument~%") arg))
+                                  (leave (G_ "~A: extraneous argument~%") arg))
                                 %default-options))
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))
@@ -828,12 +844,12 @@ blocking."
         (gather-user-privileges user))
 
       (when (zero? (getuid))
-        (warning (_ "server running as root; \
+        (warning (G_ "server running as root; \
 consider using the '--user' option!~%")))
 
       (parameterize ((%public-key public-key)
                      (%private-key private-key))
-        (format #t (_ "publishing ~a on ~a, port ~d~%")
+        (format #t (G_ "publishing ~a on ~a, port ~d~%")
                 %store-directory
                 (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
                 (sockaddr:port address))

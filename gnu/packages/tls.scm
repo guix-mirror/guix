@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.3")
+    (version "2.5.4")
     (source
      (origin
       (method url-fetch)
@@ -440,7 +440,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "0c4awq45cl757fv7f7f75i5i0ibc6v7ns13n7xvfak7chv2lrqql"))))
+        "1ykf6dqlbafafhbdfmcj19pjj1z6wmsq0rmyqga1i0xv5x95nyhh"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -458,7 +458,7 @@ required structures.")
            (search-path-specification
             (variable "SSL_CERT_FILE")
             (files '("etc/ssl/certs/ca-certificates.crt")))))
-    (home-page "http://www.libressl.org/")
+    (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
     (description "LibreSSL is a version of the TLS/crypto stack forked
 from OpenSSL in 2014, with the goals of modernizing the codebase, improving
@@ -474,13 +474,13 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "05cqadwzgfcianw3v0qxwja65dxnzw429f7dk8w0mnh21pib72bl"))))
+        "0hrmh28rrc0fsiw6nqfwbkwb1s4nkl54x50c0g0xlnp86752nzff"))))
     (build-system python-build-system)
 
     (arguments
@@ -540,7 +540,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1wq0khcf4ixda71cgfd9rkqqzx6j8hp8ha0cssvjzjnsgrsdffpn"))))
+                "0hbp3njss01a0d3brvcfzja0w0j9plwrv6l70jsfvnhy3rrd7bcq"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -634,7 +634,7 @@ web pages on SSL servers (for symmetry, the same API is offered for accessing
 http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
-    (license (package-license perl))
+    (license license:perl-license)
     (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
 
 (define-public perl-crypt-openssl-rsa
@@ -663,7 +663,7 @@ servers or clients for more complicated applications.")
     "RSA encoding and decoding, using the openSSL libraries")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
 OpenSSL libraries).")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define perl-crypt-arguments
    `(#:phases (modify-phases %standard-phases
@@ -699,7 +699,7 @@ OpenSSL libraries).")
   (description "Crypt::OpenSSL::Bignum provides multiprecision integer
 arithmetic in Perl.")
   ;; At your option either gpl1+ or the Artistic License
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-crypt-openssl-random
  (package
@@ -724,7 +724,7 @@ arithmetic in Perl.")
     "OpenSSL/LibreSSL pseudo-random number generator access")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
 number generator")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public acme-client
   (package

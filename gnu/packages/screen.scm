@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,6 +156,8 @@ window manager as well as the Tmux terminal multiplexer.")
        (method url-fetch)
        (uri (string-append "https://github.com/nelhage/reptyr/archive"
                            "/reptyr-" version ".tar.gz"))
+       ;; XXX: To be removed on next reptyr release.
+       (patches (search-patches "reptyr-fix-gcc-7.patch"))
        (sha256
         (base32
          "07pfl0rkgm8m3f3jy8r9l2yvnhf8lgllpsk3mh57mhzdxq8fagf7"))))

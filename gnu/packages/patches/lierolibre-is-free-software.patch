@@ -1,0 +1,38 @@
+Remove outdated license text. See COPYING and the description
+at http://liero.be/ for more information.
+
+--- a/data/LIEROENG.TXT
++++ b/data/LIEROENG.TXT
+@@ -11,14 +11,6 @@
+ -----------------------------------------------------------------------------
+ 
+ GENERAL STUFF
+-
+-	Liero is freeware. What that means is that you don't have to pay
+-	for it and using it has not been restricted in any way. You may
+-        distribute it to anyone and anyhow WITHOUT ANY CHANGES MADE TO IT'S 
+-	CONTAINMENTS.
+-
+-	The source code of this game is not distributed freely (neither
+-        commercially). So if you thought that maybe you could... forget it. 
+ 	
+ 	Liero is a wormgame with weapons for 2 players. The object of the
+ 	game is definately what you think it is. Liero is excellent for 
+--- a/data/LIERO.TXT
++++ b/data/LIERO.TXT
+@@ -12,15 +12,6 @@
+ 
+ YLEISTŽ
+ 
+-        Liero on freeware, mik„ tarkoittaa ett„ sen k„yt”st„ ei tarvitse
+-        maksaa mit„„n eik„ k„ytt”„ ole rajoitettu mitenk„„n. Lieroa saa
+-        kopioida kelle tahansa ja miten tahansa SISŽLT™Ž MITENKŽŽN
+-        MUUTTAMATTA.
+-
+-        Todettakoon t„ss„ ett„ Lieron l„hdekoodi ei ole vapaassa (sen
+-        enenp„„ kuin kaupallisessakaan) jakelussa. Joten jos ajattelit
+-        ett„... niin j„t„ ajatukset sikseen.
+-
+         Liero on kahden pelattava aseellinen matosimulaatiopeli. Pelin
+         p„„m„„r„n„ on ep„ilem„tt„ se mit„ luuletkin. Liero sopii
+         erinomaisen hyvin aggressioiden purkuun ja kaverin rokitt„miseen

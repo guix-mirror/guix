@@ -31,6 +31,7 @@
   #:use-module (gnu services networking)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -296,28 +297,24 @@ info --version")
                                 (setlocale LC_ALL before))
                              marionette))
 
-          (test-assert "/run/current-system is a GC root"
+          (test-eq "/run/current-system is a GC root"
+            'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
-                                (eval-when (expand load eval)
-                                  (set! %load-path
-                                    (cons
-                                     (string-append
-                                      "/run/current-system/profile/share/guile/site/"
-                                      (effective-version))
-                                     %load-path))
-                                  (set! %load-compiled-path
-                                    (cons
-                                     (string-append
-                                      "/run/current-system/profile/share/guile/site/"
-                                      (effective-version))
-                                     %load-compiled-path)))
+                                ;;
+                                ;; XXX: Currently shepherd and marionette run
+                                ;; on Guile 2.0 whereas Guix is on 2.2.  Yet
+                                ;; we should be able to load the 2.0 Scheme
+                                ;; files since it's pure Scheme.
+                                (add-to-load-path
+                                 #+(file-append guix "/share/guile/site/2.2"))
 
                                 (use-modules (srfi srfi-34) (guix store))
 
                                 (let ((system (readlink "/run/current-system")))
                                   (guard (c ((nix-protocol-error? c)
-                                             (file-exists? system)))
+                                             (and (file-exists? system)
+                                                  'success!)))
                                     (with-store store
                                       (delete-paths store (list system))
                                       #f))))

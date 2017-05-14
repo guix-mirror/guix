@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind
   (package
     (name "bind")
-    (version "9.10.4-P8")
+    (version "9.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -98,7 +99,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1sv6fp5gznjj1kmx9q8wr2c6js10wqckgy25sqj83bbf8smmdlvx"))))
+                "1chhphaa4lmfxj9daqsxph5ng4h3qq51jx21rj2i6an8ynah0192"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -149,12 +150,12 @@ high-volume and high-reliability applications. The name BIND stands for
 \"Berkeley Internet Name Domain\", because the software originated in the early
 1980s at the University of California at Berkeley.")
     (home-page "https://www.isc.org/downloads/bind")
-    (license (list license:isc))))
+    (license (list license:mpl2.0))))
 
 (define-public dnscrypt-proxy
   (package
     (name "dnscrypt-proxy")
-    (version "1.9.4")
+    (version "1.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -162,7 +163,7 @@ high-volume and high-reliability applications. The name BIND stands for
                     "dnscrypt-proxy-" version ".tar.bz2"))
               (sha256
                (base32
-                "07piwsjczamwvdpv1585kg4awqakip51bwsm8nqi6bljww4agx7x"))
+                "1dhvklr4dg2vlw108n11xbamacaryyg3dbrg629b76lp7685p7z8"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles

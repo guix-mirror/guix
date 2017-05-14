@@ -33,6 +33,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
@@ -71,6 +72,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pdf)
@@ -721,7 +723,7 @@ objects are made from the Sequence objects, Sequence objects have access to
 Annotation and SeqFeature objects and databases, Blast objects can be
 converted to Alignment objects, and so on.  This means that the objects
 provide a coordinated and extensible framework to do computational biology.")
-      (license (package-license perl)))))
+      (license license:perl-license))))
 
 (define-public python-biopython
   (package
@@ -3627,6 +3629,129 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (home-page "https://github.com/wwood/OrfM")
     (license license:lgpl3+)))
 
+(define-public pplacer
+  (let ((commit "g807f6f3"))
+    (package
+      (name "pplacer")
+      ;; The commit should be updated with each version change.
+      (version "1.1.alpha19")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/matsen/pplacer/archive/v"
+                             version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32 "0z1lnd2s8sh6kpzg106wzbh2szw7h0hvq8syd5a6wv4rmyyz6x0f"))))
+      (build-system ocaml-build-system)
+      (arguments
+       `(#:ocaml ,ocaml-4.01
+         #:findlib ,ocaml4.01-findlib
+         #:modules ((guix build ocaml-build-system)
+                    (guix build utils)
+                    (ice-9 ftw))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'replace-bundled-cddlib
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((cddlib-src (assoc-ref inputs "cddlib-src"))
+                      (local-dir "cddlib_guix"))
+                 (mkdir local-dir)
+                 (with-directory-excursion local-dir
+                   (system* "tar" "xvf" cddlib-src))
+                 (let ((cddlib-src-folder
+                        (string-append local-dir "/"
+                                       (list-ref (scandir local-dir) 2)
+                                       "/lib-src")))
+                   (for-each
+                    (lambda (file)
+                      (copy-file file
+                                 (string-append "cdd_src/" (basename file))))
+                    (find-files cddlib-src-folder ".*[ch]$")))
+                 #t)))
+           (add-after 'unpack 'fix-makefile
+             (lambda _
+               ;; Remove system calls to 'git'.
+               (substitute* "Makefile"
+                 (("^DESCRIPT:=pplacer-.*")
+                  (string-append
+                   "DESCRIPT:=pplacer-$(shell uname)-v" ,version "\n")))
+               (substitute* "myocamlbuild.ml"
+                 (("git describe --tags --long .*\\\" with")
+                  (string-append
+                   "echo -n v" ,version "-" ,commit "\" with")))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (copy-recursively "bin" bin))
+               #t)))))
+      (native-inputs
+       `(("zlib" ,zlib)
+         ("gsl" ,gsl)
+         ("ocaml-ounit" ,ocaml4.01-ounit)
+         ("ocaml-batteries" ,ocaml4.01-batteries)
+         ("ocaml-camlzip" ,ocaml4.01-camlzip)
+         ("ocaml-csv" ,ocaml4.01-csv)
+         ("ocaml-sqlite3" ,ocaml4.01-sqlite3)
+         ("ocaml-xmlm" ,ocaml4.01-xmlm)
+         ("ocaml-mcl" ,ocaml4.01-mcl)
+         ("ocaml-gsl" ,ocaml4.01-gsl)
+         ("cddlib-src" ,(package-source cddlib))))
+      (propagated-inputs
+       `(("pplacer-scripts" ,pplacer-scripts)))
+      (synopsis "Phylogenetic placement of biological sequences")
+      (description
+       "Pplacer places query sequences on a fixed reference phylogenetic tree
+to maximize phylogenetic likelihood or posterior probability according to a
+reference alignment.  Pplacer is designed to be fast, to give useful
+information about uncertainty, and to offer advanced visualization and
+downstream analysis.")
+      (home-page "http://matsen.fhcrc.org/pplacer")
+      (license license:gpl3))))
+
+;; This package is installed alongside 'pplacer'.  It is a separate package so
+;; that it can use the python-build-system for the scripts that are
+;; distributed alongside the main OCaml binaries.
+(define pplacer-scripts
+  (package
+    (inherit pplacer)
+    (name "pplacer-scripts")
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-scripts-dir
+           (lambda _ (chdir "scripts")))
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest" "discover" "-v"))))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (let ((path (string-append
+                            (assoc-ref inputs "hmmer") "/bin:"
+                            (assoc-ref inputs "infernal") "/bin")))
+                 (display path)
+                 (wrap-program (string-append bin "/refpkg_align.py")
+                   `("PATH" ":" prefix (,path))))
+               (let ((path (string-append
+                            (assoc-ref inputs "hmmer") "/bin")))
+                 (wrap-program (string-append bin "/hrefpkg_query.py")
+                   `("PATH" ":" prefix (,path)))))
+             #t)))))
+    (inputs
+     `(("infernal" ,infernal)
+       ("hmmer" ,hmmer)))
+    (propagated-inputs
+     `(("python-biopython" ,python2-biopython)
+       ("taxtastic" ,taxtastic)))
+    (synopsis "Pplacer Python scripts")))
+
 (define-public python2-pbcore
   (package
     (name "python2-pbcore")
@@ -5267,6 +5392,42 @@ been assembled from those reads.  To identify differentially expressed genes
 between experiments, StringTie's output can be processed either by the
 Cuffdiff or Ballgown programs.")
     (license license:artistic2.0)))
+
+(define-public taxtastic
+  (package
+    (name "taxtastic")
+    (version "0.5.7")
+    ;; Versions after 0.5.4 do not appear to be distributed on PyPI so we
+    ;; download the package from GitHub.
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fhcrc/taxtastic/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s0h5y1lds1c40jhir5585ffm6yjyn8h5aqimpgv64rhqhfv56xx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest" "discover" "-v")))))))
+    (propagated-inputs
+     `(("python-sqlalchemy" ,python2-sqlalchemy)
+       ("python-decorator" ,python2-decorator)
+       ("python-biopython" ,python2-biopython)
+       ("python-pandas" ,python2-pandas)))
+    (home-page "https://github.com/fhcrc/taxtastic")
+    (synopsis "Tools for taxonomic naming and annotation")
+    (description
+     "Taxtastic is software written in python used to build and maintain
+reference packages i.e. collections of reference trees, reference alignments,
+profiles, and associated taxonomic information.")
+    (license license:gpl3+)))
 
 (define-public vcftools
   (package
@@ -7730,7 +7891,7 @@ library implementing most of the pipeline's features.")
      `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
        ("guile-next" ,guile-2.2)
-       ("guile-json" ,guile2.2-json)
+       ("guile-json" ,guile-json)
        ("guile-redis" ,guile2.2-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

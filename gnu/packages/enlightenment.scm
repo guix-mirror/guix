@@ -57,7 +57,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.4")
+    (version "1.18.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -65,7 +65,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "09c0ajszjarcs6d62zlgnf1aha2f921mfr0gxg6nwza36xzc1srr"))))
+                "0wxz00cijynamm0sx4ss4hp89zyz5y6zliv5zd905jn4nak2mw2n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -133,7 +133,7 @@
                            "--with-opengl=es"
                            "--enable-egl"
                            "--enable-harfbuzz")))
-    (home-page "https://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org/about-efl")
     (synopsis "Enlightenment Foundation Libraries")
     (description
      "Enlightenment Foundation Libraries is a set of libraries developed
@@ -197,7 +197,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.21.6")
+    (version "0.21.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -205,7 +205,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0gan3c8jbvhcmvb2fpbprr3m6db0afg1dnrb87nbqb399nsi81zd"))))
+                "1xvngjdsa0p901vfhrh2qpa50k32hwwhc8bgi16a9b5d9byzfhvn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
@@ -221,7 +221,7 @@ Libraries with some extra bells and whistles.")
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (home-page "https://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
      "Enlightenment is resource friendly desktop environment with integrated

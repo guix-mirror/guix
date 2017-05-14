@@ -13,6 +13,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,14 +117,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.12.2")
+   (version "2.13.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0jlccxx7l4c76h830y8lhrxr4kqksrxqlnmj3xb8sqbfa0irw6nj"))))
+              "0n0j36rapw31zb0sabap88ffncv8jg3nwc4miyim64ilyav2mgsb"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -136,7 +137,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0n4mgw5mbrr1hm0y7xgwixf9p6gy61m6qm67ldagpxxhwq2dmlby"))))))
+            "1jcp5bjam0cqzc41bvd3qwzv2f35zdajr8icxb89q29b5v3gj544"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -314,14 +315,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git@2.10
   (package
     (inherit git)
-    (version "2.10.2")
+    (version "2.10.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0wc64dzcxrzgi6kwcljz6y3cwm3ajdgf6aws7g58azbhvl1jk04l"))))))
+              "02mb7yi49algsya3hnkcxdslwb6p1bi7c732z1g8kzq4hs838m7z"))))))
 
 (define-public libgit2
   (package
@@ -628,7 +629,13 @@ also walk each side of a merge and test those changes individually.")
                         ;; invokes Perl.
                         (substitute* (find-files "." ".*")
                           ((" perl -")
-                           (string-append " " perl " -"))))))
+                           (string-append " " perl " -")))
+
+                        ;; Avoid references to the store in authorized_keys.
+                        ;; This works because gitolite-shell is in the PATH.
+                        (substitute* "src/triggers/post-compile/ssh-authkeys"
+                          (("\\$glshell \\$user")
+                           "gitolite-shell $user")))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))

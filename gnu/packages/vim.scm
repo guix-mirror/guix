@@ -512,10 +512,82 @@ and powerline symbols, etc.")
       (home-page "https://github.com/vim-airline/vim-airline-themes")
       (license license:expat))))
 
+(define-public vim-syntastic
+  (package
+    (name "vim-syntastic")
+    (version "3.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/vim-syntastic/syntastic/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wsnd9bsp5x6yiw96h1bnd1vyxdkh130hb82kyyxydgsplx92ima"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (syntax-checkers (string-append vimfiles "/syntax_checkers")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "syntax_checkers" syntax-checkers)
+               #t))))))
+    (synopsis "Syntax checking plugin for Vim")
+    (description
+     "Vim-syntastic is a syntax checking plugin for Vim.  It runs files through
+external syntax checkers and displays any resulting errors to the user.  This
+can be done on demand, or automatically as files are saved.  If syntax errors
+are detected, the user is notified.")
+    (home-page "https://github.com/vim-syntastic/syntastic")
+    (license license:wtfpl2)))
+
+(define-public neovim-syntastic
+  (package
+    (inherit vim-syntastic)
+    (name "neovim-syntastic")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/nvim/site"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (autoload (string-append vimfiles "/autoload"))
+                    (syntax-checkers (string-append vimfiles "/syntax_checkers")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "plugin" plugin)
+               (copy-recursively "syntax_checkers" syntax-checkers)
+               #t))))))
+    (synopsis "Syntax checking plugin for Neovim")
+    (description
+     "Vim-syntastic is a syntax checking plugin for Neovim.  It runs files through
+external syntax checkers and displays any resulting errors to the user.  This
+can be done on demand, or automatically as files are saved.  If syntax errors
+are detected, the user is notified.")))
+
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.1.7")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -524,7 +596,7 @@ and powerline symbols, etc.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zjbpc4rhv5bcr353xqnbrc36zjvn7qvh8xf6s7n1bdi3788by6q"))))
+         "1db27zm6cldm1aw0570vii1bxc16a34x8lissl1h9rizsbwn7qkj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

@@ -220,7 +220,7 @@ interfaces (GUIs) in the Tcl language.")
     ;; those of the orignal Tix4.1.3 or Tk8.4.* sources. See the files
     ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
     ;; details of this license."
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public tcllib
   (package

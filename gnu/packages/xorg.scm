@@ -2393,7 +2393,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.25.0")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2401,7 +2401,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vsmijamfzf6vcljrr0am2qcz33zl2l0lj2mzmbwgrm7ixjx2zxv"))))
+                "1q67hjd67ni1nq7kgxdrrdgkyhzaqvvn2vlnsiiq9w4y3icpv7s8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -5720,7 +5720,7 @@ programs that cannot use the window system directly.")
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
 in many cases better than @code{Xlib}), and provides an object oriented
 interface to its methods (using @code{Mouse}).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-x11-protocol
   (package
@@ -5748,7 +5748,7 @@ perl programs to display windows and graphics on X11 servers.")
     ;; distribution, has another, less restrictive copying policy, as do some
     ;; of the extension modules in the directory Protocol/Ext: see those files
     ;; for details)."
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public xcompmgr
   (package

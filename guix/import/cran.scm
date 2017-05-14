@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -374,7 +375,7 @@ dependencies."
                     (start (string-rindex url #\/)))
                 ;; The URL ends on
                 ;; (string-append "/" name "_" version ".tar.gz")
-                (substring url (+ start 1) end)))
+                (and start end (substring url (+ start 1) end))))
              (_ #f)))
           (_ #f)))))
 
@@ -415,6 +416,9 @@ dependencies."
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
   (and (string-prefix? "r-" (package-name package))
+       ;; Check if the upstream name can be extracted from package uri.
+       (package->upstream-name package)
+       ;; Check if package uri(s) are prefixed by "mirror://cran".
        (match (and=> (package-source package) origin-uri)
          ((? string? uri)
           (string-prefix? "mirror://cran" uri))

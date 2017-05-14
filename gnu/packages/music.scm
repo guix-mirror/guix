@@ -582,6 +582,50 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
 interface.  It is implemented as a frontend to @code{klick}.")
     (license license:gpl2+)))
 
+(define-public libgme
+  (package
+    (name "libgme")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
+                                  "downloads/game-music-emu-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "08fk7zddpn7v93d0fa7fcypx7hvgwx9b5psj9l6m8b87k2hbw4fw"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no check target
+    (home-page "https://bitbucket.org/mpyne/game-music-emu")
+    (synopsis "Video game music file playback library")
+    (description
+     "Game-music-emu is a collection of video game music file emulators that
+support the following formats and systems:
+@table @code
+@item AY
+ZX Spectrum/Asmtrad CPC
+@item GBS
+Nintendo Game Boy
+@item GYM
+Sega Genesis/Mega Drive
+@item HES
+NEC TurboGrafx-16/PC Engine
+@item KSS
+MSX Home Computer/other Z80 systems (doesn't support FM sound)
+@item NSF/NSFE
+Nintendo NES/Famicom (with VRC 6, Namco 106, and FME-7 sound)
+@item SAP
+Atari systems using POKEY sound chip
+@item SPC
+Super Nintendo/Super Famicom
+@item VGM/VGZ
+Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
+@end table")
+    (license (list license:lgpl2.1+
+                   ;; demo and player directories are under the Expat license
+                   license:expat))))
+
 (define-public lilypond
   (package
     (name "lilypond")
@@ -943,14 +987,14 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 (define-public jalv-select
   (package
     (name "jalv-select")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brummer10/jalv_select/"
                                   "archive/V" version ".tar.gz"))
               (sha256
                (base32
-                "01y93l5c1f8za04a0y4b3v0nhsm1lhj6rny9xpdgd7jz6sl6w581"))))
+                "0zraagwr681b5s3qifxf399c7q93jz23c8sr42gmff9zqnvxc75q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -961,7 +1005,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
          (add-after 'unpack 'ignore-PATH
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "jalv.select.cpp"
-               (("echo \\$PATH | tr ':' '\\\n' | xargs ls")
+               (("echo \\$PATH.*tr ':'.*xargs ls")
                 (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
              (substitute* "jalv.select.h"
                (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
@@ -983,7 +1027,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -991,7 +1035,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0rzkr8mgy28j5kg56qqrdm05ml2wlm651yk27c2mn5ql7v92gdx3"))))
+                "0lmblhk0728bxi7cixc2j9p6gisicy6alybga9vwmg453snrsybr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1014,7 +1058,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1022,7 +1066,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0l6kjb1q9vslwy56836a0c65mf8z8ycam5vzz3k4qvd8g74bs1zq"))))
+                "0lf9x99gmmk64xq73lcwpwqznh8s79qy2fjjjzzw6sbw99w8qyz4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1048,7 +1092,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1056,7 +1100,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "15rp9d1jbb56idyrnn9cqi1i7a70z1a1qdyz7ryn0bla0ghjnich"))))
+                "11mxn3ff9g0x1rl4jl5rngmwlb8dmkbzsjhxb8gqhmlpfj24wl7l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1866,7 +1910,7 @@ and hold, etc.")
 (define-public gxtuner
   (package
     (name "gxtuner")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brummer10/gxtuner/"
@@ -1874,7 +1918,7 @@ and hold, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1abpxiydn4c9wssz6895hnad9ipkcy3rkgzbnanvwb46nm44x6if"))))
+                "1hn5qjac7qd00v0sp7ijhhc3sb26ks9bni06nngivva21h61xrjr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1886,7 +1930,7 @@ and hold, etc.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("jack" ,jack-1)
        ("fftwf" ,fftwf)
        ("cairo" ,cairo)

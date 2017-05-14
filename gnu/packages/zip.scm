@@ -48,6 +48,9 @@
                       (list "-f" "unix/Makefile"
                             (string-append "prefix=" out)
                             (string-append "MANDIR=" out "/share/man/man1")))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -171,4 +174,4 @@ recreates the stored directory structure by default.")
     (description "The Archive::Zip module allows a Perl program to create,
 manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
-    (license (package-license perl))))
+    (license license:perl-license)))

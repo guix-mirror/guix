@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@
 if it does."
   (let ((references (substitutable-references substitute)))
     (when (any (cut string-contains <> "boot") references)
-      (leave (_ "'~a' refers to bootstrap inputs: ~s~%")
+      (leave (G_ "'~a' refers to bootstrap inputs: ~s~%")
              (substitutable-path substitute) references))))
 
 (define (test-final-inputs store system)
@@ -71,7 +71,7 @@ refer to the bootstrap tools."
                                 (string=? (substitutable-path substitute)
                                           dir))
                               available)
-                  (leave (_ "~a (system: ~a) has no substitute~%")
+                  (leave (G_ "~a (system: ~a) has no substitute~%")
                          dir system)))
               inputs)
 

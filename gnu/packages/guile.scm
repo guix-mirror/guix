@@ -32,6 +32,7 @@
 (define-module (gnu packages guile)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin) ;;for tree
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
@@ -690,7 +691,7 @@ for Guile\".")
                     (("moddir =.*/share/guile/site" all)
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
-    (native-inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("guile" ,guile-2.2)))
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
@@ -706,7 +707,10 @@ specification.  These are the main features:
     (license license:lgpl3+)))
 
 (define-public guile2.2-json
-  (package-for-guile-2.2 guile-json))
+  (deprecated-package "guile2.2-json" guile-json))
+
+(define-public guile2.0-json
+  (package-for-guile-2.0 guile-json))
 
 (define-public guile-minikanren
   (package
@@ -793,6 +797,74 @@ See http://minikanren.org/ for more on miniKanren generally.")
 
 (define-public guile2.2-minikanren
   (package-for-guile-2.2 guile-minikanren))
+
+(define-public guile-miniadapton
+  (let ((commit "1b5749422304567c96ac5367f2221dda9eff5880")
+        (revision "1"))
+    (package
+      (name "guile-miniadapton")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/fisherdj/miniAdapton.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "09q51zkw2fypad5xixskfzw2cjhjgs5cswdp3i7cpp651rb3zndh"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build utils)
+                    (ice-9 popen)
+                    (ice-9 rdelim)
+                    (srfi srfi-1)
+                    (guix build gnu-build-system))
+         #:tests? #f                    ; there is no test target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((cwd        (getcwd))
+                      (scm-files  (find-files "." "\\.scm$"))
+                      (effective  (read-line
+                                   (open-pipe* OPEN_READ
+                                               "guile" "-c"
+                                               "(display (effective-version))")))
+                      (module-dir (string-append (assoc-ref outputs "out")
+                                                 "/share/guile/site/"
+                                                 effective)))
+
+                 ;; Make installation directories.
+                 (mkdir-p module-dir)
+
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+
+                 ;; Compile .scm files and install.
+                 (every (lambda (file)
+                          (let ((go-file (string-append module-dir "/"
+                                                        (basename file ".scm") ".go")))
+                            ;; Install source module.
+                            (install-file file module-dir)
+                            ;; Compile and install module.
+                            (zero? (system* "guild" "compile" "-L" cwd
+                                            "-o" go-file file))))
+                        scm-files)))))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://github.com/fisherdj/miniAdapton")
+      (synopsis "Minimal implementation of incremental computation in Guile
+Scheme")
+      (description "This package provides a complete Scheme implementation of
+miniAdapton, which implements the core functionality of the Adapton system for
+incremental computation (also known as self-adjusting computation).  Like
+Adapton, miniAdapton allows programmers to safely combine mutation and
+memoization.  miniAdapton is built on top of an even simpler system,
+microAdapton.  Both miniAdapton and microAdapton are designed to be easy to
+understand, extend, and port to host languages other than Scheme.")
+      (license license:expat))))
 
 (define-public guile-irregex
   (package
@@ -965,7 +1037,7 @@ Guile's foreign function interface.")
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
     (package
       (name "guile-sqlite3")
-      (version (string-append "0.0-0." (string-take commit 7)))
+      (version (string-append "0.0-1." (string-take commit 7)))
 
       ;; XXX: This used to be available read-only at
       ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
@@ -993,7 +1065,7 @@ Guile's foreign function interface.")
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,guile-2.0)
+       `(("guile" ,guile-2.2)
          ("sqlite" ,sqlite)))
       (arguments
        '(#:phases (modify-phases %standard-phases
@@ -1471,6 +1543,8 @@ is no support for parsing block and inline level HTML.")
                                            effective))
                 (source (assoc-ref %build-inputs "source"))
                 (doc (string-append out "/share/doc/scheme-bytestructures"))
+                (sld-files (with-directory-excursion source
+                             (find-files "bytestructures/r7" "\\.exports.sld$")))
                 (scm-files (filter (lambda (path)
                                      (not (string-prefix? "bytestructures/r7" path)))
                                    (with-directory-excursion source
@@ -1502,7 +1576,7 @@ is no support for parsing block and inline level HTML.")
                                                  file))
                            (error (format #f "Failed to compile ~s to ~s!"
                                           file go-file)))))
-                     scm-files)
+                     (append sld-files scm-files))
 
            ;; Also copy over the README.
            (install-file "README.md" doc)
@@ -1767,14 +1841,14 @@ HTML (via SXML) or any other format for rendering.")
 (define-public guile-sjson
   (package
     (name "guile-sjson")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dustycloud.org/misc/sjson-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "09hnh2brc7ihh8dv4g5hdmdj8rs8p9l3pmlgafkx145grdg7wprx"))))
+                "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

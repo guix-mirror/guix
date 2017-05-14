@@ -18,7 +18,7 @@
 
 (define-module (guix ssh)
   #:use-module (guix store)
-  #:use-module ((guix ui) #:select (_ N_))
+  #:use-module ((guix ui) #:select (G_ N_))
   #:use-module (ssh session)
   #:use-module (ssh auth)
   #:use-module (ssh key)
@@ -80,13 +80,13 @@ Throw an error on failure."
           (disconnect! session)
           (raise (condition
                   (&message
-                   (message (format #f (_ "SSH authentication failed for '~a': ~a~%")
+                   (message (format #f (G_ "SSH authentication failed for '~a': ~a~%")
                                     host (get-error session)))))))))
       (x
        ;; Connection failed or timeout expired.
        (raise (condition
                (&message
-                (message (format #f (_ "SSH connection to '~a' failed: ~a~%")
+                (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
 
 (define* (remote-daemon-channel session
@@ -269,7 +269,7 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
               (&message
                (message
                 (format #f
-                        (_ "failed to retrieve store items from '~a'")
+                        (G_ "failed to retrieve store items from '~a'")
                         (remote-store-host remote)))))))
 
     (let ((result (import-paths local port)))

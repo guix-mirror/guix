@@ -24,12 +24,11 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix discovery)
   #:use-module (guix memoization)
-  #:use-module (guix combinators)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)))
-  #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -48,7 +47,6 @@
             %package-module-path
 
             fold-packages
-            scheme-modules                    ;XXX: for lack of a better place
 
             find-packages-by-name
             find-best-packages-by-name
@@ -89,7 +87,7 @@
   "Search the patch FILE-NAME.  Raise an error if not found."
   (or (search-path (%patch-path) file-name)
       (raise (condition
-              (&message (message (format #f (_ "~a: patch not found")
+              (&message (message (format #f (G_ "~a: patch not found")
                                          file-name)))))))
 
 (define-syntax-rule (search-patches file-name ...)
@@ -105,7 +103,7 @@ found."
       (raise (condition
               (&message
                (message
-                (format #f (_ "could not find bootstrap binary '~a' \
+                (format #f (G_ "could not find bootstrap binary '~a' \
 for system '~a'")
                         file-name system)))))))
 
@@ -140,92 +138,17 @@ for system '~a'")
               directory))
         %load-path)))
 
-(define* (scheme-files directory)
-  "Return the list of Scheme files found under DIRECTORY, recursively.  The
-returned list is sorted in alphabetical order."
-
-  ;; Sort entries so that 'fold-packages' works in a deterministic fashion
-  ;; regardless of details of the underlying file system.
-  (sort (file-system-fold (const #t)                   ; enter?
-                          (lambda (path stat result)   ; leaf
-                            (if (string-suffix? ".scm" path)
-                                (cons path result)
-                                result))
-                          (lambda (path stat result)   ; down
-                            result)
-                          (lambda (path stat result)   ; up
-                            result)
-                          (const #f)                   ; skip
-                          (lambda (path stat errno result)
-                            (warning (_ "cannot access `~a': ~a~%")
-                                     path (strerror errno))
-                            result)
-                          '()
-                          directory
-                          stat)
-        string<?))
-
-(define file-name->module-name
-  (let ((not-slash (char-set-complement (char-set #\/))))
-    (lambda (file)
-      "Return the module name (a list of symbols) corresponding to FILE."
-      (map string->symbol
-           (string-tokenize (string-drop-right file 4) not-slash)))))
-
-(define* (scheme-modules directory #:optional sub-directory)
-  "Return the list of Scheme modules available under DIRECTORY.
-Optionally, narrow the search to SUB-DIRECTORY."
-  (define prefix-len
-    (string-length directory))
-
-  (filter-map (lambda (file)
-                (let* ((file   (substring file prefix-len))
-                       (module (file-name->module-name file)))
-                  (catch #t
-                    (lambda ()
-                      (resolve-interface module))
-                    (lambda args
-                      ;; Report the error, but keep going.
-                      (warn-about-load-error module args)
-                      #f))))
-              (scheme-files (if sub-directory
-                                (string-append directory "/" sub-directory)
-                                directory))))
-
-(define* (all-package-modules #:optional (path (%package-module-path)))
-  "Return the list of package modules found in PATH, a list of directories to
-search."
-  (fold-right (lambda (spec result)
-                (match spec
-                  ((? string? directory)
-                   (append (scheme-modules directory) result))
-                  ((directory . sub-directory)
-                   (append (scheme-modules directory sub-directory)
-                           result))))
-              '()
-              path))
-
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
 the initial value of RESULT.  It is guaranteed to never traverse the
 same package twice."
-  (identity   ; discard second return value
-   (fold2 (lambda (module result seen)
-            (fold2 (lambda (var result seen)
-                     (if (and (package? var)
-                              (not (vhash-assq var seen))
-                              (not (hidden-package? var)))
-                         (values (proc var result)
-                                 (vhash-consq var #t seen))
-                         (values result seen)))
-                   result
-                   seen
-                   (module-map (lambda (sym var)
-                                 (false-if-exception (variable-ref var)))
-                               module)))
-          init
-          vlist-null
-          (all-package-modules))))
+  (fold-module-public-variables (lambda (object result)
+                                  (if (and (package? object)
+                                           (not (hidden-package? object)))
+                                      (proc object result)
+                                      result))
+                                init
+                                (all-modules (%package-module-path))))
 
 (define find-packages-by-name
   (let ((packages (delay
@@ -306,38 +229,25 @@ return its return value."
 ;;; Package specification.
 ;;;
 
-(define* (%find-package spec name version #:key fallback?)
+(define* (%find-package spec name version)
   (match (find-best-packages-by-name name version)
     ((pkg . pkg*)
      (unless (null? pkg*)
-       (warning (_ "ambiguous package specification `~a'~%") spec)
-       (warning (_ "choosing ~a@~a from ~a~%")
+       (warning (G_ "ambiguous package specification `~a'~%") spec)
+       (warning (G_ "choosing ~a@~a from ~a~%")
                 (package-name pkg) (package-version pkg)
                 (location->string (package-location pkg))))
-     (when fallback?
-       (warning (_ "deprecated NAME-VERSION syntax; \
-use NAME@VERSION instead~%")))
-
      (match (package-superseded pkg)
        ((? package? new)
-        (info (_ "package '~a' has been superseded by '~a'~%")
+        (info (G_ "package '~a' has been superseded by '~a'~%")
               (package-name pkg) (package-name new))
         new)
        (#f
         pkg)))
     (x
      (if version
-         (leave (_ "~A: package not found for version ~a~%") name version)
-         (if (not fallback?)
-             ;; XXX: Fallback to the older specification style with an hyphen
-             ;; between NAME and VERSION, for backward compatibility.
-             (call-with-values
-                 (lambda ()
-                   (hyphen-separated-name->name+version name))
-               (cut %find-package spec <> <> #:fallback? #t))
-
-             ;; The fallback case didn't find anything either, so bail out.
-             (leave (_ "~A: unknown package~%") name))))))
+         (leave (G_ "~A: package not found for version ~a~%") name version)
+         (leave (G_ "~A: unknown package~%") name)))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
@@ -365,6 +275,6 @@ version; if SPEC does not specify an output, return OUTPUT."
       (package
        (if (member sub-drv (package-outputs package))
            (values package sub-drv)
-           (leave (_ "package `~a' lacks output `~a'~%")
+           (leave (G_ "package `~a' lacks output `~a'~%")
                   (package-full-name package)
                   sub-drv))))))

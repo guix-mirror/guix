@@ -288,7 +288,7 @@ META."
        ;; Warn about inputs that are part of perl's core
        (unless (null? core-inputs)
          (for-each (lambda (module)
-                     (warning (_ "input '~a' of ~a is in Perl core~%")
+                     (warning (G_ "input '~a' of ~a is in Perl core~%")
                               module (package-name package)))
                    core-inputs)))
      (let ((version (cpan-version meta))

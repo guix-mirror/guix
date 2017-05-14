@@ -13,8 +13,9 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,6 +155,41 @@ APNG patch provides APNG support to libpng.")
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+
+(define-public pngcrunch
+  (package
+   (name "pngcrunch")
+   (version "1.8.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/pmt/pngcrush/"
+                                version "/pngcrush-" version ".tar.xz"))
+            (sha256 (base32
+                     "1c7m316i91jp3h1dj1ppppdv6zilm2njk1wrpqy2zj0fcll06lwd"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:make-flags '("-f" "Makefile-nolib")
+      #:tests? #f ; no check target
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Makefile-nolib"
+              (("^(PNG(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "libpng") "/"))
+              (("^(Z(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "zlib") "/"))
+              ;; The Makefile is written by hand and not using $PREFIX
+              (("\\$\\(DESTDIR\\)/usr/")
+               (string-append (assoc-ref outputs "out") "/"))))))))
+   (inputs
+    `(("libpng" ,libpng)
+      ("zlib" , zlib)))
+   (home-page "https://pmt.sourceforge.net/pngcrush")
+   (synopsis "Utility to compress PNG files")
+   (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
+files.  It can compress them as much as 40% losslessly.")
+   (license license:zlib)))
 
 (define-public libjpeg
   (package
@@ -299,6 +335,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
+   (replacement libtiff/fixed)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
@@ -346,6 +383,19 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define libtiff/fixed
+  (package
+    (inherit libtiff)
+    (source
+     (origin
+       (inherit (package-source libtiff))
+       (patches
+        (append
+         (origin-patches (package-source libtiff))
+         (search-patches "libtiff-CVE-2017-7593.patch"
+                         "libtiff-CVE-2017-7594.patch"
+                         "libtiff-multiple-UBSAN-crashes.patch")))))))
 
 (define-public libwmf
   (package

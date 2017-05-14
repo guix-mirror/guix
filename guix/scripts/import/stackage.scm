@@ -40,16 +40,16 @@
     (include-test-dependencies? . #t)))
 
 (define (show-help)
-  (display (_ "Usage: guix import stackage PACKAGE-NAME
+  (display (G_ "Usage: guix import stackage PACKAGE-NAME
 Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
-  (display (_ "
+  (display (G_ "
   -r VERSION, --lts-version=VERSION
                                specify the LTS version to use"))
-  (display (_ "
+  (display (G_ "
   -h, --help                   display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -t, --no-test-dependencies   don't include test-only dependencies"))
-  (display (_ "
+  (display (G_ "
   -V, --version                display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -85,7 +85,7 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -105,12 +105,12 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
                      (assoc-ref opts 'include-test-dependencies?)
                      #:lts-version (assoc-ref opts 'lts-version))))
           (unless sexp
-            (leave (_ "failed to download cabal file for package '~a'~%")
+            (leave (G_ "failed to download cabal file for package '~a'~%")
                    package-name))
           sexp)))
       (()
-       (leave (_ "too few arguments~%")))
+       (leave (G_ "too few arguments~%")))
       ((many ...)
-       (leave (_ "too many arguments~%"))))))
+       (leave (G_ "too many arguments~%"))))))
 
 ;;; stackage.scm ends here

@@ -229,6 +229,35 @@ nodeArray.push(nodes[\"~a\"]);~%"
                  emit-d3js-prologue emit-d3js-epilogue
                  emit-d3js-node emit-d3js-edge))
 
+
+
+;;;
+;;; Cypher export.
+;;;
+
+(define (emit-cypher-prologue name port)
+  (format port ""))
+
+(define (emit-cypher-epilogue port)
+  (format port ""))
+
+(define (emit-cypher-node id label port)
+  (format port "MERGE (p:Package { id: ~s }) SET p.name = ~s;~%"
+          id label ))
+
+(define (emit-cypher-edge id1 id2 port)
+  (format port "MERGE (a:Package { id: ~s });~%" id1)
+  (format port "MERGE (b:Package { id: ~s });~%" id2)
+  (format port "MATCH (a:Package { id: ~s }), (b:Package { id: ~s }) CREATE UNIQUE (a)-[:NEEDS]->(b);~%"
+          id1 id2))
+
+(define %cypher-backend
+  (graph-backend "cypher"
+                 "Generate Cypher queries."
+                 emit-cypher-prologue emit-cypher-epilogue
+                 emit-cypher-node emit-cypher-edge))
+
+
 
 ;;;
 ;;; Shared.
@@ -236,7 +265,8 @@ nodeArray.push(nodes[\"~a\"]);~%"
 
 (define %graph-backends
   (list %graphviz-backend
-        %d3js-backend))
+        %d3js-backend
+        %cypher-backend))
 
 (define* (export-graph sinks port
                        #:key

@@ -220,7 +220,7 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
         (raise (condition
                 (&message
                  (message
-                  (format #f (_ "supplementary group '~a' \
+                  (format #f (G_ "supplementary group '~a' \
 of user '~a' is undeclared")
                           group
                           (user-account-name user))))))))
@@ -230,7 +230,7 @@ of user '~a' is undeclared")
                   (raise (condition
                           (&message
                            (message
-                            (format #f (_ "primary group '~a' \
+                            (format #f (G_ "primary group '~a' \
 of user '~a' is undeclared")
                                     (user-account-group user)
                                     (user-account-name user)))))))

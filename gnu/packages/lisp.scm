@@ -283,7 +283,10 @@ an interpreter, a compiler, a debugger, and much more.")
        ("texlive" ,texlive)
        ("texinfo" ,texinfo)))
     (arguments
-     '(#:phases
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'patch-unix-tool-paths

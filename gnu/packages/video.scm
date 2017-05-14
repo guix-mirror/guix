@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +76,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -989,7 +991,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.04.28")
+    (version "2017.05.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -997,7 +999,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0d3mgf8qxb07b7bjf79ppaxhcl4f47q0zjpshp6y2q0lalfskh3j"))))
+                "1q3b9xkbk1lmy1wxm1jcnmaj70sdksqbc8zsqxz6b6z4nmv8qc25"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1192,6 +1194,33 @@ DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
 authentication and descrambling (if an external libdvdcss library is
 installed).")
     (license license:gpl2+)))
+
+(define-public dvdauthor
+  (package
+    (name "dvdauthor")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdauthor/dvdauthor-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1drfc47hikfzc9d7hjk34rw10iqw01d2vwmn91pv73ppx4nsj81h"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libdvdread" ,libdvdread)
+       ("libpng" ,libpng)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("freetype" ,freetype)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Generates a DVD-Video movie from a MPEG-2 stream")
+    (description "@command{dvdauthor} will generate a DVD-Video movie from a
+MPEG-2 stream containing VOB packets.")
+    (home-page "http://dvdauthor.sourceforge.net")
+    (license license:gpl3+)))
 
 (define-public libdvdnav
   (package
@@ -1605,7 +1634,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "18.0.1")
+    (version "18.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1613,7 +1642,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "043f8mfdh4ll0hpivpyg3iniirckwsgri0gzamyrba1yhf2c2ibr"))))
+                "02pbiyvf5x0zh448h5rpmyn33qnsqk694xxlyns83mdi74savyqw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no tests

@@ -34,7 +34,8 @@ Copyright @copyright{} 2017 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
-Copyright @copyright{} 2017 Thomas Danckaert
+Copyright @copyright{} 2017 Thomas Danckaert@*
+Copyright @copyright{} 2017 humanitiesNerd
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1429,11 +1430,13 @@ remove software packages, without having to know about their build
 procedures or dependencies.  Guix also goes beyond this obvious set of
 features.
 
-This chapter describes the main features of Guix, as well as the package
-management tools it provides.  Along with the command-line interface
-described below (@pxref{Invoking guix package, @code{guix package}}),
-you may also use Emacs Interface, after installing @code{emacs-guix}
-package (run @kbd{M-x guix-help} command to start with it):
+This chapter describes the main features of Guix, as well as the
+package management tools it provides.  Along with the command-line
+interface described below (@pxref{Invoking guix package, @code{guix
+package}}), you may also use Emacs Interface (@pxref{Top,,,
+emacs-guix, The Emacs-Guix Reference Manual}), after installing
+@code{emacs-guix} package (run @kbd{M-x guix-help} command to start
+with it):
 
 @example
 guix package -i emacs-guix
@@ -2387,13 +2390,13 @@ For example, to download and deploy version 0.12.0 of Guix from the
 canonical Git repo:
 
 @example
-guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
+guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
 @end example
 
 It can also be used to deploy arbitrary Git revisions:
 
 @example
-guix pull --url=http://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
+guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
 @end example
 
 @item --bootstrap
@@ -2401,6 +2404,8 @@ Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
 @end table
 
+In addition, @command{guix pull} supports all the common build options
+(@pxref{Common Build Options}).
 
 @node Invoking guix pack
 @section Invoking @command{guix pack}
@@ -2879,7 +2884,8 @@ unavailable to the build process, possibly leading to a build failure.
 
 Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).  You can easily jump back to the
+tool (@pxref{Invoking guix build}), troubleshooting any build failures
+you encounter (@pxref{Debugging Build Failures}).  You can easily jump back to the
 package definition using the @command{guix edit} command
 (@pxref{Invoking guix edit}).
 @xref{Packaging Guidelines}, for
@@ -3321,7 +3327,8 @@ parameters, respectively.
 When the original package does not provide a suitable Ant build file,
 the parameter @code{#:jar-name} can be used to generate a minimal Ant
 build file @file{build.xml} with tasks to build the specified jar
-archive.
+archive.  In this case the parameter @code{#:source-dir} can be used to
+specify the source sub-directory, defaulting to ``src''.
 
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
@@ -4832,6 +4839,7 @@ described in the subsections below.
 * Common Build Options::        Build options for most commands.
 * Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
+* Debugging Build Failures::    Real life packaging experience
 @end menu
 
 @node Common Build Options
@@ -4857,6 +4865,8 @@ the command-line tools.
 Keep the build tree of failed builds.  Thus, if a build fails, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
+@xref{Debugging Build Failures}, for tips and tricks on how to debug
+build issues.
 
 @item --keep-going
 @itemx -k
@@ -5243,6 +5253,82 @@ https://hydra.gnu.org/log/@dots{}-gdb-7.10
 
 You can freely access a huge library of build logs!
 @end table
+
+@node Debugging Build Failures
+@subsection Debugging Build Failures
+
+@cindex build failures, debugging
+When defining a new package (@pxref{Defining Packages}), you will
+probably find yourself spending some time debugging and tweaking the
+build until it succeeds.  To do that, you need to operate the build
+commands yourself in an environment as close as possible to the one the
+build daemon uses.
+
+To that end, the first thing to do is to use the @option{--keep-failed}
+or @option{-K} option of @command{guix build}, which will keep the
+failed build tree in @file{/tmp} or whatever directory you specified as
+@code{TMPDIR} (@pxref{Invoking guix build, @code{--keep-failed}}).
+
+From there on, you can @command{cd} to the failed build tree and source
+the @file{environment-variables} file, which contains all the
+environment variable definitions that were in place when the build
+failed.  So let's say you're debugging a build failure in package
+@code{foo}; a typical session would look like this:
+
+@example
+$ guix build foo -K
+@dots{} @i{build fails}
+$ cd /tmp/guix-build-foo.drv-0
+$ source ./environment-variables
+$ cd foo-1.2
+@end example
+
+Now, you can invoke commands as if you were the daemon (almost) and
+troubleshoot your build process.
+
+Sometimes it happens that, for example, a package's tests pass when you
+run them manually but they fail when the daemon runs them.  This can
+happen because the daemon runs builds in containers where, unlike in our
+environment above, network access is missing, @file{/bin/sh} does not
+exist, etc. (@pxref{Build Environment Setup}).
+
+In such cases, you may need to run inspect the build process from within
+a container similar to the one the build daemon creates:
+
+@example
+$ guix build -K foo
+@dots{}
+$ cd /tmp/guix-build-foo.drv-0
+$ guix environment -C foo --ad-hoc strace gdb
+[env]# source ./environment-variables
+[env]# cd foo-1.2
+@end example
+
+Here, @command{guix environment -C} creates a container and spawns a new
+shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
+strace gdb} part adds the @command{strace} and @command{gdb} commands to
+the container, which would may find handy while debugging.
+
+To get closer to a container like that used by the build daemon, we can
+remove @file{/bin/sh}:
+
+@example
+[env]# rm /bin/sh
+@end example
+
+(Don't worry, this is harmless: this is all happening in the throw-away
+container created by @command{guix environment}.)
+
+The @command{strace} command is probably not in the search path, but we
+can run:
+
+@example
+[env]# $GUIX_ENVIRONMENT/bin/strace -f -o log make check
+@end example
+
+In this way, not only you will have reproduced the environment variables
+the daemon uses, you will also be running the build process in a container
+similar to the one the daemon uses.
 
 
 @node Invoking guix edit
@@ -5852,7 +5938,7 @@ an upgrade.  More rebuilds might be required under some circumstances.
 @example
 $ guix refresh --list-dependent flex
 Building the following 120 packages would ensure 213 dependent packages are rebuilt:
-hop-2.4.0 geiser-0.4 notmuch-0.18 mu-0.9.9.5 cflow-1.4 idutils-4.6 @dots{}
+hop@@2.4.0 geiser@@0.4 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
 @end example
 
 The command above lists a set of packages that could be built to check
@@ -6111,7 +6197,9 @@ provides a visual representation of the DAG.  By default,
 @uref{http://www.graphviz.org/, Graphviz}, so its output can be passed
 directly to the @command{dot} command of Graphviz.  It can also emit an
 HTML page with embedded JavaScript code to display a ``chord diagram''
-in a Web browser, using the @uref{https://d3js.org/, d3.js} library.
+in a Web browser, using the @uref{https://d3js.org/, d3.js} library, or
+emit Cypher queries to construct a graph in a graph database supporting
+the @uref{http://www.opencypher.org/, openCypher} query language.
 The general syntax is:
 
 @example
@@ -7118,15 +7206,15 @@ get a feel of what that means.)
 Support for the Logical Volume Manager (LVM) is missing.
 
 @item
-Few system services are currently supported out-of-the-box
-(@pxref{Services}).
+More and more system services are provided (@pxref{Services}), but some
+may be missing.
 
 @item
-More than 5,000 packages are available, but you may
+More than 5,300 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
-GNOME, Xfce, and Enlightenment are available (@pxref{Desktop Services}),
+GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
 as well as a number of X11 window managers.  However, some graphical
 applications may be missing, as well as KDE.
 @end itemize
@@ -7678,7 +7766,19 @@ provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
 etc.  The example above adds tcpdump to those, taken from the @code{(gnu
-packages admin)} module (@pxref{Package Modules}).
+packages admin)} module (@pxref{Package Modules}).  The
+@code{(list package output)} syntax can be used to add a specific output
+of a package:
+
+@lisp
+(use-modules (gnu packages))
+(use-modules (gnu packages dns))
+
+(operating-system
+  ;; ...
+  (packages (cons (list bind "utils")
+                  %base-packages)))
+@end lisp
 
 @findex specification->package
 Referring to packages by variable name, like @var{tcpdump} above, has
@@ -16281,9 +16381,9 @@ distribution:
 
 @smallexample
 $ guix lint -c cve
-gnu/packages/base.scm:652:2: glibc-2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
-gnu/packages/gcc.scm:334:2: gcc-4.9.3: probably vulnerable to CVE-2015-5276
-gnu/packages/image.scm:312:2: openjpeg-2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
+gnu/packages/base.scm:652:2: glibc@@2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
+gnu/packages/gcc.scm:334:2: gcc@@4.9.3: probably vulnerable to CVE-2015-5276
+gnu/packages/image.scm:312:2: openjpeg@@2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
 @dots{}
 @end smallexample
 

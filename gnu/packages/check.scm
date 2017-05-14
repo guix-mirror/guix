@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,13 +181,13 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.77")
+    (version "1.78")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/danmar/cppcheck/archive/"
                           version ".tar.gz"))
       (sha256
-       (base32 "1fn26p0xvfrdbhxjhy6aqhkk63n3fvrdb2ygcn9wg4vaandhmbkn"))
+       (base32 "1dnizw0rfj6faqgnmg8qh6njr9q89j8brhba7qmx2i47vl0qj11i"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")

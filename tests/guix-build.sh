@@ -185,7 +185,6 @@ test "`guix build superseded -d`" = "`guix build bar -d`"
 # Parsing package names and versions.
 guix build -n time		# PASS
 guix build -n time@1.7		# PASS, version found
-guix build -n time-1.7		# PASS, deprecated version syntax
 if guix build -n time@3.2;	# FAIL, version not found
 then false; else true; fi
 if guix build -n something-that-will-never-exist; # FAIL

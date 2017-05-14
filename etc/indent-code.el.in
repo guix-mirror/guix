@@ -26,10 +26,10 @@
 
 ;;; Code:
 
-;; Load Scheme indentation rules from the current directory.
+;; Load Scheme indentation rules from ".dir-locals.el".
 (with-temp-buffer
   (scheme-mode)
-  (let ((default-directory (file-name-as-directory "."))
+  (let ((default-directory (file-name-as-directory load-file-name))
         (enable-local-variables :all))
     (hack-dir-local-variables)
     (hack-local-variables-apply)))

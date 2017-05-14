@@ -69,7 +69,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.39.1")
+    (version "0.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -77,7 +77,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jwgd6sl7zl7h16id3405gwk6vlkk86ggwrp0k47njwkxmryq8d4"))))
+                "0yl6iryh89nn6hzhwv7kg16ki1chh9h0x1yk1y130h87iq42a35r"))))
     (build-system python-build-system)
     (inputs `(("ninja", ninja)))
     (home-page "https://mesonbuild.com/")

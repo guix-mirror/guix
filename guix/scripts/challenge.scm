@@ -188,10 +188,10 @@ object.  When VERBOSE?, display matches in addition to mismatches and
 inconclusive reports."
   (define (report-hashes item local narinfos)
     (if local
-        (report (_ "  local hash: ~a~%") (hash->string local))
-        (report (_ "  no local build for '~a'~%") item))
+        (report (G_ "  local hash: ~a~%") (hash->string local))
+        (report (G_ "  no local build for '~a'~%") item))
     (for-each (lambda (narinfo)
-                (report (_ "  ~50a: ~a~%")
+                (report (G_ "  ~50a: ~a~%")
                         (uri->string (narinfo-uri narinfo))
                         (hash->string
                          (narinfo-hash->sha256 (narinfo-hash narinfo)))))
@@ -199,15 +199,15 @@ inconclusive reports."
 
   (match comparison-report
     (($ <comparison-report> item 'mismatch local (narinfos ...))
-     (report (_ "~a contents differ:~%") item)
+     (report (G_ "~a contents differ:~%") item)
      (report-hashes item local narinfos))
     (($ <comparison-report> item 'inconclusive #f narinfos)
-     (warning (_ "could not challenge '~a': no local build~%") item))
+     (warning (G_ "could not challenge '~a': no local build~%") item))
     (($ <comparison-report> item 'inconclusive locals ())
-     (warning (_ "could not challenge '~a': no substitutes~%") item))
+     (warning (G_ "could not challenge '~a': no substitutes~%") item))
     (($ <comparison-report> item 'match local (narinfos ...))
      (when verbose?
-       (report (_ "~a contents match:~%") item)
+       (report (G_ "~a contents match:~%") item)
        (report-hashes item local narinfos)))))
 
 
@@ -216,17 +216,17 @@ inconclusive reports."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix challenge [PACKAGE...]
+  (display (G_ "Usage: guix challenge [PACKAGE...]
 Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
-  (display (_ "
+  (display (G_ "
       --substitute-urls=URLS
                          compare build results with those at URLS"))
-  (display (_ "
+  (display (G_ "
       -v, --verbose      show details about successful comparisons"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -9,6 +9,8 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +39,7 @@
             cc0
             cc-by2.0 cc-by3.0 cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
             cddl1.0
-            cecill-c
+            cecill cecill-b cecill-c
             artistic2.0 clarified-artistic
             copyleft-next
             cpl1.0
@@ -61,6 +63,7 @@
             ncsa
             nmap
             openldap2.8 openssl
+            perl-license
             psfl public-domain
             qpl
             repoze
@@ -75,7 +78,8 @@
             zpl2.1
             zlib
             fsf-free
-            wtfpl2))
+            wtfpl2
+            fsdg-compatible))
 
 (define-record-type <license>
   (license name uri comment)
@@ -191,7 +195,17 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:CDDLv1.0"
            "https://www.gnu.org/licenses/license-list#CDDL"))
 
-(define cecill-c
+(define cecill                                    ;copyleft
+  (license "CeCILL"
+           "http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html"
+           "https://www.gnu.org/licenses/license-list.html#CeCILL"))
+
+(define cecill-b                                  ;non-copyleft
+  (license "CeCILL-B"
+           "http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html"
+           "https://www.gnu.org/licenses/license-list.html#CeCILL"))
+
+(define cecill-c                                  ;weak copyleft
   (license "CeCILL-C"
            "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"
            "https://www.gnu.org/licenses/license-list.html#CeCILL"))
@@ -395,6 +409,12 @@ at URI, which may be a file:// URI pointing the package's tree."
            "https://www.gnu.org/licenses/license-list#newOpenLDAP"))
               ;; lists OpenLDAPv2.7, which is virtually identical
 
+(define perl-license
+  ;; The license of Perl, GPLv1+ or Artistic (we ignore the latter here).
+  ;; We define this alias to avoid circular dependencies introduced by the use
+  ;; of the '(package-license perl)' idiom.
+  gpl1+)
+
 (define psfl
   (license "Python Software Foundation License"
            "http://docs.python.org/license.html"
@@ -485,6 +505,15 @@ which may be a file:// URI pointing the package's tree."
   "Return a license that does not fit any of the ones above or a collection
 of licenses, approved as free by the FSF.  More details can be found at URI."
   (license "FSF-free"
+           uri
+           comment))
+
+(define* (fsdg-compatible uri #:optional (comment ""))
+  "Return a license that does not fit any of the ones above or a collection
+of licenses, not necessarily free, but in accordance with FSDG as Non-functional
+Data.  More details can be found at URI.  See also
+https://www.gnu.org/distros/free-system-distribution-guidelines.en.html#non-functional-data."
+  (license "FSDG-compatible"
            uri
            comment))
 

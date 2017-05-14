@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu))
@@ -28,15 +30,16 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "0.2.4")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
                                   version "/libtirpc-"
                                   version ".tar.bz2"))
+              (patches (search-patches "libtirpc-CVE-2017-8779.patch"))
               (sha256
                (base32
-                "18a337wa4amf0k21wnimp3yzs5l3cxqndz4x3x8bm993zhfy5hs5"))))
+                "17mqrdgsgp9m92pmq7bvr119svdg753prqqxmg4cnz5y657rfmji"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -66,16 +69,17 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 (define-public rpcbind
   (package
     (name "rpcbind")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           version "/"
                           name "-" version ".tar.bz2"))
+      (patches (search-patches "rpcbind-CVE-2017-8779.patch"))
       (sha256
        (base32
-        "0yyjzv4161rqxrgjcijkrawnk55rb96ha0pav48s03l2klx855wq"))))
+        "0rjc867mdacag4yqvs827wqhkh27135rp9asj06ixhf71m9rljh7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

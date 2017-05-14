@@ -104,7 +104,7 @@
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2 x11-style agpl3 asl2.0))
+                           bsd-2 x11-style agpl3 asl2.0 perl-license))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -837,14 +837,14 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.7.2")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
-               (base32 "081ixgj3skglq9i7v0jb835lmfx21zi4i5b7997igwr0lj174y9j"))))
+               (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
@@ -875,7 +875,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license (non-copyleft "file://COPYING"))))
+    (license bsd-3)))
 
 (define-public compface
   (package
@@ -1277,7 +1277,7 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
     (synopsis "Interface to mail representations")
     (description "Email::Abstract provides module writers with the ability to
 write simple, representation-independent mail handling code.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-address
   (package
@@ -1297,7 +1297,7 @@ write simple, representation-independent mail handling code.")
     (description "Email::Address implements a regex-based RFC 2822 parser that
 locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-date-format
   (package
@@ -1316,7 +1316,7 @@ objects found.  Alternatively you may construct objects manually.")
     (synopsis "Produce RFC 2822 date strings")
     (description "Email::Date::Format provides a means for generating an RFC
 2822 compliant datetime string.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-messageid
   (package
@@ -1335,7 +1335,7 @@ objects found.  Alternatively you may construct objects manually.")
     (synopsis "Generate world unique message-ids")
     (description "Email::MessageID generates recommended message-ids to
 identify a message uniquely.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime
   (package
@@ -1363,7 +1363,7 @@ identify a message uniquely.")
 handle MIME encoded messages.  It takes a message as a string, splits it up
 into its constituent parts, and allows you access to various parts of the
 message.  Headers are decoded from MIME encoding.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime-contenttype
   (package
@@ -1384,7 +1384,7 @@ message.  Headers are decoded from MIME encoding.")
     (synopsis "Parse MIME Content-Type headers")
     (description "Email::MIME::ContentType parses a MIME Content-Type
 header.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime-encodings
   (package
@@ -1404,7 +1404,7 @@ header.")
     (home-page "http://search.cpan.org/dist/Email-MIME-Encodings")
     (synopsis "Unified interface to MIME encoding and decoding")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-sender
   (package
@@ -1436,7 +1436,7 @@ header.")
     (synopsis "Perl library for sending email")
     (description "Email::Sender replaces the old and sometimes problematic
 Email::Send library.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-simple
   (package
@@ -1457,7 +1457,7 @@ Email::Send library.")
     (synopsis "Parsing of RFC 2822 messages")
     (description "Email::Simple provides simple parsing of RFC 2822 message
 format and headers.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public libesmtp
   (package

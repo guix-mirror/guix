@@ -1868,21 +1868,19 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "mirror://sourceforge/qjackctl/qjackctl/"
-                version "/qjackctl-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
+                                  version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "19bbljb3iz5ss4s5fmra1dxabg2fnp61sa51d63zsm56xkvv47ak"))))
+                "1dsavjfzz5bpzc80mvfs940w9f9f47cf4r9cqxnaqrl4xilsa3f5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
     (inputs
-     `(("jack-2" ,jack-2)
+     `(("jack" ,jack-1)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
@@ -2475,14 +2473,15 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "1j5hm99fjrnaw8wbmlh4qixkv3rw5dl429mp1ag7js2ydrx0j9yy"))))
+        (base32
+         "0qhfnikx3xcllkvs60kj6vcf2rwwzh31y41qkk6kwfhzgd219y8f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" phase

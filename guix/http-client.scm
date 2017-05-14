@@ -262,7 +262,7 @@ Raise an '&http-get-error' condition if downloading fails."
             302)                                  ; found (redirection)
            (let ((uri (resolve-uri-reference (response-location resp) uri)))
              (close-port port)
-             (format #t (_ "following redirection to `~a'...~%")
+             (format #t (G_ "following redirection to `~a'...~%")
                      (uri->string uri))
              (loop uri)))
           (else
@@ -274,7 +274,7 @@ Raise an '&http-get-error' condition if downloading fails."
                               (message
                                (format
                                 #f
-                                (_ "~a: HTTP download failed: ~a (~s)")
+                                (G_ "~a: HTTP download failed: ~a (~s)")
                                 (uri->string uri) code
                                 (response-reason-phrase resp))))))))))))
 

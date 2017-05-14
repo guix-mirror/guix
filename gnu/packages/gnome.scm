@@ -12,7 +12,7 @@
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -150,7 +150,14 @@
                                          "/share/gir-1.0")
                           (string-append "--with-typelibdir="
                                          (assoc-ref %outputs "out")
-                                         "/lib/girepository-1.0"))))
+                                         "/lib/girepository-1.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'embed-growisofs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "plugins/growisofs/burn-growisofs.c"
+               (("\"growisofs") (string-append "\"" (which "growisofs"))))
+             #t )))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
@@ -159,7 +166,8 @@
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("dvd+rw-tools" ,dvd+rw-tools)
+       ("glib" ,glib)
        ("gnome-doc-utils" ,gnome-doc-utils)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -4995,6 +5003,7 @@ properties, screen resolution, and other GNOME parameters.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gnome-shell-CVE-2017-8288.patch"))
               (sha256
                (base32
                 "16smvjfrpyfphv479hjky5261hgl4kli4q86bcb2b8xdcav4w3yq"))))

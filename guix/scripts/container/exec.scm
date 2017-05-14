@@ -37,12 +37,12 @@
                   (show-version-and-exit "guix container exec")))))
 
 (define (show-help)
-  (display (_ "Usage: guix container exec PID COMMAND [ARGS...]
+  (display (G_ "Usage: guix container exec PID COMMAND [ARGS...]
 Execute COMMMAND within the container process PID.\n"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -66,7 +66,7 @@ and the other containing arguments for the command to be executed."
 (define (guix-container-exec . args)
   (define (handle-argument arg result)
     (if (assoc-ref result 'pid)
-        (leave (_ "~a: extraneous argument~%") arg)
+        (leave (G_ "~a: extraneous argument~%") arg)
         (alist-cons 'pid (string->number* arg) result)))
 
   (with-error-handling
@@ -84,13 +84,13 @@ and the other containing arguments for the command to be executed."
                                       '("TERM"))))
 
         (unless pid
-          (leave (_ "no pid specified~%")))
+          (leave (G_ "no pid specified~%")))
 
         (when (null? command)
-          (leave (_ "no command specified~%")))
+          (leave (G_ "no command specified~%")))
 
         (unless (file-exists? (string-append "/proc/" (number->string pid)))
-          (leave (_ "no such process ~d~%") pid))
+          (leave (G_ "no such process ~d~%") pid))
 
         (let ((result (container-excursion pid
                         (lambda ()
@@ -102,4 +102,4 @@ and the other containing arguments for the command to be executed."
                                        environment)
                              (apply execlp program program program-args)))))))
           (unless (zero? result)
-            (leave (_ "exec failed with status ~d~%") result)))))))
+            (leave (G_ "exec failed with status ~d~%") result)))))))

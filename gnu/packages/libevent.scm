@@ -192,7 +192,7 @@ Currently supported event loops are EV, Event, Glib/Gtk2, Tk, Qt,
 @code{Event::Lib}, Irssi, @code{IO::Async} and POE (and thus also WxWidgets
 and Prima).  It also comes with a very fast Pure Perl event loop that does
 not rely on XS.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-ev
   (package
@@ -233,4 +233,4 @@ not rely on XS.")
      "This module provides an interface to @code{libev}, a high performance
 full-featured event loop.  It can be used through the @code{AnyEvent} module
 and still be faster than other event loops currently supported in Perl.")
-    (license (package-license perl))))
+    (license perl-license)))

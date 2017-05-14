@@ -74,7 +74,7 @@ if ITEM is not in the store."
              ;; The nar size is an approximation, but a good one.
              (return (substitutable-nar-size info)))
             (()
-             (leave (_ "no available substitute information for '~a'~%")
+             (leave (G_ "no available substitute information for '~a'~%")
                     item)))))))
 
 (define* (display-profile profile #:optional (port (current-output-port)))
@@ -82,7 +82,7 @@ if ITEM is not in the store."
   (define MiB (expt 2 20))
 
   (format port "~64a ~8a ~a\n"
-          (_ "store item") (_ "total") (_ "self"))
+          (G_ "store item") (G_ "total") (G_ "self"))
   (let ((whole (reduce + 0 (map profile-self-size profile))))
     (for-each (match-lambda
                 (($ <profile> name self total)
@@ -94,7 +94,7 @@ if ITEM is not in the store."
                       ((($ <profile> name1 self1 total1)
                         ($ <profile> name2 self2 total2))
                        (> total1 total2)))))
-    (format port (_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
+    (format port (G_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
 
 (define display-profile*
   (lift display-profile %store-monad))
@@ -208,7 +208,7 @@ the name of a PNG file."
   ;; TRANSLATORS: This is the title of a graph, meaning that the graph
   ;; represents a profile of the store (the "store" being the place where
   ;; packages are stored.)
-  (make-page-map (_ "store profile") data
+  (make-page-map (G_ "store profile") data
                  #:write-to-png file))
 
 
@@ -217,19 +217,19 @@ the name of a PNG file."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix size [OPTION]... PACKAGE
+  (display (G_ "Usage: guix size [OPTION]... PACKAGE
 Report the size of PACKAGE and its dependencies.\n"))
-  (display (_ "
+  (display (G_ "
       --substitute-urls=URLS
                          fetch substitute from URLS if they are authorized"))
-  (display (_ "
+  (display (G_ "
   -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
   -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -278,7 +278,7 @@ Report the size of PACKAGE and its dependencies.\n"))
            (urls     (assoc-ref opts 'substitute-urls)))
       (match files
         (()
-         (leave (_ "missing store item argument\n")))
+         (leave (G_ "missing store item argument\n")))
         ((files ..1)
          (leave-on-EPIPE
           ;; Turn off grafts because (1) hydra.gnu.org does not serve grafted

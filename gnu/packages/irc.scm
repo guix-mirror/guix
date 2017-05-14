@@ -142,14 +142,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.7.1")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0c0waxrxq2v0r7981y1ajh9k78jfl223smwrj4v9c5z27iwh8ziz"))
+                "05z0qmlmdm0zgkzhi6cy6snxdz37h1n5z2s460df76akjr7capxn"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
@@ -300,14 +300,14 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public limnoria
   (package
     (name "limnoria")
-    (version "2017.01.10")
+    (version "2017.03.30")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "limnoria" version))
        (sha256
         (base32
-         "0va7iiwkrd5miibpaphfm2jlfsmaazbqb8izkmlnlzkqnskhz1ff"))))
+         "1q0y6iglg1cbhimgjz3afws51as3shy6rd61dck7jfm25y8pi6g8"))))
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)

@@ -36,8 +36,9 @@
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1108,14 +1109,14 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.5.3")
+    (version "2.6.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "python-dateutil" version))
       (sha256
        (base32
-        "1v9j9fmf8g911yg6k01xa2db6dx3wv73zkk7fncsj7vagjqgs20l"))))
+        "1lhq0hxjc3cfha101q02ld5ijlpfyjn2w1yh7wvpiy367pgzi8k2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -1353,7 +1354,8 @@ Python 3.3+.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2
                  #:tests? #f))                    ; invalid command "test"
-    (home-page "https://fedorahosted.org/dogtail/")
+    ;; Currently no offical homepage.
+    (home-page "https://pypi.python.org/pypi/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
@@ -1843,14 +1845,14 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
          (base32
-          "1yl4nbhzfgsxqlsyk4clafgp9x11zvgrkprm9i2p3fgkwx9jxcm8"))))
+          "03c2qc42r4bczyw93gd7n0qi1h1jfhw7fnbhi33c3vp1hs81gm2k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1879,14 +1881,14 @@ supports coverage of subprocesses.")
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
-    (version "2.6.2")
+    (version "2.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
-         "1nwcqx0l3fv52kv8526wy8ypzghbq96c96di318d98d3wh7a8xg7"))))
+         "1cw978kqqcq916b9gfns1qjqvg33c5ail5jhw9054dsynkm32flq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2641,7 +2643,7 @@ version numbers.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)))
-    (home-page "https://fedorahosted.org/kitchen")
+    (home-page "https://github.com/fedora-infra/kitchen")
     (synopsis "Python API for snippets")
     (description "@code{kitchen} module provides a python API for all sorts of
 little useful snippets of code that everybody ends up writing for their projects
@@ -3375,15 +3377,13 @@ mining and data analysis.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.5.2")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/rq/rq-"
-             version ".tar.gz"))
+       (uri (pypi-uri "rq" version))
        (sha256
-        (base32 "0b0z5hn8wkfg300hx7816csgv3bcfamlr29fi3yzgqmpqxwj3fix"))))
+        (base32 "0gaq5pnh0zy46r8jvygi0ifbvz3pq6i7xla78ijcgjw0x77qzsdh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
@@ -4216,6 +4216,38 @@ routines such as routines for numerical integration and optimization.")
 (define-public python2-scipy
   (package-with-python2
    (strip-python2-variant python-scipy)))
+
+(define-public python-sockjs-tornado
+  (package
+    (name "python-sockjs-tornado")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sockjs-tornado" version))
+       (sha256
+        (base32
+         "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; There are no tests, and running the test phase requires missing
+       ;; dependencies
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-tornado" ,python-tornado)))
+    (home-page "http://github.com/mrjoes/sockjs-tornado/")
+    (synopsis
+     "SockJS python server implementation on top of Tornado framework")
+    (description
+     "SockJS-tornado provides the server side counterpart to a SockJS client
+library, through the Tornado framework.
+
+SockJS provides a low latency, full duplex, cross-domain communication channel
+between a web browser and web server.")
+    (license license:expat)))
+
+(define-public python2-sockjs-tornado
+  (package-with-python2 python-sockjs-tornado))
 
 (define-public python-socksipy-branch
   (package
@@ -5509,7 +5541,18 @@ features useful for text console applications.")
     (license license:lgpl2.1+)))
 
 (define-public python2-urwid
-  (package-with-python2 python-urwid))
+  (let ((python2-urwid (package-with-python2 python-urwid)))
+    (package
+      (inherit python2-urwid)
+      (arguments
+       (append
+        '(#:phases
+          (modify-phases %standard-phases
+            ;; Disable the vterm tests because of non-deterministic failures
+            ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
+            (add-after 'unpack 'delete-test_vterm.py
+              (delete-file "urwid/tests/test_vterm.py"))))
+        (package-arguments python-urwid))))))
 
 (define-public python-openid
   (package
@@ -5529,6 +5572,7 @@ features useful for text console applications.")
         (replace 'check
           (lambda _
             (zero? (system* "./admin/runtests")))))))
+    (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
     (native-inputs
@@ -6105,13 +6149,13 @@ It is written entirely in Python.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.3")
+    (version "4.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "1gzgwayl6hmc9jfcl88bni4jcsk2jcca9dn1rvrfsvnijcjx7hn9"))))
+        (base32 "1zbkgcdfq81k298awrm8p0xwbwwn2p3nbizdglzfbkskhai082fv"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: Two tests error out with:
@@ -7446,7 +7490,7 @@ a hash value.")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "python-termcolor" version))
+       (uri (pypi-uri "termcolor" version))
        (sha256
         (base32
          "0fv1vq14rpqwgazxg4981904lfyp84mnammw7y046491cv76jv8x"))))
@@ -8850,13 +8894,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.3")
+    (version "3.11.4")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "086jslw8cg2hni79j267p1dy6d27m7q5hi39ni2clh9waqbdf5v3"))))
+               "0ix3xxykz8hs8mx4f2063djawmd888y3vsl75fbvbfqvg67v35jn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -14011,3 +14055,570 @@ exception message with a traceback that points to the culprit.")
 
 (define-public python2-fudge
   (package-with-python2 python-fudge))
+
+(define-public python-oauth2client
+  (package
+    (name "python-oauth2client")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oauth2client" version))
+       (sha256
+        (base32
+         "1irqqap2zibysf8dba8sklfqikia579srd0phm5n754ni0h59gl0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-rsa" ,python-rsa)
+       ("python-six" ,python-six)))
+    (home-page "http://github.com/google/oauth2client/")
+    (synopsis "OAuth 2.0 client library")
+    (description "@code{python-oauth2client} provides an OAuth 2.0 client
+library for Python")
+    (license license:asl2.0)))
+
+(define-public python-flask-oidc
+  (package
+    (name "python-flask-oidc")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flask-oidc" version))
+       (sha256
+        (base32
+         "1ay5j0mf174bix7i67hclr95gv16z81fpx0dijvi0gydvdj3ddy2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-itsdangerous" ,python-itsdangerous)
+       ("python-oauth2client" ,python-oauth2client)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/puiterwijk/flask-oidc")
+    (synopsis "OpenID Connect extension for Flask")
+    (description "@code{python-flask-oidc} provides an OpenID Connect extension
+for Flask.")
+    (license license:bsd-2)))
+
+(define-public python-mwclient
+  (package
+    (name "python-mwclient")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       ;; The PyPI version wouldn't contain tests.
+       (uri (string-append "https://github.com/mwclient/mwclient/archive/"
+                           "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-oauthlib"
+        ,python-requests-oauthlib)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-responses" ,python-responses)))
+    (home-page "https://github.com/btongminh/mwclient")
+    (synopsis "MediaWiki API client")
+    (description "This package provides a MediaWiki API client.")
+    (license license:expat)))
+
+(define-public python2-mwclient
+  (package-with-python2 python-mwclient))
+
+(define-public python-pytest-warnings
+  (package
+    (name "python-pytest-warnings")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-warnings" version))
+       (sha256
+        (base32
+         "0gf2dpahpl5igb7jh1sr9acj3z3gp7zahqdqb69nk6wx01c8kc1g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("pytest" ,python-pytest-3.0)))
+    (home-page "https://github.com/fschulze/pytest-warnings")
+    (synopsis "Pytest plugin to list Python warnings in pytest report")
+    (description
+     "Python-pytest-warnings is a pytest plugin to list Python warnings in
+pytest report.")
+    (license license:expat)))
+
+(define-public python2-pytest-warnings
+  (package-with-python2 python-pytest-warnings))
+
+(define-public python-pytest-catchlog
+  (package
+    (name "python-pytest-catchlog")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-catchlog" version ".zip"))
+       (sha256
+        (base32
+         "1w7wxh27sbqwm4jgwrjr9c2gy384aca5jzw9c0wzhl0pmk2mvqab"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("pytest" ,python-pytest-3.0)))
+    (home-page "https://github.com/eisensheng/pytest-catchlog")
+    (synopsis "Pytest plugin to catch log messages")
+    (description
+     "Python-pytest-catchlog is a pytest plugin to catch log messages.  This is
+a fork of pytest-capturelog.")
+    (license license:expat)))
+
+(define-public python2-pytest-catchlog
+  (package-with-python2 python-pytest-catchlog))
+
+(define-public python-utils
+  (package
+    (name "python-utils")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "python-utils" version))
+              (sha256
+               (base32
+                "1mcsy6q5am4ya72rgkpb6kax6vv7c93cfkkas89xnpa4sj9zf28p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pytest-runner" ,python-pytest-runner)
+       ("pytest" ,python-pytest)
+       ("six" ,python-six)))
+    (home-page "https://github.com/WoLpH/python-utils")
+    (synopsis "Convenient utilities not included with the standard Python install")
+    (description
+      "Python Utils is a collection of small Python functions and classes which
+make common patterns shorter and easier.")
+    (license license:bsd-2)))
+
+(define-public python2-utils
+  (package-with-python2 python-utils))
+
+(define-public python-webassets
+  (package
+    (name "python-webassets")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "webassets" version))
+       (sha256
+        (base32
+         "1nrqkpb7z46h2b77xafxihqv3322cwqv6293ngaky4j3ff4cing7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/miracle2k/webassets")
+    (synopsis "Media asset management")
+    (description "Merges, minifies and compresses Javascript and CSS files,
+supporting a variety of different filters, including YUI, jsmin, jspacker or
+CSS tidy.  Also supports URL rewriting in CSS files.")
+    (license license:bsd-2)))
+
+(define-public python-sphinx-me
+  (package
+    (name "python-sphinx-me")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-me" version))
+       (sha256
+        (base32
+         "06jzgp213zihnvpcy2y5jy3ykid3apc2ncp2pg6a2g05lhiziglq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/stephenmcd/sphinx-me")
+    (synopsis "Create a Sphinx documentation shell")
+    (description
+      "Create a Sphinx documentation shell for your project and include the
+README file as the documentation index.  It handles extracting the required
+meta data such as the project name, author and version from your project for
+use in your Sphinx docs.")
+    (license license:bsd-2)))
+
+(define-public python2-sphinx-me
+  (package-with-python2 python-sphinx-me))
+
+(define-public python-cssmin
+  (package
+    (name "python-cssmin")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cssmin" version))
+        (sha256
+         (base32
+          "1dk723nfm2yf8cp4pj785giqlwv42l0kj8rk40kczvq1hk6g04p0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/zacharyvoase/cssmin")
+    (synopsis "Python port of the YUI CSS Compressor")
+    (description "Python port of the YUI CSS Compressor.")
+    (license (list license:expat license:bsd-3))))
+
+(define-public python2-cssmin
+  (package-with-python2 python-cssmin))
+
+(define-public python-diff-match-patch
+  (package
+    (name "python-diff-match-patch")
+    (version "20121119")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "diff-match-patch" version))
+        (sha256
+         (base32
+          "0k1f3v8nbidcmmrk65m7h8v41jqi37653za9fcs96y7jzc8mdflx"))))
+    (build-system python-build-system)
+    (home-page "https://code.google.com/p/google-diff-match-patch")
+    (synopsis "Synchronize plain text")
+    (description "Diff Match and Patch libraries offer robust algorithms to
+perform the operations required for synchronizing plain text.")
+    (license license:asl2.0)))
+
+(define-public python2-diff-match-patch
+  (package-with-python2 python-diff-match-patch))
+
+(define-public python-dirsync
+  (package
+    (name "python-dirsync")
+    (version "2.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dirsync" version ".zip"))
+        (sha256
+         (base32
+          "1hcdvmkwd5512zbxpin0k7bx5bkgzy3swjx7d0kj1y45af6r75v2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("six" ,python-six)))
+    (home-page "https://bitbucket.org/tkhyn/dirsync")
+    (synopsis "Advanced directory tree synchronisation tool")
+    (description "Advanced directory tree synchronisation tool.")
+    (license license:expat)))
+
+(define-public python2-dirsync
+  (package-with-python2 python-dirsync))
+
+(define-public python-nosexcover
+  (package
+    (name "python-nosexcover")
+    (version "1.0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "nosexcover" version))
+              (sha256
+               (base32
+                "10xqr12qv62k2flxwqhh8cr00cjhn7sfjrm6p35gd1x5bmjkr319"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "http://github.com/cmheisel/nose-xcover")
+    (synopsis "Extends nose.plugins.cover to add Cobertura-style XML reports")
+    (description "Nose-xcover is a companion to the built-in
+@code{nose.plugins.cover}.  This plugin will write out an XML coverage report
+to a file named coverage.xml.
+
+It will honor all the options you pass to the Nose coverage plugin,
+especially -cover-package.")
+    (license license:expat)))
+
+(define-public python2-nosexcover
+  (package-with-python2 python-nosexcover))
+
+(define-public python-elasticsearch
+  (package
+    (name "python-elasticsearch")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "elasticsearch" version))
+        (sha256
+         (base32
+          "1sdw1r05cw7ihnmng8ra9v968fj7bq6sji8i1dikymsnkcpgc69g"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nosexcover" ,python-nosexcover)
+       ("python-pyaml" ,python-pyaml)
+       ("python-requests" ,python-requests)))
+    (propagated-inputs
+     `(("urllib3" ,python-urllib3)))
+    (arguments
+     ;; tests require the test_elasticsearch module but it is not distributed.
+     `(#:tests? #f))
+    (home-page "https://github.com/elastic/elasticsearch-py")
+    (synopsis "Low-level client for Elasticsearch")
+    (description "Official low-level client for Elasticsearch.  Its goal is to
+provide common ground for all Elasticsearch-related code in Python; because of
+this it tries to be opinion-free and very extendable.")
+    (license license:expat)))
+
+(define-public python2-elasticsearch
+  (package-with-python2 python-elasticsearch))
+
+(define-public python-levenshtein
+  (package
+    (name "python-levenshtein")
+    (version "0.12.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "python-Levenshtein" version))
+      (sha256
+       (base32
+        "1c9ybqcja31nghfcc8xxbbz9h60s9qi12b9hr4jyl69xbvg12fh3"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ztane/python-Levenshtein")
+    (synopsis "Fast computation of Levenshtein distance and string similarity")
+    (description
+     "The Levenshtein Python C extension module contains functions for fast computation of
+@enumerate
+@item Levenshtein (edit) distance, and edit operations
+@item string similarity
+@item approximate median strings, and generally string averaging
+@item string sequence and set similarity
+@end enumerate
+It supports both normal and Unicode strings.")
+    (license license:gpl2+)))
+
+(define-public python2-levenshtein
+  (package-with-python2 python-levenshtein))
+
+(define-public python-scandir
+  (package
+    (name "python-scandir")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scandir" version))
+       (sha256
+        (base32 "0yjrgp0mxp3d8bjkq2m1ac2ys8n76wykksvgyjrnil9gr3fx7a5d"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/benhoyt/scandir")
+    (synopsis "Directory iteration function")
+    (description
+     "Directory iteration function like os.listdir(), except that instead of
+returning a list of bare filenames, it yields DirEntry objects that include
+file type and stat information along with the name.  Using scandir() increases
+the speed of os.walk() by 2-20 times (depending on the platform and file
+system) by avoiding unnecessary calls to os.stat() in most cases.")
+    (license license:bsd-3)))
+
+(define-public python2-scandir
+  (package-with-python2 python-scandir))
+
+(define-public python2-stemming
+  (package
+    (name "python2-stemming")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stemming" version))
+       (sha256
+        (base32 "0ldwa24gnnxhniv0fhygkpc2mwgd93q10ag8rvzayv6hw418frsr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://bitbucket.org/mchaput/stemming/overview")
+    (synopsis "Python implementations of various stemming algorithms")
+    (description
+     "Python implementations of the Porter, Porter2, Paice-Husk, and Lovins
+stemming algorithms for English.  These implementations are straightforward and
+efficient, unlike some Python versions of the same algorithms available on the
+Web.  This package is an extraction of the stemming code included in the Whoosh
+search engine.")
+    (license license:public-domain)))
+
+(define-public python-factory-boy
+  (package
+    (name "python-factory-boy")
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "factory_boy" version))
+       (sha256
+        (base32 "1fvin6san5xsjh2c4y18caj2lnmwxlylyqm8mh1yc6rp38wlwr56"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests are not included in the tarball.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("faker" ,python-faker)))
+    (home-page "https://github.com/benhoyt/scandir")
+    (synopsis "Versatile test fixtures replacement")
+    (description
+     "Factory_boy is a fixtures replacement based on thoughtbot’s factory_girl.
+
+As a fixtures replacement tool, it aims to replace static, hard to maintain
+fixtures with easy-to-use factories for complex object.
+
+Instead of building an exhaustive test setup with every possible combination
+of corner cases, factory_boy allows you to use objects customized for the
+current test, while only declaring the test-specific fields")
+    (license license:expat)))
+
+(define-public python2-factory-boy
+  (package-with-python2 python-factory-boy))
+
+(define-public python-translate-toolkit
+  (package
+    (name "python-translate-toolkit")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "translate-toolkit" version ".tar.bz2"))
+       (sha256
+        (base32 "1vlkwrg83vb17jc36pmwh2b7jphwf390lz0jw8hakcg16qhwypvq"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-chardet" ,python-chardet)
+       ("python-diff-match-patch" ,python-diff-match-patch)
+       ("python-levenshtein" ,python-levenshtein)
+       ("python-lxml" ,python-lxml)
+       ("python-six" ,python-six)
+       ("python-vobject" ,python-vobject)
+       ("python-pyyaml" ,python-pyyaml)))
+    (arguments
+     ;; TODO: tests are not run, because they end with
+     ;; TypeError: parse() missing 2 required positional arguments: 'tree' and
+     ;; 'parse_funcs'
+     ;; during test setup.
+     `(#:tests? #f))
+    (home-page "http://toolkit.translatehouse.org")
+    (synopsis "Tools and API for translation and localization engineering")
+    (description
+     "Tools and API for translation and localization engineering.  It contains
+several utilities, as well as an API for building localization tools.")
+    (license license:gpl2+)))
+
+(define-public python2-translate-toolkit
+  (package-with-python2 python-translate-toolkit))
+
+(define-public python-mysqlclient
+  (package
+    (name "python-mysqlclient")
+    (version "1.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mysqlclient" version))
+       (sha256
+        (base32
+         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("mariadb" ,mariadb)
+       ("nose" ,python-nose)
+       ("mock" ,python-mock)
+       ("py.test" ,python-pytest)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("libz" ,zlib)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/PyMySQL/mysqlclient-python")
+    (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
+    (description "MySQLdb is an interface to the popular MySQL database server
+for Python.  The design goals are:
+@enumerate
+@item Compliance with Python database API version 2.0 [PEP-0249],
+@item Thread-safety,
+@item Thread-friendliness (threads will not block each other).
+@end enumerate")
+    (license license:gpl2)))
+
+(define-public python2-mysqlclient
+  (package-with-python2 python-mysqlclient))
+
+(define-public python-hiredis
+  (package
+    (name "python-hiredis")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hiredis" version))
+       (sha256
+        (base32
+         "1dfm2k9l9zar9nw9fwmm74zrgraxdxs04vx9li56fjcf289qx5fa"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/redis/hiredis-py")
+    (synopsis "Python extension that wraps protocol parsing code in hiredis")
+    (description "Python-hiredis is a python extension that wraps protocol
+parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies.")
+    (license license:bsd-3)))
+
+(define-public python2-hiredis
+  (package-with-python2 python-hiredis))
+
+(define-public python-fakeredis
+  (package
+    (name "python-fakeredis")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fakeredis" version))
+       (sha256
+        (base32
+         "0zncahj3byyasyfx9i7k991ph0n0lq8v3a21pqri5qxn9564bk9r"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/jamesls/fakeredis")
+    (synopsis "Fake implementation of redis API for testing purposes")
+    (description "Fakeredis is a pure python implementation of the redis-py
+python client that simulates talking to a redis server.  This was created for a
+single purpose: to write unittests.  Setting up redis is not hard, but many time
+ you want to write unittests that do not talk to an external server (such as
+redis).  This module now allows tests to simply use this module as a reasonable
+substitute for redis.")
+    (license license:bsd-3)))
+
+(define-public python2-fakeredis
+  (package-with-python2 python-fakeredis))

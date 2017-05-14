@@ -252,7 +252,7 @@ curses widgets, such as dialog boxes.")
     (description
      "@code{Curses} is the interface between Perl and the curses library
 of your system.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public stfl
   (package

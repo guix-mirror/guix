@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -49,6 +51,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages qt)
   #:use-module (srfi srfi-26))
 
 (define-public tilda
@@ -433,3 +436,110 @@ its embedding program should provide it to draw on its behalf.  It avoids
 calling @code{malloc} during normal running state, allowing it to be used in
 embedded kernel situations.")
     (license license:expat)))
+
+(define-public cool-retro-term
+  (let ((commit "e48719fa44e5307df71dbd0fad234f8a6a53f863")
+        (revision "1"))
+    (package
+      (name "cool-retro-term")
+      (version (string-append "1.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (file-name (string-append name "-" version "-checkout"))
+                (uri (git-reference
+                      (url (string-append "https://github.com/Swordfish90/" name))
+                      (commit commit)
+                      (recursive? #t)))
+                (sha256
+                 (base32 "1sgqbirninkvgwchr35zgn5vzqvsmrf3cp7lqady1xgrawb8lsz3"))
+                (patches
+                 (search-patches "cool-retro-term-remove-non-free-fonts.patch"
+                                 "cool-retro-term-fix-array-size.patch"
+                                 "cool-retro-term-dont-check-uninit-member.patch"
+                                 "cool-retro-term-memory-leak-1.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(for-each (lambda (font)
+                              (delete-file-recursively
+                               (string-append "app/qml/fonts/" font))
+                              (substitute* '("app/qml/resources.qrc")
+                                (((string-append "<file>fonts/" font ".*"))
+                                 "")))
+                            '(;"1971-ibm-3278"     ; BSD 3-clause
+                              "1977-apple2"        ; Non-Free
+                              "1977-commodore-pet" ; Non-Free
+                              "1979-atari-400-800" ; Non-Free
+                              "1982-commodore64"   ; Non-Free
+                              "1985-atari-st"      ; ?
+                              "1985-ibm-pc-vga"    ; Unclear
+                              ;"modern-fixedsys-excelsior" ; Redistributable
+                              ;"modern-hermit"     ; SIL
+                              ;"modern-inconsolata"; SIL
+                              ;"modern-pro-font-win-tweaked" ; X11
+                              ;"modern-proggy-tiny"; X11
+                              ;"modern-terminus"   ; SIL
+                              "modern-monaco"))))) ; Apple non-free
+      (build-system gnu-build-system)
+      (inputs
+       `(("qtbase" ,qtbase)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtgraphicaleffects" ,qtgraphicaleffects)
+         ("qtquickcontrols" ,qtquickcontrols)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (share (string-append out "/share")))
+                 (substitute* '("qmltermwidget/qmltermwidget.pro")
+                   (("INSTALL_DIR = \\$\\$\\[QT_INSTALL_QML\\]")
+                    (string-append "INSTALL_DIR = " out "/qml")))
+                 (substitute* '("app/app.pro")
+                   (("target.path \\+= /usr")
+                    (string-append "target.path += " out))
+                   (("icon32.path = /usr/share")
+                    (string-append "icon32.path = " share))
+                   (("icon64.path = /usr/share")
+                    (string-append "icon64.path = " share))
+                   (("icon128.path = /usr/share")
+                    (string-append "icon128.path = " share))
+                   (("icon256.path = /usr/share")
+                    (string-append "icon256.path = " share)))
+                 (zero? (system* "qmake")))))
+           (add-before 'install 'fix-Makefiles
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (substitute* '("Makefile")
+                   (("\\$\\(INSTALL_ROOT\\)/usr") out)))))
+           (add-after 'install 'wrap-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (qml "/qml"))
+                 (wrap-program (string-append out "/bin/cool-retro-term")
+                   `("QML2_IMPORT_PATH" ":" prefix
+                     (,(string-append out qml)
+                      ,(string-append
+                        (assoc-ref inputs "qtdeclarative") qml)
+                      ,(string-append
+                        (assoc-ref inputs "qtgraphicaleffects") qml)
+                      ,(string-append
+                        (assoc-ref inputs "qtquickcontrols") qml)))))))
+           (add-after 'install 'add-alternate-name
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (symlink (string-append bin "/cool-retro-term")
+                          (string-append bin "/crt"))))))))
+      (synopsis "Terminal emulator")
+      (description
+       "Cool-retro-term (crt) is a terminal emulator which mimics the look and
+feel of the old cathode ray tube (CRT) screens.  It has been designed to be
+eye-candy, customizable, and reasonably lightweight.")
+      (home-page "https://github.com/Swordfish90/cool-retro-term")
+      (license (list
+                license:gpl2+           ; qmltermwidget
+                license:gpl3+           ; cool-retro-term
+                ;; Fonts
+                license:silofl1.1
+                license:x11
+                license:bsd-3)))))

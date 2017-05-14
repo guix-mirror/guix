@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
@@ -92,7 +92,8 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public emacs
   (package
@@ -890,14 +891,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.2")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
+                "0dicgkl8l83n4cah5vk7c242abbwpyzlih451blgw37f3rijs480"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1125,13 +1126,6 @@ than @code{electric-indent-mode}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (emacs-substitute-variables "ag.el"
-               ("ag-executable"
-                (string-append (assoc-ref inputs "the-silver-searcher")
-                               "/bin/ag")))
-             #t))
          (add-before 'install 'make-info
            (lambda _
              (with-directory-excursion "docs"
@@ -1142,14 +1136,14 @@ than @code{electric-indent-mode}.")
                     (info (string-append out "/share/info")))
                (install-file "docs/_build/texinfo/agel.info" info)
                #t))))))
-    (inputs
-     `(("the-silver-searcher" ,the-silver-searcher)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
-       ("s" ,emacs-s)))
+       ("s" ,emacs-s)
+       ;; We need to use 'ag' as the executable on remote systems.
+       ("the-silver-searcher" ,the-silver-searcher)))
     (home-page "https://github.com/Wilfred/ag.el")
     (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
     (description "This package provides the ability to use the silver
@@ -1406,7 +1400,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1414,7 +1408,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1327zp140c7acckk0ajl88cgwr0lk9j3mb67nsq2janxrkwmj6br"))))
+                "0s7s90rfba8ccbilbvmbcwn4qp4m0jv9y58xq8avm39cygmjgyxz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1446,14 +1440,14 @@ type, for example: packages, buffers, files, etc.")
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,geiser)
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
        ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://github.com/alezost/guix.el")
+    (home-page "https://alezost.github.io/guix.el/")
     (synopsis "Emacs interface for GNU Guix")
     (description
      "Emacs-Guix provides a visual interface, tools and features for the GNU
@@ -2584,7 +2578,7 @@ dark background.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.9.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2593,7 +2587,7 @@ dark background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12065r7h1s9v8lnq5mk3654dkw4cq60ky8aniqq5n2ivv6qd2d4q"))))
+                "1nwsi6fbbxjq3r22r6knmx71la3g0lmwfb95i9q4k138gn0m2l3i"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
@@ -2882,6 +2876,16 @@ S-expression.")
                (base32
                 "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner")))))))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
@@ -3495,6 +3499,7 @@ extensions.")
        (method url-fetch)
        ;; There is no versioned source.
        (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
+       (file-name (string-append "goto-chg-" version ".el"))
        (sha256
         (base32
          "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
@@ -3574,14 +3579,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170210")
+    (version "20170502")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "15415wh3w8d4c8hd7qfrfdjnjb1zppmrkg8cdp7hw2ilyr90c0bn"))))
+                "12inz804j55ycprb2m3ay54d1bhwhjssmn5nrfm7cfklyhfsy27s"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4519,3 +4524,246 @@ It should enable you to implement low-level X11 applications.")
     (description "EXWM is a full-featured tiling X window manager for Emacs
 built on top of XELB.")
     (license license:gpl3+)))
+
+(define-public emacs-gnuplot
+  (package
+    (name "emacs-gnuplot")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/bruceravel/gnuplot-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0glzymrn138lwig7p4cj17x4if5jisr6l4g6wcbxisqkqgc1h01i"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (arguments
+     (let ((elisp-dir (string-append "/share/emacs/site-lisp/guix.d"
+                                     "/gnuplot-" version)))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "EMACS=" (assoc-ref %build-inputs "emacs")
+                              "/bin/emacs")
+               (string-append "--with-lispdir=" %output ,elisp-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'generate-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-generate-autoloads
+                "gnuplot"
+                (string-append (assoc-ref outputs "out") ,elisp-dir))
+               #t))))))
+    (home-page "https://github.com/bruceravel/gnuplot-mode")
+    (synopsis "Emacs major mode for interacting with gnuplot")
+    (description "@code{emacs-gnuplot} is an emacs major mode for interacting
+with gnuplot.")
+    (license license:gpl2+)))
+
+(define-public emacs-transpose-frame
+  (package
+    (name "emacs-transpose-frame")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (file-name (string-append "transpose-frame-" version ".el"))
+       (sha256
+        (base32
+         "1f67yksgw9s6j0033hmqzaxx2a93jm11sd5ys7cc3li5gfh680m4"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/TransposeFrame")
+    (synopsis "Transpose window arrangement in current frame")
+    (description "@code{emacs-transpose-frame} provides some interactive
+functions which allows users to transpose windows arrangement in currently
+selected frame.")
+    (license license:bsd-2)))
+
+(define-public emacs-key-chord
+  (package
+    (name "emacs-key-chord")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/key-chord.el")
+       (file-name (string-append "key-chord-" version ".el"))
+       (sha256
+        (base32
+         "03m44pqggfrd53nh9dvpdjgm0rvca34qxmd30hr33hzprzjambxg"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/key-chord.el")
+    (synopsis "Map pairs of simultaneously pressed keys to Emacs commands")
+    (description "@code{emacs-key-chord} provides @code{key-chord-mode}, a
+mode for binding key chords to commands.  A key chord is defined as two keys
+pressed simultaneously or a single key quickly pressed twice.")
+    (license license:gpl2+)))
+
+(define-public emacs-evil-surround
+  (package
+    (name "emacs-evil-surround")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/timcharper/evil-surround/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p572jgic3q1ia1nz37kclir729ay6i2f4sa7wnaapyxly2lwb3r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/timcharper/evil-surround")
+    (synopsis "Easily modify surrounding parantheses and quotes")
+    (description "@code{emacs-evil-surround} allows easy deletion, change and
+addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-commentary
+  (package
+    (name "emacs-evil-commentary")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linktohack/evil-commentary/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdya0i921nwskwrzdsj0vrr3m7gm49dy6f6pk9p5nxaarfxk230"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/linktohack/evil-commentary")
+    (synopsis "Comment out code in evil mode")
+    (description "@code{emacs-evil-commentary} adds keybindings to easily
+comment out lines of code in evil mode.  It provides @code{gcc} to comment out
+lines, and @code{gc} to comment out the target of a motion.")
+    (license license:gpl3+)))
+
+;; Tests for emacs-ansi have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-ansi
+  (package
+    (name "emacs-ansi")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/ansi.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13jj4vbi98j3p17hs99bmy7g21jd5h4v3wpxk4pkvhylm3bfwjw8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/ansi.el")
+    (synopsis "Convert strings to ANSI")
+    (description "@code{emacs-ansi} defines functions that turns simple
+strings to ANSI strings.  Turning a string into an ANSI string can be to add
+color to a text, add color in the background of a text or adding a style, such
+as bold, underscore or italic.")
+    (license license:gpl3+)))
+
+;; Tests for emacs-commander have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-commander
+  (package
+    (name "emacs-commander")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/commander.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "196s2i15z7gwxa97l1wkxvjnfmj5n38wwm6d3g4zz15l2vqggc2y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/commander.el")
+    (synopsis "Emacs command line parser")
+    (description "@code{emacs-commander} provides command line parsing for
+Emacs.")
+    (license license:gpl3+)))
+
+;; Tests for ert-runner have a circular dependency with ecukes, and therefore
+;; cannot be run
+(define-public ert-runner
+  (let ((dependencies
+         `(("emacs-ansi" ,emacs-ansi)
+           ("emacs-commander" ,emacs-commander)
+           ("emacs-dash" ,emacs-dash)
+           ("emacs-f" ,emacs-f)
+           ("emacs-s" ,emacs-s)
+           ("emacs-shut-up" ,emacs-shut-up))))
+    (package
+      (name "ert-runner")
+      (version "0.7.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
+                             version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
+      (build-system emacs-build-system)
+      (inputs dependencies)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "bin/ert-runner"
+                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+                    (string-append "ERT_RUNNER=\"" out
+                                   "/share/emacs/site-lisp/guix.d/"
+                                   ,name "-" ,version)))
+                 (install-file "bin/ert-runner" (string-append out "/bin"))
+                 (wrap-program (string-append out "/bin/ert-runner")
+                   (list "EMACSLOADPATH" ":" '=
+                         (append
+                          ,(match dependencies
+                             (((labels packages) ...)
+                              `(map (lambda (label package version)
+                                      (string-append (assoc-ref inputs label)
+                                                     "/share/emacs/site-lisp/guix.d/"
+                                                     (string-drop package 6)
+                                                     "-" version))
+                                    ',labels
+                                    ',(map package-name packages)
+                                    ',(map package-version packages))))
+                          ;; empty element to include the default load path as
+                          ;; determined by emacs' standard initialization
+                          ;; procedure
+                          (list ""))))
+                 #t))))))
+      (home-page "https://github.com/rejeep/ert-runner.el")
+      (synopsis "Opinionated Ert testing workflow")
+      (description "@code{ert-runner} is a tool for Emacs projects tested
+using ERT.  It assumes a certain test structure setup and can therefore make
+running tests easier.")
+      (license license:gpl3+))))

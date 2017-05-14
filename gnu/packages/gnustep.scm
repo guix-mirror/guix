@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +23,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages libffcall)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages texinfo)
@@ -31,7 +33,33 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml))
+
+(define-public gnustep-make
+  (package
+    (name "gnustep-make")
+    (version "2.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.gnustep.org/pub/gnustep/core/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1khiygfkz0zhh9b5nybn40g0xnnjxchk24n49hff1bwanszir84h"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f)) ; no check target
+    (native-inputs
+     `(("which" ,which)))
+    (home-page "http://gnustep.org")
+    (synopsis "GNUstep make package")
+    (description "The makefile package is a simple, powerful and extensible way
+to write makefiles for a GNUstep-based project.  It allows the user to write a
+project without having to deal with the complex issues associated with
+configuration, building, installation, and packaging.  It also allows the user
+to easily create cross-compiled binaries.")
+    (license gpl3+)))
 
 (define-public windowmaker
   (package

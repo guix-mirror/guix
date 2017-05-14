@@ -727,8 +727,7 @@ definitions and structure manipulators for Perl.")
         (base32
           "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
       (patches
-        (search-patches
-          "perl-net-dns-resolver-programmable-Fix-broken-interface.patch"))))
+       (search-patches "perl-net-dns-resolver-programmable-fix.patch"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))
@@ -739,7 +738,7 @@ definitions and structure manipulators for Perl.")
     "Programmable DNS resolver class for offline emulation of DNS")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
 offline emulation of DNS.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-netaddr-ip
  (package
@@ -772,7 +771,7 @@ offline emulation of DNS.")
   (synopsis
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-net-patricia
  (package
@@ -846,7 +845,7 @@ offline emulation of DNS.")
     "Look up location and network information by IP Address in Perl")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
 information by IP Address.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-io-socket-inet6
  (package
@@ -876,7 +875,7 @@ information by IP Address.")
     "Perl object interface for AF_INET/AF_INET6 domain sockets")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public proxychains-ng
   (package
@@ -1143,7 +1142,7 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -1152,7 +1151,7 @@ networks.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y1888492kl21dz69vd526189c5aal3q790jawdb2wph42cz0cq8"))))
+         "1alambi1ljng6j04k7pq58jqwd0wh1q9630f17nl34ljabji5lwy"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")

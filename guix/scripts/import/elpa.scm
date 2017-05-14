@@ -38,13 +38,13 @@
   '((repo . gnu)))
 
 (define (show-help)
-  (display (_ "Usage: guix import elpa PACKAGE-NAME
+  (display (G_ "Usage: guix import elpa PACKAGE-NAME
 Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
-  (display (_ "
+  (display (G_ "
   -a, --archive=ARCHIVE          specify the archive repository"))
-  (display (_ "
+  (display (G_ "
   -h, --help                     display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version                  display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -74,7 +74,7 @@ Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -89,11 +89,11 @@ Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
       ((package-name)
        (let ((sexp (elpa->guix-package package-name (assoc-ref opts 'repo))))
          (unless sexp
-           (leave (_ "failed to download package '~a'~%") package-name))
+           (leave (G_ "failed to download package '~a'~%") package-name))
          sexp))
       (()
-       (leave (_ "too few arguments~%")))
+       (leave (G_ "too few arguments~%")))
       ((many ...)
-       (leave (_ "too many arguments~%"))))))
+       (leave (G_ "too many arguments~%"))))))
 
 ;;; elpa.scm ends here

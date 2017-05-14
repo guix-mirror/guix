@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (guix utils)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -251,6 +252,44 @@ Desktops into Active Directory environments using the winbind daemon.")
      "Talloc is a hierarchical, reference counted memory pool system with
 destructors.  It is the core memory allocator used in Samba.")
     (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
+
+(define-public talloc/static
+  (package
+    (inherit talloc)
+    (name "talloc-static")
+    (synopsis
+     "Hierarchical, reference counted memory pool system (static library)")
+    (arguments
+     (substitute-keyword-arguments (package-arguments talloc)
+       ((#:phases phases)
+        ;; Since Waf, the build system talloc uses, apparently does not
+        ;; support building static libraries from a ./configure flag, roll our
+        ;; own build process.  No need to be ashamed, we're not the only ones
+        ;; doing that:
+        ;; <https://github.com/proot-me/proot-static-build/blob/master/GNUmakefile>.
+        ;; :-)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda _
+               (letrec-syntax ((shell (syntax-rules ()
+                                        ((_ (command ...) rest ...)
+                                         (and (zero? (system* command ...))
+                                              (shell rest ...)))
+                                        ((_)
+                                         #t))))
+                 (shell ("gcc" "-c" "-Ibin/default" "-I" "lib/replace"
+                         "-I." "-Wall" "-g" "talloc.c")
+                        ("ar" "rc" "libtalloc.a" "talloc.o")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out     (assoc-ref outputs "out"))
+                      (lib     (string-append out "/lib"))
+                      (include (string-append out "/include")))
+                 (mkdir-p lib)
+                 (install-file "libtalloc.a" lib)
+                 (install-file "talloc.h" include)
+                 #t)))
+           (delete 'check)))))))            ;XXX: tests rely on Python modules
 
 (define-public tevent
   (package

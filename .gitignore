@@ -6,6 +6,8 @@
 *.tar.xz
 *.tmp
 *~
+.#*
+\#*\#
 ,*
 /ABOUT-NLS
 /INSTALL
@@ -31,6 +33,7 @@
 /doc/guix.cps
 /doc/guix.fn
 /doc/guix.fns
+/doc/guix.html
 /doc/guix.info
 /doc/guix.info-[0-9]
 /doc/guix.ky
@@ -125,3 +128,4 @@ tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
 /etc/indent-code.el
+/.version

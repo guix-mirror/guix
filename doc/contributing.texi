@@ -248,7 +248,10 @@ please do read it.
 
 Some special forms introduced in Guix, such as the @code{substitute*}
 macro, have special indentation rules.  These are defined in the
-@file{.dir-locals.el} file, which Emacs automatically uses.
+@file{.dir-locals.el} file, which Emacs automatically uses.  Also note
+that Emacs-Guix provides @code{guix-devel-mode} mode that indents and
+highlights Guix code properly (@pxref{Development,,, emacs-guix, The
+Emacs-Guix Reference Manual}).
 
 @cindex indentation, of code
 @cindex formatting, of code
@@ -342,9 +345,30 @@ For important changes, check that dependent package (if applicable) are
 not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
-Packages with roughly 100 dependents or more usually have to be
-committed to a separate branch.  That branch can then be built
-separately by our build farm, and later merged into @code{master} once
+@c See <https://lists.gnu.org/archive/html/guix-devel/2016-10/msg00933.html>.
+@cindex branching strategy
+@cindex rebuild scheduling strategy
+Depending on the number of dependent packages and thus the amount of
+rebuilding induced, commits go to different branches, along these lines:
+
+@table @asis
+@item 300 dependent packages or less
+@code{master} branch (non-disruptive changes).
+
+@item between 300 and 1,200 dependent packages
+@code{staging} branch (non-disruptive changes).  This branch is intended
+to be merged in @code{master} every 3 weeks or so.  Topical changes
+(e.g., an update of the GNOME stack) can instead go to a specific branch
+(say, @code{gnome-updates}).
+
+@item more than 1,200 dependent packages
+@code{core-updates} branch (may include major and potentially disruptive
+changes).  This branch is intended to be merged in @code{master} every
+2.5 months or so.
+@end table
+
+All these branches are tracked by our build farm
+and merged into @code{master} once
 everything has been successfully built.  This allows us to fix issues
 before they hit users, and to reduce the window during which pre-built
 binaries are not available.

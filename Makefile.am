@@ -28,6 +28,10 @@ nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
 
+# Modules that are not compiled but are installed nonetheless, such as
+# build-side modules with unusual dependencies.
+MODULES_NOT_COMPILED =
+
 include gnu/local.mk
 
 MODULES =					\
@@ -46,6 +50,7 @@ MODULES =					\
   guix/sets.scm					\
   guix/modules.scm				\
   guix/download.scm				\
+  guix/discovery.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/monads.scm				\
@@ -119,6 +124,7 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
+  guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
   guix/build/graft.scm				\
   guix/build/bournish.scm			\
@@ -205,8 +211,8 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.10-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.10-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.11-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.11-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.9-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
@@ -222,8 +228,8 @@ EXAMPLES =					\
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
-nobase_dist_guilemodule_DATA =                  \
-  $(MODULES) $(AUX_FILES) $(EXAMPLES)            \
+nobase_dist_guilemodule_DATA =					\
+  $(MODULES) $(MODULES_NOT_COMPILED) $(AUX_FILES) $(EXAMPLES)	\
   $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = guix/config.scm
 nobase_nodist_guileobject_DATA = $(GOBJECTS)
@@ -275,6 +281,7 @@ SCM_TESTS =					\
   tests/records.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\
+  tests/discovery.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
@@ -379,14 +386,16 @@ check-local:
 
 endif !CAN_RUN_TESTS
 
-check-system: $(GOBJECTS)
+check-system: $(GOBJECTS) $(BOOTSTRAP_GUILE_TARBALLS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env			\
 	   $(GUILE) --no-auto-compile				\
 	   -e '(@@ (run-system-tests) run-system-tests)'	\
 	   $(top_srcdir)/build-aux/run-system-tests.scm
 
-# Public key used to sign substitutes from hydra.gnu.org.
-dist_pkgdata_DATA = hydra.gnu.org.pub
+# Public key used to sign substitutes from hydra.gnu.org & co.
+dist_pkgdata_DATA =				\
+  hydra.gnu.org.pub				\
+  bayfront.guixsd.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix
@@ -400,7 +409,6 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
-  gnu/build/svg.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
@@ -411,6 +419,7 @@ EXTRA_DIST =						\
   build-aux/download.scm				\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
+  build-aux/update-guix-package.scm			\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
@@ -487,34 +496,42 @@ endif BUILD_DAEMON
 ACLOCAL_AMFLAGS = -I m4
 
 # Pass an explicit '--localstatedir' so that configure does not error out if
-# it finds an existing installation with a different localstatedir.
+# it finds an existing installation with a different localstatedir.  Inherit
+# 'ac_cv_guix_test_root' so that "make check" in $(distdir) does not have to
+# repopulate the whole store, and to make sure $(GUIX_TEST_ROOT) is short
+# enough for shebangs.
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --localstatedir="$$dc_install_base/var"	\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
-  --enable-daemon
+  --enable-daemon				\
+  ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
 # The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
 # so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
 guix-binary.%.tar.xz:
-	$(AM_V_GEN)GUIX_PACKAGE_PATH=				\
-	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz	\
-	  -s "$*" --localstatedir guix glibc-utf8-locales	\
-	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;	\
+	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
+	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
+	  -s "$*" --localstatedir guix glibc-utf8-locales		\
+	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;		\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-dist-hook: sync-descriptions gen-ChangeLog gen-AUTHORS
+dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
-sync-descriptions:
-	$(AM_V_at)GUIX_PACKAGE_PATH= \
-	 $(top_builddir)/pre-inst-env guix lint --checkers=gnu-description
+EXTRA_DIST += $(top_srcdir)/.version
+BUILT_SOURCES += $(top_srcdir)/.version
+$(top_srcdir)/.version:
+	echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
 
-gen-ChangeLog:
+gen-tarball-version:
+	echo $(VERSION) > "$(distdir)/.tarball-version"
+
+gen-ChangeLog $(distdir)/ChangeLog:
 	$(AM_V_GEN)if test -d .git; then		\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
 	    > $(distdir)/cl-t;				\
@@ -530,8 +547,98 @@ gen-AUTHORS:
 	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
 	fi
 
+
+#
+# Release management.
+#
+
+releasedir = release-$(PACKAGE_VERSION)
+
+PACKAGE_FULL_TARNAME = $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)
+
+# List of source tarballs produced.  This must be kept in sync with the
+# 'dist-' options of 'AM_INIT_AUTOMAKE' in 'configure.ac'.
+SOURCE_TARBALLS =					\
+  $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
+
+# Systems supported by Guix.
+SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux
+
+# Guix binary tarballs.
+BINARY_TARBALLS =							\
+  $(foreach system,$(SUPPORTED_SYSTEMS),guix-binary.$(system).tar.xz)
+
+# Systems supported by GuixSD.
+GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
+
+# Prefix of the GuixSD installation image file name.
+GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
+
+# Size of the installation image (for x86_64 typically).
+GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
+
+# The release process works in several phases:
+#
+#   0. We assume the developer created a 'vX.Y' tag.
+#   1. Build the source tarball.
+#   2. Update the 'guix' package so that it corresponds to the 'vX.Y' tag.
+#   3. Build the binary tarballs for that 'guix' package.
+#   4. Update the 'guix' package again.
+#   5. Build the GuixSD installation images.  The images will run 'guix'
+#      corresponding to 'vX.Y' + 1 commit, and they will install 'vX.Y'.
+#
+# This 'release' target takes care of everything and copies the resulting
+# files to $(releasedir).
+release: distcheck
+	cd po; git checkout .
+	@if ! git diff-index --quiet HEAD; then			\
+	  echo "There are uncommitted changes; stopping." >&2 ;	\
+	  exit 1 ;						\
+	fi
+	$(MKDIR_P) "$(releasedir)"
+	rm -f "$(releasedir)"/*
+	mv $(SOURCE_TARBALLS) "$(releasedir)"
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
+	git add $(top_srcdir)/gnu/packages/package-management.scm
+	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
+	rm -f $(BINARY_TARBALLS)
+	$(MAKE) $(BINARY_TARBALLS)
+	for system in $(SUPPORTED_SYSTEMS) ; do					\
+	  mv "guix-binary.$$system.tar.xz"					\
+	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
+	done
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`"
+	git add $(top_srcdir)/gnu/packages/package-management.scm
+	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
+	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
+	  image=`$(top_builddir)/pre-inst-env						\
+	    guix system disk-image							\
+	    --image-size=$(GUIXSD_INSTALLATION_IMAGE_SIZE)				\
+	    gnu/system/install.scm` ;							\
+	  if [ ! -f "$$image" ] ; then							\
+	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
+	    exit 1 ;									\
+	  fi ;										\
+	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
+	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
+	done
+	@echo
+	@echo "Congratulations!  All the release files are now in $(releasedir)."
+	@echo
+
+update-guix-package:
+	git rev-parse HEAD
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	   $(top_srcdir)/build-aux/update-guix-package.scm	\
+	   "`git rev-parse HEAD`"
+
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
-assert-no-store-file-names:
+assert-no-store-file-names: $(distdir)/ChangeLog
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
@@ -561,9 +668,11 @@ hydra-jobs.scm: $(GOBJECTS)
 	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
 	$(AM_V_at)mv "$@.tmp" "$@"
 
-.PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
+.PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
+.PHONY: clean-go make-go
+.PHONY: update-guix-package release
 
 ## -------------- ##
 ## Silent rules.  ##

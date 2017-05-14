@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -287,14 +289,16 @@ designs.")
 (define-public ant
   (package
     (name "ant")
-    (version "1.9.6")
+    ;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x
+    ;; series requires Java 8.
+    (version "1.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1396wflczyxjxl603dhxjvd559f289lha9y2f04f71c7hapjl3am"))))
+                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -1080,7 +1084,11 @@ an Ant task that extends the built-in @code{jar} task.")
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; Tests require junit
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:make-flags (list (string-append "-Dversion=" ,version))
+       #:test-target "unit-test"
        #:build-target "core"
        #:phases
        (modify-phases %standard-phases
@@ -1131,10 +1139,23 @@ private Method[] allMethods = getSortedMethods();")))))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (install-file (string-append "build/hamcrest-core-"
-                                          ,version ".jar")
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/java")))))))
+             (let* ((target (string-append (assoc-ref outputs "out")
+                                           "/share/java/"))
+                    (version-suffix ,(string-append "-" version ".jar"))
+                    (install-without-version-suffix
+                     (lambda (jar)
+                       (copy-file jar
+                                  (string-append target
+                                                 (basename jar version-suffix)
+                                                 ".jar")))))
+               (mkdir-p target)
+               (for-each
+                install-without-version-suffix
+                (find-files "build"
+                            (lambda (name _)
+                              (and (string-suffix? ".jar" name)
+                                   (not (string-suffix? "-sources.jar" name)))))))
+             #t)))))
     (native-inputs
      `(("java-qdox-1.12" ,java-qdox-1.12)
        ("java-jarjar" ,java-jarjar)))
@@ -1178,3 +1199,1341 @@ testing frameworks, mocking libraries and UI validation rules.")
 JUnit provides assertions for testing expected results, test fixtures for
 sharing common test data, and test runners for running tests.")
     (license license:epl1.0)))
+
+(define-public java-plexus-utils
+  (package
+    (name "java-plexus-utils")
+    (version "3.0.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-utils/archive/plexus-utils-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1mlwpc6fms24slygv5yvi6fi9hcha2fh0v73p5znpi78bg36i2js"))))
+    (build-system ant-build-system)
+    ;; FIXME: The default build.xml does not include a target to install
+    ;; javadoc files.
+    (arguments
+     `(#:jar-name "plexus-utils.jar"
+       #:source-dir "src/main"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-/bin-and-/usr
+           (lambda _
+             (substitute* "src/main/java/org/codehaus/plexus/util/\
+cli/shell/BourneShell.java"
+               (("/bin/sh") (which "sh"))
+               (("/usr/")   (getcwd)))
+             #t))
+         (add-after 'unpack 'fix-or-disable-broken-tests
+           (lambda _
+             (with-directory-excursion "src/test/java/org/codehaus/plexus/util"
+               (substitute* '("cli/CommandlineTest.java"
+                              "cli/shell/BourneShellTest.java")
+                 (("/bin/sh")   (which "sh"))
+                 (("/bin/echo") (which "echo")))
+
+               ;; This test depends on MavenProjectStub, but we don't have
+               ;; a package for Maven.
+               (delete-file "introspection/ReflectionValueExtractorTest.java")
+
+               ;; FIXME: The command line tests fail, maybe because they use
+               ;; absolute paths.
+               (delete-file "cli/CommandlineTest.java"))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://codehaus-plexus.github.io/plexus-utils/")
+    (synopsis "Common utilities for the Plexus framework")
+    (description "This package provides various Java utility classes for the
+Plexus framework to ease working with strings, files, command lines, XML and
+more.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-interpolation
+  (package
+    (name "java-plexus-interpolation")
+    (version "1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-interpolation/archive/"
+                                  "plexus-interpolation-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w79ljwk42ymrgy8kqxq4l82pgdj6287gabpfnpkyzbrnclsnfrp"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-interpolation.jar"
+       #:source-dir "src/main"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://codehaus-plexus.github.io/plexus-interpolation/")
+    (synopsis "Java components for interpolating ${} strings and the like")
+    (description "Plexus interpolator is a modular, flexible interpolation
+framework for the expression language style commonly seen in Maven, Plexus,
+and other related projects.
+
+It has its foundation in the @code{org.codehaus.plexus.utils.interpolation}
+package within @code{plexus-utils}, but has been separated in order to allow
+these two libraries to vary independently of one another.")
+    (license license:asl2.0)))
+
+(define-public java-asm
+  (package
+    (name "java-asm")
+    (version "5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.forge.ow2.org/asm/"
+                                  "asm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kxvmv5275rnjl7jv0442k3wjnq03ngkb7sghs78avf45pzm4qgr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "compile"
+       ;; The tests require an old version of Janino, which no longer compiles
+       ;; with the JDK7.
+       #:tests? #f
+       ;; We don't need these extra ant tasks, but the build system asks us to
+       ;; provide a path anyway.
+       #:make-flags (list (string-append "-Dobjectweb.ant.tasks.path=foo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-jars
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; We cannot use the "jar" target because it depends on a couple
+             ;; of unpackaged, complicated tools.
+             (mkdir "dist")
+             (zero? (system* "jar"
+                             "-cf" (string-append "dist/asm-" ,version ".jar")
+                             "-C" "output/build/tmp" "."))))
+         (replace 'install
+           (install-jars "dist")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://asm.ow2.org/")
+    (synopsis "Very small and fast Java bytecode manipulation framework")
+    (description "ASM is an all purpose Java bytecode manipulation and
+analysis framework.  It can be used to modify existing classes or dynamically
+generate classes, directly in binary form.  The provided common
+transformations and analysis algorithms allow to easily assemble custom
+complex transformations and code analysis tools.")
+    (license license:bsd-3)))
+
+(define-public java-cglib
+  (package
+    (name "java-cglib")
+    (version "3.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cglib/cglib/archive/RELEASE_"
+                    (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
+                    ".tar.gz"))
+              (file-name (string-append "cglib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "162dvd4fln76ai8prfharf66pn6r56p3sxx683j5vdyccrd5hi1q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; FIXME: tests fail because junit runs
+       ;; "net.sf.cglib.transform.AbstractTransformTest", which does not seem
+       ;; to describe a test at all.
+       #:tests? #f
+       #:jar-name "cglib.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "cglib") #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-junit" ,java-junit)))
+    (home-page "https://github.com/cglib/cglib/")
+    (synopsis "Java byte code generation library")
+    (description "The byte code generation library CGLIB is a high level API
+to generate and transform Java byte code.")
+    (license license:asl2.0)))
+
+(define-public java-objenesis
+  (package
+    (name "java-objenesis")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/easymock/objenesis/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "objenesis-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1va5qz1i2wawwavhnxfzxnfgrcaflz9p1pg03irrjh4nd3rz8wh6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "objenesis.jar"
+       #:source-dir "main/src/"
+       #:test-dir "main/src/test/"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://objenesis.org/")
+    (synopsis "Bypass the constructor when creating an object")
+    (description "Objenesis is a small Java library that serves one purpose:
+to instantiate a new object of a particular class.  It is common to see
+restrictions in libraries stating that classes must require a default
+constructor.  Objenesis aims to overcome these restrictions by bypassing the
+constructor on object instantiation.")
+    (license license:asl2.0)))
+
+(define-public java-easymock
+  (package
+    (name "java-easymock")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/easymock/easymock/"
+                                  "archive/easymock-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yzg0kv256ndr57gpav46cyv4a1ns5sj722l50zpxk3j6sk9hnmi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "easymock.jar"
+       #:source-dir "core/src/main"
+       #:test-dir "core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: Android support requires the following packages to be
+         ;; available: com.google.dexmaker.stock.ProxyBuilder
+         (add-after 'unpack 'delete-android-support
+           (lambda _
+             (with-directory-excursion "core/src/main/java/org/easymock/internal"
+               (substitute* "MocksControl.java"
+                 (("AndroidSupport.isAndroid\\(\\)") "false")
+                 (("return classProxyFactory = new AndroidClassProxyFactory\\(\\);") ""))
+               (delete-file "AndroidClassProxyFactory.java"))
+             #t))
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             (with-directory-excursion "core/src/test/java/org/easymock"
+               ;; This test depends on dexmaker.
+               (delete-file "tests2/ClassExtensionHelperTest.java")
+
+               ;; This is not a test.
+               (delete-file "tests/BaseEasyMockRunnerTest.java")
+
+               ;; This test should be executed with a different runner...
+               (delete-file "tests2/EasyMockAnnotationsTest.java")
+               ;; ...but deleting it means that we also have to delete these
+               ;; dependent files.
+               (delete-file "tests2/EasyMockRunnerTest.java")
+               (delete-file "tests2/EasyMockRuleTest.java")
+
+               ;; This test fails because the file "easymock.properties" does
+               ;; not exist.
+               (delete-file "tests2/EasyMockPropertiesTest.java"))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)
+       ("java-objenesis" ,java-objenesis)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://easymock.org")
+    (synopsis "Java library providing mock objects for unit tests")
+    (description "EasyMock is a Java library that provides an easy way to use
+mock objects in unit testing.")
+    (license license:asl2.0)))
+
+(define-public java-jmock-1
+  (package
+    (name "java-jmock")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jmock-developers/"
+                                  "jmock-library/archive/" version ".tar.gz"))
+              (file-name (string-append "jmock-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xmrlhq0fszldkbv281k9463mv496143vvmqwpxp62yzjvdkx9w0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jars"
+       #:test-target "run.tests"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "build")))))
+    (home-page "http://www.jmock.org")
+    (synopsis "Mock object library for test-driven development")
+    (description "JMock is a library that supports test-driven development of
+Java code with mock objects.  Mock objects help you design and test the
+interactions between the objects in your programs.
+
+The jMock library
+
+@itemize
+@item makes it quick and easy to define mock objects
+@item lets you precisely specify the interactions between
+  your objects, reducing the brittleness of your tests
+@item plugs into your favourite test framework
+@item is easy to extend.
+@end itemize\n")
+    (license license:bsd-3)))
+
+(define-public java-hamcrest-all
+  (package (inherit java-hamcrest-core)
+    (name "java-hamcrest-all")
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-hamcrest-core)
+       ;; FIXME: a unit test fails because org.hamcrest.SelfDescribing is not
+       ;; found, although it is part of the hamcrest-core library that has
+       ;; just been built.
+       ;;
+       ;; Fixing this one test is insufficient, though, and upstream confirmed
+       ;; that the latest hamcrest release fails its unit tests when built
+       ;; with Java 7.  See https://github.com/hamcrest/JavaHamcrest/issues/30
+       ((#:tests? _) #f)
+       ((#:build-target _) "bigjar")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Some build targets override the classpath, so we need to patch
+           ;; the build.xml to ensure that required dependencies are on the
+           ;; classpath.
+           (add-after 'unpack 'patch-classpath-for-integration
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "build.xml"
+                 ((" build/hamcrest-library-\\$\\{version\\}.jar" line)
+                  (string-join
+                   (cons line
+                         (append
+                          (find-files (assoc-ref inputs "java-hamcrest-core") "\\.jar$")
+                          (find-files (assoc-ref inputs "java-junit") "\\.jar$")
+                          (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
+                          (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
+                   ";")))
+               #t))))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-jmock" ,java-jmock-1)
+       ("java-easymock" ,java-easymock)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ,@(package-inputs java-hamcrest-core)))))
+
+(define-public java-jopt-simple
+  (package
+    (name "java-jopt-simple")
+    (version "5.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://repo1.maven.org/maven2/"
+                                  "net/sf/jopt-simple/jopt-simple/"
+                                  version "/jopt-simple-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1v8bzmwmw6qq20gm42xyay6vrd567dra4vqwhgjnqqjz1gs9f8qa"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:jar-name "jopt-simple.jar"))
+    (home-page "https://pholser.github.io/jopt-simple/")
+    (synopsis "Java library for parsing command line options")
+    (description "JOpt Simple is a Java library for parsing command line
+options, such as those you might pass to an invocation of @code{javac}.  In
+the interest of striving for simplicity, as closely as possible JOpt Simple
+attempts to honor the command line option syntaxes of POSIX @code{getopt} and
+GNU @code{getopt_long}.  It also aims to make option parser configuration and
+retrieval of options and their arguments simple and expressive, without being
+overly clever.")
+    (license license:expat)))
+
+(define-public java-commons-math3
+  (package
+    (name "java-commons-math3")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/math/source/"
+                                  "commons-math3-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "19l6yp44qc5g7wg816nbn5z3zq3xxzwimvbm4a8pczgvpi4i85s6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jar"
+       #:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; We want to build the jar in the build phase and run the tests
+         ;; later in a separate phase.
+         (add-after 'unpack 'untangle-targets
+           (lambda _
+             (substitute* "build.xml"
+               (("name=\"jar\" depends=\"test\"")
+                "name=\"jar\" depends=\"compile\""))
+             #t))
+         ;; There is no install target.
+         (replace 'install
+           (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/math/")
+    (synopsis "Apache Commons mathematics library")
+    (description "Commons Math is a library of lightweight, self-contained
+mathematics and statistics components addressing the most common problems not
+available in the Java programming language or Commons Lang.")
+    (license license:asl2.0)))
+
+(define-public java-jmh
+  (package
+    (name "java-jmh")
+    (version "1.17.5")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "http://hg.openjdk.java.net/code-tools/jmh/")
+                    (changeset version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1fxyxhg9famwcg1prc4cgwb5wzyxqavn3cjm5vz8605xz7x5k084"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jmh-core.jar"
+       #:source-dir "jmh-core/src/main"
+       #:test-dir "jmh-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This seems to be a bug in the JDK.  It may not be necessary in
+         ;; future versions of the JDK.
+         (add-after 'unpack 'fix-bug
+           (lambda _
+             (with-directory-excursion
+                 "jmh-core/src/main/java/org/openjdk/jmh/runner/options"
+               (substitute* '("IntegerValueConverter.java"
+                              "ThreadsValueConverter.java")
+                 (("public Class<Integer> valueType")
+                  "public Class<? extends Integer> valueType")))
+             #t)))))
+    (inputs
+     `(("java-jopt-simple" ,java-jopt-simple)
+       ("java-commons-math3" ,java-commons-math3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://openjdk.java.net/projects/code-tools/jmh/")
+    (synopsis "Benchmark harness for the JVM")
+    (description "JMH is a Java harness for building, running, and analysing
+nano/micro/milli/macro benchmarks written in Java and other languages
+targetting the JVM.")
+    ;; GPLv2 only
+    (license license:gpl2)))
+
+(define-public java-commons-collections4
+  (package
+    (name "java-commons-collections4")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/collections/source/"
+                                  "commons-collections4-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1krfhvggympq4avk7gh6qafzf6b9ip6r1m4lmacikyx04039m0wl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit"))
+             (easymock (assoc-ref %build-inputs "java-easymock")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")
+               (string-append "-Deasymock.jar=" easymock
+                              "/share/java/easymock.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-easymock" ,java-easymock)))
+    (home-page "http://commons.apache.org/collections/")
+    (synopsis "Collections framework")
+    (description "The Java Collections Framework is the recognised standard
+for collection handling in Java.  Commons-Collections seek to build upon the
+JDK classes by providing new interfaces, implementations and utilities.  There
+are many features, including:
+
+@itemize
+@item @code{Bag} interface for collections that have a number of copies of
+  each object
+@item @code{BidiMap} interface for maps that can be looked up from value to
+  key as well and key to value
+@item @code{MapIterator} interface to provide simple and quick iteration over
+  maps
+@item Transforming decorators that alter each object as it is added to the
+  collection
+@item Composite collections that make multiple collections look like one
+@item Ordered maps and sets that retain the order elements are added in,
+  including an LRU based map
+@item Reference map that allows keys and/or values to be garbage collected
+  under close control
+@item Many comparator implementations
+@item Many iterator implementations
+@item Adapter classes from array and enumerations to collections
+@item Utilities to test or create typical set-theory properties of collections
+  such as union, intersection, and closure.
+@end itemize\n")
+    (license license:asl2.0)))
+
+(define-public java-commons-io
+  (package
+    (name "java-commons-io")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/io/source/"
+                           "commons-io-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0q5y41jrcjvx9hzs47x5kdhnasdy6rm4bzqd2jxl02w717m7a7v3"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Djunit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/io/")
+    (synopsis "Common useful IO related classes")
+    (description "Commons-IO contains utility classes, stream implementations,
+file filters and endian classes.")
+    (license license:asl2.0)))
+
+(define-public java-commons-lang
+  (package
+    (name "java-commons-lang")
+    (version "2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/lang/source/"
+                           "commons-lang-" version "-src.tar.gz"))
+       (sha256
+        (base32 "1mxwagqadzx1b2al7i0z1v0r235aj2njdyijf02szq0vhmqrfiq5"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; Disable a failing test
+             (substitute* "src/test/java/org/apache/commons/lang/\
+time/FastDateFormatTest.java"
+               (("public void testFormat\\(\\)")
+                "public void disabled_testFormat()"))
+             #t))
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/lang/")
+    (synopsis "Extension of the java.lang package")
+    (description "The Commons Lang components contains a set of Java classes
+that provide helper methods for standard Java classes, especially those found
+in the @code{java.lang} package in the Sun JDK.  The following classes are
+included:
+
+@itemize
+@item StringUtils - Helper for @code{java.lang.String}.
+@item CharSetUtils - Methods for dealing with @code{CharSets}, which are sets
+  of characters such as @code{[a-z]} and @code{[abcdez]}.
+@item RandomStringUtils - Helper for creating randomised strings.
+@item NumberUtils - Helper for @code{java.lang.Number} and its subclasses.
+@item NumberRange - A range of numbers with an upper and lower bound.
+@item ObjectUtils - Helper for @code{java.lang.Object}.
+@item SerializationUtils - Helper for serializing objects.
+@item SystemUtils - Utility class defining the Java system properties.
+@item NestedException package - A sub-package for the creation of nested
+  exceptions.
+@item Enum package - A sub-package for the creation of enumerated types.
+@item Builder package - A sub-package for the creation of @code{equals},
+  @code{hashCode}, @code{compareTo} and @code{toString} methods.
+@end itemize\n")
+    (license license:asl2.0)))
+
+(define-public java-commons-lang3
+  (package
+    (name "java-commons-lang3")
+    (version "3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/lang/source/"
+                           "commons-lang3-" version "-src.tar.gz"))
+       (sha256
+        (base32 "0xpshb9spjhplq5a7mr0y1bgfw8190ik4xj8f569xidfcki1d6kg"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-all"))
+             (junit    (assoc-ref %build-inputs "java-junit"))
+             (easymock (assoc-ref %build-inputs "java-easymock"))
+             (io       (assoc-ref %build-inputs "java-commons-io")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-all.jar")
+               (string-append "-Dcommons-io.jar=" io
+                              "/share/java/commons-io-"
+                              ,(package-version java-commons-io)
+                              "-SNAPSHOT.jar")
+               (string-append "-Deasymock.jar=" easymock
+                              "/share/java/easymock.jar")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-commons-io" ,java-commons-io)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-easymock" ,java-easymock)))
+    (home-page "http://commons.apache.org/lang/")
+    (synopsis "Extension of the java.lang package")
+    (description "The Commons Lang components contains a set of Java classes
+that provide helper methods for standard Java classes, especially those found
+in the @code{java.lang} package.  The following classes are included:
+
+@itemize
+@item StringUtils - Helper for @code{java.lang.String}.
+@item CharSetUtils - Methods for dealing with @code{CharSets}, which are sets of
+  characters such as @code{[a-z]} and @code{[abcdez]}.
+@item RandomStringUtils - Helper for creating randomised strings.
+@item NumberUtils - Helper for @code{java.lang.Number} and its subclasses.
+@item NumberRange - A range of numbers with an upper and lower bound.
+@item ObjectUtils - Helper for @code{java.lang.Object}.
+@item SerializationUtils - Helper for serializing objects.
+@item SystemUtils - Utility class defining the Java system properties.
+@item NestedException package - A sub-package for the creation of nested
+   exceptions.
+@item Enum package - A sub-package for the creation of enumerated types.
+@item Builder package - A sub-package for the creation of @code{equals},
+  @code{hashCode}, @code{compareTo} and @code{toString} methods.
+@end itemize\n")
+    (license license:asl2.0)))
+
+(define-public java-jsr305
+  (package
+    (name "java-jsr305")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/google/code/findbugs/"
+                                  "jsr305/" version "/jsr305-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1rh6jin9v7jqpq3kf1swl868l8i94r636n03pzpsmgr8v0lh9j2n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "jsr305.jar"))
+    (home-page "http://findbugs.sourceforge.net/")
+    (synopsis "Annotations for the static analyzer called findbugs")
+    (description "This package provides annotations for the findbugs package.
+It provides packages in the @code{javax.annotations} namespace.")
+    (license license:asl2.0)))
+
+(define-public java-guava
+  (package
+    (name "java-guava")
+    ;; This is the last release of Guava that can be built with Java 7.
+    (version "20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/guava/"
+                                  "releases/download/v" version
+                                  "/guava-" version "-sources.jar"))
+              (sha256
+               (base32
+                "1gawrs5gi6j5hcfxdgpnfli75vb9pfi4sn09pnc8xacr669yajwr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:jar-name "guava.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'trim-sources
+           (lambda _
+             (with-directory-excursion "src/com/google/common"
+               ;; Remove annotations to avoid extra dependencies:
+               ;; * "j2objc" annotations are used when converting Java to
+               ;;   Objective C;
+               ;; * "errorprone" annotations catch common Java mistakes at
+               ;;   compile time;
+               ;; * "IgnoreJRERequirement" is used for Android.
+               (substitute* (find-files "." "\\.java$")
+                 (("import com.google.j2objc.*") "")
+                 (("import com.google.errorprone.annotation.*") "")
+                 (("import org.codehaus.mojo.animal_sniffer.*") "")
+                 (("@CanIgnoreReturnValue") "")
+                 (("@LazyInit") "")
+                 (("@WeakOuter") "")
+                 (("@RetainedWith") "")
+                 (("@Weak") "")
+                 (("@ForOverride") "")
+                 (("@J2ObjCIncompatible") "")
+                 (("@IgnoreJRERequirement") "")))
+             #t)))))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (home-page "https://github.com/google/guava")
+    (synopsis "Google core libraries for Java")
+    (description "Guava is a set of core libraries that includes new
+collection types (such as multimap and multiset), immutable collections, a
+graph library, functional types, an in-memory cache, and APIs/utilities for
+concurrency, I/O, hashing, primitives, reflection, string processing, and much
+more!")
+    (license license:asl2.0)))
+
+;; The java-commons-logging package provides adapters to many different
+;; logging frameworks.  To avoid an excessive dependency graph we try to build
+;; it with only a minimal set of adapters.
+(define-public java-commons-logging-minimal
+  (package
+    (name "java-commons-logging-minimal")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/logging/source/"
+                                  "commons-logging-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "10bwcy5w8d7y39n0krlwhnp8ds3kj5zhmzj0zxnkw0qdlsjmsrj9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; avoid dependency on logging frameworks
+       #:jar-name "commons-logging-minimal.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-adapters-and-tests
+           (lambda _
+             ;; Delete all adapters except for NoOpLog, SimpleLog, and
+             ;; LogFactoryImpl.  NoOpLog is required to build; LogFactoryImpl
+             ;; is used by applications; SimpleLog is the only actually usable
+             ;; implementation that does not depend on another logging
+             ;; framework.
+             (for-each
+              (lambda (file)
+                (delete-file (string-append
+                              "src/main/java/org/apache/commons/logging/impl/" file)))
+              (list "Jdk13LumberjackLogger.java"
+                    "WeakHashtable.java"
+                    "Log4JLogger.java"
+                    "ServletContextCleaner.java"
+                    "Jdk14Logger.java"
+                    "AvalonLogger.java"
+                    "LogKitLogger.java"))
+             (delete-file-recursively "src/test")
+             #t)))))
+    (home-page "http://commons.apache.org/logging/")
+    (synopsis "Common API for logging implementations")
+    (description "The Logging package is a thin bridge between different
+logging implementations.  A library that uses the commons-logging API can be
+used with any logging implementation at runtime.")
+    (license license:asl2.0)))
+
+(define-public java-commons-cli
+  (package
+    (name "java-commons-cli")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/cli/source/"
+                                  "commons-cli-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1fkjn552i12vp3xxk21ws4p70fi0lyjm004vzxsdaz7gdpgyxxyl"))))
+    (build-system ant-build-system)
+    ;; TODO: javadoc
+    (arguments
+     `(#:jar-name "commons-cli.jar"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/cli/")
+    (synopsis "Command line arguments and options parsing library")
+    (description "The Apache Commons CLI library provides an API for parsing
+command line options passed to programs.  It is also able to print help
+messages detailing the options available for a command line tool.
+
+Commons CLI supports different types of options:
+
+@itemize
+@item POSIX like options (ie. tar -zxvf foo.tar.gz)
+@item GNU like long options (ie. du --human-readable --max-depth=1)
+@item Java like properties (ie. java -Djava.awt.headless=true Foo)
+@item Short options with value attached (ie. gcc -O2 foo.c)
+@item long options with single hyphen (ie. ant -projecthelp)
+@end itemize
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
+
+(define-public java-commons-codec
+  (package
+    (name "java-commons-codec")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/codec/source/"
+                                  "commons-codec-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1w9qg30y4s0x8gnmr2fgj4lyplfn788jqxbcz27lf5kbr6n8xr65"))))
+    (build-system ant-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
+             (junit    (assoc-ref %build-inputs "java-junit")))
+         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
+               (string-append "-Dhamcrest.jar=" hamcrest
+                              "/share/java/hamcrest-core.jar")
+               ;; Do not append version to jar.
+               "-Dfinal.name=commons-codec"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://commons.apache.org/codec/")
+    (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
+    (description "The codec package contains simple encoder and decoders for
+various formats such as Base64 and Hexadecimal.  In addition to these widely
+used encoders and decoders, the codec package also maintains a collection of
+phonetic encoding utilities.
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
+
+(define-public java-commons-daemon
+  (package
+    (name "java-commons-daemon")
+    (version "1.0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/daemon/source/"
+                                  "commons-daemon-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0ci46kq8jpz084ccwq0mmkahcgsmh20ziclp2jf5i0djqv95gvhi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-javadoc ant-build-javadoc)
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/daemon/")
+    (synopsis "Library to launch Java applications as daemons")
+    (description "The Daemon package from Apache Commons can be used to
+implement Java applications which can be launched as daemons.  For example the
+program will be notified about a shutdown so that it can perform cleanup tasks
+before its process of execution is destroyed by the operation system.
+
+This package contains the Java library.  You will also need the actual binary
+for your architecture which is provided by the jsvc package.
+
+This is a part of the Apache Commons Project.")
+    (license license:asl2.0)))
+
+(define-public antlr2
+  (package
+    (name "antlr2")
+    (version "2.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.antlr2.org/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1ffvcwdw73id0dk6pj2mlxjvbg0662qacx4ylayqcxgg381fnfl5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "antlr.jar")
+                  (substitute* "lib/cpp/antlr/CharScanner.hpp"
+                    (("#include <map>")
+                     (string-append
+                       "#include <map>\n"
+                       "#define EOF (-1)\n"
+                       "#include <strings.h>")))
+                  (substitute* "configure"
+                    (("/bin/sh") "sh"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'strip-jar-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (jar1 (string-append out "/lib/antlr.jar"))
+                    (jar2 (string-append out "/share/antlr-2.7.7/antlr.jar")))
+               ;; XXX: copied from (guix build ant-build-system)
+               (define (strip-jar jar dir)
+                 (let ((manifest (string-append dir "/META-INF/MANIFEST.MF")))
+                   (mkdir-p dir)
+                   (and (with-directory-excursion dir
+                          (zero? (system* "jar" "xf" jar)))
+                        (delete-file jar)
+                        (for-each (lambda (file)
+                                    (let ((s (lstat file)))
+                                      (unless (eq? (stat:type s) 'symlink)
+                                                 (utime file 0 0 0 0))))
+                                  (find-files dir #:directories? #t))
+                        (with-directory-excursion dir
+                          (let* ((files (find-files "." ".*" #:directories? #t)))
+                            (unless (zero? (apply system*
+                                                  `("zip" "-X" ,jar ,manifest
+                                                    ,@files)))
+                              (error "'zip' failed"))))
+                        (utime jar 0 0)
+                        #t)))
+                (strip-jar jar1 "temp1")
+                (strip-jar jar2 "temp2"))))
+         (add-after 'configure 'fix-bin-ls
+           (lambda _
+             (for-each (lambda (file)
+                         (substitute* file
+                          (("/bin/ls") "ls")))
+               (find-files "." "Makefile")))))))
+    (native-inputs
+     `(("which" ,which)
+       ("zip" ,zip)
+       ("java" ,icedtea "jdk")))
+    (inputs
+     `(("java" ,icedtea)))
+    (home-page "http://www.antlr2.org")
+    (synopsis "Framework for constructing recognizers, compilers, and translators")
+    (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
+is a language tool that provides a framework for constructing recognizers,
+compilers, and translators from grammatical descriptions containing Java, C#,
+C++, or Python actions.  ANTLR provides excellent support for tree construction,
+tree walking, and translation.")
+    (license license:public-domain)))
+
+(define-public stringtemplate3
+  (package
+    (name "stringtemplate3")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-st4/raw/"
+                                  "gh-pages/download/stringtemplate-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "086yj68np1vqhkj7483diz3km6s6y4gmwqswa7524a0ca6vxn2is"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "stringtemplate-3.2.1.jar"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "src/org/antlr/stringtemplate/language/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("template.g" "angle.bracket.template.g" "action.g"
+                           "eval.g" "group.g" "interface.g"))))))))
+    (native-inputs
+     `(("antlr" ,antlr2)))
+    (home-page "http://www.stringtemplate.org")
+    (synopsis "Template engine to generate formatted text output")
+    (description "StringTemplate is a java template engine (with ports for C#,
+Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
+or any other formatted text output.  StringTemplate is particularly good at
+code generators, multiple site skins, and internationalization / localization.
+StringTemplate also powers ANTLR.")
+    (license license:bsd-3)))
+
+;; antlr3 is partially written using antlr3 grammar files. It also depends on
+;; ST4 (stringtemplate4), which is also partially written using antlr3 grammar
+;; files and uses antlr3 at runtime. The latest version requires a recent version
+;; of antlr3 at runtime.
+;; Fortunately, ST4 4.0.6 can be built with an older antlr3, and we use antlr3.3.
+;; This version of ST4 is sufficient for the latest antlr3.
+;; We use ST4 4.0.6 to build a boostrap antlr3 (latest version), and build
+;; the latest ST4 with it. Then we build our final antlr3 that will be linked
+;; against the latest ST4.
+;; antlr3.3 still depends on antlr3 to generate some files, so we use an
+;; even older version, antlr3.1, to generate them. Fortunately antlr3.1 uses
+;; only grammar files with the antlr2 syntax.
+;; So we build antlr3.1 -> antlr3.3 -> ST4.0.6 -> antlr3-bootstrap -> ST4 -> antlr3.
+
+(define-public stringtemplate4
+  (package
+    (name "stringtemplate4")
+    (version "4.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/stringtemplate4/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pri8hqa95rfdkjy55icl5q1m09zwp5k67ib14abas39s4v3w087"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:jar-name (string-append ,name "-" ,version ".jar")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-grammar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chdir "src/org/stringtemplate/v4/compiler/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("STParser.g" "Group.g" "CodeGenerator.g"))
+             (chdir "../../../../.."))))))
+    (inputs
+     `(("antlr3" ,antlr3-bootstrap)
+       ("antlr2" ,antlr2)
+       ("stringtemplate" ,stringtemplate3)))
+    (home-page "http://www.stringtemplate.org")
+    (synopsis "Template engine to generate formatted text output")
+    (description "StringTemplate is a java template engine (with ports for C#,
+Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
+or any other formatted text output.  StringTemplate is particularly good at
+code generators, multiple site skins, and internationalization / localization.
+StringTemplate also powers ANTLR.")
+    (license license:bsd-3)))
+
+(define stringtemplate4-4.0.6
+  (package
+    (inherit stringtemplate4)
+    (name "stringtemplate4")
+    (version "4.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/stringtemplate4/archive/ST-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hjmh1ahdsh3w825i67mli9l4nncc4l6hdbf9ma91jvlj590sljp"))))
+    (inputs
+     `(("antlr3" ,antlr3-3.3)
+       ("antlr2" ,antlr2)
+       ("stringtemplate" ,stringtemplate3)))))
+
+(define-public antlr3
+  (package
+    (name "antlr3")
+    (version "3.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/antlr3/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07zff5frmjd53rnqdx31h0pmswz1lv0p2lp28cspfszh25ysz6sj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "tool/src/main/java:runtime/Java/src/main/java:tool/src/main/antlr3"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/" ,name "-" ,version ".jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate4")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("ANTLR.g" "ANTLRTreePrinter.g" "ActionAnalysis.g"
+                         "AssignTokenTypesWalker.g"
+                         "ActionTranslator.g" "TreeToNFAConverter.g"
+                         "ANTLRv3.g" "ANTLRv3Tree.g" "LeftRecursiveRuleWalker.g"
+                         "CodeGenTreeWalker.g" "DefineGrammarItemsWalker.g"))
+             (substitute* "ANTLRParser.java"
+               (("public Object getTree") "public GrammarAST getTree"))
+             (substitute* "ANTLRv3Parser.java"
+               (("public Object getTree") "public CommonTree getTree"))
+             (chdir "../../../../../java")
+             (system* "antlr" "-o" "org/antlr/tool"
+                      "org/antlr/tool/serialize.g")
+             (substitute* "org/antlr/tool/LeftRecursiveRuleAnalyzer.java"
+               (("import org.antlr.grammar.v3.\\*;") "import org.antlr.grammar.v3.*;
+import org.antlr.grammar.v3.ANTLRTreePrinter;"))
+             (substitute* "org/antlr/tool/ErrorManager.java"
+               (("case NO_SUCH_ATTRIBUTE_PASS_THROUGH:") ""))
+             (chdir "../../../..")))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"tool/src/main/resources\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-bootstrap)))
+    (inputs
+     `(("junit" ,java-junit)
+       ("stringtemplate" ,stringtemplate3)
+       ("stringtemplate4" ,stringtemplate4)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)
+       ("antlr" ,antlr2)
+       ("stringtemplate4" ,stringtemplate4-4.0.6)))
+    (home-page "http://www.antlr3.org")
+    (synopsis "Framework for constructing recognizers, compilers, and translators")
+    (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
+is a language tool that provides a framework for constructing recognizers,
+compilers, and translators from grammatical descriptions containing Java, C#,
+C++, or Python actions.  ANTLR provides excellent support for tree construction,
+tree walking, and translation.")
+    (license license:bsd-3)))
+
+(define antlr3-bootstrap
+  (package
+    (inherit antlr3)
+    (name "antlr3-bootstrap")
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.3)))
+    (inputs
+     `(("junit" ,java-junit)))))
+
+(define antlr3-3.3
+  (package
+    (inherit antlr3)
+    (name "antlr3")
+    (version "3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-antlr3/raw/"
+                                  "gh-pages/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir (string-append "tool/src/main/java:runtime/Java/src/main/java:"
+                                "tool/src/main/antlr2:tool/src/main/antlr3")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr3-3.3.jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "tool/src/main/antlr2/org/antlr/grammar/v2/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("antlr.g" "antlr.print.g" "assign.types.g"
+                           "buildnfa.g" "codegen.g" "define.g")))
+             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
+             (for-each (lambda (file)
+                         (display file)
+                         (newline)
+                         (system* "antlr3" file))
+                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
+                         "ANTLRv3Tree.g"))
+             (chdir "../../../../../../../..")
+             (substitute* "tool/src/main/java/org/antlr/tool/Grammar.java"
+               (("import org.antlr.grammar.v2.\\*;")
+                "import org.antlr.grammar.v2.*;\n
+import org.antlr.grammar.v2.TreeToNFAConverter;\n
+import org.antlr.grammar.v2.DefineGrammarItemsWalker;\n
+import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"tool/src/main/resources\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.1)))
+    (inputs
+     `(("junit" ,java-junit)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)
+       ("antlr" ,antlr2)
+       ("antlr3" ,antlr3-3.1)))))
+
+(define antlr3-3.1
+  (package
+    (inherit antlr3)
+    (name "antlr3-3.1")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/antlr/website-antlr3/raw/"
+                                  "gh-pages/download/antlr-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "src:runtime/Java/src"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr3")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr3-3.1-3.1.jar:"
+                                    (string-concatenate
+                                      (find-files (assoc-ref inputs "stringtemplate")
+                                                  ".*\\.jar"))
+                                    ":"
+                                    (string-concatenate
+                                      (find-files (string-append
+                                                    (assoc-ref inputs "antlr")
+                                                    "/lib")
+                                                  ".*\\.jar"))
+                                    " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755))))
+         (add-before 'build 'generate-grammar
+           (lambda _
+             (let ((dir "src/org/antlr/tool/"))
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (system* "antlr" "-o" dir (string-append dir file)))
+                         '("antlr.g" "antlr.print.g" "assign.types.g"
+                           "buildnfa.g" "define.g")))
+             (format #t "codegen.g\n")
+             (system* "antlr" "-o" "src/org/antlr/codegen"
+                      "src/org/antlr/codegen/codegen.g")))
+         (add-before 'build 'fix-build-xml
+           (lambda _
+             (substitute* "build.xml"
+               (("<exec") "<copy todir=\"${classes.dir}\">
+<fileset dir=\"src\">
+<include name=\"**/*.stg\"/>
+<include name=\"**/*.st\"/>
+<include name=\"**/*.sti\"/>
+<include name=\"**/STLexer.tokens\"/>
+</fileset>
+</copy><exec")))))))
+    (native-inputs
+     `(("antlr" ,antlr2)))
+    (inputs
+     `(("junit" ,java-junit)))
+    (propagated-inputs
+     `(("stringtemplate" ,stringtemplate3)))))

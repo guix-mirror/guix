@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,8 @@
             monad?
             monad-bind
             monad-return
+
+            template-directory
 
             ;; Syntax.
             >>=
@@ -92,6 +94,9 @@
                ;; The record type, for use at run time.
                (make-monad b r))
 
+             ;; Instantiate all the templates, specialized for this monad.
+             (template-directory instantiations name)
+
              (define-syntax name
                ;; An "inlined record", for use at expansion time.  The goal is
                ;; to allow 'bind' and 'return' to be resolved at expansion
@@ -102,6 +107,172 @@
                    ((_ %bind)   #'b)
                    ((_ %return) #'r)
                    (_           #'rtd))))))))))
+
+;; Expansion- and run-time state of the template directory.  This needs to be
+;; available at run time (and not just at expansion time) so we can
+;; instantiate templates defined in other modules, or use instances defined
+;; elsewhere.
+(eval-when (load expand eval)
+  ;; Mapping of syntax objects denoting the template to a pair containing (1)
+  ;; the syntax object of the parameter over which it is templated, and (2)
+  ;; the syntax of its body.
+  (define-once %templates (make-hash-table))
+
+  (define (register-template! name param body)
+    (hash-set! %templates name (cons param body)))
+
+  ;; List of template instances, where each entry is a triplet containing the
+  ;; syntax of the name, the actual parameter for which the template is
+  ;; specialized, and the syntax object referring to this specialization (the
+  ;; procedure's identifier.)
+  (define-once %template-instances '())
+
+  (define (register-template-instance! name actual instance)
+    (set! %template-instances
+      (cons (list name actual instance) %template-instances))))
+
+(define-syntax template-directory
+  (lambda (s)
+    "This is a \"stateful macro\" to register and lookup templates and
+template instances."
+    (define location
+      (syntax-source s))
+
+    (define current-info-port
+      ;; Port for debugging info.
+      (const (%make-void-port "w")))
+
+    (define location-string
+      (format #f "~a:~a:~a"
+              (assq-ref location 'filename)
+              (and=> (assq-ref location 'line) 1+)
+              (assq-ref location 'column)))
+
+    (define (matching-instance? name actual)
+      (match-lambda
+        ((name* instance-param proc)
+         (and (free-identifier=? name name*)
+              (or (equal? actual instance-param)
+                  (and (identifier? actual)
+                       (identifier? instance-param)
+                       (free-identifier=? instance-param
+                                          actual)))
+              proc))))
+
+    (define (instance-identifier name actual)
+      (define stem
+        (string-append
+         " "
+         (symbol->string (syntax->datum name))
+         (if (identifier? actual)
+             (string-append " " (symbol->string (syntax->datum actual)))
+             "")
+         " instance"))
+      (datum->syntax actual (string->symbol stem)))
+
+    (define (instance-definition name template actual)
+      (match template
+        ((formal . body)
+         (let ((instance (instance-identifier name actual)))
+           (format (current-info-port)
+                   "~a: info: specializing '~a' for '~a' as '~a'~%"
+                   location-string
+                   (syntax->datum name) (syntax->datum actual)
+                   (syntax->datum instance))
+
+           (register-template-instance! name actual instance)
+
+           #`(begin
+               (define #,instance
+                 (let-syntax ((#,formal (identifier-syntax #,actual)))
+                   #,body))
+
+               ;; Generate code to register the thing at run time.
+               (register-template-instance! #'#,name #'#,actual
+                                            #'#,instance))))))
+
+    (syntax-case s (register! lookup exists? instantiations)
+      ((_ register! name param body)
+       ;; Register NAME as a template on PARAM with the given BODY.
+       (begin
+         (register-template! #'name #'param #'body)
+
+         ;; Generate code to register the template at run time.  XXX: Because
+         ;; of this, BODY must not contain ellipses.
+         #'(register-template! #'name #'param #'body)))
+      ((_ lookup name actual)
+       ;; Search for an instance of template NAME for this ACTUAL parameter.
+       ;; On success, expand to the identifier of the instance; otherwise
+       ;; expand to #f.
+       (any (matching-instance? #'name #'actual) %template-instances))
+      ((_ exists? name actual)
+       ;; Likewise, but return a Boolean.
+       (let ((result (->bool
+                      (any (matching-instance? #'name #'actual)
+                           %template-instances))))
+         (unless result
+           (format (current-warning-port)
+                   "~a: warning: no specialization of template '~a' for '~a'~%"
+                   location-string
+                   (syntax->datum #'name) (syntax->datum #'actual)))
+         result))
+      ((_ instantiations actual)
+       ;; Expand to the definitions of all the existing templates
+       ;; specialized for ACTUAL.
+       #`(begin
+           #,@(hash-map->list (cut instance-definition <> <> #'actual)
+                              %templates))))))
+
+(define-syntax define-template
+  (lambda (s)
+    "Define a template, which is a procedure that can be specialized over its
+first argument.  In our case, the first argument is typically the identifier
+of a monad.
+
+Defining templates for procedures like 'mapm' allows us to make have a
+specialized version of those procedures for each monad that we define, such
+that calls to:
+
+  (mapm %state-monad proc lst)
+
+automatically expand to:
+
+  (#{ mapm %state-monad instance}# proc lst)
+
+Here, #{ mapm %state-monad instance}# is specialized for %state-monad, and
+thus it contains inline calls to %state-bind and %state-return.  This avoids
+repeated calls to 'struct-ref' to get the 'bind' and 'return' procedure of the
+monad, and allows 'bind' and 'return' to be inlined, which in turn allows for
+more optimizations."
+    (syntax-case s ()
+      ((_ (name arg0 args ...) body ...)
+       (with-syntax ((generic-name (datum->syntax
+                                    #'name
+                                    (symbol-append '#{ %}#
+                                                   (syntax->datum #'name)
+                                                   '-generic)))
+                     (original-name #'name))
+         #`(begin
+             (template-directory register! name arg0
+                                 (lambda (args ...)
+                                   body ...))
+             (define (generic-name arg0 args ...)
+               ;; The generic instance of NAME, for when no specialization was
+               ;; found.
+               body ...)
+
+             (define-syntax name
+               (lambda (s)
+                 (syntax-case s ()
+                   ((_ arg0* args ...)
+                    ;; Expand to either the specialized instance or the
+                    ;; generic instance of template ORIGINAL-NAME.
+                    #'(if (template-directory exists? original-name arg0*)
+                          ((template-directory lookup original-name arg0*)
+                           args ...)
+                          (generic-name arg0* args ...)))
+                   (_
+                    #'generic-name))))))))))
 
 (define-syntax-parameter >>=
   ;; The name 'bind' is already taken, so we choose this (obscure) symbol.
@@ -265,7 +436,7 @@ MONAD---i.e., return a monadic function in MONAD."
     (with-monad monad
       (return (apply proc args)))))
 
-(define (foldm monad mproc init lst)
+(define-template (foldm monad mproc init lst)
   "Fold MPROC over LST and return a monadic value seeded by INIT.
 
   (foldm %state-monad (lift2 cons %state-monad) '() '(a b c))
@@ -277,33 +448,33 @@ MONAD---i.e., return a monadic function in MONAD."
       (match lst
         (()
          (return result))
-        ((head tail ...)
+        ((head . tail)
          (>>= (mproc head result)
               (lambda (result)
                 (loop tail result))))))))
 
-(define (mapm monad mproc lst)
+(define-template (mapm monad mproc lst)
   "Map MPROC over LST and return a monadic list.
 
   (mapm %state-monad (lift1 1+ %state-monad) '(0 1 2))
   => (1 2 3)  ;monadic
 "
-  (mlet monad ((result (foldm monad
-                              (lambda (item result)
-                                (>>= (mproc item)
-                                     (lambda (item)
-                                       (return (cons item result)))))
-                              '()
-                              lst)))
-    (return (reverse result))))
+  ;; XXX: We don't use 'foldm' because template specialization wouldn't work
+  ;; in this context.
+  (with-monad monad
+    (let mapm ((lst    lst)
+               (result '()))
+      (match lst
+        (()
+         (return (reverse result)))
+        ((head . tail)
+         (>>= (mproc head)
+              (lambda (head)
+                (mapm tail (cons head result)))))))))
 
-(define-syntax-rule (sequence monad lst)
+(define-template (sequence monad lst)
   "Turn the list of monadic values LST into a monadic list of values, by
 evaluating each item of LST in sequence."
-  ;; XXX: Making it a macro is a bit brutal as it leads to a lot of code
-  ;; duplication.  However, it allows >>= and return to be open-coded, which
-  ;; avoids struct-ref's to MONAD and a few closure allocations when using
-  ;; %STATE-MONAD.
   (with-monad monad
     (let seq ((lstx   lst)
               (result '()))
@@ -315,7 +486,7 @@ evaluating each item of LST in sequence."
               (lambda (item)
                 (seq tail (cons item result)))))))))
 
-(define (anym monad mproc lst)
+(define-template (anym monad mproc lst)
   "Apply MPROC to the list of values LST; return as a monadic value the first
 value for which MPROC returns a true monadic value or #f.  For example:
 
@@ -327,7 +498,7 @@ value for which MPROC returns a true monadic value or #f.  For example:
       (match lst
         (()
          (return #f))
-        ((head tail ...)
+        ((head . tail)
          (>>= (mproc head)
               (lambda (result)
                 (if result

@@ -92,7 +92,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -108,7 +108,7 @@ such as compact binary encodings, XML, or JSON.")
              (close-output-port p))))
        (sha256
         (base32
-         "0bpjfh9vz0n2k93mph3x15clmigkgs223xfn8h12ymrh5gsi5ica"))))
+         "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("googletest" ,googletest)
@@ -136,14 +136,15 @@ serialization.")
 (define-public libmpack
   (package
     (name "libmpack")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tarruda/libmpack/"
                                   "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "08kfdl55yf66xk57aqsbf8n45f2jsw2v7qwnaan08ciim77j3sv5"))))
+               (base32
+                "0ml922gv8y99lbldqb9ykpjndla0hlprdjyl79yskkhwv2ai7sac"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -164,6 +165,14 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public lua-libmpack
   (package (inherit libmpack)
     (name "lua-libmpack")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libmpack/libmpack-lua/"
+                                  "archive/" (package-version libmpack) ".tar.gz"))
+              (file-name (string-append name "-" (package-version libmpack) ".tar.gz"))
+              (sha256
+               (base32
+                "153zrrbyxhf71dgzjjhrk56rfwk3nisslpgcqyg44v8fnz1xpk6i"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: tests require "busted", which is not yet available in Guix.
@@ -173,26 +182,35 @@ that implements both the msgpack and msgpack-rpc specifications.")
        (let* ((lua-version ,(package-version lua))
               (lua-major+minor ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
+               "FETCH=echo"  ; don't fetch anything from the web
+               "UNTGZ=echo"  ; and don't try to unpack it
                "USE_SYSTEM_LUA=yes"
-               (string-append "LUA_VERSION=" lua-version)
-               (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+               (string-append "MPACK_LUA_VERSION=" lua-version)
+               (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                (string-append "PREFIX="
                               (assoc-ref %outputs "out"))
                (string-append "LUA_CMOD_INSTALLDIR="
                               (assoc-ref %outputs "out")
-                              "/lib/lua/" lua-major+minor)
-               ;; This is unnecessary as of upstream commit 02886c13ff8a2,
-               ;; which is not part of the current release.
-               "CFLAGS=-DLUA_C89_NUMBERS -fPIC"))
+                              "/lib/lua/" lua-major+minor)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "binding/lua") #t)))))
+         (add-after 'unpack 'unpack-mpack-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This is broken because mpack-src is not a file, but all
+             ;; prerequisites are added to the inputs of the gcc invocation.
+             (substitute* "Makefile"
+               (("\\$\\(MPACK\\): mpack-src") "$(MPACK): "))
+             (mkdir-p "mpack-src")
+             (zero? (system* "tar" "-C" "mpack-src"
+                             "--strip-components=1"
+                             "-xvf" (assoc-ref inputs "libmpack"))))))))
     (inputs
      `(("lua" ,lua)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libmpack" ,(package-source libmpack))))
+    (home-page "https://github.com/libmpack/libmpack-lua")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
 (define-public lua5.2-libmpack
@@ -205,8 +223,8 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 (lua-major+minor ,(version-major+minor (package-version lua-5.2))))
            (list "CC=gcc"
                  "USE_SYSTEM_LUA=yes"
-                 (string-append "LUA_VERSION=" lua-version)
-                 (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+                 (string-append "MPACK_LUA_VERSION=" lua-version)
+                 (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                  (string-append "PREFIX="
                                 (assoc-ref %outputs "out"))
                  (string-append "LUA_CMOD_INSTALLDIR="
@@ -264,7 +282,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.5.3.1")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -272,7 +290,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "06wi4fcxx58nc7pr2xga20hn11psk56b0yhna5bx2pw90mlcbd84"))))
+                "0gpp1cxsb9nfd7qkjjykzknx03y0z0n4bq5q0fmxci7w38ci22g5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -37,18 +37,18 @@
   '((key-download . interactive)))
 
 (define (show-help)
-  (display (_ "Usage: guix import gnu [OPTION...] PACKAGE
+  (display (G_ "Usage: guix import gnu [OPTION...] PACKAGE
 Return a package declaration template for PACKAGE, a GNU package.\n"))
   ;; '--key-download' taken from (guix scripts refresh).
-  (display (_ "
+  (display (G_ "
       --key-download=POLICY
                          handle missing OpenPGP keys according to POLICY:
                          'always', 'never', and 'interactive', which is also
                          used when 'key-download' is not specified"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -69,7 +69,7 @@ Return a package declaration template for PACKAGE, a GNU package.\n"))
                       (alist-cons 'key-download (string->symbol arg)
                                   result))
                      (x
-                      (leave (_ "unsupported policy: ~a~%")
+                      (leave (G_ "unsupported policy: ~a~%")
                              arg)))))
          %standard-import-options))
 
@@ -83,7 +83,7 @@ Return a package declaration template for PACKAGE, a GNU package.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -100,6 +100,6 @@ Return a package declaration template for PACKAGE, a GNU package.\n"))
          (gnu->guix-package name
                             #:key-download (assoc-ref opts 'key-download))))
       (x
-       (leave (_ "wrong number of arguments~%"))))))
+       (leave (G_ "wrong number of arguments~%"))))))
 
 ;;; gnu.scm ends here

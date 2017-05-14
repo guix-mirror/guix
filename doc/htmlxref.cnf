@@ -219,7 +219,9 @@ emacs		node	${EMACS}/html_node/emacs/
 easejs		mono	${GS}/easejs/manual/easejs.html
 easejs		node	${GS}/easejs/manual/
 
-emacs-guix	mono	https://notabug.org/alezost/emacs-guix
+EMACS_GUIX = https://alezost.github.io/guix.el/manual/latest
+emacs-guix	mono	${EMACS_GUIX}/emacs-guix.html
+emacs-guix	node	${EMACS_GUIX}/html_node/index.html
 
 emacs-muse	node	${GS}/emacs-muse/manual/muse.html
 emacs-muse	node	${GS}/emacs-muse/manual/html_node/

@@ -44,23 +44,23 @@
     (cabal-environment . ,`(("impl" . ,ghc-default-version)))))
 
 (define (show-help)
-  (display (_ "Usage: guix import hackage PACKAGE-NAME
+  (display (G_ "Usage: guix import hackage PACKAGE-NAME
 Import and convert the Hackage package for PACKAGE-NAME.  If PACKAGE-NAME
 includes a suffix constituted by a at-sign followed by a numerical version (as
 used with Guix packages), then a definition for the specified version of the
 package will be generated.  If no version suffix is pecified, then the
 generated package definition will correspond to the latest available
 version.\n"))
-  (display (_ "
+  (display (G_ "
   -e ALIST, --cabal-environment=ALIST
                                specify environment for Cabal evaluation"))
-  (display (_ "
+  (display (G_ "
   -h, --help                   display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -s, --stdin                  read from standard input"))
-  (display (_ "
+  (display (G_ "
   -t, --no-test-dependencies   don't include test-only dependencies"))
-  (display (_ "
+  (display (G_ "
   -V, --version                display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -101,7 +101,7 @@ version.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -130,18 +130,18 @@ version.\n"))
           (()
            (run-importer "stdin" opts
                          (lambda ()
-                           (leave (_ "failed to import cabal file \
+                           (leave (G_ "failed to import cabal file \
 from standard input~%")))))
           ((many ...)
-           (leave (_ "too many arguments~%"))))
+           (leave (G_ "too many arguments~%"))))
         (match args
           ((package-name)
            (run-importer package-name opts
                          (lambda ()
-                           (leave (_ "failed to download cabal file \
+                           (leave (G_ "failed to download cabal file \
 for package '~a'~%")
                                   package-name))))
           (()
-           (leave (_ "too few arguments~%")))
+           (leave (G_ "too few arguments~%")))
           ((many ...)
-           (leave (_ "too many arguments~%")))))))
+           (leave (G_ "too many arguments~%")))))))

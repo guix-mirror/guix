@@ -183,7 +183,7 @@ TYPE does not have a default value, an error is raised."
            (condition
             (&missing-value-service-error (type type) (location location))
             (&message
-             (message (format #f (_ "~a: no value specified \
+             (message (format #f (G_ "~a: no value specified \
 for service of type '~a'")
                               (location->string location)
                               (service-type-name type)))))))
@@ -624,7 +624,7 @@ kernel."
                         (target-type target-type))
                        (&message
                         (message
-                         (format #f (_ "no target of type '~a' for service ~s")
+                         (format #f (G_ "no target of type '~a' for service ~s")
                                  (service-type-name target-type)
                                  service))))))
           (x
@@ -635,7 +635,7 @@ kernel."
                        (&message
                         (message
                          (format #f
-                                 (_ "more than one target service of type '~a'")
+                                 (G_ "more than one target service of type '~a'")
                                  (service-type-name target-type))))))))))
 
     (fold add-edge edges (service-type-extensions (service-kind service))))
@@ -686,7 +686,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
                   (service #f)
                   (target-type target-type))
                  (&message
-                  (message (format #f (_ "service of type '~a' not found")
+                  (message (format #f (G_ "service of type '~a' not found")
                                    (service-type-name target-type)))))))
     (x
      (raise
@@ -696,7 +696,7 @@ TARGET-TYPE; return the root service adjusted accordingly."
                  (&message
                   (message
                    (format #f
-                           (_ "more than one target service of type '~a'")
+                           (G_ "more than one target service of type '~a'")
                            (service-type-name target-type)))))))))
 
 ;;; services.scm ends here.

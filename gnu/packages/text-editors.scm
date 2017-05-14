@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
@@ -188,4 +190,40 @@ bindings and many of the powerful features of GNU Emacs.")
 development focuses on keeping weight down to a minimum, only the most essential
 features are implemented in the editor.  Leafpad is simple to use, is easily
 compiled, requires few libraries, and starts up quickly. ")
+    (license license:gpl2+)))
+
+(define-public e3
+  (package
+    (name "e3")
+    (version "2.82")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sites.google.com/site/e3editor/Home/"
+                                  "e3-" version ".tgz"))
+              (sha256
+               (base32
+                "0919kadkas020maqq37852isnzp053q2fnws2zh3mz81d1jiviak"))
+              (modules '((guix build utils)))
+
+              ;; Remove pre-built binaries.
+              (snippet '(delete-file-recursively "bin"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (native-inputs
+     `(("nasm" ,nasm)))
+    (home-page "https://sites.google.com/site/e3editor/")
+    (synopsis "Tiny text editor written in assembly")
+    (description
+     "e3 is a micro text editor with an executable code size between 3800 and
+35000 bytes.  Except for ``syntax highlighting'', the e3 binary supports all
+of the basic functions one expects plus built in arithmetic calculations.
+UTF-8 coding of unicode characters is supported as well.  e3 can use
+Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
+16, 32, and 64-bit CPUs.")
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
