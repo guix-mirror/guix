@@ -512,7 +512,7 @@ minor version numbers from version-string."
 (define (compressed-file? file)
   "Return true if FILE denotes a compressed file."
   (->bool (member (file-extension file)
-                  '("gz" "bz2" "xz" "lz" "tgz" "tbz2" "zip"))))
+                  '("gz" "bz2" "xz" "lz" "lzma" "tgz" "tbz2" "zip"))))
 
 (define (switch-symlinks link target)
   "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
