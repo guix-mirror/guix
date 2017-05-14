@@ -518,7 +518,7 @@ guix-binary.%.tar.xz:
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
+dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
@@ -531,7 +531,7 @@ $(top_srcdir)/.version:
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
 
-gen-ChangeLog:
+gen-ChangeLog $(distdir)/ChangeLog:
 	$(AM_V_GEN)if test -d .git; then		\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
 	    > $(distdir)/cl-t;				\
@@ -638,7 +638,7 @@ update-guix-package:
 	   "`git rev-parse HEAD`"
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
-assert-no-store-file-names:
+assert-no-store-file-names: $(distdir)/ChangeLog
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
