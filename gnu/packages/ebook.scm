@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ebook)
-  #:use-module ((guix licenses) #:select (gpl3 lgpl2.1+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -60,7 +60,7 @@
     (home-page "http://www.jedrea.com/chmlib/")
     (synopsis "Library for CHM files")
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public calibre
   (package
@@ -167,4 +167,16 @@ and catalog ebooks in most of the major ebook formats.  It can also talk
 to many ebook reader devices.  It can go out to the Internet and fetch
 metadata for books.  It can download newspapers and convert them into
 ebooks for convenient reading.")
-    (license gpl3))) ; some files are under various other licenses, see COPYRIGHT
+    ;; Calibre is largely GPL3+, but includes a number of components covered
+    ;; by other licenses. See COPYRIGHT for more details.
+    (license (list license:gpl3+
+                   license:gpl2+
+                   license:lgpl2.1+
+                   license:lgpl2.1
+                   license:bsd-3
+                   license:expat
+                   license:zpl2.1
+                   license:asl2.0
+                   license:public-domain
+                   license:silofl1.1
+                   license:cc-by-sa3.0))))
