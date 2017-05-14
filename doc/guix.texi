@@ -14932,6 +14932,19 @@ $ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 $ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
 @end example
 
+As another example, R requires the @code{CURL_CA_BUNDLE} environment
+variable to point to a certificate bundle, so you would have to run
+something like this:
+
+@example
+$ guix package -i nss-certs
+$ export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+@end example
+
+For other applications you may want to look up the required environment
+variable in the relevant documentation.
+
+
 @node Name Service Switch
 @subsection Name Service Switch
 
