@@ -84,34 +84,7 @@ in print.  With attention to detail for high resolution rendering.")
               (sha256
                (base32
                 "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ubuntu-font-family-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$"))))))
-    (native-inputs `(("source" ,source)
-                     ("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://font.ubuntu.com/")
     (synopsis "The Ubuntu Font Family")
     (description "The Ubuntu Font Family is a unique, custom designed font
