@@ -744,20 +744,17 @@ or user activity.")
                 "1liq1ppa7xb1dcncv25c2a0xy3l9bvb2a56cff90c0b0vwr239q5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item models extending the Qt model-view framework")
@@ -807,8 +804,7 @@ model to observers
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -817,13 +813,8 @@ model to observers
          (add-before 'check 'check-setup
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t))
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item views extending the Qt model-view framework")
@@ -847,19 +838,16 @@ to flat and hierarchical lists.")
                 "1ffy9b08128ym024wlfgnzk52vpy0mbaa91dhndpr40qcz0i67sh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _ ; kplotting
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
@@ -1338,8 +1326,7 @@ integrated it into your application's other widgets.")
                 "1cshay7dhbqgh62nq85vd9sm20gq9s9f70mdnzjjh1q7cajybkp3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("kwindowsystem" ,kwindowsystem)
@@ -1348,12 +1335,10 @@ integrated it into your application's other widgets.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system "Xvfb :1 &")
-             (sleep 2)              ;XXX: give the server enough time to start
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Graceful handling of application crashes")
@@ -1476,19 +1461,16 @@ by applications to write metadata.")
                 "0q9ng4clqk2dqw43nk1pmq1d61rahc3qr4dmg4y3kjvz3ahnnijw"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Plugins to allow QImage to support extra file formats")
