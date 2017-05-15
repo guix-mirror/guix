@@ -957,6 +957,7 @@ the entries in MANIFEST."
     #~(begin
         (use-modules (guix build utils)
                      (srfi srfi-1)
+                     (srfi srfi-19)
                      (srfi srfi-26))
 
         (define entries
@@ -1011,16 +1012,23 @@ the entries in MANIFEST."
         (mkdir-p man-directory)
         (setenv "MANPATH" (string-join entries ":"))
 
-        (format #t "creating manual page database for ~a packages...~%"
+        (format #t "Creating manual page database for ~a packages... "
                 (length entries))
         (force-output)
-
-        (zero? (system* #+(file-append man-db "/bin/mandb")
-                        "--quiet" "--create"
-                        "-C" "man_db.conf"))))
+        (let* ((start-time (current-time))
+               (exit-status (system* #+(file-append man-db "/bin/mandb")
+                                    "--quiet" "--create"
+                                    "-C" "man_db.conf"))
+               (duration (time-difference (current-time) start-time)))
+          (format #t "done in ~,3f s~%"
+                  (+ (time-second duration)
+                     (* (time-nanosecond duration) (expt 10 -9))))
+          (force-output)
+          (zero? exit-status))))
 
   (gexp->derivation "manual-database" build
                     #:modules '((guix build utils)
+                                (srfi srfi-19)
                                 (srfi srfi-26))
                     #:local-build? #t))
 
