@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -366,6 +367,45 @@ documents made by MS Word version 2 and version 6 or later are supported.  The
 name comes from: \"The antidote against people who send Microsoft Word files
 to everybody, because they believe that everybody runs Windows and therefore
 runs Word\".")
+    (license license:gpl2+)))
+
+(define-public catdoc
+  (package
+    (name "catdoc")
+    (version "0.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.wagner.pp.ru/pub/catdoc/"
+                                  "catdoc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15h7v3bmwfk4z8r78xs5ih6vd0pskn0rj90xghvbzdjj0cc88jji"))))
+    (build-system gnu-build-system)
+    ;; TODO: Also build `wordview` which requires `tk` – make a separate
+    ;; package for this.
+    (arguments
+     '(#:tests? #f ; There are no tests
+       #:configure-flags '("--disable-wordview")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man1"))))))))
+    (home-page "http://www.wagner.pp.ru/~vitus/software/catdoc/")
+    (synopsis "MS-Word to TeX or plain text converter")
+    (description "@command{catdoc} extracts text from MS-Word files, trying to
+preserve as many special printable characters as possible.  It supports
+everything up to Word-97. Also supported are MS Write documents and RTF files.
+
+@command{catdoc} does not preserve complex word formatting, but it can
+translate some non-ASCII characters into TeX escape codes.  It's goal is to
+extract plain text and allow you to read it and, probably, reformat with TeX,
+according to TeXnical rules.
+
+This package also provides @command{xls2csv}, which extracts data from Excel
+spreadsheets and outputs it in comma-separated-value format, and
+@command{catppt}, which extracts data from PowerPoint presentations.")
     (license license:gpl2+)))
 
 (define-public utfcpp
