@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix hg-download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnuzilla) ;nss
@@ -621,6 +623,68 @@ machine.")))
     (description "This package provides a wrapper around the @dfn{Eclipse
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
+
+;; The last release of GNU Classpath is 0.99 and it happened in 2012.  Since
+;; then Classpath has gained much more support for Java 1.6.
+(define-public classpath-devel
+  (let ((commit "e7c13ee0cf2005206fbec0eca677f8cf66d5a103")
+        (revision "1"))
+    (package (inherit classpath-on-sablevm)
+      (version (string-append "0.99-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.savannah.gnu.org/classpath.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))))
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--with-ecj-jar="
+                              (assoc-ref %build-inputs "ecj-bootstrap")
+                              "/share/java/ecj-bootstrap.jar")
+               (string-append "JAVAC="
+                              (assoc-ref %build-inputs "ecj-javac-wrapper")
+                              "/bin/javac")
+               (string-append "JAVA="
+                              (assoc-ref %build-inputs "jamvm")
+                              "/bin/jamvm")
+               "GCJ_JAVAC_TRUE=no"
+               "ac_cv_prog_java_works=yes" ; trust me
+               "--disable-Werror"
+               "--disable-gmp"
+               "--disable-gtk-peer"
+               "--disable-gconf-peer"
+               "--disable-plugin"
+               "--disable-dssi"
+               "--disable-alsa"
+               "--disable-gjdoc")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'bootstrap
+             (lambda _
+               (zero? (system* "autoreconf" "-vif"))))
+           (add-after 'unpack 'remove-unsupported-annotations
+             (lambda _
+               (substitute* (find-files "java" "\\.java$")
+                 (("@Override") ""))
+               #t))
+           (add-after 'install 'install-data
+             (lambda _ (zero? (system* "make" "install-data")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("gettext" ,gettext-minimal)
+         ("texinfo" ,texinfo)
+         ("classpath-jamvm-wrappers" ,classpath-jamvm-wrappers) ; for javah
+         ("ecj-bootstrap" ,ecj-bootstrap)
+         ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+         ("fastjar" ,fastjar)
+         ("jamvm" ,jamvm-bootstrap)
+         ("libltdl" ,libltdl)
+         ("pkg-config" ,pkg-config))))))
 
 (define-public java-swt
   (package
