@@ -3627,6 +3627,14 @@ package is installed in its own directory under
 @file{share/emacs/site-lisp/guix.d}.
 @end defvr
 
+@defvr {Scheme Variable} font-build-system
+This variable is exported by @code{(guix build-system font)}.  It
+implements an installation procedure for font packages where upstream
+provides pre-compiled TrueType, OpenType, etc. font files that merely
+need to be copied into place.  It copies font files to standard
+locations in the output directory.
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
