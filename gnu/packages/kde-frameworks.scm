@@ -1303,8 +1303,7 @@ utilities.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("qttools" ,qttools)))
     (inputs
      `(("kconfig" ,kconfig)
        ("kwidgetsaddons" ,kwidgetsaddons)
