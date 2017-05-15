@@ -4145,7 +4145,7 @@ jQuery and Bootstrap resources included via osscdn.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "45.0")
+    (version "46.0")
     (source
      (origin
        (method url-fetch)
@@ -4154,7 +4154,11 @@ jQuery and Bootstrap resources included via osscdn.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "0npcr867xbbhwa0i7v26hnk4z2d51522jwcfwc594j74kbv3g6ka"))))
+         "15x4yfp3wl2fxm1nkx6pz3clw6zyw3argcsqxgcx6pa28sivlg2n"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete the bundled byte-compiled elisp files.
+        '(for-each delete-file (find-files "lisp" "\\.elc$")))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -4162,25 +4166,35 @@ jQuery and Bootstrap resources included via osscdn.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("\\$\\(INSTALL\\) -d \\$\\(libdir\\)/servers/linux-outloud")
-                "")
-               (("\\$\\(INSTALL\\)  -m 755 \\$\\{OUTLOUD\\}.*$") "")
-               (("\\*info\\*") "*"))
-             (substitute* "etc/emacspeak.sh.def"
-               (("<emacspeak-dir>")
-                (string-append (assoc-ref outputs "out")
-                               "/share/emacs/site-lisp/emacspeak/lisp")))
+           (lambda _
+             ;; Configure Emacspeak according to etc/install.org.
              (zero? (system* "make" "config"))))
-         (add-after 'install 'install-espeak-server
+         (add-after 'build 'build-espeak
+           (lambda _
+             (zero? (system* "make" "espeak"))))
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "servers/linux-espeak"
-                 (and (zero? (system* "make"))
-                      (zero? (system* "make" "install"
-                                      (string-append "PREFIX=" out))))))))
-         (add-after 'install-espeak-server 'wrap-program
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
+                    (info (string-append out "/share/info")))
+               ;; According to etc/install.org, the Emacspeak directory should
+               ;; be copied to its installation destination.
+               (for-each
+                (lambda (file)
+                  (copy-recursively file (string-append lisp "/" file)))
+                '("etc" "info" "lisp" "media" "servers" "sounds" "stumpwm"
+                  "xsl"))
+               ;; Make sure emacspeak is loaded from the correct directory.
+               (substitute* "etc/emacspeak.sh"
+                 (("exec emacs.*$")
+                  (string-append "exec emacs -l " lisp
+                                 "/lisp/emacspeak-setup.el $CL_ALL")))
+               ;; Install the convenient startup script.
+               (mkdir-p bin)
+               (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
+             #t))
+         (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (emacspeak (string-append out "/bin/emacspeak"))
