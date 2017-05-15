@@ -131,7 +131,7 @@ fundamental object types for C.")
              #t)))))
     (inputs
      `(("augeas" ,augeas)
-       ("bind" ,bind "utils")
+       ("bind" ,isc-bind "utils")
        ("c-ares" ,c-ares)
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
