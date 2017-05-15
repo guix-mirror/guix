@@ -118,7 +118,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.6.14")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -126,21 +126,14 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ykfb7ar0x0flfdgf6i8xphyv5b93dalbjj2jb6hx7sdjax33n1g"))
-              ;; This test merely needs a file to test recovery on, but
-              ;; /dev/random is essentially /dev/urandom plus minimum entropy
-              ;; locking, making the test hang indefinitely. This change is
-              ;; already upstream: remove on upgrade to future 0.6.15.
-              ;; https://github.com/Parchive/par2cmdline/commit/27723a678f780da82c79b98592592009c779a4fb
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "tests/test20" (("if=/dev/random") "if=/dev/urandom")))))
+                "1m9vnv3pg0nds47raq2rd2kfpaad1sc10hv40hll5byksqlbfxyq"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
