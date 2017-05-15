@@ -7320,6 +7320,7 @@ copy the image with:
 
 @example
 dd if=guixsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
+sync
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
