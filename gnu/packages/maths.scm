@@ -1807,7 +1807,7 @@ implemented in ANSI C, and MPI for communications.")
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
-       ("flex" ,flex-2.6.1) ; A bug in flex prevents building with flex-2.6.3.
+       ("flex" ,flex)
        ("bison" ,bison)))
     (arguments
      `(#:phases

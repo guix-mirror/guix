@@ -114,10 +114,7 @@
     (native-inputs
      `(("unifont" ,unifont)
        ("bison" ,bison)
-       ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
-       ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
-       ;; TODO Try building with flex > 2.6.3.
-       ("flex" ,flex-2.6.1)
+       ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
 
@@ -240,7 +237,7 @@ menu to select one of the installed operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex-2.6.1))) ; A bug in flex prevents building with flex-2.6.3.
+       ("flex" ,flex)))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
