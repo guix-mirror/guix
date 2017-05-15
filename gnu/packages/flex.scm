@@ -32,16 +32,16 @@
 (define-public flex
   (package
     (name "flex")
-    (version "2.6.3")
+    (version "2.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/westes/flex"
                     "/releases/download/v" version "/"
-                    "flex-" version ".tar.gz"))
+                    "flex-" version ".tar.lz"))
               (sha256
                (base32
-                "1an2cn2z85mkpgqcinh1fhhcd7993qm2lil1yxic8iz76ci79ck8"))))
+                "19sc63m09zamy2qlw5x3sg6wb6hrw96gfl0h87vh6flvsqjg9m3g"))))
     (build-system gnu-build-system)
     (inputs
      (let ((bison-for-tests
