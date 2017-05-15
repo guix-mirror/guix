@@ -686,6 +686,13 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
          ("libltdl" ,libltdl)
          ("pkg-config" ,pkg-config))))))
 
+(define-public jamvm
+  (package (inherit jamvm-bootstrap)
+    (inputs
+     `(("classpath" ,classpath-devel)
+       ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+       ("zlib" ,zlib)))))
+
 (define-public java-swt
   (package
     (name "java-swt")
