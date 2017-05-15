@@ -834,8 +834,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
-  %D%/packages/patches/networkmanager-qt-activeconnection-test-1.patch \
-  %D%/packages/patches/networkmanager-qt-activeconnection-test-2.patch \
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
