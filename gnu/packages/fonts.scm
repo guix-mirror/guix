@@ -140,38 +140,7 @@ provide serif, sans and monospaced variants.")
              (sha256
               (base32
                "1p3qs51x5327gnk71yq8cvmxc6wgx79sqxfvxcv80cdvgggjfnyv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ttf-bitstream-vera-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.TXT$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+    (build-system font-build-system)
     (home-page "http://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
