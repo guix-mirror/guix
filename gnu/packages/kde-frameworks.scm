@@ -747,7 +747,8 @@ or user activity.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("xorg-server" ,xorg-server)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
