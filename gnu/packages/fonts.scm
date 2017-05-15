@@ -42,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
@@ -64,18 +65,7 @@
               (sha256
                (base32
                 "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((font-dir (string-append %output
-                                                  "/share/fonts/opentype"))
-                         (source (assoc-ref %build-inputs "source")))
-                     (mkdir-p font-dir)
-                     (copy-file source
-                                (string-append font-dir "/" "inconsolata.otf"))))))
-    (native-inputs `(("source" ,source)))
+    (build-system font-build-system)
     (home-page "http://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
     (description "A monospace font, designed for code listings and the like,
