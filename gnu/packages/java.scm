@@ -1344,9 +1344,6 @@ bootstrapping purposes.")
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
-                    ;; link against libgcj to avoid linker error
-                    (("-o native-ecj")
-                     "-lgcj -o native-ecj")
                     ;; do not leak information about the build host
                     (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
                      "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
@@ -1376,29 +1373,21 @@ bootstrapping purposes.")
                     (guix build gnu-build-system)
                     (ice-9 match)
                     (ice-9 popen)
-                    (ice-9 rdelim)
                     (srfi srfi-19)
                     (srfi srfi-26))
 
          #:configure-flags
-         (let* ((gcjdir (assoc-ref %build-inputs "gcj"))
-                (ecj    (string-append gcjdir "/share/java/ecj.jar"))
-                (jdk    (string-append gcjdir "/lib/jvm/"))
-                (gcj    (string-append gcjdir "/bin/gcj")))
-           ;; TODO: package pcsc and sctp, and add to inputs
-           `("--disable-system-pcsc"
-             "--disable-system-sctp"
-             "--enable-bootstrap"
-             "--enable-nss"
-             "--without-rhino"
-             "--disable-downloading"
-             "--disable-tests"        ;they are run in the check phase instead
-             "--with-openjdk-src-dir=./openjdk.src"
-             ,(string-append "--with-javac=" jdk "/bin/javac")
-             ,(string-append "--with-ecj-jar=" ecj)
-             ,(string-append "--with-gcj=" gcj)
-             ,(string-append "--with-jdk-home=" jdk)
-             ,(string-append "--with-java=" jdk "/bin/java")))
+         ;; TODO: package pcsc and sctp, and add to inputs
+         `("--disable-system-pcsc"
+           "--disable-system-sctp"
+           "--enable-bootstrap"
+           "--enable-nss"
+           "--without-rhino"
+           "--disable-downloading"
+           "--disable-tests"        ;they are run in the check phase instead
+           "--with-openjdk-src-dir=./openjdk.src"
+           ,(string-append "--with-jdk-home="
+                           (assoc-ref %build-inputs "jdk")))
 
          #:phases
          (modify-phases %standard-phases
@@ -1527,39 +1516,32 @@ bootstrapping purposes.")
                #t))
            (add-before 'configure 'set-additional-paths
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ( ;; Get target-specific include directory so that
-                     ;; libgcj-config.h is found when compiling hotspot.
-                     (gcjinclude (let* ((port (open-input-pipe "gcj -print-file-name=include"))
-                                        (str  (read-line port)))
-                                   (close-pipe port)
-                                   str)))
-                 (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
-                   (("ALSA_INCLUDE=/usr/include/alsa/version.h")
-                    (string-append "ALSA_INCLUDE="
-                                   (assoc-ref inputs "alsa-lib")
-                                   "/include/alsa/version.h")))
-                 (setenv "CC" "gcc")
-                 (setenv "CPATH"
-                         (string-append gcjinclude ":"
-                                        (assoc-ref inputs "libxcomposite")
-                                        "/include/X11/extensions" ":"
-                                        (assoc-ref inputs "libxrender")
-                                        "/include/X11/extensions" ":"
-                                        (assoc-ref inputs "libxtst")
-                                        "/include/X11/extensions" ":"
-                                        (assoc-ref inputs "libxinerama")
-                                        "/include/X11/extensions" ":"
-                                        (or (getenv "CPATH") "")))
-                 (setenv "ALT_OBJCOPY" (which "objcopy"))
-                 (setenv "ALT_CUPS_HEADERS_PATH"
-                         (string-append (assoc-ref inputs "cups")
-                                        "/include"))
-                 (setenv "ALT_FREETYPE_HEADERS_PATH"
-                         (string-append (assoc-ref inputs "freetype")
-                                        "/include"))
-                 (setenv "ALT_FREETYPE_LIB_PATH"
-                         (string-append (assoc-ref inputs "freetype")
-                                        "/lib")))
+               (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
+                 (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                  (string-append "ALSA_INCLUDE="
+                                 (assoc-ref inputs "alsa-lib")
+                                 "/include/alsa/version.h")))
+               (setenv "CC" "gcc")
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "libxcomposite")
+                                      "/include/X11/extensions" ":"
+                                      (assoc-ref inputs "libxrender")
+                                      "/include/X11/extensions" ":"
+                                      (assoc-ref inputs "libxtst")
+                                      "/include/X11/extensions" ":"
+                                      (assoc-ref inputs "libxinerama")
+                                      "/include/X11/extensions" ":"
+                                      (or (getenv "CPATH") "")))
+               (setenv "ALT_OBJCOPY" (which "objcopy"))
+               (setenv "ALT_CUPS_HEADERS_PATH"
+                       (string-append (assoc-ref inputs "cups")
+                                      "/include"))
+               (setenv "ALT_FREETYPE_HEADERS_PATH"
+                       (string-append (assoc-ref inputs "freetype")
+                                      "/include"))
+               (setenv "ALT_FREETYPE_LIB_PATH"
+                       (string-append (assoc-ref inputs "freetype")
+                                      "/lib"))
                #t))
            (add-before 'check 'fix-test-framework
              (lambda _
@@ -1770,10 +1752,8 @@ bootstrapping purposes.")
          ("hotspot-drop"
           ,(drop "hotspot"
                  "0q6mdgbbd3681y3n0z1v783irdjhhi73z6sn5csczpyhjm318axb"))
-         ("ant" ,ant)
+         ("ant" ,ant-bootstrap)
          ("attr" ,attr)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
          ("coreutils" ,coreutils)
          ("diffutils" ,diffutils)       ;for tests
          ("gawk" ,gawk)
@@ -1790,7 +1770,7 @@ bootstrapping purposes.")
          ("nss-certs" ,nss-certs)
          ("perl" ,perl)
          ("procps" ,procps) ;for "free", even though I'm not sure we should use it
-         ("gcj" ,gcj)))
+         ("jdk" ,icedtea-6 "jdk")))
       (inputs
        `(("alsa-lib" ,alsa-lib)
          ("cups" ,cups)
@@ -1939,7 +1919,7 @@ IcedTea build harness.")
           ,(drop "shenandoah"
                  "0fpxl8zlii1hpm777r875ys2cr5ih3gb6p1nm9jfa6krjrccrxv1"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
-                 '("gcj" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
+                 '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
 (define-public icedtea icedtea-7)
