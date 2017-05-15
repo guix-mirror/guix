@@ -693,6 +693,14 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
        ("zlib" ,zlib)))))
 
+(define ecj-javac-on-jamvm-wrapper-final
+  (package (inherit ecj-javac-on-jamvm-wrapper)
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ("ecj-bootstrap" ,ecj-bootstrap)
+       ("jamvm" ,jamvm)
+       ("classpath" ,classpath-devel)))))
+
 (define-public java-swt
   (package
     (name "java-swt")
