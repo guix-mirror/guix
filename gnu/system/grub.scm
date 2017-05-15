@@ -249,8 +249,8 @@ else
 fi~%"
                            #$setup-gfxterm-body
                            #$(grub-root-search store-device font-file)
-                           #$(grub-setup-io config)
                            #$(setup-gfxterm config font-file)
+                           #$(grub-setup-io config)
 
                            #$(strip-mount-point store-mount-point image)
                            #$(theme-colors grub-theme-color-normal)
