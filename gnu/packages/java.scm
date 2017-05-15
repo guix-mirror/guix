@@ -3110,14 +3110,15 @@ This is a part of the Apache Commons Project.")
                   (substitute* "lib/cpp/antlr/CharScanner.hpp"
                     (("#include <map>")
                      (string-append
-                       "#include <map>\n"
-                       "#define EOF (-1)\n"
-                       "#include <strings.h>")))
+                      "#include <map>\n"
+                      "#define EOF (-1)\n"
+                      "#include <strings.h>")))
                   (substitute* "configure"
-                    (("/bin/sh") "sh"))))))
+                    (("/bin/sh") "sh"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f ; no test target
        #:imported-modules ((guix build ant-build-system)
                            (guix build syscalls)
                            ,@%gnu-build-system-modules)
