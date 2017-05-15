@@ -981,6 +981,346 @@ and is best suited to building Java projects.  Ant uses XML to describe the
 build process and its dependencies, whereas Make uses Makefile format.")
     (license license:asl2.0)))
 
+;; The bootstrap JDK consisting of jamvm, classpath-devel,
+;; ecj-javac-on-jamvm-wrapper-final cannot build Icedtea 2.x directly, because
+;; it's written in Java 7.  It can, however, build the unmaintained Icedtea
+;; 1.x, which uses Java 6 only.
+(define-public icedtea-6
+  (package
+    (name "icedtea")
+    (version "1.13.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://icedtea.wildebeest.org/download/source/icedtea6-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  ;; do not leak information about the build host
+                  (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                   "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+    (build-system gnu-build-system)
+    (outputs '("out"   ; Java Runtime Environment
+               "jdk"   ; Java Development Kit
+               "doc")) ; all documentation
+    (arguments
+     `(;; There are many failing tests and many are known to fail upstream.
+       #:tests? #f
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-19))
+
+       #:configure-flags
+       `("--enable-bootstrap"
+         "--enable-nss"
+         "--without-rhino"
+         "--with-parallel-jobs"
+         "--disable-downloading"
+         "--disable-tests"
+         ,(string-append "--with-ecj="
+                         (assoc-ref %build-inputs "ecj")
+                         "/share/java/ecj-bootstrap.jar")
+         ,(string-append "--with-jar="
+                         (assoc-ref %build-inputs "fastjar")
+                         "/bin/fastjar")
+         ,(string-append "--with-jdk-home="
+                         (assoc-ref %build-inputs "classpath"))
+         ,(string-append "--with-java="
+                         (assoc-ref %build-inputs "jamvm")
+                         "/bin/jamvm"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xvf" source))
+                  (begin
+                    (chdir (string-append "icedtea6-" ,version))
+                    (mkdir "openjdk")
+                    (copy-recursively (assoc-ref inputs "openjdk-src") "openjdk")
+                    ;; The convenient OpenJDK source bundle is no longer
+                    ;; available for download, so we have to take the sources
+                    ;; from the Mercurial repositories and change the Makefile
+                    ;; to avoid tests for the OpenJDK zip archive.
+                    (with-directory-excursion "openjdk"
+                      (for-each (lambda (part)
+                                  (mkdir part)
+                                  (copy-recursively
+                                   (assoc-ref inputs
+                                              (string-append part "-src"))
+                                   part))
+                                '("jdk" "hotspot" "corba"
+                                  "langtools" "jaxp" "jaxws")))
+                    (substitute* "Makefile.in"
+                      (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
+                       "echo \"trust me\";")
+                      ;; The contents of the bootstrap directory must be
+                      ;; writeable but when copying from the store they are
+                      ;; not.
+                      (("mkdir -p lib/rt" line)
+                       (string-append line "; chmod -R u+w $(BOOT_DIR)")))
+                    (zero? (system* "chmod" "-R" "u+w" "openjdk"))
+                    #t))))
+         (add-after 'unpack 'use-classpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jvmlib (assoc-ref inputs "classpath")))
+               ;; Classpath does not provide rt.jar.
+               (substitute* "Makefile.in"
+                 (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar")
+                  (string-append jvmlib "/share/classpath/glibj.zip")))
+               ;; Make sure we can find all classes.
+               (setenv "CLASSPATH"
+                       (string-append jvmlib "/share/classpath/glibj.zip:"
+                                      jvmlib "/share/classpath/tools.zip"))
+               (setenv "JAVACFLAGS"
+                       (string-append "-cp "
+                                      jvmlib "/share/classpath/glibj.zip:"
+                                      jvmlib "/share/classpath/tools.zip")))
+             #t))
+         (add-after 'unpack 'patch-patches
+           (lambda _
+             ;; shebang in patches so that they apply cleanly
+             (substitute* '("patches/jtreg-jrunscript.patch"
+                            "patches/hotspot/hs23/drop_unlicensed_test.patch")
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; buildtree.make generates shell scripts, so we need to replace
+             ;; the generated shebang
+             (substitute* '("openjdk/hotspot/make/linux/makefiles/buildtree.make")
+               (("/bin/sh") (which "bash")))
+
+             (let ((corebin (string-append
+                             (assoc-ref inputs "coreutils") "/bin/"))
+                   (binbin  (string-append
+                             (assoc-ref inputs "binutils") "/bin/"))
+                   (grepbin (string-append
+                             (assoc-ref inputs "grep") "/bin/")))
+               (substitute* '("openjdk/jdk/make/common/shared/Defs-linux.gmk"
+                              "openjdk/corba/make/common/shared/Defs-linux.gmk")
+                 (("UNIXCOMMAND_PATH  = /bin/")
+                  (string-append "UNIXCOMMAND_PATH = " corebin))
+                 (("USRBIN_PATH  = /usr/bin/")
+                  (string-append "USRBIN_PATH = " corebin))
+                 (("DEVTOOLS_PATH *= */usr/bin/")
+                  (string-append "DEVTOOLS_PATH = " corebin))
+                 (("COMPILER_PATH *= */usr/bin/")
+                  (string-append "COMPILER_PATH = "
+                                 (assoc-ref inputs "gcc") "/bin/"))
+                 (("DEF_OBJCOPY *=.*objcopy")
+                  (string-append "DEF_OBJCOPY = " (which "objcopy"))))
+
+               ;; fix path to alsa header
+               (substitute* "openjdk/jdk/make/common/shared/Sanity.gmk"
+                 (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                  (string-append "ALSA_INCLUDE="
+                                 (assoc-ref inputs "alsa-lib")
+                                 "/include/alsa/version.h")))
+
+               ;; fix hard-coded utility paths
+               (substitute* '("openjdk/jdk/make/common/shared/Defs-utils.gmk"
+                              "openjdk/corba/make/common/shared/Defs-utils.gmk")
+                 (("ECHO *=.*echo")
+                  (string-append "ECHO = " (which "echo")))
+                 (("^GREP *=.*grep")
+                  (string-append "GREP = " (which "grep")))
+                 (("EGREP *=.*egrep")
+                  (string-append "EGREP = " (which "egrep")))
+                 (("CPIO *=.*cpio")
+                  (string-append "CPIO = " (which "cpio")))
+                 (("READELF *=.*readelf")
+                  (string-append "READELF = " (which "readelf")))
+                 (("^ *AR *=.*ar")
+                  (string-append "AR = " (which "ar")))
+                 (("^ *TAR *=.*tar")
+                  (string-append "TAR = " (which "tar")))
+                 (("AS *=.*as")
+                  (string-append "AS = " (which "as")))
+                 (("LD *=.*ld")
+                  (string-append "LD = " (which "ld")))
+                 (("STRIP *=.*strip")
+                  (string-append "STRIP = " (which "strip")))
+                 (("NM *=.*nm")
+                  (string-append "NM = " (which "nm")))
+                 (("^SH *=.*sh")
+                  (string-append "SH = " (which "bash")))
+                 (("^FIND *=.*find")
+                  (string-append "FIND = " (which "find")))
+                 (("LDD *=.*ldd")
+                  (string-append "LDD = " (which "ldd")))
+                 (("NAWK *=.*(n|g)awk")
+                  (string-append "NAWK = " (which "gawk")))
+                 (("XARGS *=.*xargs")
+                  (string-append "XARGS = " (which "xargs")))
+                 (("UNZIP *=.*unzip")
+                  (string-append "UNZIP = " (which "unzip")))
+                 (("ZIPEXE *=.*zip")
+                  (string-append "ZIPEXE = " (which "zip")))
+                 (("SED *=.*sed")
+                  (string-append "SED = " (which "sed"))))
+
+               ;; Some of these timestamps cause problems as they are more than
+               ;; 10 years ago, failing the build process.
+               (substitute*
+                   "openjdk/jdk/src/share/classes/java/util/CurrencyData.properties"
+                 (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
+                 (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
+                 (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
+                 (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY"))
+               #t)))
+         (add-before 'configure 'set-additional-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "libxrender")
+                                    "/include/X11/extensions" ":"
+                                    (assoc-ref inputs "libxtst")
+                                    "/include/X11/extensions" ":"
+                                    (assoc-ref inputs "libxinerama")
+                                    "/include/X11/extensions" ":"
+                                    (or (getenv "CPATH") "")))
+             (setenv "ALT_CUPS_HEADERS_PATH"
+                     (string-append (assoc-ref inputs "cups")
+                                    "/include"))
+             (setenv "ALT_FREETYPE_HEADERS_PATH"
+                     (string-append (assoc-ref inputs "freetype")
+                                    "/include"))
+             (setenv "ALT_FREETYPE_LIB_PATH"
+                     (string-append (assoc-ref inputs "freetype")
+                                    "/lib"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "doc")
+                                       "/share/doc/icedtea"))
+                   (jre (assoc-ref outputs "out"))
+                   (jdk (assoc-ref outputs "jdk")))
+               (copy-recursively "openjdk.build/docs" doc)
+               (copy-recursively "openjdk.build/j2re-image" jre)
+               (copy-recursively "openjdk.build/j2sdk-image" jdk))
+             #t)))))
+    (native-inputs
+     `(("ant" ,ant-bootstrap)
+       ("alsa-lib" ,alsa-lib)
+       ("attr" ,attr)
+       ("classpath" ,classpath-devel)
+       ("coreutils" ,coreutils)
+       ("cpio" ,cpio)
+       ("cups" ,cups)
+       ("ecj" ,ecj-bootstrap)
+       ("ecj-javac" ,ecj-javac-on-jamvm-wrapper-final)
+       ("fastjar" ,fastjar)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("gtk" ,gtk+-2)
+       ("gawk" ,gawk)
+       ("giflib" ,giflib)
+       ("grep" ,grep)
+       ("jamvm" ,jamvm)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtool" ,libtool)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxrender" ,libxrender)
+       ("libxslt" ,libxslt) ;for xsltproc
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)
+       ("mit-krb5" ,mit-krb5)
+       ("nss" ,nss)
+       ("nss-certs" ,nss-certs)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("procps" ,procps) ;for "free", even though I'm not sure we should use it
+       ("unzip" ,unzip)
+       ("wget" ,wget)
+       ("which" ,which)
+       ("zip" ,zip)
+       ("zlib" ,zlib)
+       ("openjdk-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "14q47yfg586fs64w30g8mk92m5dkxsvr36zzh0ra99xk5x0x96mv"))))
+       ("jdk-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/jdk/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "165824nhg1k1dx6zs9dny0j49rmk35jw5b13dmz8c77jfajml4v9"))))
+       ("hotspot-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/hotspot/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
+       ("corba-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/corba/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "1p9g1r9dnax2iwp7yb59qx7m4nmshqhwmrb2b8jj8zgbd9dl2i3q"))))
+       ("langtools-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/langtools/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "1x52wd67fynbbd9ild6fb4wvba3f5hhwk03qdjfazd0a1qr37z3d"))))
+       ("jaxp-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/jaxp/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "0shlqrvzpr4nrkmv215lbxnby63s3yvbdh1yxcayznsyqwa4nlxm"))))
+       ("jaxws-src"
+        ,(origin
+           (method hg-fetch)
+           (uri (hg-reference
+                 (url "http://hg.openjdk.java.net/jdk6/jdk6/jaxws/")
+                 (changeset "jdk6-b41")))
+           (sha256
+            (base32
+             "0835lkw8vib1xhp8lxnybhlvzdh699hbi4mclxanydjk63zbpxk0"))))))
+    (home-page "http://icedtea.classpath.org")
+    (synopsis "Java development kit")
+    (description
+     "This package provides the OpenJDK built with the IcedTea build harness.
+This version of the OpenJDK is no longer maintained and is only used for
+bootstrapping purposes.")
+    ;; IcedTea is released under the GPL2 + Classpath exception, which is the
+    ;; same license as both GNU Classpath and OpenJDK.
+    (license license:gpl2+)))
+
 (define-public icedtea-7
   (let* ((version "2.6.10")
          (drop (lambda (name hash)
