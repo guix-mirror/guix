@@ -108,42 +108,15 @@ TrueType (TTF) files.")
               (base32
                "1mqpds24wfs5cmfhj57fsfs07mji2z8812i5c4pi5pbi738s977s"))))
     (build-system trivial-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append
-                                    %output "/share/fonts/truetype"))
-                         (conf-dir (string-append
-                                    %output "/share/fontconfig/conf.avail"))
-                         (doc-dir  (string-append
-                                    %output "/share/doc/" ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p conf-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "dejavu-fonts-ttf-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "ttf" "\\.ttf$"))
-                     (for-each (lambda (conf)
-                                 (install-file conf conf-dir))
-                               (find-files "fontconfig" "\\.conf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((conf-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fontconfig/conf.avail")))
+               (copy-recursively "fontconfig" conf-dir)))))))
     (home-page "http://dejavu-fonts.org/")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
