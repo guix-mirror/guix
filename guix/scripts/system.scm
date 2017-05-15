@@ -38,10 +38,10 @@
   #:use-module (guix build utils)
   #:use-module (gnu build install)
   #:use-module (gnu system)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system vm)
-  #:use-module (gnu system grub)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services herd)
@@ -598,8 +598,12 @@ output when building a system derivation, such as a disk image."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (grub      (package->derivation (grub-configuration-grub
-                                        (operating-system-bootloader os))))
+       (bootloader (let ((bootloader (bootloader-package
+                                      (bootloader-configuration-bootloader
+                                       (operating-system-bootloader os)))))
+                     (if bootloader
+                         (package->derivation bootloader)
+                         (return #f))))
        (grub.cfg  (if (eq? 'container action)
                       (return #f)
                       (operating-system-bootcfg os
@@ -611,8 +615,8 @@ output when building a system derivation, such as a disk image."
        ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
        ;; root.  See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if bootloader?
-                          (list sys grub.cfg grub)
+                      (if (and bootloader? bootloader)
+                          (list sys grub.cfg bootloader)
                           (list sys grub.cfg))
                       (list sys)))
        (%         (if derivations-only?
@@ -628,8 +632,8 @@ output when building a system derivation, such as a disk image."
                     drvs)
 
           ;; Make sure GRUB is accessible.
-          (when bootloader?
-            (let ((prefix (derivation->output-path grub)))
+          (when (and bootloader? bootloader)
+            (let ((prefix (derivation->output-path bootloader)))
               (setenv "PATH"
                       (string-append  prefix "/bin:" prefix "/sbin:"
                                       (getenv "PATH")))))
@@ -832,7 +836,7 @@ resulting from command-line parsing."
                         ((first second) second)
                         (_ #f)))
          (device      (and bootloader?
-                           (grub-configuration-device
+                           (bootloader-configuration-device
                             (operating-system-bootloader os)))))
 
     (with-store store

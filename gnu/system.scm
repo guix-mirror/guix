@@ -48,6 +48,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system locale)
@@ -139,7 +140,7 @@ booted from ROOT-DEVICE"
           (default linux-libre))
   (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
-  (bootloader operating-system-bootloader)        ; <grub-configuration>
+  (bootloader operating-system-bootloader)        ; <bootloader-configuration>
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default base-initrd))
@@ -847,12 +848,11 @@ populate the \"old entries\" menu."
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entry (operating-system-boot-parameters os system root-device)))
-    ((module-ref (resolve-interface '(gnu system grub))
-                 'grub-configuration-file)
-     (operating-system-bootloader os)
-     (list entry)
-     #:old-entries old-entries)))
+       (entry (operating-system-boot-parameters os system root-device))
+       (bootloader-conf -> (operating-system-bootloader os)))
+    ((bootloader-configuration-file-generator
+      (bootloader-configuration-bootloader bootloader-conf))
+     bootloader-conf (list entry) #:old-entries old-entries)))
 
 (define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the

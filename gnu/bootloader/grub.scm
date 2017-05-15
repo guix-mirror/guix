@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu system grub)
+(define-module (gnu bootloader grub)
   #:use-module (guix store)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -28,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (gnu artwork)
   #:use-module (gnu system)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
@@ -50,15 +52,10 @@
             %background-image
             %default-theme
 
-            grub-configuration
-            grub-configuration?
-            grub-configuration-device
-            grub-configuration-grub
+            grub-bootloader
+            grub-efi-bootloader
 
-            menu-entry
-            menu-entry?
-
-            grub-configuration-file))
+            grub-configuration))
 
 ;;; Commentary:
 ;;;
@@ -106,29 +103,6 @@ denoting a file name."
    (color-highlight '((fg . yellow) (bg . black)))
    (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
-(define-record-type* <grub-configuration>
-  grub-configuration make-grub-configuration
-  grub-configuration?
-  (grub             grub-configuration-grub             ; package
-                    (default (@ (gnu packages bootloaders) grub)))
-  (device           grub-configuration-device)          ; string
-  (menu-entries     grub-configuration-menu-entries     ; list
-                    (default '()))
-  (default-entry    grub-configuration-default-entry    ; integer
-                    (default 0))
-  (timeout          grub-configuration-timeout          ; integer
-                    (default 5))
-  (theme            grub-configuration-theme            ; <grub-theme>
-                    (default %default-theme))
-  (terminal-outputs grub-configuration-terminal-outputs ; list of symbols
-                    (default '(gfxterm)))
-  (terminal-inputs  grub-configuration-terminal-inputs  ; list of symbols
-                    (default '()))
-  (serial-unit      grub-configuration-serial-unit      ; integer | #f
-                    (default #f))
-  (serial-speed     grub-configuration-serial-speed     ; integer | #f
-                    (default #f)))
-
 (define-record-type* <menu-entry>
   menu-entry make-menu-entry
   menu-entry?
@@ -146,6 +120,11 @@ denoting a file name."
 ;;;
 ;;; Background image & themes.
 ;;;
+
+(define (bootloader-theme config)
+  "Return user defined theme in CONFIG if defined or %default-theme
+otherwise."
+  (or (bootloader-configuration-theme config) %default-theme))
 
 (define* (svg->png svg #:key width height)
   "Build a PNG of HEIGHT x WIDTH from SVG."
@@ -171,7 +150,8 @@ WIDTH/HEIGHT, or #f if none was found."
   (let* ((ratio (/ width height))
          (image (find (lambda (image)
                         (= (grub-image-aspect-ratio image) ratio))
-                      (grub-theme-images (grub-configuration-theme config)))))
+                      (grub-theme-images
+                       (bootloader-theme config)))))
     (if image
         (svg->png (grub-image-file image)
                   #:width width #:height height)
@@ -212,14 +192,14 @@ system string---e.g., \"x86_64-linux\"."
         ""))
 
   (define (setup-gfxterm config font-file)
-    (if (memq 'gfxterm (grub-configuration-terminal-outputs config))
-      #~(format #f "if loadfont ~a; then
+    (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
+        #~(format #f "if loadfont ~a; then
   setup_gfxterm
 fi~%" #$font-file)
-      ""))
+        ""))
 
   (define (theme-colors type)
-    (let* ((theme  (grub-configuration-theme config))
+    (let* ((theme  (bootloader-theme config))
            (colors (type theme)))
       (string-append (symbol->string (assoc-ref colors 'fg)) "/"
                      (symbol->string (assoc-ref colors 'bg)))))
@@ -266,10 +246,10 @@ fi~%"
 is a string that can be inserted in grub.cfg."
   (let* ((symbols->string (lambda (list)
                            (string-join (map symbol->string list) " ")))
-         (outputs (grub-configuration-terminal-outputs config))
-         (inputs (grub-configuration-terminal-inputs config))
-         (unit (grub-configuration-serial-unit config))
-         (speed (grub-configuration-serial-speed config))
+         (outputs (bootloader-configuration-terminal-outputs config))
+         (inputs (bootloader-configuration-terminal-inputs config))
+         (unit (bootloader-configuration-serial-unit config))
+         (speed (bootloader-configuration-serial-speed config))
 
          ;; Respectively, GRUB_TERMINAL_OUTPUT and GRUB_TERMINAL_INPUT,
          ;; as documented in GRUB manual section "Simple Configuration
@@ -347,12 +327,13 @@ code."
                                   (system (%current-system))
                                   (old-entries '()))
   "Return the GRUB configuration file corresponding to CONFIG, a
-<grub-configuration> object, and where the store is available at STORE-FS, a
-<file-system> object.  OLD-ENTRIES is taken to be a list of menu entries
-corresponding to old generations of the system."
+<bootloader-configuration> object, and where the store is available at
+STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
+entries corresponding to old generations of the system."
   (define all-entries
-    (append (map boot-parameters->menu-entry entries)
-            (grub-configuration-menu-entries config)))
+    (map boot-parameters->menu-entry
+         (append entries
+                 (bootloader-configuration-menu-entries config))))
 
   (define entry->gexp
     (match-lambda
@@ -391,8 +372,8 @@ corresponding to old generations of the system."
             (format port "
 set default=~a
 set timeout=~a~%"
-                    #$(grub-configuration-default-entry config)
-                    #$(grub-configuration-timeout config))
+                    #$(bootloader-configuration-default-entry config)
+                    #$(bootloader-configuration-timeout config))
             #$@(map entry->gexp all-entries)
 
             #$@(if (pair? old-entries)
@@ -403,5 +384,65 @@ submenu \"GNU system, old configurations...\" {~%")
                    #~()))))
 
     (gexp->derivation "grub.cfg" builder)))
+
+
+
+;;;
+;;; Install procedures.
+;;;
+
+(define install-grub
+  #~(lambda (bootloader device mount-point)
+      ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT.
+      (let ((grub (string-append bootloader "/sbin/grub-install"))
+            (install-dir (string-append mount-point "/boot")))
+        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
+        ;; root partition.
+        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+
+        (unless (zero? (system* grub "--no-floppy"
+                                "--boot-directory" install-dir
+                                device))
+          (error "failed to install GRUB")))))
+
+
+
+;;;
+;;; Bootloader definitions.
+;;;
+
+(define grub-bootloader
+  (bootloader
+   (name 'grub)
+   (package grub)
+   (installer install-grub)
+   (configuration-file "/boot/grub/grub.cfg")
+   (configuration-file-generator grub-configuration-file)))
+
+(define* grub-efi-bootloader
+  (bootloader
+   (inherit grub-bootloader)
+   (name 'grub-efi)
+   (package grub-efi)))
+
+
+;;;
+;;; Compatibility macros.
+;;;
+
+(define-syntax grub-configuration
+  (syntax-rules (grub)
+                ((_ (grub package) fields ...)
+                 (if (eq? package grub)
+                     (bootloader-configuration
+                      (bootloader grub-bootloader)
+                      fields ...)
+                   (bootloader-configuration
+                    (bootloader grub-efi-bootloader)
+                    fields ...)))
+                ((_ fields ...)
+                 (bootloader-configuration
+                  (bootloader grub-bootloader)
+                  fields ...))))
 
 ;;; grub.scm ends here

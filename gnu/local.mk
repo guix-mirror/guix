@@ -36,6 +36,9 @@
 GNU_SYSTEM_MODULES =				\
   gnu.scm					\
   %D%/artwork.scm				\
+  %D%/bootloader.scm				\
+  %D%/bootloader/grub.scm                       \
+  %D%/bootloader/extlinux.scm                   \
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -443,7 +446,6 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/system.scm				\
   %D%/system/file-systems.scm			\
-  %D%/system/grub.scm				\
   %D%/system/install.scm			\
   %D%/system/linux-container.scm		\
   %D%/system/linux-initrd.scm			\
