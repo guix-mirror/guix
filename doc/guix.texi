@@ -2893,6 +2893,10 @@ package definition using the @command{guix edit} command
 more information on how to test package definitions, and
 @ref{Invoking guix lint}, for information on how to check a definition
 for style conformance.
+@vindex GUIX_PACKAGE_PATH
+Lastly, @pxref{Package Modules}, for information
+on how to extend the distribution by adding your own package definitions
+to @code{GUIX_PACKAGE_PATH}.
 
 Finally, updating the package definition to a new upstream version
 can be partly automated by the @command{guix refresh} command
