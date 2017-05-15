@@ -3118,41 +3118,21 @@ This is a part of the Apache Commons Project.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       #:imported-modules ((guix build ant-build-system)
+                           (guix build syscalls)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build ant-build-system) #:prefix ant:)
+                  (guix build gnu-build-system)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'strip-jar-timestamps
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (jar1 (string-append out "/lib/antlr.jar"))
-                    (jar2 (string-append out "/share/antlr-2.7.7/antlr.jar")))
-               ;; XXX: copied from (guix build ant-build-system)
-               (define (strip-jar jar dir)
-                 (let ((manifest (string-append dir "/META-INF/MANIFEST.MF")))
-                   (mkdir-p dir)
-                   (and (with-directory-excursion dir
-                          (zero? (system* "jar" "xf" jar)))
-                        (delete-file jar)
-                        (for-each (lambda (file)
-                                    (let ((s (lstat file)))
-                                      (unless (eq? (stat:type s) 'symlink)
-                                                 (utime file 0 0 0 0))))
-                                  (find-files dir #:directories? #t))
-                        (with-directory-excursion dir
-                          (let* ((files (find-files "." ".*" #:directories? #t)))
-                            (unless (zero? (apply system*
-                                                  `("zip" "-X" ,jar ,manifest
-                                                    ,@files)))
-                              (error "'zip' failed"))))
-                        (utime jar 0 0)
-                        #t)))
-                (strip-jar jar1 "temp1")
-                (strip-jar jar2 "temp2"))))
+           (assoc-ref ant:%standard-phases 'strip-jar-timestamps))
          (add-after 'configure 'fix-bin-ls
            (lambda _
-             (for-each (lambda (file)
-                         (substitute* file
-                          (("/bin/ls") "ls")))
-               (find-files "." "Makefile")))))))
+             (substitute* (find-files "." "Makefile")
+               (("/bin/ls") "ls"))
+             #t)))))
     (native-inputs
      `(("which" ,which)
        ("zip" ,zip)
