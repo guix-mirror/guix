@@ -199,7 +199,7 @@ System Configuration
 * X.509 Certificates::          Authenticating HTTPS servers.
 * Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
-* GRUB Configuration::          Configuring the boot loader.
+* Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
 * Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
 * Defining Services::           Adding new service definitions.
@@ -7797,7 +7797,7 @@ instance to support new system services.
 * X.509 Certificates::          Authenticating HTTPS servers.
 * Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
-* GRUB Configuration::          Configuring the boot loader.
+* Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
 * Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
 * Defining Services::           Adding new service definitions.
@@ -7980,7 +7980,7 @@ system, should you ever need to.
 Speaking of roll-back, each time you run @command{guix system
 reconfigure}, a new @dfn{generation} of the system is created---without
 modifying or deleting previous generations.  Old system generations get
-an entry in the GRUB boot menu, allowing you to boot them in case
+an entry in the bootloader boot menu, allowing you to boot them in case
 something went wrong with the latest generation.  Reassuring, no?  The
 @command{guix system list-generations} command lists the system
 generations available on disk.  It is also possible to roll back the
@@ -8036,7 +8036,7 @@ List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 
 @item @code{bootloader}
-The system bootloader configuration object.  @xref{GRUB Configuration}.
+The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
 @item @code{initrd} (default: @code{base-initrd})
 @cindex initrd
@@ -15711,32 +15711,52 @@ upon booting.  All the derivations referenced by @var{exp} are
 automatically copied to the initrd.
 @end deffn
 
-@node GRUB Configuration
-@subsection GRUB Configuration
+@node Bootloader Configuration
+@subsection Bootloader Configuration
 
-@cindex GRUB
+@cindex bootloader
 @cindex boot loader
 
-The operating system uses GNU@tie{}GRUB as its boot loader
-(@pxref{Overview, overview of GRUB,, grub, GNU GRUB Manual}).  It is
-configured using a @code{grub-configuration} declaration.  This data type
-is exported by the @code{(gnu system grub)} module and described below.
+The operating system supports multiple bootloaders.  The bootloader is
+configured using @code{bootloader-configuration} declaration.  All the
+fields of this structure are bootloader agnostic except for one field,
+@code{bootloader} that indicates the bootloader to be configured and
+installed.
 
-@deftp {Data Type} grub-configuration
-The type of a GRUB configuration declaration.
+Some of the bootloaders do not honor every field of
+@code{bootloader-configuration}.  For instance, the extlinux
+bootloader does not support themes and thus ignores the @code{theme}
+field.
+
+@deftp {Data Type} bootloader-configuration
+The type of a bootloader configuration declaration.
 
 @table @asis
 
+@item @code{bootloader}
+@cindex EFI, bootloader
+@cindex UEFI, bootloader
+@cindex BIOS, bootloader
+The bootloader to use, as a @code{bootloader} object. For now
+@code{grub-bootloader}, @code{grub-efi-bootloader} and
+@code{extlinux-bootloader} are supported.  @code{grub-efi-bootloader},
+allows to boot on modern systems using the @dfn{Unified Extensible
+Firmware Interface} (UEFI).
+
+Available bootloaders are described in @code{(gnu bootloader @dots{})}
+modules.
+
 @item @code{device}
 This is a string denoting the boot device.  It must be a device name
-understood by the @command{grub-install} command, such as
-@code{/dev/sda} or @code{(hd0)} (@pxref{Invoking grub-install,,, grub,
+understood by the bootloader @command{installer} command, such as
+@code{/dev/sda} or @code{(hd0)} (for GRUB, @pxref{Invoking grub-install,,, grub,
 GNU GRUB Manual}).
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
-entries to appear in the GRUB boot menu, in addition to the current
+entries to appear in the bootloader menu, in addition to the current
 system entry and the entry pointing to previous system generations.
+generations.
 
 @item @code{default-entry} (default: @code{0})
 The index of the default boot menu entry.  Index 0 is for the entry of the
@@ -15746,42 +15766,37 @@ current system.
 The number of seconds to wait for keyboard input before booting.  Set to
 0 to boot immediately, and to -1 to wait indefinitely.
 
-@item @code{theme} (default: @var{%default-theme})
-The @code{grub-theme} object describing the theme to use.
-
-@item @code{grub} (default: @code{grub})
-@cindex EFI, bootloader
-@cindex UEFI, bootloader
-@cindex BIOS, bootloader
-The GRUB package to use.  Currently either @code{grub}, for ``legacy''
-x86 BIOS systems, or @code{grub-efi}, for modern systems using the
-@dfn{Unified Extensible Firmware Interface} (UEFI).
+@item @code{theme} (default: @var{#f})
+The bootloader theme object describing the theme to use.  If no theme
+is provided, some bootloaders might use a default theme, that's true
+for GRUB.
 
 @item @code{terminal-outputs} (default: @code{'gfxterm})
-The output terminals used for the GRUB boot menu, as a list of symbols.
-These values are accepted: @code{console}, @code{serial},
-@code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text}, @code{mda_text},
-@code{morse}, and @code{pkmodem}.  This field corresponds to the GRUB
-variable GRUB_TERMINAL_OUTPUT (@pxref{Simple configuration,,, grub,GNU
-GRUB manual}).
+The output terminals used for the bootloader boot menu, as a list of
+symbols.  GRUB accepts the values: @code{console}, @code{serial},
+@code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},
+@code{mda_text}, @code{morse}, and @code{pkmodem}.  This field
+corresponds to the GRUB variable GRUB_TERMINAL_OUTPUT (@pxref{Simple
+configuration,,, grub,GNU GRUB manual}).
 
 @item @code{terminal-inputs} (default: @code{'()})
-The input terminals used for the GRUB boot menu, as a list of symbols.
-The default is the native platform terminal as determined by GRUB at
-run-time.  These values are accepted: @code{console}, @code{serial},
-@code{serial_@{0-3@}}, @code{at_keyboard}, and @code{usb_keyboard}.
-This field corresponds to the GRUB variable GRUB_TERMINAL_INPUT
-(@pxref{Simple configuration,,, grub,GNU GRUB manual}).
+The input terminals used for the bootloader boot menu, as a list of
+symbols.  For GRUB, the default is the native platform terminal as
+determined at run-time.  GRUB accepts the values: @code{console},
+@code{serial}, @code{serial_@{0-3@}}, @code{at_keyboard}, and
+@code{usb_keyboard}.  This field corresponds to the GRUB variable
+GRUB_TERMINAL_INPUT (@pxref{Simple configuration,,, grub,GNU GRUB
+manual}).
 
 @item @code{serial-unit} (default: @code{#f})
-The serial unit used by GRUB, as an integer from 0 to 3.  The default
-value is chosen by GRUB at run-time; currently GRUB chooses 0, which
+The serial unit used by the bootloader, as an integer from 0 to 3.
+For GRUB it is choosen at run-time; currently GRUB chooses 0, which
 corresponds to COM1 (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 
 @item @code{serial-speed} (default: @code{#f})
-The speed of the serial interface, as an integer.  The default value is
-chosen by GRUB at run-time; currently GRUB chooses 9600@tie{}bps
-(@pxref{Serial terminal,,, grub,GNU GRUB manual}).
+The speed of the serial interface, as an integer.  For GRUB, the
+default value is chosen at run-time; currently GRUB chooses
+9600@tie{}bps (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 @end table
 
 @end deftp
@@ -15805,7 +15820,7 @@ along these lines:
 Details below.
 
 @deftp {Data Type} menu-entry
-The type of an entry in the GRUB boot menu.
+The type of an entry in the bootloader menu.
 
 @table @asis
 
@@ -15819,9 +15834,9 @@ The Linux kernel image to boot, for example:
 (file-append linux-libre "/bzImage")
 @end example
 
-It is also possible to specify a device explicitly in the file path
-using GRUB's device naming convention (@pxref{Naming convention,,, grub,
-GNU GRUB manual}), for example:
+For GRUB, it is also possible to specify a device explicitly in the
+file path using GRUB's device naming convention (@pxref{Naming
+convention,,, grub, GNU GRUB manual}), for example:
 
 @example
 "(hd0,msdos1)/boot/vmlinuz"
@@ -15837,33 +15852,30 @@ The list of extra Linux kernel command-line arguments---e.g.,
 @item @code{initrd}
 A G-Expression or string denoting the file name of the initial RAM disk
 to use (@pxref{G-Expressions}).
-
 @item @code{device} (default: @code{#f})
-The device where the kernel and initrd are to be found---i.e., the GRUB
+The device where the kernel and initrd are to be found---i.e., for GRUB,
 @dfn{root} for this menu entry (@pxref{root,,, grub, GNU GRUB manual}).
 
 This may be a file system label (a string), a file system UUID (a
-bytevector, @pxref{File Systems}), or @code{#f}, in which case GRUB will
-search the device containing the file specified by the @code{linux}
-field (@pxref{search,,, grub, GNU GRUB manual}).  It must @emph{not} be
-an OS device name such as @file{/dev/sda1}.
-
-@item @code{device-mount-point} (default: @code{"/"})
-The mount point of the above device on the system.  You probably do not
-need to change the default value.  GuixSD uses it to strip the prefix of
-store file names for systems where @file{/gnu} or @file{/gnu/store} is
-on a separate partition.
+bytevector, @pxref{File Systems}), or @code{#f}, in which case
+the bootloader will search the device containing the file specified by
+the @code{linux} field (@pxref{search,,, grub, GNU GRUB manual}).  It
+must @emph{not} be an OS device name such as @file{/dev/sda1}.
 
 @end table
 @end deftp
 
 @c FIXME: Write documentation once it's stable.
-Themes are created using the @code{grub-theme} form, which is not
-documented yet.
+Fow now only GRUB has theme support. GRUB themes are created using
+the @code{grub-theme} form, which is not documented yet.
 
 @defvr {Scheme Variable} %default-theme
-This is the default GRUB theme used by the operating system, with a
-fancy background image displaying the GNU and Guix logos.
+This is the default GRUB theme used by the operating system if no
+@code{theme} field is specified in @code{bootloader-configuration}
+record.
+
+It comes with a fancy background image displaying the GNU and Guix
+logos.
 @end defvr
 
 
@@ -15903,9 +15915,10 @@ list-generations}).  If that generation already exists, it will be
 overwritten.  This behavior mirrors that of @command{guix package}
 (@pxref{Invoking guix package}).
 
-It also adds a GRUB menu entry for the new OS configuration, and moves
-entries for older configurations to a submenu---unless
-@option{--no-bootloader} is passed.
+It also adds a bootloader menu entry for the new OS configuration,
+---unless @option{--no-bootloader} is passed.  For GRUB, it moves
+entries for older configurations to a submenu, allowing you to choose
+an older system generation at boot time should you need it.
 
 @quotation Note
 @c The paragraph below refers to the problem discussed at
@@ -15919,11 +15932,16 @@ once @command{reconfigure} has completed.
 @item switch-generation
 @cindex generations
 Switch to an existing system generation.  This action atomically
-switches the system profile to the specified system generation.  It also
-rearranges the system's existing GRUB menu entries.  It makes the menu
-entry for the specified system generation the default, and it moves the
-entries for the other generations to a submenu.  The next time the
-system boots, it will use the specified system generation.
+switches the system profile to the specified system generation.  It
+also rearranges the system's existing bootloader menu entries.  It
+makes the menu entry for the specified system generation the default,
+and it moves the entries for the other generatiors to a submenu, if
+supported by the bootloader being used.  The next time the system
+boots, it will use the specified system generation.
+
+The bootloader itself is not being reinstalled when using this
+command.  Thus, the installed bootloader is used with an updated
+configuration file.
 
 The target generation can be specified explicitly by its generation
 number.  For example, the following invocation would switch to system
@@ -15945,11 +15963,11 @@ guix system switch-generation -- -1
 @end example
 
 Currently, the effect of invoking this action is @emph{only} to switch
-the system profile to an existing generation and rearrange the GRUB menu
-entries.  To actually start using the target system generation, you must
-reboot after running this action.  In the future, it will be updated to
-do the same things as @command{reconfigure}, like activating and
-deactivating services.
+the system profile to an existing generation and rearrange the
+bootloader menu entries.  To actually start using the target system
+generation, you must reboot after running this action.  In the future,
+it will be updated to do the same things as @command{reconfigure},
+like activating and deactivating services.
 
 This action will fail if the specified generation does not exist.
 
@@ -15984,8 +16002,9 @@ files, packages, and so on.  It also creates other essential files
 needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
-This command also installs GRUB on the device specified in
-@file{my-os-config}, unless the @option{--no-bootloader} option was passed.
+This command also installs bootloader on the device specified in
+@file{my-os-config}, unless the @option{--no-bootloader} option was
+passed.
 
 @item vm
 @cindex virtual machine
@@ -16125,7 +16144,7 @@ build users of the daemon (@pxref{Build Environment Setup}).
 Once you have built, configured, re-configured, and re-re-configured
 your GuixSD installation, you may find it useful to list the operating
 system generations available on disk---and that you can choose from the
-GRUB boot menu:
+bootloader boot menu:
 
 @table @code
 
