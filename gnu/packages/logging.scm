@@ -109,6 +109,21 @@ command line.")
      `(("python-pyyaml" ,python-pyyaml)
        ("python-sockjs-tornado" ,python-sockjs-tornado)
        ("python-tornado" ,python-tornado)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-commands.py
+                     (lambda args
+                       (substitute* "tailon/commands.py"
+                         (("self\\.first_in_path\\('grep'\\)")
+                          (string-append"'" (which "grep") "'"))
+                         (("self\\.first_in_path\\('gawk', 'awk'\\)")
+                          (string-append"'" (which "gawk") "'"))
+                         (("self\\.first_in_path\\('gsed', 'sed'\\)")
+                          (string-append"'" (which "sed") "'"))
+                         (("self\\.first_in_path\\('gtail', 'tail'\\)")
+                          (string-append"'" (which "tail") "'")))
+                       #t)))))
     (home-page "https://tailon.readthedocs.io/")
     (synopsis
      "Webapp for looking at and searching through log files")
