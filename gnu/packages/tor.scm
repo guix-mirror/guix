@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -43,14 +43,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.0.6")
+    (version "0.3.0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "057vq8wagppmrlg85dgbsrk1v67yqpbi9n87s8gn0mdm7kli5rd3"))))
+               "00kxa83bn0axh7479fynp6r8znq5wy26kvb8ghixgjpkir2c8h4n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-expensive-hardening"
