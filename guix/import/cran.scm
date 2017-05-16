@@ -45,7 +45,12 @@
             bioconductor->guix-package
             recursive-import
             %cran-updater
-            %bioconductor-updater))
+            %bioconductor-updater
+
+            cran-package?
+            bioconductor-package?
+            bioconductor-data-package?
+            bioconductor-experiment-package?))
 
 ;;; Commentary:
 ;;;
