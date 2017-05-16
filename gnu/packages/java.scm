@@ -3163,7 +3163,7 @@ tree walking, and translation.")
                 "086yj68np1vqhkj7483diz3km6s6y4gmwqswa7524a0ca6vxn2is"))))
     (build-system ant-build-system)
     (arguments
-     `(#:jar-name "stringtemplate-3.2.1.jar"
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
