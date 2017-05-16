@@ -3243,9 +3243,9 @@ StringTemplate also powers ANTLR.")
        ("antlr2" ,antlr2)
        ("java-stringtemplate" ,java-stringtemplate-3)))))
 
-(define stringtemplate4-4.0.6
+(define java-stringtemplate-4.0.6
   (package (inherit java-stringtemplate)
-    (name "stringtemplate4")
+    (name "java-stringtemplate")
     (version "4.0.6")
     (source (origin
               (method url-fetch)
@@ -3350,7 +3350,7 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
-       ("stringtemplate4" ,stringtemplate4-4.0.6)))
+       ("stringtemplate4" ,java-stringtemplate-4.0.6)))
     (home-page "http://www.antlr3.org")
     (synopsis "Framework for constructing recognizers, compilers, and translators")
     (description "ANTLR, ANother Tool for Language Recognition, (formerly PCCTS)
