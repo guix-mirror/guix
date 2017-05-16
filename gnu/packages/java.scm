@@ -701,92 +701,6 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("jamvm" ,jamvm)
        ("classpath" ,classpath-devel)))))
 
-(define-public java-swt
-  (package
-    (name "java-swt")
-    (version "4.6")
-    (source
-     ;; The types of many variables and procedures differ in the sources
-     ;; dependent on whether the target architecture is a 32-bit system or a
-     ;; 64-bit system.  Instead of patching the sources on demand in a build
-     ;; phase we download either the 32-bit archive (which mostly uses "int"
-     ;; types) or the 64-bit archive (which mostly uses "long" types).
-     (let ((hash32 "0jmx1h65wqxsyjzs64i2z6ryiynllxzm13cq90fky2qrzagcw1ir")
-           (hash64 "0wnd01xssdq9pgx5xqh5lfiy3dmk60dzzqdxzdzf883h13692lgy")
-           (file32 "x86")
-           (file64 "x86_64"))
-       (let-values (((hash file)
-                     (match (or (%current-target-system) (%current-system))
-                       ("x86_64-linux" (values hash64 file64))
-                       (_              (values hash32 file32)))))
-         (origin
-           (method url-fetch)
-           (uri (string-append
-                 "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
-                 "eclipse/eclipse/downloads/drops4/R-" version
-                 "-201606061100/swt-" version "-gtk-linux-" file ".zip"))
-           (sha256 (base32 hash))))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "swt.jar"
-       #:tests? #f ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (and (mkdir "swt")
-                  (zero? (system* "unzip" source "-d" "swt"))
-                  (chdir "swt")
-                  (mkdir "src")
-                  (zero? (system* "unzip" "src.zip" "-d" "src")))))
-         ;; The classpath contains invalid icecat jars.  Since we don't need
-         ;; anything other than the JDK on the classpath, we can simply unset
-         ;; it.
-         (add-after 'configure 'unset-classpath
-           (lambda _ (unsetenv "CLASSPATH") #t))
-         (add-before 'build 'build-native
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               ;; Build shared libraries.  Users of SWT have to set the system
-               ;; property swt.library.path to the "lib" directory of this
-               ;; package output.
-               (mkdir-p lib)
-               (setenv "OUTPUT_DIR" lib)
-               (with-directory-excursion "src"
-                 (zero? (system* "bash" "build.sh"))))))
-         (add-after 'install 'install-native
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (for-each (lambda (file)
-                           (install-file file lib))
-                         (find-files "." "\\.so$"))
-               #t))))))
-    (inputs
-     `(("xulrunner" ,icecat)
-       ("gtk" ,gtk+-2)
-       ("libxtst" ,libxtst)
-       ("libxt" ,libxt)
-       ("mesa" ,mesa)
-       ("glu" ,glu)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("unzip" ,unzip)))
-    (home-page "https://www.eclipse.org/swt/")
-    (synopsis "Widget toolkit for Java")
-    (description
-     "SWT is a widget toolkit for Java designed to provide efficient, portable
-access to the user-interface facilities of the operating systems on which it
-is implemented.")
-    ;; SWT code is licensed under EPL1.0
-    ;; Gnome and Gtk+ bindings contain code licensed under LGPLv2.1
-    ;; Cairo bindings contain code under MPL1.1
-    ;; XULRunner 1.9 bindings contain code under MPL2.0
-    (license (list
-              license:epl1.0
-              license:mpl1.1
-              license:mpl2.0
-              license:lgpl2.1+))))
-
 (define-public clojure
   (let* ((remove-archives '(begin
                              (for-each delete-file
@@ -1923,6 +1837,93 @@ IcedTea build harness.")
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
 (define-public icedtea icedtea-7)
+
+
+(define-public java-swt
+  (package
+    (name "java-swt")
+    (version "4.6")
+    (source
+     ;; The types of many variables and procedures differ in the sources
+     ;; dependent on whether the target architecture is a 32-bit system or a
+     ;; 64-bit system.  Instead of patching the sources on demand in a build
+     ;; phase we download either the 32-bit archive (which mostly uses "int"
+     ;; types) or the 64-bit archive (which mostly uses "long" types).
+     (let ((hash32 "0jmx1h65wqxsyjzs64i2z6ryiynllxzm13cq90fky2qrzagcw1ir")
+           (hash64 "0wnd01xssdq9pgx5xqh5lfiy3dmk60dzzqdxzdzf883h13692lgy")
+           (file32 "x86")
+           (file64 "x86_64"))
+       (let-values (((hash file)
+                     (match (or (%current-target-system) (%current-system))
+                       ("x86_64-linux" (values hash64 file64))
+                       (_              (values hash32 file32)))))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
+                 "eclipse/eclipse/downloads/drops4/R-" version
+                 "-201606061100/swt-" version "-gtk-linux-" file ".zip"))
+           (sha256 (base32 hash))))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "swt.jar"
+       #:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (and (mkdir "swt")
+                  (zero? (system* "unzip" source "-d" "swt"))
+                  (chdir "swt")
+                  (mkdir "src")
+                  (zero? (system* "unzip" "src.zip" "-d" "src")))))
+         ;; The classpath contains invalid icecat jars.  Since we don't need
+         ;; anything other than the JDK on the classpath, we can simply unset
+         ;; it.
+         (add-after 'configure 'unset-classpath
+           (lambda _ (unsetenv "CLASSPATH") #t))
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               ;; Build shared libraries.  Users of SWT have to set the system
+               ;; property swt.library.path to the "lib" directory of this
+               ;; package output.
+               (mkdir-p lib)
+               (setenv "OUTPUT_DIR" lib)
+               (with-directory-excursion "src"
+                 (zero? (system* "bash" "build.sh"))))))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (for-each (lambda (file)
+                           (install-file file lib))
+                         (find-files "." "\\.so$"))
+               #t))))))
+    (inputs
+     `(("xulrunner" ,icecat)
+       ("gtk" ,gtk+-2)
+       ("libxtst" ,libxtst)
+       ("libxt" ,libxt)
+       ("mesa" ,mesa)
+       ("glu" ,glu)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)))
+    (home-page "https://www.eclipse.org/swt/")
+    (synopsis "Widget toolkit for Java")
+    (description
+     "SWT is a widget toolkit for Java designed to provide efficient, portable
+access to the user-interface facilities of the operating systems on which it
+is implemented.")
+    ;; SWT code is licensed under EPL1.0
+    ;; Gnome and Gtk+ bindings contain code licensed under LGPLv2.1
+    ;; Cairo bindings contain code under MPL1.1
+    ;; XULRunner 1.9 bindings contain code under MPL2.0
+    (license (list
+              license:epl1.0
+              license:mpl1.1
+              license:mpl2.0
+              license:lgpl2.1+))))
 
 (define-public java-xz
   (package
