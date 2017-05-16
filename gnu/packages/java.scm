@@ -3211,7 +3211,7 @@ StringTemplate also powers ANTLR.")
 ;; So we build antlr3.1 -> antlr3.3 -> ST4.0.6 -> antlr3-bootstrap -> ST4 -> antlr3.
 
 (define-public stringtemplate4
-  (package
+  (package (inherit java-stringtemplate-3)
     (name "stringtemplate4")
     (version "4.0.8")
     (source (origin
@@ -3240,15 +3240,7 @@ StringTemplate also powers ANTLR.")
     (inputs
      `(("antlr3" ,antlr3-bootstrap)
        ("antlr2" ,antlr2)
-       ("java-stringtemplate" ,java-stringtemplate-3)))
-    (home-page "http://www.stringtemplate.org")
-    (synopsis "Template engine to generate formatted text output")
-    (description "StringTemplate is a java template engine (with ports for C#,
-Objective-C, JavaScript, Scala) for generating source code, web pages, emails,
-or any other formatted text output.  StringTemplate is particularly good at
-code generators, multiple site skins, and internationalization / localization.
-StringTemplate also powers ANTLR.")
-    (license license:bsd-3)))
+       ("java-stringtemplate" ,java-stringtemplate-3)))))
 
 (define stringtemplate4-4.0.6
   (package
