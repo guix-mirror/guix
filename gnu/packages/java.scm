@@ -3226,17 +3226,18 @@ StringTemplate also powers ANTLR.")
     (arguments
      `(#:tests? #f
        #:jar-name (string-append ,name "-" ,version ".jar")
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'generate-grammar
-           (lambda* (#:key inputs #:allow-other-keys)
-             (chdir "src/org/stringtemplate/v4/compiler/")
-             (for-each (lambda (file)
-                         (display file)
-                         (newline)
-                         (system* "antlr3" file))
-                       '("STParser.g" "Group.g" "CodeGenerator.g"))
-             (chdir "../../../../.."))))))
+           (lambda _
+             (with-directory-excursion "src/org/stringtemplate/v4/compiler/"
+               (every (lambda (file)
+                        (format #t "~a\n" file)
+                        (zero? (system* "antlr3" file)))
+                      '("STParser.g" "Group.g" "CodeGenerator.g"))))))))
     (inputs
      `(("antlr3" ,antlr3-bootstrap)
        ("antlr2" ,antlr2)
