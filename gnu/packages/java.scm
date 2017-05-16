@@ -3210,9 +3210,9 @@ StringTemplate also powers ANTLR.")
 ;; only grammar files with the antlr2 syntax.
 ;; So we build antlr3.1 -> antlr3.3 -> ST4.0.6 -> antlr3-bootstrap -> ST4 -> antlr3.
 
-(define-public stringtemplate4
+(define-public java-stringtemplate
   (package (inherit java-stringtemplate-3)
-    (name "stringtemplate4")
+    (name "java-stringtemplate")
     (version "4.0.8")
     (source (origin
               (method url-fetch)
@@ -3244,8 +3244,7 @@ StringTemplate also powers ANTLR.")
        ("java-stringtemplate" ,java-stringtemplate-3)))))
 
 (define stringtemplate4-4.0.6
-  (package
-    (inherit stringtemplate4)
+  (package (inherit java-stringtemplate)
     (name "stringtemplate4")
     (version "4.0.6")
     (source (origin
@@ -3347,7 +3346,7 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
     (inputs
      `(("junit" ,java-junit)
        ("stringtemplate" ,java-stringtemplate-3)
-       ("stringtemplate4" ,stringtemplate4)))
+       ("stringtemplate4" ,java-stringtemplate)))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
