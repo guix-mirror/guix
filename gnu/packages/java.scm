@@ -3149,9 +3149,9 @@ C++, or Python actions.  ANTLR provides excellent support for tree construction,
 tree walking, and translation.")
     (license license:public-domain)))
 
-(define-public stringtemplate3
+(define-public java-stringtemplate-3
   (package
-    (name "stringtemplate3")
+    (name "java-stringtemplate")
     (version "3.2.1")
     (source (origin
               (method url-fetch)
@@ -3231,7 +3231,7 @@ StringTemplate also powers ANTLR.")
     (inputs
      `(("antlr3" ,antlr3-bootstrap)
        ("antlr2" ,antlr2)
-       ("stringtemplate" ,stringtemplate3)))
+       ("java-stringtemplate" ,java-stringtemplate-3)))
     (home-page "http://www.stringtemplate.org")
     (synopsis "Template engine to generate formatted text output")
     (description "StringTemplate is a java template engine (with ports for C#,
@@ -3257,7 +3257,7 @@ StringTemplate also powers ANTLR.")
     (inputs
      `(("antlr3" ,antlr3-3.3)
        ("antlr2" ,antlr2)
-       ("stringtemplate" ,stringtemplate3)))))
+       ("java-stringtemplate" ,java-stringtemplate-3)))))
 
 (define-public antlr3
   (package
@@ -3344,10 +3344,10 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
        ("antlr3" ,antlr3-bootstrap)))
     (inputs
      `(("junit" ,java-junit)
-       ("stringtemplate" ,stringtemplate3)
+       ("stringtemplate" ,java-stringtemplate-3)
        ("stringtemplate4" ,stringtemplate4)))
     (propagated-inputs
-     `(("stringtemplate" ,stringtemplate3)
+     `(("stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
        ("stringtemplate4" ,stringtemplate4-4.0.6)))
     (home-page "http://www.antlr3.org")
@@ -3400,7 +3400,7 @@ tree walking, and translation.")
                      (string-append "#!" (which "sh") "\n"
                                     "java -cp " jar "/antlr3-3.3.jar:"
                                     (string-concatenate
-                                      (find-files (assoc-ref inputs "stringtemplate")
+                                      (find-files (assoc-ref inputs "java-stringtemplate")
                                                   ".*\\.jar"))
                                     ":"
                                     (string-concatenate
@@ -3450,7 +3450,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
     (inputs
      `(("junit" ,java-junit)))
     (propagated-inputs
-     `(("stringtemplate" ,stringtemplate3)
+     `(("java-stringtemplate" ,java-stringtemplate-3)
        ("antlr" ,antlr2)
        ("antlr3" ,antlr3-3.1)))))
 
@@ -3522,7 +3522,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
     (inputs
      `(("junit" ,java-junit)))
     (propagated-inputs
-     `(("stringtemplate" ,stringtemplate3)))))
+     `(("stringtemplate" ,java-stringtemplate-3)))))
 
 (define-public java-asm
   (package
