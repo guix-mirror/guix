@@ -100,16 +100,9 @@
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
        ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
+       ("python2-flake8" ,python2-flake8)
        ("xdg-utils" ,xdg-utils)))
-    ;; FIXME: The following are missing inputs according to the documentation,
-    ;; but the package can apparently be used without them,
-    ;; They may need to be added if a deficiency is detected.
-    ;; BeautifulSoup >= 3.0.5
-    ;; dnspython >= 1.6.0
-    ;; poppler >= 0.20.2
-    ;; libwmf >= 0.2.8
-    ;; psutil >= 0.6.1
-    ;; python-pygments >= 2.0.1 ; used for ebook editing
+    ;; Beautifulsoup3 is bundled but obsolete and not packaged, so just leave it bundled.
     (inputs
      `(("chmlib" ,chmlib)
        ("fontconfig" ,fontconfig)
@@ -121,6 +114,7 @@
        ("libxrender" ,libxrender)
        ("openssl" ,openssl)
        ("podofo" ,podofo)
+       ("poppler" ,poppler)
        ("python" ,python-2)
        ("python2-apsw" ,python2-apsw)
        ("python2-chardet" ,python2-chardet)
@@ -128,12 +122,14 @@
        ("python2-cssutils" ,python2-cssutils)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
+       ("python2-dnspython" ,python2-dnspython)
        ("python2-feedparser" ,python2-feedparser)
        ("python2-lxml" ,python2-lxml)
        ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
        ("python2-pillow" ,python2-pillow)
+       ("python2-pygments" ,python2-pygments)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("sqlite" ,sqlite)))
