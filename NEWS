@@ -2,13 +2,71 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 0.13.0 (since 0.12.0)
+
+** Package management
+
+*** Guix can now be used on aarch64 GNU/Linux systems
+*** New ‘guix pack’ command to create bundles
+*** New ‘guix copy’ command to copy store items over SSH
+*** New ‘--cache’ option for ‘guix publish’
+*** $GUIX_DAEMON_SOCKET can specify remote daemons
+*** Guix can now run on Guile 2.2, providing better performance
+*** Emacs interface moved to separate Emacs-Guix package
+*** New ‘--root’ option for ‘guix environment’
+*** ‘guix pull’ now connects to git.savannah.gnu.org over HTTPS
+*** New cross-compilation targets: aarch64-linux-gnu, powerpc-linux-gnu
+*** Packages can specify “single-entry search paths” (e.g., ‘GIT_EXEC_PATH’)
+*** ‘guix import’ and ‘guix refresh’ now support Stackage
+*** Support for the deprecated “PKG-VERSION” syntax has been removed
+*** GnuTLS (Guile bindings) is now required
+
+** Distribution
+
+*** The GuixSD installation image supports (U)EFI systems
+*** GuixSD supports Btrfs (<http://bugs.gnu.org/19280>)
+*** Some system services are now run in separate namespaces
+*** The LXDE desktop environment is now available
+*** ‘grub-configuration’ can specify settings for the user interface
+*** Service types can now specify a default value for services
+*** Create the /var/log/wtmp and /var/log/utmpx databases
+*** ‘static-networking’ service can now be extended
+*** Configuration of ‘nginx-service-type’ has been greatly improved
+*** New ‘gnu-build-system’ phase to always reset gzip timestamps
+*** FIXME new services
+
+exim, mail-aliases, inetd, agetty, openvswitch, special-files, redis,
+thermald
+
+*** FIXME new packages
+*** FIXME package updates
+
+** Programming interfaces
+
+*** (guix scripts challenge) returns complete reports, not just discrepancies
+*** New ‘dub-build-system’ for the D language and Dub
+*** New ‘ocaml-build-system’ for software written in OCaml
+*** New ‘package-mapping’ procedure to rewrite package dependency graphs
+*** New modules: (guix workers), (guix discovery), (guix cache),
+    (guix memoization), (guix ssh)
+
+** Noteworthy bug fixes
+
+*** Create home directories once file systems are mounted
+    (<http://bugs.gnu.org/21108>)
+*** FIXME: Add more
+
+** Native language support
+
+Updated translations: fr (French), FIXME
 
 * Changes in 0.12.0 (since 0.11.0)
 
