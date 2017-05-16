@@ -779,6 +779,71 @@ with the Linux kernel.")
         ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
         ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
         `(modify-phases ,original-phases
+           ;; TODO: This is almost an exact copy of the phase of the same name
+           ;; in glibc/linux.  The only difference is that the i686 patch is
+           ;; not applied here.  In the next update cycle the patch moves to
+           ;; the patches field and this overwritten phase won't be needed any
+           ;; more.
+           (replace 'pre-configure
+             (lambda* (#:key inputs native-inputs outputs
+                       #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      ;; FIXME: Normally we would look it up only in INPUTS
+                      ;; but cross-base uses it as a native input.
+                      (bash (or (assoc-ref inputs "static-bash")
+                                (assoc-ref native-inputs "static-bash"))))
+                 ;; Install the rpc data base file under `$out/etc/rpc'.
+                 ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
+                 (substitute* "sunrpc/Makefile"
+                   (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                    (string-append out "/etc/rpc" suffix "\n"))
+                   (("^install-others =.*$")
+                    (string-append "install-others = " out "/etc/rpc\n")))
+
+                 (substitute* "Makeconfig"
+                   ;; According to
+                   ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
+                   ;; linking against libgcc_s is not needed with GCC
+                   ;; 4.7.1.
+                   ((" -lgcc_s") ""))
+
+                 ;; Have `system' use that Bash.
+                 (substitute* "sysdeps/posix/system.c"
+                   (("#define[[:blank:]]+SHELL_PATH.*$")
+                    (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                            bash)))
+
+                 ;; Same for `popen'.
+                 (substitute* "libio/iopopen.c"
+                   (("/bin/sh")
+                    (string-append bash "/bin/sh")))
+
+                 ;; Same for the shell used by the 'exec' functions for
+                 ;; scripts that lack a shebang.
+                 (substitute* (find-files "." "^paths\\.h$")
+                   (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
+                    (string-append "#define _PATH_BSHELL \""
+                                   bash "/bin/sh\"\n")))
+
+                 ;; Nscd uses __DATE__ and __TIME__ to create a string to
+                 ;; make sure the client and server come from the same
+                 ;; libc.  Use something deterministic instead.
+                 (substitute* "nscd/nscd_stat.c"
+                   (("static const char compilation\\[21\\] =.*$")
+                    (string-append
+                     "static const char compilation[21] = \""
+                     (string-take (basename out) 20) "\";\n")))
+
+                 ;; Make sure we don't retain a reference to the
+                 ;; bootstrap Perl.
+                 (substitute* "malloc/mtrace.pl"
+                   (("^#!.*")
+                    ;; The shebang can be omitted, because there's the
+                    ;; "bilingual" eval/exec magic at the top of the file.
+                    "")
+                   (("exec @PERL@")
+                    "exec perl")))))
            (add-after 'install 'augment-libc.so
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out")))
