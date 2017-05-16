@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
+;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -2990,3 +2992,91 @@ are a C compiler and glib.  Full API documentation and examples are included.")
 melodies and beats and for mixing and arranging songs.  LMMS includes instruments based on
 audio samples and various soft sythesizers.  It can receive input from a MIDI keyboard.")
     (license license:gpl2+)))
+
+(define-public musescore
+  (package
+    (name "musescore")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/musescore/MuseScore/archive/"
+                    "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0irwsq6ihfz3y3b943cwqy29g3si7gqbgxdscgw53vwv9vfvi085"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Un-bundle OpenSSL and remove unused libraries.
+               '(begin
+                  (substitute* "thirdparty/kQOAuth/CMakeLists.txt"
+                    (("-I \\$\\{PROJECT_SOURCE_DIR\\}/thirdparty/openssl/include ")
+                     ""))
+                  (substitute* "thirdparty/kQOAuth/kqoauthutils.cpp"
+                    (("#include <openssl/.*") ""))
+                  (for-each delete-file-recursively
+                            '("thirdparty/freetype"
+                              "thirdparty/openssl"
+                              "thirdparty/portmidi"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; There are tests, but no simple target to run.  The command
+       ;; used to run them is:
+       ;;
+       ;;   make debug && sudo make installdebug && cd \
+       ;;   build.debug/mtest && make && ctest
+       ;;
+       ;; Basically, it requires to start a whole new build process.
+       ;; So we simply skip them.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'use-system-freetype
+           (lambda _
+             ;; XXX: For the time being, we grossly insert the CMake
+             ;; option needed to ignore bundled freetype.  However,
+             ;; there's a pending PR to have it as a regular make
+             ;; option, in a future release.
+             (substitute* "Makefile"
+               (("cmake -DCMAKE") "cmake -DUSE_SYSTEM_FREETYPE=ON -DCMAKE"))
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("freetype" ,freetype)
+       ("gtk+-bin" ,gtk+ "bin")         ;for gtk-update-icon-cache
+       ("jack" ,jack-1)
+       ("lame" ,lame)
+       ("libogg" ,libogg)
+       ("libsndfile" ,libsndfile)
+       ("libvorbis" ,libvorbis)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtscript" ,qtscript)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (synopsis "Music composition and notation software")
+    (description "MuseScore is a music score typesetter.  Its main purpose is
+the creation of high-quality engraved musical scores in a WYSIWYG environment.
+
+It supports unlimited staves, linked parts and part extraction, tablature,
+MIDI input, percussion notation, cross-staff beaming, automatic transposition,
+lyrics (multiple verses), fretboard diagrams, and in general everything
+commonly used in sheet music.  Style options and style sheets to change the
+appearance and layout are provided.
+
+MuseScore can also play back scores through the built-in sequencer and SoundFont
+sample library.")
+    (home-page "https://musescore.org")
+    (license license:gpl2)))
