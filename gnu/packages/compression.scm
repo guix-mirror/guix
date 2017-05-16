@@ -254,6 +254,12 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
                              (copy-file file
                                         (string-append libdir "/" base))))
                          (find-files "." "^libbz2\\.so")))
+             #t))
+         (add-after 'install-shared-lib 'patch-scripts
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/bin/bzdiff")
+                 (("/bin/rm") "rm")))
              #t)))
 
        #:make-flags (list (string-append "PREFIX="
