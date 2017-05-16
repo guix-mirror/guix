@@ -778,35 +778,33 @@ with the Linux kernel.")
        ((#:phases original-phases)
         ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
         ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
-        `(alist-cons-after
-          'install 'augment-libc.so
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out")))
-              (substitute* (string-append out "/lib/libc.so")
-                (("/[^ ]+/lib/libc.so.0.3")
-                 (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
-            #t)
-          (alist-cons-after
-           'pre-configure 'pre-configure-set-pwd
-           (lambda _
-             ;; Use the right 'pwd'.
-             (substitute* "configure"
-               (("/bin/pwd") "pwd")))
-           (alist-replace
-            'build
-            (lambda _
-              ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
-              ;; linking errors.
-              ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
-              (let ((-j (list "-j" (number->string (parallel-job-count)))))
-                (let-syntax ((make (syntax-rules ()
-                                     ((_ target)
-                                      (zero? (apply system* "make" target -j))))))
-                  (and (make "mach/subdir_lib")
-                       (make "hurd/subdir_lib")
-                       (make "libpthread/subdir_lib")
-                       (zero? (apply system* "make" -j))))))
-            ,original-phases))))
+        `(modify-phases ,original-phases
+           (add-after 'install 'augment-libc.so
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (substitute* (string-append out "/lib/libc.so")
+                   (("/[^ ]+/lib/libc.so.0.3")
+                    (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
+               #t))
+           (add-after 'pre-configure 'pre-configure-set-pwd
+             (lambda _
+               ;; Use the right 'pwd'.
+               (substitute* "configure"
+                 (("/bin/pwd") "pwd"))
+               #t))
+           (replace 'build
+             (lambda _
+               ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
+               ;; linking errors.
+               ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
+               (let ((-j (list "-j" (number->string (parallel-job-count)))))
+                 (let-syntax ((make (syntax-rules ()
+                                      ((_ target)
+                                       (zero? (apply system* "make" target -j))))))
+                   (and (make "mach/subdir_lib")
+                        (make "hurd/subdir_lib")
+                        (make "libpthread/subdir_lib")
+                        (zero? (apply system* "make" -j)))))))))
         ((#:configure-flags original-configure-flags)
         `(append (list "--host=i586-pc-gnu"
 
