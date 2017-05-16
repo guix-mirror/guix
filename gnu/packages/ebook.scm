@@ -142,6 +142,12 @@
        #:use-setuptools? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "src/calibre/linux.py"
+               ;; We can't use the uninstaller in Guix. Don't build it.
+               (("self\\.create_uninstaller()") ""))
+             #t))
          (add-before 'build 'configure
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
