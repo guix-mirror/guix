@@ -3165,6 +3165,9 @@ tree walking, and translation.")
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
        #:test-dir "test"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'fix-tests
@@ -3175,13 +3178,12 @@ tree walking, and translation.")
              #t))
          (add-before 'build 'generate-grammar
            (lambda _
-             (let ((dir "src/org/antlr/stringtemplate/language/"))
-               (for-each (lambda (file)
-                           (display file)
-                           (newline)
-                           (system* "antlr" "-o" dir (string-append dir file)))
-                         '("template.g" "angle.bracket.template.g" "action.g"
-                           "eval.g" "group.g" "interface.g"))))))))
+             (with-directory-excursion "src/org/antlr/stringtemplate/language/"
+               (every (lambda (file)
+                        (format #t "~a\n" file)
+                        (zero? (system* "antlr" file)))
+                      '("template.g" "angle.bracket.template.g" "action.g"
+                        "eval.g" "group.g" "interface.g"))))))))
     (native-inputs
      `(("antlr" ,antlr2)
        ("java-junit" ,java-junit)))
