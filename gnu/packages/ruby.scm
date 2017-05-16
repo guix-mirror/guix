@@ -4107,7 +4107,7 @@ call.")
 (define-public ruby-concurrent
   (package
     (name "ruby-concurrent")
-    (version "1.0.2")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
@@ -4120,7 +4120,7 @@ call.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1x3g2admp14ykwfxidsicqbhlfsnxh9wyc806np4i15hws4if1d8"))
+         "0qhv0qzsby4iijgwa4s9r88zj8123pmyz1dwaqzdk57xgqll9pny"))
        ;; Exclude failing test reported at
        ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
        (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"
