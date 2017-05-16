@@ -503,6 +503,67 @@ Its features include:
 @end enumerate\n")
     (license bsd-2)))
 
+(define-public s
+  (let ((commit "6604341edb3a775ff94415762af3ee9bd86bfb3c")
+        (revision "1"))
+    (package
+      (name "s")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rain-1/s")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1075cml6dl15d770j3m12yz90cjacsdslbv3gank1nxd76vmpdcr"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("linenoise" ,linenoise)))
+      (arguments
+       `(#:tests? #f
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'install-directory-fix
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (substitute* "Makefile"
+                   (("out") bin))
+                 #t)))
+           (add-after 'install 'manpage
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "s.1" (string-append (assoc-ref outputs "out")
+                                                  "/share/man/man1"))))
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; At this point linenoise is meant to be included,
+               ;; so we have to really copy it into the working directory
+               ;; of s.
+               (let* ((linenoise (assoc-ref inputs "linenoise"))
+                      (noisepath (string-append linenoise "/include/linenoise"))
+                      (out (assoc-ref outputs "out")))
+                 (copy-recursively noisepath "linenoise")
+                 (substitute* "s.c"
+                   (("/bin/s") (string-append out "/bin/s")))
+                 #t))))))
+      (home-page "https://github.com/rain-1/s")
+      (synopsis "Extremely minimal shell with the simplest syntax possible")
+      (description
+       "S is a new shell that aims to be extremely simple.
+S does not implemnt the POSIX shell standard.
+There are no globs or \"splatting\" where a variable $FOO turns into multiple
+command line arguments.  One token stays one token forever.
+This is a \"no surprises\" straightforward approach.
+
+There are no redirection operators > in the shell language, they are added as
+extra programs.  > is just another unix command, < is essentially cat(1).
+A @code{andglob} program is also provided along with s.")
+      (license bsd-3))))
+
 (define-public loksh
   (package
     (name "loksh")
