@@ -3164,9 +3164,15 @@ tree walking, and translation.")
     (build-system ant-build-system)
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
-       #:tests? #f
+       #:test-dir "test"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             (substitute* "build.xml"
+               (("\\$\\{test.home\\}/java")
+                "${test.home}/org"))
+             #t))
          (add-before 'build 'generate-grammar
            (lambda _
              (let ((dir "src/org/antlr/stringtemplate/language/"))
@@ -3177,7 +3183,8 @@ tree walking, and translation.")
                          '("template.g" "angle.bracket.template.g" "action.g"
                            "eval.g" "group.g" "interface.g"))))))))
     (native-inputs
-     `(("antlr" ,antlr2)))
+     `(("antlr" ,antlr2)
+       ("java-junit" ,java-junit)))
     (home-page "http://www.stringtemplate.org")
     (synopsis "Template engine to generate formatted text output")
     (description "StringTemplate is a java template engine (with ports for C#,
