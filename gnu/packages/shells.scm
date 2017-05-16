@@ -459,6 +459,50 @@ and redirections, and a complete syscall library for low-level access to the
 operating system.")
       (license bsd-3))))
 
+(define-public linenoise
+  (package
+    (name "linenoise")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/antirez/linenoise/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05006hd56xcvxjdpll4x720bpfan7vwqmxbw8a2kvm10w57ll1gm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;No tests are included
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; At the moment there is no 'make install' in upstream.
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "linenoise.h"
+                             (string-append out "/include/linenoise"))
+               (install-file "linenoise.c"
+                             (string-append out "/include/linenoise"))
+               #t))))))
+    (home-page "https://github.com/antirez/linenoise")
+    (synopsis "Minimal zero-config readline replacement")
+    (description
+     "Linenoise is a minimal, zero-config, readline replacement.
+Its features include:
+
+@enumerate
+@item Single and multi line editing mode with the usual key bindings
+@item History handling
+@item Completion
+@item Hints (suggestions at the right of the prompt as you type)
+@item A subset of VT100 escapes, ANSI.SYS compatible
+@end enumerate\n")
+    (license bsd-2)))
+
 (define-public loksh
   (package
     (name "loksh")
