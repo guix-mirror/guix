@@ -48,8 +48,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.3.3")
-    (replacement ruby-2.3.4)
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -58,7 +57,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1p0rfk0blrbfjcnv0vb0ha4hxflgkfhv9zbzp4vvld2pi31ahkqs"))
+         "141nnsdk2q83c23p5kl404id8gy1ap261gin48rbjj5sbksgx1rs"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -102,11 +101,11 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
-(define ruby-2.3.4
+(define-public ruby-2.3
   (package
     (inherit ruby)
-    (name "ruby")
     (version "2.3.4")
+    (replacement #f)
     (source
      (origin
        (method url-fetch)
