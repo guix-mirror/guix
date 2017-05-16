@@ -3224,13 +3224,20 @@ StringTemplate also powers ANTLR.")
                 "1pri8hqa95rfdkjy55icl5q1m09zwp5k67ib14abas39s4v3w087"))))
     (build-system ant-build-system)
     (arguments
-     `(#:tests? #f
-       #:jar-name (string-append ,name "-" ,version ".jar")
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:tests? #f ; FIXME: tests fail for unknown reasons
+       #:test-dir "test"
        #:modules ((guix build ant-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'fix-test-target
+           (lambda _
+             (substitute* "build.xml"
+               (("\\$\\{test.home\\}/java") "${test.home}/")
+               (("\\*Test.java") "Test*.java"))
+             #t))
          (add-before 'build 'generate-grammar
            (lambda _
              (with-directory-excursion "src/org/stringtemplate/v4/compiler/"
@@ -3241,7 +3248,8 @@ StringTemplate also powers ANTLR.")
     (inputs
      `(("antlr3" ,antlr3-bootstrap)
        ("antlr2" ,antlr2)
-       ("java-stringtemplate" ,java-stringtemplate-3)))))
+       ("java-stringtemplate" ,java-stringtemplate-3)
+       ("java-junit" ,java-junit)))))
 
 (define java-stringtemplate-4.0.6
   (package (inherit java-stringtemplate)
