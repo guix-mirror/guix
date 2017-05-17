@@ -9021,6 +9021,37 @@ standalone, be utilized in other packages, or be wrapped up in higher-level
 classes.")
     (license license:gpl2+)))
 
+(define-public r-deseq
+  (package
+    (name "r-deseq")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DESeq" version))
+       (sha256
+        (base32
+         "0j3dgcxd64m9qknmlcbdzvg4xhp981xd6nbwsvnqjfn6yypslgyw"))))
+    (properties `((upstream-name . "DESeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genefilter" ,r-genefilter)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-lattice" ,r-lattice)
+       ("r-locfit" ,r-locfit)
+       ("r-mass" ,r-mass)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://www-huber.embl.de/users/anders/DESeq")
+    (synopsis "Differential gene expression analysis")
+    (description
+     "This package provides tools for estimating variance-mean dependence in
+count data from high-throughput genetic sequencing assays and for testing for
+differential expression based on a model using the negative binomial
+distribution.")
+    (license license:gpl3+)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
