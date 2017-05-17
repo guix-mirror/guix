@@ -1059,14 +1059,14 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.7.9")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://christoph-ender.de/fizmo/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w7cgyjrhgkadjrazijzhq7zh0pl5bfc6wl7mdpgh020y4kp46d7"))))
+                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1079,12 +1079,13 @@ reference interpreter, using the Glk API.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("sdl" ,sdl)))
+       ("sdl2" ,sdl2)))
     (home-page "https://christoph-ender.de/fizmo/")
     (synopsis "Z-machine interpreter")
     (description
