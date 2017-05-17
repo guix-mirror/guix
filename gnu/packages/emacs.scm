@@ -3411,6 +3411,31 @@ not tied in the trap of backward compatibility.")
 for search-based navigation of buffers.")
     (license license:gpl2+)))
 
+(define-public emacs-helm-projectile
+  (package
+    (name "emacs-helm-projectile")
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbatsov/helm-projectile/archive/v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19cfmilqh8kbab3b2hmx6lyrj73q6vfmn3p730x95g23iz16mnd5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/bbatsov/helm-projectile")
+    (synopsis "Helm integration for Projectile")
+    (description
+     "This Emacs library provides a Helm interface for Projectile.")
+    (license license:gpl3+)))
+
 (define-public emacs-cider
   (package
     (name "emacs-cider")
