@@ -27,7 +27,9 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** Packages can specify “single-entry search paths” (e.g., ‘GIT_EXEC_PATH’)
 *** ‘guix import’ and ‘guix refresh’ now support Stackage
 *** Support for the deprecated “PKG-VERSION” syntax has been removed
+*** New Cypher backend for ‘guix graph’
 *** GnuTLS (Guile bindings) is now required
+*** Guix now issues a warning when it detects that Guix has not been upgraded in a while
 
 ** Distribution
 
@@ -38,6 +40,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘grub-configuration’ can specify settings for the user interface
 *** Service types can now specify a default value for services
 *** Create the /var/log/wtmp and /var/log/utmpx databases
+*** A raw initial RAM disk can be created to support systems with custom kernel configurations
 *** ‘static-networking’ service can now be extended
 *** Configuration of ‘nginx-service-type’ has been greatly improved
 *** New ‘gnu-build-system’ phase to always reset gzip timestamps
@@ -54,14 +57,18 @@ thermald
 *** (guix scripts challenge) returns complete reports, not just discrepancies
 *** New ‘dub-build-system’ for the D language and Dub
 *** New ‘ocaml-build-system’ for software written in OCaml
+*** Improvements to the ‘asdf-build-system’ for software written in various Common Lisp dialects.
 *** New ‘package-mapping’ procedure to rewrite package dependency graphs
 *** New modules: (guix workers), (guix discovery), (guix cache),
     (guix memoization), (guix ssh)
+*** (gnu build file-systems) now has support for ISO-9660 file systems.
 
 ** Noteworthy bug fixes
 
 *** Create home directories once file systems are mounted
     (<http://bugs.gnu.org/21108>)
+*** GNU R now builds bit-reproducibly (<https://bugs.gnu.org/25598>)
+
 *** FIXME: Add more
 
 ** Native language support
