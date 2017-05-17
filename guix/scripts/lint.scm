@@ -673,11 +673,10 @@ descriptions maintained upstream."
     (let ((file-name (origin-actual-file-name origin))
           (version (package-version package)))
       (and file-name
-           (not (or (string-prefix? version file-name)
-                    ;; Common in many projects is for the filename to start
-                    ;; with a "v" followed by the version,
-                    ;; e.g. "v3.2.0.tar.gz".
-                    (string-prefix? (string-append "v" version) file-name))))))
+           ;; Common in many projects is for the filename to start
+           ;; with a "v" followed by the version,
+           ;; e.g. "v3.2.0.tar.gz".
+           (not (string-match (string-append "^v?" version) file-name)))))
 
   (let ((origin (package-source package)))
     (unless (or (not origin) (origin-file-name-valid? origin))
