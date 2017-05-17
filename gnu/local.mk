@@ -967,8 +967,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/screen-fix-info-syntax-error.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
-  %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
-  %D%/packages/patches/shadow-CVE-2017-2616.patch		\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
