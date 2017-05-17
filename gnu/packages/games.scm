@@ -207,7 +207,7 @@ effects and music to make a completely free game.")
 (define-public gnubg
   (package
     (name "gnubg")
-    (version "1.05")
+    (version "1.02")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +215,7 @@ effects and music to make a completely free game.")
                            version ".000-sources." "tar.gz"))
        (sha256
         (base32
-         "1nydliwfpljbys4941irixflqqwpv889mx5lcjz50ygih85q2wm8"))))
+         "015mvjk2iw1cg1kxwxfnvp2rxb9cylf6yc39i30fdy414k07zkky"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("readline" ,readline)
@@ -1411,14 +1411,14 @@ older games.")
 (define-public gamine
   (package
     (name "gamine")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gamine-game/"
                                   "gamine-" version ".tar.gz"))
               (sha256
                (base32
-                "1iny959i1kl2ab6z5xi4s66mrvrwcarxyvjfp2k1sx532s8knk8h"))))
+                "08wnk7w84c2413hwny89j2cn89cvfdf67bfc6wl0bf475if0mf4h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
