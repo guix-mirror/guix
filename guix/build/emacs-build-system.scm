@@ -47,10 +47,12 @@
 (define (store-file->elisp-source-file file)
   "Convert FILE, a store file name for an Emacs Lisp source file, into a file
 name that has been stripped of the hash and version number."
-  (let-values (((name version)
-                (package-name->name+version
-                 (strip-store-file-name file))))
-    (string-append name ".el")))
+  (let ((suffix ".el"))
+    (let-values (((name version)
+                  (package-name->name+version
+                   (basename
+                    (strip-store-file-name file) suffix))))
+      (string-append name suffix))))
 
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE into the build directory.  SOURCE may be a compressed
