@@ -668,7 +668,7 @@ descriptions maintained upstream."
 (define (check-source-file-name package)
   "Emit a warning if PACKAGE's origin has no meaningful file name."
   (define (origin-file-name-valid? origin)
-    ;; Return #t if the source file name contains only a version or is #f;
+    ;; Return #f if the source file name contains only a version or is #f;
     ;; indicates that the origin needs a 'file-name' field.
     (let ((file-name (origin-actual-file-name origin))
           (version (package-version package)))
