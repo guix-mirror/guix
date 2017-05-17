@@ -1156,14 +1156,14 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.9")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
+                "17fnvrj7jww29sav6a6jpizclg4w2962m6h37akpii71gf0vrffw"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
