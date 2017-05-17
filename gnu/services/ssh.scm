@@ -385,7 +385,7 @@ The other options should be self-descriptive."
 
   (list (shepherd-service
          (documentation "OpenSSH server.")
-         (requirement '(networking syslogd))
+         (requirement '(syslogd))
          (provision '(ssh-daemon))
          (start #~(make-forkexec-constructor #$openssh-command
                                              #:pid-file #$pid-file))
