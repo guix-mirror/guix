@@ -207,7 +207,7 @@ effects and music to make a completely free game.")
 (define-public gnubg
   (package
     (name "gnubg")
-    (version "1.02")
+    (version "1.05")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +215,7 @@ effects and music to make a completely free game.")
                            version ".000-sources." "tar.gz"))
        (sha256
         (base32
-         "015mvjk2iw1cg1kxwxfnvp2rxb9cylf6yc39i30fdy414k07zkky"))))
+         "1nydliwfpljbys4941irixflqqwpv889mx5lcjz50ygih85q2wm8"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("readline" ,readline)
