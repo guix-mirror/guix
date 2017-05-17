@@ -8994,6 +8994,33 @@ algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
       (license license:gpl3))))
 
+(define-public r-aroma-light
+  (package
+    (name "r-aroma-light")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "aroma.light" version))
+       (sha256
+        (base32
+         "10snykmmx36qaymyf5s1n1km8hsscyzpykcpf0mzsrcv8ml9rp8a"))))
+    (properties `((upstream-name . "aroma.light")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrixstats" ,r-matrixstats)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/aroma.light")
+    (synopsis "Methods for normalization and visualization of microarray data")
+    (description
+     "This package provides methods for microarray analysis that take basic
+data types such as matrices and lists of vectors.  These methods can be used
+standalone, be utilized in other packages, or be wrapped up in higher-level
+classes.")
+    (license license:gpl2+)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
