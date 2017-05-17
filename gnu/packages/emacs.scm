@@ -3387,6 +3387,30 @@ considered to be its successor.  Helm sets out to clean up the legacy code in
 not tied in the trap of backward compatibility.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-swoop
+  (package
+    (name "emacs-helm-swoop")
+    (version "1.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ShingoFukuyama/helm-swoop/archive/"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z34pfi0gsk054pxr906ilaalaw0xz3s536163gf9ykkwmc2356d"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/ShingoFukuyama/helm-swoop")
+    (synopsis "Filter and jump to lines in an Emacs buffer using Helm")
+    (description
+     "This package builds on the Helm interface to provide several commands
+for search-based navigation of buffers.")
+    (license license:gpl2+)))
+
 (define-public emacs-cider
   (package
     (name "emacs-cider")
