@@ -1868,6 +1868,41 @@ designs.")
                      license:asl2.0
                      license:cpl1.0)))))
 
+(define-public java-classpathx-servletapi
+  (package
+    (name "java-classpathx-servletapi")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/classpathx/servletapi/"
+                                  "servletapi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y9489pk4as9q6x300sk3ycc0psqfxcd4b0xvbmf3rhgli8q1kx3"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:build-target "compile"
+       ;; NOTE: This package does not build with Java 8 because of a type
+       ;; mismatch in
+       ;; "source/javax/servlet/jsp/el/ImplicitObjectELResolver.java".  It
+       ;; defines the return value of ScopeMap's "remove" method to be of type
+       ;; "Object", whereas Map's "remove" method returns boolean.
+       #:make-flags
+       (list "-Dbuild.compiler=javac1.7"
+             (string-append "-Ddist=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("ant" "dist" ,@make-flags))))))))
+    (home-page "https://www.gnu.org/software/classpathx/")
+    (synopsis "Java servlet API implementation")
+    (description "This is the GNU servlet API distribution, part of the
+ClasspathX project.  It provides implementations of version 3.0 of the servlet
+API and version 2.1 of the Java ServerPages API.")
+    (license license:gpl3+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
