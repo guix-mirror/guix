@@ -2696,6 +2696,46 @@ comment or quality sections.")
       (supported-systems '("x86_64-linux"))
       (license license:expat))))
 
+(define-public gemma
+  (package
+    (name "gemma")
+    (version "0.96")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xiangzhou/GEMMA/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))))
+    (inputs
+     `(("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("FORCE_DYNAMIC=1") ; use shared libs
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'bin-mkdir
+                     (lambda _
+                       (mkdir-p "bin")))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (install-file "bin/gemma"
+                                    (string-append
+                                     out "/bin"))))))
+       #:tests? #f)) ; no tests included yet
+    (home-page "https://github.com/xiangzhou/GEMMA")
+    (synopsis "Tool for genome-wide efficient mixed model association")
+    (description
+     "Genome-wide Efficient Mixed Model Association (GEMMA) provides a
+standard linear mixed model resolver with application in genome-wide
+association studies (GWAS).")
+    (license license:gpl3)))
+
 (define-public grit
   (package
     (name "grit")
