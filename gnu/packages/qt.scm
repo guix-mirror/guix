@@ -468,19 +468,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                        "-openssl-linked"
                        ;; explicitly link with dbus instead of dlopening it
                        "-dbus-linked"
-                       ;; drop special machine instructions not supported
-                       ;; on all instances of the target
+                       ;; don't use the precompiled headers
+                       "-no-pch"
+                       ;; drop special machine instructions that do not have
+                       ;; runtime detection
                        ,@(if (string-prefix? "x86_64"
                                              (or (%current-target-system)
                                                  (%current-system)))
                              '()
                              '("-no-sse2"))
-                       "-no-sse3"
-                       "-no-ssse3"
-                       "-no-sse4.1"
-                       "-no-sse4.2"
-                       "-no-avx"
-                       "-no-avx2"
                        "-no-mips_dsp"
                        "-no-mips_dspr2")))))
          (add-after 'install 'patch-qt_config.prf
