@@ -18,12 +18,14 @@
 
 (define-module (gnu tests install)
   #:use-module (gnu)
+  #:use-module (gnu bootloader extlinux)
   #:use-module (gnu tests)
   #:use-module (gnu tests base)
   #:use-module (gnu system)
   #:use-module (gnu system install)
   #:use-module (gnu system vm)
   #:use-module ((gnu build vm) #:select (qemu-command))
+  #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages package-management)
@@ -34,6 +36,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:export (%test-installed-os
+            %test-installed-extlinux-os
             %test-separate-store-os
             %test-separate-home-os
             %test-raid-root-os
@@ -71,6 +74,38 @@
                   (supplementary-groups '("wheel" "audio" "video"))
                   (home-directory "/home/alice"))
                  %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define (operating-system-add-packages os packages)
+  "Append PACKAGES to OS packages list."
+  (operating-system
+    (inherit os)
+    (packages (append packages (operating-system-packages os)))))
+
+(define-os-with-source (%minimal-extlinux-os
+                        %minimal-extlinux-os-source)
+  (use-modules (gnu) (gnu tests) (gnu bootloader extlinux)
+               (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader extlinux-bootloader-gpt)
+                 (device "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons (file-system
+                          (device "my-root")
+                          (title 'label)
+                          (mount-point "/")
+                          (type "ext4"))
+                        %base-file-systems))
     (services (cons (service marionette-service-type
                              (marionette-configuration
                               (imported-modules '((gnu services herd)
@@ -121,23 +156,51 @@ guix system init /mnt/etc/config.scm /mnt --no-substitutes
 sync
 reboot\n")
 
+(define %extlinux-gpt-installation-script
+  ;; Shell script of a simple installation.
+  ;; As syslinux 6.0.3 does not handle 64bits ext4 partitions,
+  ;; we make sure to pass -O '^64bit' to mkfs.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+guix build isc-dhcp
+parted --script /dev/vdb mklabel gpt \\
+  mkpart ext2 1M 1G \\
+  set 1 legacy_boot on
+mkfs.ext4 -L my-root -O '^64bit' /dev/vdb1
+mount /dev/vdb1 /mnt
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
 (define* (run-install target-os target-os-source
                       #:key
                       (script %simple-installation-script)
+                      (packages '())
                       (os (marionette-operating-system
-                           ;; Since the image has no network access, use the
-                           ;; current Guix so the store items we need are in
-                           ;; the image.
                            (operating-system
-                             (inherit (operating-system-with-current-guix
-                                       installation-os))
+                             ;; Since the image has no network access, use the
+                             ;; current Guix so the store items we need are in
+                             ;; the image and add packages provided.
+                             (inherit (operating-system-add-packages
+                                       (operating-system-with-current-guix
+                                        installation-os)
+                                       packages))
                              (kernel-arguments '("console=ttyS0")))
                            #:imported-modules '((gnu services herd)
                                                 (guix combinators))))
                       (target-size (* 1200 MiB)))
   "Run SCRIPT (a shell script following the GuixSD installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
-the installed system."
+the installed system.  The packages specified in PACKAGES will be appended to
+packages defined in installation-os."
 
   (mlet* %store-monad ((_      (set-grafting #f))
                        (system (current-system))
@@ -231,6 +294,23 @@ build (current-guix) and then store a couple of full system images.")
                          (command (qemu-command/writable-image image)))
       (run-basic-test %minimal-os command
                       "installed-os")))))
+
+(define %test-installed-extlinux-os
+  (system-test
+   (name "installed-extlinux-os")
+   (description
+    "Test basic functionality of an OS booted with an extlinux bootloader.  As
+per %test-installed-os, this test is expensive in terms of CPU and storage.")
+   (value
+    (mlet* %store-monad ((image (run-install %minimal-extlinux-os
+                                             %minimal-extlinux-os-source
+                                             #:packages
+                                             (list syslinux)
+                                             #:script
+                                             %extlinux-gpt-installation-script))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %minimal-extlinux-os command
+                      "installed-extlinux-os")))))
 
 
 ;;;
