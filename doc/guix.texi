@@ -7322,8 +7322,8 @@ Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
 Once this is done, you should be able to reboot the system and boot from
-the USB stick.  The latter usually requires you to get in the BIOS' boot
-menu, where you can choose to boot from the USB stick.
+the USB stick.  The latter usually requires you to get in the BIOS' or
+UEFI boot menu, where you can choose to boot from the USB stick.
 
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
 GuixSD in a virtual machine (VM).
@@ -7477,6 +7477,17 @@ install BIOS-based GRUB (which is the default), make sure a BIOS Boot
 Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
 manual}).
 
+@cindex EFI, installation
+@cindex UEFI, installation
+@cindex ESP, EFI system partition
+If you instead wish to use EFI-based GRUB, a FAT32 @dfn{EFI System Partition}
+(ESP) is required.  This partition should be mounted at @file{/boot/efi} and
+must have the @code{esp} flag set.  E.g., for @command{parted}:
+
+@example
+parted /dev/sda set 1 esp on
+@end example
+
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
@@ -7515,6 +7526,11 @@ root partition):
 @example
 mount LABEL=my-root /mnt
 @end example
+
+Also mount any other partitions you would like to use on the target
+system relative to this path.  If you have @file{/boot} on a separate
+partition for example, mount it at @file{/mnt/boot} now so it is found
+by @code{guix system init} afterwards.
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
 Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
@@ -7590,7 +7606,8 @@ in particular:
 @itemize
 @item
 Make sure the @code{grub-configuration} form refers to the device you
-want to install GRUB on.
+want to install GRUB on.  You also need to specify the @code{grub-efi}
+package if you wish to use native UEFI boot.
 
 @item
 Be sure that your partition labels match the value of their respective
@@ -7879,7 +7896,7 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
-A graphical environment with a choice of lightweight window managers
+A graphical UEFI system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
@@ -15277,7 +15294,12 @@ The number of seconds to wait for keyboard input before booting.  Set to
 The @code{grub-theme} object describing the theme to use.
 
 @item @code{grub} (default: @code{grub})
-The GRUB package to use.
+@cindex EFI, bootloader
+@cindex UEFI, bootloader
+@cindex BIOS, bootloader
+The GRUB package to use.  Currently either @code{grub}, for ``legacy''
+x86 BIOS systems, or @code{grub-efi}, for modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).
 
 @item @code{terminal-outputs} (default: @code{'gfxterm})
 The output terminals used for the GRUB boot menu, as a list of symbols.
