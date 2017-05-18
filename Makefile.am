@@ -420,6 +420,7 @@ EXTRA_DIST =						\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
+  build-aux/update-NEWS.scm				\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
@@ -641,6 +642,15 @@ update-guix-package:
 	   $(top_srcdir)/build-aux/update-guix-package.scm	\
 	   "`git rev-parse HEAD`"
 
+# Location of a checkout of <git://git.savannah.gnu.org/guix/maintenance.git>.
+# Package data from this checkout is used by 'update-NEWS.scm'.
+GUIX_MAINTENANCE_DIRECTORY ?= $(top_srcdir)/../guix-maintenance
+
+update-NEWS: $(GOBJECTS)
+	$(top_builddir)/pre-inst-env "$(GUILE)"				\
+	  $(top_srcdir)/build-aux/update-NEWS.scm			\
+	  $(top_srcdir)/NEWS "$(GUIX_MAINTENANCE_DIRECTORY)/data"
+
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names: $(distdir)/ChangeLog
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
@@ -676,7 +686,7 @@ hydra-jobs.scm: $(GOBJECTS)
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
 .PHONY: clean-go make-go
-.PHONY: update-guix-package release
+.PHONY: update-guix-package update-NEWS release
 
 ## -------------- ##
 ## Silent rules.  ##
