@@ -255,7 +255,8 @@ of a package, and INPUT-NAMES, a list of package specifications such as
   ;; native inputs.
   (let ((inputs (package-inputs package))
         (input-names
-          '("pkg-config"
+         '("pkg-config"
+            "cmake"
             "extra-cmake-modules"
             "glib:bin"
             "intltool"
