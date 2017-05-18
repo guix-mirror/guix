@@ -1645,53 +1645,6 @@ IcedTea build harness.")
 (define-public icedtea icedtea-7)
 
 
-(define-public ant
-  (package (inherit ant-bootstrap)
-    (name "ant")
-    ;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x
-    ;; series requires Java 8.
-    (version "1.9.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://apache/ant/source/apache-ant-"
-                                  version "-src.tar.gz"))
-              (sha256
-               (base32
-                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (for-each delete-file
-                            (find-files "lib/optional" "\\.jar$"))
-                  #t))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ant-bootstrap)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'remove-scripts
-             ;; Remove bat / cmd scripts for DOS as well as the antRun and runant
-             ;; wrappers.
-             (lambda _
-               (for-each delete-file
-                         (find-files "src/script"
-                                     "(.*\\.(bat|cmd)|runant.*|antRun.*)"))
-               #t))
-           (replace 'build
-             (lambda _
-               (setenv "JAVA_HOME" (string-append (assoc-ref %build-inputs "gcj")
-                                                  "/lib/jvm"))
-               ;; Disable tests to avoid dependency on hamcrest-core, which needs
-               ;; Ant to build.  This is necessary in addition to disabling the
-               ;; "check" phase, because the dependency on "test-jar" would always
-               ;; result in the tests to be run.
-               (substitute* "build.xml"
-                 (("depends=\"jars,test-jar\"") "depends=\"jars\""))
-               (zero? (system* "bash" "bootstrap.sh"
-                               (string-append "-Ddist.dir="
-                                              (assoc-ref %outputs "out"))))))))))
-    (native-inputs
-     `(("gcj" ,gcj)))))
-
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
@@ -1736,6 +1689,21 @@ IcedTea build harness.")
                                               (assoc-ref outputs "out"))))))))))
     (native-inputs
      `(("jdk" ,icedtea-8 "jdk")))))
+
+;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x series
+;; requires Java 8.
+(define-public ant
+  (package (inherit ant/java8)
+    (version "1.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/ant/source/apache-ant-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
+    (native-inputs
+     `(("jdk" ,icedtea-7 "jdk")))))
 
 (define-public clojure
   (let* ((remove-archives '(begin
