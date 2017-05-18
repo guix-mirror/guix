@@ -47,31 +47,34 @@
          (loop (cons file files)))))))
 
 (define (file-is-directory? file)
-  (eq? 'directory (stat:type (stat file))))
+  (match (stat file #f)
+    (#f #f)                                       ;maybe a dangling symlink
+    (st (eq? 'directory (stat:type st)))))
 
 (define (file=? file1 file2)
   "Return #t if FILE1 and FILE2 are regular files and their contents are
 identical, #f otherwise."
-  (let ((st1 (stat file1))
-        (st2 (stat file2)))
+  (let ((st1 (stat file1 #f))
+        (st2 (stat file2 #f)))
     ;; When deduplication is enabled, identical files share the same inode.
-    (or (= (stat:ino st1) (stat:ino st2))
-        (and (eq? (stat:type st1) 'regular)
-             (eq? (stat:type st2) 'regular)
-             (= (stat:size st1) (stat:size st2))
-             (call-with-input-file file1
-               (lambda (port1)
-                 (call-with-input-file file2
-                   (lambda (port2)
-                     (define len 8192)
-                     (define buf1 (make-bytevector len))
-                     (define buf2 (make-bytevector len))
-                     (let loop ()
-                       (let ((n1 (get-bytevector-n! port1 buf1 0 len))
-                             (n2 (get-bytevector-n! port2 buf2 0 len)))
-                         (and (equal? n1 n2)
-                              (or (eof-object? n1)
-                                  (loop)))))))))))))
+    (and st1 st2
+         (or (= (stat:ino st1) (stat:ino st2))
+             (and (eq? (stat:type st1) 'regular)
+                  (eq? (stat:type st2) 'regular)
+                  (= (stat:size st1) (stat:size st2))
+                  (call-with-input-file file1
+                    (lambda (port1)
+                      (call-with-input-file file2
+                        (lambda (port2)
+                          (define len 8192)
+                          (define buf1 (make-bytevector len))
+                          (define buf2 (make-bytevector len))
+                          (let loop ()
+                            (let ((n1 (get-bytevector-n! port1 buf1 0 len))
+                                  (n2 (get-bytevector-n! port2 buf2 0 len)))
+                              (and (equal? n1 n2)
+                                   (or (eof-object? n1)
+                                       (loop))))))))))))))
 
 (define* (union-build output inputs
                       #:key (log-port (current-error-port))
