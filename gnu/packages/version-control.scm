@@ -8,7 +8,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -37,6 +37,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
@@ -1476,3 +1478,36 @@ patches.
 unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 @end enumerate")
     (license license:gpl2)))
+
+(define-public java-jgit
+  (package
+    (name "java-jgit")
+    (version "4.7.0.201704051617-r")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jgit/org.eclipse.jgit/"
+                                  version "/org.eclipse.jgit-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "13ii4jn02ynzq6i7gsyi21k2i94jpc85wf6bcm31q4cyvzv0mk4k"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; There are no tests to run.
+       #:jar-name "jgit.jar"
+       ;; JGit must be built with a JDK supporting Java 8.
+       #:jdk ,icedtea-8
+       ;; Target our older default JDK.
+       #:make-flags (list "-Dtarget=1.7")))
+    (inputs
+     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-javaewah" ,java-javaewah)
+       ("java-jsch" ,java-jsch)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (home-page "https://eclipse.org/jgit/")
+    (synopsis "Java library implementing the Git version control system")
+    (description "JGit is a lightweight, pure Java library implementing the
+Git version control system, providing repository access routines, support for
+network protocols, and core version control algorithms.")
+    (license license:edl1.0)))
