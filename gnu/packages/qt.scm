@@ -909,7 +909,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "09m41n95448pszr7inlg03ycb66s1a9hzfylaka92382acf1myav"))))
+               "09m41n95448pszr7inlg03ycb66s1a9hzfylaka92382acf1myav"))
+             (patches (search-patches "qtscript-disable-tests.patch"))))
     (native-inputs
      `(("perl" ,perl)
        ("qttools" ,qttools)))

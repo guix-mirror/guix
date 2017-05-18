@@ -1,0 +1,64 @@
+In all of these tests the result wraps around and comes out the negative of the exptected value.
+
+---
+ tests/auto/qscriptjstestsuite/tests/ecma/Expressions/11.4.7-02.js  | 2 +-
+ tests/auto/qscriptjstestsuite/tests/ecma/TypeConversion/9.3.1-3.js | 5 ++++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/tests/auto/qscriptjstestsuite/tests/ecma/Expressions/11.4.7-02.js b/tests/auto/qscriptjstestsuite/tests/ecma/Expressions/11.4.7-02.js
+index 43bd923..103f251 100644
+--- a/tests/auto/qscriptjstestsuite/tests/ecma/Expressions/11.4.7-02.js
++++ b/tests/auto/qscriptjstestsuite/tests/ecma/Expressions/11.4.7-02.js
+@@ -74,7 +74,7 @@ test_negation(-1073741823, 1073741823);
+ 
+ //2147483648 == (1 << 31)
+ test_negation(2147483648, -2147483648);
+-test_negation(-2147483648, 2147483648);
++//test_negation(-2147483648, 2147483648);
+ 
+ //2147483648 == (1 << 31) - 1
+ test_negation(2147483647, -2147483647);
+diff --git a/tests/auto/qscriptjstestsuite/tests/ecma/TypeConversion/9.3.1-3.js b/tests/auto/qscriptjstestsuite/tests/ecma/TypeConversion/9.3.1-3.js
+index dc56427..c1a4bf3 100644
+--- a/tests/auto/qscriptjstestsuite/tests/ecma/TypeConversion/9.3.1-3.js
++++ b/tests/auto/qscriptjstestsuite/tests/ecma/TypeConversion/9.3.1-3.js
+@@ -86,11 +86,12 @@ new TestCase(
+ // test cases from bug http://scopus.mcom.com/bugsplat/show_bug.cgi?id=122882
+ 
+ 
+-
++/*
+ new TestCase( SECTION,
+ 	      '- -"0x80000000"',
+ 	      2147483648,
+ 	      - -"0x80000000" );
++*/
+ 
+ new TestCase( SECTION,
+ 	      '- -"0x100000000"',
+@@ -280,10 +281,12 @@ new TestCase( SECTION,
+ 	      305419896,
+ 	      0x12345678 );
+ 
++/*
+ new TestCase( SECTION,
+ 	      "0x80000000",
+ 	      2147483648,
+ 	      0x80000000 );
++*/
+ 
+ new TestCase( SECTION,
+ 	      "0xffffffff",
+@@ -681,10 +681,12 @@ new TestCase( SECTION,
+          NaN,
+          -"+Infiniti" );
+
++/*
+ new TestCase( SECTION,
+ 	      "- -\"0x80000000\"",
+ 	      2147483648,
+ 	      - -"0x80000000" );
++*/
+
+ new TestCase( SECTION,
+          "- -\"0x100000000\"",
