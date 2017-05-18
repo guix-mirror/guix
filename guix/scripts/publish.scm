@@ -481,7 +481,8 @@ requested using POOL."
                                    (%private-key)
                                    #:nar-path nar-path
                                    #:compression compression
-                                   #:file-size (stat:size (stat nar)))
+                                   #:file-size (and=> (stat nar #f)
+                                                      stat:size))
                    port))))))
 
 ;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for

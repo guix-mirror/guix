@@ -98,6 +98,18 @@
                (connect conn AF_INET (inet-pton AF_INET "127.0.0.1") port))
         (loop)))))
 
+(define (wait-for-file file)
+  ;; Wait until FILE shows up.
+  (let loop ((i 20))
+    (cond ((file-exists? file)
+           #t)
+          ((zero? i)
+           (error "file didn't show up" file))
+          (else
+           (pk 'wait-for-file file)
+           (sleep 1)
+           (loop (- i 1))))))
+
 ;; Wait until the two servers are ready.
 (wait-until-ready 6789)
 
@@ -331,14 +343,6 @@ FileSize: ~a~%"
         200)                                      ;nar/…
   (call-with-temporary-directory
    (lambda (cache)
-     (define (wait-for-file file)
-       (let loop ((i 20))
-         (or (file-exists? file)
-             (begin
-               (pk 'wait-for-file file)
-               (sleep 1)
-               (loop (- i 1))))))
-
      (let ((thread (with-separate-output-ports
                     (call-with-new-thread
                      (lambda ()
@@ -383,5 +387,56 @@ FileSize: ~a~%"
                           (assoc-ref narinfo "FileSize"))
                          (stat:size (stat nar)))
                       (response-code uncompressed)))))))))
+
+(unless (zlib-available?)
+  (test-skip 1))
+(let ((item (add-text-to-store %store "fake-compressed-thing.tar.gz"
+                               (random-text))))
+  (test-equal "with cache, uncompressed"
+    (list #f
+          `(("StorePath" . ,item)
+            ("URL" . ,(string-append "nar/" (basename item)))
+            ("Compression" . "none"))
+          200                                     ;nar/…
+          (path-info-nar-size
+           (query-path-info %store item))         ;FileSize
+          404)                                    ;nar/gzip/…
+    (call-with-temporary-directory
+     (lambda (cache)
+       (let ((thread (with-separate-output-ports
+                      (call-with-new-thread
+                       (lambda ()
+                         (guix-publish "--port=6796" "-C2"
+                                       (string-append "--cache=" cache)))))))
+         (wait-until-ready 6796)
+         (let* ((base     "http://localhost:6796/")
+                (part     (store-path-hash-part item))
+                (url      (string-append base part ".narinfo"))
+                (cached   (string-append cache "/none/"
+                                         (basename item) ".narinfo"))
+                (nar      (string-append cache "/none/"
+                                         (basename item) ".nar"))
+                (response (http-get url)))
+           (and (= 404 (response-code response))
+
+                (wait-for-file cached)
+                (let* ((body         (http-get-port url))
+                       (compressed   (http-get (string-append base "nar/gzip/"
+                                                              (basename item))))
+                       (uncompressed (http-get (string-append base "nar/"
+                                                              (basename item))))
+                       (narinfo      (recutils->alist body)))
+                  (list (file-exists? nar)
+                        (filter (lambda (item)
+                                  (match item
+                                    (("Compression" . _) #t)
+                                    (("StorePath" . _)  #t)
+                                    (("URL" . _) #t)
+                                    (_ #f)))
+                                narinfo)
+                        (response-code uncompressed)
+                        (string->number
+                         (assoc-ref narinfo "FileSize"))
+                        (response-code compressed))))))))))
 
 (test-end "publish")
