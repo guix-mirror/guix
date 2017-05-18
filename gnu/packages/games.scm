@@ -1491,7 +1491,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.3.4")
+    (version "1.7.5.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1499,7 +1499,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0mbxzsgjg16pqa3jnxkd7wwvw1lrx455r7fvwjfhzp0yv7acrn10"))))
+                "1b5q79jkdrck5lq8lvhnpq2mly257r8lylp7b8sp8xn4365f86ch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1513,7 +1513,6 @@ is programmed in Haskell.")
        ("curl" ,curl)
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
-       ("physfs" ,physfs)
        ("sdl-union" ,(sdl-union))))
     (home-page "http://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
