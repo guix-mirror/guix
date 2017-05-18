@@ -2160,14 +2160,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1ak32fj5xkk2fvmm3g8i7wzmk4bh2ijsp8fzvvw5wj6365p9j24v"))
+               "1q4r5860dpkkw4fpfz3f8mvdd8xjpnwwzr9zybgmgb255bs0g4yz"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2207,8 +2207,8 @@ and a game metadata scraper.")
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
-autoreplace and autoupdate vehicles.  This package only includes the game engine.  When you start
-it you will be prompted to download a graphics set.")
+autoreplace and autoupdate vehicles.  This package only includes the game
+engine.  When you start it you will be prompted to download a graphics set.")
     (home-page "http://openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
