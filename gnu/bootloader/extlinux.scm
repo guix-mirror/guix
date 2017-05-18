@@ -26,10 +26,7 @@
   #:use-module (guix records)
   #:use-module (guix utils)
   #:export (extlinux-bootloader
-            syslinux-bootloader
-
-            extlinux-configuration
-            syslinux-configuration))
+            syslinux-bootloader))
 
 (define* (extlinux-configuration-file config entries
                                       #:key
