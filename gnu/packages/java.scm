@@ -341,12 +341,12 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:asl2.0)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.9")
+  (let* ((version "2.6.10")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
                    (uri (string-append
-                         "http://icedtea.classpath.org/download/drops/"
+                         "http://icedtea.classpath.org/download/drops"
                          "/icedtea7/" version "/" name ".tar.bz2"))
                    (sha256 (base32 hash))))))
     (package
@@ -359,7 +359,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "1slmajiakq7sk137vgqq9c93r5s620a46lw2jwbnzxhysjw3wkwf"))
+                  "0am945k2zqrka2xn7lb5grmkad4lwncnhnwk8iq6f269birzsj8w"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -770,25 +770,25 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "08a4d1sg5m9l99lc7gafc7dmzmf4d8jvij5pffxv8rf6pk7psk24"))
+                 "02klsxp9hlf5sial6mxpiq53hmrhlrg6x774j7bjjfhb7hpdvadh"))
          ("corba-drop"
           ,(drop "corba"
-                 "12br49cfrqgvms0bnaij7fvnakvb6q8dlpqja64rg5q5r3x4gps8"))
+                 "1vbly6khri241xda05gnwkpf2fk41d96ls96ximi084mx0a3w5rd"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "07v2y3pll6z2wma94qilgffwyn2n4jna01mrhqwkb27whfpjfkmz"))
+                 "0s8zln64vdwdxwlw1vpfzm8xbpyhgsv3nqjmnv7y36qpsszg27a5"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "18rw64jjpq14v56d0q1xvz8knl0kf02rcday7fvlaxrbbj19km55"))
+                 "0myd66bv8ib8krzgqv754bc564rd8xwpwabvf7my1apyb86vap3n"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "1ig7xipi3vzm6cphy5fdraxi72p27xsg2qb51yqx9qwsmlrv1zj4"))
+                 "10b4lfv10vba07zblw0wii7mhrfhf32pf7410x5nz2q0smgszl2h"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0sn9qv9nnhaan2smbhrv54lfhwsjhgd3b3h736p5d2hzpw8kicry"))
+                 "0lvncxb5qzrlqkflrnd0l8vwy155cwj1jb07rkq10z2vx0bq7lq2"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "16ijxy8br8dla339m4i90wr9xpf7s8z3nrhfyxm7jahr8injpzyl"))
+                 "0q6mdgbbd3681y3n0z1v783irdjhhi73z6sn5csczpyhjm318axb"))
          ("ant" ,ant)
          ("attr" ,attr)
          ("autoconf" ,autoconf)
