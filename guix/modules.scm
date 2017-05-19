@@ -95,11 +95,16 @@ depends on."
     (('gnu _ ...) #t)
     (_ #f)))
 
+(define %source-less-modules
+  ;; These are modules that have no corresponding source files or a source
+  ;; file different from what you'd expect.
+  '((system syntax)                             ;2.0, defined in boot-9
+    (ice-9 ports internal)                      ;2.2, defined in (ice-9 ports)
+    (system syntax internal)))                  ;2.2, defined in boot-9
+
 (define* (source-module-dependencies module #:optional (load-path %load-path))
   "Return the modules used by MODULE by looking at its source code."
-  ;; The (system syntax) module is a special-case because it has no
-  ;; corresponding source file (as of Guile 2.0.)
-  (if (equal? module '(system syntax))
+  (if (member module %source-less-modules)
       '()
       (module-file-dependencies
        (search-path load-path
