@@ -1302,17 +1302,17 @@ contain over 620 classes.")
 (define-public python-pyqt-4
   (package (inherit python-pyqt)
     (name "python-pyqt")
-    (version "4.11.4")
+    (version "4.12")
     (source
       (origin
         (method url-fetch)
         (uri
           (string-append "mirror://sourceforge/pyqt/PyQt4/"
-                         "PyQt-" version "/PyQt-x11-gpl-"
+                         "PyQt-" version "/PyQt4_gpl_x11-"
                          version ".tar.gz"))
         (sha256
          (base32
-          "01zlviy5lq8g6db84wnvvpsrfnip9lbcpxagsyqa6as3jmsff7zw"))))
+          "1nw8r88a5g2d550yvklawlvns8gd5slw53yy688kxnsa65aln79w"))))
     (native-inputs
      `(("python-sip" ,python-sip)
        ("qt" ,qt-4)))
