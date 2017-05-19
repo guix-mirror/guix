@@ -4151,6 +4151,43 @@ more efficient storage-wise than an uncompressed bitmap (as implemented in the
     ;; GPL2.0 derivates are explicitly allowed.
     (license license:asl2.0)))
 
+(define-public java-slf4j-api
+  (package
+    (name "java-slf4j-api")
+    (version "1.7.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.slf4j.org/dist/slf4j-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13j51sgzmhhdrfa74gkal5zpip7r1440dh7zsi2c8bpb2zs1v8kb"))
+              (modules '((guix build utils)))
+              ;; Delete bundled jars.
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     ;; FIXME: org.slf4j.NoBindingTest fails with the ominous "This code
+     ;; should have never made it into slf4j-api.jar".
+     `(#:tests? #f
+       #:jar-name "slf4j-api.jar"
+       #:source-dir "slf4j-api/src/main"
+       #:test-dir "slf4j-api/src/test"))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://www.slf4j.org/")
+    (synopsis "Simple logging facade for Java")
+    (description "The Simple Logging Facade for Java (SLF4J) serves as a
+simple facade or abstraction for various logging
+frameworks (e.g. @code{java.util.logging}, @code{logback}, @code{log4j})
+allowing the end user to plug in the desired logging framework at deployment
+time.")
+    (license license:expat)))
+
 (define-public antlr2
   (package
     (name "antlr2")
