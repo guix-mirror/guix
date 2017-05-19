@@ -1149,7 +1149,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.18.1")
+    (version "4.19.2")
     (source
       (origin
         (method url-fetch)
@@ -1158,7 +1158,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                          "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "1452zy3g0qv4fpd9c0y4gq437kn0xf7bbfniibv5n43zpwnpmklv"))))
+          "0cq5r21fmjyw5v7a6l4sfbaj3zgm7k5b2cryj6bnjki54nnllas3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
