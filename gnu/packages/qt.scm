@@ -1212,7 +1212,7 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.7")
+    (version "5.8.2")
     (source
       (origin
         (method url-fetch)
@@ -1222,7 +1222,7 @@ module provides support functions to the automatically generated code.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "01avscn1bir0h8zzfh1jvpljgwg6qkax5nk142xrm63rbyx969l9"))
+          "1s1nalcspam9dc7f63jkqn1i2sv9lrqn57p2zsc61g8bncahbmzb"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
