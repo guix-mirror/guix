@@ -930,6 +930,9 @@ IcedTea build harness.")
          ("openjdk-src"
           ,(drop "openjdk"
                  "0va5i3zr8y8ncv914rz914jda9d88gq0viww3smdqnln8n78rszi"))
+         ("aarch32-drop"
+          ,(drop "aarch32"
+                 "0cway5a5hcfyh4pzl9zz5xr7lil4gsliy6r5iqbaasd2d9alvqiq"))
          ("corba-drop"
           ,(drop "corba"
                  "1l9zr97a3kq00bj4i8wcdsjlz3xlfldxd8zhkcxikinwd5n0n8a7"))
