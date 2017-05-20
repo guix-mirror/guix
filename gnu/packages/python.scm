@@ -14865,3 +14865,28 @@ textual content for output generation on the web.")
 ;; the "python-genshi-" prefix instead of "python2-genshi-".
 (define-public python2-genshi
   (package-with-python2 python-genshi))
+
+(define-public python-relatorio
+  (package
+    (name "python-relatorio")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "relatorio" version))
+       (sha256
+        (base32
+         "0lincq79mzgazwd9gh41dybjh9c3n87r83pl8nk3j79aihyfk84z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-genshi" ,python-genshi)))
+    (home-page "https://relatorio.tryton.org/")
+    (synopsis "Templating library able to output ODT and PDF files")
+    (description "Relatorio is a templating library which provides a way to
+easily output ODT, ODS, PNG, SVG and several other kinds of files.  Support
+for more filetypes can be easily added by creating plugins for them.")
+    (license license:gpl3+)))
+
+(define-public python2-relatorio
+  (package-with-python2 python-relatorio))
