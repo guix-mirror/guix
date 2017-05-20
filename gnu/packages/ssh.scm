@@ -68,6 +68,7 @@
                (base32
                 "03bcp9ksqp0s1pmwfmzhcknvkxay5k0mjzzxp3rjlifbng1vxq9r"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
@@ -238,6 +239,7 @@ Additionally, various channel-specific options can be negotiated.")
                                   "], [chmod +x examples/"
                                   file "])\n"))))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
