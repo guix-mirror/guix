@@ -1568,7 +1568,12 @@ UnionFS-FUSE additionally supports copy-on-write.")
                           (exe (string-append out "/bin/unionfs")))
                      ;; By default, 'unionfs' keeps references to
                      ;; $glibc/share/locale and similar stuff.  Remove them.
-                     (remove-store-references exe)))
+                     (remove-store-references exe)
+
+                     ;; 'unionfsctl' has references to glibc as well.  Since
+                     ;; we don't need it, remove it.
+                     (delete-file (string-append out "/bin/unionfsctl"))
+                     #t))
                  %standard-phases)))
     (inputs `(("fuse" ,fuse-static)))))
 
