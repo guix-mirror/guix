@@ -321,6 +321,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/protobuf.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/tryton.scm			\
   %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
