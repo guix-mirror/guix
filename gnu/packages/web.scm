@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -4259,6 +4259,17 @@ handling many of the web standards in use today.")
                (base32
                 "1fy4ph5h9kp0jzj1m6pfylxnnmgdk0mmdppw76z9jhna4jndk5xa"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'compress-elvi.1sr
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The manpages of the elvis are symlinks to elvi.1sr.gz
+             ;; but elvi.1sr does not get compressed by our manpage phase.
+             (let* ((out (assoc-ref %outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (with-directory-excursion man
+                 (zero? (system* "gzip" "elvi.1sr")))))))))
     (inputs
      `(("perl" ,perl)
        ("perl-www-opensearch" ,perl-www-opensearch)
