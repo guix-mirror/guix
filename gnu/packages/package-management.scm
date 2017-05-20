@@ -52,6 +52,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define (boot-guile-uri arch)
@@ -264,6 +265,18 @@ the Nix package manager.")
 
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
+
+(define-public guile2.0-guix
+  (package
+    (inherit guix)
+    (name "guile2.0-guix")
+    (inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-inputs guix))))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)
+       ("guile-json" ,guile2.0-json)
+       ("guile-ssh" ,guile2.0-ssh)))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
