@@ -68,8 +68,10 @@ thermald
 *** Create home directories once file systems are mounted
     (<http://bugs.gnu.org/21108>)
 *** GNU R now builds bit-reproducibly (<https://bugs.gnu.org/25598>)
-
-*** FIXME: Add more
+*** The daemon’s default settings are used unless overriden (https://bugs.gnu.org/20217)
+*** ‘guix system’ now supports the common build option ‘--root’ (https://bugs.gnu.org/26271)
+*** Mesa uses LLVM for better Gallium performance (https://bugs.gnu.org/25953)
+*** Grafting no longer triggers a download of all the outputs of each derivation (https://bugs.gnu.org/24886)
 
 ** Native language support
 
