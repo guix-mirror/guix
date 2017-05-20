@@ -61,6 +61,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -192,6 +193,83 @@
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
+
+(define-public deja-dup
+  (package
+    (name "deja-dup")
+    (version "34.3")
+    (source (origin
+             (method url-fetch)
+             (uri "https://launchpadlibrarian.net/295170991/deja-dup-34.3.tar.xz")
+             (sha256
+              (base32
+               "1xqcr61hpbahbla7gdjn4ngjfz7w6f57y7f5pkb77yk05f60j2n9"))
+             (patches
+               (search-patches "deja-dup-use-ref-keyword-for-iter.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build cmake-build-system) #:prefix cmake:)
+                  (guix build glib-or-gtk-build-system)
+                  (guix build utils))
+       #:imported-modules (,@%glib-or-gtk-build-system-modules
+                           (guix build cmake-build-system))
+       #:test-target "test"
+       #:configure-flags (list (string-append
+                                "-DCMAKE_INSTALL_FULL_DATADIR=" %output)
+                               (string-append
+                                "-DCMAKE_INSTALL_LIBEXECDIR=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lockfile-deletion
+           (lambda rest
+             (substitute* "libdeja/tools/duplicity/DuplicityInstance.vala"
+               (("/bin/rm")
+                (which "rm")))))
+         (replace 'configure
+           (assoc-ref cmake:%standard-phases 'configure))
+         (delete 'check) ;; Fails due to issues with DBus
+         (add-after 'install 'wrap-deja-dup
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((python      (assoc-ref inputs "python"))
+                   (python-path (getenv "PYTHONPATH"))
+                   (duplicity   (assoc-ref inputs "duplicity"))
+                   (out         (assoc-ref outputs "out")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("PATH" ":" prefix (,(string-append python "/bin")
+                                         ,(string-append duplicity "/bin"))))
+                  (wrap-program program
+                    `("PYTHONPATH" ":" prefix (,python-path))))
+
+                (find-files (string-append out "/bin")))
+               #t))))))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)
+       ("duplicity" ,duplicity)
+       ("python" ,python2-minimal)
+       ("python-pygobject" ,python2-pygobject)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("packagekit" ,packagekit)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)
+       ("intltool" ,intltool)
+       ("cmake", cmake)))
+    (home-page "https://launchpad.net/deja-dup")
+    (synopsis "Simple backup tool, for regular encrypted backups")
+    (description
+     "Déjà Dup is a simple backup tool, for regular encrypted backups.  It
+uses duplicity as the backend, which supports incremental backups and storage
+either on a local, or remote machine via a number of methods.")
+    (license license:gpl3+)))
 
 (define-public dia
   ;; This version from GNOME's repository includes fixes for compiling with
