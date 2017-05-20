@@ -19,6 +19,7 @@
 (define-module (gnu packages tryton)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -64,4 +65,29 @@
 application platform using PostgreSQL as its main database engine.  It is the
 core base of a complete business solution providing modularity, scalability
 and security.")
+    (license license:gpl3+)))
+
+(define-public tryton
+  (package
+    (name "tryton")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://downloads.tryton.org/4.4/tryton-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1lklcz5fs6rkrd7z2m2f5gz4fdwzkgnhg2hyvzp20kdsvi33bq2j"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-chardet" ,python2-chardet)
+       ("python2-dateutil" ,python2-dateutil)
+       ("python2-pygtk" ,python2-pygtk)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Client component of Tryton")
+    (description "This package is the client component of Tryton.")
     (license license:gpl3+)))
