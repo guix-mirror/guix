@@ -132,6 +132,7 @@ printing, and psresize, for adjusting page sizes.")
    (name "ghostscript")
    (replacement ghostscript/fixed)
    (version "9.14.0")
+   ;; XXX Try removing the bundled copy of jbig2dec.
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
