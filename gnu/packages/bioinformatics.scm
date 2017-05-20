@@ -614,7 +614,7 @@ Python.")
 (define-public python-biom-format
   (package
    (name "python-biom-format")
-   (version "2.1.5")
+   (version "2.1.6")
    (source
     (origin
      (method url-fetch)
@@ -625,14 +625,15 @@ Python.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "1n25w3p1rixbpac8iysmzcja6m4ip5r6sz19l8y6wlwi49hxn278"))))
+       "08cr7wpahk6zb31h4bs7jmzpvxcqv9s13xz40h6y2h656jvdvnpj"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-numpy" ,python-numpy)
       ("python-scipy" ,python-scipy)
       ("python-future" ,python-future)
       ("python-click" ,python-click)
-      ("python-h5py" ,python-h5py)))
+      ("python-h5py" ,python-h5py)
+      ("python-pandas" ,python-pandas)))
    (native-inputs
     `(("python-nose" ,python-nose)))
    (home-page "http://www.biom-format.org")
