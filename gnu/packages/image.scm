@@ -509,7 +509,10 @@ arithmetic ops.")
         (sha256
           (base32 "04akiwab8iy5iy34razcvh9mcja9wy737civ3sbjxk4j143s1b2s"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"
-                                 "jbig2dec-CVE-2016-9601.patch"))))
+                                 "jbig2dec-CVE-2016-9601.patch"
+                                 "jbig2dec-CVE-2017-7885.patch"
+                                 "jbig2dec-CVE-2017-7975.patch"
+                                 "jbig2dec-CVE-2017-7976.patch"))))
 
     (build-system gnu-build-system)
     (synopsis "Decoder of the JBIG2 image compression format")

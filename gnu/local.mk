@@ -689,6 +689,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/jasper-CVE-2017-6850.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7885.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7975.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7976.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
