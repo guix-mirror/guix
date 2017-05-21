@@ -2673,3 +2673,24 @@ match expressions, and if expressions.")
     (description "A ppx rewriter that simplifies building s-expressions from
 ocaml values.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-pipebang
+  (package
+    (name "ocaml-ppx-pipebang")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_pipebang" version
+              "1965c7hymp26ncmjs0pfxi2s5jlj60z2c9b194lgcwxqiav56pcw"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_pipebang/")
+    (synopsis "Inline reverse application operators `|>` and `|!`")
+    (description "A ppx rewriter that inlines reverse application operators
+@code{|>} and @code{|!}.")
+    (license license:asl2.0)))
