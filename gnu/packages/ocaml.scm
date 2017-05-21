@@ -2871,3 +2871,39 @@ let%expect_test construct.  The body of an expect-test can contain
 output-generating code, interleaved with %expect extension expressions to denote
 the expected output.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-jane
+  (package
+    (name "ocaml-ppx-jane")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_jane" version
+              "0bjxkhmzgm6x9dcvjwybbccn34khbvyyjimcbaja30fp6qcqk5yl"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-bench" ,ocaml-ppx-bench)
+       ("ppx-bin-prot" ,ocaml-ppx-bin-prot)
+       ("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
+       ("ppx-deriving" ,ocaml-ppx-deriving)
+       ("ppx-enumerate" ,ocaml-ppx-enumerate)
+       ("ppx-expect" ,ocaml-ppx-expect)
+       ("ppx-fail" ,ocaml-ppx-fail)
+       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-let" ,ocaml-ppx-let)
+       ("ppx-pipebang" ,ocaml-ppx-pipebang)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-sexp-message" ,ocaml-ppx-sexp-message)
+       ("ppx-sexp-value" ,ocaml-ppx-sexp-value)
+       ("ppx-typerep-conv" ,ocaml-ppx-typerep-conv)
+       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_jane/")
+    (synopsis "Standard Jane Street ppx rewriters")
+    (description "Ppx_jane is a ppx_driver including all standard ppx rewriters.")
+    (license license:asl2.0)))
