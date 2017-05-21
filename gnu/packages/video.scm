@@ -1816,14 +1816,14 @@ specifications.")
 (define-public libaacs
   (package
     (name "libaacs")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libaacs/"
                            version "/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "1s5v075hnbs57995r6lljm79wgrip3gnyf55a0y7bja75jh49hwm"))))
+        (base32 "1kms92i0c7i1yl659kqjf19lm8172pnpik5lsxp19xphr74vvq27"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (native-inputs
