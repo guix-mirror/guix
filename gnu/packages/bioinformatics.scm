@@ -2418,7 +2418,7 @@ similarity of community members.")
 (define-public fasttree
   (package
    (name "fasttree")
-   (version "2.1.9")
+   (version "2.1.10")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2426,7 +2426,7 @@ similarity of community members.")
                    version ".c"))
              (sha256
               (base32
-               "0ljvvw8i1als1wbfzvrf15c3ii2vw9db20a259g6pzg34xyyb97k"))))
+               "0vcjdvy1j4m702vmak4svbfkrpcw63k7wymfksjp9a982zy8kjsl"))))
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; no "check" target
