@@ -2093,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.38")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2102,7 +2102,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q2z6z5f7c0kbbzpjamkcyqg0rc6h5rxfp97qbmb0wxaycr7jajq"))))
+                "19lvz661mmgikbry0nvnsjc01fdxqbw9rl2868dvjfraxbcx9ras"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2122,8 +2122,7 @@ translated DNA query sequences against a protein reference database (BLASTP
 and BLASTX alignment mode).  The speedup over BLAST is up to 20,000 on short
 reads at a typical sensitivity of 90-99% relative to BLAST depending on the
 data and settings.")
-    (license (license:non-copyleft "file://src/COPYING"
-                                   "See src/COPYING in the distribution."))))
+    (license license:agpl3+)))
 
 (define-public discrover
   (package
