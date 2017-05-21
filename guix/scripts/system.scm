@@ -847,8 +847,10 @@ resulting from command-line parsing."
             ((shepherd-graph)
              (export-shepherd-graph os (current-output-port)))
             (else
-             (warn-about-old-distro #:suggested-command
-                                    "guix system reconfigure")
+             (unless (memq action '(build init))
+               (warn-about-old-distro #:suggested-command
+                                      "guix system reconfigure"))
+
              (perform-action action os
                              #:dry-run? dry?
                              #:derivations-only? (assoc-ref opts
