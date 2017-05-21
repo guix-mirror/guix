@@ -2716,3 +2716,25 @@ ocaml values.")
     (description "Generation of binary serialization and deserialization
 functions from type definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-fail
+  (package
+    (name "ocaml-ppx-fail")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_fail" version
+              "1dwgad0f05gqp5rnwf9dcasidpfi7q3mrpazsw3a2vijjblbhjgn"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_fail/")
+    (synopsis "Add location to calls to failwiths")
+    (description "Syntax extension that makes [failwiths] always include a
+position.")
+    (license license:asl2.0)))
