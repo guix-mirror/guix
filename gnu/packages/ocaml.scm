@@ -2810,3 +2810,29 @@ first class values representing record fields, and additional routines, to get
 and set record fields, iterate and fold over all fields of a record and create
 new record values.")
     (license license:asl2.0)))
+
+(define-public ocaml-re
+  (package
+    (name "ocaml-re")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/ocaml-re//archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s3rcr76cgm4p1xmaazc58arkg2lz3zfcp1icm00m6s5ccnkh67b"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (home-page "https://github.com/ocaml/ocaml-re/")
+    (synopsis "Regular expression library for OCaml")
+    (description "Pure OCaml regular expressions with:
+@enumerate
+@item Perl-style regular expressions (module Re_perl)
+@item Posix extended regular expressions (module Re_posix)
+@item Emacs-style regular expressions (module Re_emacs)
+@item Shell-style file globbing (module Re_glob)
+@item Compatibility layer for OCaml's built-in Str module (module Re_str)
+@end enumerate")
+    (license license:expat)))
