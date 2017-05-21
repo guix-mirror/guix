@@ -2760,3 +2760,28 @@ position.")
     (description "Extensions to printf-style format-strings for user-defined
 string conversion.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-message
+  (package
+    (name "ocaml-ppx-sexp-message")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_message" version
+              "084w1l3gnyw4ri9vbn7bv9b2xkw1520qczfxpxdarfivdrz8xr68"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_message/")
+    (synopsis "A ppx rewriter for easy construction of s-expressions")
+    (description "Ppx_sexp_message aims to ease the creation of s-expressions
+in OCaml.  This is mainly motivated by writing error and debugging messages,
+where one needs to construct a s-expression based on various element of the
+context such as function arguments.")
+    (license license:asl2.0)))
