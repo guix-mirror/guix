@@ -2694,3 +2694,25 @@ ocaml values.")
     (description "A ppx rewriter that inlines reverse application operators
 @code{|>} and @code{|!}.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-bin-prot
+  (package
+    (name "ocaml-ppx-bin-prot")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_bin_prot" version
+              "173kjv36giik11zgfvsbzwfbpr66dm2pcha9vf990jgzh8hqz39h"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("bin-prot" ,ocaml-bin-prot)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_bin_prot/")
+    (synopsis "Generation of bin_prot readers and writers from types")
+    (description "Generation of binary serialization and deserialization
+functions from type definitions.")
+    (license license:asl2.0)))
