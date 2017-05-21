@@ -2785,3 +2785,28 @@ in OCaml.  This is mainly motivated by writing error and debugging messages,
 where one needs to construct a s-expression based on various element of the
 context such as function arguments.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-fields-conv
+  (package
+    (name "ocaml-ppx-fields-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_fields_conv" version
+              "1vzbdz27g5qhhfs7wx6rjf979q4xyssxqbmp6sc1sxknbghslbdv"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("fieldslib" ,ocaml-fieldslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_fields_conv/")
+    (synopsis "Generation of accessor and iteration functions for ocaml records")
+    (description "Ppx_fields_conv is a ppx rewriter that can be used to define
+first class values representing record fields, and additional routines, to get
+and set record fields, iterate and fold over all fields of a record and create
+new record values.")
+    (license license:asl2.0)))
