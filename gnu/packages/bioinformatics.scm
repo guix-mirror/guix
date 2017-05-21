@@ -5436,18 +5436,13 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.5.7")
-    ;; Versions after 0.5.4 do not appear to be distributed on PyPI so we
-    ;; download the package from GitHub.
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fhcrc/taxtastic/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (pypi-uri "taxtastic" version))
               (sha256
                (base32
-                "1s0h5y1lds1c40jhir5585ffm6yjyn8h5aqimpgv64rhqhfv56xx"))))
+                "0s79z8kfl853x7l4h8ms05k31q87aw62nrchlk20w9n227j35929"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
