@@ -2551,7 +2551,7 @@ Illumina, Roche 454, and the SOLiD platform.")
 (define-public fraggenescan
   (package
     (name "fraggenescan")
-    (version "1.20")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
@@ -2559,7 +2559,7 @@ Illumina, Roche 454, and the SOLiD platform.")
         (string-append "mirror://sourceforge/fraggenescan/"
                        "FragGeneScan" version ".tar.gz"))
        (sha256
-        (base32 "1zzigqmvqvjyqv4945kv6nc5ah2xxm1nxgrlsnbzav3f5c0n0pyj"))))
+        (base32 "158dcnwczgcyhwm4qlx19sanrwgdpzf6bn2y57mbpx55lkgz1mzj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2574,6 +2574,7 @@ Illumina, Roche 454, and the SOLiD platform.")
                   (string-append "system(\"" (which "rm")))
                  (("system\\(\"mv")
                   (string-append "system(\"" (which "mv")))
+                 (("\\\"awk") (string-append "\"" (which "awk")))
                  ;; This script and other programs expect the training files
                  ;; to be in the non-standard location bin/train/XXX. Change
                  ;; this to be share/fraggenescan/train/XXX instead.
@@ -2583,10 +2584,7 @@ Illumina, Roche 454, and the SOLiD platform.")
                                  "train/\".$FGS_train_file;")))
                (substitute* "run_hmm.c"
                  (("^  strcat\\(train_dir, \\\"train/\\\"\\);")
-                  (string-append "  strcpy(train_dir, \"" share "/train/\");")))
-               (substitute* "post_process.pl"
-                 (("^my \\$dir = substr.*")
-                  (string-append "my $dir = \"" share "\";"))))
+                  (string-append "  strcpy(train_dir, \"" share "/train/\");"))))
              #t))
          (replace 'build
            (lambda _ (and (zero? (system* "make" "clean"))
@@ -2598,8 +2596,6 @@ Illumina, Roche 454, and the SOLiD platform.")
                     (share (string-append out "/share/fraggenescan/train")))
                (install-file "run_FragGeneScan.pl" bin)
                (install-file "FragGeneScan" bin)
-               (install-file "FGS_gff.py" bin)
-               (install-file "post_process.pl" bin)
                (copy-recursively "train" share))))
          (delete 'check)
          (add-after 'install 'post-install-check
@@ -2607,8 +2603,9 @@ Illumina, Roche 454, and the SOLiD platform.")
            ;; output files gets created.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
-                    (bin (string-append out "/bin/")))
-               (and (zero? (system* (string-append bin "run_FragGeneScan.pl")
+                    (bin (string-append out "/bin/"))
+                    (frag (string-append bin "run_FragGeneScan.pl")))
+               (and (zero? (system* frag ; Test complete genome.
                              "-genome=./example/NC_000913.fna"
                              "-out=./test2"
                              "-complete=1"
@@ -2616,7 +2613,13 @@ Illumina, Roche 454, and the SOLiD platform.")
                     (file-exists? "test2.faa")
                     (file-exists? "test2.ffn")
                     (file-exists? "test2.gff")
-                    (file-exists? "test2.out"))))))))
+                    (file-exists? "test2.out")
+                    (zero? (system* ; Test incomplete sequences.
+                            frag
+                            "-genome=./example/NC_000913-fgs.ffn"
+                            "-out=out"
+                            "-complete=0"
+                            "-train=454_30")))))))))
     (inputs
      `(("perl" ,perl)
        ("python" ,python-2))) ;not compatible with python 3.
