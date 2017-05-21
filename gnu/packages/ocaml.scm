@@ -2836,3 +2836,38 @@ new record values.")
 @item Compatibility layer for OCaml's built-in Str module (module Re_str)
 @end enumerate")
     (license license:expat)))
+
+(define-public ocaml-ppx-expect
+  (package
+    (name "ocaml-ppx-expect")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_expect" version
+              "03sbs4s5i8l9syr45v25f5hzy7msd2b47k2a9wsq9m43d4imgkrc"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("fieldslib" ,ocaml-fieldslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)
+       ("re" ,ocaml-re)
+       ("sexplib" ,ocaml-sexplib)
+       ("variantslib" ,ocaml-variantslib)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_expect/")
+    (synopsis "Cram like framework for OCaml")
+    (description "Expect-test is a framework for writing tests in OCaml, similar
+to Cram.  Expect-tests mimic the existing inline tests framework with the
+let%expect_test construct.  The body of an expect-test can contain
+output-generating code, interleaved with %expect extension expressions to denote
+the expected output.")
+    (license license:asl2.0)))
