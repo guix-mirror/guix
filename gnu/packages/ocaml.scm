@@ -2650,3 +2650,26 @@ match expressions, and if expressions.")
     (synopsis "Generation of runtime types from type declarations")
     (description "Automatic generation of runtime types from type definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-value
+  (package
+    (name "ocaml-ppx-sexp-value")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_value" version
+              "0m3ag23mbqm0i2pv1dzilfks15ipa5q60mf57a0cd3p0pvarq10g"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_value/")
+    (synopsis "Simplify building s-expressions from ocaml values")
+    (description "A ppx rewriter that simplifies building s-expressions from
+ocaml values.")
+    (license license:asl2.0)))
