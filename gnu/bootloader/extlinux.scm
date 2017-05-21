@@ -59,7 +59,8 @@ corresponding to old generations of the system."
     #~(call-with-output-file #$output
         (lambda (port)
           (let ((timeout #$(bootloader-configuration-timeout config)))
-            (format port "
+            (format port "# This file was generated from your GuixSD configuration.  Any changes
+# will be lost upon reconfiguration.
 UI menu.c32
 PROMPT ~a
 TIMEOUT ~a~%"
