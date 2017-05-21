@@ -2738,3 +2738,25 @@ functions from type definitions.")
     (description "Syntax extension that makes [failwiths] always include a
 position.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-custom-printf
+  (package
+    (name "ocaml-ppx-custom-printf")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_custom_printf" version
+              "11jlx0n87g2j1vyyp343dibx7lvvwig5j5q0nq0b80kbsq0k6yr8"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_custom_printf/")
+    (synopsis "Printf-style format-strings for user-defined string conversion")
+    (description "Extensions to printf-style format-strings for user-defined
+string conversion.")
+    (license license:asl2.0)))
