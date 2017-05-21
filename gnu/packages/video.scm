@@ -646,7 +646,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.4")
+    (version "2.2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -654,14 +654,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1gjkrwlg8ab3skzl67cxb9qzg4187ifckd1z9kpy11q058fyjchn"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; There are two occurrences where __DATE__ and __TIME__ are
-              ;; used to capture the build time and show it to the user.
-              '(substitute* (find-files "." "help\\.c(pp)?$")
-                 (("__DATE__") "\"2016\"")
-                 (("__TIME__") "\"00:00\"")))))
+               "1k51vm6piqlrnld7sxyg0s4kdkd3lan97lmy3v5wdh3qyll8m2xj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
