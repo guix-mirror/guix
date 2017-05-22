@@ -197,6 +197,30 @@ usable on embedded products.")
            "--disable-nls"))))
     (synopsis "Newlib variant for small systems with limited memory")))
 
+(define (make-libstdc++-arm-none-eabi xgcc newlib)
+  (let ((libstdc++ (make-libstdc++ xgcc)))
+    (package (inherit libstdc++)
+      (name "libstdc++-arm-none-eabi")
+      (arguments
+       (substitute-keyword-arguments (package-arguments libstdc++)
+         ((#:configure-flags flags)
+          ``("--target=arm-none-eabi"
+             "--host=arm-none-eabi"
+             "--disable-libstdcxx-pch"
+             "--enable-multilib"
+             "--with-multilib-list=armv6-m,armv7-m,armv7e-m"
+             "--disable-shared"
+             "--disable-tls"
+             "--disable-plugin"
+             "--with-newlib"
+             ,(string-append "--with-gxx-include-dir="
+                             (assoc-ref %outputs "out")
+                             "/arm-none-eabi/include")))))
+      (native-inputs
+       `(("newlib" ,newlib)
+         ("xgcc" ,xgcc)
+         ,@(package-native-inputs libstdc++))))))
+
 (define (arm-none-eabi-toolchain xgcc newlib)
   "Produce a cross-compiler toolchain package with the compiler XGCC and the C
 library variant NEWLIB."
