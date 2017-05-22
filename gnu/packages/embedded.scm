@@ -249,6 +249,7 @@ library variant NEWLIB."
                            directories))))))
       (propagated-inputs
        `(("binutils" ,(cross-binutils "arm-none-eabi"))
+         ("libstdc++" ,(make-libstdc++-arm-none-eabi xgcc newlib-with-xgcc))
          ("gcc" ,xgcc)
          ("newlib" ,newlib-with-xgcc)))
       (synopsis "Complete GCC tool chain for ARM bare metal development")
