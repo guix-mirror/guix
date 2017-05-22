@@ -52,7 +52,8 @@
 ;; See https://launchpadlibrarian.net/218827644/release.txt
 (define-public gcc-arm-none-eabi-4.9
   (let ((xgcc (cross-gcc "arm-none-eabi"
-                         (cross-binutils "arm-none-eabi")))
+                         #:xgcc gcc-4.9
+                         #:xbinutils (cross-binutils "arm-none-eabi")))
         (revision "1")
         (svn-revision 227977))
     (package (inherit xgcc)
@@ -419,7 +420,7 @@ with a layered architecture of JTAG interface and TAP support.")
 
 (define-public propeller-gcc
   (let ((xgcc (cross-gcc "propeller-elf"
-                         propeller-binutils))
+                         #:xbinutils propeller-binutils))
         (commit "b4f45a4725e0b6d0af59e594c4e3e35ca4105867")
         (revision "1"))
     (package (inherit xgcc)
@@ -776,7 +777,7 @@ the Raspberry Pi chip.")
 
 (define-public gcc-vc4
   (let ((commit "165f6d0e11d2e76ee799533bb45bd5c92bf60dc2")
-        (xgcc (cross-gcc "vc4-elf" binutils-vc4)))
+        (xgcc (cross-gcc "vc4-elf" #:xbinutils binutils-vc4)))
     (package (inherit xgcc)
       (name "gcc-vc4")
       (source (origin
