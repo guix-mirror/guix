@@ -68,6 +68,7 @@
                (base32
                 "03bcp9ksqp0s1pmwfmzhcknvkxay5k0mjzzxp3rjlifbng1vxq9r"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
@@ -226,6 +227,8 @@ Additionally, various channel-specific options can be negotiated.")
               (sha256
                (base32
                 "0r261i8kc3avbmbwgyzak2vnqwssjlgz37g2y2fwm80w9bmn2m7j"))
+              (patches (search-patches "guile-ssh-rexec-bug.patch"
+                                       "guile-ssh-double-free.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; 'configure.ac' mistakenly tries to link files from examples/
@@ -236,6 +239,7 @@ Additionally, various channel-specific options can be negotiated.")
                                   "], [chmod +x examples/"
                                   file "])\n"))))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
@@ -378,7 +382,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2016.74")
+    (version "2017.75")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -386,7 +390,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "14c8f4gzixf0j9fkx68jgl85q7b05852kk0vf09gi6h0xmafl817"))))
+                "1309cm2aw62n9m3h38prvgsqr8bj85hfasgnvwkd42cp3k5ivg3c"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))

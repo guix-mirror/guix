@@ -1059,14 +1059,14 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.7.9")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://christoph-ender.de/fizmo/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w7cgyjrhgkadjrazijzhq7zh0pl5bfc6wl7mdpgh020y4kp46d7"))))
+                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1079,12 +1079,13 @@ reference interpreter, using the Glk API.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("sdl" ,sdl)))
+       ("sdl2" ,sdl2)))
     (home-page "https://christoph-ender.de/fizmo/")
     (synopsis "Z-machine interpreter")
     (description
@@ -1410,14 +1411,14 @@ older games.")
 (define-public gamine
   (package
     (name "gamine")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gamine-game/"
                                   "gamine-" version ".tar.gz"))
               (sha256
                (base32
-                "1iny959i1kl2ab6z5xi4s66mrvrwcarxyvjfp2k1sx532s8knk8h"))))
+                "08wnk7w84c2413hwny89j2cn89cvfdf67bfc6wl0bf475if0mf4h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1490,7 +1491,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.3.4")
+    (version "1.7.5.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1498,7 +1499,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0mbxzsgjg16pqa3jnxkd7wwvw1lrx455r7fvwjfhzp0yv7acrn10"))))
+                "1b5q79jkdrck5lq8lvhnpq2mly257r8lylp7b8sp8xn4365f86ch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1512,7 +1513,6 @@ is programmed in Haskell.")
        ("curl" ,curl)
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
-       ("physfs" ,physfs)
        ("sdl-union" ,(sdl-union))))
     (home-page "http://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
@@ -2160,14 +2160,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1ak32fj5xkk2fvmm3g8i7wzmk4bh2ijsp8fzvvw5wj6365p9j24v"))
+               "1q4r5860dpkkw4fpfz3f8mvdd8xjpnwwzr9zybgmgb255bs0g4yz"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2207,8 +2207,8 @@ and a game metadata scraper.")
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
-autoreplace and autoupdate vehicles.  This package only includes the game engine.  When you start
-it you will be prompted to download a graphics set.")
+autoreplace and autoupdate vehicles.  This package only includes the game
+engine.  When you start it you will be prompted to download a graphics set.")
     (home-page "http://openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib

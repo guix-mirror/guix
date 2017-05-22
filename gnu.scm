@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,8 @@
       '((gnu system)
         (gnu system mapped-devices)
         (gnu system file-systems)
-        (gnu system grub)                         ; 'grub-configuration'
+        (gnu bootloader)
+        (gnu bootloader grub)
         (gnu system pam)
         (gnu system shadow)                       ; 'user-account'
         (gnu system linux-initrd)

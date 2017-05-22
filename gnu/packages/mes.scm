@@ -54,30 +54,35 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((commit   "a437c173b9da1949ad966fd50dd4f26e522a910a")
+  (let ((commit "d4420bbcc9f994e2cce430cf156f383dc4092bca")
         (revision "0")
-        (triplet  "i686-unknown-linux-gnu"))
+        (triplet "i686-unknown-linux-gnu")
+        (version "0.6"))
     (package
       (name "mes")
-      (version (string-append "0.5-" revision "." (string-take commit 7)))
+      (version (string-append version "-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://gitlab.com/janneke/mes")
                       (commit commit)))
                 (file-name (string-append name "-" version))
-                ;; TODO: Unbundle nyacc.
                 (sha256
-                 (base32 "1ynr0hc0k15307sgzv09k3y5rvy46h0wbh7zcblx1f9v7y8k90zv"))))
+                 (base32 "0qqywk3siyhf08v7xac08lqldklrqfndlp495wgy6ii9fn93197k"))))
       (build-system gnu-build-system)
-      (supported-systems '("x86_64-linux"))
+      (supported-systems '("i686-linux" "x86_64-linux"))
+      (propagated-inputs
+       `(("nyacc" ,nyacc)))
       (native-inputs
        `(("guile" ,guile-2.2)
-         ;; Use cross-compiler rather than #:system "i686-linux" to get
-         ;; MesCC 64 bit .go files installed ready for use with Guile.
-         ("i686-linux-binutils" ,(cross-binutils triplet))
-         ("i686-linux-gcc" ,(let ((triplet triplet)) (cross-gcc triplet)))
-         ("perl" ,perl)))                       ;build-aux/gitlog-to-changelog
+         ,@(if (string-prefix? "x86_64-linux" (or (%current-target-system)
+                                                  (%current-system)))
+               ;; Use cross-compiler rather than #:system "i686-linux" to get
+               ;; MesCC 64 bit .go files installed ready for use with Guile.
+               `(("i686-linux-binutils" ,(cross-binutils triplet))
+                 ("i686-linux-gcc" ,(cross-gcc triplet)))
+               '())
+         ("perl" ,perl)))               ;build-aux/gitlog-to-changelog
       (arguments
        `(#:phases
          (modify-phases %standard-phases

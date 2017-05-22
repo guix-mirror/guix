@@ -32,6 +32,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -457,3 +458,39 @@ components: a process notation for running programs and setting up pipelines
 and redirections, and a complete syscall library for low-level access to the
 operating system.")
       (license bsd-3))))
+
+(define-public loksh
+  (package
+    (name "loksh")
+    (version "6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dimkr/loksh/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wg7ds56yr8fgg1m149bi53bvrwccwiashmwknggza1sqgj9m2lq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libbsd" ,libbsd)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ;No tests included
+       #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
+                          (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          "PREFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ;No configure script
+    (home-page "https://github.com/dimkr/loksh")
+    (synopsis "Korn Shell from OpenBSD")
+    (description
+     "loksh is a Linux port of OpenBSD's @command{ksh}.  It is a small,
+interactive POSIX shell targeted at resource-constrained systems.")
+    ;; The file 'LEGAL' says it is the public domain, and the 2
+    ;; exceptions which are listed are not included in this port.
+    (license public-domain)))

@@ -5,6 +5,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+# Copyright © 2017 Leo Famulari <leo@famulari.name>
 #
 # This file is part of GNU Guix.
 #
@@ -160,7 +161,6 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
-  guix/scripts/import/stackage.scm		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
@@ -185,7 +185,8 @@ MODULES +=					\
   guix/import/stackage.scm			\
   guix/scripts/import/crate.scm			\
   guix/scripts/import/gem.scm			\
-  guix/scripts/import/pypi.scm
+  guix/scripts/import/pypi.scm			\
+  guix/scripts/import/stackage.scm
 
 endif
 
@@ -224,7 +225,8 @@ AUX_FILES =						\
 EXAMPLES =					\
   gnu/system/examples/bare-bones.tmpl		\
   gnu/system/examples/desktop.tmpl		\
-  gnu/system/examples/lightweight-desktop.tmpl
+  gnu/system/examples/lightweight-desktop.tmpl	\
+  gnu/system/examples/vm-image.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
@@ -571,11 +573,20 @@ BINARY_TARBALLS =							\
 # Systems supported by GuixSD.
 GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
 
+# Systems for which we build GuixSD VMs.
+GUIXSD_VM_SYSTEMS ?= x86_64-linux
+
 # Prefix of the GuixSD installation image file name.
 GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
 
+# Prefix of the GuixSD VM image file name.
+GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
+
 # Size of the installation image (for x86_64 typically).
 GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
+
+# Size of the VM image (for x86_64 typically).
+GUIXSD_VM_IMAGE_SIZE ?= 2GiB
 
 # The release process works in several phases:
 #
@@ -589,7 +600,10 @@ GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
 #
 # This 'release' target takes care of everything and copies the resulting
 # files to $(releasedir).
-release: distcheck
+#
+# XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
+# issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
+release: dist
 	cd po; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
@@ -617,6 +631,7 @@ release: distcheck
 	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
+            --system=$$system								\
 	    --image-size=$(GUIXSD_INSTALLATION_IMAGE_SIZE)				\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
@@ -626,6 +641,20 @@ release: distcheck
 	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp" ;	\
 	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
 	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
+	done
+	for system in $(GUIXSD_VM_SYSTEMS) ; do						\
+	  image=`$(top_builddir)/pre-inst-env						\
+	    guix system vm-image							\
+	    --system=$$system								\
+	    --image-size=$(GUIXSD_VM_IMAGE_SIZE)					\
+	    gnu/system/examples/vm-image.tmpl` ;					\
+	  if [ ! -f "$$image" ] ; then							\
+	    echo "failed to produced GuixSD VM image for $$system" >&2 ;		\
+	    exit 1 ;									\
+	  fi ;										\
+	  xz < "$$image" > "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz.tmp"			\
+	     "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz" ;			\
 	done
 	@echo
 	@echo "Congratulations!  All the release files are now in $(releasedir)."

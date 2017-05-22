@@ -354,8 +354,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11")
-(define %linux-libre-hash "0j1bzzq9iq5i1zm7gnig8v0clr8wq303kvcdsaifc0r0ggz1mx1n")
+(define %linux-libre-version "4.11.2")
+(define %linux-libre-hash "0vp6hjc7cb6q6bhbg6jcf08r27xbf293cdib2vfng15ygvxpyfij")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -364,14 +364,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.27"
-                    "1b39zijjkv21kya359y4g88w5ff110v95pvc4wfvc83dvik9hny5"
+  (make-linux-libre "4.9.29"
+                    "0yj4gajdzilxnh9lhb2zl0hs654lagdfx8cp7bv2w4q41bnmc3l9"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.67"
-                    "1nadmrd26llc17ipig7bx7rf2gwns94g86a3ilcvgdk17hq5riss"
+  (make-linux-libre "4.4.69"
+                    "14q5lqsfmwyiilbhffr3bwsm6i3z1jv6y09rg8x3faibcg766wny"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1568,7 +1568,12 @@ UnionFS-FUSE additionally supports copy-on-write.")
                           (exe (string-append out "/bin/unionfs")))
                      ;; By default, 'unionfs' keeps references to
                      ;; $glibc/share/locale and similar stuff.  Remove them.
-                     (remove-store-references exe)))
+                     (remove-store-references exe)
+
+                     ;; 'unionfsctl' has references to glibc as well.  Since
+                     ;; we don't need it, remove it.
+                     (delete-file (string-append out "/bin/unionfsctl"))
+                     #t))
                  %standard-phases)))
     (inputs `(("fuse" ,fuse-static)))))
 
@@ -2859,7 +2864,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.10.2")
+    (version "4.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2867,7 +2872,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "02p63nz78lrr156cmbb759z76cn95hv6mmz7v592lmiq0dkxy2gd"))))
+                "03mzv89f08gdsqv4ima793g44kdavcfyjialf5dr0zd2ab66hyp1"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -3320,14 +3325,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "149")
+    (version "150")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "08hd8bl9rgss990icb69srarrfwcg8k7py979ak753j92ybbkhdm"))
+                "1skfiracl3a1afmml8mvnccr4rym4ibv33c342rkyxn0j3088h24"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet

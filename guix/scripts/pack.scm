@@ -35,7 +35,7 @@
   #:autoload   (gnu packages base) (tar)
   #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (libgcrypt)
-  #:autoload   (gnu packages guile) (guile-json)
+  #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-37)
@@ -217,6 +217,13 @@ the image."
                        (define %libgcrypt
                          #+(file-append libgcrypt "/lib/libgcrypt"))))))
 
+  (define json
+    ;; Pick the guile-json package that corresponds to the Guile used to build
+    ;; derivations.
+    (if (string-prefix? "2.0" (package-version (default-guile)))
+        guile2.0-json
+        guile-json))
+
   (define build
     (with-imported-modules `(,@(source-module-closure '((guix docker))
                                                       #:select? not-config?)
@@ -224,7 +231,7 @@ the image."
       #~(begin
           ;; Guile-JSON is required by (guix docker).
           (add-to-load-path
-           (string-append #$guile-json "/share/guile/site/"
+           (string-append #+json "/share/guile/site/"
                           (effective-version)))
 
           (use-modules (guix docker) (srfi srfi-19))

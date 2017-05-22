@@ -1156,14 +1156,14 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.9")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
+                "17fnvrj7jww29sav6a6jpizclg4w2962m6h37akpii71gf0vrffw"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
@@ -3361,7 +3361,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "1.9.8")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3370,7 +3370,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "019dpzr6l83k1fgxn40aqxjvrpz4dl5d9vi7fc5wjnifmxaqxia6"))))
+                "1scdirpclgq3pi1j2c90gqaaqg1pgvasp98f4jqw8c5xbqcr7jdw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -3385,6 +3385,55 @@ of @code{anything.el} originally written by Tamas Patrovic and can be
 considered to be its successor.  Helm sets out to clean up the legacy code in
 @code{anything.el} and provide a cleaner, leaner and more modular tool, that's
 not tied in the trap of backward compatibility.")
+    (license license:gpl3+)))
+
+(define-public emacs-helm-swoop
+  (package
+    (name "emacs-helm-swoop")
+    (version "1.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ShingoFukuyama/helm-swoop/archive/"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z34pfi0gsk054pxr906ilaalaw0xz3s536163gf9ykkwmc2356d"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/ShingoFukuyama/helm-swoop")
+    (synopsis "Filter and jump to lines in an Emacs buffer using Helm")
+    (description
+     "This package builds on the Helm interface to provide several commands
+for search-based navigation of buffers.")
+    (license license:gpl2+)))
+
+(define-public emacs-helm-projectile
+  (package
+    (name "emacs-helm-projectile")
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbatsov/helm-projectile/archive/v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19cfmilqh8kbab3b2hmx6lyrj73q6vfmn3p730x95g23iz16mnd5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/bbatsov/helm-projectile")
+    (synopsis "Helm integration for Projectile")
+    (description
+     "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
 
 (define-public emacs-cider
@@ -3579,14 +3628,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170502")
+    (version "20170515")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "12inz804j55ycprb2m3ay54d1bhwhjssmn5nrfm7cfklyhfsy27s"))))
+                "0lfapcxil69x1a63cszgq72lqks1z3gpyxw7vcllqlgi7n7a4y6f"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4145,7 +4194,7 @@ jQuery and Bootstrap resources included via osscdn.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "45.0")
+    (version "46.0")
     (source
      (origin
        (method url-fetch)
@@ -4154,7 +4203,11 @@ jQuery and Bootstrap resources included via osscdn.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "0npcr867xbbhwa0i7v26hnk4z2d51522jwcfwc594j74kbv3g6ka"))))
+         "15x4yfp3wl2fxm1nkx6pz3clw6zyw3argcsqxgcx6pa28sivlg2n"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete the bundled byte-compiled elisp files.
+        '(for-each delete-file (find-files "lisp" "\\.elc$")))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -4162,25 +4215,35 @@ jQuery and Bootstrap resources included via osscdn.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("\\$\\(INSTALL\\) -d \\$\\(libdir\\)/servers/linux-outloud")
-                "")
-               (("\\$\\(INSTALL\\)  -m 755 \\$\\{OUTLOUD\\}.*$") "")
-               (("\\*info\\*") "*"))
-             (substitute* "etc/emacspeak.sh.def"
-               (("<emacspeak-dir>")
-                (string-append (assoc-ref outputs "out")
-                               "/share/emacs/site-lisp/emacspeak/lisp")))
+           (lambda _
+             ;; Configure Emacspeak according to etc/install.org.
              (zero? (system* "make" "config"))))
-         (add-after 'install 'install-espeak-server
+         (add-after 'build 'build-espeak
+           (lambda _
+             (zero? (system* "make" "espeak"))))
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "servers/linux-espeak"
-                 (and (zero? (system* "make"))
-                      (zero? (system* "make" "install"
-                                      (string-append "PREFIX=" out))))))))
-         (add-after 'install-espeak-server 'wrap-program
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
+                    (info (string-append out "/share/info")))
+               ;; According to etc/install.org, the Emacspeak directory should
+               ;; be copied to its installation destination.
+               (for-each
+                (lambda (file)
+                  (copy-recursively file (string-append lisp "/" file)))
+                '("etc" "info" "lisp" "media" "servers" "sounds" "stumpwm"
+                  "xsl"))
+               ;; Make sure emacspeak is loaded from the correct directory.
+               (substitute* "etc/emacspeak.sh"
+                 (("exec emacs.*$")
+                  (string-append "exec emacs -l " lisp
+                                 "/lisp/emacspeak-setup.el $CL_ALL")))
+               ;; Install the convenient startup script.
+               (mkdir-p bin)
+               (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
+             #t))
+         (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (emacspeak (string-append out "/bin/emacspeak"))

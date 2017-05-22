@@ -108,7 +108,8 @@
      `(("boost" ,boost)
        ("muparser" ,muparser)
        ("freetype" ,freetype)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))

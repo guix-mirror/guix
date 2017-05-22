@@ -51,6 +51,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
@@ -6130,3 +6131,56 @@ accessibility infrastructure.")
 via speech and refreshable braille.  Orca works with applications and toolkits
 that support the Assistive Technology Service Provider Interface (AT-SPI).")
     (license license:lgpl2.1+)))
+
+(define-public gspell
+  (package
+    (name "gspell")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1n4kd5i11l79h8bpvx3cz79ww0b4z89y99h4czvyg80qlarn585w"))
+              (patches (search-patches "gspell-dash-test.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+
+             ;; Allow Enchant and its Aspell backend to find the en_US
+             ;; dictionary.
+             (setenv "ASPELL_DICT_DIR"
+                     (string-append (assoc-ref inputs "aspell-dict-en")
+                                    "/lib/aspell"))
+             #t)))))
+    (inputs
+     `(("enchant" ,enchant)
+       ("iso-codes" ,iso-codes)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)
+
+       ;; For tests.
+       ("xorg-server" ,xorg-server)
+       ("aspell-dict-en" ,aspell-dict-en)))
+    (home-page "https://wiki.gnome.org/Projects/gspell")
+    (synopsis "GNOME's alternative spell checker")
+    (description
+     "gspell provides a flexible API to add spell-checking to a GTK+
+application.  It provides a GObject API, spell-checking to text entries and
+text views, and buttons to choose the language.")
+    (license license:gpl2+)))

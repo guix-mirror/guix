@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base))
 
@@ -40,7 +41,8 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))))
+        "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))
+      (patches (search-patches "aspell-default-dict-dir.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -53,6 +55,15 @@
                  '("ASPELL_CONF" "" =
                    ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))))))))
     (inputs `(("perl" ,perl)))
+
+    (native-search-paths
+     ;; This is a Guix-specific environment variable that takes a single
+     ;; entry, not an actual search path.
+     (list (search-path-specification
+            (variable "ASPELL_DICT_DIR")
+            (separator #f)
+            (files '("lib/aspell")))))
+
     (home-page "http://aspell.net/")
     (synopsis "Spell checker")
     (description
@@ -66,7 +77,8 @@ dictionaries, including personal ones.")
 ;;; Dictionaries.
 ;;;
 ;;; Use 'export ASPELL_CONF="dict-dir $HOME/.guix-profile/lib/aspell"' to use
-;;; them.
+;;; them, or set the Guix-specific 'ASPELL_DICT_DIR', or just do nothing (as
+;;; long as 'HOME' is set, that's fine!).
 ;;;
 
 (define* (aspell-dictionary dict-name full-name

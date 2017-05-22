@@ -52,6 +52,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define (boot-guile-uri arch)
@@ -73,8 +74,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.12.0")
-        (commit "ba2260dbbc5a3c915e2cbd54d93f2f3af2a864c3")
-        (revision 10))
+        (commit "ce92d269fea0a2bfac0ac20414f77127d2f07500")
+        (revision 11))
     (package
       (name "guix")
 
@@ -90,7 +91,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0nkwbblsnl7kv2n8jf8c6rl3a7dynaqxizhhni18vbnmvza35c79"))
+                  "17l9r2mdzzv8vfxb3bc5zkdqkl472q979iwsarp7lcqss1jxys7w"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -264,6 +265,18 @@ the Nix package manager.")
 
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
+
+(define-public guile2.0-guix
+  (package
+    (inherit guix)
+    (name "guile2.0-guix")
+    (inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-inputs guix))))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)
+       ("guile-json" ,guile2.0-json)
+       ("guile-ssh" ,guile2.0-ssh)))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical

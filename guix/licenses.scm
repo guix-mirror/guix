@@ -43,6 +43,7 @@
             artistic2.0 clarified-artistic
             copyleft-next
             cpl1.0
+            edl1.0
             epl1.0
             expat
             freetype
@@ -230,6 +231,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "CPL 1.0"
            "http://directory.fsf.org/wiki/License:CPLv1.0"
            "https://www.gnu.org/licenses/license-list#CommonPublicLicense10"))
+
+(define edl1.0
+  (license "EDL 1.0"
+           "http://directory.fsf.org/wiki/License:EDLv1.0"
+           "https://eclipse.org/org/documents/edl-v10.php"))
 
 (define epl1.0
   (license "EPL 1.0"

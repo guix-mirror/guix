@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,8 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix records)
+  #:use-module (gnu bootloader grub)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system shadow)
   #:use-module (gnu services)

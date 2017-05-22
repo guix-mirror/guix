@@ -50,6 +50,12 @@
     (run-with-store %store exp
                     #:guile-for-build (%guile-for-build))))
 
+(define-syntax-rule (test-equalm name value exp)
+  (test-equal name
+    value
+    (run-with-store %store exp
+                    #:guile-for-build (%guile-for-build))))
+
 ;; Example manifest entries.
 
 (define guile-1.8.8
@@ -365,6 +371,29 @@
                                  (string-append profile "/etc/bar")
                                get-string-all)
                              "foo!"))))))
+
+(test-equalm "union vs. dangling symlink"        ;<https://bugs.gnu.org/26949>
+  "does-not-exist"
+  (mlet* %store-monad
+      ((thing1 ->  (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out")))
+                          (mkdir out)
+                          (symlink "does-not-exist"
+                                   (string-append out "/dangling"))
+                          #t)))))
+       (thing2 ->  (package (inherit thing1) (name "dummy2")))
+       (drv        (profile-derivation (packages->manifest
+                                        (list thing1 thing2))
+                                       #:hooks '()
+                                       #:locales? #f))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (readlink (readlink (string-append profile "/dangling")))))))
 
 (test-end "profiles")
 

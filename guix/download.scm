@@ -213,7 +213,6 @@
        ;; mirrors keeping old versions at the top level
        "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
        ;; mirrors moving old versions to "legacy"
-       "http://mirrors-au.go-parts.com/mirrors/ImageMagick/"
        "ftp://mirror.aarnet.edu.au/pub/imagemagick/"
        "http://mirror.checkdomain.de/imagemagick/"
        "ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/"
@@ -222,9 +221,7 @@
        "http://ftp.surfnet.nl/pub/ImageMagick/"
        "http://mirror.searchdaimon.com/ImageMagick"
        "ftp://ftp.tpnet.pl/pub/graphics/ImageMagick/"
-       "http://mirrors-ru.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.is.co.za/pub/imagemagick/"
-       "http://mirrors-uk.go-parts.com/mirrors/ImageMagick/"
        "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
        "ftp://ftp.fifi.org/pub/ImageMagick/"
        "http://www.imagemagick.org/download/"

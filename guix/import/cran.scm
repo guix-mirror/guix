@@ -45,7 +45,12 @@
             bioconductor->guix-package
             recursive-import
             %cran-updater
-            %bioconductor-updater))
+            %bioconductor-updater
+
+            cran-package?
+            bioconductor-package?
+            bioconductor-data-package?
+            bioconductor-experiment-package?))
 
 ;;; Commentary:
 ;;;
@@ -125,17 +130,19 @@ package definition."
 
 ;; The latest Bioconductor release is 3.5.  Bioconductor packages should be
 ;; updated together.
-(define %bioconductor-svn-url
-  (string-append "https://readonly:readonly@"
-                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_5/"
-                 "madman/Rpacks/"))
+(define (bioconductor-mirror-url name)
+  (string-append "https://raw.githubusercontent.com/Bioconductor-mirror/"
+                 name "/release-3.5"))
 
-
-(define (fetch-description base-url name)
+(define (fetch-description repository name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
-NAME, or #f in case of failure.  NAME is case-sensitive."
+NAME in the given REPOSITORY, or #f in case of failure.  NAME is
+case-sensitive."
   ;; This API always returns the latest release of the module.
-  (let ((url (string-append base-url name "/DESCRIPTION")))
+  (let ((url (string-append (case repository
+                              ((cran)         (string-append %cran-url name))
+                              ((bioconductor) (bioconductor-mirror-url name)))
+                            "/DESCRIPTION")))
     (guard (c ((http-get-error? c)
                (format (current-error-port)
                        "error: failed to retrieve package information \
@@ -200,17 +207,16 @@ empty list when the FIELD cannot be found."
       (check "*.f95")
       (check "*.f")))
 
-(define (needs-zlib? tarball)
-  "Return #T if any of the Makevars files in the src directory of the TARBALL
-contain a zlib linker flag."
+(define (tarball-files-match-pattern? tarball regexp . file-patterns)
+  "Return #T if any of the files represented by FILE-PATTERNS in the TARBALL
+match the given REGEXP."
   (call-with-temporary-directory
    (lambda (dir)
-     (let ((pattern (make-regexp "-lz")))
+     (let ((pattern (make-regexp regexp)))
        (parameterize ((current-error-port (%make-void-port "rw+")))
-         (system* "tar"
-                  "xf" tarball "-C" dir
-                  "--wildcards"
-                  "*/src/Makevars*" "*/src/configure*" "*/configure*"))
+         (apply system* "tar"
+                "xf" tarball "-C" dir
+                `("--wildcards" ,@file-patterns)))
        (any (lambda (file)
               (call-with-input-file file
                 (lambda (port)
@@ -219,9 +225,22 @@ contain a zlib linker flag."
                       (cond
                        ((eof-object? line) #f)
                        ((regexp-exec pattern line) #t)
-                       (else (loop)))))))
-              #t)
+                       (else (loop))))))))
             (find-files dir))))))
+
+(define (needs-zlib? tarball)
+  "Return #T if any of the Makevars files in the src directory of the TARBALL
+contain a zlib linker flag."
+  (tarball-files-match-pattern?
+   tarball "-lz"
+   "*/src/Makevars*" "*/src/configure*" "*/configure*"))
+
+(define (needs-pkg-config? tarball)
+  "Return #T if any of the Makevars files in the src directory of the TARBALL
+reference the pkg-config tool."
+  (tarball-files-match-pattern?
+   tarball "pkg-config"
+   "*/src/Makevars*" "*/src/configure*" "*/configure*"))
 
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
@@ -272,11 +291,12 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
         (build-system r-build-system)
         ,@(maybe-inputs sysdepends)
         ,@(maybe-inputs (map guix-name propagate) 'propagated-inputs)
-        ,@(if (needs-fortran? tarball)
-              `((native-inputs (,'quasiquote
-                                ,(list "gfortran"
-                                       (list 'unquote 'gfortran)))))
-              '())
+        ,@(maybe-inputs
+           `(,@(if (needs-fortran? tarball)
+                   '("gfortran") '())
+             ,@(if (needs-pkg-config? tarball)
+                   '("pkg-config") '()))
+           'native-inputs)
         (home-page ,(if (string-null? home-page)
                         (string-append base-url name)
                         home-page))
@@ -291,11 +311,8 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
    (lambda* (package-name #:optional (repo 'cran))
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (let* ((url (case repo
-                   ((cran)         %cran-url)
-                   ((bioconductor) %bioconductor-svn-url)))
-            (module-meta (fetch-description url package-name)))
-       (and=> module-meta (cut description->package repo <>))))))
+     (and=> (fetch-description repo package-name)
+            (cut description->package repo <>)))))
 
 (define* (recursive-import package-name #:optional (repo 'cran))
   "Generate a stream of package expressions for PACKAGE-NAME and all its
@@ -386,7 +403,7 @@ dependencies."
     (package->upstream-name package))
 
   (define meta
-    (fetch-description %cran-url upstream-name))
+    (fetch-description 'cran upstream-name))
 
   (and meta
        (let ((version (assoc-ref meta "Version")))
@@ -403,7 +420,7 @@ dependencies."
     (package->upstream-name package))
 
   (define meta
-    (fetch-description %bioconductor-svn-url upstream-name))
+    (fetch-description 'bioconductor upstream-name))
 
   (and meta
        (let ((version (assoc-ref meta "Version")))
@@ -430,8 +447,13 @@ dependencies."
   "Return true if PACKAGE is an R package from Bioconductor."
   (let ((predicate (lambda (uri)
                      (and (string-prefix? "http://bioconductor.org" uri)
-                          ;; Data packages are not listed in SVN
-                          (not (string-contains uri "/data/annotation/"))))))
+                          ;; Data packages are neither listed in SVN nor on
+                          ;; the Github mirror, so we have to exclude them
+                          ;; from the set of bioconductor packages that can be
+                          ;; updated automatically.
+                          (not (string-contains uri "/data/annotation/"))
+                          ;; Experiment packages are in a separate repository.
+                          (not (string-contains uri "/data/experiment/"))))))
     (and (string-prefix? "r-" (package-name package))
          (match (and=> (package-source package) origin-uri)
            ((? string? uri)
@@ -445,6 +467,19 @@ dependencies."
   (let ((predicate (lambda (uri)
                      (and (string-prefix? "http://bioconductor.org" uri)
                           (string-contains uri "/data/annotation/")))))
+    (and (string-prefix? "r-" (package-name package))
+         (match (and=> (package-source package) origin-uri)
+           ((? string? uri)
+            (predicate uri))
+           ((? list? uris)
+            (any predicate uris))
+           (_ #f)))))
+
+(define (bioconductor-experiment-package? package)
+  "Return true if PACKAGE is an R experiment package from Bioconductor."
+  (let ((predicate (lambda (uri)
+                     (and (string-prefix? "http://bioconductor.org" uri)
+                          (string-contains uri "/data/experiment/")))))
     (and (string-prefix? "r-" (package-name package))
          (match (and=> (package-source package) origin-uri)
            ((? string? uri)

@@ -36,6 +36,9 @@
 GNU_SYSTEM_MODULES =				\
   gnu.scm					\
   %D%/artwork.scm				\
+  %D%/bootloader.scm				\
+  %D%/bootloader/grub.scm                       \
+  %D%/bootloader/extlinux.scm                   \
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -194,6 +197,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/idris.scm			\
   %D%/packages/idutils.scm			\
   %D%/packages/image.scm			\
+  %D%/packages/image-processing.scm	\
   %D%/packages/image-viewers.scm	\
   %D%/packages/imagemagick.scm			\
   %D%/packages/indent.scm			\
@@ -356,6 +360,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
   %D%/packages/ssh.scm				\
+  %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
   %D%/packages/storage.scm			\
@@ -441,7 +446,6 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/system.scm				\
   %D%/system/file-systems.scm			\
-  %D%/system/grub.scm				\
   %D%/system/install.scm			\
   %D%/system/linux-container.scm		\
   %D%/system/linux-initrd.scm			\
@@ -497,6 +501,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/artanis-fix-Makefile.in.patch		\
+  %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
@@ -515,7 +520,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-drop-unrar.patch			\
+  %D%/packages/patches/calibre-dont-load-remote-icons.patch	\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
+  %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
@@ -641,12 +648,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphite2-non-linear-classes-even-number.patch \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
+  %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
+  %D%/packages/patches/guile-ssh-rexec-bug.patch		\
+  %D%/packages/patches/guile-ssh-double-free.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
@@ -679,6 +689,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/jasper-CVE-2017-6850.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7885.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7975.patch		\
+  %D%/packages/patches/jbig2dec-CVE-2017-7976.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
@@ -834,8 +847,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
-  %D%/packages/patches/networkmanager-qt-activeconnection-test-1.patch \
-  %D%/packages/patches/networkmanager-qt-activeconnection-test-2.patch \
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
@@ -938,7 +949,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
+  %D%/packages/patches/qemu-CVE-2017-7493.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
+  %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/ratpoison-shell.patch			\
@@ -961,8 +974,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/screen-fix-info-syntax-error.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
-  %D%/packages/patches/shadow-4.4-su-snprintf-fix.patch         \
-  %D%/packages/patches/shadow-CVE-2017-2616.patch		\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\

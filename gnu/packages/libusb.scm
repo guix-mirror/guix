@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
@@ -27,12 +27,16 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
@@ -90,6 +94,100 @@ devices on various operating systems.")
      "Libusb-compat provides a shim allowing applications based on older
 version of libusb to run with newer libusb.")
     (license lgpl2.1+)))
+
+(define-public libusb4java
+  ;; There is no public release so we take the latest version from git.
+  (let ((commit "396d642a57678a0d9663b062c980fe100cc0ea1e")
+        (revision "1"))
+    (package
+      (name "libusb4java")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/usb4java/libusb4java.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0wqgapalhfh9v38ycbl6i2f5lh1wpr6fzwn5dwd0rdacypkd1gml"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'set-JAVA_HOME
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+               #t)))))
+      (inputs
+       `(("libusb" ,libusb)))
+      (native-inputs
+       `(("jdk" ,icedtea "jdk")))
+      (home-page "https://github.com/usb4java/libusb4java/")
+      (synopsis "JNI bindings to libusb")
+      (description
+       "This package provides Java JNI bindings to the libusb library for use
+with usb4java.")
+      (license expat))))
+
+(define-public java-usb4java
+  (package
+    (name "java-usb4java")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/usb4java/usb4java/"
+                                  "archive/usb4java-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gzpsnzwgsdyra3smq288yvxnwrgvdwxr6g8jbknnsk56kv6wc34"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "usb4java.jar"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Usually, native libusb4java libraries for all supported systems
+         ;; would be included in the jar and extracted at runtime.  Since we
+         ;; build everything from source we cannot just bundle pre-built
+         ;; binaries for other systems.  Instead, we patch the loader to
+         ;; directly return the appropriate library for this system.  The
+         ;; downside is that the jar will only work on the same architecture
+         ;; that it was built on.
+         (add-after 'unpack 'copy-libusb4java
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/main/java/org/usb4java/Loader.java"
+               (("private static String extractLibrary" line)
+                (string-append
+                 line "(final String a, final String b) {"
+                 "return \""
+                 (assoc-ref inputs "libusb4java") "/lib/libusb4java.so"
+                 "\"; }\n"
+                 "private static String _extractLibrary")))
+             #t))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (with-directory-excursion "src/test/java/org/usb4java"
+               ;; These tests should only be run when USB devices are present.
+               (substitute* '("LibUsbGlobalTest.java"
+                              "TransferTest.java")
+                 (("this.context = new Context\\(\\);")
+                  "this.context = null;")
+                 (("LibUsb.init") "//"))
+               (substitute* "DeviceListIteratorTest.java"
+                 (("this.iterator.remove" line)
+                  (string-append "assumeUsbTestsEnabled();" line))))
+             #t)))))
+    (inputs
+     `(("libusb4java" ,libusb4java)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://usb4java.org/")
+    (synopsis "USB library for Java")
+    (description
+     "This package provides a USB library for Java based on libusb and
+implementing @code{javax.usb} (JSR-80).")
+    (license expat)))
 
 (define-public python-pyusb
   (package

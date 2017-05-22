@@ -273,7 +273,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "2.3")
+    (version "2.4")
     (source
       (origin
         (method url-fetch)
@@ -281,7 +281,7 @@ H.264 (MPEG-4 AVC) video streams.")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "07z4ydxg0lk6j43h0wlh2xddb91cy4y4mny2ln71d4278b1hllj7"))
+          "0afp0xlk0fb4q6j4sh3hyvjnjccdp61sn21zg3fyqvwgswcafalw"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
@@ -458,14 +458,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.3")
+    (version "3.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "17anx7rnbi63if1ndr61836lf76dpn47n0y424hc48bj05y7z7jr"))))
+               "0bwgm6z6k3khb91qh9xv15inykkfchpkm0lcdckkxhkacpyaf0mp"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -646,7 +646,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.4")
+    (version "2.2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -654,14 +654,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1gjkrwlg8ab3skzl67cxb9qzg4187ifckd1z9kpy11q058fyjchn"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; There are two occurrences where __DATE__ and __TIME__ are
-              ;; used to capture the build time and show it to the user.
-              '(substitute* (find-files "." "help\\.c(pp)?$")
-                 (("__DATE__") "\"2016\"")
-                 (("__TIME__") "\"00:00\"")))))
+               "1k51vm6piqlrnld7sxyg0s4kdkd3lan97lmy3v5wdh3qyll8m2xj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
@@ -1599,14 +1592,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.12.3")
+    (version "1.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vpl3jl0x441y7b5cn7zhdsyi954hp9h2p30jhnr1zkx1rpxsiss"))))
+                "03g2b4rivrilimcp57mwrlsa3qvrxmk4sza08mygwmqbvcnic606"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1816,14 +1809,14 @@ specifications.")
 (define-public libaacs
   (package
     (name "libaacs")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libaacs/"
                            version "/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "1s5v075hnbs57995r6lljm79wgrip3gnyf55a0y7bja75jh49hwm"))))
+        (base32 "1kms92i0c7i1yl659kqjf19lm8172pnpik5lsxp19xphr74vvq27"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (native-inputs

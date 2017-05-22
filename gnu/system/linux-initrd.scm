@@ -268,6 +268,7 @@ loaded at boot time in the order in which they appear."
       "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
       "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
       "nvme"                                     ;for new SSD NVMe devices
+      "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
       ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
             '("pata_acpi" "pata_atiixp"    ;for ATA controllers
               "isci")                      ;for SAS controllers like Intel C602
@@ -280,9 +281,6 @@ loaded at boot time in the order in which they appear."
             '())
       ,@(if (find (file-system-type-predicate "9p") file-systems)
             virtio-9p-modules
-            '())
-      ,@(if (find (file-system-type-predicate "vfat") file-systems)
-            '("nls_iso8859-1")
             '())
       ,@(if (find (file-system-type-predicate "btrfs") file-systems)
             '("btrfs")

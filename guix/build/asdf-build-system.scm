@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build lisp-utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 receive)
@@ -42,50 +43,42 @@
 
 (define %object-prefix "/lib")
 
-(define (source-install-prefix lisp)
-  (string-append %install-prefix "/" lisp "-source"))
+(define (%lisp-source-install-prefix)
+  (string-append %source-install-prefix "/" (%lisp-type) "-source"))
 
 (define %system-install-prefix
-  (string-append %install-prefix "/systems"))
+  (string-append %source-install-prefix "/systems"))
 
-(define (output-path->package-name path)
-  (package-name->name+version (strip-store-file-name path)))
-
-(define (outputs->name outputs)
-  (output-path->package-name
-   (assoc-ref outputs "out")))
-
-(define (lisp-source-directory output lisp name)
-  (string-append output (source-install-prefix lisp) "/" name))
+(define (lisp-source-directory output name)
+  (string-append output (%lisp-source-install-prefix) "/" name))
 
 (define (source-directory output name)
-  (string-append output %install-prefix "/source/" name))
+  (string-append output %source-install-prefix "/source/" name))
 
-(define (library-directory output lisp)
+(define (library-directory output)
   (string-append output %object-prefix
-                 "/" lisp))
+                 "/" (%lisp-type)))
 
 (define (output-translation source-path
-                            object-output
-                            lisp)
+                            object-output)
   "Return a translation for the system's source path
 to it's binary output."
   `((,source-path
      :**/ :*.*.*)
-    (,(library-directory object-output lisp)
+    (,(library-directory object-output)
      :**/ :*.*.*)))
 
-(define (source-asd-file output lisp name asd-file)
-  (string-append (lisp-source-directory output lisp name) "/" asd-file))
+(define (source-asd-file output name asd-file)
+  (string-append (lisp-source-directory output name) "/" asd-file))
 
-(define (copy-files-to-output outputs output name)
-  "Copy all files from OUTPUT to \"out\".  Create an extra link to any
-system-defining files in the source to a convenient location.  This is done
-before any compiling so that the compiled source locations will be valid."
-  (let* ((out (assoc-ref outputs output))
-         (source (getcwd))
-         (target (source-directory out name))
-         (system-path (string-append out %system-install-prefix)))
+(define (copy-files-to-output out name)
+  "Copy all files from the current directory to OUT.  Create an extra link to
+any system-defining files in the source to a convenient location.  This is
+done before any compiling so that the compiled source locations will be
+valid."
+  (let ((source (getcwd))
+        (target (source-directory out name))
+        (system-path (string-append out %system-install-prefix)))
     (copy-recursively source target)
     (mkdir-p system-path)
     (for-each
@@ -97,45 +90,38 @@ before any compiling so that the compiled source locations will be valid."
 
 (define* (install #:key outputs #:allow-other-keys)
   "Copy and symlink all the source files."
-  (copy-files-to-output outputs "out" (outputs->name outputs)))
+  (define output (assoc-ref outputs "out"))
+  (copy-files-to-output output
+                        (package-name->name+version
+                         (strip-store-file-name output))))
 
-(define* (copy-source #:key outputs lisp #:allow-other-keys)
-  "Copy the source to \"out\"."
-  (let* ((out (assoc-ref outputs "out"))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (install-path (string-append out %install-prefix)))
-    (copy-files-to-output outputs "out" name)
+(define* (copy-source #:key outputs asd-system-name #:allow-other-keys)
+  "Copy the source to the library output."
+  (let* ((out (library-output outputs))
+         (install-path (string-append out %source-install-prefix)))
+    (copy-files-to-output out asd-system-name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path
-      (rename-file "source" (string-append lisp "-source"))
+      (rename-file "source" (string-append (%lisp-type) "-source"))
       (delete-file-recursively "systems")))
   #t)
 
-(define* (build #:key outputs inputs lisp asd-file
+(define* (build #:key outputs inputs asd-file asd-system-name
                 #:allow-other-keys)
   "Compile the system."
-  (let* ((out (assoc-ref outputs "out"))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (source-path (lisp-source-directory out lisp name))
+  (let* ((out (library-output outputs))
+         (source-path (lisp-source-directory out asd-system-name))
          (translations (wrap-output-translations
                         `(,(output-translation source-path
-                                               out
-                                               lisp))))
-         (asd-file (and=> asd-file (cut source-asd-file out lisp name <>))))
+                                               out))))
+         (asd-file (source-asd-file out asd-system-name asd-file)))
 
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
 
-    ;; We don't need this if we have the asd file, and it can mess with the
-    ;; load ordering we're trying to enforce
-    (unless asd-file
-      (prepend-to-source-registry (string-append source-path "//")))
-
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
 
-    (parameterize ((%lisp (string-append
-                           (assoc-ref inputs lisp) "/bin/" lisp)))
-      (compile-system name lisp asd-file))
+    (compile-system asd-system-name asd-file)
 
     ;; As above, ecl will sometimes create this even though it doesn't use it
 
@@ -144,56 +130,48 @@ before any compiling so that the compiled source locations will be valid."
         (delete-file-recursively cache-directory))))
   #t)
 
-(define* (check #:key lisp tests? outputs inputs asd-file
+(define* (check #:key tests? outputs inputs asd-file asd-system-name
+                test-asd-file
                 #:allow-other-keys)
   "Test the system."
-  (let* ((name (remove-lisp-from-name (outputs->name outputs) lisp))
-         (out (assoc-ref outputs "out"))
-         (asd-file (and=> asd-file (cut source-asd-file out lisp name <>))))
+  (let* ((out (library-output outputs))
+         (asd-file (source-asd-file out asd-system-name asd-file))
+         (test-asd-file
+          (and=> test-asd-file
+                 (cut source-asd-file out asd-system-name <>))))
     (if tests?
-        (parameterize ((%lisp (string-append
-                               (assoc-ref inputs lisp) "/bin/" lisp)))
-          (test-system name lisp asd-file))
+        (test-system asd-system-name asd-file test-asd-file)
         (format #t "test suite not run~%")))
   #t)
 
-(define* (patch-asd-files #:key outputs
+(define* (create-asd-file #:key outputs
                           inputs
-                          lisp
-                          special-dependencies
-                          test-only-systems
+                          asd-file
+                          asd-system-name
                           #:allow-other-keys)
-  "Patch any asd files created by the compilation process so that they can
-find their dependencies.  Exclude any TEST-ONLY-SYSTEMS which were only
-included to run tests.  Add any SPECIAL-DEPENDENCIES which the LISP
-implementation itself provides."
-  (let* ((out (assoc-ref outputs "out"))
-         (name (remove-lisp-from-name (output-path->package-name out) lisp))
-         (registry (lset-difference
-                    (lambda (input system)
-                      (match input
-                        ((name . path) (string=? name system))))
-                    (lisp-dependencies lisp inputs)
-                    test-only-systems))
-         (lisp-systems (map first registry)))
+  "Create a system definition file for the built system."
+  (let*-values (((out) (library-output outputs))
+                ((_ version) (package-name->name+version
+                              (strip-store-file-name out)))
+                ((new-asd-file) (string-append
+                                 (library-directory out)
+                                 "/" (normalize-string asd-system-name)
+                                 ".asd")))
 
-    (for-each
-     (lambda (asd-file)
-       (patch-asd-file asd-file registry lisp
-                       (append lisp-systems special-dependencies)))
-     (find-files out "\\.asd$")))
+    (make-asd-file new-asd-file
+                   #:system asd-system-name
+                   #:version version
+                   #:inputs inputs
+                   #:system-asd-file asd-file))
   #t)
 
-(define* (symlink-asd-files #:key outputs lisp #:allow-other-keys)
+(define* (symlink-asd-files #:key outputs #:allow-other-keys)
   "Create an extra reference to the system in a convenient location."
-  (let* ((out (assoc-ref outputs "out")))
+  (let* ((out (library-output outputs)))
     (for-each
      (lambda (asd-file)
-       (substitute* asd-file
-         ((";;; Built for.*") "") ; remove potential non-determinism
-         (("^\\(DEFSYSTEM(.*)$" all end) (string-append "(asdf:defsystem" end)))
        (receive (new-asd-file asd-file-directory)
-           (bundle-asd-file out asd-file lisp)
+           (bundle-asd-file out asd-file)
          (mkdir-p asd-file-directory)
          (symlink asd-file new-asd-file)
          ;; Update the source registry for future phases which might want to
@@ -201,15 +179,14 @@ implementation itself provides."
          (prepend-to-source-registry
           (string-append asd-file-directory "/"))))
 
-     (find-files (string-append out %object-prefix) "\\.asd$"))
-)
+     (find-files (string-append out %object-prefix) "\\.asd$")))
   #t)
 
-(define* (cleanup-files #:key outputs lisp
-                             #:allow-other-keys)
+(define* (cleanup-files #:key outputs
+                        #:allow-other-keys)
   "Remove any compiled files which are not a part of the final bundle."
-  (let ((out (assoc-ref outputs "out")))
-    (match lisp
+  (let ((out (library-output outputs)))
+    (match (%lisp-type)
       ("sbcl"
        (for-each
         (lambda (file)
@@ -219,10 +196,9 @@ implementation itself provides."
       ("ecl"
        (for-each delete-file
                  (append (find-files out "\\.fas$")
-                         (find-files out "\\.o$")
-                         (find-files out "\\.a$")))))
+                         (find-files out "\\.o$")))))
 
-    (with-directory-excursion (library-directory out lisp)
+    (with-directory-excursion (library-directory out)
       (for-each
        (lambda (file)
          (rename-file file
@@ -237,9 +213,9 @@ implementation itself provides."
                             (string<> ".." file)))))))
   #t)
 
-(define* (strip #:key lisp #:allow-other-keys #:rest args)
+(define* (strip #:rest args)
   ;; stripping sbcl binaries removes their entry program and extra systems
-  (or (string=? lisp "sbcl")
+  (or (string=? (%lisp-type) "sbcl")
       (apply (assoc-ref gnu:%standard-phases 'strip) args)))
 
 (define %standard-phases/source
@@ -257,8 +233,8 @@ implementation itself provides."
     (add-before 'build 'copy-source copy-source)
     (replace 'check check)
     (replace 'strip strip)
-    (add-after 'check 'link-dependencies patch-asd-files)
-    (add-after 'link-dependencies 'cleanup cleanup-files)
+    (add-after 'check 'create-asd-file create-asd-file)
+    (add-after 'create-asd-file 'cleanup cleanup-files)
     (add-after 'cleanup 'create-symlinks symlink-asd-files)))
 
 (define* (asdf-build #:key inputs

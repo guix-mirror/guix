@@ -30,7 +30,7 @@
 (define-public fio
   (package
     (name "fio")
-    (version "2.19")
+    (version "2.20")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -38,7 +38,7 @@
                        "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dwx2dpbsg3xyd8jzm64gazy6ij4zirlfdrbgcxr1a0z5smcmcw1"))))
+                "15vgbzlcjd21bi9ahlbs8h9ca4raw5qgi711n802qmagjdjbmlxw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -78,8 +78,8 @@
                                  (dst (string-append newbin "/" file)))
                              (link src dst)
                              (delete-file src)))
-                         '("fio2gnuplot" "fio_latency2csv.py"
-                           "fiologparser_hist.py" "fiologparser.py"))
+                         '("fio2gnuplot"  "fiologparser_hist.py"
+                           "fiologparser.py"))
                ;; Make sure numpy et.al is found.
                (wrap-program (string-append newbin "/fiologparser_hist.py")
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))

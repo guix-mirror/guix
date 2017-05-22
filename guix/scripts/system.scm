@@ -38,10 +38,10 @@
   #:use-module (guix build utils)
   #:use-module (gnu build install)
   #:use-module (gnu system)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system vm)
-  #:use-module (gnu system grub)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services herd)
@@ -147,36 +147,45 @@ TARGET, and register them."
               (map (cut copy-item <> target #:log-port log-port)
                    to-copy))))
 
-(define (install-grub* grub.cfg device target)
-  "This is a variant of 'install-grub' with error handling, lifted in
-%STORE-MONAD"
-  (let* ((gc-root      (string-append target %gc-roots-directory
-                                      "/grub.cfg"))
-         (temp-gc-root (string-append gc-root ".new"))
-         (delete-file  (lift1 delete-file %store-monad))
-         (make-symlink (lift2 switch-symlinks %store-monad))
-         (rename       (lift2 rename-file %store-monad)))
-    (mbegin %store-monad
-      ;; Prepare the symlink to GRUB.CFG to make sure that it's a GC root when
-      ;; 'install-grub' completes (being a bit paranoid.)
-      (make-symlink temp-gc-root grub.cfg)
+(define* (install-bootloader installer-drv
+                             #:key
+                             bootcfg bootcfg-file
+                             device target)
+  "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
+  (with-monad %store-monad
+    (let* ((gc-root      (string-append target %gc-roots-directory
+                                        "/bootcfg"))
+           (temp-gc-root (string-append gc-root ".new"))
+           (install (and installer-drv
+                         (derivation->output-path installer-drv)))
+           (bootcfg (derivation->output-path bootcfg)))
+      ;; Prepare the symlink to bootloader config file to make sure that it's
+      ;; a GC root when 'installer-drv' completes (being a bit paranoid.)
+      (switch-symlinks temp-gc-root bootcfg)
 
-      (munless (false-if-exception (install-grub grub.cfg device target))
+      (unless (false-if-exception
+               (begin
+                 (install-boot-config bootcfg bootcfg-file target)
+                 (when install
+                   (save-load-path-excursion (primitive-load install)))))
         (delete-file temp-gc-root)
-        (leave (G_ "failed to install GRUB on device '~a'~%") device))
+        (leave (G_ "failed to install bootloader on device ~a '~a'~%") install device))
 
-      ;; Register GRUB.CFG as a GC root so that its dependencies (background
-      ;; image, font, etc.) are not reclaimed.
-      (rename temp-gc-root gc-root))))
+      ;; Register bootloader config file as a GC root so that its dependencies
+      ;; (background image, font, etc.) are not reclaimed.
+      (rename-file temp-gc-root gc-root)
+      (return #t))))
 
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
-                  grub? grub.cfg device)
-  "Copy the closure of GRUB.CFG, which includes the output of OS-DRV, to
+                  bootloader-installer install-bootloader?
+                  bootcfg bootcfg-file
+                  device)
+  "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'guix-register' expects.
 
-When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
+When INSTALL-BOOTLOADER? is true, install bootloader on DEVICE, using BOOTCFG."
   (define (maybe-copy to-copy)
     (with-monad %store-monad
       (if (string=? target "/")
@@ -205,16 +214,21 @@ the ownership of '~a' may be incorrect!~%")
         (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
-      ;; Copy the closure of GRUB.CFG, which includes OS-DIR, GRUB's
-      ;; background image and so on.
-      (maybe-copy grub.cfg)
+      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+      ;; eventual background image and so on.
+      (maybe-copy
+       (derivation->output-path bootcfg))
 
       ;; Create a bunch of additional files.
       (format log-port "populating '~a'...~%" target)
       (populate os-dir target)
 
-      (mwhen grub?
-        (install-grub* grub.cfg device target)))))
+      (mwhen install-bootloader?
+        (install-bootloader bootloader-installer
+                            #:bootcfg bootcfg
+                            #:bootcfg-file bootcfg-file
+                            #:device device
+                            #:target target)))))
 
 
 ;;;
@@ -398,49 +412,58 @@ connection to the store."
 ;;;
 (define (switch-to-system-generation store spec)
   "Switch the system profile to the generation specified by SPEC, and
-re-install grub with a grub configuration file that uses the specified system
+re-install bootloader with a configuration file that uses the specified system
 generation as its default entry.  STORE is an open connection to the store."
   (let ((number (relative-generation-spec->number %system-profile spec)))
     (if number
         (begin
-          (reinstall-grub store number)
+          (reinstall-bootloader store number)
           (switch-to-generation* %system-profile number))
         (leave (G_ "cannot switch to system generation '~a'~%") spec))))
 
-(define (reinstall-grub store number)
-  "Re-install grub for existing system profile generation NUMBER.  STORE is an
-open connection to the store."
+(define* (system-bootloader-name #:optional (system %system-profile))
+  "Return the bootloader name stored in SYSTEM's \"parameters\" file."
+  (let ((params (unless-file-not-found
+                 (read-boot-parameters-file system))))
+    (boot-parameters-boot-name params)))
+
+(define (reinstall-bootloader store number)
+  "Re-install bootloader for existing system profile generation NUMBER.
+STORE is an open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
          (params (unless-file-not-found
                   (read-boot-parameters-file generation)))
-         (root-device (boot-parameters-root-device params))
-         ;; We don't currently keep track of past menu entries' details.  The
-         ;; default values will allow the system to boot, even if they differ
-         ;; from the actual past values for this generation's entry.
-         (grub-config (grub-configuration (device root-device)))
+         ;; Detect the bootloader used in %system-profile.
+         (bootloader (lookup-bootloader-by-name (system-bootloader-name)))
+
+         ;; Use the detected bootloader with default configuration.
+         ;; It will be enough to allow the system to boot.
+         (bootloader-config (bootloader-configuration
+                             (bootloader bootloader)))
+
          ;; Make the specified system generation the default entry.
          (entries (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-boot-parameters %system-profile old-generations))
-         (grub.cfg (run-with-store store
-                     (grub-configuration-file grub-config
-                                              entries
-                                              #:old-entries old-entries))))
-    (show-what-to-build store (list grub.cfg))
-    (build-derivations store (list grub.cfg))
-    ;; This is basically the same as install-grub*, but for now we avoid
-    ;; re-installing the GRUB boot loader itself onto a device, mainly because
-    ;; we don't in general have access to the same version of the GRUB package
-    ;; which was used when installing this other system generation.
-    (let* ((grub.cfg-path (derivation->output-path grub.cfg))
-           (gc-root (string-append %gc-roots-directory "/grub.cfg"))
-           (temp-gc-root (string-append gc-root ".new")))
-      (switch-symlinks temp-gc-root grub.cfg-path)
-      (unless (false-if-exception (install-grub-config grub.cfg-path "/"))
-        (delete-file temp-gc-root)
-        (leave (G_ "failed to re-install GRUB configuration file: '~a'~%")
-               grub.cfg-path))
-      (rename-file temp-gc-root gc-root))))
+         (old-entries (profile-boot-parameters
+                       %system-profile old-generations)))
+    (run-with-store store
+      (mlet* %store-monad
+          ((bootcfg ((bootloader-configuration-file-generator bootloader)
+                     bootloader-config entries
+                     #:old-entries old-entries))
+           (bootcfg-file -> (bootloader-configuration-file bootloader))
+           (target -> "/")
+           (drvs -> (list bootcfg)))
+        (mbegin %store-monad
+          (show-what-to-build* drvs)
+          (built-derivations drvs)
+          ;; Only install bootloader configuration file. Thus, no installer
+          ;; nor device is provided here.
+          (install-bootloader #f
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:device #f
+                              #:target target))))))
 
 
 ;;;
@@ -498,6 +521,7 @@ list of services."
     (let* ((generation  (generation-file-name profile number))
            (params      (read-boot-parameters-file generation))
            (label       (boot-parameters-label params))
+           (boot-name   (boot-parameters-boot-name params))
            (root        (boot-parameters-root-device params))
            (root-device (if (bytevector? root)
                             (uuid->string root)
@@ -508,6 +532,7 @@ list of services."
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
+      (format #t (G_ "  bootloader: ~a~%") boot-name)
       (format #t (G_ "  root device: ~a~%") root-device)
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
@@ -570,17 +595,29 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
     (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
     (warning (G_ "Failing to do that may downgrade your system!~%"))))
 
+(define (bootloader-installer-derivation installer
+                                         bootloader device target)
+  "Return a file calling INSTALLER gexp with given BOOTLOADER, DEVICE
+and TARGET arguments."
+  (with-monad %store-monad
+    (gexp->file "bootloader-installer"
+                (with-imported-modules '((guix build utils))
+                  #~(begin
+                      (use-modules (guix build utils))
+                      (#$installer #$bootloader #$device #$target))))))
+
 (define* (perform-action action os
-                         #:key bootloader? dry-run? derivations-only?
+                         #:key install-bootloader?
+                         dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
                          (mappings '())
                          (gc-root #f))
-  "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
-the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
-is the size of the image to be built, for the 'vm-image' and 'disk-image'
-actions.  FULL-BOOT? is used for the 'vm' action; it determines whether to
-boot directly to the kernel or to the bootloader.
+  "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
+bootloader; DEVICE is the target devices for bootloader; TARGET is the target
+root directory; IMAGE-SIZE is the size of the image to be built, for the
+'vm-image' and 'disk-image' actions.  FULL-BOOT? is used for the 'vm' action;
+it determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
@@ -598,22 +635,37 @@ output when building a system derivation, such as a disk image."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (grub      (package->derivation (grub-configuration-grub
-                                        (operating-system-bootloader os))))
-       (grub.cfg  (if (eq? 'container action)
-                      (return #f)
-                      (operating-system-bootcfg os
-                                                (if (eq? 'init action)
-                                                    '()
-                                                    (profile-boot-parameters)))))
+       (bootloader -> (bootloader-configuration-bootloader
+                       (operating-system-bootloader os)))
+       (bootloader-package
+        (let ((package (bootloader-package bootloader)))
+          (if package
+              (package->derivation package)
+              (return #f))))
+       (bootcfg  (if (eq? 'container action)
+                     (return #f)
+                     (operating-system-bootcfg
+                      os
+                      (if (eq? 'init action)
+                          '()
+                          (profile-boot-parameters)))))
+       (bootcfg-file -> (bootloader-configuration-file bootloader))
+       (bootloader-installer
+        (let ((installer (bootloader-installer bootloader))
+              (target    (or target "/")))
+          (bootloader-installer-derivation installer
+                                           bootloader-package
+                                           device target)))
 
-       ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
-       ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
-       ;; root.  See <http://bugs.gnu.org/21068>.
+       ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
+       ;; --no-bootloader is passed, because we then use it as a GC root.
+       ;; See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if bootloader?
-                          (list sys grub.cfg grub)
-                          (list sys grub.cfg))
+                      (if (and install-bootloader? bootloader-package)
+                          (list sys bootcfg
+				bootloader-package
+				bootloader-installer)
+                          (list sys bootcfg))
                       (list sys)))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
@@ -627,27 +679,25 @@ output when building a system derivation, such as a disk image."
           (for-each (compose println derivation->output-path)
                     drvs)
 
-          ;; Make sure GRUB is accessible.
-          (when bootloader?
-            (let ((prefix (derivation->output-path grub)))
-              (setenv "PATH"
-                      (string-append  prefix "/bin:" prefix "/sbin:"
-                                      (getenv "PATH")))))
-
           (case action
             ((reconfigure)
              (mbegin %store-monad
                (switch-to-system os)
-               (mwhen bootloader?
-                 (install-grub* (derivation->output-path grub.cfg)
-                                device "/"))))
+               (mwhen install-bootloader?
+                 (install-bootloader bootloader-installer
+                                     #:bootcfg bootcfg
+                                     #:bootcfg-file bootcfg-file
+                                     #:device device
+                                     #:target "/"))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
-                      #:grub? bootloader?
-                      #:grub.cfg (derivation->output-path grub.cfg)
+                      #:install-bootloader? install-bootloader?
+                      #:bootcfg bootcfg
+                      #:bootcfg-file bootcfg-file
+                      #:bootloader-installer bootloader-installer
                       #:device device))
             (else
              ;; All we had to do was to build SYS and maybe register an
@@ -832,7 +882,7 @@ resulting from command-line parsing."
                         ((first second) second)
                         (_ #f)))
          (device      (and bootloader?
-                           (grub-configuration-device
+                           (bootloader-configuration-device
                             (operating-system-bootloader os)))))
 
     (with-store store
@@ -861,7 +911,7 @@ resulting from command-line parsing."
                                                        m)
                                                       (_ #f))
                                                     opts)
-                             #:bootloader? bootloader?
+                             #:install-bootloader? bootloader?
                              #:target target #:device device
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))

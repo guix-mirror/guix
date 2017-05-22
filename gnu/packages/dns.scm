@@ -88,7 +88,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
     ;; Source files only say GPL2 and GPL3 are allowed.
     (license (list license:gpl2 license:gpl3))))
 
-(define-public bind
+;; 'bind' is the name of a built-in Guile procedure, which is why we choose a
+;; different name here.
+(define-public isc-bind
   (package
     (name "bind")
     (version "9.11.1")

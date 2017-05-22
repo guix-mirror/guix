@@ -10717,14 +10717,14 @@ development version of CPython that are not available in older releases.")
 (define-public python-future
   (package
     (name "python-future")
-    (version "0.15.2")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "future" version))
        (sha256
         (base32
-         "15wvcfzssc68xqnqi1dq4fhd0848hwi9jn42hxyvlqna40zijfrx"))))
+         "1nzy1k4m9966sikp0qka7lirh8sqrsyainyf8rk97db7nwdfv773"))))
     (build-system python-build-system)
     ;; Many tests connect to the network or are otherwise flawed.
     ;; https://github.com/PythonCharmers/python-future/issues/210

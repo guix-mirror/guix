@@ -1,15 +1,20 @@
-Taken from Debian. Updated by Alex Griffin.
+Recreated old debian patch on the latest calibre version
 
-Author: Dmitry Shachnev <mitya57@gmail.com>
-Description: do not build unrar extension as we strip unrar from the tarball
-Forwarded: not-needed
-Last-Update: 2013-04-04
+From 6764e4c211e50d4f4633dbabfba7cbc3089c51dc Mon Sep 17 00:00:00 2001
+From: Brendan Tildesley <brendan.tildesley@openmailbox.org>
+Date: Sat, 13 May 2017 21:12:12 +1000
+Subject: [PATCH] Remove unrar extension
 
-Index: calibre/setup/extensions.py
-===================================================================
---- calibre.orig/setup/extensions.json	2016-07-21 21:21:05.000000000 -0500
-+++ calibre/setup/extensions.json	2016-07-27 11:22:17.167710112 -0500
-@@ -211,14 +211,5 @@
+---
+ setup/extensions.json                  | 11 -----------
+ src/calibre/ebooks/metadata/archive.py |  2 +-
+ 2 files changed, 1 insertion(+), 12 deletions(-)
+
+diff --git a/setup/extensions.json b/setup/extensions.json
+index 1f6d1fb5fd..127390450f 100644
+--- a/setup/extensions.json
++++ b/setup/extensions.json
+@@ -211,16 +211,5 @@
          "sources": "calibre/devices/mtp/unix/devices.c calibre/devices/mtp/unix/libmtp.c",
          "headers": "calibre/devices/mtp/unix/devices.h calibre/devices/mtp/unix/upstream/music-players.h calibre/devices/mtp/unix/upstream/device-flags.h",
          "libraries": "mtp"
@@ -20,22 +25,25 @@ Index: calibre/setup/extensions.py
 -        "inc_dirs": "unrar",
 -        "defines": "SILENT RARDLL UNRAR _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE",
 -        "windows_defines": "SILENT RARDLL UNRAR",
+-        "haiku_defines": "LITTLE_ENDIAN SILENT RARDLL UNRAR _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _BSD_SOURCE",
+-        "haiku_libraries": "bsd",
 -        "optimize_level": 2,
 -        "windows_libraries": "User32 Advapi32 kernel32 Shell32"
      }
  ]
- 
- 
-Index: calibre/src/calibre/ebooks/metadata/archive.py
-===================================================================
---- calibre.orig/src/calibre/ebooks/metadata/archive.py	2016-07-21 21:21:05.000000000 -0500
-+++ calibre/src/calibre/ebooks/metadata/archive.py	2016-07-27 11:21:07.793616039 -0500
-@@ -42,7 +42,7 @@
-     description = _('Extract common e-book formats from archives '
-         '(zip/rar) files. Also try to autodetect if they are actually '
-         'cbz/cbr files.')
+diff --git a/src/calibre/ebooks/metadata/archive.py b/src/calibre/ebooks/metadata/archive.py
+index f5c0b7bed3..32257dcdae 100644
+--- a/src/calibre/ebooks/metadata/archive.py
++++ b/src/calibre/ebooks/metadata/archive.py
+@@ -44,7 +44,7 @@ class ArchiveExtract(FileTypePlugin):
+     description = _('Extract common e-book formats from archive files '
+         '(ZIP/RAR). Also try to autodetect if they are actually '
+         'CBZ/CBR files.')
 -    file_types = set(['zip', 'rar'])
 +    file_types = set(['zip'])
      supported_platforms = ['windows', 'osx', 'linux']
      on_import = True
  
+-- 
+2.12.2
+

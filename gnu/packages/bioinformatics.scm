@@ -614,7 +614,7 @@ Python.")
 (define-public python-biom-format
   (package
    (name "python-biom-format")
-   (version "2.1.5")
+   (version "2.1.6")
    (source
     (origin
      (method url-fetch)
@@ -625,14 +625,15 @@ Python.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "1n25w3p1rixbpac8iysmzcja6m4ip5r6sz19l8y6wlwi49hxn278"))))
+       "08cr7wpahk6zb31h4bs7jmzpvxcqv9s13xz40h6y2h656jvdvnpj"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-numpy" ,python-numpy)
       ("python-scipy" ,python-scipy)
       ("python-future" ,python-future)
       ("python-click" ,python-click)
-      ("python-h5py" ,python-h5py)))
+      ("python-h5py" ,python-h5py)
+      ("python-pandas" ,python-pandas)))
    (native-inputs
     `(("python-nose" ,python-nose)))
    (home-page "http://www.biom-format.org")
@@ -2092,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.38")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2101,7 +2102,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q2z6z5f7c0kbbzpjamkcyqg0rc6h5rxfp97qbmb0wxaycr7jajq"))))
+                "19lvz661mmgikbry0nvnsjc01fdxqbw9rl2868dvjfraxbcx9ras"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2121,8 +2122,7 @@ translated DNA query sequences against a protein reference database (BLASTP
 and BLASTX alignment mode).  The speedup over BLAST is up to 20,000 on short
 reads at a typical sensitivity of 90-99% relative to BLAST depending on the
 data and settings.")
-    (license (license:non-copyleft "file://src/COPYING"
-                                   "See src/COPYING in the distribution."))))
+    (license license:agpl3+)))
 
 (define-public discrover
   (package
@@ -2417,7 +2417,7 @@ similarity of community members.")
 (define-public fasttree
   (package
    (name "fasttree")
-   (version "2.1.9")
+   (version "2.1.10")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2425,7 +2425,7 @@ similarity of community members.")
                    version ".c"))
              (sha256
               (base32
-               "0ljvvw8i1als1wbfzvrf15c3ii2vw9db20a259g6pzg34xyyb97k"))))
+               "0vcjdvy1j4m702vmak4svbfkrpcw63k7wymfksjp9a982zy8kjsl"))))
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; no "check" target
@@ -2551,7 +2551,7 @@ Illumina, Roche 454, and the SOLiD platform.")
 (define-public fraggenescan
   (package
     (name "fraggenescan")
-    (version "1.20")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
@@ -2559,7 +2559,7 @@ Illumina, Roche 454, and the SOLiD platform.")
         (string-append "mirror://sourceforge/fraggenescan/"
                        "FragGeneScan" version ".tar.gz"))
        (sha256
-        (base32 "1zzigqmvqvjyqv4945kv6nc5ah2xxm1nxgrlsnbzav3f5c0n0pyj"))))
+        (base32 "158dcnwczgcyhwm4qlx19sanrwgdpzf6bn2y57mbpx55lkgz1mzj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2574,6 +2574,7 @@ Illumina, Roche 454, and the SOLiD platform.")
                   (string-append "system(\"" (which "rm")))
                  (("system\\(\"mv")
                   (string-append "system(\"" (which "mv")))
+                 (("\\\"awk") (string-append "\"" (which "awk")))
                  ;; This script and other programs expect the training files
                  ;; to be in the non-standard location bin/train/XXX. Change
                  ;; this to be share/fraggenescan/train/XXX instead.
@@ -2583,10 +2584,7 @@ Illumina, Roche 454, and the SOLiD platform.")
                                  "train/\".$FGS_train_file;")))
                (substitute* "run_hmm.c"
                  (("^  strcat\\(train_dir, \\\"train/\\\"\\);")
-                  (string-append "  strcpy(train_dir, \"" share "/train/\");")))
-               (substitute* "post_process.pl"
-                 (("^my \\$dir = substr.*")
-                  (string-append "my $dir = \"" share "\";"))))
+                  (string-append "  strcpy(train_dir, \"" share "/train/\");"))))
              #t))
          (replace 'build
            (lambda _ (and (zero? (system* "make" "clean"))
@@ -2598,8 +2596,6 @@ Illumina, Roche 454, and the SOLiD platform.")
                     (share (string-append out "/share/fraggenescan/train")))
                (install-file "run_FragGeneScan.pl" bin)
                (install-file "FragGeneScan" bin)
-               (install-file "FGS_gff.py" bin)
-               (install-file "post_process.pl" bin)
                (copy-recursively "train" share))))
          (delete 'check)
          (add-after 'install 'post-install-check
@@ -2607,8 +2603,9 @@ Illumina, Roche 454, and the SOLiD platform.")
            ;; output files gets created.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
-                    (bin (string-append out "/bin/")))
-               (and (zero? (system* (string-append bin "run_FragGeneScan.pl")
+                    (bin (string-append out "/bin/"))
+                    (frag (string-append bin "run_FragGeneScan.pl")))
+               (and (zero? (system* frag ; Test complete genome.
                              "-genome=./example/NC_000913.fna"
                              "-out=./test2"
                              "-complete=1"
@@ -2616,7 +2613,13 @@ Illumina, Roche 454, and the SOLiD platform.")
                     (file-exists? "test2.faa")
                     (file-exists? "test2.ffn")
                     (file-exists? "test2.gff")
-                    (file-exists? "test2.out"))))))))
+                    (file-exists? "test2.out")
+                    (zero? (system* ; Test incomplete sequences.
+                            frag
+                            "-genome=./example/NC_000913-fgs.ffn"
+                            "-out=out"
+                            "-complete=0"
+                            "-train=454_30")))))))))
     (inputs
      `(("perl" ,perl)
        ("python" ,python-2))) ;not compatible with python 3.
@@ -2695,6 +2698,46 @@ comment or quality sections.")
       ;; 'util' requires SSE instructions.
       (supported-systems '("x86_64-linux"))
       (license license:expat))))
+
+(define-public gemma
+  (package
+    (name "gemma")
+    (version "0.96")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xiangzhou/GEMMA/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))))
+    (inputs
+     `(("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("FORCE_DYNAMIC=1") ; use shared libs
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'bin-mkdir
+                     (lambda _
+                       (mkdir-p "bin")))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (install-file "bin/gemma"
+                                    (string-append
+                                     out "/bin"))))))
+       #:tests? #f)) ; no tests included yet
+    (home-page "https://github.com/xiangzhou/GEMMA")
+    (synopsis "Tool for genome-wide efficient mixed model association")
+    (description
+     "Genome-wide Efficient Mixed Model Association (GEMMA) provides a
+standard linear mixed model resolver with application in genome-wide
+association studies (GWAS).")
+    (license license:gpl3)))
 
 (define-public grit
   (package
@@ -4054,7 +4097,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.7.0")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
@@ -4063,7 +4106,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0x2hpb3nfsc6x2nq1788w0fhqfzc7cn2dp4xwyva9m3k6xlz0m43"))))
+         "03dfr2cd5fp80bcr65923zpdzrasvcxl7c2vgh8373v25a1yfap7"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -5396,18 +5439,13 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.5.7")
-    ;; Versions after 0.5.4 do not appear to be distributed on PyPI so we
-    ;; download the package from GitHub.
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fhcrc/taxtastic/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (pypi-uri "taxtastic" version))
               (sha256
                (base32
-                "1s0h5y1lds1c40jhir5585ffm6yjyn8h5aqimpgv64rhqhfv56xx"))))
+                "0s79z8kfl853x7l4h8ms05k31q87aw62nrchlk20w9n227j35929"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -7904,14 +7942,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "00jh1qklj8jb9j7mwvkfybq368h2wg9yc2cwkgb7yb9vsw72r61d"))))
+         "1s50diwh1j6vg3mgahh6bczvq74mfdbmwjrad4d5lh723gnc5pjg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)

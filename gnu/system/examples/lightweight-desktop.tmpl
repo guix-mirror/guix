@@ -4,23 +4,31 @@
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
-(use-package-modules wm ratpoison certs suckless)
+(use-package-modules bootloaders certs ratpoison suckless wm)
 
 (operating-system
   (host-name "antelope")
   (timezone "Europe/Paris")
   (locale "en_US.utf8")
 
-  ;; Assuming /dev/sdX is the target hard disk, and "my-root"
-  ;; is the label of the target root file system.
-  (bootloader (grub-configuration (device "/dev/sdX")))
+  ;; Use the UEFI variant of GRUB with the EFI System
+  ;; Partition on /dev/sda1.
+  (bootloader (grub-configuration (grub grub-efi)
+                                  (device "/dev/sda1")))
 
-  (file-systems (cons (file-system
-                        (device "my-root")
-                        (title 'label)
-                        (mount-point "/")
-                        (type "ext4"))
-                      %base-file-systems))
+  ;; Assume the target root file system is labelled "my-root".
+  (file-systems (cons* (file-system
+                         (device "my-root")
+                         (title 'label)
+                         (mount-point "/")
+                         (type "ext4"))
+                       (file-system
+                         ;; Specify partition here since FAT
+                         ;; labels are currently unsupported.
+                         (device "/dev/sda1")
+                         (mount-point "/boot/efi")
+                         (type "vfat"))
+                       %base-file-systems))
 
   (users (cons (user-account
                 (name "alice")

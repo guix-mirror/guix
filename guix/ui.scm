@@ -302,6 +302,13 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
+  ;; By default don't annoy users with deprecation warnings.  In practice,
+  ;; 'define-deprecated' in (ice-9 deprecated) arranges so that those warnings
+  ;; are emitted at expansion-time only, but there are cases where they could
+  ;; slip through, for instance when interpreting code.
+  (unless (getenv "GUILE_WARN_DEPRECATED")
+    (debug-disable 'warn-deprecated))
+
   (install-locale)
   (textdomain %gettext-domain)
 

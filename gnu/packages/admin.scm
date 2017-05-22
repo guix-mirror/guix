@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
+;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,7 +81,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kerberos)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xml))
 
 (define-public aide
   (package
@@ -279,17 +281,15 @@ client and server, a telnet client and server, and an rsh client and server.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.4")
+    (version "4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"
-                                       "shadow-CVE-2017-2616.patch"))
               (sha256
                (base32
-                "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
+                "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -2180,3 +2180,53 @@ navigation, opening files and running tasks.  There is no config file and
 mime associations are hard-coded.  The incredible user-friendliness and speed
 make it a perfect utility on modern distros.")
     (license license:bsd-2)))
+
+(define-public thermald
+  (package
+    (name "thermald")
+    (version "1.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
+                          version ".tar.gz"))
+      (sha256 (base32
+               "14klz9fnvi9jdlaqwrp61xa5nh051n8ykrs1fh1wxd7j66qf2fn6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'autogen.sh-and-fix-paths
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       ;; upstartconfir is hardcoded to /etc/init and the build
+                       ;; system tries to mkdir that.  We don't even need upstart
+                       ;; files at all; this is a fast and kludgy workaround
+                       (substitute* "data/Makefile.am"
+                         (("upstartconfdir = /etc/init")
+                          (string-append "upstartconfdir = "
+                                         out "/etc/init")))
+                       ;; Now run autogen
+                       (zero? (system* "sh" "autogen.sh"))))))
+       #:configure-flags
+       (let ((out      (assoc-ref %outputs "out")))
+         (list (string-append "--sysconfdir="
+                              out "/etc")
+               (string-append "--with-udev-dir="
+                              out "/lib/udev")
+               (string-append "--with-dbus-sys-dir="
+                              out "/etc/dbus-1/system.d")
+               "--localstatedir=/var"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("libxml2" ,libxml2)))
+    (home-page "https://01.org/linux-thermal-daemon/")
+    (synopsis "CPU scaling for thermal management")
+    (description "The Linux Thermal Daemon helps monitor and control temperature
+on systems running the Linux kernel.")
+    (license license:gpl2+)))

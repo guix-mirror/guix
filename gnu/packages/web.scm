@@ -4552,3 +4552,35 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 
 (define-public python2-pytest-httpbin
   (package-with-python2 python-pytest-httpbin))
+
+(define-public http-parser
+  (package
+    (name "http-parser")
+    (version "2.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/nodejs/http-parser/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cw6nf8xy4jhib1w0jd2y0gpqjbdasg8b7pkl2k2vpp54k9rlh3h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "PREFIX="
+                            (assoc-ref %outputs "out"))
+             "CC=gcc" "library")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/nodejs/http-parser")
+    (synopsis "HTTP request/response parser for C")
+    (description "This is a parser for HTTP messages written in C.  It parses
+both requests and responses.  The parser is designed to be used in
+high-performance HTTP applications.  It does not make any syscalls nor
+allocations, it does not buffer data, it can be interrupted at anytime.
+Depending on your architecture, it only requires about 40 bytes of data per
+message stream (in a web server that is per connection).")
+    (license l:expat)))

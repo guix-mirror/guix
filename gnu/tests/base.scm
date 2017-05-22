@@ -199,6 +199,28 @@ info --version")
                          ',users+homes))
                marionette)))
 
+          (test-equal "no extra home directories"
+            '()
+
+            ;; Make sure the home directories that are not supposed to be
+            ;; created are indeed not created.
+            (let ((nonexistent
+                   '#$(filter-map (lambda (user)
+                                    (and (not
+                                          (user-account-create-home-directory?
+                                           user))
+                                         (user-account-home-directory user)))
+                                  (operating-system-user-accounts os))))
+              (marionette-eval
+               `(begin
+                  (use-modules (srfi srfi-1))
+
+                  ;; Note: Do not flag "/var/empty".
+                  (filter file-exists?
+                          ',(remove (cut string-prefix? "/var/" <>)
+                                    nonexistent)))
+               marionette)))
+
           (test-equal "login on tty1"
             "root\n"
             (begin

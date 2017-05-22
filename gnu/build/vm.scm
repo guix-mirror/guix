@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (guix records)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -41,7 +43,7 @@
             partition-size
             partition-file-system
             partition-label
-            partition-bootable?
+            partition-flags
             partition-initializer
 
             root-partition-initializer
@@ -141,7 +143,7 @@ the #:references-graphs parameter of 'derivation'."
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
   (label       partition-label (default #f))
-  (bootable?   partition-bootable? (default #f))
+  (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
 
 (define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
@@ -168,9 +170,10 @@ actual /dev name based on DEVICE."
     (cons* "mkpart" "primary" "ext2"
            (format #f "~aB" offset)
            (format #f "~aB" (+ offset (partition-size part)))
-           (if (partition-bootable? part)
-               `("set" ,(number->string index) "boot" "on")
-               '())))
+           (append-map (lambda (flag)
+                         (list "set" (number->string index)
+                               (symbol->string flag) "on"))
+                       (partition-flags part))))
 
   (define (options partitions offset)
     (let loop ((partitions partitions)
@@ -211,10 +214,10 @@ actual /dev name based on DEVICE."
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
-(define* (format-partition partition type
-                           #:key label)
-  "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
-volume name."
+(define* (create-ext-file-system partition type
+                                 #:key label)
+  "Create an ext-family filesystem of TYPE on PARTITION.  If LABEL is true,
+use that as the volume name."
   (format #t "creating ~a partition...\n" type)
   (unless (zero? (apply system* (string-append "mkfs." type)
                         "-F" partition
@@ -222,6 +225,28 @@ volume name."
                             `("-L" ,label)
                             '())))
     (error "failed to create partition")))
+
+(define* (create-fat-file-system partition
+                                 #:key label)
+  "Create a FAT filesystem on PARTITION.  The number of File Allocation Tables
+will be determined based on filesystem size.  If LABEL is true, use that as the
+volume name."
+  (format #t "creating FAT partition...\n")
+  (unless (zero? (apply system* "mkfs.fat" partition
+                        (if label
+                            `("-n" ,label)
+                            '())))
+    (error "failed to create FAT partition")))
+
+(define* (format-partition partition type
+                           #:key label)
+  "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
+volume name."
+  (cond ((string-prefix? "ext" type)
+         (create-ext-file-system partition type #:label label))
+        ((or (string-prefix? "fat" type) (string= "vfat" type))
+         (create-fat-file-system partition #:label label))
+        (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
   "Format PARTITION, a <partition> object with a non-#f 'device' field, mount
@@ -285,23 +310,65 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (unless register-closures?
       (reset-timestamps target))))
 
-(define (register-grub.cfg-root target bootcfg)
+(define (register-bootcfg-root target bootcfg)
   "On file system TARGET, register BOOTCFG as a GC root."
   (let ((directory (string-append target "/var/guix/gcroots")))
     (mkdir-p directory)
-    (symlink bootcfg (string-append directory "/grub.cfg"))))
+    (symlink bootcfg (string-append directory "/bootcfg"))))
+
+(define (install-efi grub esp config-file)
+  "Write a self-contained GRUB EFI loader to the mounted ESP using CONFIG-FILE."
+  (let* ((system %host-type)
+         ;; Hard code the output location to a well-known path recognized by
+         ;; compliant firmware. See "3.5.1.1 Removable Media Boot Behaviour":
+         ;; http://www.uefi.org/sites/default/files/resources/UEFI%20Spec%202_6.pdf
+         (grub-mkstandalone (string-append grub "/bin/grub-mkstandalone"))
+         (efi-directory (string-append esp "/EFI/BOOT"))
+         ;; Map grub target names to boot file names.
+         (efi-targets (cond ((string-prefix? "x86_64" system)
+                             '("x86_64-efi" . "BOOTX64.EFI"))
+                            ((string-prefix? "i686" system)
+                             '("i386-efi" . "BOOTIA32.EFI"))
+                            ((string-prefix? "armhf" system)
+                             '("arm-efi" . "BOOTARM.EFI"))
+                            ((string-prefix? "aarch64" system)
+                             '("arm64-efi" . "BOOTAA64.EFI")))))
+    ;; grub-mkstandalone requires a TMPDIR to prepare the firmware image.
+    (setenv "TMPDIR" esp)
+
+    (mkdir-p efi-directory)
+    (unless (zero? (system* grub-mkstandalone "-O" (car efi-targets)
+                            "-o" (string-append efi-directory "/"
+                                                (cdr efi-targets))
+                            ;; Graft the configuration file onto the image.
+                            (string-append "boot/grub/grub.cfg=" config-file)))
+      (error "failed to create GRUB EFI image"))))
 
 (define* (initialize-hard-disk device
                                #:key
-                               grub.cfg
+                               bootloader-package
+                               bootcfg
+                               bootcfg-location
+                               bootloader-installer
+                               (grub-efi #f)
                                (partitions '()))
   "Initialize DEVICE as a disk containing all the <partition> objects listed
 in PARTITIONS, and using BOOTCFG as its bootloader configuration file.
 
 Each partition is initialized by calling its 'initializer' procedure,
 passing it a directory name where it is mounted."
+
+  (define (partition-bootable? partition)
+    "Return the first partition found with the boot flag set."
+    (member 'boot (partition-flags partition)))
+
+  (define (partition-esp? partition)
+    "Return the first EFI System Partition."
+    (member 'esp (partition-flags partition)))
+
   (let* ((partitions (initialize-partition-table device partitions))
          (root       (find partition-bootable? partitions))
+         (esp        (find partition-esp? partitions))
          (target     "/fs"))
     (unless root
       (error "no bootable partition specified" partitions))
@@ -311,10 +378,38 @@ passing it a directory name where it is mounted."
     (display "mounting root partition...\n")
     (mkdir-p target)
     (mount (partition-device root) target (partition-file-system root))
-    (install-grub grub.cfg device target)
+    (install-boot-config bootcfg bootcfg-location target)
+    (when bootloader-installer
+      (display "installing bootloader...\n")
+      (bootloader-installer bootloader-package device target))
 
-    ;; Register GRUB.CFG as a GC root.
-    (register-grub.cfg-root target grub.cfg)
+    (when esp
+      ;; Mount the ESP somewhere and install GRUB UEFI image.
+      (let ((mount-point (string-append target "/boot/efi"))
+            (grub-config (string-append target "/tmp/grub-standalone.cfg")))
+        (display "mounting EFI system partition...\n")
+        (mkdir-p mount-point)
+        (mount (partition-device esp) mount-point
+               (partition-file-system esp))
+
+        ;; Create a tiny configuration file telling the embedded grub
+        ;; where to load the real thing.
+        (call-with-output-file grub-config
+          (lambda (port)
+            (format port
+                    "insmod part_msdos~@
+                    search --set=root --label gnu-disk-image~@
+                    configfile /boot/grub/grub.cfg~%")))
+
+        (display "creating EFI firmware image...")
+        (install-efi grub-efi mount-point grub-config)
+        (display "done.\n")
+
+        (delete-file grub-config)
+        (umount mount-point)))
+
+    ;; Register BOOTCFG as a GC root.
+    (register-bootcfg-root target bootcfg)
 
     (umount target)))
 

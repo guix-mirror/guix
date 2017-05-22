@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,11 +32,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -368,6 +371,45 @@ to everybody, because they believe that everybody runs Windows and therefore
 runs Word\".")
     (license license:gpl2+)))
 
+(define-public catdoc
+  (package
+    (name "catdoc")
+    (version "0.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.wagner.pp.ru/pub/catdoc/"
+                                  "catdoc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15h7v3bmwfk4z8r78xs5ih6vd0pskn0rj90xghvbzdjj0cc88jji"))))
+    (build-system gnu-build-system)
+    ;; TODO: Also build `wordview` which requires `tk` – make a separate
+    ;; package for this.
+    (arguments
+     '(#:tests? #f ; There are no tests
+       #:configure-flags '("--disable-wordview")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man1"))))))))
+    (home-page "http://www.wagner.pp.ru/~vitus/software/catdoc/")
+    (synopsis "MS-Word to TeX or plain text converter")
+    (description "@command{catdoc} extracts text from MS-Word files, trying to
+preserve as many special printable characters as possible.  It supports
+everything up to Word-97. Also supported are MS Write documents and RTF files.
+
+@command{catdoc} does not preserve complex word formatting, but it can
+translate some non-ASCII characters into TeX escape codes.  It's goal is to
+extract plain text and allow you to read it and, probably, reformat with TeX,
+according to TeXnical rules.
+
+This package also provides @command{xls2csv}, which extracts data from Excel
+spreadsheets and outputs it in comma-separated-value format, and
+@command{catppt}, which extracts data from PowerPoint presentations.")
+    (license license:gpl2+)))
+
 (define-public utfcpp
   (package
     (name "utfcpp")
@@ -518,3 +560,35 @@ categories.")
      "C library for creating and parsing configuration files.")
     (license (list license:lgpl2.1         ; Main distribution.
                    license:asl1.1))))      ; src/readdir.{c,h}
+
+(define-public java-rsyntaxtextarea
+  (package
+    (name "java-rsyntaxtextarea")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bobbylight/"
+                                  "RSyntaxTextArea/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c5mqg2klj5rvf8fhycrli8rf6s37l9p7a8knw9gpp65r1c120q2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; FIXME: some tests fail because locale resources cannot be found.
+       ;; Even when I add them to the class path,
+       ;; RSyntaxTextAreaEditorKitDumbCompleteWordActionTest fails.
+       #:tests? #f
+       #:jar-name "rsyntaxtextarea.jar"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://bobbylight.github.io/RSyntaxTextArea/")
+    (synopsis "Syntax highlighting text component for Java Swing")
+    (description "RSyntaxTextArea is a syntax highlighting, code folding text
+component for Java Swing.  It extends @code{JTextComponent} so it integrates
+completely with the standard @code{javax.swing.text} package.  It is fast and
+efficient, and can be used in any application that needs to edit or view
+source code.")
+    (license license:bsd-3)))

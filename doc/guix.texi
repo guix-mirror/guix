@@ -35,7 +35,9 @@ Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
-Copyright @copyright{} 2017 humanitiesNerd
+Copyright @copyright{} 2017 humanitiesNerd@*
+Copyright @copyright{} 2017 Christopher Allan Webber@*
+Copyright @copyright{} 2017 Marius Bakke
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2892,6 +2894,10 @@ package definition using the @command{guix edit} command
 more information on how to test package definitions, and
 @ref{Invoking guix lint}, for information on how to check a definition
 for style conformance.
+@vindex GUIX_PACKAGE_PATH
+Lastly, @pxref{Package Modules}, for information
+on how to extend the distribution by adding your own package definitions
+to @code{GUIX_PACKAGE_PATH}.
 
 Finally, updating the package definition to a new upstream version
 can be partly automated by the @command{guix refresh} command
@@ -3353,23 +3359,8 @@ These build systems can also be used to produce executable programs, or
 lisp images which contain a set of packages pre-loaded.
 
 The build system uses naming conventions.  For binary packages, the
-package itself as well as its run-time dependencies should begin their
-name with the lisp implementation, such as @code{sbcl-} for
-@code{asdf-build-system/sbcl}.  Beginning the input name with this
-prefix will allow the build system to encode its location into the
-resulting library, so that the input can be found at run-time.
-
-If dependencies are used only for tests, it is convenient to use a
-different prefix in order to avoid having a run-time dependency on such
-systems.  For example,
-
-@example
-(define-public sbcl-bordeaux-threads
-  (package
-    ...
-    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
-    ...))
-@end example
+package name should be prefixed with the lisp implementation, such as
+@code{sbcl-} for @code{asdf-build-system/sbcl}.
 
 Additionally, the corresponding source package should be labeled using
 the same convention as python packages (see @ref{Python Modules}), using
@@ -3389,7 +3380,16 @@ expressions to be passed as the @code{#:entry-program} argument.
 
 If the system is not defined within its own @code{.asd} file of the same
 name, then the @code{#:asd-file} parameter should be used to specify
-which file the system is defined in.
+which file the system is defined in.  Furthermore, if the package
+defines a system for its tests in a separate file, it will be loaded
+before the tests are run if it is specified by the
+@code{#:test-asd-file} parameter.  If it is not set, the files
+@code{<system>-tests.asd}, @code{<system>-test.asd}, @code{tests.asd},
+and @code{test.asd} will be tried if they exist.
+
+If for some reason the package must be named in a different way than the
+naming conventions suggest, the @code{#:asd-system-name} parameter can
+be used to specify the name of the system.
 
 @end defvr
 
@@ -7315,14 +7315,15 @@ copy the image with:
 
 @example
 dd if=guixsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
+sync
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
 Once this is done, you should be able to reboot the system and boot from
-the USB stick.  The latter usually requires you to get in the BIOS' boot
-menu, where you can choose to boot from the USB stick.
+the USB stick.  The latter usually requires you to get in the BIOS' or
+UEFI boot menu, where you can choose to boot from the USB stick.
 
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
 GuixSD in a virtual machine (VM).
@@ -7446,6 +7447,17 @@ ping -c 3 gnu.org
 Setting up network access is almost always a requirement because the
 image does not contain all the software and tools that may be needed.
 
+@cindex installing over SSH
+If you want to, you can continue the installation remotely by starting
+an SSH server:
+
+@example
+herd start ssh-daemon
+@end example
+
+Make sure to either set a password with @command{passwd}, or configure
+OpenSSH public key authentication before logging in.
+
 @subsubsection Disk Partitioning
 
 Unless this has already been done, the next step is to partition, and
@@ -7464,6 +7476,17 @@ If your disk uses the GUID Partition Table (GPT) format and you plan to
 install BIOS-based GRUB (which is the default), make sure a BIOS Boot
 Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
 manual}).
+
+@cindex EFI, installation
+@cindex UEFI, installation
+@cindex ESP, EFI system partition
+If you instead wish to use EFI-based GRUB, a FAT32 @dfn{EFI System Partition}
+(ESP) is required.  This partition should be mounted at @file{/boot/efi} and
+must have the @code{esp} flag set.  E.g., for @command{parted}:
+
+@example
+parted /dev/sda set 1 esp on
+@end example
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
@@ -7503,6 +7526,11 @@ root partition):
 @example
 mount LABEL=my-root /mnt
 @end example
+
+Also mount any other partitions you would like to use on the target
+system relative to this path.  If you have @file{/boot} on a separate
+partition for example, mount it at @file{/mnt/boot} now so it is found
+by @code{guix system init} afterwards.
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
 Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
@@ -7578,7 +7606,8 @@ in particular:
 @itemize
 @item
 Make sure the @code{grub-configuration} form refers to the device you
-want to install GRUB on.
+want to install GRUB on.  You also need to specify the @code{grub-efi}
+package if you wish to use native UEFI boot.
 
 @item
 Be sure that your partition labels match the value of their respective
@@ -7628,8 +7657,11 @@ good.
 @subsection Installing GuixSD in a Virtual Machine
 
 @cindex virtual machine, GuixSD installation
-If you'd like to install GuixSD in a virtual machine (VM) rather than on
-your beloved machine, this section is for you.
+@cindex virtual private server (VPS)
+@cindex VPS (virtual private server)
+If you'd like to install GuixSD in a virtual machine (VM) or on a
+virtual private server (VPS) rather than on your beloved machine, this
+section is for you.
 
 To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
 disk image, follow these steps:
@@ -7864,7 +7896,7 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
-A graphical environment with a choice of lightweight window managers
+A graphical UEFI system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
@@ -14617,6 +14649,31 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
+
+The @code{(gnu services pm)} module provides an interface to
+thermald, a CPU frequency scaling service which helps prevent overheating.
+
+@defvr {Scheme Variable} thermald-service-type
+This is the service type for
+@uref{https://01.org/linux-thermal-daemon/, thermald}, the Linux
+Thermal Daemon, which is responsible for controlling the thermal state
+of processors and preventing overheating.
+@end defvr
+
+@deftp {Data Type} thermald-configuration
+Data type representing the configuration of @code{thermald-service-type}.
+
+@table @asis
+@item @code{ignore-cpuid-check?} (default: @code{#f})
+Ignore cpuid check for supported CPU models.
+
+@item @code{thermald} (default: @var{thermald})
+Package object of thermald.
+
+@end table
+@end deftp
+
+
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
 
@@ -14905,6 +14962,19 @@ $ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
 $ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 $ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
 @end example
+
+As another example, R requires the @code{CURL_CA_BUNDLE} environment
+variable to point to a certificate bundle, so you would have to run
+something like this:
+
+@example
+$ guix package -i nss-certs
+$ export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+@end example
+
+For other applications you may want to look up the required environment
+variable in the relevant documentation.
+
 
 @node Name Service Switch
 @subsection Name Service Switch
@@ -15224,7 +15294,38 @@ The number of seconds to wait for keyboard input before booting.  Set to
 The @code{grub-theme} object describing the theme to use.
 
 @item @code{grub} (default: @code{grub})
-The GRUB package to use.
+@cindex EFI, bootloader
+@cindex UEFI, bootloader
+@cindex BIOS, bootloader
+The GRUB package to use.  Currently either @code{grub}, for ``legacy''
+x86 BIOS systems, or @code{grub-efi}, for modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).
+
+@item @code{terminal-outputs} (default: @code{'gfxterm})
+The output terminals used for the GRUB boot menu, as a list of symbols.
+These values are accepted: @code{console}, @code{serial},
+@code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text}, @code{mda_text},
+@code{morse}, and @code{pkmodem}.  This field corresponds to the GRUB
+variable GRUB_TERMINAL_OUTPUT (@pxref{Simple configuration,,, grub,GNU
+GRUB manual}).
+
+@item @code{terminal-inputs} (default: @code{'()})
+The input terminals used for the GRUB boot menu, as a list of symbols.
+The default is the native platform terminal as determined by GRUB at
+run-time.  These values are accepted: @code{console}, @code{serial},
+@code{serial_@{0-3@}}, @code{at_keyboard}, and @code{usb_keyboard}.
+This field corresponds to the GRUB variable GRUB_TERMINAL_INPUT
+(@pxref{Simple configuration,,, grub,GNU GRUB manual}).
+
+@item @code{serial-unit} (default: @code{#f})
+The serial unit used by GRUB, as an integer from 0 to 3.  The default
+value is chosen by GRUB at run-time; currently GRUB chooses 0, which
+corresponds to COM1 (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
+
+@item @code{serial-speed} (default: @code{#f})
+The speed of the serial interface, as an integer.  The default value is
+chosen by GRUB at run-time; currently GRUB chooses 9600@tie{}bps
+(@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 @end table
 
 @end deftp
@@ -15623,17 +15724,21 @@ example graph.
 @subsection Running GuixSD in a Virtual Machine
 
 @cindex virtual machine
-One way to run GuixSD in a virtual machine (VM) is to build a GuixSD
-virtual machine image using @command{guix system vm-image}
-(@pxref{Invoking guix system}).  The returned image is in qcow2 format,
-which the @uref{http://qemu.org/, QEMU emulator} can efficiently use.
+To run GuixSD in a virtual machine (VM), one can either use the
+pre-built GuixSD VM image distributed at
+@indicateurl{ftp://alpha.gnu.org/guix/guixsd-vm-image-@value{VERSION}.@var{system}.tar.xz}
+, or build their own virtual machine image using @command{guix system
+vm-image} (@pxref{Invoking guix system}).  The returned image is in
+qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
+efficiently use.
 
 @cindex QEMU
-To run the image in QEMU, copy it out of the store (@pxref{The Store})
-and give yourself permission to write to the copy.  When invoking QEMU,
-you must choose a system emulator that is suitable for your hardware
-platform.  Here is a minimal QEMU invocation that will boot the result
-of @command{guix system vm-image} on x86_64 hardware:
+If you built your own image, you must copy it out of the store
+(@pxref{The Store}) and give yourself permission to write to the copy
+before you can use it.  When invoking QEMU, you must choose a system
+emulator that is suitable for your hardware platform.  Here is a minimal
+QEMU invocation that will boot the result of @command{guix system
+vm-image} on x86_64 hardware:
 
 @example
 $ qemu-system-x86_64 \
@@ -15679,7 +15784,7 @@ to your system definition and start the VM using
 @command{`guix system vm config.scm` -net user}.  An important caveat of using
 @command{-net user} for networking is that @command{ping} will not work, because
 it uses the ICMP protocol.  You'll have to use a different command to check for
-network connectivity, like for example @command{curl}.
+network connectivity, for example @command{guix download}.
 
 @subsubsection Connecting Through SSH
 
