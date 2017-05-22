@@ -1,6 +1,7 @@
 # This list is used to avoid multiple name/email instances of the same
 # contributors reported by "git log" and "git shortlog" commands.
 
+Adriano Peluso <catonano@gmail.com>
 Al McElrath <hello@yrns.org> <hello@atonesir.com>
 Alex Sassmannshausen <alex@pompo.co> <alex.sassmannshausen@gmail.com>
 Alexander I. Grafov <grafov@gmail.com>
