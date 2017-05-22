@@ -3984,7 +3984,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.4")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3992,7 +3992,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "190www3b61spfgwx42jw8h5hsz2996jcxky48k63468avjpk33dd"))))
+                "09aqsnpah71p9gx0ap2px2dyanrs7jmkkar6q114n9b7js8qh9qk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")
