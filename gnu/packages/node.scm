@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -33,7 +34,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public node
   (package
@@ -50,10 +52,12 @@
               (patches (search-patches "node-9077.patch"))))
     (build-system gnu-build-system)
     (arguments
-     ;; TODO: Package http_parser and add --shared-http-parser.
+     ;; TODO: Purge the bundled copies from the source.
      '(#:configure-flags '("--shared-openssl"
                            "--shared-zlib"
                            "--shared-libuv"
+                           "--shared-cares"
+                           "--shared-http-parser"
                            "--without-snapshot")
        #:phases
        (modify-phases %standard-phases
@@ -123,7 +127,9 @@
        ("util-linux" ,util-linux)
        ("which" ,which)))
     (inputs
-     `(("libuv" ,libuv)
+     `(("c-ares" ,c-ares)
+       ("http-parser" ,http-parser)
+       ("libuv" ,libuv)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
