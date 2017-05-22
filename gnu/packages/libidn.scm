@@ -20,6 +20,7 @@
 
 (define-module (gnu packages libidn)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages libunistring)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -53,14 +54,16 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
-                                  ".tar.xz"))
+                                  ".tar.lz"))
               (sha256
                (base32
-                "0irz2wlzdllpxr2w7lglryj88fy2ww3ilv7ang5d0s30jddjbg45"))))
+                "0pqaj8d01aj4i110669fincqs10kgynyqcrmq2q7pss8v9dcd1jq"))))
+    (native-inputs
+     `(("lzip" ,lzip)))
     (inputs
      `(("libunistring" ,libunistring)))
     (build-system gnu-build-system)
