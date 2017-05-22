@@ -44,7 +44,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘static-networking’ service can now be extended
 *** Configuration of ‘nginx-service-type’ has been greatly improved
 *** New ‘gnu-build-system’ phase to always reset gzip timestamps
-*** FIXME new services
+*** New services
 
 exim, mail-aliases, inetd, agetty, openvswitch, special-files, redis,
 thermald
@@ -617,7 +617,7 @@ zimg@2.5, zlib@1.2.11, znc@1.6.5
 
 ** Native language support
 
-Updated translations: fr (French), FIXME
+Updated translations: fr (French)
 
 * Changes in 0.12.0 (since 0.11.0)
 
