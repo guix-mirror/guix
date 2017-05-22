@@ -237,7 +237,16 @@ library variant NEWLIB."
       (version (package-version xgcc))
       (source #f)
       (build-system trivial-build-system)
-      (arguments '(#:builder (mkdir %output)))
+      (arguments
+       '(#:modules ((guix build union))
+         #:builder
+         (begin
+           (use-modules (ice-9 match)
+                        (guix build union))
+           (match %build-inputs
+             (((names . directories) ...)
+              (union-build (assoc-ref %outputs "out")
+                           directories))))))
       (propagated-inputs
        `(("binutils" ,(cross-binutils "arm-none-eabi"))
          ("gcc" ,xgcc)
