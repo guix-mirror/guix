@@ -341,6 +341,7 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
+                     shadow                    ;'passwd', for easy SSH access
                      parted gptfdisk ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
