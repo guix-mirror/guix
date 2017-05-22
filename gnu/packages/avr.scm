@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -39,7 +39,7 @@
     (name "avr-binutils")))
 
 (define-public avr-gcc-4.9
-  (let ((xgcc (cross-gcc "avr" #:xbinutils avr-binutils)))
+  (let ((xgcc (cross-gcc "avr" #:xgcc gcc-4.9 #:xbinutils avr-binutils)))
     (package
       (inherit xgcc)
       (name "avr-gcc")
