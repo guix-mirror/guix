@@ -3979,8 +3979,6 @@ fish.  The whole game is accompanied by quiet, comforting music.")
          (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
                (string-append "prefix=" out)
                "SAVEDIR=~/.crawl"
-               ;; TODO: build graphical client
-               "TILES="
                ;; don't build any bundled dependencies
                "BUILD_LUA="
                "BUILD_SQLITE="
@@ -3999,7 +3997,8 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (setenv "TERM" "xterm-256color")
              (zero? (apply system* "make" "debug" "test"
                            (format #f "-j~d" (parallel-job-count))
-                           make-flags)))))))
+                           ;; Force command line build for test cases.
+                           (append make-flags '("GAME=crawl" "TILES=")))))))))
     (synopsis "Roguelike dungeon crawler game")
     (description "Dungeon Crawl Stone Soup is a roguelike adventure through
 dungeons filled with dangerous monsters in a quest to find the mystifyingly
@@ -4012,6 +4011,39 @@ fabulous Orb of Zot.")
                    license:expat
                    license:zlib
                    license:asl2.0))))
+
+(define-public crawl-tiles
+  (package
+    (inherit crawl)
+    (name "crawl-tiles")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments crawl)
+       ((#:make-flags flags)
+        `(let ((dejavu (assoc-ref %build-inputs "font-dejavu")))
+           (cons*
+            (string-append "PROPORTIONAL_FONT=" dejavu
+                           "/share/fonts/truetype/DejaVuSans.ttf")
+            (string-append "MONOSPACED_FONT=" dejavu
+                           "/share/fonts/truetype/DejaVuSansMono.ttf")
+            "TILES=y"
+            ;; Rename the executable to allow parallel installation with crawl.
+            "GAME=crawl-tiles"
+            ,flags)))))
+    (inputs
+     `(,@(package-inputs crawl)
+       ("font-dejavu" ,font-dejavu)
+       ("freetype6" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (native-inputs
+     `(,@(package-native-inputs crawl)
+       ;; TODO: Add advpng or pngcrush for additional PNG optimization.
+       ("which" ,which)))
+    (synopsis "Graphical roguelike dungeon crawler game")))
 
 (define-public lugaru
   (package
