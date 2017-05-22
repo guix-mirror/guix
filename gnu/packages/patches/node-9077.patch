@@ -12,19 +12,20 @@ zlib. Using a shared zlib results in build breakage:
                ^ ~~~~~~~~~~~~~~~~~
 1 error generated.
 ---
- node.gyp | 2 ++
- 1 file changed, 2 insertions(+)
+ node.gyp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/node.gyp b/node.gyp
-index fa98547..d799ba1 100644
+index 272dc98..667c260 100644
 --- a/node.gyp
 +++ b/node.gyp
-@@ -480,6 +480,8 @@
-         }],
-         [ 'node_shared_zlib=="false"', {
-           'dependencies': [ 'deps/zlib/zlib.gyp:zlib' ],
-+        }, {
-+          'defines': [ 'ZLIB_CONST' ],
-         }],
- 
-         [ 'node_shared_http_parser=="false"', {
+@@ -653,7 +653,8 @@
+             [ 'node_shared_zlib=="false"', {
+               'dependencies': [
+                 'deps/zlib/zlib.gyp:zlib',
+-              ]
++              ]}, {
++              'defines': [ 'ZLIB_CONST' ],
+             }],
+             [ 'node_shared_openssl=="false"', {
+               'dependencies': [

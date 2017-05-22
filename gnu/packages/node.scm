@@ -38,14 +38,14 @@
 (define-public node
   (package
     (name "node")
-    (version "7.8.0")
+    (version "7.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1nkngdjbsm81nn3v0w0c2aqx9nb7mwy3z49ynq4wwcrzfr9ap8ka"))
+                "00vdmb0z8b2sd547bkksgy9dfq5gi5xfd9b3f0rc4ngvpzl3z164"))
               ;; https://github.com/nodejs/node/pull/9077
               (patches (search-patches "node-9077.patch"))))
     (build-system gnu-build-system)
@@ -86,7 +86,9 @@
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
                          "test/parallel/test-npm-install.js"
-                         "test/sequential/test-child-process-emfile.js"))
+                         "test/sequential/test-child-process-emfile.js"
+                         "test/sequential/test-benchmark-child-process.js"
+                         "test/sequential/test-http-regr-gh-2928.js"))
              #t))
          (replace 'configure
            ;; Node's configure script is actually a python script, so we can't
