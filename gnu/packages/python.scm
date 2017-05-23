@@ -4768,7 +4768,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
 (define-public python-cairocffi
   (package
     (name "python-cairocffi")
-    (version "0.6")
+    (version "0.8.0")
     (source
      (origin
       (method url-fetch)
@@ -4778,7 +4778,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
