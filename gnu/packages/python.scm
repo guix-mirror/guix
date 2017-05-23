@@ -7253,15 +7253,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.0")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "idna/idna-" version ".tar.gz"))
+       (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "0frxgmgi234lr9hylg62j69j4ik5zhg0wz05w5dhyacbjfnrl68n"))))
+         "1ara12a7k2zc69msa0arrvw00gn61a6i6by01xb3lkkc0h4cxd9w"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
