@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,7 +225,7 @@ name of its URI."
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
-  '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
+  '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "mips64el-linux"))
 
 (define %hurd-systems
   ;; The GNU/Hurd systems for which support is being developed.
@@ -235,7 +236,7 @@ name of its URI."
   ;;
   ;; XXX: MIPS is temporarily unavailable on Hydra:
   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
-  (delete "mips64el-linux" %supported-systems))
+  (fold delete %supported-systems '("aarch64-linux" "mips64el-linux")))
 
 
 ;; A package.
