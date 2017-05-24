@@ -4880,3 +4880,31 @@ running tests easier.")
 pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
     (license license:gpl3+)))
+
+(define-public emacs-restclient
+  (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
+        (revision "1"))                 ;Guix package revision,
+                                        ;upstream doesn't have official releases
+    (package
+      (name "emacs-restclient")
+      (version (string-append revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pashky/restclient.el.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00lmjhb5im1kgrp54yipf1h9pshxzgjlg71yf2rq5n973gvb0w0q"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/pashky/restclient.el")
+      (synopsis "Explore and test HTTP REST webservices")
+      (description
+       "This tool allows for testing and exploration of HTTP REST Web services
+from within Emacs.  Restclient runs queries from a plan-text query sheet,
+displays results pretty-printed in XML or JSON with @code{restclient-mode}")
+      (license license:public-domain))))
