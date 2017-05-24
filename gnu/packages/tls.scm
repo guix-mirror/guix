@@ -52,13 +52,13 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (replacement libtasn1/fixed)
     (version "4.10")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/libtasn1/libtasn1-"
                           version ".tar.gz"))
+      (patches (search-patches "libtasn1-CVE-2017-6891.patch"))
       (sha256
        (base32
         "00jsix5hny0g768zv4hk78dib7w0qmk5fbizf4jj37r51nd4s6k8"))))
@@ -72,15 +72,6 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
-
-(define libtasn1/fixed
-  (package
-    (inherit libtasn1)
-    (source
-      (origin
-        (inherit (package-source libtasn1))
-        (patches
-          (search-patches "libtasn1-CVE-2017-6891.patch"))))))
 
 (define-public asn1c
   (package
