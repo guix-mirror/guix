@@ -573,7 +573,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.22.0")
+    (version "3.24.1")
     (source
      (origin
        (method url-fetch)
@@ -582,11 +582,13 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1ryblpc4wbhxcwf7grgib4drrab5xi6p78ihhrx0zj7g13xrrch8"))))
+         "1zdzznrj2s1gsrv2z4r0n88fzba8zjc1n2r313xi77lhl1daja56"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
-       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ;for tests: dbus-run-session and glib-compile-schemas
+       ("dbus" ,dbus)
+       ("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
@@ -596,16 +598,6 @@ useful for C++.")
      ;; pygobject-3.0.pc refers to all these.
      `(("glib" ,glib)
        ("libffi" ,libffi)))
-    (arguments
-     ;; TODO: failing tests: test_native_calls_async
-     ;; test_native_calls_async_errors test_native_calls_sync
-     ;; test_native_calls_sync_errors test_python_calls_async
-     ;; test_python_calls_async_error test_python_calls_async_error_result
-     ;; test_python_calls_sync test_python_calls_sync_errors
-     ;; test_python_calls_sync_noargs test_callback_user_data_middle_none
-     ;; test_callback_user_data_middle_single
-     ;; test_callback_user_data_middle_tuple
-     '(#:tests? #f))
     ;; For finding typelib files, since gobject-introscpetion isn't propagated.
     (native-search-paths (package-native-search-paths gobject-introspection))
     (home-page "https://live.gnome.org/PyGObject")
