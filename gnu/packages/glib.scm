@@ -289,14 +289,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.50.0")
+    (version "1.52.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1i9pccig8mv6qf0c1z8fcapays190nmr7j6pyc7cfhzmcv39fr8w"))
+              (base32 "1x5gkyrglv3dn9b4fsgw6asqgjw1wj7qc37g9pyac6pyaa6w7l1f"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "tools/g-ir-tool-template.in"
