@@ -949,16 +949,18 @@ the GNOME desktop environment.")
 (define-public libcroco
   (package
     (name "libcroco")
-    (replacement libcroco/fixed)
-    (version "0.6.11")
+    (version "0.6.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
+              (patches
+                (search-patches "libcroco-CVE-2017-7960.patch"
+                                "libcroco-CVE-2017-7961.patch"))
               (sha256
                (base32
-                "0mm0wldbi40am5qn0nv7psisbg01k42rwzjxl3gv11l5jj554aqk"))))
+                "0q7qhi7z64i26zabg9dbs5706fa8pmzp1qhpa052id4zdiabbi6x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -976,19 +978,6 @@ XML/CSS rendering engine.")
 
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
-
-(define libcroco/fixed
-  (package
-    (inherit libcroco)
-    (replacement #f)
-    (source
-      (origin
-        (inherit (package-source libcroco))
-        (patches
-          (append
-            (origin-patches (package-source libcroco))
-            (search-patches "libcroco-CVE-2017-7960.patch"
-                            "libcroco-CVE-2017-7961.patch")))))))
 
 (define-public libgsf
   (package
