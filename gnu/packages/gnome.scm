@@ -4174,7 +4174,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.46.0")
+    (version "1.48.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4182,10 +4182,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1m2ssa6qsipbp8lz4xbhf0nhadhv0xkdpmz1jcvl9187lwgmk0r2"))
-              (modules '((guix build utils)))
-              (snippet '(substitute* "test/run-with-dbus"
-                          (("/bin/rm") "rm")))))
+                "0cqgv460wfhwkw6j1h46v6bg29bycg6dfl7c5rv0lfcqmmw7v6v6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4200,11 +4197,11 @@ configuration program to choose applications starting on login.")
             ;; For the missing /etc/machine-id.
             (setenv "DBUS_FATAL_WARNINGS" "0")
 
-            ;; XXX: fails with:
-            ;;   Failed to convert UTF-8 string to JS string: ...
-            ;; TODO: actually fix it.
-            (substitute* "installed-tests/js/testEverythingBasic.js"
-              ((".*test_utf8_inout.*") ""))
+            ;; Our mozjs-38 package does not compile the required Intl API
+            ;; support for these failing tests.
+            (substitute* "installed-tests/js/testLocale.js"
+              ((".*toBeDefined.*") "")
+              ((".*expect\\(datestr\\).*") ""))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
@@ -4216,8 +4213,9 @@ configuration program to choose applications starting on login.")
        ("xvfb" ,xorg-server)))
     (propagated-inputs
      ;; These are all in the Requires.private field of gjs-1.0.pc.
-     `(("gobject-introspection" ,gobject-introspection)
-       ("mozjs" ,mozjs-24)))
+     `(("cairo" ,cairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("mozjs" ,mozjs-38)))
     (inputs
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
