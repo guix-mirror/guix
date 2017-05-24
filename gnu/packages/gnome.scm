@@ -5566,7 +5566,7 @@ existing databases over the internet.")
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
-    (version "3.22.0")
+    (version "3.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
@@ -5576,7 +5576,7 @@ existing databases over the internet.")
                         (search-patch "gnome-tweak-tool-search-paths.patch")))
               (sha256
                (base32
-                "1frs16p2284mdw65g1ldmf9cz5sn3rg16wz58gjrw5pn2cgf2six"))))
+                "000ygz9wgnv8pimb6rwbjfm12vbx4138pwkq36ci0k6v827282wk"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
