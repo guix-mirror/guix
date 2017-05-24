@@ -55,17 +55,15 @@ staying as close to their API as is reasonable.")
 (define-public glog
   (package
     (name "glog")
-    (version "0.3.4")
+    (version "0.3.5")
     (home-page "https://github.com/google/glog")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))))
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "0ym5g15m7c8kjfr2c3zq6bz08ghin2d1r1nb6v2vnkfh1vn945x1"))
-              (file-name (string-append name "-" version "-checkout"))
+                "1q6ihk2asbx95a56kmyqwysq1x3grrw9jwqllafaidf0l84f903m"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (patches (search-patches "glog-gcc-5-demangling.patch"))))
     (build-system gnu-build-system)
     (native-inputs
