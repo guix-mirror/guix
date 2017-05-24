@@ -57,14 +57,7 @@
      `(("bison" ,bison)
        ("perl" ,perl)))
     (arguments
-     `(;; Work around "No rule to make target '../../include/gssapi/gssapi.h',
-       ;; needed by 'authgss_prot.so'."
-       #:parallel-build? #f
-
-       ;; Likewise with tests.
-       #:parallel-tests? #f
-
-       ;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
+     `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
        ;; while running the tests in 'src/tests'.
        #:tests? ,(string=? (%current-system) "x86_64-linux")
 
