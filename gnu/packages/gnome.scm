@@ -46,6 +46,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
@@ -4449,7 +4450,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.22.3")
+    (version "3.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4457,26 +4458,20 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kygd46s0is6i451bqykagrfx34wjvrgjbjyyszaabnppp1dyn0c"))))
-    (build-system gnu-build-system)
+                "1ywqy939n27v3kchlnyxs6ikhjxmlasv6f08ap4bldgr121vkfx9"))))
+    (build-system cmake-build-system)
     (arguments
-     '(;; XXX: fails with:
-       ;;   /Fixture/Calendar0: cleaning up pid xxxx
-       ;;   t status: 139)
+     '(;; XXX FIXME: 11/85 tests are failing.
        #:tests? #f
        #:configure-flags
-       (let ((nss  (assoc-ref %build-inputs "nss"))
-             (nspr (assoc-ref %build-inputs "nspr")))
-         (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
-               "--disable-google" ; disable Google Contacts support
-               "--disable-google-auth" ; disable Google authentication
-               "--enable-vala-bindings"
-               (string-append "--with-nspr-includes=" nspr "/include/nspr")
-               (string-append "--with-nss-includes=" nss "/include/nss")
-               (string-append "--with-nss-libs=" nss "/lib/nss")))
+       (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
+             "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
+             "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
+             "-DENABLE_VALA_BINDINGS=ON"
+             "-DENABLE_INTROSPECTION=ON")   ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'pre-check
+         (add-after 'unpack 'patch-paths
           (lambda _
             (substitute* "tests/test-server-utils/e-test-server-utils.c"
               (("/bin/rm") (which "rm")))
@@ -4488,7 +4483,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
-       ("python" ,python)))
+       ("python" ,python-wrapper)))
     (propagated-inputs
      ;; These are all in the Requires field of .pc files.
      `(("gtk+" ,gtk+)
@@ -4501,7 +4496,9 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
      `(("bdb" ,bdb)
        ("gcr" ,gcr)
        ("gnome-online-accounts" ,gnome-online-accounts)
-       ("libgweather" ,libgweather)))
+       ("libgweather" ,libgweather)
+       ("mit-krb5" ,mit-krb5)
+       ("openldap" ,openldap)))
     (synopsis "Store address books and calendars")
     (home-page "https://wiki.gnome.org/Apps/Evolution")
     (description
