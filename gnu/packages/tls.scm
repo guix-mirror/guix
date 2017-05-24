@@ -75,14 +75,14 @@ specifications.")
 (define-public asn1c
   (package
     (name "asn1c")
-    (version "0.9.27")
+    (version "0.9.28")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://lionet.info/soft/asn1c-"
                           version ".tar.gz"))
       (sha256
        (base32
-        "17nvn2kzvlryasr9dzqg6gs27b9lvqpval0k31pb64bjqbhn8pq2"))))
+        "1fc64g45ykmv73kdndr4zdm4wxhimhrir4rxnygxvwkych5l81w0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
