@@ -5536,7 +5536,7 @@ desktop.  It supports multiple calendars, monthly view and yearly view.")
 (define-public gnome-dictionary
   (package
     (name "gnome-dictionary")
-    (version "3.20.0")
+    (version "3.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5544,7 +5544,7 @@ desktop.  It supports multiple calendars, monthly view and yearly view.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08b1f5s5aqka3dwxnzmwr2fmyddjm9xw7zmqsf8r5zvfsivn7czg"))))
+                "1wnrpg8yndacq0xnzc84d519yp7f28brzklm3a48xcgs1i50drs1"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
