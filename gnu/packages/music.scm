@@ -1883,18 +1883,19 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1pvs9r5ykfaci900p0kz2xc5xsrswnwwbcl2chsvd98f1ns4vwds"))))
+                "0sp7r9n926ggdn285l4xzvw558jz1440n7kn2f1qs6w6h6l0f1q3"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
-     `(("qt" ,qt)
+     `(("qt" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -1909,7 +1910,8 @@ computer's keyboard.")
        ("liblo" ,liblo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (home-page "http://qtractor.org/")
     (synopsis "Audio/MIDI multi-track sequencer")
     (description

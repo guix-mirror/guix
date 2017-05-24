@@ -39,6 +39,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4767,17 +4768,17 @@ support for Python 3 and PyPy.  It is based on cffi.")
 (define-public python-cairocffi
   (package
     (name "python-cairocffi")
-    (version "0.6")
+    (version "0.8.0")
     (source
      (origin
       (method url-fetch)
       ;; The archive on pypi is missing the 'utils' directory!
-      (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
+      (uri (string-append "https://github.com/Kozea/cairocffi/archive/v"
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -4811,7 +4812,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
                (system* "python" "setup.py" "build_sphinx")
                (copy-recursively "docs/_build/html" html)
                #t))))))
-    (home-page "https://github.com/SimonSapin/cairocffi")
+    (home-page "https://github.com/Kozea/cairocffi")
     (synopsis "Python bindings and object-oriented API for Cairo")
     (description
      "Cairocffi is a CFFI-based drop-in replacement for Pycairo, a set of
@@ -7154,14 +7155,14 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.1.9")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "0zraxni14bqi20kr4bi6nwsh32aibz0fq0xaczfisw0zdpcsqg45"))))
+         "1b86yx23c1x74clai05a5ma8c8nfmhlx3j1mxq0ff657i2ylx33k"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -7252,15 +7253,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.0")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "idna/idna-" version ".tar.gz"))
+       (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "0frxgmgi234lr9hylg62j69j4ik5zhg0wz05w5dhyacbjfnrl68n"))))
+         "1ara12a7k2zc69msa0arrvw00gn61a6i6by01xb3lkkc0h4cxd9w"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")

@@ -2054,11 +2054,14 @@ the Turtle syntax.")
               (base32
                "1kji3lhha26qr6xm9j8ic5c40zbrrb5qnwm2qxzmsfxgmrz29wkf"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("lv2" ,lv2)
        ("gtk+-2" ,gtk+-2)
-       ("qt-4" ,qt-4)))
+       ("qt" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://drobilla.net/software/suil/")

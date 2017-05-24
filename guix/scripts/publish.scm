@@ -425,11 +425,13 @@ requested using POOL."
            ;; return 404.
            (eventually pool
              (single-baker item
-               ;; (format #t "baking ~s~%" item)
-               (bake-narinfo+nar cache item
-                                 #:ttl ttl
-                                 #:compression compression
-                                 #:nar-path nar-path))
+               ;; Check whether CACHED has been produced in the meantime.
+               (unless (file-exists? cached)
+                 ;; (format #t "baking ~s~%" item)
+                 (bake-narinfo+nar cache item
+                                   #:ttl ttl
+                                   #:compression compression
+                                   #:nar-path nar-path)))
 
              (when ttl
                (single-baker 'cache-cleanup
