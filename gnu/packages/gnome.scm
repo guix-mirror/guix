@@ -2242,7 +2242,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.56.0")
+    (version "2.58.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2250,14 +2250,17 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1r8zz270qdg92gbsvy61d51y1cj7hp059h2f4xpvqiw2vrqnn8fq"))))
+                "1fggmshk2mfsyfvml6paki65xj9rv1s5p7ds41xmnx6yazsnkik2"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))
+                            "/share/gtk-doc/html")
+             (string-append "--with-apache-module-dir="
+                            (assoc-ref %build-inputs "httpd")
+                            "/modules"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
@@ -2275,6 +2278,9 @@ libxml to ease remote use of the RESTful API.")
                        ;; The ca-certificates.crt is not available in the build
                        ;; environment.
                        (setenv "SSL_CERT_FILE" "/dev/null")
+                       ;; HTTPD in Guix uses mod_event and does not build prefork.
+                       (substitute* "tests/httpd.conf"
+                         (("^LoadModule mpm_prefork_module.*$") "\n"))
                        #t))
          (replace 'install
                   (lambda _
