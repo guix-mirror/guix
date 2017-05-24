@@ -72,16 +72,17 @@
 (define-public libconfuse
   (package
     (name "libconfuse")
-    (version "2.7")
+    (version "3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://savannah.nongnu.org/download/confuse/"
-                                  "confuse-" version ".tar.gz"))
+              (uri (string-append "https://github.com/martinh/libconfuse/"
+                                  "releases/download/v" version
+                                  "/confuse-" version ".tar.xz"))
               (sha256
                (base32
-                "0y47r2ashz44wvnxdb18ivpmj8nxhw3y9bf7v9w0g5byhgyp89g3"))))
+                "0rnacgfkd88qyxrfdfzn9cxz533l9s5wrzb9093f9mbi00gg6wc1"))))
     (build-system gnu-build-system)
-    (home-page "http://www.nongnu.org/confuse/")
+    (home-page "https://github.com/martinh/libconfuse")
     (synopsis "Configuration file parser library")
     (description "libconfuse is a configuration file parser library.  It
 supports sections and (lists of) values (strings, integers, floats, booleans
