@@ -3248,6 +3248,25 @@ identifiers based on their names.  Each identifier gets a color based on a hash
 of its name.")
     (license license:bsd-2)))
 
+(define-public emacs-rainbow-mode
+  (package
+    (name "emacs-rainbow-mode")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
+              (sha256
+               (base32
+                "10a7qs7fvw4qi4vxj9n56j26gjk61bl79dgz4md1d26slb2j1c04"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/rainbow-mode.html")
+    (synopsis "Colorize color names in buffers")
+    (description
+     "This minor mode sets background color to strings that match color
+names, e.g. #0000ff is displayed in white with a blue background.")
+    (license license:gpl3+)))
+
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
