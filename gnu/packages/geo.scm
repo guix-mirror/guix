@@ -75,7 +75,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.18.3")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -83,7 +83,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vdnr2wmhqhql2gxd5n1ijwk88qhim14izbkczncg35846hfsr5i"))))
+                "1mnhcrawdp6fyqylh0m8l259xdd7pqwibrjyl54rmsvnm8vfrwsy"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags ; Ensure that geoclue is referred to by output.
