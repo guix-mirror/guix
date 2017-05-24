@@ -5153,7 +5153,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "1.10.3")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5161,7 +5161,7 @@ easy, safe, and automatic.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "03ch3ndmxghfr9wnw9hfmpkjfa7k5v5cwwf3y1ja6ihk3c5avgbb"))))
+                "0vsrzzkcfvmylhpk1ww6xdx8z9sgjs0gn74gz82qngjyq3c3s6c3"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
@@ -5188,13 +5188,14 @@ easy, safe, and automatic.")
        ("exempi" ,exempi)
        ("libxml2" ,libxml2)
        ("upower" ,upower)
-       ("libgee" ,libgee)
        ("libunistring" ,libunistring)
        ("giflib" ,giflib)
+       ("json-glib" ,json-glib)
        ("openjpeg" ,openjpeg-1)
        ("libosinfo" ,libosinfo)
        ("libcue" ,libcue)
        ("libseccomp" ,libseccomp)
+       ("libsoup" ,libsoup)
        ("libuuid" ,util-linux)))
     (arguments `(#:tests? #f))  ; XXX FIXME enable tests (some fail)
     (synopsis "Metadata database, indexer and search tool")
