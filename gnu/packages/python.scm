@@ -39,6 +39,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4767,17 +4768,17 @@ support for Python 3 and PyPy.  It is based on cffi.")
 (define-public python-cairocffi
   (package
     (name "python-cairocffi")
-    (version "0.6")
+    (version "0.8.0")
     (source
      (origin
       (method url-fetch)
       ;; The archive on pypi is missing the 'utils' directory!
-      (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
+      (uri (string-append "https://github.com/Kozea/cairocffi/archive/v"
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -4811,7 +4812,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
                (system* "python" "setup.py" "build_sphinx")
                (copy-recursively "docs/_build/html" html)
                #t))))))
-    (home-page "https://github.com/SimonSapin/cairocffi")
+    (home-page "https://github.com/Kozea/cairocffi")
     (synopsis "Python bindings and object-oriented API for Cairo")
     (description
      "Cairocffi is a CFFI-based drop-in replacement for Pycairo, a set of

@@ -1,6 +1,7 @@
 # This list is used to avoid multiple name/email instances of the same
 # contributors reported by "git log" and "git shortlog" commands.
 
+Adriano Peluso <catonano@gmail.com>
 Al McElrath <hello@yrns.org> <hello@atonesir.com>
 Alex Sassmannshausen <alex@pompo.co> <alex.sassmannshausen@gmail.com>
 Alexander I. Grafov <grafov@gmail.com>
@@ -39,6 +40,7 @@ Marek Benc <dusxmt@gmx.com> <merkur32@gmail.com>
 Marius Bakke <mbakke@fastmail.com> <m.bakke@warwick.ac.uk>
 Mathieu Lirzin <mthl@gnu.org> <mthl@openmailbox.org>
 Mathieu Lirzin <mthl@gnu.org> <mathieu.lirzin@openmailbox.org>
+Mathieu Othacehe <m.othacehe@gmail.com>
 Nikita Karetnikov <nikita@karetnikov.org> <nikita.karetnikov@gmail.com>
 ng0 <ng0@no-reply.pragmatique.xyz>
 ng0 <ng0@no-reply.pragmatique.xyz> <contact.ng0@cryptolab.net>

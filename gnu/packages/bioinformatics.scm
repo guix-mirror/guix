@@ -2093,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2102,7 +2102,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19lvz661mmgikbry0nvnsjc01fdxqbw9rl2868dvjfraxbcx9ras"))))
+                "062943yk3mp23jpcawamkh1zawx9br95l7w178v0kyr863v4p5a1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -8993,6 +8993,102 @@ dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
 algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
       (license license:gpl3))))
+
+(define-public r-aroma-light
+  (package
+    (name "r-aroma-light")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "aroma.light" version))
+       (sha256
+        (base32
+         "10snykmmx36qaymyf5s1n1km8hsscyzpykcpf0mzsrcv8ml9rp8a"))))
+    (properties `((upstream-name . "aroma.light")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrixstats" ,r-matrixstats)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/aroma.light")
+    (synopsis "Methods for normalization and visualization of microarray data")
+    (description
+     "This package provides methods for microarray analysis that take basic
+data types such as matrices and lists of vectors.  These methods can be used
+standalone, be utilized in other packages, or be wrapped up in higher-level
+classes.")
+    (license license:gpl2+)))
+
+(define-public r-deseq
+  (package
+    (name "r-deseq")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DESeq" version))
+       (sha256
+        (base32
+         "0j3dgcxd64m9qknmlcbdzvg4xhp981xd6nbwsvnqjfn6yypslgyw"))))
+    (properties `((upstream-name . "DESeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genefilter" ,r-genefilter)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-lattice" ,r-lattice)
+       ("r-locfit" ,r-locfit)
+       ("r-mass" ,r-mass)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://www-huber.embl.de/users/anders/DESeq")
+    (synopsis "Differential gene expression analysis")
+    (description
+     "This package provides tools for estimating variance-mean dependence in
+count data from high-throughput genetic sequencing assays and for testing for
+differential expression based on a model using the negative binomial
+distribution.")
+    (license license:gpl3+)))
+
+(define-public r-edaseq
+  (package
+    (name "r-edaseq")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EDASeq" version))
+       (sha256
+        (base32
+         "0f25dfc8hdii9fjm3bf89vy9jkxv23sa62fkcga5b4gkipwrvm9a"))))
+    (properties `((upstream-name . "EDASeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-aroma-light" ,r-aroma-light)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomart" ,r-biomart)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq" ,r-deseq)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-shortread" ,r-shortread)))
+    (home-page "https://github.com/drisso/EDASeq")
+    (synopsis "Exploratory data analysis and normalization for RNA-Seq")
+    (description
+     "This package provides support for numerical and graphical summaries of
+RNA-Seq genomic read data.  Provided within-lane normalization procedures to
+adjust for GC-content effect (or other gene-level effects) on read counts:
+loess robust local regression, global-scaling, and full-quantile
+normalization.  Between-lane normalization procedures to adjust for
+distributional differences between lanes (e.g., sequencing depth):
+global-scaling and full-quantile normalization.")
+    (license license:artistic2.0)))
 
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))

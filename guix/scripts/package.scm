@@ -681,24 +681,26 @@ processed, #f otherwise."
          (unless (null-list? (cdr numbers))
            (display-profile-content-diff profile (car numbers) (cadr numbers))
            (diff-profiles profile (cdr numbers))))
-       (cond ((not (file-exists? profile))      ; XXX: race condition
-              (raise (condition (&profile-not-found-error
-                                 (profile profile)))))
-             ((string-null? pattern)
-              (list-generation display-profile-content
-                               (car (profile-generations profile)))
-              (diff-profiles profile (profile-generations profile)))
-             ((matching-generations pattern profile)
-              =>
-              (lambda (numbers)
-                (if (null-list? numbers)
-                    (exit 1)
-                    (leave-on-EPIPE
-                     (list-generation display-profile-content (car numbers))
-                     (diff-profiles profile numbers)))))
-             (else
-              (leave (G_ "invalid syntax: ~a~%")
-                     pattern)))
+
+       (leave-on-EPIPE
+        (cond ((not (file-exists? profile))       ; XXX: race condition
+               (raise (condition (&profile-not-found-error
+                                  (profile profile)))))
+              ((string-null? pattern)
+               (list-generation display-profile-content
+                                (car (profile-generations profile)))
+               (diff-profiles profile (profile-generations profile)))
+              ((matching-generations pattern profile)
+               =>
+               (lambda (numbers)
+                 (if (null-list? numbers)
+                     (exit 1)
+                     (begin
+                       (list-generation display-profile-content (car numbers))
+                       (diff-profiles profile numbers)))))
+              (else
+               (leave (G_ "invalid syntax: ~a~%")
+                      pattern))))
        #t)
 
       (('list-installed regexp)

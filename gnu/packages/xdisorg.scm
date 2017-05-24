@@ -441,7 +441,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "5.3.37")
+    (version "5.3.38")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -450,7 +450,7 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p2ih123zkj8rxz8acsxpaim1kq57f4rbq7zqsibafn5rkw5c5is"))))
+                "1gvsxzl4y4l7d5gvx24i0yxk3jxc1gnb48bjwvqmrh34gx974wn7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -472,7 +472,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "4.4.62")
+    (version "5.4.62")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -481,7 +481,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08lnbsl9ialqik1ris6piz1g0fgq4r3767ycr4nziphw3kz89vr1"))))
+                "084czvwcicl8apjlv729inxx8rpycra76ignfjmcbaq0hhn6ip6w"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target

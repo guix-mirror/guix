@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
@@ -558,140 +558,6 @@ as the 'native-search-paths' field."
               ;; "lib" and "out" outputs would refer to each other, creating
               ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
               #:separate-lib-output? #f))
-
-(define javac.in
-  (origin
-    (method url-fetch)
-    (uri (string-append "http://sources.gentoo.org/cgi-bin/viewvc.cgi/"
-                        "gentoo-x86/dev-java/gcj-jdk/files/javac.in?revision=1.1"))
-    (file-name "javac.in")
-    (sha256 (base32
-              "1c3dk4z5yfj6ic2fn3lyxs27n6pmn2wy9k0r1s17lnkf1bzkrciv"))))
-
-(define-public gcj
-  (package (inherit gcc)
-    (name "gcj")
-    (version (package-version gcc))
-    (inputs
-     `(("fastjar" ,fastjar)
-       ("perl" ,perl)
-       ("javac.in" ,javac.in)
-       ("ecj-bootstrap" ,ecj-bootstrap)
-       ,@(package-inputs gcc)))
-    (native-inputs
-     `(("dejagnu" ,dejagnu)
-       ,@(if (string-prefix? "armhf" (or (%current-system)
-                                         (%current-target-system)))
-             `(("arm-patch" ,(origin
-                               (method url-fetch)
-                               (uri (search-patch "gcj-arm-mode.patch"))
-                               (sha256
-                                (base32
-                                 "1z15xs5yx6qinnb572swzxrn9f668sw7ga5280q3gznj1jyrynfn")))))
-             '())
-       ,@(package-native-inputs gcc)))
-    (native-search-paths %generic-search-paths)
-
-    ;; Suppress the separate "lib" output, because otherwise the
-    ;; "lib" and "out" outputs would refer to each other, creating
-    ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
-    (outputs
-     (delete "lib" (package-outputs gcc)))
-    (arguments
-     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
-                                                (guix build utils)
-                                                (ice-9 regex)
-                                                (srfi srfi-1)
-                                                (srfi srfi-26))
-                                     #:test-target "check-target-libjava"
-                                     ,@(package-arguments gcc))
-       ((#:tests? _) #t)
-       ((#:configure-flags flags)
-        `(let ((ecj (assoc-ref %build-inputs "ecj-bootstrap")))
-           `("--enable-java-home"
-             "--enable-gjdoc"
-             ,(string-append "--with-ecj-jar=" ecj)
-             "--enable-languages=java"
-             ,@(remove (cut string-match "--enable-languages.*" <>)
-                       ,flags))))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; Conditionally add phase to apply patch
-           ,@(if (string-prefix? "armhf" (or (%current-system)
-                                             (%current-target-system)))
-                 `((add-after 'unpack 'apply-arm-patch
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (zero? (system* "patch" "-p1"
-                                       "-i" (assoc-ref inputs "arm-patch"))))))
-                 '())
-           (add-after
-            'unpack 'add-lib-output-to-rpath
-            (lambda _
-              (substitute* "libjava/Makefile.in"
-                (("libgcj_bc_dummy_LINK = .* -shared" line)
-                 (string-append line " -Wl,-rpath=$(libdir)"))
-                (("libgcj(_bc)?_la_LDFLAGS =" ldflags _)
-                 (string-append ldflags " -Wl,-rpath=$(libdir)")))))
-           (add-after
-            'unpack 'patch-testsuite
-            ;; dejagnu-1.6 removes the 'absolute' command
-            (lambda _
-              ;; This test fails on armhf.  It seems harmless enough to disable it.
-              (for-each delete-file '("libjava/testsuite/libjava.lang/Throw_2.java"
-                                      "libjava/testsuite/libjava.lang/Throw_2.out"
-                                      "libjava/testsuite/libjava.lang/Throw_2.jar"))
-              (substitute* "libjava/testsuite/lib/libjava.exp"
-                (("absolute") "file normalize"))
-              #t))
-           (add-after
-            'install 'install-javac-and-javap-wrappers
-            (lambda _
-              (let* ((javac  (assoc-ref %build-inputs "javac.in"))
-                     (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
-                     (gcj    (assoc-ref %outputs "out"))
-                     (gcjbin (string-append gcj "/bin/"))
-                     (jvm    (string-append gcj "/lib/jvm/"))
-                     (target (string-append jvm "/bin/javac")))
-
-                (symlink (string-append gcjbin "jcf-dump")
-                         (string-append jvm "/bin/javap"))
-
-                (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
-
-                ;; Create javac wrapper from the template javac.in by
-                ;; replacing the @VARIABLES@ with paths.
-                (copy-file javac target)
-                (patch-shebang target)
-                (substitute* target
-                  (("@JAVA@")
-                   (string-append jvm "/bin/java"))
-                  (("@ECJ_JAR@")
-                   (string-append gcj "/share/java/ecj.jar"))
-                  (("@RT_JAR@")
-                   (string-append jvm "/jre/lib/rt.jar"))
-                  (("@TOOLS_JAR@")
-                   (string-append jvm "/lib/tools.jar")))
-                (chmod target #o755)
-                #t)))
-           (add-after
-            'install 'remove-broken-or-conflicting-files
-            (lambda _
-              (let ((out (assoc-ref %outputs "out")))
-                (for-each
-                 delete-file
-                 (append (find-files (string-append out "/lib/jvm/jre/lib")
-                                     "libjawt.so")
-                         (find-files (string-append out "/bin")
-                                     ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
-              #t))))))))
-
-(define ecj-bootstrap
-  (origin
-    (method url-fetch)
-    (uri "ftp://sourceware.org/pub/java/ecj-4.9.jar")
-    (sha256
-     (base32
-      "1k9lgm3qamf6zy534pa2zwskr8mpiqrngbv1vw9j4y1ghrdyf1lm"))))
 
 (define-public gcc-objc-4.8
   (custom-gcc gcc-4.8 "gcc-objc" '("objc")

@@ -575,7 +575,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                                             #:disk-image-size
                                             (if full-boot?
                                                 image-size
-                                                (* 30 (expt 2 20)))
+                                                (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
@@ -897,8 +897,10 @@ resulting from command-line parsing."
             ((shepherd-graph)
              (export-shepherd-graph os (current-output-port)))
             (else
-             (warn-about-old-distro #:suggested-command
-                                    "guix system reconfigure")
+             (unless (memq action '(build init))
+               (warn-about-old-distro #:suggested-command
+                                      "guix system reconfigure"))
+
              (perform-action action os
                              #:dry-run? dry?
                              #:derivations-only? (assoc-ref opts

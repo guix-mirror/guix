@@ -1191,7 +1191,10 @@ as a library for other Emacs packages.")
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
-    (arguments `(#:emacs ,emacs))
+    (arguments
+     `(#:emacs ,emacs
+       #:include '("\\.el$" "^images/" "^latex/" "\\.info$")
+       #:exclude '("^tests/" "^latex/README")))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/auctex/")
@@ -2327,7 +2330,10 @@ in @code{html-mode}.")
     (native-inputs
      `(("texinfo" ,texinfo)))
     (arguments
-     `(#:phases
+     `(#:include '("\\.el$" "\\.lisp$" "\\.asd$" "contrib")
+       #:exclude '("^slime-tests.el" "^contrib/test/"
+                   "^contrib/Makefile$" "^contrib/README.md$")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'install 'configure
            (lambda* _
