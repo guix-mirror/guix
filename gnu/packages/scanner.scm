@@ -31,15 +31,15 @@
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.25")
+    (version "1.0.27")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://alioth.debian.org/frs/download.php/file/4146/"
+                   "https://alioth.debian.org/frs/download.php/latestfile/176/"
                    "sane-backends-" version ".tar.gz"))
              (sha256
               (base32
-               "0b3fvhrxl4l82bf3v0j47ypjv6a0k5lqbgknrq1agpmjca6vmmx4"))
+               "1j9nbqspaj0rlgalafb5z6r606k0i22kz0rcpd744p176yzlfdr9"))
              (modules '((guix build utils)))
              (snippet
               ;; Generated HTML files and udev rules normally embed a
