@@ -2985,7 +2985,7 @@ without stepping on each others toes.")
 (define-public clutter
   (package
     (name "clutter")
-    (version "1.26.0")
+    (version "1.26.2")
     (source
      (origin
        (method url-fetch)
@@ -2994,7 +2994,7 @@ without stepping on each others toes.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "01nfjd4k7j2n3agpx2d9ncff86nfsqv4n23465rb9zmk4iw4wlb7"))))
+         "0mif1qnrpkgxi43h7pimim6w6zwywa16ixcliw0yjm9hk0a368z7"))))
     ;; NOTE: mutter exports a bundled fork of clutter, so when making changes
     ;; to clutter, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
