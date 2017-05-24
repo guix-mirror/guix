@@ -3343,7 +3343,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.22.0")
+    (version "3.24.0")
     (source
      (origin
        (method url-fetch)
@@ -3352,7 +3352,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1sjgjqhpsh3kipnbc8y31xz64s61xjayxq98pi0vkgbl2rdmnsh2"))))
+         "00cdlll5b0wj5ckl1pc0a3g39a0hlq0gxkcsh1f6p20fjixqzmwv"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
