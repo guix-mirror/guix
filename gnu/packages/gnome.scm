@@ -4990,16 +4990,15 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.22.2")
+    (version "3.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "gnome-shell-CVE-2017-8288.patch"))
               (sha256
                (base32
-                "16smvjfrpyfphv479hjky5261hgl4kli4q86bcb2b8xdcav4w3yq"))))
+                "1xp2ccmdrvzlczsrcplykwqwx2v4lbmkr0rxyylb06danlw9mivh"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
