@@ -3581,7 +3581,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.30.3")
+    (version "1.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3589,7 +3589,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xgis1kgglnazy1vm66xiqyz8yvvmiad3h0g3agg7ryai6aa495q"))))
+                "1pkahczniar1yyas7awcqpkb4ca8l7qa4msn6mr29m89mgnwkdnh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; XXX: requiring `pidof'
