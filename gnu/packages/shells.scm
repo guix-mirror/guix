@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,6 +31,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -116,6 +118,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
     (inputs
      `(("bc" ,bc)
        ("ncurses" ,ncurses)
+       ("groff" ,groff)               ;for 'fish --help'
        ("pcre2" ,pcre2)               ;don't use the bundled PCRE2
        ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
@@ -133,6 +136,8 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                "/bin/bc")))
              (substitute* "share/functions/fish_update_completions.fish"
                (("python") (which "python")))
+             (substitute* "share/functions/__fish_print_help.fish"
+               (("nroff") (which "nroff")))
              #t)))))
     (synopsis "The friendly interactive shell")
     (description
@@ -146,6 +151,32 @@ terminal handling based on terminfo, an easy to search history, and syntax
 highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
+
+(define-public fish-guix
+  (package
+    (name "fish-guix")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dist.pragmatique.xyz/fish-guix/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0xi0j9lvzh43lrj82gz52n2cjln0i0pgayngrg4hy5w4449biy0z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No checks.
+       #:make-flags (list
+                     (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script.
+    (home-page "https://pragmatique.xyz/software/fish-guix.html")
+    (synopsis "Fish completions for Guix")
+    (description
+     "Fish-guix provides completions for Guix for users of the fish shell.")
+    (license public-domain)))
 
 (define-public rc
   (package
@@ -427,3 +458,39 @@ components: a process notation for running programs and setting up pipelines
 and redirections, and a complete syscall library for low-level access to the
 operating system.")
       (license bsd-3))))
+
+(define-public loksh
+  (package
+    (name "loksh")
+    (version "6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dimkr/loksh/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wg7ds56yr8fgg1m149bi53bvrwccwiashmwknggza1sqgj9m2lq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libbsd" ,libbsd)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ;No tests included
+       #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
+                          (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          "PREFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ;No configure script
+    (home-page "https://github.com/dimkr/loksh")
+    (synopsis "Korn Shell from OpenBSD")
+    (description
+     "loksh is a Linux port of OpenBSD's @command{ksh}.  It is a small,
+interactive POSIX shell targeted at resource-constrained systems.")
+    ;; The file 'LEGAL' says it is the public domain, and the 2
+    ;; exceptions which are listed are not included in this port.
+    (license public-domain)))

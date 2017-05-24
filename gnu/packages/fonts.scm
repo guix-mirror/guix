@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
@@ -17,6 +17,8 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -239,8 +241,11 @@ provide serif, sans and monospaced variants.")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
 package provides the TrueType (TTF) files.")
     (license
-     (license:x11-style
-      "http://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
+     (license:fsdg-compatible
+      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
+      "The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself."))))
 
 (define-public font-cantarell
   (package
@@ -316,7 +321,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (version "2.00.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://fedorahosted.org/releases/l/i/"
+              (uri (string-append "https://releases.pagure.org/"
                                   "liberation-fonts/liberation-fonts-ttf-"
                                   version ".tar.gz"))
               (sha256
@@ -350,7 +355,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
      `(("source" ,source)
        ("tar" ,tar)
        ("gzip" ,gzip)))
-    (home-page "https://fedorahosted.org/liberation-fonts/")
+    (home-page "https://pagure.io/liberation-fonts/")
     (synopsis
      "Fonts compatible with Arial, Times New Roman, and Courier New")
     (description
@@ -369,6 +374,63 @@ and Bitstream Vera Sans Mono).
 
 The Liberation Fonts are sponsored by Red Hat.")
     (license license:silofl1.1)))
+
+(define-public font-linuxlibertine
+  (package
+    (name "font-linuxlibertine")
+    (version "5.3.0")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "mirror://sourceforge/linuxlibertine/"
+                                  "linuxlibertine/" version
+                                  "/LinLibertineSRC_" version "_2012_07_02.tgz"))
+              (sha256
+               (base32
+                "0x7cz6hvhpil1rh03rax9zsfzm54bh7r4bbrq8rz673gl9h47v0v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((compile
+                    (lambda (name ext)
+                      (zero? (system*
+                              "fontforge" "-lang=ff"
+                              "-c" (string-append "Open('" name "');"
+                                                  "Generate('"
+                                                  (basename name "sfd") ext
+                                                  "')"))))))
+               (every (lambda (name)
+                        (and (compile name "ttf")
+                             (compile name "otf")))
+                      (find-files "." "\\.sfd$")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((font-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fonts/truetype")))
+               (mkdir-p font-dir)
+               (for-each (cut install-file <> font-dir)
+                         (find-files "." "\\.(otf|ttf)$"))
+               #t))))))
+    (native-inputs
+     `(("fontforge" ,fontforge)))
+    (home-page "http://www.linuxlibertine.org/")
+    (synopsis "Serif and sans serif typefaces")
+    (description "The Linux Libertine fonts is a set of typefaces containing
+both a Serif version (\"Linux Libertine\") and a Sans Serif (\"Linux
+Biolinum\") designed to be used together as an alternative for Times/Times New
+Roman and Helvetica/Arial.  The Serif typeface comes in two shapes and two
+weights, and with a Small Capitals version of the regular typeface.  Linux
+Biolinum is available in both Regular and Bold weights.")
+    ;; The fonts are released under either of these licenses.
+    (license (list license:gpl2+ license:silofl1.1))))
 
 (define-public font-terminus
   (package
@@ -460,6 +522,104 @@ various system requirements or limitations.  As the name suggests, Pan-CJK
 fonts are intended to support the characters necessary to render or display
 text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
     (license license:silofl1.1)))
+
+(define-public font-cns11643
+  (package
+    (name "font-cns11643")
+    (version "98.1.20170405")
+    (source (origin
+              (method url-fetch)
+              (uri "http://www.cns11643.gov.tw/AIDB/Open_Data.zip")
+              (sha256
+               (base32
+                "02kb3bwjrra0k2hlr2p8xswd2y0xs6j8d9vm6yrby734h02a40qf"))))
+    (outputs '("out" "tw-kai" "tw-sung"))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((font-dir "/share/fonts/truetype/cns11643")
+                (out (string-append
+                      (assoc-ref %outputs "out") font-dir))
+                (tw-kai (string-append
+                         (assoc-ref %outputs "tw-kai") font-dir))
+                (tw-sung (string-append
+                          (assoc-ref %outputs "tw-sung") font-dir))
+                (unzip (string-append
+                        (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+           (system* unzip (assoc-ref %build-inputs "source"))
+           (chdir "Open_Data/Fonts/")
+           (install-file "TW-Kai-98_1.ttf" tw-kai)
+           (install-file "TW-Sung-98_1.ttf" tw-sung)
+           (install-file "TW-Kai-98_1.ttf" out)
+           (install-file "TW-Kai-Ext-B-98_1.ttf" out)
+           (install-file "TW-Kai-Plus-98_1.ttf" out)
+           (install-file "TW-Sung-98_1.ttf" out)
+           (install-file "TW-Sung-Ext-B-98_1.ttf" out)
+           (install-file "TW-Sung-Plus-98_1.ttf" out)
+           #t))))
+    (home-page "http://www.cns11643.gov.tw/AIDB/welcome.do")
+    (synopsis "CJK TrueType fonts, TW-Kai and TW-Sung")
+    (description
+     "@code{CNS 11643} character set (Chinese National Standard, or Chinese
+Standard Interchange Code) is the standard character set of the Republic of
+China (Taiwan) for Chinese Characters and other Unicode symbols.  Contained
+are six TrueType fonts based on two script styles, Regular script (Kai), and
+Sung/Ming script, each with three variants:
+
+@itemize
+@item @code{CNS 11643} (@code{TW-Kai} and @code{TW-Sung}): Tens of thousands
+of CJK characters from frequency tables published by the Taiwanese
+Ministry of Education.  ISO 10646 and Unicode compatible encoding.
+@item @code{Big-5 Plus}: Several thousand frequently used CJK characters
+encoded in the user defined area of the Big-5 code.
+@item @code{Big-5 Extended}: A Big-5 character set based on the
+@code{Big-5 Plus} and @code{CNS 11643} character sets.
+@end itemize\n")
+    (license (license:non-copyleft
+              "http://data.gov.tw/license")))) ; CC-BY 4.0 compatible
+
+(define-public font-cns11643-swjz
+  (package
+    (name "font-cns11643-swjz")
+    (version "1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.moedict.tw/fonts/truetype/cns11643/ebas927.ttf")
+       (sha256
+        (base32
+         "1qkljldbmb53zp1rcmpsb8rzy67rnsqcjxi549m9743ifk4isl78"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((font-dir (string-append %output
+                                        "/share/fonts/truetype/cns11643"))
+               (source (assoc-ref %build-inputs "source")))
+           (mkdir-p font-dir)
+           (copy-file source
+                      (string-append font-dir "/" "ebas927.ttf"))
+           #t))))
+    (home-page
+     (string-append "http://www.cns11643.gov.tw/AIDB/download.do"
+                    "?name=%E5%AD%97%E5%9E%8B%E4%B8%8B%E8%BC%89"))
+    (synopsis "TrueType seal script font")
+    (description
+     "@code{Shuowen Jiezi} is a TrueType seal script font based on the ancient
+text of the same name published by the Executive Yuan of Taiwan.  6721 glyphs
+are included, at Unicode compatible code points corresponding to their modern
+variants.")
+    ;; Original text only available in Chinese. More info at
+    ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26703#11
+    (license (license:non-copyleft
+              "http://www.cns11643.gov.tw/AIDB/copyright.do"))))
 
 (define-public font-wqy-zenhei
   (package

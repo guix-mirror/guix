@@ -81,7 +81,7 @@ name."
      (raise
       (condition
        (&message
-        (message (format #f (_ "~a: invalid argument (package name expected)")
+        (message (format #f (G_ "~a: invalid argument (package name expected)")
                          x))))))))
 
 (define nodes-from-package
@@ -305,7 +305,7 @@ substitutes."
                  ((info)
                   (values (substitutable-references info) store))
                  (()
-                  (leave (_ "references for '~a' are not known~%")
+                  (leave (G_ "references for '~a' are not known~%")
                          item)))))
       (values (references store item) store))))
 
@@ -355,18 +355,18 @@ substitutes."
   (or (find (lambda (type)
               (string=? (node-type-name type) name))
             %node-types)
-      (leave (_ "~a: unknown node type~%") name)))
+      (leave (G_ "~a: unknown node type~%") name)))
 
 (define (lookup-backend name)
   "Return the graph backend called NAME.  Raise an error if it is not found."
   (or (find (lambda (backend)
               (string=? (graph-backend-name backend) name))
             %graph-backends)
-      (leave (_ "~a: unknown backend~%") name)))
+      (leave (G_ "~a: unknown backend~%") name)))
 
 (define (list-node-types)
   "Print the available node types along with their synopsis."
-  (display (_ "The available node types are:\n"))
+  (display (G_ "The available node types are:\n"))
   (newline)
   (for-each (lambda (type)
               (format #t "  - ~a: ~a~%"
@@ -376,7 +376,7 @@ substitutes."
 
 (define (list-backends)
   "Print the available backends along with their synopsis."
-  (display (_ "The available backend types are:\n"))
+  (display (G_ "The available backend types are:\n"))
   (newline)
   (for-each (lambda (backend)
               (format #t "  - ~a: ~a~%"
@@ -420,22 +420,22 @@ substitutes."
 (define (show-help)
   ;; TRANSLATORS: Here 'dot' is the name of a program; it must not be
   ;; translated.
-  (display (_ "Usage: guix graph PACKAGE...
+  (display (G_ "Usage: guix graph PACKAGE...
 Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
-  (display (_ "
+  (display (G_ "
   -b, --backend=TYPE     produce a graph with the given backend TYPE"))
-  (display (_ "
+  (display (G_ "
       --list-backends    list the available graph backends"))
-  (display (_ "
+  (display (G_ "
   -t, --type=TYPE        represent nodes of the given TYPE"))
-  (display (_ "
+  (display (G_ "
       --list-types       list the available graph types"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -453,7 +453,7 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
   (with-error-handling
     (let* ((opts     (args-fold* args %options
                                  (lambda (opt name arg . rest)
-                                   (leave (_ "~A: unrecognized option~%") name))
+                                   (leave (G_ "~A: unrecognized option~%") name))
                                  (lambda (arg result)
                                    (alist-cons 'argument arg result))
                                  %default-options))

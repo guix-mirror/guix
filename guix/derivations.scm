@@ -76,7 +76,6 @@
             derivation-name
             derivation-output-names
             fixed-output-derivation?
-            fixed-output-path
             offloadable-derivation?
             substitutable-derivation?
             substitution-oracle
@@ -566,12 +565,14 @@ that form."
      (write-list env-vars write-env-var port)
      (display ")" port))))
 
-(define derivation->string
+(define derivation->bytevector
   (mlambda (drv)
-    "Return the external representation of DRV as a string."
+    "Return the external representation of DRV as a UTF-8-encoded string."
     (with-fluids ((%default-port-encoding "UTF-8"))
-      (call-with-output-string
-        (cut write-derivation drv <>)))))
+      (call-with-values open-bytevector-output-port
+        (lambda (port get-bytevector)
+          (write-derivation drv port)
+          (get-bytevector))))))
 
 (define* (derivation->output-path drv #:optional (output "out"))
   "Return the store path of its output OUTPUT.  Raise a
@@ -611,20 +612,6 @@ list of name/path pairs of its outputs."
 ;;;
 ;;; Derivation primitive.
 ;;;
-
-(define (compressed-hash bv size)                 ; `compressHash'
-  "Given the hash stored in BV, return a compressed version thereof that fits
-in SIZE bytes."
-  (define new (make-bytevector size 0))
-  (define old-size (bytevector-length bv))
-  (let loop ((i 0))
-    (if (= i old-size)
-        new
-        (let* ((j (modulo i size))
-               (o (bytevector-u8-ref new j)))
-          (bytevector-u8-set! new j
-                              (logxor o (bytevector-u8-ref bv i)))
-          (loop (+ 1 i))))))
 
 (define derivation-path->base16-hash
   (mlambda (file)
@@ -670,45 +657,7 @@ derivation at FILE."
          ;; XXX: At this point this remains faster than `port-sha256', because
          ;; the SHA256 port's `write' method gets called for every single
          ;; character.
-         (sha256
-          (string->utf8 (derivation->string drv))))))))
-
-(define (store-path type hash name)               ; makeStorePath
-  "Return the store path for NAME/HASH/TYPE."
-  (let* ((s (string-append type ":sha256:"
-                           (bytevector->base16-string hash) ":"
-                           (%store-prefix) ":" name))
-         (h (sha256 (string->utf8 s)))
-         (c (compressed-hash h 20)))
-    (string-append (%store-prefix) "/"
-                   (bytevector->nix-base32-string c) "-"
-                   name)))
-
-(define (output-path output hash name)            ; makeOutputPath
-  "Return an output path for OUTPUT (the name of the output as a string) of
-the derivation called NAME with hash HASH."
-  (store-path (string-append "output:" output) hash
-              (if (string=? output "out")
-                  name
-                  (string-append name "-" output))))
-
-(define* (fixed-output-path name hash
-                            #:key
-                            (output "out")
-                            (hash-algo 'sha256)
-                            (recursive? #t))
-  "Return an output path for the fixed output OUTPUT defined by HASH of type
-HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
-'add-to-store'."
-  (if (and recursive? (eq? hash-algo 'sha256))
-      (store-path "source" hash name)
-      (let ((tag (string-append "fixed:" output ":"
-                                (if recursive? "r:" "")
-                                (symbol->string hash-algo) ":"
-                                (bytevector->base16-string hash) ":")))
-        (store-path (string-append "output:" output)
-                    (sha256 (string->utf8 tag))
-                    name))))
+         (sha256 (derivation->bytevector drv)))))))
 
 (define* (derivation store name builder args
                      #:key
@@ -872,8 +821,8 @@ output should not be used."
                                       system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
-    (let* ((file (add-text-to-store store (string-append name ".drv")
-                                    (derivation->string drv)
+    (let* ((file (add-data-to-store store (string-append name ".drv")
+                                    (derivation->bytevector drv)
                                     (map derivation-input-path inputs)))
            (drv* (set-field drv (derivation-file-name) file)))
       (hash-set! %derivation-cache file drv*)
@@ -1245,15 +1194,15 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                                       (with-fluids ((%default-port-encoding
                                                      "UTF-8"))
                                         (call-with-output-string
-                                         (lambda (port)
-                                           (write prologue port)
-                                           (write
-                                            `(exit
-                                              ,(match exp
-                                                 ((_ ...)
-                                                  (remove module-form? exp))
-                                                 (_ `(,exp))))
-                                            port))))
+                                          (lambda (port)
+                                            (write prologue port)
+                                            (write
+                                             `(exit
+                                               ,(match exp
+                                                  ((_ ...)
+                                                   (remove module-form? exp))
+                                                  (_ `(,exp))))
+                                             port))))
 
                                       ;; The references don't really matter
                                       ;; since the builder is always used in

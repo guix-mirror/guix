@@ -208,7 +208,7 @@ s-expression"))
             (hash     (get-hash))
             (has-sig? (= 1 (read-int port))))
         (format log-port
-                (_ "importing file or directory '~a'...~%")
+                (G_ "importing file or directory '~a'...~%")
                 file)
 
         ;; The signature may contain characters that are meant to be
@@ -219,7 +219,7 @@ s-expression"))
                 (begin
                   (assert-valid-signature sig hash file)
                   (format log-port
-                          (_ "found valid signature for '~a'~%")
+                          (G_ "found valid signature for '~a'~%")
                           file)
                   (finalize-store-file temp file
                                        #:references refs

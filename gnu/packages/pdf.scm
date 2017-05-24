@@ -184,6 +184,53 @@
 Poppler PDF rendering library.")
     (license license:lgpl2.1+)))
 
+(define-public python-poppler-qt5
+  (package
+    (name "python-poppler-qt5")
+    (version "0.24.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-poppler-qt5" version))
+        (sha256
+         (base32
+          "0l69llw1fzwz8y90q0qp9q5pifbrqjjbwii7di54dwghw5fc6w1r"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; There are no tests.  The check phase just causes a rebuild.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               ;; This check always fails, so disable it.
+               (("if not check_qtxml\\(\\)")
+                "if True")
+               ;; Enable C++11, which is needed because of Qt5.
+               (("\\*\\*ext_args" line)
+                (string-append "extra_compile_args=['-std=gnu++11'], " line)))
+             ;; We need to pass an extra flag here.  This cannot be in
+             ;; configure-flags because it should not be passed for the
+             ;; installation phase.
+             ((@@ (guix build python-build-system) call-setuppy)
+              "build_ext" (list (string-append "--pyqt-sip-dir="
+                                               (assoc-ref inputs "python-pyqt")
+                                               "/share/sip")) #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python-sip" ,python-sip)
+       ("python-pyqt" ,python-pyqt)
+       ("poppler-qt5" ,poppler-qt5)
+       ("qtbase" ,qtbase)))
+    (home-page "https://pypi.python.org/pypi/python-poppler-qt5")
+    (synopsis "Python bindings for Poppler-Qt5")
+    (description
+     "This package provides Python bindings for the Qt5 interface of the
+Poppler PDF rendering library.")
+    (license license:lgpl2.1+)))
+
 (define-public libharu
   (package
    (name "libharu")
@@ -484,7 +531,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.10a")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -492,10 +539,8 @@ extracting content or merging files.")
                             name "-" version "-source.tar.gz"))
         (sha256
          (base32
-          "0dm8wcs8i29aibzkqkrn8kcnk4q0kd1v66pg48h5c3qqp4v1zk5a"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
-                                 "mupdf-mujs-CVE-2016-10132.patch"
-                                 "mupdf-mujs-CVE-2016-10133.patch"))
+          "02phamcchgsmvjnb3ir7r5sssvx9fcrscn297z73b82n1jl79510"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
@@ -507,7 +552,7 @@ extracting content or merging files.")
                          "thirdparty/glfw"
                          "thirdparty/harfbuzz"
                          "thirdparty/jbig2dec"
-                         "thirdparty/jpeg"
+                         "thirdparty/libjpeg"
                          "thirdparty/openjpeg"
                          "thirdparty/zlib")))))
     (build-system gnu-build-system)

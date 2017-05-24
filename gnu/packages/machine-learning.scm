@@ -207,7 +207,7 @@ classification.")
       (description
        "The General Hidden Markov Model library (GHMM) is a C library with
 additional Python bindings implementing a wide range of types of @dfn{Hidden
-Markov Models} (HMM) and algorithms: discrete, continous emissions, basic
+Markov Models} (HMM) and algorithms: discrete, continuous emissions, basic
 training, HMM clustering, HMM mixtures.")
       (license license:lgpl2.0+))))
 
@@ -273,6 +273,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
      "This package provides OCaml bindings for the MCL graph clustering
 algorithm.")
     (license license:gpl3)))
+
+(define-public ocaml4.01-mcl
+  (package-with-ocaml4.01 ocaml-mcl))
 
 (define-public randomjungle
   (package

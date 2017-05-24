@@ -31,7 +31,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "0.99.1")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -39,7 +39,7 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "12kw452arnl5ldip2x749j5np3l40bv7asqdv9w0f60j45hii40r"))))
+                "1srbz0cyvd0k1yqgbrwnfj94yg5y3z533q1kzac96z1h7v454s5h"))))
     (build-system haskell-build-system)
     (inputs
      `(("gmp" ,gmp)
@@ -146,12 +146,14 @@ Epigram and Agda.")
                                                     idris-path-files))
                  (install-cmd (cons* idris-bin
                                      "--ibcsubdir" ibcsubdir
-                                     "--install" ipkg
+                                     "--build" ipkg
+                                     ;; only trigger a build, as --ibcsubdir
+                                     ;; already installs .ibc files.
+
                                      (apply append (map (lambda (path)
                                                           (list "--idrispath"
                                                                 path))
                                                         idris-path-subdirs)))))
-            (setenv "IDRIS_LIBRARY_PATH" idris-libs)
             ;; FIXME: Seems to be a bug in idris that causes a dubious failure.
             (apply system* install-cmd)
             #t))))))

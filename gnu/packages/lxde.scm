@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,10 +27,12 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image-viewers)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openbox)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -159,6 +162,7 @@ toolkit.  It allows users to monitor and control of running processes.")
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
                                   "%20%28terminal%20emulator%29/LXTerminal%20"
                                   version "/" name "-" version ".tar.xz"))
+              (patches (search-patches "lxterminal-CVE-2016-10369.patch"))
               (sha256
                (base32
                 "1yf76s15zvfw0h42b0ay1slpq47khgjmcry8ki2z812zar9lchia"))))
@@ -285,11 +289,26 @@ menu spec-compliant desktop menus for LXDE.")
         (base32
          "0mj84fa3f4ak1jjslrwc2q3ci9zxrxpciggviza9bjb0168brn8w"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-lxsession
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Set the right file name for 'lxsession'.
+                      (let ((lxsession (assoc-ref inputs "lxsession")))
+                        (substitute* "startlxde.in"
+                          (("^exec .*/bin/lxsession")
+                           (string-append "exec " lxsession
+                                          "/bin/lxsession")))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("lxmenu-data" ,lxmenu-data)
        ("lxde-icon-theme" ,lxde-icon-theme)))
+    (inputs
+     `(("lxsession" ,lxsession)
+       ;; ("lxlock" ,lxlock) ;for 'lxde-screenlock.desktop'
+       ))
     (synopsis "Common files of the LXDE Desktop")
     (description
      "Lxde-common provides common files of the LXDE Desktop.")
@@ -433,9 +452,11 @@ in LXDE.")
     (arguments '(#:builder (mkdir %output)))
     (propagated-inputs
      ;; TODO:
-     ;; lxshortcut, lxsession-edit, gpicview, leafpad,
+     ;; lxshortcut, lxsession-edit
      ;; lxappearance-obconf
      `(("menu-cache" ,menu-cache)
+       ("gpicview" ,gpicview)
+       ("leafpad" ,leafpad)
        ("lxappearance" ,lxappearance)
        ("lxde-icon-theme" ,lxde-icon-theme)
        ("lxde-common" ,lxde-common)

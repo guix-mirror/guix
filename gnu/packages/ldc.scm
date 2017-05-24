@@ -2,6 +2,8 @@
 ;;; Copyright © 2015, 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +122,8 @@ and freshness without requiring additional information from the user.")
                 (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
              (substitute* "tests/d2/dmd-testsuite/Makefile"
                (("/bin/bash") (which "bash")))
+             ;; FIXME: this test cannot be linked.
+             (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
              #t)))))
     (inputs
      `(("libconfig" ,libconfig)
@@ -276,7 +280,7 @@ latest DMD frontend and uses LLVM as backend.")
 (define-public dub
   (package
     (name "dub")
-    (version "1.2.2")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dlang/dub/archive/"
@@ -284,28 +288,33 @@ latest DMD frontend and uses LLVM as backend.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02k11x34nck0lbv13ww103niiswnwnslbnswj3b5faszzadbi1v4"))))
+                "056mvf01z51qc3i1qnx7yaqr728q8pss8zabiv5zpfx2ynfsw3k7"))))
    (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (replace 'build
            (lambda _
              (zero? (system* "./build.sh"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (outbin (string-append out "/bin")))
-               (mkdir-p outbin)
-               (install-file "bin/dub" outbin)
+                    (bin (string-append out "/bin")))
+               (install-file "bin/dub" bin)
                #t))))))
     (inputs
      `(("curl" ,curl)))
     (native-inputs
      `(("ldc" ,ldc)))
     (home-page "https://code.dlang.org/getting_started")
-    (synopsis "DUB package manager")
-    (description "This package provides the D package manager.")
+    (synopsis "Package and build manager for D projects")
+    (description
+     "DUB is a package and build manager for applications and libraries written
+in the D programming language.  It can automatically retrieve a project's
+dependencies and integrate them in the build process.
+
+The design emphasis is on maximum simplicity for simple projects, while
+providing the opportunity to customize things when needed. ")
     (license license:expat)))

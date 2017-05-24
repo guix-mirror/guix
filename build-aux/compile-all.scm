@@ -24,7 +24,10 @@
              (guix build utils))
 
 (define warnings
-  '(unsupported-warning format unbound-variable arity-mismatch))
+  ;; FIXME: 'format' is missing because it reports "non-literal format
+  ;; strings" due to the fact that we use 'G_' instead of '_'.  We'll need
+  ;; help from Guile to solve this.
+  '(unsupported-warning unbound-variable arity-mismatch))
 
 (define host (getenv "host"))
 

@@ -17,13 +17,20 @@
    (eval . (put 'call-with-prompt 'scheme-indent-function 1))
    (eval . (put 'test-assert 'scheme-indent-function 1))
    (eval . (put 'test-assertm 'scheme-indent-function 1))
+   (eval . (put 'test-equalm 'scheme-indent-function 1))
    (eval . (put 'test-equal 'scheme-indent-function 1))
    (eval . (put 'test-eq 'scheme-indent-function 1))
    (eval . (put 'call-with-input-string 'scheme-indent-function 1))
    (eval . (put 'guard 'scheme-indent-function 1))
    (eval . (put 'lambda* 'scheme-indent-function 1))
    (eval . (put 'substitute* 'scheme-indent-function 1))
+
+   ;; 'modify-phases' and its keywords.
    (eval . (put 'modify-phases 'scheme-indent-function 1))
+   (eval . (put 'replace 'scheme-indent-function 1))
+   (eval . (put 'add-before 'scheme-indent-function 2))
+   (eval . (put 'add-after 'scheme-indent-function 2))
+
    (eval . (put 'modify-services 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
    (eval . (put 'package 'scheme-indent-function 0))
@@ -68,6 +75,7 @@
 
    (eval . (put 'call-with-container 'scheme-indent-function 1))
    (eval . (put 'container-excursion 'scheme-indent-function 1))
+   (eval . (put 'eventually 'scheme-indent-function 1))
 
    ;; Recognize '~', '+', and '$', as used for gexps, as quotation symbols.
    ;; This notably allows '(' in Paredit to not insert a space when the

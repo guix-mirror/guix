@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services ssh)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
@@ -262,6 +264,16 @@ You have been warned.  Thanks for being so brave.
           ;; To facilitate copy/paste.
           (gpm-service)
 
+          ;; Add an SSH server to facilitate remote installs.
+          (service openssh-service-type
+                   (openssh-configuration
+                    (port-number 22)
+                    (permit-root-login #t)
+                    ;; The root account is passwordless, so make sure
+                    ;; a password is set before allowing logins.
+                    (allow-empty-passwords? #f)
+                    (password-authentication? #t)))
+
           ;; Since this is running on a USB stick with a unionfs as the root
           ;; file system, use an appropriate cache configuration.
           (nscd-service (nscd-configuration
@@ -329,6 +341,7 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
+                     shadow                    ;'passwd', for easy SSH access
                      parted gptfdisk ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup

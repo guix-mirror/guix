@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,9 +25,6 @@
   #:use-module (guix derivations)
   #:use-module (guix scripts build)
   #:use-module ((guix scripts archive) #:select (options->derivations+files))
-  #:use-module (ssh session)
-  #:use-module (ssh auth)
-  #:use-module (ssh key)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
@@ -39,42 +36,6 @@
 ;;;
 ;;; Exchanging store items over SSH.
 ;;;
-
-(define %compression
-  "zlib@openssh.com,zlib")
-
-(define* (open-ssh-session host #:key user port)
-  "Open an SSH session for HOST and return it.  When USER and PORT are #f, use
-default values or whatever '~/.ssh/config' specifies; otherwise use them.
-Throw an error on failure."
-  (let ((session (make-session #:user user
-                               #:host host
-                               #:port port
-                               #:timeout 10       ;seconds
-                               ;; #:log-verbosity 'protocol
-
-                               ;; We need lightweight compression when
-                               ;; exchanging full archives.
-                               #:compression %compression
-                               #:compression-level 3)))
-
-    ;; Honor ~/.ssh/config.
-    (session-parse-config! session)
-
-    (match (connect! session)
-      ('ok
-       ;; Use public key authentication, via the SSH agent if it's available.
-       (match (userauth-public-key/auto! session)
-         ('success
-          session)
-         (x
-          (disconnect! session)
-          (leave (_ "SSH authentication failed for '~a': ~a~%")
-                 host (get-error session)))))
-      (x
-       ;; Connection failed or timeout expired.
-       (leave (_ "SSH connection to '~a' failed: ~a~%")
-              host (get-error session))))))
 
 (define (ssh-spec->user+host+port spec)
   "Parse SPEC, a string like \"user@host:port\" or just \"host\", and return
@@ -95,9 +56,9 @@ number (or #f) corresponding to SPEC."
        ((? integer? port)
         (values user host port))
        (x
-        (leave (_ "~a: invalid TCP port number~%") port))))
+        (leave (G_ "~a: invalid TCP port number~%") port))))
     (x
-     (leave (_ "~a: invalid SSH specification~%") spec))))
+     (leave (G_ "~a: invalid SSH specification~%") spec))))
 
 (define (send-to-remote-host target opts)
   "Send ITEMS to TARGET.  ITEMS is a list of store items or package names; for ;
@@ -148,18 +109,18 @@ package names, build the underlying packages before sending them."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix copy [OPTION]... ITEMS...
+  (display (G_ "Usage: guix copy [OPTION]... ITEMS...
 Copy ITEMS to or from the specified host over SSH.\n"))
-  (display (_ "
+  (display (G_ "
       --to=HOST          send ITEMS to HOST"))
-  (display (_ "
+  (display (G_ "
       --from=HOST        receive ITEMS from HOST"))
   (newline)
   (show-build-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -204,4 +165,4 @@ Copy ITEMS to or from the specified host over SSH.\n"))
            (target   (assoc-ref opts 'destination)))
       (cond (target (send-to-remote-host target opts))
             (source (retrieve-from-remote-host source opts))
-            (else   (leave (_ "use '--to' or '--from'~%")))))))
+            (else   (leave (G_ "use '--to' or '--from'~%")))))))

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,8 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages perl))
 
 (define-public cereal
   (package
@@ -90,7 +92,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -106,7 +108,7 @@ such as compact binary encodings, XML, or JSON.")
              (close-output-port p))))
        (sha256
         (base32
-         "0bpjfh9vz0n2k93mph3x15clmigkgs223xfn8h12ymrh5gsi5ica"))))
+         "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("googletest" ,googletest)
@@ -134,14 +136,15 @@ serialization.")
 (define-public libmpack
   (package
     (name "libmpack")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tarruda/libmpack/"
                                   "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "08kfdl55yf66xk57aqsbf8n45f2jsw2v7qwnaan08ciim77j3sv5"))))
+               (base32
+                "0ml922gv8y99lbldqb9ykpjndla0hlprdjyl79yskkhwv2ai7sac"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -162,6 +165,14 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public lua-libmpack
   (package (inherit libmpack)
     (name "lua-libmpack")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libmpack/libmpack-lua/"
+                                  "archive/" (package-version libmpack) ".tar.gz"))
+              (file-name (string-append name "-" (package-version libmpack) ".tar.gz"))
+              (sha256
+               (base32
+                "153zrrbyxhf71dgzjjhrk56rfwk3nisslpgcqyg44v8fnz1xpk6i"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: tests require "busted", which is not yet available in Guix.
@@ -171,26 +182,35 @@ that implements both the msgpack and msgpack-rpc specifications.")
        (let* ((lua-version ,(package-version lua))
               (lua-major+minor ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
+               "FETCH=echo"  ; don't fetch anything from the web
+               "UNTGZ=echo"  ; and don't try to unpack it
                "USE_SYSTEM_LUA=yes"
-               (string-append "LUA_VERSION=" lua-version)
-               (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+               (string-append "MPACK_LUA_VERSION=" lua-version)
+               (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                (string-append "PREFIX="
                               (assoc-ref %outputs "out"))
                (string-append "LUA_CMOD_INSTALLDIR="
                               (assoc-ref %outputs "out")
-                              "/lib/lua/" lua-major+minor)
-               ;; This is unnecessary as of upstream commit 02886c13ff8a2,
-               ;; which is not part of the current release.
-               "CFLAGS=-DLUA_C89_NUMBERS -fPIC"))
+                              "/lib/lua/" lua-major+minor)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "binding/lua") #t)))))
+         (add-after 'unpack 'unpack-mpack-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This is broken because mpack-src is not a file, but all
+             ;; prerequisites are added to the inputs of the gcc invocation.
+             (substitute* "Makefile"
+               (("\\$\\(MPACK\\): mpack-src") "$(MPACK): "))
+             (mkdir-p "mpack-src")
+             (zero? (system* "tar" "-C" "mpack-src"
+                             "--strip-components=1"
+                             "-xvf" (assoc-ref inputs "libmpack"))))))))
     (inputs
      `(("lua" ,lua)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libmpack" ,(package-source libmpack))))
+    (home-page "https://github.com/libmpack/libmpack-lua")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
 (define-public lua5.2-libmpack
@@ -203,8 +223,8 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 (lua-major+minor ,(version-major+minor (package-version lua-5.2))))
            (list "CC=gcc"
                  "USE_SYSTEM_LUA=yes"
-                 (string-append "LUA_VERSION=" lua-version)
-                 (string-append "LUA_VERSION_MAJ_MIN=" lua-major+minor)
+                 (string-append "MPACK_LUA_VERSION=" lua-version)
+                 (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
                  (string-append "PREFIX="
                                 (assoc-ref %outputs "out"))
                  (string-append "LUA_CMOD_INSTALLDIR="
@@ -262,7 +282,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.5.3")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -270,7 +290,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1yvaadhgakskqq5wpv53hd6fc3pp17mrdldw4i5cvgck4iwprcfd"))))
+                "0gpp1cxsb9nfd7qkjjykzknx03y0z0n4bq5q0fmxci7w38ci22g5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -287,3 +307,24 @@ it a convenient format to store user input files.")
      "Cap'n Proto is a very fast data interchange format and capability-based
 RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faster.")
     (license license:expat)))
+
+(define-public libbson
+  (package
+    (name "libbson")
+    (version "1.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/mongodb/libbson/releases/"
+                             "download/" version "/libbson-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1fj4554msq0rrz14snbj908dzqj46gh7jg9w9j0akn2b7q911m5a"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)))
+    (home-page "http://mongoc.org/libbson/current/index.html")
+    (synopsis "C BSON library")
+    (description "Libbson can create and parse BSON documents.  It can also
+convert JSON documents to BSON and the opposite.  BSON stands for Binary JSON,
+it is comparable to protobuf.")
+    (license license:asl2.0)))

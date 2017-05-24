@@ -2,6 +2,8 @@
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,11 +28,15 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages xml))
@@ -38,18 +44,17 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/"
                                   name "/archive/v" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0bbmkblpndc53pvr8xcfywdn8g351yxfj8c46zp5d744c3bq2nry"))))
+               (base32 "0xvhkj4j8pcmpnsx7f93d6n2f068xnl7wacfs97vr0agxwrfvn5y"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("CFLAGS=-pie")
-       #:tests? #f ; No tests.
+     `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-binary
@@ -161,3 +166,64 @@ competitive (as in keystroke count) with Vim.")
 interface similar to many user-friendly editors.  JOE has some of the key
 bindings and many of the powerful features of GNU Emacs.")
     (license license:gpl3+)))
+
+(define-public leafpad
+  (package
+    (name "leafpad")
+    (version "0.8.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.savannah.gnu.org/releases/"
+                                  "leafpad/leafpad-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b0az2wvqgvam7w0ns1j8xp2llslm1rx6h7zcsy06a7j0yp257cm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (home-page "http://tarot.freeshell.org/leafpad/")
+    (synopsis "GTK+ based text editor")
+    (description "Leafpad is a GTK+ text editor that emphasizes simplicity.  As
+development focuses on keeping weight down to a minimum, only the most essential
+features are implemented in the editor.  Leafpad is simple to use, is easily
+compiled, requires few libraries, and starts up quickly. ")
+    (license license:gpl2+)))
+
+(define-public e3
+  (package
+    (name "e3")
+    (version "2.82")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sites.google.com/site/e3editor/Home/"
+                                  "e3-" version ".tgz"))
+              (sha256
+               (base32
+                "0919kadkas020maqq37852isnzp053q2fnws2zh3mz81d1jiviak"))
+              (modules '((guix build utils)))
+
+              ;; Remove pre-built binaries.
+              (snippet '(delete-file-recursively "bin"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (native-inputs
+     `(("nasm" ,nasm)))
+    (home-page "https://sites.google.com/site/e3editor/")
+    (synopsis "Tiny text editor written in assembly")
+    (description
+     "e3 is a micro text editor with an executable code size between 3800 and
+35000 bytes.  Except for ``syntax highlighting'', the e3 binary supports all
+of the basic functions one expects plus built in arithmetic calculations.
+UTF-8 coding of unicode characters is supported as well.  e3 can use
+Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
+16, 32, and 64-bit CPUs.")
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (license license:gpl2+)))

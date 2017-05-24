@@ -243,7 +243,7 @@ developers.")
 based IPC interface it provides (if enabled in the configuration file).
 You can then subscribe to events or send messages and receive their replies.")
     ;; Can be used with either license.
-    (license (list license:gpl3+ (package-license perl)))))
+    (license (list license:gpl3+ license:perl-license))))
 
 (define-public python-i3-py
   (package

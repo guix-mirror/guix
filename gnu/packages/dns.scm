@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,10 +88,12 @@ and BOOTP/TFTP for network booting of diskless machines.")
     ;; Source files only say GPL2 and GPL3 are allowed.
     (license (list license:gpl2 license:gpl3))))
 
-(define-public bind
+;; 'bind' is the name of a built-in Guile procedure, which is why we choose a
+;; different name here.
+(define-public isc-bind
   (package
     (name "bind")
-    (version "9.10.4-P6")
+    (version "9.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -98,7 +101,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0rgffdm0h6dks0np4h9q4kd8nyb3azrdxw2skqnjzd8ws78vzpx1"))))
+                "1chhphaa4lmfxj9daqsxph5ng4h3qq51jx21rj2i6an8ynah0192"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -149,12 +152,12 @@ high-volume and high-reliability applications. The name BIND stands for
 \"Berkeley Internet Name Domain\", because the software originated in the early
 1980s at the University of California at Berkeley.")
     (home-page "https://www.isc.org/downloads/bind")
-    (license (list license:isc))))
+    (license (list license:mpl2.0))))
 
 (define-public dnscrypt-proxy
   (package
     (name "dnscrypt-proxy")
-    (version "1.9.4")
+    (version "1.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -162,7 +165,7 @@ high-volume and high-reliability applications. The name BIND stands for
                     "dnscrypt-proxy-" version ".tar.bz2"))
               (sha256
                (base32
-                "07piwsjczamwvdpv1585kg4awqakip51bwsm8nqi6bljww4agx7x"))
+                "1dhvklr4dg2vlw108n11xbamacaryyg3dbrg629b76lp7685p7z8"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles
@@ -275,9 +278,9 @@ asynchronous fashion.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.3")
+    (version "2.2.4")
     (source
-     (let ((revision "6711"))
+     (let ((revision "6924"))
        (origin
          (method url-fetch)
          (uri
@@ -285,7 +288,7 @@ asynchronous fashion.")
                          name "-" version "-" revision ".tar.gz"))
          (sha256
           (base32
-           "0ikfm40gx0zjw3gnxsw3rn1k4wb8jacgklja3ygcj1knq6hy2zaa")))))
+           "060ydcfn9876bs6p5xi3p1k20ca547f4jck25r5x1hnxjlv7ss03")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -318,14 +321,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0licfnjl0mq9lzdn6frzdasrj65253xc9n33dhvxcjqr3z7pznip"))
+                "0kvhibnnk77nqi9gdw2zbnp0dydfcy6zy96qv0f3a7wwnay5h0pr"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -377,7 +380,7 @@ Extensions} (DNSSEC).")
                             "/etc/bash_completion.d"))))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
-    (description "Knot DNS is an authorative name server for the @dfn{Domain
+    (description "Knot DNS is an authoritative name server for the @dfn{Domain
 Name System} (DNS), designed to meet the needs of root and @dfn{top-level
 domain} (TLD) name servers.  It is implemented as a threaded daemon and uses a
 number of programming techniques to improve speed.  For example, the responder

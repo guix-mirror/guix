@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-module (gnu packages cdrom)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+))
+  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+ cddl1.0))
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -36,19 +37,29 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages xiph))
 
@@ -197,6 +208,104 @@ extra-robust data verification, synchronization, error handling and scratch
 reconstruction capability.")
     (license gpl2))) ; libraries under lgpl2.1
 
+(define-public cdrtools
+  (package
+    (name "cdrtools")
+    (version "3.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/cdrtools/cdrtools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "03w6ypsmwwy4d7vh6zgwpc60v541vc5ywp8bdb758hbc4yv2wa7d"))
+              (patches (search-patches "cdrtools-3.01-mkisofs-isoinfo.patch"))))
+    (build-system gnu-build-system)
+    ;; XXX cdrtools bundles a modified, relicensed early version of cdparanoia.
+    (inputs
+     `(("linux-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-linux-headers
+           (lambda _
+             (substitute* "autoconf/configure"
+               (("/usr/src/linux")
+                (assoc-ref %build-inputs "linux-headers")))
+             #t))
+         (add-before 'build 'substitute-dirs
+           (lambda _
+             (substitute* (append (find-files "DEFAULTS" "^Defaults\\.")
+                                  (find-files "DEFAULTS_ENG" "^Defaults\\.")
+                                  (find-files "TEMPLATES" "^Defaults\\."))
+               (("/opt/schily") (assoc-ref %outputs "out")))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero?
+              (system* "make" "CONFIG_SHELL=sh" "CCOM=gcc" "RM=rm"))))
+         (replace 'install
+           (lambda _
+             (zero?
+              (system* "make"
+                       "RM=rm" "LN=ln" "SYMLINK=ln -s"
+                       (string-append "INS_BASE=" (assoc-ref %outputs "out"))
+                       (string-append "INS_RBASE=" (assoc-ref %outputs "out"))
+                       "install" )))))
+       #:tests? #f))  ; no tests
+   (synopsis "Command line utilities to manipulate and burn CD/DVD/BD images")
+   (description "cdrtools is a collection of command line utilities to create
+CD's, DVD's or Blue Ray discs.  The most important components are
+@command{cdrecord}, a burning program, @command{cdda2wav}, a CD audio ripper
+which uses libparanoia, and @command{mkisofs}, which can create various disc
+images.")
+   (home-page "http://cdrtools.sourceforge.net/private/cdrecord.html")
+
+   ;; mkisofs is GPL, the other programs are CDDL.
+   (license (list cddl1.0 gpl2))))
+
+(define-public dvd+rw-tools
+  (package
+    (name "dvd+rw-tools")
+    (version "7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://fy.chalmers.se/~appro/linux/DVD+RW/tools/dvd+rw-tools-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1jkjvvnjcyxpql97xjjx0kwvy70kxpiznr2zpjy2hhci5s10zmpq"))
+              (patches (search-patches "dvd+rw-tools-add-include.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cdrtools" ,cdrtools)))
+    (native-inputs
+     `(("m4" ,m4)))
+    (arguments
+     `(#:tests? #f ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
+         (add-before 'build 'embed-mkisofs
+           (lambda*  (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (zero? (system* "sed" "-i" "-e"
+                             (string-append
+                              "s,\"mkisofs\","
+                              "\"" (which "mkisofs") "\",")
+                             "growisofs.c")))))))
+    (home-page "http://fy.chalmers.se/~appro/linux/DVD+RW/")
+    (synopsis "DVD and Blu-ray Disc burning tools")
+    (description "dvd+rw-tools, mostly known for its command
+@command{growisofs}, is a collection of DVD and Blu-ray Disc burning tools.
+It requires another program, such as @command{mkisofs}, @command{genisoimage},
+or @command{xorrisofs} to create ISO 9660 images.")
+    (license gpl2)))
+
 (define-public dvdisaster
   (package
     (name "dvdisaster")
@@ -237,6 +346,70 @@ files.  Dvdisaster works at the image level so that the recovery does not
 depend on the file system of the medium.  The maximum error correction
 capacity is user-selectable.")
     (license gpl2+)))
+
+(define-public dvdstyler
+  (package
+    (name "dvdstyler")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdstyler/dvdstyler/"
+                            version "/DVDStyler-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1j432kszmwmsd3nz398h5514dbm5vsrn4rr3iil72ckjj1h3i00q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "XMLTO="
+                                              (assoc-ref %build-inputs "xmlto")
+                                              "/bin/xmlto"
+                                              " --searchpath "
+                                              (assoc-ref %build-inputs "docbook-xsl")
+                                              "/xml/xsl/docbook-xsl-1.79.1/htmlhelp:"
+                                              (assoc-ref %build-inputs "docbook-xml")
+                                              "/xml/dtd/docbook"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out") "/bin/dvdstyler")
+               `("PATH" ":" prefix
+                 (,(string-join
+                    (map (lambda (in) (string-append (assoc-ref inputs in) "/bin"))
+                         '("cdrtools" "dvdauthor" "dvd+rw-tools" "ffmpeg"))
+                    ":"))))
+             #t)))
+       #:tests? #f)) ; No tests.
+    (inputs ; TODO package bundled wxvillalib
+     `(("wxwidgets" ,wxwidgets-3.1)
+       ("wssvg" ,wxsvg)
+       ("dbus" ,dbus)
+       ("cdrtools" ,cdrtools)
+       ("dvd+rw-tools" ,dvd+rw-tools)
+       ("dvdauthor" ,dvdauthor)
+       ("eudev" ,eudev)
+       ("fontconfig" ,fontconfig)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("python" ,python-2)
+       ("xmlto" ,xmlto)
+       ("gettext" ,gnu-gettext)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("zip" ,zip)))
+    (synopsis "DVD authoring application")
+    (description "DVDStyler is a DVD authoring application which allows users
+to burn video files in many formats to DVD discs, complete with individually
+designed menus.  It can be used to create professional-looking DVD's with
+custom buttons, backgrounds and animations, from within a user-friendly
+graphical interface.")
+    (home-page "https://www.dvdstyler.org")
+    (license gpl2)))
 
 (define-public libcue
   (package

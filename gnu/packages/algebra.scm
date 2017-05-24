@@ -1,10 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,26 +28,28 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages ed)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
   #:use-module (guix utils))
 
 
@@ -203,7 +207,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.3-25")
+    (version "1.2.3-37")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -215,7 +219,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0d6a42p8111raf7k16yvjajnpj22abiqndy3yzkrb4b8l071r24d"))))
+                "180146rm8fxlbd6x25x81yscf6q8qjpzr35k203r25c2xkcb7h2x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -468,34 +472,21 @@ binary.")
 (define-public bc
   (package
     (name "bc")
-    (version "1.06")
+    (version "1.07.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/bc/bc-" version ".tar.gz"))
              (sha256
               (base32
-               "0cqf5jkwx6awgd2xc2a0mkpxilzcfmhncdcfg7c9439wgkqxkxjf"))))
+               "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
-    (native-inputs `(("flex" ,flex)))
+    (native-inputs
+     `(("ed" ,ed)
+       ("flex" ,flex)
+       ("texinfo" ,texinfo)))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; This old `configure' script doesn't support
-             ;; variables passed as arguments.
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system*
-                 "./configure"
-                 (string-append "--prefix=" out)
-                 ;; By default, man and info pages are put in
-                 ;; PREFIX/{man,info}, but we want them in
-                 ;; PREFIX/share/{man,info}.
-                 (string-append "--mandir=" out "/share/man")
-                 (string-append "--infodir=" out "/share/info")))))))))
+     '(#:configure-flags
+       (list "--with-readline")))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description

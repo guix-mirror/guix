@@ -529,7 +529,8 @@ make an initial adjustment of more than 1,000 seconds."
   tor-configuration?
   (tor              tor-configuration-tor
                     (default tor))
-  (config-file      tor-configuration-config-file)
+  (config-file      tor-configuration-config-file
+                    (default (plain-file "empty" "")))
   (hidden-services  tor-configuration-hidden-services
                     (default '())))
 
@@ -595,17 +596,31 @@ HiddenServicePort ~a ~a~%"
   (match config
     (($ <tor-configuration> tor)
      (let ((torrc (tor-configuration->torrc config)))
-       (list (shepherd-service
-              (provision '(tor))
+       (with-imported-modules (source-module-closure
+                               '((gnu build shepherd)
+                                 (gnu system file-systems)))
+         (list (shepherd-service
+                (provision '(tor))
 
-              ;; Tor needs at least one network interface to be up, hence the
-              ;; dependency on 'loopback'.
-              (requirement '(user-processes loopback syslogd))
+                ;; Tor needs at least one network interface to be up, hence the
+                ;; dependency on 'loopback'.
+                (requirement '(user-processes loopback syslogd))
 
-              (start #~(make-forkexec-constructor
-                        (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
-              (stop #~(make-kill-destructor))
-              (documentation "Run the Tor anonymous network overlay.")))))))
+                (modules '((gnu build shepherd)
+                           (gnu system file-systems)))
+
+                (start #~(make-forkexec-constructor/container
+                          (list #$(file-append tor "/bin/tor") "-f" #$torrc)
+
+                          #:mappings (list (file-system-mapping
+                                            (source "/var/lib/tor")
+                                            (target source)
+                                            (writable? #t))
+                                           (file-system-mapping
+                                            (source "/dev/log") ;for syslog
+                                            (target source)))))
+                (stop #~(make-kill-destructor))
+                (documentation "Run the Tor anonymous network overlay."))))))))
 
 (define (tor-hidden-service-activation config)
   "Return the activation gexp for SERVICES, a list of hidden services."
@@ -652,7 +667,8 @@ HiddenServicePort ~a ~a~%"
                            (inherit config)
                            (hidden-services
                             (append (tor-configuration-hidden-services config)
-                                    services)))))))
+                                    services)))))
+                (default-value (tor-configuration))))
 
 (define* (tor-service #:optional
                       (config-file (plain-file "empty" ""))
@@ -705,9 +721,12 @@ project's documentation} for more information."
   bitlbee-configuration?
   (bitlbee bitlbee-configuration-bitlbee
            (default bitlbee))
-  (interface bitlbee-configuration-interface)
-  (port bitlbee-configuration-port)
-  (extra-settings bitlbee-configuration-extra-settings))
+  (interface bitlbee-configuration-interface
+             (default "127.0.0.1"))
+  (port bitlbee-configuration-port
+        (default 6667))
+  (extra-settings bitlbee-configuration-extra-settings
+                  (default "")))
 
 (define bitlbee-shepherd-service
   (match-lambda
@@ -775,7 +794,8 @@ project's documentation} for more information."
                        (service-extension account-service-type
                                           (const %bitlbee-accounts))
                        (service-extension activation-service-type
-                                          (const %bitlbee-activation))))))
+                                          (const %bitlbee-activation))))
+                (default-value (bitlbee-configuration))))
 
 (define* (bitlbee-service #:key (bitlbee bitlbee)
                           (interface "127.0.0.1") (port 6667)
@@ -988,7 +1008,8 @@ dns=" dns "
                  (list (service-extension shepherd-root-service-type
                                           wpa-supplicant-shepherd-service)
                        (service-extension dbus-root-service-type list)
-                       (service-extension profile-service-type list)))))
+                       (service-extension profile-service-type list)))
+                (default-value wpa-supplicant)))
 
 
 ;;;

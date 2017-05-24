@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages screen)
+  #:use-module (srfi srfi-1)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -40,6 +42,7 @@
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
+             (patches (search-patches "screen-fix-info-syntax-error.patch"))
              (sha256
               (base32 "0bbv16gpxrh64sn4bvjy3qjy7jsxjlqlilyysin02fwnvla23nwp"))))
     (build-system gnu-build-system)
@@ -153,6 +156,8 @@ window manager as well as the Tmux terminal multiplexer.")
        (method url-fetch)
        (uri (string-append "https://github.com/nelhage/reptyr/archive"
                            "/reptyr-" version ".tar.gz"))
+       ;; XXX: To be removed on next reptyr release.
+       (patches (search-patches "reptyr-fix-gcc-7.patch"))
        (sha256
         (base32
          "07pfl0rkgm8m3f3jy8r9l2yvnhf8lgllpsk3mh57mhzdxq8fagf7"))))
@@ -169,6 +174,7 @@ window manager as well as the Tmux terminal multiplexer.")
 it to a new terminal.  Started a long-running process over @code{ssh}, but have
 to leave and don't want to interrupt it?  Just start a @code{screen}, use
 reptyr to grab it, and then kill the @code{ssh} session and head on home.")
-    ;; Reptyr currently does not support mips.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    ;; Reptyr currently does not support mips or aarch64.
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "aarch64-linux")))
     (license expat)))

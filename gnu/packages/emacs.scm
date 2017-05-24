@@ -5,9 +5,9 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
@@ -22,6 +22,9 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,13 +54,16 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
@@ -86,19 +92,20 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public emacs
   (package
     (name "emacs")
-    (version "25.1")
+    (version "25.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0cwgyiyymnx4xdg99dm2drfxcyhy2jmyf0rkr9fwj9mwwf77kwhr"))
+               "1ykkq0xl28ljdg61bm6gzy04ww86ajms98gix72qg6cpr6a53dar"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -725,7 +732,7 @@ the body are let-bound and this search is done at compile time.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "28")
+    (version "30")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -733,7 +740,7 @@ the body are let-bound and this search is done at compile time.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "1yjxivk11d7w39zfhj2xr4h6xhwx1aj6yhyzd63rjrad7xpjfl86"))))
+                "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -884,14 +891,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.2")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xa9y64g5z8gfnxk1c2rf3plfjhqn4r6j8dpiygnfs6w4giysn22"))
+                "0dicgkl8l83n4cah5vk7c242abbwpyzlih451blgw37f3rijs480"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1119,18 +1126,24 @@ than @code{electric-indent-mode}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'patch-exec-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (emacs-substitute-variables "ag.el"
-               ("ag-executable"
-                (string-append (assoc-ref inputs "the-silver-searcher")
-                               "/bin/ag")))
-             #t)))))
-    (inputs
-     `(("the-silver-searcher" ,the-silver-searcher)))
+         (add-before 'install 'make-info
+           (lambda _
+             (with-directory-excursion "docs"
+               (zero? (system* "make" "info")))))
+         (add-after 'install 'install-info
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (install-file "docs/_build/texinfo/agel.info" info)
+               #t))))))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
-       ("s" ,emacs-s)))
+       ("s" ,emacs-s)
+       ;; We need to use 'ag' as the executable on remote systems.
+       ("the-silver-searcher" ,the-silver-searcher)))
     (home-page "https://github.com/Wilfred/ag.el")
     (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
     (description "This package provides the ability to use the silver
@@ -1143,14 +1156,14 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.9")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
+                "17fnvrj7jww29sav6a6jpizclg4w2962m6h37akpii71gf0vrffw"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
@@ -1178,7 +1191,10 @@ as a library for other Emacs packages.")
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
-    (arguments `(#:emacs ,emacs))
+    (arguments
+     `(#:emacs ,emacs
+       #:include '("\\.el$" "^images/" "^latex/" "\\.info$")
+       #:exclude '("^tests/" "^latex/README")))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/auctex/")
@@ -1187,6 +1203,47 @@ as a library for other Emacs packages.")
      "AUCTeX is a comprehensive customizable integrated environment for
 writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-calfw
+  (package
+    (name "emacs-calfw")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/kiwanami/emacs-calfw/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17ssg8gx66yp63nhygjq2r6kgl4h45cacmrxsxs9f0lrfcx37k0l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/kiwanami/emacs-calfw/")
+    (synopsis "Calendar framework for Emacs")
+    (description
+     "This package displays a calendar view with various shedule data in
+the Emacs buffer.")
+    (license license:gpl3+)))
+
+(define-public emacs-google-maps
+  (package
+    (name "emacs-google-maps")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jd/google-maps.el/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "014bxapm4d8vjxbzrfjdpsavxyfx981mlcb10aq5rmigr6il8ybs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/jd/google-maps.el")
+    (synopsis "Access Google Maps from Emacs")
+    (description "The @code{google-maps} package allows to display Google
+Maps directly inside Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-mmm-mode
@@ -1346,7 +1403,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1354,7 +1411,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1327zp140c7acckk0ajl88cgwr0lk9j3mb67nsq2janxrkwmj6br"))))
+                "0s7s90rfba8ccbilbvmbcwn4qp4m0jv9y58xq8avm39cygmjgyxz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1365,7 +1422,13 @@ type, for example: packages, buffers, files, etc.")
              (magit-popup (assoc-ref %build-inputs "magit-popup"))
              (site-lisp   "/share/emacs/site-lisp"))
          (list (string-append "--with-guix-site-dir="
-                              guix "/share/guile/site/2.0")
+                              (car (find-files (string-append guix
+                                                           "/share/guile/site")
+                                               (lambda (file stat)
+                                                 (string-prefix?
+                                                  "2."
+                                                  (basename file)))
+                                               #:directories? #t)))
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
                               dash site-lisp "/guix.d/dash-"
@@ -1380,14 +1443,14 @@ type, for example: packages, buffers, files, etc.")
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,geiser)
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
        ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://github.com/alezost/guix.el")
+    (home-page "https://alezost.github.io/guix.el/")
     (synopsis "Emacs interface for GNU Guix")
     (description
      "Emacs-Guix provides a visual interface, tools and features for the GNU
@@ -1487,17 +1550,18 @@ strings.")
 (define-public emacs-symon
   (package
     (name "emacs-symon")
-    (version "20170224.33")
+    (version "20160630")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://melpa.org/packages/symon-"
-                           version ".el"))
+       (uri (string-append "https://github.com/zk-phi/symon/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "109jd7yjhdrrf5jqpqyv543nb28g7065z58bji9pvxanzi4zl2iz"))))
+         "0h4jcgdnq98wc9rj72nwyazq8498yg55jfljiij5qwbn1xf1g5zz"))))
     (build-system emacs-build-system)
-    (home-page "http://hins11.yu-yake.com/")
+    (home-page "https://github.com/zk-phi/symon")
     (synopsis "Tiny graphical system monitor")
     (description
      "Tiny graphical system monitor for the Emacs minibuffer when idle.")
@@ -1979,14 +2043,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.12")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1swi4d7fhahimid9j12cypmkz7dlqgffrnhfxy5ra44y3j2b35ph"))))
+                "07wgcvg038l88gxvjr0gjpjhyk743w22x1rqghz3gkmif0g70say"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
@@ -2058,7 +2122,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.8.12")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -2067,8 +2131,20 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vwmbqm7h4lrszv2qxy6fqzznm9raigi84cadx982c9m7shp0zzz"))))
+         "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             ;; The company-files-candidates-normal-root test looks
+             ;; for the /bin directory, but the build environment has
+             ;; no /bin directory. Modify the test to look for the
+             ;; /tmp directory.
+             (substitute* "test/files-tests.el"
+               (("/bin/") "/tmp/"))
+             (zero? (system* "make" "test-batch")))))))
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
@@ -2254,7 +2330,10 @@ in @code{html-mode}.")
     (native-inputs
      `(("texinfo" ,texinfo)))
     (arguments
-     `(#:phases
+     `(#:include '("\\.el$" "\\.lisp$" "\\.asd$" "contrib")
+       #:exclude '("^slime-tests.el" "^contrib/test/"
+                   "^contrib/Makefile$" "^contrib/README.md$")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'install 'configure
            (lambda* _
@@ -2442,7 +2521,7 @@ organizer.")
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2451,7 +2530,7 @@ organizer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lyi84bm8sa7vj40n6zg6rlbsmi53mi1y9xn6gkjj29s5zbcnlg7"))))
+                "03kfhzgbbbl8ivpzzky6qxw4j9mmp452m1sk7wikxmcalfnix0gn"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bbatsov/zenburn-emacs")
     (synopsis "Low contrast color theme for Emacs")
@@ -2505,7 +2584,7 @@ dark background.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.9.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2514,7 +2593,7 @@ dark background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12065r7h1s9v8lnq5mk3654dkw4cq60ky8aniqq5n2ivv6qd2d4q"))))
+                "1nwsi6fbbxjq3r22r6knmx71la3g0lmwfb95i9q4k138gn0m2l3i"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
@@ -2655,7 +2734,7 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -2664,7 +2743,7 @@ automatically.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18nqwl05is71dzswnvpfhlg7b0v3apvbsfxrwab9c0apwavi892q"))))
+         "1abi1rvjarwfxxylpx8qlhck0kbavnj0nmlaaizk9q5zr02xfx1j"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
@@ -2792,7 +2871,7 @@ S-expression.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2801,8 +2880,18 @@ S-expression.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gi8ra3ap5m3mz4qh1yxp2cldn7z9xcxvypznr6rrlc6a9l8s5a6"))))
+                "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner")))))))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
@@ -3064,7 +3153,7 @@ in Emacs.")
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/bbatsov"
@@ -3072,7 +3161,7 @@ in Emacs.")
               (file-name (string-append "projectile-" version ".el"))
               (sha256
                (base32
-                "1pc6xb61hzxzc5hkqkli1ab0s7wz0rfgx4kcn9y30ksvhw18smbz"))))
+                "1ql1wnzhblbwnv66hf2y0wq45g71hh6s9inc090lmhm1vgylbd1f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -3100,6 +3189,12 @@ If you want to mark a folder manually as a project just create an empty
                (base32
                 "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "make" "test")))))))
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
     (description
@@ -3272,7 +3367,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "1.9.8")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3281,7 +3376,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "019dpzr6l83k1fgxn40aqxjvrpz4dl5d9vi7fc5wjnifmxaqxia6"))))
+                "1scdirpclgq3pi1j2c90gqaaqg1pgvasp98f4jqw8c5xbqcr7jdw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -3296,6 +3391,55 @@ of @code{anything.el} originally written by Tamas Patrovic and can be
 considered to be its successor.  Helm sets out to clean up the legacy code in
 @code{anything.el} and provide a cleaner, leaner and more modular tool, that's
 not tied in the trap of backward compatibility.")
+    (license license:gpl3+)))
+
+(define-public emacs-helm-swoop
+  (package
+    (name "emacs-helm-swoop")
+    (version "1.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ShingoFukuyama/helm-swoop/archive/"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z34pfi0gsk054pxr906ilaalaw0xz3s536163gf9ykkwmc2356d"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/ShingoFukuyama/helm-swoop")
+    (synopsis "Filter and jump to lines in an Emacs buffer using Helm")
+    (description
+     "This package builds on the Helm interface to provide several commands
+for search-based navigation of buffers.")
+    (license license:gpl2+)))
+
+(define-public emacs-helm-projectile
+  (package
+    (name "emacs-helm-projectile")
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbatsov/helm-projectile/archive/v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19cfmilqh8kbab3b2hmx6lyrj73q6vfmn3p730x95g23iz16mnd5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/bbatsov/helm-projectile")
+    (synopsis "Helm integration for Projectile")
+    (description
+     "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
 
 (define-public emacs-cider
@@ -3410,6 +3554,7 @@ extensions.")
        (method url-fetch)
        ;; There is no versioned source.
        (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
+       (file-name (string-append "goto-chg-" version ".el"))
        (sha256
         (base32
          "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
@@ -3489,14 +3634,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170210")
+    (version "20170515")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "15415wh3w8d4c8hd7qfrfdjnjb1zppmrkg8cdp7hw2ilyr90c0bn"))))
+                "0lfapcxil69x1a63cszgq72lqks1z3gpyxw7vcllqlgi7n7a4y6f"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -3870,7 +4015,7 @@ customizable by the user.")
 (define-public emacs-mu4e-alert
   (package
     (name "emacs-mu4e-alert")
-    (version "0.4")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -3880,7 +4025,7 @@ customizable by the user.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1m63vyb2v5r9swmqv56q80jca8172nk5vaxl7bcm5zbfs8zsvr4b"))))
+         "07qc834qnxn8xi4bw5nawj8g91bmkzw0r0vahkgysp7r9xrf57gj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-alert" ,emacs-alert)
@@ -4000,10 +4145,10 @@ number on the left margin in Emacs.")
          "0kdv10hrgqpskjh0zvpnzwlkn5bccnqxas62gkws6njln57bf8nl"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/IdleHighlight")
-    (synopsis "Highlights all occurences of the word the point is on")
+    (synopsis "Highlights all occurrences of the word the point is on")
     (description
      "This Emacs package provides @code{idle-highlight-mode} that sets
- an idle timer to highlight all occurences in the buffer of the word under
+ an idle timer to highlight all occurrences in the buffer of the word under
  the point.")
     (license license:gpl3+)))
 
@@ -4051,3 +4196,643 @@ jQuery and Bootstrap resources included via osscdn.")
     (description
      "This Emacs package highlights the s-exp at the current position.")
     (license license:gpl3+)))
+
+(define-public emacspeak
+  (package
+    (name "emacspeak")
+    (version "46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/tvraman/emacspeak/releases/download/"
+             version "/emacspeak-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "15x4yfp3wl2fxm1nkx6pz3clw6zyw3argcsqxgcx6pa28sivlg2n"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete the bundled byte-compiled elisp files.
+        '(for-each delete-file (find-files "lisp" "\\.elc$")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             ;; Configure Emacspeak according to etc/install.org.
+             (zero? (system* "make" "config"))))
+         (add-after 'build 'build-espeak
+           (lambda _
+             (zero? (system* "make" "espeak"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
+                    (info (string-append out "/share/info")))
+               ;; According to etc/install.org, the Emacspeak directory should
+               ;; be copied to its installation destination.
+               (for-each
+                (lambda (file)
+                  (copy-recursively file (string-append lisp "/" file)))
+                '("etc" "info" "lisp" "media" "servers" "sounds" "stumpwm"
+                  "xsl"))
+               ;; Make sure emacspeak is loaded from the correct directory.
+               (substitute* "etc/emacspeak.sh"
+                 (("exec emacs.*$")
+                  (string-append "exec emacs -l " lisp
+                                 "/lisp/emacspeak-setup.el $CL_ALL")))
+               ;; Install the convenient startup script.
+               (mkdir-p bin)
+               (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (emacspeak (string-append out "/bin/emacspeak"))
+                    (espeak (string-append (assoc-ref inputs "espeak")
+                                           "/bin/espeak")))
+               ;; The environment variable DTK_PROGRAM tells emacspeak what
+               ;; program to use for speech.
+               (wrap-program emacspeak
+                 `("DTK_PROGRAM" ":" prefix (,espeak)))
+               #t))))
+       #:tests? #f)) ; no check target
+    (inputs
+     `(("espeak" ,espeak)
+       ("tcl" ,tcl)
+       ("tclx" ,tclx)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (home-page "http://emacspeak.sourceforge.net")
+    (synopsis "Audio desktop interface for Emacs")
+    (description
+     "Emacspeak is a speech interface that allows visually impaired users to
+interact independently and efficiently with the computer.  Audio formatting
+--a technique pioneered by AsTeR-- and full support for W3C's Aural CSS (ACSS)
+allows Emacspeak to produce rich aural presentations of electronic information.
+By seamlessly blending all aspects of the Internet such as Web-surfing and
+messaging, Emacspeak speech-enables local and remote information via a
+consistent and well-integrated user interface.")
+    (license license:gpl2+)))
+
+(define-public emacs-adaptive-wrap
+  (package
+    (name "emacs-adaptive-wrap")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://elpa.gnu.org/packages/adaptive-wrap-"
+                    version ".el"))
+              (sha256
+               (base32
+                "0frgmp8vrrml4iykm60j4d6cl9rbcivy9yh24q6kd10bcyx59ypy"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/adaptive-wrap.html")
+    (synopsis "Smart line-wrapping with wrap-prefix")
+    (description
+     "This Emacs package provides the @code{adaptive-wrap-prefix-mode}
+minor mode which sets the wrap-prefix property on the fly so that
+single-long-line paragraphs get word-wrapped in a way similar to what
+you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
+actually changing the buffer's text.")
+    (license license:gpl3+)))
+
+(define-public emacs-diminish
+  (package
+    (name "emacs-diminish")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/myrjola/diminish.el/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i3629sv5cfrrb00hcnmaqzgs8mk36yasc1ax3ry1ga09nr6rkj9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/myrjola/diminish.el")
+    (synopsis "Diminish minor modes with no modeline display")
+    (description "@code{emacs-diminish} implements hiding or
+abbreviation of the mode line displays (lighters) of minor modes.")
+    (license license:gpl2+)))
+
+(define-public emacs-use-package
+  (package
+    (name "emacs-use-package")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwiegley/use-package/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x4h136jb3imyli6zsh7dyzjrra6pv0v6b0yk94jdng3rdfcmsf5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-diminish" ,emacs-diminish)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "use-package-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit"))
+             ;; Tests fail in this release, but have been fixed in
+             ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
+             #t)))))
+    (home-page "https://github.com/jwiegley/use-package")
+    (synopsis "Declaration for simplifying your .emacs")
+    (description "The use-package macro allows you to isolate package
+configuration in your @file{.emacs} file in a way that is both
+performance-oriented and tidy.")
+    (license license:gpl2+)))
+
+(define-public emacs-strace-mode
+  (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
+         (revision "1"))
+    (package
+      (name "emacs-strace-mode")
+      (version (string-append "0.0.2-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkmoore/strace-mode")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1lbk2kzdznf2bkfazizfbimaxxzfzv00lrz1ran9dc2zqbc0bj9f"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/pkmoore/strace-mode")
+      (synopsis "Emacs major mode to highlight strace outputs")
+      (description "@code{emacs-strace-mode} provides an Emacs major mode
+ highlighting strace outputs.")
+      (license license:gpl3+))))
+
+(define-public emacs-default-encrypt
+  (package
+    (name "emacs-default-encrypt")
+    (version "4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.informationelle-selbstbestimmung-im-internet.de"
+             "/emacs/jl-encrypt" version "/jl-encrypt.el"))
+       (file-name (string-append "jl-encrypt-" version ".el"))
+       (sha256
+        (base32
+         "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (synopsis "Automatically encrypt or sign Gnus messages in Emacs")
+    (description
+     "DefaultEncrypt is designed to be used with Gnus in Emacs.  It
+automatically encrypts messages that you send (e.g., email) when public keys
+for all recipients are available, and it protects you from accidentally
+sending un-encrypted messages.  It can also be configured to automatically
+sign messages that you send.  For details and instructions on how to use
+DefaultEncrypt, please refer to the home page or read the comments in the
+source file, @file{jl-encrypt.el}.")
+    (license license:gpl3+)))
+
+(define-public emacs-htmlize
+  (package
+    (name "emacs-htmlize")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/hniksic/emacs-htmlize/archive/release/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fy1lybzrxl8a8r88f6p19nz8ygmvcxhxbnymkxh7jqaz25viwld"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hniksic/emacs-htmlize")
+    (synopsis "Convert buffer text and decorations to HTML")
+    (description "@code{emacs-htmlize} converts the buffer text and
+the associated decorations to HTML.  Output to CSS, inline CSS and
+fonts is supported.")
+    (license license:gpl2+)))
+
+(define-public emacs-xmlgen
+  (package
+    (name "emacs-xmlgen")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/philjackson/xmlgen/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "xmlgen-test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/philjackson/xmlgen")
+    (synopsis "S-expression to XML domain specific language (DSL) in
+Emacs Lisp")
+    (description "@code{emacs-xmlgen} provides S-expression to XML
+conversion for Emacs Lisp.")
+    (license license:gpl2+)))
+
+(define-public emacs-cdlatex
+  (package
+    (name "emacs-cdlatex")
+    (version "4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cdominik/cdlatex/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pivapphmykc6vhvpx7hdyl55ls37vc4jcrxpvs4yk7jzcmwa9xp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cdominik/cdlatex")
+    (synopsis "Fast Emacs input methods for LaTeX environments and
+math")
+    (description "CDLaTeX is an Emacs minor mode supporting fast
+insertion of environment templates and math in LaTeX.  Similar
+commands are also offered as part of the AUCTeX package, but it is not
+the same - CDLaTeX focuses on speediness for inserting LaTeX
+constructs.")
+    (license license:gpl3+)))
+
+(define-public emacs-xelb
+  (package
+    (name "emacs-xelb")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/xelb-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0i9n0f3ibj4a5pwcsvwrah9m0fz32m0x6a9wsmjn3li20v8pcb81"))))
+    (build-system emacs-build-system)
+    ;; The following functions and variables needed by emacs-xelb are
+    ;; not included in emacs-minimal:
+    ;; x-display-screens, x-keysym-table, x-alt-keysym, x-meta-keysym
+    ;; x-hyper-keysym, x-super-keysym, libxml-parse-xml-region
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'regenerate-el-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "make"
+                             (string-append "PROTO_PATH="
+                                            (assoc-ref inputs "xcb-proto")
+                                            "/share/xcb")
+                             (string-append "EMACS_BIN="
+                                            (assoc-ref inputs "emacs")
+                                            "/bin/emacs -Q"))))))))
+    (native-inputs `(("xcb-proto" ,xcb-proto)))
+    (home-page "https://github.com/ch11ng/xelb")
+    (synopsis "X protocol Emacs Lisp binding")
+    (description "@code{emacs-xelb} is a pure Emacs Lisp implementation of the
+X11 protocol based on the XML description files from the XCB project.  It
+features an object-oriented API and permits a certain degree of concurrency.
+It should enable you to implement low-level X11 applications.")
+    (license license:gpl3+)))
+
+(define-public emacs-exwm
+  (package
+    (name "emacs-exwm")
+    (version "0.13")
+    (synopsis "Emacs X window manager")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/exwm-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0n1wzy6chh024r0yaywjbf7mdsrxs6hrfycv5v0ps0drf6q3zldc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-xelb" ,emacs-xelb)))
+    (inputs
+     `(("xhost" ,xhost)
+       ("dbus" ,dbus)))
+    ;; The following functions and variables needed by emacs-exwm are
+    ;; not included in emacs-minimal:
+    ;; scroll-bar-mode, fringe-mode
+    ;; x-display-pixel-width, x-display-pixel-height
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-xsession
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions"))
+                    (bin (string-append out "/bin"))
+                    (exwm-executable (string-append bin "/exwm")))
+               ;; Add a .desktop file to xsessions
+               (mkdir-p xsessions)
+               (mkdir-p bin)
+               (with-output-to-file
+                   (string-append xsessions "/exwm.desktop")
+                 (lambda _
+                   (format #t "[Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a~@
+                     TryExec=~@*~a~@
+                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
+               (with-output-to-file exwm-executable
+                 (lambda _
+                   (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
+                     ~a +SI:localuser:$USER ~@
+                     exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
+                           (string-append (assoc-ref inputs "bash") "/bin/sh")
+                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
+                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
+                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           '(cond
+                             ((file-exists-p "~/.exwm")
+                              (load-file "~/.exwm"))
+                             ((not (featurep 'exwm))
+                              (require 'exwm)
+                              (require 'exwm-config)
+                              (exwm-config-default)
+                              (message "exwm configuration not found. Falling back to default configuration..."))))))
+               (chmod exwm-executable #o555)
+               #t))))))
+    (home-page "https://github.com/ch11ng/exwm")
+    (description "EXWM is a full-featured tiling X window manager for Emacs
+built on top of XELB.")
+    (license license:gpl3+)))
+
+(define-public emacs-gnuplot
+  (package
+    (name "emacs-gnuplot")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/bruceravel/gnuplot-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0glzymrn138lwig7p4cj17x4if5jisr6l4g6wcbxisqkqgc1h01i"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("emacs" ,emacs-minimal)))
+    (arguments
+     (let ((elisp-dir (string-append "/share/emacs/site-lisp/guix.d"
+                                     "/gnuplot-" version)))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:configure-flags
+         (list (string-append "EMACS=" (assoc-ref %build-inputs "emacs")
+                              "/bin/emacs")
+               (string-append "--with-lispdir=" %output ,elisp-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'generate-autoloads
+             (lambda* (#:key outputs #:allow-other-keys)
+               (emacs-generate-autoloads
+                "gnuplot"
+                (string-append (assoc-ref outputs "out") ,elisp-dir))
+               #t))))))
+    (home-page "https://github.com/bruceravel/gnuplot-mode")
+    (synopsis "Emacs major mode for interacting with gnuplot")
+    (description "@code{emacs-gnuplot} is an emacs major mode for interacting
+with gnuplot.")
+    (license license:gpl2+)))
+
+(define-public emacs-transpose-frame
+  (package
+    (name "emacs-transpose-frame")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://www.emacswiki.org/emacs/download/transpose-frame.el")
+       (file-name (string-append "transpose-frame-" version ".el"))
+       (sha256
+        (base32
+         "1f67yksgw9s6j0033hmqzaxx2a93jm11sd5ys7cc3li5gfh680m4"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/TransposeFrame")
+    (synopsis "Transpose window arrangement in current frame")
+    (description "@code{emacs-transpose-frame} provides some interactive
+functions which allows users to transpose windows arrangement in currently
+selected frame.")
+    (license license:bsd-2)))
+
+(define-public emacs-key-chord
+  (package
+    (name "emacs-key-chord")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/key-chord.el")
+       (file-name (string-append "key-chord-" version ".el"))
+       (sha256
+        (base32
+         "03m44pqggfrd53nh9dvpdjgm0rvca34qxmd30hr33hzprzjambxg"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/key-chord.el")
+    (synopsis "Map pairs of simultaneously pressed keys to Emacs commands")
+    (description "@code{emacs-key-chord} provides @code{key-chord-mode}, a
+mode for binding key chords to commands.  A key chord is defined as two keys
+pressed simultaneously or a single key quickly pressed twice.")
+    (license license:gpl2+)))
+
+(define-public emacs-evil-surround
+  (package
+    (name "emacs-evil-surround")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/timcharper/evil-surround/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p572jgic3q1ia1nz37kclir729ay6i2f4sa7wnaapyxly2lwb3r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/timcharper/evil-surround")
+    (synopsis "Easily modify surrounding parantheses and quotes")
+    (description "@code{emacs-evil-surround} allows easy deletion, change and
+addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-commentary
+  (package
+    (name "emacs-evil-commentary")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linktohack/evil-commentary/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdya0i921nwskwrzdsj0vrr3m7gm49dy6f6pk9p5nxaarfxk230"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/linktohack/evil-commentary")
+    (synopsis "Comment out code in evil mode")
+    (description "@code{emacs-evil-commentary} adds keybindings to easily
+comment out lines of code in evil mode.  It provides @code{gcc} to comment out
+lines, and @code{gc} to comment out the target of a motion.")
+    (license license:gpl3+)))
+
+;; Tests for emacs-ansi have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-ansi
+  (package
+    (name "emacs-ansi")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/ansi.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13jj4vbi98j3p17hs99bmy7g21jd5h4v3wpxk4pkvhylm3bfwjw8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/ansi.el")
+    (synopsis "Convert strings to ANSI")
+    (description "@code{emacs-ansi} defines functions that turns simple
+strings to ANSI strings.  Turning a string into an ANSI string can be to add
+color to a text, add color in the background of a text or adding a style, such
+as bold, underscore or italic.")
+    (license license:gpl3+)))
+
+;; Tests for emacs-commander have a circular dependency with ert-runner, and
+;; therefore cannot be run
+(define-public emacs-commander
+  (package
+    (name "emacs-commander")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/commander.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "196s2i15z7gwxa97l1wkxvjnfmj5n38wwm6d3g4zz15l2vqggc2y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/rejeep/commander.el")
+    (synopsis "Emacs command line parser")
+    (description "@code{emacs-commander} provides command line parsing for
+Emacs.")
+    (license license:gpl3+)))
+
+;; Tests for ert-runner have a circular dependency with ecukes, and therefore
+;; cannot be run
+(define-public ert-runner
+  (let ((dependencies
+         `(("emacs-ansi" ,emacs-ansi)
+           ("emacs-commander" ,emacs-commander)
+           ("emacs-dash" ,emacs-dash)
+           ("emacs-f" ,emacs-f)
+           ("emacs-s" ,emacs-s)
+           ("emacs-shut-up" ,emacs-shut-up))))
+    (package
+      (name "ert-runner")
+      (version "0.7.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
+                             version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
+      (build-system emacs-build-system)
+      (inputs dependencies)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "bin/ert-runner"
+                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+                    (string-append "ERT_RUNNER=\"" out
+                                   "/share/emacs/site-lisp/guix.d/"
+                                   ,name "-" ,version)))
+                 (install-file "bin/ert-runner" (string-append out "/bin"))
+                 (wrap-program (string-append out "/bin/ert-runner")
+                   (list "EMACSLOADPATH" ":" '=
+                         (append
+                          ,(match dependencies
+                             (((labels packages) ...)
+                              `(map (lambda (label package version)
+                                      (string-append (assoc-ref inputs label)
+                                                     "/share/emacs/site-lisp/guix.d/"
+                                                     (string-drop package 6)
+                                                     "-" version))
+                                    ',labels
+                                    ',(map package-name packages)
+                                    ',(map package-version packages))))
+                          ;; empty element to include the default load path as
+                          ;; determined by emacs' standard initialization
+                          ;; procedure
+                          (list ""))))
+                 #t))))))
+      (home-page "https://github.com/rejeep/ert-runner.el")
+      (synopsis "Opinionated Ert testing workflow")
+      (description "@code{ert-runner} is a tool for Emacs projects tested
+using ERT.  It assumes a certain test structure setup and can therefore make
+running tests easier.")
+      (license license:gpl3+))))

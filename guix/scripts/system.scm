@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,10 @@
   #:use-module (guix build utils)
   #:use-module (gnu build install)
   #:use-module (gnu system)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system vm)
-  #:use-module (gnu system grub)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services herd)
@@ -77,6 +78,29 @@
 ;;; Installation.
 ;;;
 
+(define-syntax-rule (save-load-path-excursion body ...)
+  "Save the current values of '%load-path' and '%load-compiled-path', run
+BODY..., and restore them."
+  (let ((path %load-path)
+        (cpath %load-compiled-path))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (set! %load-path path)
+        (set! %load-compiled-path cpath)))))
+
+(define-syntax-rule (save-environment-excursion body ...)
+  "Save the current environment variables, run BODY..., and restore them."
+  (let ((env (environ)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (environ env)))))
+
 (define topologically-sorted*
   (store-lift topologically-sorted))
 
@@ -106,7 +130,7 @@
                              #:prefix target
                              #:state-directory state
                              #:references refs)
-        (leave (_ "failed to register '~a' under '~a'~%")
+        (leave (G_ "failed to register '~a' under '~a'~%")
                item target))
 
       (return #t))))
@@ -123,41 +147,50 @@ TARGET, and register them."
               (map (cut copy-item <> target #:log-port log-port)
                    to-copy))))
 
-(define (install-grub* grub.cfg device target)
-  "This is a variant of 'install-grub' with error handling, lifted in
-%STORE-MONAD"
-  (let* ((gc-root      (string-append target %gc-roots-directory
-                                      "/grub.cfg"))
-         (temp-gc-root (string-append gc-root ".new"))
-         (delete-file  (lift1 delete-file %store-monad))
-         (make-symlink (lift2 switch-symlinks %store-monad))
-         (rename       (lift2 rename-file %store-monad)))
-    (mbegin %store-monad
-      ;; Prepare the symlink to GRUB.CFG to make sure that it's a GC root when
-      ;; 'install-grub' completes (being a bit paranoid.)
-      (make-symlink temp-gc-root grub.cfg)
+(define* (install-bootloader installer-drv
+                             #:key
+                             bootcfg bootcfg-file
+                             device target)
+  "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
+  (with-monad %store-monad
+    (let* ((gc-root      (string-append target %gc-roots-directory
+                                        "/bootcfg"))
+           (temp-gc-root (string-append gc-root ".new"))
+           (install (and installer-drv
+                         (derivation->output-path installer-drv)))
+           (bootcfg (derivation->output-path bootcfg)))
+      ;; Prepare the symlink to bootloader config file to make sure that it's
+      ;; a GC root when 'installer-drv' completes (being a bit paranoid.)
+      (switch-symlinks temp-gc-root bootcfg)
 
-      (munless (false-if-exception (install-grub grub.cfg device target))
+      (unless (false-if-exception
+               (begin
+                 (install-boot-config bootcfg bootcfg-file target)
+                 (when install
+                   (save-load-path-excursion (primitive-load install)))))
         (delete-file temp-gc-root)
-        (leave (_ "failed to install GRUB on device '~a'~%") device))
+        (leave (G_ "failed to install bootloader on device ~a '~a'~%") install device))
 
-      ;; Register GRUB.CFG as a GC root so that its dependencies (background
-      ;; image, font, etc.) are not reclaimed.
-      (rename temp-gc-root gc-root))))
+      ;; Register bootloader config file as a GC root so that its dependencies
+      ;; (background image, font, etc.) are not reclaimed.
+      (rename-file temp-gc-root gc-root)
+      (return #t))))
 
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
-                  grub? grub.cfg device)
-  "Copy the closure of GRUB.CFG, which includes the output of OS-DRV, to
+                  bootloader-installer install-bootloader?
+                  bootcfg bootcfg-file
+                  device)
+  "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'guix-register' expects.
 
-When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
+When INSTALL-BOOTLOADER? is true, install bootloader on DEVICE, using BOOTCFG."
   (define (maybe-copy to-copy)
     (with-monad %store-monad
       (if (string=? target "/")
           (begin
-            (warning (_ "initializing the current root file system~%"))
+            (warning (G_ "initializing the current root file system~%"))
             (return #t))
           (begin
             ;; Make sure the target store exists.
@@ -171,7 +204,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   ;; <http://lists.gnu.org/archive/html/guix-devel/2015-05/msg00452.html>.
   (if (zero? (geteuid))
       (chown target 0 0)
-      (warning (_ "not running as 'root', so \
+      (warning (G_ "not running as 'root', so \
 the ownership of '~a' may be incorrect!~%")
                target))
 
@@ -181,16 +214,21 @@ the ownership of '~a' may be incorrect!~%")
         (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
-      ;; Copy the closure of GRUB.CFG, which includes OS-DIR, GRUB's
-      ;; background image and so on.
-      (maybe-copy grub.cfg)
+      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+      ;; eventual background image and so on.
+      (maybe-copy
+       (derivation->output-path bootcfg))
 
       ;; Create a bunch of additional files.
       (format log-port "populating '~a'...~%" target)
       (populate os-dir target)
 
-      (mwhen grub?
-        (install-grub* grub.cfg device target)))))
+      (mwhen install-bootloader?
+        (install-bootloader bootloader-installer
+                            #:bootcfg bootcfg
+                            #:bootcfg-file bootcfg-file
+                            #:device device
+                            #:target target)))))
 
 
 ;;;
@@ -200,29 +238,6 @@ the ownership of '~a' may be incorrect!~%")
 (define %system-profile
   ;; The system profile.
   (string-append %state-directory "/profiles/system"))
-
-(define-syntax-rule (save-environment-excursion body ...)
-  "Save the current environment variables, run BODY..., and restore them."
-  (let ((env (environ)))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        body ...)
-      (lambda ()
-        (environ env)))))
-
-(define-syntax-rule (save-load-path-excursion body ...)
-  "Save the current values of '%load-path' and '%load-compiled-path', run
-BODY..., and restore them."
-  (let ((path %load-path)
-        (cpath %load-compiled-path))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        body ...)
-      (lambda ()
-        (set! %load-path path)
-        (set! %load-compiled-path cpath)))))
 
 (define-syntax-rule (with-shepherd-error-handling mbody ...)
   "Catch and report Shepherd errors that arise when binding MBODY, a monadic
@@ -235,21 +250,21 @@ expression in %STORE-MONAD."
           (values (run-with-store store (begin mbody ...))
                   store)))
       (lambda (key proc format-string format-args errno . rest)
-        (warning (_ "while talking to shepherd: ~a~%")
+        (warning (G_ "while talking to shepherd: ~a~%")
                  (apply format #f format-string format-args))
         (values #f store)))))
 
 (define (report-shepherd-error error)
   "Report ERROR, a '&shepherd-error' error condition object."
   (cond ((service-not-found-error? error)
-         (report-error (_ "service '~a' could not be found~%")
+         (report-error (G_ "service '~a' could not be found~%")
                        (service-not-found-error-service error)))
         ((action-not-found-error? error)
-         (report-error (_ "service '~a' does not have an action '~a'~%")
+         (report-error (G_ "service '~a' does not have an action '~a'~%")
                        (action-not-found-error-service error)
                        (action-not-found-error-action error)))
         ((action-exception-error? error)
-         (report-error (_ "exception caught while executing '~a' \
+         (report-error (G_ "exception caught while executing '~a' \
 on service '~a':~%")
                        (action-exception-error-action error)
                        (action-exception-error-service error))
@@ -257,10 +272,10 @@ on service '~a':~%")
                           (action-exception-error-key error)
                           (action-exception-error-arguments error)))
         ((unknown-shepherd-error? error)
-         (report-error (_ "something went wrong: ~s~%")
+         (report-error (G_ "something went wrong: ~s~%")
                        (unknown-shepherd-error-sexp error)))
         ((shepherd-error? error)
-         (report-error (_ "shepherd error~%")))
+         (report-error (G_ "shepherd error~%")))
         ((not error)                              ;not an error
          #t)))
 
@@ -277,7 +292,7 @@ unload."
                    to-unload))))
     (#f
      (with-monad %store-monad
-       (warning (_ "failed to obtain list of shepherd services~%"))
+       (warning (G_ "failed to obtain list of shepherd services~%"))
        (return #f)))))
 
 (define (upgrade-shepherd-services os)
@@ -288,7 +303,7 @@ This is currently very conservative in that it does not stop or unload any
 running service.  Unloading or stopping the wrong service ('udev', say) could
 bring the system down."
   (define new-services
-    (service-parameters
+    (service-value
      (fold-services (operating-system-services os)
                     #:target-type shepherd-root-service-type)))
 
@@ -297,7 +312,7 @@ bring the system down."
    (call-with-service-upgrade-info new-services
      (lambda (to-load to-unload)
         (for-each (lambda (unload)
-                    (info (_ "unloading service '~a'...~%") unload)
+                    (info (G_ "unloading service '~a'...~%") unload)
                     (unload-service unload))
                   to-unload)
 
@@ -305,7 +320,7 @@ bring the system down."
           (munless (null? to-load)
             (let ((to-load-names  (map shepherd-service-canonical-name to-load))
                   (to-start       (filter shepherd-service-auto-start? to-load)))
-              (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
+              (info (G_ "loading new services:~{ ~a~}...~%") to-load-names)
               (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
                                                to-load)))
                 ;; Here we assume that FILES are exactly those that were computed
@@ -329,7 +344,7 @@ it atomically, and then run OS's activation script."
       (switch-symlinks generation system)
       (switch-symlinks profile generation)
 
-      (format #t (_ "activating system...~%"))
+      (format #t (G_ "activating system...~%"))
 
       ;; The activation script may change $PATH, among others, so protect
       ;; against that.
@@ -362,44 +377,26 @@ it atomically, and then run OS's activation script."
     (date->string (time-utc->date time)
                   "~Y-~m-~d ~H:~M")))
 
-(define* (profile-grub-entries #:optional (profile %system-profile)
+(define* (profile-boot-parameters #:optional (profile %system-profile)
                                   (numbers (generation-numbers profile)))
-  "Return a list of 'menu-entry' for the generations of PROFILE specified by
+  "Return a list of 'boot-parameters' for the generations of PROFILE specified by
 NUMBERS, which is a list of generation numbers."
-  (define (system->grub-entry system number time)
+  (define (system->boot-parameters system number time)
     (unless-file-not-found
-     (let* ((file             (string-append system "/parameters"))
-            (params           (call-with-input-file file
-                                read-boot-parameters))
-            (label            (boot-parameters-label params))
-            (root             (boot-parameters-root-device params))
-            (root-device      (if (bytevector? root)
-                                  (uuid->string root)
-                                  root))
-            (kernel           (boot-parameters-kernel params))
-            (kernel-arguments (boot-parameters-kernel-arguments params))
-            (initrd           (boot-parameters-initrd params)))
-       (menu-entry
-        (label (string-append label " (#"
-                              (number->string number) ", "
-                              (seconds->string time) ")"))
-        (device (boot-parameters-store-device params))
-        (device-mount-point (boot-parameters-store-mount-point params))
-        (linux kernel)
-        (linux-arguments
-         (cons* (string-append "--root=" root-device)
-                (string-append "--system=" system)
-                (string-append "--load=" system "/boot")
-                kernel-arguments))
-        (initrd initrd)))))
-
+     (let* ((params           (read-boot-parameters-file system))
+            (label            (boot-parameters-label params)))
+       (boot-parameters
+         (inherit params)
+         (label (string-append label " (#"
+                               (number->string number) ", "
+                               (seconds->string time) ")"))))))
   (let* ((systems (map (cut generation-file-name profile <>)
                        numbers))
          (times   (map (lambda (system)
                          (unless-file-not-found
                           (stat:mtime (lstat system))))
                        systems)))
-    (filter-map system->grub-entry systems numbers times)))
+    (filter-map system->boot-parameters systems numbers times)))
 
 
 ;;;
@@ -415,50 +412,58 @@ connection to the store."
 ;;;
 (define (switch-to-system-generation store spec)
   "Switch the system profile to the generation specified by SPEC, and
-re-install grub with a grub configuration file that uses the specified system
+re-install bootloader with a configuration file that uses the specified system
 generation as its default entry.  STORE is an open connection to the store."
   (let ((number (relative-generation-spec->number %system-profile spec)))
     (if number
         (begin
-          (reinstall-grub store number)
+          (reinstall-bootloader store number)
           (switch-to-generation* %system-profile number))
-        (leave (_ "cannot switch to system generation '~a'~%") spec))))
+        (leave (G_ "cannot switch to system generation '~a'~%") spec))))
 
-(define (reinstall-grub store number)
-  "Re-install grub for existing system profile generation NUMBER.  STORE is an
-open connection to the store."
+(define* (system-bootloader-name #:optional (system %system-profile))
+  "Return the bootloader name stored in SYSTEM's \"parameters\" file."
+  (let ((params (unless-file-not-found
+                 (read-boot-parameters-file system))))
+    (boot-parameters-boot-name params)))
+
+(define (reinstall-bootloader store number)
+  "Re-install bootloader for existing system profile generation NUMBER.
+STORE is an open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
-         (file (string-append generation "/parameters"))
          (params (unless-file-not-found
-                  (call-with-input-file file read-boot-parameters)))
-         (root-device (boot-parameters-root-device params))
-         ;; We don't currently keep track of past menu entries' details.  The
-         ;; default values will allow the system to boot, even if they differ
-         ;; from the actual past values for this generation's entry.
-         (grub-config (grub-configuration (device root-device)))
+                  (read-boot-parameters-file generation)))
+         ;; Detect the bootloader used in %system-profile.
+         (bootloader (lookup-bootloader-by-name (system-bootloader-name)))
+
+         ;; Use the detected bootloader with default configuration.
+         ;; It will be enough to allow the system to boot.
+         (bootloader-config (bootloader-configuration
+                             (bootloader bootloader)))
+
          ;; Make the specified system generation the default entry.
-         (entries (profile-grub-entries %system-profile (list number)))
+         (entries (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-grub-entries %system-profile old-generations))
-         (grub.cfg (run-with-store store
-                     (grub-configuration-file grub-config
-                                              entries
-                                              #:old-entries old-entries))))
-    (show-what-to-build store (list grub.cfg))
-    (build-derivations store (list grub.cfg))
-    ;; This is basically the same as install-grub*, but for now we avoid
-    ;; re-installing the GRUB boot loader itself onto a device, mainly because
-    ;; we don't in general have access to the same version of the GRUB package
-    ;; which was used when installing this other system generation.
-    (let* ((grub.cfg-path (derivation->output-path grub.cfg))
-           (gc-root (string-append %gc-roots-directory "/grub.cfg"))
-           (temp-gc-root (string-append gc-root ".new")))
-      (switch-symlinks temp-gc-root grub.cfg-path)
-      (unless (false-if-exception (install-grub-config grub.cfg-path "/"))
-        (delete-file temp-gc-root)
-        (leave (_ "failed to re-install GRUB configuration file: '~a'~%")
-               grub.cfg-path))
-      (rename-file temp-gc-root gc-root))))
+         (old-entries (profile-boot-parameters
+                       %system-profile old-generations)))
+    (run-with-store store
+      (mlet* %store-monad
+          ((bootcfg ((bootloader-configuration-file-generator bootloader)
+                     bootloader-config entries
+                     #:old-entries old-entries))
+           (bootcfg-file -> (bootloader-configuration-file bootloader))
+           (target -> "/")
+           (drvs -> (list bootcfg)))
+        (mbegin %store-monad
+          (show-what-to-build* drvs)
+          (built-derivations drvs)
+          ;; Only install bootloader configuration file. Thus, no installer
+          ;; nor device is provided here.
+          (install-bootloader #f
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:device #f
+                              #:target target))))))
 
 
 ;;;
@@ -468,7 +473,7 @@ open connection to the store."
 (define (service-node-label service)
   "Return a label to represent SERVICE."
   (let ((type  (service-kind service))
-        (value (service-parameters service)))
+        (value (service-value service)))
     (string-append (symbol->string (service-type-name type))
                    (cond ((or (number? value) (symbol? value))
                           (string-append " " (object->string value)))
@@ -514,21 +519,22 @@ list of services."
   "Display a summary of system generation NUMBER in a human-readable format."
   (unless (zero? number)
     (let* ((generation  (generation-file-name profile number))
-           (param-file  (string-append generation "/parameters"))
-           (params      (call-with-input-file param-file read-boot-parameters))
+           (params      (read-boot-parameters-file generation))
            (label       (boot-parameters-label params))
+           (boot-name   (boot-parameters-boot-name params))
            (root        (boot-parameters-root-device params))
            (root-device (if (bytevector? root)
                             (uuid->string root)
                             root))
            (kernel      (boot-parameters-kernel params)))
       (display-generation profile number)
-      (format #t (_ "  file name: ~a~%") generation)
-      (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
+      (format #t (G_ "  file name: ~a~%") generation)
+      (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
-      (format #t (_ "  label: ~a~%") label)
-      (format #t (_ "  root device: ~a~%") root-device)
-      (format #t (_ "  kernel: ~a~%") kernel))))
+      (format #t (G_ "  label: ~a~%") label)
+      (format #t (G_ "  bootloader: ~a~%") boot-name)
+      (format #t (G_ "  root device: ~a~%") root-device)
+      (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching
@@ -546,7 +552,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                (leave-on-EPIPE
                 (for-each display-system-generation numbers)))))
         (else
-         (leave (_ "invalid syntax: ~a~%") pattern))))
+         (leave (G_ "invalid syntax: ~a~%") pattern))))
 
 
 ;;;
@@ -569,7 +575,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                                             #:disk-image-size
                                             (if full-boot?
                                                 image-size
-                                                (* 30 (expt 2 20)))
+                                                (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
@@ -585,23 +591,39 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
     (string-append (config-directory) "/latest"))
 
   (unless (file-exists? latest)
-    (warning (_ "~a not found: 'guix pull' was never run~%") latest)
-    (warning (_ "Consider running 'guix pull' before 'reconfigure'.~%"))
-    (warning (_ "Failing to do that may downgrade your system!~%"))))
+    (warning (G_ "~a not found: 'guix pull' was never run~%") latest)
+    (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
+    (warning (G_ "Failing to do that may downgrade your system!~%"))))
+
+(define (bootloader-installer-derivation installer
+                                         bootloader device target)
+  "Return a file calling INSTALLER gexp with given BOOTLOADER, DEVICE
+and TARGET arguments."
+  (with-monad %store-monad
+    (gexp->file "bootloader-installer"
+                (with-imported-modules '((guix build utils))
+                  #~(begin
+                      (use-modules (guix build utils))
+                      (#$installer #$bootloader #$device #$target))))))
 
 (define* (perform-action action os
-                         #:key grub? dry-run? derivations-only?
+                         #:key install-bootloader?
+                         dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
-                         (mappings '()))
-  "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
-the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
-is the size of the image to be built, for the 'vm-image' and 'disk-image'
-actions.  FULL-BOOT? is used for the 'vm' action; it determines whether to
-boot directly to the kernel or to the bootloader.
+                         (mappings '())
+                         (gc-root #f))
+  "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
+bootloader; DEVICE is the target devices for bootloader; TARGET is the target
+root directory; IMAGE-SIZE is the size of the image to be built, for the
+'vm-image' and 'disk-image' actions.  FULL-BOOT? is used for the 'vm' action;
+it determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
-building anything."
+building anything.
+
+When GC-ROOT is a path, also make that path an indirect root of the build
+output when building a system derivation, such as a disk image."
   (define println
     (cut format #t "~a~%" <>))
 
@@ -613,22 +635,37 @@ building anything."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (grub      (package->derivation (grub-configuration-grub
-                                        (operating-system-bootloader os))))
-       (grub.cfg  (if (eq? 'container action)
-                      (return #f)
-                      (operating-system-grub.cfg os
-                                                 (if (eq? 'init action)
-                                                     '()
-                                                     (profile-grub-entries)))))
+       (bootloader -> (bootloader-configuration-bootloader
+                       (operating-system-bootloader os)))
+       (bootloader-package
+        (let ((package (bootloader-package bootloader)))
+          (if package
+              (package->derivation package)
+              (return #f))))
+       (bootcfg  (if (eq? 'container action)
+                     (return #f)
+                     (operating-system-bootcfg
+                      os
+                      (if (eq? 'init action)
+                          '()
+                          (profile-boot-parameters)))))
+       (bootcfg-file -> (bootloader-configuration-file bootloader))
+       (bootloader-installer
+        (let ((installer (bootloader-installer bootloader))
+              (target    (or target "/")))
+          (bootloader-installer-derivation installer
+                                           bootloader-package
+                                           device target)))
 
-       ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
-       ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
-       ;; root.  See <http://bugs.gnu.org/21068>.
+       ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
+       ;; --no-bootloader is passed, because we then use it as a GC root.
+       ;; See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if grub?
-                          (list sys grub.cfg grub)
-                          (list sys grub.cfg))
+                      (if (and install-bootloader? bootloader-package)
+                          (list sys bootcfg
+				bootloader-package
+				bootloader-installer)
+                          (list sys bootcfg))
                       (list sys)))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
@@ -642,31 +679,34 @@ building anything."
           (for-each (compose println derivation->output-path)
                     drvs)
 
-          ;; Make sure GRUB is accessible.
-          (when grub?
-            (let ((prefix (derivation->output-path grub)))
-              (setenv "PATH"
-                      (string-append  prefix "/bin:" prefix "/sbin:"
-                                      (getenv "PATH")))))
-
           (case action
             ((reconfigure)
              (mbegin %store-monad
                (switch-to-system os)
-               (mwhen grub?
-                 (install-grub* (derivation->output-path grub.cfg)
-                                device "/"))))
+               (mwhen install-bootloader?
+                 (install-bootloader bootloader-installer
+                                     #:bootcfg bootcfg
+                                     #:bootcfg-file bootcfg-file
+                                     #:device device
+                                     #:target "/"))))
             ((init)
              (newline)
-             (format #t (_ "initializing operating system under '~a'...~%")
+             (format #t (G_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
-                      #:grub? grub?
-                      #:grub.cfg (derivation->output-path grub.cfg)
+                      #:install-bootloader? install-bootloader?
+                      #:bootcfg bootcfg
+                      #:bootcfg-file bootcfg-file
+                      #:bootloader-installer bootloader-installer
                       #:device device))
             (else
-             ;; All we had to do was to build SYS.
-             (return (derivation->output-path sys))))))))
+             ;; All we had to do was to build SYS and maybe register an
+             ;; indirect GC root.
+             (let ((output (derivation->output-path sys)))
+               (mbegin %store-monad
+                 (mwhen gc-root
+                   (register-root* (list output) gc-root))
+                 (return output)))))))))
 
 (define (export-extension-graph os port)
   "Export the service extension graph of OS to PORT."
@@ -683,7 +723,7 @@ building anything."
   (let* ((services  (operating-system-services os))
          (pid1      (fold-services services
                                    #:target-type shepherd-root-service-type))
-         (shepherds (service-parameters pid1)) ;list of <shepherd-service>
+         (shepherds (service-value pid1))         ;list of <shepherd-service>
          (sinks     (filter (lambda (service)
                               (null? (shepherd-service-requirement service)))
                             shepherds)))
@@ -697,57 +737,61 @@ building anything."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]
+  (display (G_ "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]
 Build the operating system declared in FILE according to ACTION.
 Some ACTIONS support additional ARGS.\n"))
   (newline)
-  (display (_ "The valid values for ACTION are:\n"))
+  (display (G_ "The valid values for ACTION are:\n"))
   (newline)
-  (display (_ "\
+  (display (G_ "\
    reconfigure      switch to a new operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    switch-generation switch to an existing operating system configuration\n"))
-  (display (_ "\
+  (display (G_ "\
    list-generations list the system generations\n"))
-  (display (_ "\
+  (display (G_ "\
    build            build the operating system without installing anything\n"))
-  (display (_ "\
+  (display (G_ "\
    container        build a container that shares the host's store\n"))
-  (display (_ "\
+  (display (G_ "\
    vm               build a virtual machine image that shares the host's store\n"))
-  (display (_ "\
+  (display (G_ "\
    vm-image         build a freestanding virtual machine image\n"))
-  (display (_ "\
+  (display (G_ "\
    disk-image       build a disk image, suitable for a USB stick\n"))
-  (display (_ "\
+  (display (G_ "\
    init             initialize a root file system to run GNU\n"))
-  (display (_ "\
+  (display (G_ "\
    extension-graph  emit the service extension graph in Dot format\n"))
-  (display (_ "\
+  (display (G_ "\
    shepherd-graph   emit the graph of shepherd services in Dot format\n"))
 
   (show-build-options-help)
-  (display (_ "
+  (display (G_ "
   -d, --derivation       return the derivation of the given system"))
-  (display (_ "
+  (display (G_ "
       --on-error=STRATEGY
                          apply STRATEGY when an error occurs while reading FILE"))
-  (display (_ "
+  (display (G_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
-  (display (_ "
-      --no-grub          for 'init', do not install GRUB"))
-  (display (_ "
+  (display (G_ "
+      --no-bootloader    for 'init', do not install a bootloader"))
+  (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
-  (display (_ "
+  (display (G_ "
+  -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
+                         and 'build', make FILE a symlink to the result, and
+                         register it as a garbage collector root"))
+  (display (G_ "
       --expose=SPEC      for 'vm', expose host file system according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -772,9 +816,9 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
                                result)))
-         (option '("no-grub") #f #f
+         (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'install-grub? #f result)))
+                   (alist-cons 'install-bootloader? #f result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
@@ -797,6 +841,9 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '(#\r "root") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'gc-root arg result)))
          %standard-build-options))
 
 (define %default-options
@@ -808,7 +855,7 @@ Some ACTIONS support additional ARGS.\n"))
     (max-silent-time . 3600)
     (verbosity . 0)
     (image-size . ,(* 900 (expt 2 20)))
-    (install-grub? . #t)))
+    (install-bootloader? . #t)))
 
 
 ;;;
@@ -820,23 +867,23 @@ Some ACTIONS support additional ARGS.\n"))
 ACTION must be one of the sub-commands that takes an operating system
 declaration as an argument (a file name.)  OPTS is the raw alist of options
 resulting from command-line parsing."
-  (let* ((file     (match args
-                     (() #f)
-                     ((x . _) x)))
-         (system   (assoc-ref opts 'system))
-         (os       (if file
-                       (load* file %user-module
-                              #:on-error (assoc-ref opts 'on-error))
-                       (leave (_ "no configuration file specified~%"))))
+  (let* ((file        (match args
+                        (() #f)
+                        ((x . _) x)))
+         (system      (assoc-ref opts 'system))
+         (os          (if file
+                          (load* file %user-module
+                                 #:on-error (assoc-ref opts 'on-error))
+                          (leave (G_ "no configuration file specified~%"))))
 
-         (dry?     (assoc-ref opts 'dry-run?))
-         (grub?    (assoc-ref opts 'install-grub?))
-         (target   (match args
-                     ((first second) second)
-                     (_ #f)))
-         (device   (and grub?
-                        (grub-configuration-device
-                         (operating-system-bootloader os)))))
+         (dry?        (assoc-ref opts 'dry-run?))
+         (bootloader? (assoc-ref opts 'install-bootloader?))
+         (target      (match args
+                        ((first second) second)
+                        (_ #f)))
+         (device      (and bootloader?
+                           (bootloader-configuration-device
+                            (operating-system-bootloader os)))))
 
     (with-store store
       (set-build-options-from-command-line store opts)
@@ -850,6 +897,10 @@ resulting from command-line parsing."
             ((shepherd-graph)
              (export-shepherd-graph os (current-output-port)))
             (else
+             (unless (memq action '(build init))
+               (warn-about-old-distro #:suggested-command
+                                      "guix system reconfigure"))
+
              (perform-action action os
                              #:dry-run? dry?
                              #:derivations-only? (assoc-ref opts
@@ -862,8 +913,9 @@ resulting from command-line parsing."
                                                        m)
                                                       (_ #f))
                                                     opts)
-                             #:grub? grub?
-                             #:target target #:device device))))
+                             #:install-bootloader? bootloader?
+                             #:target target #:device device
+                             #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
 
 (define (process-command command args opts)
@@ -876,21 +928,21 @@ argument list and OPTS is the option alist."
      (let ((pattern (match args
                       (() "")
                       ((pattern) pattern)
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
     ;; The following commands need to use the store, but they do not need an
     ;; operating system configuration file.
     ((switch-generation)
      (let ((pattern (match args
                       ((pattern) pattern)
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (with-store store
          (set-build-options-from-command-line store opts)
          (switch-to-system-generation store pattern))))
     ((roll-back)
      (let ((pattern (match args
                       (() "")
-                      (x (leave (_ "wrong number of arguments~%"))))))
+                      (x (leave (G_ "wrong number of arguments~%"))))))
        (with-store store
          (set-build-options-from-command-line store opts)
          (roll-back-system store))))
@@ -909,7 +961,7 @@ argument list and OPTS is the option alist."
               extension-graph shepherd-graph list-generations roll-back
               switch-generation)
              (alist-cons 'action action result))
-            (else (leave (_ "~a: unknown action~%") action))))))
+            (else (leave (G_ "~a: unknown action~%") action))))))
 
   (define (match-pair car)
     ;; Return a procedure that matches a pair with CAR.
@@ -924,14 +976,14 @@ argument list and OPTS is the option alist."
            (count  (length args))
            (action (assoc-ref opts 'action)))
       (define (fail)
-        (leave (_ "wrong number of arguments for action '~a'~%")
+        (leave (G_ "wrong number of arguments for action '~a'~%")
                action))
 
       (unless action
         (format (current-error-port)
-                (_ "guix system: missing command name~%"))
+                (G_ "guix system: missing command name~%"))
         (format (current-error-port)
-                (_ "Try 'guix system --help' for more information.~%"))
+                (G_ "Try 'guix system --help' for more information.~%"))
         (exit 1))
 
       (case action

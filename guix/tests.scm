@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,13 +56,13 @@
    (or (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL") list)
        '())))
 
-(define* (open-connection-for-tests #:optional (file (%daemon-socket-file)))
+(define* (open-connection-for-tests #:optional (uri (%daemon-socket-uri)))
   "Open a connection to the build daemon for tests purposes and return it."
   (guard (c ((nix-error? c)
              (format (current-error-port)
                      "warning: build daemon error: ~s~%" c)
              #f))
-    (let ((store (open-connection file)))
+    (let ((store (open-connection uri)))
       ;; Make sure we build everything by ourselves.
       (set-build-options store
                          #:use-substitutes? #f

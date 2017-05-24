@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
                                  "pcre-" version ".tar.bz2")
                   (string-append "mirror://sourceforge/pcre/pcre/"
                                  version "/pcre-" version ".tar.bz2")))
+            (patches (search-patches "pcre-CVE-2017-7186.patch"))
             (sha256
              (base32
               "1x7lpjn7jhk0n3sdvggxrlrhab8kkfjwl7qix0ypw9nlx8lpmqh0"))))
@@ -81,17 +83,18 @@ POSIX regular expression API.")
 
               (sha256
                (base32
-                "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))))
+                "0vn5g0mkkp99mmzpissa06hpyj6pk9s4mlwbjqrjvw3ihy8rpiyz"))
+              (patches (search-patches "pcre2-CVE-2017-7186.patch"
+                                       "pcre2-CVE-2017-8786.patch"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
              ("zlib" ,zlib)))
    (arguments
     `(#:configure-flags '("--enable-unicode"
-                          "--enable-pcregrep-libz"
-                          "--enable-pcregrep-libbz2"
-                          "--enable-pcretest-libreadline"
-                          "--enable-unicode-properties"
+                          "--enable-pcre2grep-libz"
+                          "--enable-pcre2grep-libbz2"
+                          "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
                           "--enable-jit")

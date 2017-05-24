@@ -1,0 +1,20 @@
+This patch changes the default value of 'dict-dir' to correspond
+to ~/.guix-profile/lib/aspell rather than $prefix/lib/aspell-X.Y.
+
+This is not strictly necessary for the 'aspell' program itself since
+one can simply set "ASPELL_CONF=dict-dir $HOME/.guix-profile/lib/aspell".
+However it is necessary for applications that use libaspell since
+'ASPELL_CONF' is not honored in this case.  See <https://bugs.gnu.org/25836>.
+
+--- a/common/config.cpp
++++ b/common/config.cpp
+@@ -1349,6 +1349,9 @@ namespace acommon {
+ #  define REPL     ".aspell.<lang>.prepl"
+ #endif
+ 
++#undef DICT_DIR
++#define DICT_DIR "<$ASPELL_DICT_DIR|home-dir/.guix-profile/lib/aspell>"
++
+   static const KeyInfo config_keys[] = {
+     // the description should be under 50 chars
+     {"actual-dict-dir", KeyInfoString, "<dict-dir^master>", 0}

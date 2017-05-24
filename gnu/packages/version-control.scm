@@ -11,6 +11,9 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +38,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
@@ -50,6 +54,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
@@ -112,14 +117,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.12.2")
+   (version "2.13.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0jlccxx7l4c76h830y8lhrxr4kqksrxqlnmj3xb8sqbfa0irw6nj"))))
+              "0n0j36rapw31zb0sabap88ffncv8jg3nwc4miyim64ilyav2mgsb"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -132,7 +137,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0n4mgw5mbrr1hm0y7xgwixf9p6gy61m6qm67ldagpxxhwq2dmlby"))))))
+            "1jcp5bjam0cqzc41bvd3qwzv2f35zdajr8icxb89q29b5v3gj544"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -165,7 +170,7 @@ as well as the classic centralized workflow.")
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
-                     ;; nars; see <http://bugs.gnu.org/21949>.
+                     ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
       #:tests? #f ; FIXME: Many tests are failing
@@ -303,21 +308,21 @@ as well as the classic centralized workflow.")
     "Git is a free distributed version control system designed to handle
 everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
-   (home-page "http://git-scm.com/")))
+   (home-page "https://git-scm.com/")))
 
 ;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.10
-(define-public git@2.9
+;; have changed in 2.12
+(define-public git@2.10
   (package
     (inherit git)
-    (version "2.9.3")
+    (version "2.10.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qzs681a64k3shh5p0rg41l1z16fbk5sj0xga45k34hp1hsp654z"))))))
+              "02mb7yi49algsya3hnkcxdslwb6p1bi7c732z1g8kzq4hs838m7z"))))))
 
 (define-public libgit2
   (package
@@ -409,11 +414,11 @@ write native speed custom Git applications in any language with bindings.")
     (home-page "https://www.agwa.name/projects/git-crypt")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of
-files in a git repository. Files which you choose to protect are encrypted when
-committed, and decrypted when checked out. git-crypt lets you freely share a
-repository containing a mix of public and private content. git-crypt gracefully
+files in a git repository.  Files which you choose to protect are encrypted when
+committed, and decrypted when checked out.  git-crypt lets you freely share a
+repository containing a mix of public and private content.  git-crypt gracefully
 degrades, so developers without the secret key can still clone and commit to a
-repository with encrypted files. This lets you store your secret material (such
+repository with encrypted files.  This lets you store your secret material (such
 as keys or passwords) in the same repository as your code, without requiring you
 to lock down your entire repository.")
     (license license:gpl3+)))
@@ -421,7 +426,7 @@ to lock down your entire repository.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -429,7 +434,7 @@ to lock down your entire repository.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0kbh835p7dl4h88qv55fyfh1za09cgnqh63rii325w9215hm95x8"))))
+                "142qcgs8dwnzhymn0a7xx47p9fc2z5wrb86ah4a9iz0mpqlsz288"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -465,7 +470,7 @@ to lock down your entire repository.")
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)))
     (inputs
-     `(("git:src" ,(package-source git@2.9))
+     `(("git:src" ,(package-source git@2.10))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -624,7 +629,13 @@ also walk each side of a merge and test those changes individually.")
                         ;; invokes Perl.
                         (substitute* (find-files "." ".*")
                           ((" perl -")
-                           (string-append " " perl " -"))))))
+                           (string-append " " perl " -")))
+
+                        ;; Avoid references to the store in authorized_keys.
+                        ;; This works because gitolite-shell is in the PATH.
+                        (substitute* "src/triggers/post-compile/ssh-authkeys"
+                          (("\\$glshell \\$user")
+                           "gitolite-shell $user")))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -683,14 +694,14 @@ and offers an easy and intuitive interface.")
 (define-public neon
   (package
     (name "neon")
-    (version "0.30.1")
+    (version "0.30.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.webdav.org/neon/neon-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1pawhk02x728xn396a1kcivy9gqm94srmgad6ymr9l0qvk02dih0"))))
+               "1jpvczcx658vimqm7c8my2q41fnmjaf1j03g7bsli6rjxk6xh2yv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -710,22 +721,25 @@ and offers an easy and intuitive interface.")
                            "--with-ssl=openssl")))
     (home-page "http://www.webdav.org/neon/")
     (synopsis "HTTP and WebDAV client library")
-    (description "Neon is an HTTP and WebDAV client library, with a
-C interface.  Features:
-High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
-DELETE, etc.);
-low-level interface to the HTTP request/response engine, allowing the use
-of arbitrary HTTP methods, headers, etc.;
-authentication support including Basic and Digest support, along with
-GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
-SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
-verifying server certificates, handling client certificates, and examining
-certificate properties, smartcard-based client certificates are also
-supported via a PKCS#11 wrapper interface;
-abstract interface to parsing XML using libxml2 or expat, and wrappers for
-simplifying handling XML HTTP response bodies;
-WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
-property manipulation.")
+    (description
+     "Neon is an HTTP and WebDAV client library, with a C interface and the
+following features:
+@enumerate
+@item High-level wrappers for common HTTP and WebDAV operations (GET, MOVE,
+  DELETE, etc.);
+@item low-level interface to the HTTP request/response engine, allowing the use
+  of arbitrary HTTP methods, headers, etc.;
+@item authentication support including Basic and Digest support, along with
+  GSSAPI-based Negotiate on Unix, and SSPI-based Negotiate/NTLM on Win32;
+@item SSL/TLS support using OpenSSL or GnuTLS, exposing an abstraction layer for
+  verifying server certificates, handling client certificates, and examining
+  certificate properties, smartcard-based client certificates are also
+  supported via a PKCS#11 wrapper interface;
+@item abstract interface to parsing XML using libxml2 or expat, and wrappers for
+  simplifying handling XML HTTP response bodies;
+@item WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
+  property manipulation.
+@end enumerate\n")
     (license license:gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
 (define-public subversion
@@ -827,7 +841,7 @@ machine.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://ftp.gnu.org/non-gnu/cvs/source/feature/"
+                   "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
              (sha256
               (base32
@@ -912,22 +926,25 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 (define-public diffstat
   (package
     (name "diffstat")
-    (version "1.58")
+    (version "1.61")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://invisible-island.net/diffstat/diffstat-"
-                    version ".tgz"))
+              (uri
+               (list
+                 (string-append "ftp://invisible-island.net/diffstat/"
+                                name "-" version ".tgz")
+                 (string-append "http://invisible-mirror.net/archives/diffstat/"
+                                name "-" version ".tgz")))
               (sha256
                (base32
-                "14rpf5c05ff30f6vn6pn6pzy0k4g4is5im656ahsxff3k58i7mgs"))))
+                "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
     (home-page "http://invisible-island.net/diffstat/")
-    (synopsis "Make histograms from the output of 'diff'")
+    (synopsis "Make histograms from the output of @command{diff}")
     (description
-     "Diffstat reads the output of 'diff' and displays a histogram of the
-insertions, deletions, and modifications per-file.  It is useful for reviewing
-large, complex patch files.")
+     "Diffstat reads the output of @command{diff} and displays a histogram of
+the insertions, deletions, and modifications per file.  It is useful for
+reviewing large, complex patch files.")
     (license (license:x11-style "file://COPYING"))))
 
 (define-public cssc
@@ -1171,24 +1188,24 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20160123")
+    (version "1.20170129")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/joeyh/myrepos/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://myrepos.branchable.com/myrepos")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1723cg5haplz2w9dwdzp6ds1ip33cx3awmj4wnb0h4yq171v5lqk"))))
+        (base32 "15i9bs2i25l7ibv530ghy8280kklcgm5kr6j86s7iwcqqckd0czp"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
     (arguments
-     `(#:test-target "test"
-       #:phases (alist-delete 'configure %standard-phases)
+     '(#:test-target "test"
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" %output))))
-    (home-page "http://myrepos.branchable.com/")
+    (home-page "https://myrepos.branchable.com/")
     (synopsis "Multiple repository management tool")
     (description
      "Myrepos provides the @code{mr} command, which maps an operation (e.g.,
@@ -1287,7 +1304,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (version "0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.2f30.org/releases/"
+              (uri (string-append "https://dl.2f30.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -1302,8 +1319,109 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libgit2" ,libgit2)))
-    (home-page "http://2f30.org")
+    (home-page "https://2f30.org/")
     (synopsis "Static git page generator")
     (description "Stagit creates static pages for git repositories, the results can
 be served with a HTTP file server of your choice.")
     (license license:expat)))
+
+;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
+;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
+;; and results of search engines will show that if the protocol is http, https
+;; is never mentioned.
+(define-public darcs
+  (package
+    (name "darcs")
+    (version "2.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/darcs/"
+                           "darcs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jfwiwl5k8wspciq1kpmvh5yap4japrf97s9pvhcybxxhaj3ds28"))
+       (modules '((guix build utils)))
+       ;; Remove time-dependent code for reproducibility.
+       (snippet
+        '(begin
+           (substitute* "darcs/darcs.hs"
+             (("__DATE__") "\"1970-01-01\"")
+             (("__TIME__") "\"00:00:00\""))
+           (substitute* "src/impossible.h"
+             (("__DATE__") "\"\"")
+             (("__TIME__") "\"\""))))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
+                           "-fnetwork-uri" "-fhttp" "--flag=executable"
+                           "--flag=library")
+       #:tests? #f)) ; 20 failing shell tests out of over 400
+    (inputs
+     `(("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-split" ,ghc-split)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-findbin" ,ghc-findbin)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-array" ,ghc-array)
+       ("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-binary" ,ghc-binary)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-data-ordlist" ,ghc-data-ordlist)
+       ("ghc-directory" ,ghc-directory)
+       ("ghc-fgl" ,ghc-fgl)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-graphviz" ,ghc-graphviz)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-haskeline" ,ghc-haskeline)
+       ("ghc-html" ,ghc-html)
+       ("ghc-mmap" ,ghc-mmap)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-process" ,ghc-process)
+       ("ghc-random" ,ghc-random)
+       ("ghc-regex-applicative" ,ghc-regex-applicative)
+       ("ghc-regex-compat-tdfa" ,ghc-regex-compat-tdfa)
+       ("ghc-sandi" ,ghc-sandi)
+       ("ghc-shelly" ,ghc-shelly)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-http" ,ghc-http)
+       ("curl" ,curl)
+       ("ghc" ,ghc)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("libiconv" ,libiconv)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://darcs.net")
+    (synopsis "Distributed Revision Control System")
+    (description
+     "Darcs is a revision control system.  It is:
+
+@enumerate
+@item Distributed: Every user has access to the full command set, removing boundaries
+between server and client or committer and non-committers.
+@item Interactive: Darcs is easy to learn and efficient to use because it asks you
+questions in response to simple commands, giving you choices in your work flow.
+You can choose to record one change in a file, while ignoring another.  As you update
+from upstream, you can review each patch name, even the full diff for interesting
+patches.
+@item Smart: Originally developed by physicist David Roundy, darcs is based on a
+unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
+@end enumerate")
+    (license license:gpl2)))

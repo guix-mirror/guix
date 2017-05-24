@@ -83,6 +83,8 @@
                       (phases '(@ (guix build emacs-build-system)
                                   %standard-phases))
                       (outputs '("out"))
+                      (include ''("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
+                      (exclude ''("^\\.dir-locals\\.el$" "-pkg\\.el$" "^[^/]*tests?\\.el$"))
                       (search-paths '())
                       (system (%current-system))
                       (guile #f)
@@ -108,6 +110,8 @@
                     #:tests? ,tests?
                     #:phases ,phases
                     #:outputs %outputs
+                    #:include ,include
+                    #:exclude ,exclude
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
                     #:inputs %build-inputs)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.11")
+    (version "0.7.12")
     (source
      (origin
       (method url-fetch)
@@ -65,7 +66,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "01zcq9cwn4pvj68rihgjvcdgccnxvz4jrba38sbv6nqz19cs2ixh"))))
+        "1rhgrz2lm9vbfdp2raykrih1c6n2lw5jd572z4dsz488m52avjqi"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)     ;setsid command, for the tests
@@ -117,7 +118,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.6.14")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -125,21 +126,14 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ykfb7ar0x0flfdgf6i8xphyv5b93dalbjj2jb6hx7sdjax33n1g"))
-              ;; This test merely needs a file to test recovery on, but
-              ;; /dev/random is essentially /dev/urandom plus minimum entropy
-              ;; locking, making the test hang indefinitely. This change is
-              ;; already upstream: remove on upgrade to future 0.6.15.
-              ;; https://github.com/Parchive/par2cmdline/commit/27723a678f780da82c79b98592592009c779a4fb
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "tests/test20" (("if=/dev/random") "if=/dev/urandom")))))
+                "1m9vnv3pg0nds47raq2rd2kfpaad1sc10hv40hll5byksqlbfxyq"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
@@ -240,6 +234,20 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
+
+(define libarchive-3.3.1
+  (package
+    (inherit libarchive)
+    (name "libarchive")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://libarchive.org/downloads/libarchive-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rr40hxlm9vy5z2zb5w7pyfkgd1a4s061qapm83s19accb8mpji9"))))))
 
 (define-public rdup
   (package

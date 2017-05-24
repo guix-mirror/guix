@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -28,18 +28,10 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix discovery)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
-  #:use-module ((guix gnu-maintenance)
-                #:select (%gnu-updater
-                          %gnome-updater
-                          %kde-updater
-                          %xorg-updater
-                          %kernel.org-updater))
-  #:use-module (guix import elpa)
-  #:use-module (guix import cran)
-  #:use-module (guix import hackage)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -76,7 +68,7 @@
                      (alist-cons 'select (string->symbol arg)
                                  result))
                     (x
-                     (leave (_ "~a: invalid selection; expected `core' or `non-core'~%")
+                     (leave (G_ "~a: invalid selection; expected `core' or `non-core'~%")
                             arg)))))
         (option '(#\t "type") #t #f
                 (lambda (opt name arg result)
@@ -107,7 +99,7 @@
                      (alist-cons 'key-download (string->symbol arg)
                                  result))
                     (x
-                     (leave (_ "unsupported policy: ~a~%")
+                     (leave (G_ "unsupported policy: ~a~%")
                             arg)))))
 
         (option '(#\h "help") #f #f
@@ -119,41 +111,41 @@
                   (show-version-and-exit "guix refresh")))))
 
 (define (show-help)
-  (display (_ "Usage: guix refresh [OPTION]... [PACKAGE]...
+  (display (G_ "Usage: guix refresh [OPTION]... [PACKAGE]...
 Update package definitions to match the latest upstream version.
 
 When PACKAGE... is given, update only the specified packages.  Otherwise
 update all the packages of the distribution, or the subset thereof
 specified with `--select'.\n"))
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
-  (display (_ "
+  (display (G_ "
   -u, --update           update source files in place"))
-  (display (_ "
+  (display (G_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
-  (display (_ "
+  (display (G_ "
   -t, --type=UPDATER,... restrict to updates from the specified updaters
                          (e.g., 'gnu')"))
-  (display (_ "
+  (display (G_ "
   -L, --list-updaters    list available updaters and exit"))
-  (display (_ "
+  (display (G_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
-  (display (_ "
+  (display (G_ "
       --key-server=HOST  use HOST as the OpenPGP key server"))
-  (display (_ "
+  (display (G_ "
       --gpg=COMMAND      use COMMAND as the GnuPG 2.x command"))
-  (display (_ "
+  (display (G_ "
       --key-download=POLICY
                          handle missing OpenPGP keys according to POLICY:
                          'always', 'never', and 'interactive', which is also
                          used when 'key-download' is not specified"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -163,66 +155,32 @@ specified with `--select'.\n"))
 ;;; Updates.
 ;;;
 
-(define-syntax maybe-updater
-  ;; Helper macro for 'list-updaters'.
-  (syntax-rules (=>)
-    ((_ ((module => updater) rest ...) result)
-     (maybe-updater (rest ...)
-                    (let ((iface (false-if-exception
-                                  (resolve-interface 'module)))
-                          (tail  result))
-                      (if iface
-                          (cons (module-ref iface 'updater) tail)
-                          tail))))
-    ((_ (updater rest ...) result)
-     (maybe-updater (rest ...)
-                    (cons updater result)))
-    ((_ () result)
-     (reverse result))))
-
-(define-syntax-rule (list-updaters updaters ...)
-  "Expand to '(list UPDATERS ...)' but only the subset of UPDATERS that are
-either unconditional, or have their requirement met.
-
-A conditional updater has this form:
-
-  ((SOME MODULE) => UPDATER)
-
-meaning that UPDATER is added to the list if and only if (SOME MODULE) could
-be resolved at run time.
-
-This is a way to discard at macro expansion time updaters that depend on
-unavailable optional dependencies such as Guile-JSON."
-  (maybe-updater (updaters ...) '()))
+(define (importer-modules)
+  "Return the list of importer modules."
+  (cons (resolve-interface '(guix gnu-maintenance))
+        (all-modules (map (lambda (entry)
+                            `(,entry . "guix/import"))
+                          %load-path))))
 
 (define %updaters
-  ;; List of "updaters" used by default.  They are consulted in this order.
-  (list-updaters %gnu-updater
-                 %gnome-updater
-                 %kde-updater
-                 %xorg-updater
-                 %kernel.org-updater
-                 %elpa-updater
-                 %cran-updater
-                 %bioconductor-updater
-                 ((guix import stackage) => %stackage-updater)
-                 %hackage-updater
-                 ((guix import cpan) => %cpan-updater)
-                 ((guix import pypi) => %pypi-updater)
-                 ((guix import gem) => %gem-updater)
-                 ((guix import github) => %github-updater)
-                 ((guix import crate) => %crate-updater)))
+  ;; The list of publically-known updaters.
+  (delay (fold-module-public-variables (lambda (obj result)
+                                         (if (upstream-updater? obj)
+                                             (cons obj result)
+                                             result))
+                                       '()
+                                       (importer-modules))))
 
 (define (lookup-updater-by-name name)
   "Return the updater called NAME."
   (or (find (lambda (updater)
               (eq? name (upstream-updater-name updater)))
-            %updaters)
-      (leave (_ "~a: no such updater~%") name)))
+            (force %updaters))
+      (leave (G_ "~a: no such updater~%") name)))
 
 (define (list-updaters-and-exit)
   "Display available updaters and exit."
-  (format #t (_ "Available updaters:~%"))
+  (format #t (G_ "Available updaters:~%"))
   (newline)
 
   (let* ((packages (fold-packages cons '()))
@@ -234,22 +192,22 @@ unavailable optional dependencies such as Guile-JSON."
                 ;; TRANSLATORS: The parenthetical expression here is rendered
                 ;; like "(42% coverage)" and denotes the fraction of packages
                 ;; covered by the given updater.
-                (format #t (_ "  - ~a: ~a (~2,1f% coverage)~%")
+                (format #t (G_ "  - ~a: ~a (~2,1f% coverage)~%")
                         (upstream-updater-name updater)
-                        (_ (upstream-updater-description updater))
+                        (G_ (upstream-updater-description updater))
                         (* 100. (/ matches total)))
                 (+ covered matches)))
             0
-            %updaters))
+            (force %updaters)))
 
     (newline)
-    (format #t (_ "~2,1f% of the packages are covered by these updaters.~%")
+    (format #t (G_ "~2,1f% of the packages are covered by these updaters.~%")
             (* 100. (/ covered total))))
   (exit 0))
 
 (define (warn-no-updater package)
   (format (current-error-port)
-          (_ "~a: warning: no updater for ~a~%")
+          (G_ "~a: warning: no updater for ~a~%")
           (location->string (package-location package))
           (package-name package)))
 
@@ -270,14 +228,14 @@ warn about packages that have no matching updater."
           (if (and=> tarball file-exists?)
               (begin
                 (format (current-error-port)
-                        (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                        (G_ "~a: ~a: updating from version ~a to version ~a...~%")
                         (location->string loc)
                         (package-name package)
                         (package-version package) version)
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
                   (update-package-source package version hash)))
-              (warning (_ "~a: version ~a could not be \
+              (warning (G_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
                        (package-name package) version))))
       (when warn?
@@ -293,7 +251,7 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
        (let ((loc (or (package-field-location package 'version)
                       (package-location package))))
          (format (current-error-port)
-                 (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                 (G_ "~a: ~a would be upgraded from ~a to ~a~%")
                  (location->string loc)
                  (package-name package) (package-version package)
                  (upstream-source-version source)))))
@@ -315,6 +273,10 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
   "List all the things that would need to be rebuilt if PACKAGES are changed."
   ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
   ;; because it includes implicit dependencies.
+  (define (full-name package)
+    (string-append (package-name package) "@"
+                   (package-version package)))
+
   (mlet %store-monad ((edges (node-back-edges %bag-node-type
                                               (all-packages))))
     (let* ((dependents (node-transitive-edges packages edges))
@@ -327,12 +289,12 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
                  (N_ "No dependents other than itself: ~{~a~}~%"
                      "No dependents other than themselves: ~{~a~^ ~}~%"
                      (length packages))
-                 (map package-full-name packages)))
+                 (map full-name packages)))
 
         ((x)
          (format (current-output-port)
-                 (_ "A single dependent package: ~a~%")
-                 (package-full-name x)))
+                 (G_ "A single dependent package: ~a~%")
+                 (full-name x)))
         (lst
          (format (current-output-port)
                  (N_ "Building the following package would ensure ~d \
@@ -341,7 +303,7 @@ dependent packages are rebuilt: ~*~{~a~^ ~}~%"
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                      (length covering))
                  (length covering) (length dependents)
-                 (map package-full-name covering))))
+                 (map full-name covering))))
       (return #t))))
 
 
@@ -354,7 +316,7 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -368,7 +330,7 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                        opts)
       (()
        ;; Use the default updaters.
-       %updaters)
+       (force %updaters))
       (lists
        (concatenate lists))))
 

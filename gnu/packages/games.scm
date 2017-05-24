@@ -21,12 +21,15 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,11 +54,13 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
@@ -82,13 +87,16 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages fonts)
@@ -114,6 +122,12 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages networking)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -225,7 +239,7 @@ representation of the playing board.")
 (define-public gnubik
   (package
     (name "gnubik")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
       (method url-fetch)
@@ -233,7 +247,7 @@ representation of the playing board.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mhpfnxzbns0wfrsjv5vafqr34770rbvkmdzxk0x0aq67hb3zyl5"))))
+        "1vlf924mq8hg93bsjj0rzvs0crc6psmlxyc6zn0fr7msnmpx6gib"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
@@ -431,7 +445,7 @@ that beneath its ruins lay buried an ancient evil.")
            (lambda _
              (substitute* "acinclude.m4"
                (("ncursesw5-config") "ncursesw6-config"))
-             (zero? (system* "sh" "autogen.sh"))))))) 
+             (zero? (system* "sh" "autogen.sh")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -596,14 +610,14 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
 (define freedink-data
   (package
     (name "freedink-data")
-    (version "1.08.20140901")
+    (version "1.08.20170401")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-data-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "04f1aa8gfz30qkgv7chjz5n1s8v5hbqs01h2113cq1ylm3isd5sp"))))
+                "1zx7qywibhznj7bnz217404scr8dfh0xj24xjihnda5iapzz7lz8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1045,14 +1059,14 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.7.9")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://christoph-ender.de/fizmo/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w7cgyjrhgkadjrazijzhq7zh0pl5bfc6wl7mdpgh020y4kp46d7"))))
+                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1065,12 +1079,13 @@ reference interpreter, using the Glk API.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("sdl" ,sdl)))
+       ("sdl2" ,sdl2)))
     (home-page "https://christoph-ender.de/fizmo/")
     (synopsis "Z-machine interpreter")
     (description
@@ -1082,7 +1097,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.3.6")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -1090,7 +1105,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1xar0wagcz50clwwkvjg4zq9m1sjqw47vw3xx44pisdj94g21m5y"))))
+        (base32 "1rbdax3i33myg1v938pxy28117ihff2lml1ky6g70c8099fkirjx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1396,14 +1411,14 @@ older games.")
 (define-public gamine
   (package
     (name "gamine")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gamine-game/"
                                   "gamine-" version ".tar.gz"))
               (sha256
                (base32
-                "1iny959i1kl2ab6z5xi4s66mrvrwcarxyvjfp2k1sx532s8knk8h"))))
+                "08wnk7w84c2413hwny89j2cn89cvfdf67bfc6wl0bf475if0mf4h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1476,7 +1491,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.3.4")
+    (version "1.7.5.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1484,7 +1499,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0mbxzsgjg16pqa3jnxkd7wwvw1lrx455r7fvwjfhzp0yv7acrn10"))))
+                "1b5q79jkdrck5lq8lvhnpq2mly257r8lylp7b8sp8xn4365f86ch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1498,7 +1513,6 @@ is programmed in Haskell.")
        ("curl" ,curl)
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
-       ("physfs" ,physfs)
        ("sdl-union" ,(sdl-union))))
     (home-page "http://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
@@ -2146,14 +2160,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1ak32fj5xkk2fvmm3g8i7wzmk4bh2ijsp8fzvvw5wj6365p9j24v"))
+               "1q4r5860dpkkw4fpfz3f8mvdd8xjpnwwzr9zybgmgb255bs0g4yz"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2193,8 +2207,8 @@ and a game metadata scraper.")
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
-autoreplace and autoupdate vehicles.  This package only includes the game engine.  When you start
-it you will be prompted to download a graphics set.")
+autoreplace and autoupdate vehicles.  This package only includes the game
+engine.  When you start it you will be prompted to download a graphics set.")
     (home-page "http://openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
@@ -2681,6 +2695,69 @@ your way through an underground cave system in search of the Grue.  Can you
 capture it and get out alive?")
     (license license:agpl3+)))
 
+(define-public lierolibre
+  (package
+    (name "lierolibre")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/lierolibre/trunk/"
+                                  version "/+download/lierolibre-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1cf1gvsn4qq190lrf9k5bpjnqwlcfw7pajvdnh7z5r4jqw0rsbl9"))
+              (patches
+               (search-patches "lierolibre-check-unaligned-access.patch"
+                               "lierolibre-try-building-other-arch.patch"
+                               "lierolibre-remove-arch-warning.patch"
+                               "lierolibre-newer-libconfig.patch"
+                               "lierolibre-is-free-software.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-compiled files.
+                  (delete-file "data/LIERO.CHR")
+                  (delete-file "data/LIERO.SND")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("imagemagick" ,imagemagick)
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)
+       ("sox" ,sox)))
+    (inputs
+     `(("boost" ,boost)
+       ("libconfig" ,libconfig)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/lierolibre/lierolibre")
+    (synopsis "Old-school earthworm action game")
+    (description
+     "lierolibre is an earthworm action game where you fight another player
+(or the computer) underground using a wide array of weapons.
+
+Features:
+@itemize
+@item 2 worms, 40 weapons, great playability, two game modes: Kill'em All
+and Game of Tag, plus AI-players without true intelligence!
+@item Dat nostalgia.
+@item Extensions via a hidden F1 menu:
+@itemize
+@item Replays
+@item Game controller support
+@item Powerlevel palettes
+@end itemize
+@item Ability to write game variables to plain text files.
+@item Ability to load game variables from both EXE and plain text files.
+@item Scripts to extract and repack graphics, sounds and levels.
+@end itemize
+
+To switch between different window sizes, use F6, F7 and F8, to switch to
+fullscreen, use F5 or Alt+Enter.")
+    ;; Code mainly BSD-2, some parts under Boost 1.0. All assets are WTFPL2.
+    (license (list license:bsd-2 license:boost1.0 license:wtfpl2))))
+
 (define-public warzone2100
   (package
     (name "warzone2100")
@@ -2847,6 +2924,7 @@ safety of the Chromium vessel.")
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)"
                       "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
+       #:parallel-build? #f             ;fails on some systems
        #:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
@@ -3167,7 +3245,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4c")
+    (version "9.4g")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3178,7 +3256,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1ri5fllnhqjm3dlnl1xbb9mlv79iigc940vbvcnk0v5k6p58pavq"))))
+                "09j9gnx701x28zfkrv3rjqlr56p89hyxk78gkpmmdfjgcq076pc2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3233,14 +3311,14 @@ throwing people around in pseudo-randomly generated buildings.")
                           (string-append
                            "hyperrogue"
                            (string-join (string-split ,version #\.) "")
-                           "-win/sounds/credits.txt") "-d" sounds))
+                           "/sounds/credits.txt") "-d" sounds))
                 ;; Extract sounds and music into sounds directory.
                 (zero?
                  (system* "unzip" "-j" data
                           (string-append
                            "hyperrogue"
                            (string-join (string-split ,version #\.) "")
-                           "-win/*.ogg") "-d" sounds)))))))))
+                           "/*.ogg") "-d" sounds)))))))))
     (native-inputs
      `(("hyperrogue-data"
         ,(origin
@@ -3252,7 +3330,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1cyyrsnrixygg3zyz97hpsm6jzwbhydiwk3kl0lm7qjnw2nzkhhh"))))
+             "1r57db4hm7fjcd27p8b6cdsnq2cgkym2kp9lrw7ha2asdf8w6gkb"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3458,3 +3536,732 @@ starting a decryption sequence to reveal the original plaintext characters.")
 game, where you control the armies of one of seven different factions: Tech,
 Magic, Egypt, Indians, Norsemen, Persian or Romans.")
     (license license:gpl2+)))
+
+(define-public freegish
+  (let ((commit "8795cd7adc95957883f2d3465eb9036a774667a7")
+        (revision "1"))
+    (package
+      (name "freegish")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/freegish/freegish.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1p1zf5qqagmcpi1db2bs02cnalpy3qiymp6yzan7k1bhmv859gsx"))
+                (modules '((guix build utils)))
+                ;; The audio files in the "music" directory are licensed under
+                ;; CC-BY-NC, so we delete them.
+                (snippet
+                 '(begin
+                    (delete-file-recursively "music")
+                    #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:configure-flags
+         (list "-DCMAKE_INSTALL_FHS=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-DATAPATH
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "CMakeLists.txt"
+                 (("^option\\(INSTALL_FHS" line)
+                  (string-append "add_definitions(-DDATAPATH=\""
+                                 (assoc-ref outputs "out") "/share/freegish\")\n"
+                                 line)))
+               #t)))))
+      (inputs
+       `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))
+         ("openal" ,openal)
+         ("libvorbis" ,libvorbis)
+         ("libogg" ,libogg)
+         ("mesa" ,mesa)
+         ("libpng" ,libpng)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/freegish/freegish")
+      (synopsis "Side-scrolling physics platformer with a ball of tar")
+      (description "In FreeGish you control Gish, a ball of tar who lives
+happily with his girlfriend Brea, until one day a mysterious dark creature
+emerges from a sewer hole and pulls her below ground.")
+      ;; The textures are available under the Expat license.  All other assets
+      ;; (including levels) are covered under CC-BY-SA or public domain.  The
+      ;; source code is under GPLv2+.
+      (license (list license:gpl2+
+                     license:expat
+                     license:public-domain
+                     license:cc-by-sa3.0)))))
+
+(define-public cdogs-sdl
+  (package
+    (name "cdogs-sdl")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cxong/cdogs-sdl/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08c3y8ijimx6mp0gm90abz4lsnbflqka519q2v0id0096vsc2pxn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCDOGS_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/cdogs-sdl/"))))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "http://cxong.github.io/cdogs-sdl/")
+    (synopsis "Classic overhead run-and-gun game")
+    (description "C-Dogs SDL is a classic overhead run-and-gun game,
+supporting up to 4 players in co-op and deathmatch modes.  Customize your
+player, choose from many weapons, and blast, slide and slash your way through
+over 100 user-created campaigns.")
+    ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
+    ;; CC0/CC-BY/CC-BY-SA for assets.
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0))))
+
+(define-public kiki
+  (package
+    (name "kiki")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/kiki/kiki-src/"
+                                  version "/kiki-" version "-src.tgz"))
+              (sha256
+               (base32
+                "0ihjdsxbn8z3cz0gpcprafiipcqaiskgdnh1rhmw4qff8dszalbn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.dll$"))
+                  #t))
+              (patches
+               (search-patches "kiki-level-selection-crash.patch"
+                               "kiki-makefile.patch"
+                               "kiki-missing-includes.patch"
+                               "kiki-portability-64bit.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CXX=g++")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL:"
+                                    (assoc-ref inputs "python")
+                                    "/include/python2.7:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             (substitute* "src/main/main.cpp"
+               (("#include <SDL.h>" line)
+                (string-append line "
+#define K_INCLUDE_GLUT
+#include \"KIncludeTools.h\""))
+               (("// initialize SDL" line)
+                (string-append "glutInit(&argc,argv);\n" line)))
+             (substitute* "src/main/KikiController.cpp"
+               (("getenv\\(\"KIKI_HOME\"\\)")
+                (string-append "\"" (assoc-ref outputs "out") "/share/kiki/\"")))
+             (substitute* "linux/Makefile"
+               (("CXXOPTS =" line)
+                (string-append line " -fpermissive"))
+               (("PYTHON_VERSION=.*") "PYTHON_VERSION=2.7")
+               (("PYTHONHOME =.*")
+                (string-append "PYTHONHOME = "
+                               (assoc-ref inputs "python")
+                               "/lib/python2.7/"))
+               (("\\$\\(GLLIBS\\)" line)
+                (string-append line " -lm -lpython2.7")))
+             (substitute* "src/main/KikiPythonWidget.h"
+               (("#define __KikiPythonWidget" line)
+                (string-append line "\n#include \"KikiPython.h\"")))
+             #t))
+         (add-before 'build 'build-kodilib
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (with-directory-excursion "kodilib/linux"
+               (zero? (apply system* "make" make-flags)))))
+         (add-after 'build-kodilib 'chdir
+           (lambda _ (chdir "linux") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/kiki")))
+               (mkdir-p bin)
+               (mkdir-p share)
+               (install-file "kiki" bin)
+               (copy-recursively "../py" (string-append share "/py"))
+               (copy-recursively "../sound" (string-append share "/sound"))
+               #t))))))
+    (inputs
+     `(("glu" ,glu)
+       ;; Kiki builds fine with freeglut 3.0.0 but segfaults on start.
+       ("freeglut" ,freeglut-2.8)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("python" ,python-2)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page "http://kiki.sourceforge.net/")
+    (synopsis "3D puzzle game")
+    (description "Kiki the nano bot is a 3D puzzle game.  It is basically a
+mixture of the games Sokoban and Kula-World.  Your task is to help Kiki, a
+small robot living in the nano world, repair its maker.")
+    ;; See <http://metadata.ftp-master.debian.org/changelogs/main/k/
+    ;; kiki-the-nano-bot/kiki-the-nano-bot_1.0.2+dfsg1-4_copyright>
+    ;; for a statement from the author.
+    (license license:public-domain)))
+
+(define-public teeworlds
+  (package
+    (name "teeworlds")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/teeworlds/teeworlds/"
+                                  "archive/" version "-release.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                            '("src/engine/external/wavpack/"
+                              "src/engine/external/zlib/"))
+                  #t))
+              (patches
+               (search-patches "teeworlds-use-latest-wavpack.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Embed path to assets.
+             (substitute* "src/engine/shared/storage.cpp"
+               (("#define DATA_DIR.*")
+                (string-append "#define DATA_DIR \""
+                               (assoc-ref outputs "out")
+                               "/share/teeworlds/data"
+                               "\"")))
+
+             ;; Bam expects all files to have a recent time stamp.
+             (for-each (lambda (file)
+                         (utime file 1 1))
+                       (find-files "."))
+
+             ;; Do not use bundled libraries.
+             (substitute* "bam.lua"
+               (("if config.zlib.value == 1 then")
+                "if true then")
+               (("wavpack = .*")
+                "wavpack = {}
+settings.link.libs:Add(\"wavpack\")\n"))
+             (substitute* "src/engine/client/sound.cpp"
+               (("#include <engine/external/wavpack/wavpack.h>")
+                "#include <wavpack/wavpack.h>"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "bam" "-a" "-v" "release"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (data (string-append out "/share/teeworlds/data")))
+               (mkdir-p bin)
+               (mkdir-p data)
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         '("teeworlds" "teeworlds_srv"))
+               (copy-recursively "data" data)
+               #t))))))
+    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
+    ;; library without a build system.
+    (inputs
+     `(("freetype" ,freetype)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image)))
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bam" ,bam)
+       ("python" ,python-2)))
+    (home-page "https://www.teeworlds.com")
+    (synopsis "2D retro multiplayer shooter game")
+    (description "Teeworlds is an online multiplayer game.  Battle with up to
+16 players in a variety of game modes, including Team Deathmatch and Capture
+The Flag.  You can even design your own maps!")
+    (license license:bsd-3)))
+
+(define-public enigma
+  (package
+    (name "enigma")
+    (version "1.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/enigma-game/"
+                                  "Release%20" version "/enigma-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "00ffh9pypj1948pg3q9sjp1nmiabh52p5c8wpg9n1dcfgl3cywnq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-system-enet")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-sdl
+           (lambda _
+             (substitute* "configure"
+               (("SDL_ttf.h") "SDL/SDL_ttf.h"))
+             (substitute* '("tools/ttf2bmf.cc"
+                            "lib-src/enigma-core/ecl_font.cc"
+                            "lib-src/enigma-core/ecl_video.cc"
+                            "lib-src/enigma-core/ecl_buffer.hh"
+                            "src/SoundEngine.cc"
+                            "src/SoundEngine.hh"
+                            "src/MusicManager.cc"
+                            "src/MusicManager.hh"
+                            "src/d_models.cc"
+                            "src/main.cc"
+                            "src/network.cc")
+               (("#include \"SDL_(image|ttf|mixer|types|syswm|mutex).h\"" line header)
+                (string-append "#include \"SDL/SDL_" header ".h\"")))
+             (substitute* "src/main.cc"
+               (("#include <SDL_(image|ttf|mixer).h>" line header)
+                (string-append "#include \"SDL/SDL_" header ".h\"")))
+             #t)))))
+    (inputs
+     `(("xerces-c" ,xerces-c)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
+       ("curl" ,curl)
+       ("enet" ,enet)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("imagemagick" ,imagemagick)))
+    (home-page "http://www.nongnu.org/enigma")
+    (synopsis "Puzzle game with a dexterity component")
+    (description "Enigma is a puzzle game with 550 unique levels.  The object
+of the game is to find and uncover pairs of identically colored ‘Oxyd’ stones.
+Simple?  Yes.  Easy?  Certainly not!  Hidden traps, vast mazes, laser beams,
+and most of all, countless hairy puzzles usually block your direct way to the
+Oxyd stones.  Enigma’s game objects (and there are hundreds of them, lest you
+get bored) interact in many unexpected ways, and since many of them follow the
+laws of physics (Enigma’s special laws of physics, that is), controlling them
+with the mouse isn’t always trivial.")
+    (license license:gpl2+)))
+
+(define-public fillets-ng
+  (package
+    (name "fillets-ng")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fillets/"
+                                  "Fish%20Fillets%20-%20Next%20Generation/"
+                                  version "/fillets-ng-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nljp75aqqb35qq3x7abhs2kp69vjcj0h1vxcpdyn2yn2nalv6ij"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-lua="
+                            (assoc-ref %build-inputs "lua")))
+       #:make-flags
+       (list (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL")
+             (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Lua 5.1 does not provide it.
+         (add-after 'unpack 'do-not-link-with-lualib
+           (lambda _
+             (substitute* "configure"
+               (("-llualib") ""))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((data (string-append (assoc-ref outputs "out")
+                                        "/share/games/fillets-ng")))
+               (mkdir-p data)
+               (zero? (system* "tar" "-xvf"
+                               (assoc-ref inputs "fillets-ng-data")
+                               "--strip-components=1"
+                               "-C" data))))))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl
+                                      sdl-mixer
+                                      sdl-image
+                                      sdl-ttf)))
+       ("fribidi" ,fribidi)
+       ("libx11" ,libx11)
+       ("lua" ,lua-5.1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("fillets-ng-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/fillets/"
+                               "Fish%20Fillets%20-%20Next%20Generation/"
+                               version "/fillets-ng-data-" version ".tar.gz"))
+           (sha256
+            (base32
+             "169p0yqh2gxvhdilvjc2ld8aap7lv2nhkhkg4i1hlmgc6pxpkjgh"))))))
+    (home-page "http://fillets.sourceforge.net/")
+    (synopsis "Puzzle game")
+    (description "Fish Fillets NG is strictly a puzzle game.  The goal in
+every of the seventy levels is always the same: find a safe way out.  The fish
+utter witty remarks about their surroundings, the various inhabitants of their
+underwater realm quarrel among themselves or comment on the efforts of your
+fish.  The whole game is accompanied by quiet, comforting music.")
+    (license license:gpl2+)))
+
+(define-public crawl
+  (package
+    (name "crawl")
+    (version "0.19.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             ;; Older releases get moved into a versioned directory
+             (string-append "http://crawl.develz.org/release/"
+                            (version-major+minor version) "/stone_soup-"
+                            version "-nodeps.tar.xz")
+             ;; Only the latest release is in this directory
+             (string-append "http://crawl.develz.org/release/stone_soup-"
+                            version "-nodeps.tar.xz")))
+       (sha256
+        (base32
+         "00yl2lb2shglxlxzpyk99zvglfx4amjybqwnzdcasvbiggb4cj18"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lua51" ,lua-5.1)
+       ("ncurses" ,ncurses)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:make-flags
+       (let* ((sqlite (assoc-ref %build-inputs "sqlite"))
+              (out (assoc-ref %outputs "out")))
+         (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
+               (string-append "prefix=" out)
+               "SAVEDIR=~/.crawl"
+               ;; don't build any bundled dependencies
+               "BUILD_LUA="
+               "BUILD_SQLITE="
+               "BUILD_ZLIB="
+               "-Csource"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         ;; Test cases require the source to be rebuild with the -DDEBUG define.
+         ;; Do 'check before 'build to avoid a 3rd build on make install.
+         (add-before 'build 'check
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             ;; Fake a terminal for the test cases.
+             (setenv "TERM" "xterm-256color")
+             (zero? (apply system* "make" "debug" "test"
+                           (format #f "-j~d" (parallel-job-count))
+                           ;; Force command line build for test cases.
+                           (append make-flags '("GAME=crawl" "TILES=")))))))))
+    (synopsis "Roguelike dungeon crawler game")
+    (description "Dungeon Crawl Stone Soup is a roguelike adventure through
+dungeons filled with dangerous monsters in a quest to find the mystifyingly
+fabulous Orb of Zot.")
+    (home-page "https://crawl.develz.org")
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:expat
+                   license:zlib
+                   license:asl2.0))))
+
+(define-public crawl-tiles
+  (package
+    (inherit crawl)
+    (name "crawl-tiles")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments crawl)
+       ((#:make-flags flags)
+        `(let ((dejavu (assoc-ref %build-inputs "font-dejavu")))
+           (cons*
+            (string-append "PROPORTIONAL_FONT=" dejavu
+                           "/share/fonts/truetype/DejaVuSans.ttf")
+            (string-append "MONOSPACED_FONT=" dejavu
+                           "/share/fonts/truetype/DejaVuSansMono.ttf")
+            "TILES=y"
+            ;; Rename the executable to allow parallel installation with crawl.
+            "GAME=crawl-tiles"
+            ,flags)))))
+    (inputs
+     `(,@(package-inputs crawl)
+       ("font-dejavu" ,font-dejavu)
+       ("freetype6" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (native-inputs
+     `(,@(package-native-inputs crawl)
+       ;; TODO: Add advpng or pngcrush for additional PNG optimization.
+       ("which" ,which)))
+    (synopsis "Graphical roguelike dungeon crawler game")))
+
+(define-public lugaru
+  (package
+    (name "lugaru")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/osslugaru/lugaru/downloads/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "15zgcshy22q51rm72zi6y9z7qlgnz5iw3gczjdlir4bqmxy4gspk"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSYSTEM_INSTALL=ON")
+       ;; no test target
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("vorbis" ,libvorbis)
+       ("zlib" ,zlib)))
+    (home-page "https://osslugaru.gitlab.io")
+    (synopsis "Cross-platform third-person action game")
+    (description "Lugaru is a third-person action game.  The main character,
+Turner, is an anthropomorphic rebel bunny rabbit with impressive combat skills.
+In his quest to find those responsible for slaughtering his village, he uncovers
+a far-reaching conspiracy involving the corrupt leaders of the rabbit republic
+and the starving wolves from a nearby den.  Turner takes it upon himself to
+fight against their plot and save his fellow rabbits from slavery.")
+    (license (list license:gpl2+ ; code
+                   ;; assets:
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0))))
+
+(define-public 0ad-data
+  (package
+    (name "0ad-data")
+    (version "0.0.21-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+                           version "-unix-data.tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "15xadyrpvq27lm9p1ny7bcmmv56m16h3xadbkdx69gfkzxc3razk"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            (for-each
+             (lambda (name)
+               (let* ((dir (string-append "binaries/data/mods/" name))
+                      (file (string-append dir "/" name ".zip"))
+                      (unzip #$(file-append unzip "/bin/unzip")))
+                 (system* unzip "-d" dir file)
+                 (delete-file file)))
+             '("mod" "public"))
+            #t))))
+    (build-system trivial-build-system)
+    (native-inputs `(("tar" ,tar)
+                     ("xz" ,xz)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((out (assoc-ref %outputs "out"))
+               (source (assoc-ref %build-inputs "source"))
+               (tar (string-append (assoc-ref %build-inputs "tar") "/bin/tar"))
+               (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
+           (setenv "PATH" xz-path)
+           (mkdir out)
+           (zero? (system* tar "xvf" source "-C" out "--strip=3"))))))
+    (synopsis "Data files for 0ad")
+    (description "0ad-data provides the data files required by the game 0ad.")
+    (home-page "https://play0ad.com")
+    (license (list (license:fsdg-compatible
+                    "http://tavmjong.free.fr/FONTS/ArevCopyright.txt"
+                    (license:license-comment
+                     (package-license font-bitstream-vera)))
+                   (package-license font-bitstream-vera)
+                   license:cc-by-sa3.0
+                   license:expat
+                   license:gfl1.0
+                   license:gpl2+
+                   license:gpl3+))))
+
+(define-public 0ad
+  (package
+    (name "0ad")
+    (version "0.0.21-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+                           version "-unix-build.tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1kw3hqnr737ipx4f03khz3hvsh3ha7r8iy9njppk2faa53j27gln"))
+       ;; A snippet here would cause a build failure because of timestamps
+       ;; reset.  See https://bugs.gnu.org/26734.
+       ))
+    (inputs
+     `(("0ad-data" ,0ad-data)
+       ("curl" ,curl)
+       ("enet" ,enet)
+       ("gloox" ,gloox)
+       ("icu4c" ,icu4c)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("libxcursor" ,libxcursor)
+       ("libxml2" ,libxml2)
+       ("miniupnpc" ,miniupnpc)
+       ("mozjs-38" ,mozjs-38)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("wxwidgets" ,wxwidgets)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("boost" ,boost)
+       ("cmake" ,cmake)
+       ("mesa" ,mesa)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundles
+           (lambda _
+             (delete-file-recursively "libraries/source/spidermonkey")
+             #t))
+         (add-after 'unpack 'fix-x11-includes
+           (lambda _
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xlib.h>") "<X11/Xlib.h>"))
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xatom.h>") "<X11/Xatom.h>"))
+             (substitute* "source/lib/sysdep/os/unix/x/x.cpp"
+               (("<Xcursor/Xcursor.h>") "<X11/Xcursor/Xcursor.h>"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((jobs (number->string (parallel-job-count)))
+                    (out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (data (string-append out "/share/0ad")))
+               (setenv "JOBS" (string-append "-j" jobs))
+               (setenv "CC" "gcc")
+               (with-directory-excursion "build/workspaces"
+                 (zero? (system* "./update-workspaces.sh"
+                                 (string-append "--libdir=" lib)
+                                 (string-append "--datadir=" data)
+                                 "--minimal-flags"
+                                 ;; TODO: "--with-system-nvtt"
+                                 "--with-system-mozjs38"))))))
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "build/workspaces/gcc")
+             #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (chdir "../../../binaries")
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (data (string-append out "/share/0ad"))
+                    (applications (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps"))
+                    (0ad-data (assoc-ref inputs "0ad-data")))
+               ;; data
+               (copy-recursively "data" data)
+               (for-each (lambda (file)
+                           (symlink (string-append 0ad-data "/" file)
+                                    (string-append data "/" file)))
+                         '("config" "mods/mod" "mods/public" "tools"))
+               ;; libraries
+               (for-each (lambda (file)
+                           (install-file file lib))
+                         (find-files "system" "\\.so$"))
+               ;; binaries
+               (install-file "system/pyrogenesis" bin)
+               (with-directory-excursion bin
+                 (symlink "pyrogenesis" "0ad"))
+               ;; resources
+               (with-directory-excursion "../build/resources"
+                 (install-file "0ad.desktop" applications)
+                 (install-file "0ad.png" pixmaps))
+               #t)))
+         (add-after 'install 'check
+           (lambda _
+             (with-directory-excursion "system"
+               (zero? (system* "./test"))))))))
+    (home-page "https://play0ad.com")
+    (synopsis "3D real-time strategy game of ancient warfare")
+    (description "0 A.D. is a real-time strategy (RTS) game of ancient
+warfare.  It's a historically-based war/economy game that allows players to
+relive or rewrite the history of twelve ancient civilizations, each depicted
+at their peak of economic growth and military prowess.
+
+0ad needs a window manager that supports 'Extended Window Manager Hints'.")
+    (license (list license:bsd-2
+                   license:bsd-3
+                   license:expat
+                   license:gpl2+
+                   license:ibmpl1.0
+                   license:isc
+                   license:lgpl2.1
+                   license:lgpl3
+                   license:mpl2.0
+                   license:zlib))))

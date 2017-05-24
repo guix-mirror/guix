@@ -12,7 +12,7 @@
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -21,8 +21,9 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
@@ -89,6 +91,7 @@
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -125,6 +128,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages speech)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -147,7 +151,14 @@
                                          "/share/gir-1.0")
                           (string-append "--with-typelibdir="
                                          (assoc-ref %outputs "out")
-                                         "/lib/girepository-1.0"))))
+                                         "/lib/girepository-1.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'embed-growisofs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "plugins/growisofs/burn-growisofs.c"
+               (("\"growisofs") (string-append "\"" (which "growisofs"))))
+             #t )))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
@@ -156,7 +167,8 @@
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("dvd+rw-tools" ,dvd+rw-tools)
+       ("glib" ,glib)
        ("gnome-doc-utils" ,gnome-doc-utils)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -711,7 +723,7 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.22.0")
+    (version "3.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -719,9 +731,32 @@ update-desktop-database: updates the database containing a cache of MIME types
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1dyw8mm72wfpkn83vdqr0ifv5yhy565jhxrcjsd83nc7c3igd2y1"))))
+                "0ai73gs44yyw276xag6db0rlpvncy23qplp4girm80ilpprrzxyc"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+
+(define-public tango-icon-theme
+  (package
+    (name "tango-icon-theme")
+    (version "0.8.90")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tango.freedesktop.org/releases/"
+                                  "tango-icon-theme-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "034r9s944b4yikyfgn602yv7s54wdzlq0qfvqh52b9x6kbx08h79"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("imagemagick" ,imagemagick)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://tango-project.org/")
+    (synopsis "Tango icon theme")
+    (description "This is an icon theme that follows the Tango visual
+guidelines.")
+    (license license:public-domain)))
 
 (define-public shared-mime-info
   (package
@@ -837,11 +872,11 @@ some form of information without getting in the user's way.")
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
-     "Libpeas is a gobject-based plugins engine, and is targetted at giving
-every application the chance to assume its own extensibility.  It also has a
-set of features including, but not limited to: multiple extension points; on
-demand (lazy) programming language support for C, Python and JS; simplicity of
-the API.")
+     "Libpeas is a gobject-based plugin engine, targeted at giving every
+application the chance to assume its own extensibility.  It also has a set of
+features including, but not limited to: multiple extension points; on-demand
+(lazy) programming language support for C, Python and JS; simplicity of the
+API.")
     (license license:lgpl2.0+)))
 
 (define-public gtkglext
@@ -927,7 +962,9 @@ the GNOME desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0mm0wldbi40am5qn0nv7psisbg01k42rwzjxl3gv11l5jj554aqk"))))
+                "0mm0wldbi40am5qn0nv7psisbg01k42rwzjxl3gv11l5jj554aqk"))
+              (patches (search-patches "libcroco-CVE-2017-7960.patch"
+                                       "libcroco-CVE-2017-7961.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1822,7 +1859,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.46.1")
+    (version "0.48.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1830,22 +1867,15 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ipmnfazvhzjp5pjw90mmxbkizivnh7gnlqqml94lw2rqa5wy048"))))
+                "1hsqc7238862mqnva5qqdfxnhpwq3ak6zx6kbjj95cs04wcgpad3"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; XXX: fails to compile tests with the default flags.
-     ;; vteconv.cc:774:40:
-     ;;    error: missing sentinel in function call [-Werror=format=]
-     ;;    g_test_init (&argc, &argv, NULL);
-     ;;
-     ;; cc1plus: some warnings being treated as errors
-     '(#:configure-flags '("CXXFLAGS=-Wformat=0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gperf" ,gperf)
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
@@ -1864,10 +1894,10 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.46.1.a")
+    (version "0.48.3.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
-       ("gperf" ,gperf-3.0)
+       ("gperf" ,gperf)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
@@ -1879,7 +1909,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c0czhsn28b5h4pk3kx89jjbdc5d2qkxhl4ywqvxfivphf2nicbp"))))
+                "1wdkf090zclqy11hxdjgy8f6fgzajl0xzzirajikhbaiill7f8zh"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -2414,7 +2444,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.22.1")
+    (version "3.24.1")
     (source
      (origin
        (method url-fetch)
@@ -2423,7 +2453,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1m5h3ck7wcvq1kfap05jwhnbpp3kmikc2qy822gnsbdjdqrm41xh"))))
+         "1q303bljcr06w3ra737kq1hpjda45wk16kmrixxwldf3zkk2dgx7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -2811,7 +2841,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.1")
+    (version "3.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2819,7 +2849,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01ydq39kk8xvv8nbqqbh458gpmvx676sms71r1iix42z40a13caj"))))
+                "0a8cir7vgi67sncl0m7cypq11amardm7r68gr3q52a11l8ajycdx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3658,7 +3688,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3667,7 +3697,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "19klldnbnknpq6ikz9x93861ywcyg0pg9ngijvw66ncbnb7lx912"))))
+                "1czg21cdbd2fgqylxfnzfhhzy69gycf816d5bbaq6hb62hmq7bjy"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3942,7 +3972,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.4")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3950,7 +3980,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "190www3b61spfgwx42jw8h5hsz2996jcxky48k63468avjpk33dd"))))
+                "09aqsnpah71p9gx0ap2px2dyanrs7jmkkar6q114n9b7js8qh9qk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")
@@ -4549,7 +4579,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.4.4")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4557,7 +4587,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "029k2f1arx1m5hppmr778i9yg34jj68nmji3i89qs06c33rpi4w2"))
+                "1y96k82rav8if334jl500zc024d210c4pgprh94yqyz3rmanyaxj"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -4601,12 +4631,14 @@ users.")
              ;; cope with being already in the Guix build jail as that jail
              ;; lacks some features that they would like to proxy over (like
              ;; a /sys mount).
-             (substitute* '("src/platform/Makefile.in"
-                            "src/devices/Makefile.in")
-               (("SUBDIRS = tests") ""))
-             (substitute* '("src/tests/Makefile.in")
-               (("\ttest-route-manager-linux") "\t")
-               (("\ttest-route-manager-fake") "\t"))
+             (substitute* '("Makefile.in")
+               (("src/platform/tests/test-address-linux") " ")
+               (("src/platform/tests/test-cleanup-linux") " ")
+               (("src/platform/tests/test-link-linux") " ")
+               (("src/platform/tests/test-route-linux") " ")
+               (("src/devices/tests/test-arping") " ")
+               (("src/devices/tests/test-lldp") " ")
+               (("src/tests/test-route-manager-linux") " "))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -4619,13 +4651,17 @@ users.")
                              "sysconfdir=/tmp"
                              "rundir=/tmp"
                              "statedir=/tmp"
+                             "nmstatedir=/tmp/nm"
                              "install")))))))
     (propagated-inputs
      `(("glib" ,glib)))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen
        ("gobject-introspection" ,gobject-introspection)
+       ("docbook-xsl" ,docbook-xsl)
        ("intltool" ,intltool)
+       ("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
        ;; For testing.
        ("python" ,python-wrapper)
@@ -4637,6 +4673,7 @@ users.")
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
+       ("jansson" ,jansson)
        ("libgcrypt" ,libgcrypt)
        ("libgudev" ,libgudev)
        ("libndp" ,libndp)
@@ -4960,6 +4997,7 @@ properties, screen resolution, and other GNOME parameters.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gnome-shell-CVE-2017-8288.patch"))
               (sha256
                (base32
                 "16smvjfrpyfphv479hjky5261hgl4kli4q86bcb2b8xdcav4w3yq"))))
@@ -5210,7 +5248,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.22.1")
+    (version "3.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5219,7 +5257,7 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zwpzj6hbvcyw1ymqzn3zw8w4h29ad7411crbkbh71c8jwbwpssv"))))
+                "0gzwzn8p0agidjq3wnkxcsny6jhqph3yqscqjqd7blgkz5nyk02r"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -5301,7 +5339,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.22.1")
+    (version "3.22.3")
     (source
      (origin
        (method url-fetch)
@@ -5310,7 +5348,7 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09n1ljryjgkmxwly542zb2dh9j7h76chc0br2bbhrhkwvjjmc3ha"))))
+         "1939yq3fl55c2dqkc6nzp6cbpxq9sli74gdj0rj7c50pwvbngwam"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5996,4 +6034,147 @@ an attractive, easy-to-use interface.  It has features, such as a tree view
 for process dependencies, icons for processes, the ability to hide processes,
 graphical time histories of CPU/memory/swap usage and the ability to
 kill/reinice processes.")
+    (license license:gpl2+)))
+
+(define-public python-pyatspi
+  (package
+    (name "python-pyatspi")
+    (version "2.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/pyatspi/"
+                    (version-major+minor version)
+                    "/pyatspi-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14m6y27ziqc9f6339gjz49mlsk6mrsyg4bkj055cdzc7sfjlgvz7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Python client bindings for D-Bus AT-SPI")
+    (home-page "https://wiki.linuxfoundation.org/accessibility\
+/atk/at-spi/at-spi_on_d-bus")
+    (description
+     "This package includes a python client library for the AT-SPI D-Bus
+accessibility infrastructure.")
+    (license license:lgpl2.0)
+    (properties '((upstream-name . "pyatspi")))))
+
+(define-public orca
+  (package
+    (name "orca")
+    (version "3.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1la6f815drykrgqf791jx1dda6716cfv6052frqp7nhjxr75xg97"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'qualify-xkbcomp
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xkbcomp (string-append
+                             (assoc-ref inputs "xkbcomp") "/bin/xkbcomp")))
+               (substitute* "src/orca/orca.py"
+                 (("'xkbcomp'") (format #f "'~a'" xkbcomp))))
+             #t))
+         (add-after 'install 'wrap-orca
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/orca")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH")))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
+                   (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 `("PYTHONPATH" ":" prefix
+                   (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("at-spi2-atk" ,at-spi2-atk)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyatspi" ,python-pyatspi)
+       ("python-speechd" ,speech-dispatcher)
+       ("xkbcomp" ,xkbcomp)))
+    (synopsis
+     "Screen reader for individuals who are blind or visually impaired")
+    (home-page "https://wiki.gnome.org/Projects/Orca")
+    (description
+     "Orca is a screen reader that provides access to the graphical desktop
+via speech and refreshable braille.  Orca works with applications and toolkits
+that support the Assistive Technology Service Provider Interface (AT-SPI).")
+    (license license:lgpl2.1+)))
+
+(define-public gspell
+  (package
+    (name "gspell")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1n4kd5i11l79h8bpvx3cz79ww0b4z89y99h4czvyg80qlarn585w"))
+              (patches (search-patches "gspell-dash-test.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+
+             ;; Allow Enchant and its Aspell backend to find the en_US
+             ;; dictionary.
+             (setenv "ASPELL_DICT_DIR"
+                     (string-append (assoc-ref inputs "aspell-dict-en")
+                                    "/lib/aspell"))
+             #t)))))
+    (inputs
+     `(("enchant" ,enchant)
+       ("iso-codes" ,iso-codes)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)
+
+       ;; For tests.
+       ("xorg-server" ,xorg-server)
+       ("aspell-dict-en" ,aspell-dict-en)))
+    (home-page "https://wiki.gnome.org/Projects/gspell")
+    (synopsis "GNOME's alternative spell checker")
+    (description
+     "gspell provides a flexible API to add spell-checking to a GTK+
+application.  It provides a GObject API, spell-checking to text entries and
+text views, and buttons to choose the language.")
     (license license:gpl2+)))

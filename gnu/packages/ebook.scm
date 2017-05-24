@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ebook)
-  #:use-module ((guix licenses) #:select (gpl3 lgpl2.1+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -27,8 +28,10 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -38,6 +41,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
 (define-public chmlib
@@ -56,12 +60,12 @@
     (home-page "http://www.jedrea.com/chmlib/")
     (synopsis "Library for CHM files")
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.76.0")
+    (version "2.85.1")
     (source
       (origin
         (method url-fetch)
@@ -70,33 +74,35 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1xfm586n6gm44mkyn25mbiyhj6w9ji9yl6fvmnr4zk1q6qcga3v8"))
+          "1g8s0kp1gj05yysfgqpp2lgrxvzc0fsny1hwzx5jh9hvqn0b53cc"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
         (snippet
           '(begin
+            (delete-file-recursively "src/calibre/ebooks/markdown")
             (delete-file-recursively "src/unrar")
-            (delete-file "src/odf/thumbnail.py")))
+            (delete-file "src/odf/thumbnail.py")
+            (delete-file-recursively "resources/fonts/liberation")
+            (delete-file-recursively "src/chardet")
+            (substitute* (find-files "." "\\.py")
+              (("calibre\\.ebooks\\.markdown") "markdown"))
+            #t))
         (patches (search-patches "calibre-drop-unrar.patch"
+                                 "calibre-use-packaged-feedparser.patch"
+                                 "calibre-dont-load-remote-icons.patch"
                                  "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("font-liberation" ,font-liberation)
        ("qtbase" ,qtbase) ; for qmake
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
        ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
+       ("python2-flake8" ,python2-flake8)
        ("xdg-utils" ,xdg-utils)))
-    ;; FIXME: The following are missing inputs according to the documentation,
-    ;; but the package can apparently be used without them,
-    ;; They may need to be added if a deficiency is detected.
-    ;; BeautifulSoup >= 3.0.5
-    ;; dnspython >= 1.6.0
-    ;; poppler >= 0.20.2
-    ;; libwmf >= 0.2.8
-    ;; psutil >= 0.6.1
-    ;; python-pygments >= 2.0.1 ; used for ebook editing
+    ;; Beautifulsoup3 is bundled but obsolete and not packaged, so just leave it bundled.
     (inputs
      `(("chmlib" ,chmlib)
        ("fontconfig" ,fontconfig)
@@ -108,16 +114,22 @@
        ("libxrender" ,libxrender)
        ("openssl" ,openssl)
        ("podofo" ,podofo)
+       ("poppler" ,poppler)
        ("python" ,python-2)
        ("python2-apsw" ,python2-apsw)
+       ("python2-chardet" ,python2-chardet)
        ("python2-cssselect" ,python2-cssselect)
        ("python2-cssutils" ,python2-cssutils)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
+       ("python2-dnspython" ,python2-dnspython)
+       ("python2-feedparser" ,python2-feedparser)
        ("python2-lxml" ,python2-lxml)
+       ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
        ("python2-pillow" ,python2-pillow)
+       ("python2-pygments" ,python2-pygments)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("sqlite" ,sqlite)))
@@ -130,6 +142,12 @@
        #:use-setuptools? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "src/calibre/linux.py"
+               ;; We can't use the uninstaller in Guix. Don't build it.
+               (("self\\.create_uninstaller()") ""))
+             #t))
          (add-before 'build 'configure
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
@@ -137,7 +155,17 @@
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
-              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))))))))
+              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib")))))
+         (add-after 'install 'install-font-liberation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file (string-append
+                                             (assoc-ref outputs "out")
+                                             "/share/calibre/fonts/liberation")))
+                       (find-files (string-append
+                                    (assoc-ref inputs "font-liberation")
+                                    "/share/fonts/truetype")))
+             #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
     (description "Calibre is an ebook library manager.  It can view, convert
@@ -145,4 +173,16 @@ and catalog ebooks in most of the major ebook formats.  It can also talk
 to many ebook reader devices.  It can go out to the Internet and fetch
 metadata for books.  It can download newspapers and convert them into
 ebooks for convenient reading.")
-    (license gpl3))) ; some files are under various other licenses, see COPYRIGHT
+    ;; Calibre is largely GPL3+, but includes a number of components covered
+    ;; by other licenses. See COPYRIGHT for more details.
+    (license (list license:gpl3+
+                   license:gpl2+
+                   license:lgpl2.1+
+                   license:lgpl2.1
+                   license:bsd-3
+                   license:expat
+                   license:zpl2.1
+                   license:asl2.0
+                   license:public-domain
+                   license:silofl1.1
+                   license:cc-by-sa3.0))))

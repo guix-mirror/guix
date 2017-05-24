@@ -14,6 +14,10 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +37,6 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -73,6 +76,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -94,6 +98,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -268,7 +273,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "2.3")
+    (version "2.4")
     (source
       (origin
         (method url-fetch)
@@ -276,7 +281,7 @@ H.264 (MPEG-4 AVC) video streams.")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "07z4ydxg0lk6j43h0wlh2xddb91cy4y4mny2ln71d4278b1hllj7"))
+          "0afp0xlk0fb4q6j4sh3hyvjnjccdp61sn21zg3fyqvwgswcafalw"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
@@ -364,13 +369,13 @@ canvas operations.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://download.videolan.org/pub/videolan/libdca/"
+                    "https://download.videolan.org/pub/videolan/libdca/"
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
                 "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdca.html")
+    (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
 streams.")
@@ -403,7 +408,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.7.3")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -411,7 +416,7 @@ SMPTE 314M.")
              "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "1ndrf136rlw03xag7j1xpmf9015d1h0dpnv6v587jnh6k2a17g12"))))
+        (base32 "0wswfznj93jpnxhc3jwdk5j3pmyki0rs6k9vk4vnzds0dddximf1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -453,14 +458,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.2.4")
+    (version "3.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ymg1mkg1n0770gmjfqp79p5ijxq04smfrsrrxc8pjc0y0agyf3f"))))
+               "0bwgm6z6k3khb91qh9xv15inykkfchpkm0lcdckkxhkacpyaf0mp"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -573,7 +578,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
-         "--enable-x11grab"
 
          "--enable-runtime-cpudetect"
 
@@ -642,7 +646,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.4")
+    (version "2.2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -650,14 +654,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1gjkrwlg8ab3skzl67cxb9qzg4187ifckd1z9kpy11q058fyjchn"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; There are two occurrences where __DATE__ and __TIME__ are
-              ;; used to capture the build time and show it to the user.
-              '(substitute* (find-files "." "help\\.c(pp)?$")
-                 (("__DATE__") "\"2016\"")
-                 (("__TIME__") "\"00:00\"")))))
+               "1k51vm6piqlrnld7sxyg0s4kdkd3lan97lmy3v5wdh3qyll8m2xj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
@@ -846,7 +843,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.24.0")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -854,7 +851,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "059zblcj98fhrns1rwa66mf4km68czpam4nnk8q9qny31bx58654"))
+                "1khb7c4fdj1aak46lwyb3lq14w5jpxzws0zp6bdc87ljsvx3yhh7"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -904,6 +901,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
        #:configure-flags (list "--enable-libmpv-shared"
+                               "--enable-cdda"
+                               "--enable-dvdread"
+                               "--enable-dvdnav"
                                "--enable-zsh-comp"
                                "--disable-build-date")
        ;; No check function defined.
@@ -984,7 +984,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.03.26")
+    (version "2017.05.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -992,7 +992,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00ysv18p4rqg7sswbpjpmmvaih6nm135bpllqdlj4ns8kjqmh59j"))))
+                "1q3b9xkbk1lmy1wxm1jcnmaj70sdksqbc8zsqxz6b6z4nmv8qc25"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1022,6 +1022,106 @@ access to mpv's powerful playback capabilities.")
 YouTube.com and a few more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
+
+(define-public youtube-dl-gui
+  (package
+    (name "youtube-dl-gui")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Youtube-DLG" version))
+       (sha256
+        (base32
+         "0napxwzgls5ik1bxbp99vly32l23xpc4ng5kr24hfhf21ypjyadb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; In Guix, wxpython has not yet been packaged for Python 3.
+     `(#:python ,python-2
+       ;; This package has no tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The youtube-dl-gui program lets you configure options.  Some of
+             ;; them are problematic, so we change their defaults.
+             (substitute* "youtube_dl_gui/optionsmanager.py"
+               ;; When this is true, the builder process will try (and fail) to
+               ;; write logs to the builder user's home directory.
+               (("'enable_log': True") "'enable_log': False")
+               ;; This determines which youtube-dl program youtube-dl-gui will
+               ;; run.  If we don't set this, then youtube-dl-gui might download
+               ;; an arbitrary copy from the Internet into the user's home
+               ;; directory and run it, so let's make sure youtube-dl-gui uses
+               ;; the youtube-dl from the inputs by default.
+               (("'youtubedl_path': self.config_path")
+                (string-append "'youtubedl_path': '"
+                               (assoc-ref inputs "youtube-dl")
+                               "/bin'"))
+               ;; When this is True, when youtube-dl-gui is finished downloading
+               ;; a file, it will try (and possibly fail) to open the directory
+               ;; containing the downloaded file.  This can fail because it
+               ;; assumes that xdg-open is in PATH.  Unfortunately, simply
+               ;; adding xdg-utils to the propagated inputs is not enough to
+               ;; make this work, so for now we set the default to False.
+               (("'open_dl_dir': True") "'open_dl_dir': False"))
+             ;; The youtube-dl program from the inputs is actually a wrapper
+             ;; script written in bash, so attempting to invoke it as a python
+             ;; script will fail.
+             (substitute* "youtube_dl_gui/downloaders.py"
+               (("cmd = \\['python', self\\.youtubedl_path\\]")
+                "cmd = [self.youtubedl_path]"))
+             ;; Use relative paths for installing data files so youtube-dl-gui
+             ;; installs the files relative to its prefix in the store, rather
+             ;; than relative to /.  Also, instead of installing data files into
+             ;; $prefix/usr/share, install them into $prefix/share for
+             ;; consistency (see: (standards) Directory Variables).
+             (substitute* "setup.py"
+               (("= '/usr/share") "= 'share"))
+             ;; Update get_locale_file() so it finds the installed localization
+             ;; files.
+             (substitute* "youtube_dl_gui/utils.py"
+               (("os\\.path\\.join\\('/usr', 'share'")
+                (string-append "os.path.join('"
+                               (assoc-ref %outputs "out")
+                               "', 'share'"))))))))
+    (inputs
+     `(("python2-wxpython" ,python2-wxpython)
+       ("youtube-dl" ,youtube-dl)))
+    (home-page "https://github.com/MrS0m30n3/youtube-dl-gui")
+    (synopsis
+     "GUI (Graphical User Interface) for @command{youtube-dl}")
+    (description
+     "Youtube-dlG is a GUI (Graphical User Interface) for
+@command{youtube-dl}.  You can use it to download videos from YouTube and any
+other site that youtube-dl supports.")
+    (license license:unlicense)))
+
+(define-public you-get
+  (package
+    (name "you-get")
+    (version "0.4.715")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/soimort/you-get/releases/download/v"
+                    version "/you-get-" version ".tar.gz"))
+              (sha256
+               (base32
+                "043122hfh56fbbszp1kwd1f65asgyn60j1ijday93hf2dkhvbrnh"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     '(#:tests? #f))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (synopsis "Download videos, audios, or images from Web sites")
+    (description
+     "You-Get is a command-line utility to download media contents (videos,
+audio, images) from the Web.  It can use either mpv or vlc for playback.")
+    (home-page "https://you-get.org/")
+    (license license:expat)))
 
 (define-public libbluray
   (package
@@ -1071,7 +1171,7 @@ players, like VLC or MPlayer.")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1088,13 +1188,40 @@ authentication and descrambling (if an external libdvdcss library is
 installed).")
     (license license:gpl2+)))
 
+(define-public dvdauthor
+  (package
+    (name "dvdauthor")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/dvdauthor/dvdauthor-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1drfc47hikfzc9d7hjk34rw10iqw01d2vwmn91pv73ppx4nsj81h"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libdvdread" ,libdvdread)
+       ("libpng" ,libpng)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("freetype" ,freetype)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Generates a DVD-Video movie from a MPEG-2 stream")
+    (description "@command{dvdauthor} will generate a DVD-Video movie from a
+MPEG-2 stream containing VOB packets.")
+    (home-page "http://dvdauthor.sourceforge.net")
+    (license license:gpl3+)))
+
 (define-public libdvdnav
   (package
     (name "libdvdnav")
     (version "5.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
@@ -1128,7 +1255,7 @@ encapsulated.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.videolan.org/videolan/libdvdnav/libdvdnav-"
+                "https://download.videolan.org/videolan/libdvdnav/libdvdnav-"
                 version ".tar.xz"))
               (sha256
                (base32
@@ -1152,14 +1279,14 @@ encapsulated.")
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/pub/"
+              (uri (string-append "https://download.videolan.org/pub/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0nl45ifc4xcb196snv9d6hinfw614cqpzcqp92dg43c0hickg290"))))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libdvdcss.html")
+    (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
     (description
      "libdvdcss is a simple library designed for accessing DVDs like a block
@@ -1465,14 +1592,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.10.1")
+    (version "1.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1h1nhg5cmmzlbipak526nk4bm6d0yb217mll75f3rpg7kz1cqiv1"))))
+                "03g2b4rivrilimcp57mwrlsa3qvrxmk4sza08mygwmqbvcnic606"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1481,7 +1608,8 @@ tools, XML authoring components, and an extensible plug-in based API.")
                             "/lib/udev")
              "CXXFLAGS=-std=gnu++11")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
@@ -1499,7 +1627,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "18.0.1")
+    (version "18.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1507,23 +1635,10 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "043f8mfdh4ll0hpivpyg3iniirckwsgri0gzamyrba1yhf2c2ibr"))))
+                "02pbiyvf5x0zh448h5rpmyn33qnsqk694xxlyns83mdi74savyqw"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                              (%current-system)))
-                  '("arm" "mips"))
-           '(#:phases
-             (modify-phases %standard-phases
-             (add-after 'unpack 'remove-architecture-specific-instructions
-               ;; non-Intel platforms fail to build with the architecture
-               ;; specific compiler flags included by default.
-               (lambda _
-                 (substitute* "libobs/CMakeLists.txt"
-                              (("if\\(NOT MSVC\\)") "if(MSVC)"))
-                 #t))))
-           '())))
+     `(#:tests? #f)) ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1550,6 +1665,7 @@ video recording and live streaming.  OBS supports capturing audio and video
 from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public libvdpau
@@ -1642,6 +1758,7 @@ making @dfn{screencasts}.")
               (uri (svn-reference
                     (url "svn://svn.icculus.org/smpeg/trunk/")
                     (revision 401))) ; last revision before smpeg2 (for SDL 2.0)
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
@@ -1683,7 +1800,7 @@ and MPEG system streams.")
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libbdplus.html")
+    (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libbdplus is a library which implements the BD+ System
 specifications.")
@@ -1692,21 +1809,21 @@ specifications.")
 (define-public libaacs
   (package
     (name "libaacs")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libaacs/"
                            version "/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "1s5v075hnbs57995r6lljm79wgrip3gnyf55a0y7bja75jh49hwm"))))
+        (base32 "1kms92i0c7i1yl659kqjf19lm8172pnpik5lsxp19xphr74vvq27"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
     (build-system gnu-build-system)
-    (home-page "http://www.videolan.org/developers/libaacs.html")
+    (home-page "https://www.videolan.org/developers/libaacs.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libaacs is a library which implements the Advanced Access
 Content System specification.")

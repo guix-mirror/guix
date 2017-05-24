@@ -42,17 +42,15 @@
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
      (string->uri
-       (match system
-        ("aarch64-linux"
-         (string-append "http://flashner.co.il/guix/bootstrap/aarch64-linux"
-                        "/20170217/" basename))
-        (_ (string-append %url-base "/" system
-                          (match system
-                                 ("armhf-linux"
-                                  "/20150101/")
-                                 (_
-                                  "/20131110/"))
-                          basename)))))))
+      (string-append %url-base "/" system
+                     (match system
+                       ("aarch64-linux"
+                        "/20170217/")
+                       ("armhf-linux"
+                        "/20150101/")
+                       (_
+                        "/20131110/"))
+                     basename)))))
 
 (match (command-line)
   ((_ file expected-hash)

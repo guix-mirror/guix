@@ -8,13 +8,16 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Coypright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Coypright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Coypright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
+;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,28 +70,31 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kerberos)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xml))
 
 (define-public aide
   (package
     (name "aide")
-    (version "0.15.1")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/aide/aide/"
                                   version "/aide-" version ".tar.gz"))
               (sha256
                (base32
-                "1vsrc0s62kv1i84skm6k6zy868gayjck268qwj38rpspc8c5qgih"))))
+                "0ibkv4z2gk14fn014kq13rp2ysiq6nn2cflv2q5i7zf466hm6758"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -97,6 +103,7 @@
      `(("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
        ("libmhash" ,libmhash)
+       ("pcre" ,pcre)
        ("zlib" ,zlib)))
     (synopsis "File and directory integrity checker")
     (description
@@ -274,17 +281,15 @@ client and server, a telnet client and server, and an rsh client and server.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.4")
+    (version "4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-4.4-su-snprintf-fix.patch"
-                                       "shadow-CVE-2017-2616.patch"))
               (sha256
                (base32
-                "0g7hf55ar2pafg5g3ldx0fwzjk36wf4xb21p4ndanbjm3c2a9ab1"))))
+                "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -477,7 +482,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "9")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "6")      ; for patch release, e.g. "6"
+         (bind-release-version "8")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -593,7 +598,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1qf9j0nyqx0qy871mj22xh4dg0n1pqlv94lpiijb8vr7n7m3svhr"))))
+                      "1f5i64f6y4rmy61y63r5if1lifw8dw8r8dh6ns3x4002hanzrpgz"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1349,14 +1354,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.2.1.0")
+    (version "2.3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0gz9i30pdmkchi936ijy873k8di6fmf3v5rv551hxyf0hjkjx8b3"))))
+         "0n54h8g6a6hcp41sasvjqa4yz1pwd8mshbwlcghj0sjnrl3kk7r9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-pycrypto" ,python2-pycrypto)
@@ -1691,7 +1696,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.15")
+    (version "3.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1699,7 +1704,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vxas21h5mf41cb6y7f7x07858ags7qg45lkf74rc0slqbic3l1h"))
+                "0jrhfxmj2asx4jdix9ks3fpl364ph8w9prhwpk4488aj1a0q4rak"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1760,7 +1765,7 @@ a new command using the matched rule, and runs it.")
      "'di' is a disk information utility, displaying everything
 (and more) that your @code{df} command does.  It features the ability to
 display your disk usage in whatever format you prefer.  It is designed to be
-highly portable.  Great for heterogenous networks.")
+highly portable.  Great for heterogeneous networks.")
     (license license:zlib)))
 
 (define-public cbatticon
@@ -1997,3 +2002,231 @@ with all the commands and parameters identified for your viewing pleasure.
 With sedsed you can master any sed script.  No more secrets, no more hidden
 buffers.")
     (license license:expat)))
+
+(define-public intel-gpu-tools
+  (package
+    (name "intel-gpu-tools")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
+                                  "intel-gpu-tools/snapshot/"
+                                  "intel-gpu-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w7djk0y5w76hzn1b3cm39zd5c6w9za1wfn80wd857h0v313rzq3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; many of the tests try to load kernel modules
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             ;; Don't run configure in this phase
+             (setenv "NOCONFIGURE" "1")
+             (zero? (system* "sh" "autogen.sh")))))))
+    (inputs
+     `(("util-macros" ,util-macros)
+       ("libdrm" ,libdrm)
+       ("libpciaccess" ,libpciaccess)
+       ("kmod" ,kmod)
+       ("procps" ,procps)
+       ("cairo" ,cairo)
+       ("libunwind" ,libunwind)
+       ("libxrandr" ,libxrandr)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (synopsis "Tools for development and testing of the Intel DRM driver")
+    (description "Intel GPU Tools is a collection of tools for development and
+testing of the Intel DRM driver.  There are many macro-level test suites that
+get used against the driver, including xtest, rendercheck, piglit, and
+oglconform, but failures from those can be difficult to track down to kernel
+changes, and many require complicated build procedures or specific testing
+environments to get useful results.  Therefore, Intel GPU Tools includes
+low-level tools and tests specifically for development and testing of the
+Intel DRM Driver.")
+    (license license:expat)))
+
+(define-public fabric
+  (package
+    (name "fabric")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Fabric" version))
+       (sha256
+        (base32
+         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))
+       (patches (search-patches "fabric-tests.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))                       ;Python 2 only
+    (native-inputs
+     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
+       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
+       ("python2-nose" ,python2-nose))) ; Requires < 2.0
+    (propagated-inputs
+     ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
+     ;; between python-paramiko and newer python-pycrypto. Without this, the
+     ;; `fab` command fails with "ValueError: CTR mode needs counter
+     ;; parameter, not IV". See:
+     ;; https://github.com/paramiko/paramiko/pull/714#issuecomment-281191548.
+     `(("python2-paramiko" ,python2-paramiko)))
+    (home-page "http://fabfile.org")
+    (synopsis "Simple Pythonic remote execution and deployment tool")
+    (description
+     "Fabric is designed to upload files and run shell commands on a number of
+servers in parallel or serially.  These commands are grouped in tasks (which
+are regular Python functions) and specified in a @dfn{fabfile}.
+
+It is similar to Capistrano, except it's implemented in Python and doesn't
+expect you to be deploying Rails applications.  Fabric is a simple, Pythonic
+tool for remote execution and deployment.")
+    (license license:bsd-2)))
+
+(define-public neofetch
+  (package
+    (name "neofetch")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dylanaraps/neofetch/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rgznkl7a5q7lnc6zxlwvinq20b7k46n949l1hiwifarv0jgwynv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there are no tests
+       #:make-flags
+       (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-target-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("\\$\\(DESTDIR\\)/etc/")
+                  "$(PREFIX)/etc/"))
+               (substitute* "neofetch"
+                 (("\"/etc/neofetch")
+                  (string-append "\"" out "/etc/neofetch"))
+                 (("\"/usr/share/neofetch")
+                  (string-append "\"" out "/usr/share/neofetch"))))
+             #t))
+         (delete 'configure))))
+    (home-page "https://github.com/dylanaraps/neofetch")
+    (synopsis "System info script")
+    (description "Neofetch is a CLI system information tool written in Bash.
+Neofetch displays information about your system next to an image, your OS
+logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
+used in screenshots to show other users what operating system or distribution
+you are running, what theme or icon set you are using, etc.")
+    (license license:expat)))
+
+(define-public nnn
+  (package
+    (name "nnn")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jarun/nnn/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hww4385f81lyy30fx2rb4wchfi79dpgl7yylnfxvf27a4h2mkhm"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)
+              ("readline" ,readline)))
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases
+       ;; We do not provide `ncurses.h' within an `ncursesw'
+       ;; sub-directory, so patch the source accordingly.  See
+       ;; <http://bugs.gnu.org/19018>.
+       ;; Thanks to gtypist maintainer.
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-curses-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("-lncursesw")
+                  "-lncurses"))
+               (substitute* "nnn.c"
+                 (("ncursesw\\/curses.h")
+                  "ncurses.h")))
+             #t))
+         (delete 'configure))
+       #:make-flags
+       (list
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out"))
+        (string-append "-Wl,-rpath="
+                       %output "/lib")
+        "CC=gcc")))
+    (home-page "https://github.com/jarun/nnn")
+    (synopsis "Terminal file browser")
+    (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
+lightweight terminal file browser with easy keyboard shortcuts for
+navigation, opening files and running tasks.  There is no config file and
+mime associations are hard-coded.  The incredible user-friendliness and speed
+make it a perfect utility on modern distros.")
+    (license license:bsd-2)))
+
+(define-public thermald
+  (package
+    (name "thermald")
+    (version "1.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
+                          version ".tar.gz"))
+      (sha256 (base32
+               "14klz9fnvi9jdlaqwrp61xa5nh051n8ykrs1fh1wxd7j66qf2fn6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'autogen.sh-and-fix-paths
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       ;; upstartconfir is hardcoded to /etc/init and the build
+                       ;; system tries to mkdir that.  We don't even need upstart
+                       ;; files at all; this is a fast and kludgy workaround
+                       (substitute* "data/Makefile.am"
+                         (("upstartconfdir = /etc/init")
+                          (string-append "upstartconfdir = "
+                                         out "/etc/init")))
+                       ;; Now run autogen
+                       (zero? (system* "sh" "autogen.sh"))))))
+       #:configure-flags
+       (let ((out      (assoc-ref %outputs "out")))
+         (list (string-append "--sysconfdir="
+                              out "/etc")
+               (string-append "--with-udev-dir="
+                              out "/lib/udev")
+               (string-append "--with-dbus-sys-dir="
+                              out "/etc/dbus-1/system.d")
+               "--localstatedir=/var"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("libxml2" ,libxml2)))
+    (home-page "https://01.org/linux-thermal-daemon/")
+    (synopsis "CPU scaling for thermal management")
+    (description "The Linux Thermal Daemon helps monitor and control temperature
+on systems running the Linux kernel.")
+    (license license:gpl2+)))

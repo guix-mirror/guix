@@ -4,8 +4,9 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,34 +88,32 @@
      `(#:parallel-build? #f  ; The build system seems not to be thread safe.
        #:tests? #f  ; There does not seem to be make check or anything similar.
        #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-       #:phases (alist-cons-before
-                'configure 'pre-conf
-                (lambda _
-                  ;; Patch bug when building readline support.  This bug was
-                  ;; also observed by Debian
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=741819
-                  (substitute* "o/gcl_readline.d"
-                    (("rl_attempted_completion_function = \
-\\(CPPFunction \\*\\)rl_completion;")
-                      "rl_attempted_completion_function = rl_completion;"))
-                  (substitute*
-                      (append
-                       '("pcl/impl/kcl/makefile.akcl"
-                         "add-defs"
-                         "unixport/makefile.dos"
-                         "add-defs.bat"
-                         "gcl-tk/makefile.prev"
-                         "add-defs1")
-                       (find-files "h" "\\.defs"))
-                    (("SHELL=/bin/(ba)?sh")
-                     (string-append "SHELL=" (which "bash")))))
-                ;; drop strip phase to make maxima build, see
-                ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
-                (alist-delete 'strip
-                 %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'pre-conf
+                    (lambda _
+                      (substitute*
+                        (append
+                         '("pcl/impl/kcl/makefile.akcl"
+                           "add-defs"
+                           "unixport/makefile.dos"
+                           "add-defs.bat"
+                           "gcl-tk/makefile.prev"
+                           "add-defs1")
+                         (find-files "h" "\\.defs"))
+                        (("SHELL=/bin/bash")
+                         (string-append "SHELL=" (which "bash")))
+                        (("SHELL=/bin/sh")
+                         (string-append "SHELL=" (which "sh"))))
+                      #t))
+                  ;; drop strip phase to make maxima build, see
+                  ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
+                  (delete 'strip))))
+    (inputs
+     `(("gmp" ,gmp)
+       ("readline" ,readline)))
     (native-inputs
-     `(("m4" ,m4)
-       ("readline" ,readline)
+     `(("gcc" ,gcc-4.9)
+       ("m4" ,m4)
        ("texinfo" ,texinfo)
        ("texlive" ,texlive)))
     (home-page "https://www.gnu.org/software/gcl/")
@@ -522,7 +521,7 @@ interface.")
       ;; https://github.com/JeffBezanson/femtolisp/issues/25
       (supported-systems
        (fold delete %supported-systems
-             '("armhf-linux" "mips64el-linux")))
+             '("armhf-linux" "mips64el-linux" "aarch64-linux")))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags '("CC=gcc" "release")
@@ -660,7 +659,7 @@ portable between implementations.")
        (sha256
         (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
        (file-name (string-append "fiveam-" version ".tar.gz"))))
-    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
     (description "FiveAM is a simple (as far as writing and running tests
@@ -688,8 +687,8 @@ interactive development model in mind.")
                (base32 "10ryrcx832fwqdawb6jmknymi7wpdzhi30qzx7cbrk0cpnka71w2"))
               (file-name
                (string-append "bordeaux-threads-" version ".tar.gz"))))
-    (inputs `(("sbcl-alexandria" ,sbcl-alexandria)))
-    (native-inputs `(("tests:cl-fiveam" ,sbcl-fiveam)))
+    (inputs `(("alexandria" ,sbcl-alexandria)))
+    (native-inputs `(("fiveam" ,sbcl-fiveam)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Portable shared-state concurrency library for Common Lisp")
     (description "BORDEAUX-THREADS is a proposed standard for a minimal
@@ -750,7 +749,7 @@ thin compatibility layer for gray streams.")
         (base32 "16grnxvs7vqm5s6myf8a5s7vwblzq1kgwj8i7ahz8vwvihm9gzfi"))
        (file-name (string-append "flexi-streams-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (inputs `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (inputs `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Implementation of virtual bivalent streams for Common Lisp")
     (description "Flexi-streams is an implementation of \"virtual\" bivalent
 streams that can be layered atop real binary or bivalent streams and that can
@@ -780,7 +779,7 @@ streams which are similar to string streams.")
         (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
        (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (native-inputs `(("tests:cl-flexi-streams" ,sbcl-flexi-streams)))
+    (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
     (description "CL-PPCRE is a portable regular expression library for Common
 Lisp, which is compatible with perl.  It is pretty fast, thread-safe, and
@@ -793,6 +792,51 @@ compatible with ANSI-compliant Common Lisp implementations.")
 
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
+
+(define sbcl-cl-unicode-base
+  (let ((revision "1")
+        (commit "9fcd06fba1ddc9e66aed2f2d6c32dc9b764f03ea"))
+    (package
+      (name "sbcl-cl-unicode-base")
+      (version (string-append "0.1.5-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/edicl/cl-unicode.git")
+                      (commit commit)))
+                (file-name (string-append "cl-unicode-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1jicprb5b3bv57dy1kg03572gxkcaqdjhak00426s76g0plmx5ki"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-file "cl-unicode.asd"
+         #:asd-system-name "cl-unicode/base"))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "http://weitz.de/cl-unicode/")
+      (synopsis "Portable Unicode library for Common Lisp")
+      (description "CL-UNICODE is a portable Unicode library Common Lisp, which
+is compatible with perl.  It is pretty fast, thread-safe, and compatible with
+ANSI-compliant Common Lisp implementations.")
+      (license license:bsd-2))))
+
+(define-public sbcl-cl-unicode
+  (package
+    (inherit sbcl-cl-unicode-base)
+    (name "sbcl-cl-unicode")
+    (inputs
+     `(("cl-unicode/base" ,sbcl-cl-unicode-base)
+       ,@(package-inputs sbcl-cl-unicode-base)))
+    (native-inputs
+     `(("flexi-streams" ,sbcl-flexi-streams)))
+    (arguments '())))
+
+(define-public ecl-cl-unicode
+  (sbcl-package->ecl-package sbcl-cl-unicode))
+
+(define-public cl-unicode
+  (sbcl-package->cl-source-package sbcl-cl-unicode))
 
 (define-public sbcl-clx
   (let ((revision "1")
@@ -823,8 +867,6 @@ compatible with ANSI-compliant Common Lisp implementations.")
              (substitute* "clx.asd"
                (("\\(:file \"trapezoid\"\\)") ""))))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:special-dependencies '("sb-bsd-sockets")))
       (home-page "http://www.cliki.net/portable-clx")
       (synopsis "X11 client library for Common Lisp")
       (description "CLX is an X11 client library for Common Lisp.  The code was
@@ -852,31 +894,27 @@ from other CLXes around the net.")
                (base32 "1maxp98gh64az3d9vz9br6zdd6rc9fmj2imvax4by85g6kxvdz1i"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
-    (inputs `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
-              ("sbcl-clx" ,sbcl-clx)))
-    (outputs '("out" "bin"))
+    (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
+              ("clx" ,sbcl-clx)))
+    (outputs '("out" "lib"))
     (arguments
-     '(#:special-dependencies '("sb-posix")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
-           (lambda* (#:key lisp outputs inputs #:allow-other-keys)
+           (lambda* (#:key outputs #:allow-other-keys)
              (build-program
-              lisp
-              (string-append (assoc-ref outputs "bin") "/bin/stumpwm")
-              #:inputs inputs
+              (string-append (assoc-ref outputs "out") "/bin/stumpwm")
+              outputs
               #:entry-program '((stumpwm:stumpwm) 0))))
          (add-after 'build-program 'create-desktop-file
-           (lambda* (#:key outputs lisp binary? #:allow-other-keys)
-             (let ((output (or (assoc-ref outputs "bin")
-                               (assoc-ref outputs "out")))
-                   (xsessions "/share/xsessions"))
-               (mkdir-p (string-append output xsessions))
-               (with-output-to-file
-                   (string-append output xsessions
-                                  "/stumpwm.desktop")
-                 (lambda _
-                   (format #t
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/stumpwm.desktop")
+                 (lambda (file)
+                   (format file
                     "[Desktop Entry]~@
                      Name=stumpwm~@
                      Comment=The Stump Window Manager~@
@@ -884,7 +922,7 @@ from other CLXes around the net.")
                      TryExec=~@*~a/bin/stumpwm~@
                      Icon=~@
                      Type=Application~%"
-                    output)))
+                    out)))
                #t))))))
     (synopsis "Window manager written in Common Lisp")
     (description "Stumpwm is a window manager written entirely in Common Lisp.
@@ -905,11 +943,15 @@ productive, customizable lisp based systems.")
       (outputs '("out"))
       (arguments '()))))
 
+;; The slynk that users expect to install includes all of slynk's contrib
+;; modules.  Therefore, we build the base module and all contribs first; then
+;; we expose the union of these as `sbcl-slynk'.  The following variable
+;; describes the base module.
 (define sbcl-slynk-boot0
   (let ((revision "1")
         (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
     (package
-      (name "sbcl-slynk")
+      (name "sbcl-slynk-boot0")
       (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
       (source
        (origin
@@ -949,19 +991,22 @@ productive, customizable lisp based systems.")
               (scandir "slynk"))))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:tests? #f)) ; No test suite
+       `(#:tests? #f ; No test suite
+         #:asd-system-name "slynk"))
       (synopsis "Common Lisp IDE for Emacs")
-      (description "SLY is a fork of SLIME.  It also features a completely
-redesigned REPL based on Emacs's own full-featured comint.el, live code
-annotations, and a consistent interactive button interface.  Everything can be
-copied to the REPL.  One can create multiple inspectors with independent
-history.")
+      (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
+It also features a completely redesigned REPL based on Emacs's own
+full-featured comint.el, live code annotations, and a consistent interactive
+button interface.  Everything can be copied to the REPL.  One can create
+multiple inspectors with independent history.")
       (home-page "https://github.com/joaotavora/sly")
       (license license:public-domain)
       (properties `((cl-source-variant . ,(delay cl-slynk)))))))
 
 (define-public cl-slynk
-  (sbcl-package->cl-source-package sbcl-slynk-boot0))
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-slynk-boot0))
+    (name "cl-slynk")))
 
 (define ecl-slynk-boot0
   (sbcl-package->ecl-package sbcl-slynk-boot0))
@@ -970,10 +1015,11 @@ history.")
   (package
     (inherit sbcl-slynk-boot0)
     (name "sbcl-slynk-arglists")
-    (inputs `(("sbcl-slynk" ,sbcl-slynk-boot0)))
+    (inputs `(("slynk" ,sbcl-slynk-boot0)))
     (arguments
-     `(#:asd-file "slynk.asd"
-       ,@(package-arguments sbcl-slynk-boot0)))))
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
+       ((#:asd-file _ "") "slynk.asd")
+       ((#:asd-system-name _ #f) #f)))))
 
 (define ecl-slynk-arglists
   (sbcl-package->ecl-package sbcl-slynk-arglists))
@@ -990,7 +1036,7 @@ history.")
   (package
     (inherit sbcl-slynk-arglists)
     (name "sbcl-slynk-fancy-inspector")
-    (inputs `(("sbcl-slynk-util" ,sbcl-slynk-util)
+    (inputs `(("slynk-util" ,sbcl-slynk-util)
               ,@(package-inputs sbcl-slynk-arglists)))))
 
 (define ecl-slynk-fancy-inspector
@@ -1068,6 +1114,7 @@ history.")
 (define-public sbcl-slynk
   (package
     (inherit sbcl-slynk-boot0)
+    (name "sbcl-slynk")
     (inputs
      `(("slynk" ,sbcl-slynk-boot0)
        ("slynk-util" ,sbcl-slynk-util)
@@ -1105,12 +1152,15 @@ history.")
 
          (prepend-to-source-registry
           (string-append (assoc-ref %outputs "out") "//"))
-         (build-image "sbcl"
-                      (string-append
-                       (assoc-ref %outputs "image")
-                       "/bin/slynk")
-                      #:inputs %build-inputs
-                      #:dependencies ',slynk-systems))))))
+
+         (parameterize ((%lisp-type "sbcl")
+                        (%lisp (string-append (assoc-ref %build-inputs "sbcl")
+                                              "/bin/sbcl")))
+           (build-image (string-append
+                         (assoc-ref %outputs "image")
+                         "/bin/slynk")
+                        %outputs
+                        #:dependencies ',slynk-systems)))))))
 
 (define-public ecl-slynk
   (package
@@ -1139,28 +1189,30 @@ history.")
     (inherit sbcl-stumpwm)
     (name "sbcl-stumpwm-with-slynk")
     (outputs '("out"))
-    (native-inputs
-     `(("stumpwm" ,sbcl-stumpwm)
+    (inputs
+     `(("stumpwm" ,sbcl-stumpwm "lib")
        ("slynk" ,sbcl-slynk)))
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
-             (lambda* (#:key lisp inputs outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
-                 (build-program lisp program
-                                #:inputs inputs
+                 (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm"
-                                                 ,@slynk-systems))
+                                                 ,@slynk-systems)
+                                #:dependency-prefixes
+                                (map (lambda (input) (assoc-ref inputs input))
+                                     '("stumpwm" "slynk")))
                  ;; Remove unneeded file.
                  (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
                  #t)))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
-           (delete 'link-dependencies)
+           (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))

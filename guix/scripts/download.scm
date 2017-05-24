@@ -64,23 +64,23 @@
     (download-proc . ,download-to-store*)))
 
 (define (show-help)
-  (display (_ "Usage: guix download [OPTION] URL
+  (display (G_ "Usage: guix download [OPTION] URL
 Download the file at URL to the store or to the given file, and print its
 file name and the hash of its contents.
 
 Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 ('hex' and 'hexadecimal' can be used as well).\n"))
-  (format #t (_ "
+  (format #t (G_ "
   -f, --format=FMT       write the hash in the given format"))
-  (format #t (_ "
+  (format #t (G_ "
       --no-check-certificate
                          do not validate the certificate of HTTPS servers "))
-  (format #f (_ "
+  (format #f (G_ "
   -o, --output=FILE      download to FILE"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -98,7 +98,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                       ((or "base16" "hex" "hexadecimal")
                        bytevector->base16-string)
                       (x
-                       (leave (_ "unsupported hash format: ~a~%") arg))))
+                       (leave (G_ "unsupported hash format: ~a~%") arg))))
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))
@@ -130,10 +130,10 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (when (assq 'argument result)
-                    (leave (_ "~A: extraneous argument~%") arg))
+                    (leave (G_ "~A: extraneous argument~%") arg))
 
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -141,9 +141,9 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
   (with-error-handling
     (let* ((opts  (parse-options))
            (arg   (or (assq-ref opts 'argument)
-                      (leave (_ "no download URI was specified~%"))))
+                      (leave (G_ "no download URI was specified~%"))))
            (uri   (or (string->uri arg)
-                      (leave (_ "~a: failed to parse URI~%")
+                      (leave (G_ "~a: failed to parse URI~%")
                              arg)))
            (fetch (assq-ref opts 'download-proc))
            (path  (parameterize ((current-terminal-columns
@@ -153,7 +153,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                            (assq-ref opts 'verify-certificate?))))
            (hash  (call-with-input-file
                       (or path
-                          (leave (_ "~a: download failed~%")
+                          (leave (G_ "~a: download failed~%")
                                  arg))
                     port-sha256))
            (fmt   (assq-ref opts 'format)))

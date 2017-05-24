@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -33,27 +34,30 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public node
   (package
     (name "node")
-    (version "6.8.0")
+    (version "7.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0lj3250hglz4w5ic4svd7wlg2r3qc49hnasvbva1v69l8yvx98m8"))
+                "00vdmb0z8b2sd547bkksgy9dfq5gi5xfd9b3f0rc4ngvpzl3z164"))
               ;; https://github.com/nodejs/node/pull/9077
               (patches (search-patches "node-9077.patch"))))
     (build-system gnu-build-system)
     (arguments
-     ;; TODO: Package http_parser and add --shared-http-parser.
+     ;; TODO: Purge the bundled copies from the source.
      '(#:configure-flags '("--shared-openssl"
                            "--shared-zlib"
                            "--shared-libuv"
+                           "--shared-cares"
+                           "--shared-http-parser"
                            "--without-snapshot")
        #:phases
        (modify-phases %standard-phases
@@ -62,6 +66,7 @@
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
                             "lib/internal/v8_prof_polyfill.js"
+                            "test/parallel/test-child-process-spawnsync-shell.js"
                             "test/parallel/test-stdio-closed.js")
                (("'/bin/sh'")
                 (string-append "'" (which "sh") "'")))
@@ -85,7 +90,9 @@
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
                          "test/parallel/test-npm-install.js"
-                         "test/sequential/test-child-process-emfile.js"))
+                         "test/sequential/test-child-process-emfile.js"
+                         "test/sequential/test-benchmark-child-process.js"
+                         "test/sequential/test-http-regr-gh-2928.js"))
              #t))
          (replace 'configure
            ;; Node's configure script is actually a python script, so we can't
@@ -120,7 +127,9 @@
        ("util-linux" ,util-linux)
        ("which" ,which)))
     (inputs
-     `(("libuv" ,libuv)
+     `(("c-ares" ,c-ares)
+       ("http-parser" ,http-parser)
+       ("libuv" ,libuv)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
@@ -130,4 +139,5 @@ event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
 devices.")
     (home-page "http://nodejs.org/")
-    (license expat)))
+    (license expat)
+    (properties '((timeout . 3600))))) ; 1 h

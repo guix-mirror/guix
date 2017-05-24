@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public lsof
   (package
    (name "lsof")
-   (version "4.88")
+   (version "4.89")
    (source (origin
             (method url-fetch)
             (uri (list (string-append %ftp-base "lsof_"
@@ -44,41 +45,36 @@
                         "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/lsof_"
                         version ".tar.bz2")
                        (string-append
+                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/OLD/lsof_"
+                        version ".tar.bz2")
+                       (string-append
                         "ftp://sunsite.ualberta.ca/pub/Mirror/lsof/lsof_"
                         version ".tar.bz2")))
             (sha256
              (base32
-              "16y9wm26rg81mihnzcbdg8h8vhxmq8kn62ssxb8cqydp4q79nvzy"))))
+              "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)))
    (arguments
     `(#:tests? #f ; no test target
       #:phases
-      (alist-replace
-       'unpack
-       (lambda* (#:key source #:allow-other-keys)
-         (let ((unpack (assoc-ref %standard-phases 'unpack)))
-           (unpack #:source source)
-           (unpack #:source (car (find-files "." "\\.tar$")))))
-      (alist-replace
-       'configure
-       (lambda _
-         (setenv "LSOF_CC" "gcc")
-         (setenv "LSOF_MAKE" "make")
-         (system* "./Configure" "linux"))
-      (alist-replace
-       'install
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (mkdir out)
-           (mkdir (string-append out "/bin"))
-           (copy-file "lsof" (string-append out "/bin/lsof"))
-           (mkdir (string-append out "/share"))
-           (mkdir (string-append out "/share/man"))
-           (mkdir (string-append out "/share/man/man8"))
-           (copy-file "lsof.8" (string-append out "/share/man/man8/lsof.8"))
-         ))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (replace 'unpack
+          (lambda* (#:key source #:allow-other-keys)
+            (let ((unpack (assoc-ref %standard-phases 'unpack)))
+              (unpack #:source source)
+              (unpack #:source (car (find-files "." "\\.tar$"))))))
+        (replace 'configure
+          (lambda _
+            (setenv "LSOF_CC" "gcc")
+            (setenv "LSOF_MAKE" "make")
+            (zero? (system* "./Configure" "linux"))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (install-file "lsof" (string-append out "/bin"))
+              (install-file "lsof.8" (string-append out "/share/man/man8")))
+            #t)))))
    (synopsis "Display information about open files")
    (description
     "Lsof stands for LiSt Open Files, and it does just that.

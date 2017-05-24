@@ -69,27 +69,15 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.8.0")
+    (version "2.9.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
+             (patches (search-patches "qemu-CVE-2017-7493.patch"))
              (sha256
               (base32
-               "0qjy3rcrn89n42y5iz60kgr0rrl29hpnj8mq2yvbc1wrcizmvzfs"))
-             (patches (search-patches "qemu-CVE-2016-10155.patch"
-                                      "qemu-CVE-2017-2615.patch"
-                                      "qemu-CVE-2017-2620.patch"
-                                      "qemu-CVE-2017-2630.patch"
-                                      "qemu-CVE-2017-5525.patch"
-                                      "qemu-CVE-2017-5526.patch"
-                                      "qemu-CVE-2017-5552.patch"
-                                      "qemu-CVE-2017-5578.patch"
-                                      "qemu-CVE-2017-5579.patch"
-                                      "qemu-CVE-2017-5667.patch"
-                                      "qemu-CVE-2017-5856.patch"
-                                      "qemu-CVE-2017-5898.patch"
-                                      "qemu-CVE-2017-5931.patch"))))
+               "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -275,14 +263,14 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "2.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0sriasjc573c519yqw1hcfb3qqjcsm9hm8vayw0anwkl6di9ay8s"))))
+                "17i08v3836c9w4dwcklvbgzin3aw1gbksm9ry8kpk837nn1s10cl"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -346,14 +334,14 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "0.2.3")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
                                   "libvirt-glib-" version ".tar.gz"))
               (sha256
                (base32
-                "1pahj8qa7k2307sd57rwqwq1hijya02v0sxk91hl3cw48niimcf3"))))
+                "0iwa5sdbii52pjpdm5j37f67sdmf0kpcky4liwhy1nf43k85i4fa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -394,13 +382,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "2.0.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "0h0x5lpsx97bvw20pzfcsdmmivximddq4qmn8fk0n55dqv0wn5kq"))))
+                "0g80vhjss1a48w60zw0pd5fhpwfjw2dqhh0fbs730brkxj6xv1dc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -408,9 +396,10 @@ three libraries:
          (add-after 'unpack 'patch-nosetests-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "setup.py"
-               (("sys.executable, \"/usr/bin/nosetests\"")
-                (string-append "\"" (which "bash") "\", \""
-                               (which "nosetests") "\"")))
+               (("\"/usr/bin/nosetests\"")
+                (string-append "\"" (which "nosetests") "\""))
+               (("self\\.spawn\\(\\[sys\\.executable, nose\\]\\)")
+                (format #f "self.spawn([\"~a\", nose])" (which "bash"))))
              #t)))))
     (inputs
      `(("libvirt" ,libvirt)))
@@ -431,7 +420,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -439,7 +428,7 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1jnawqjmcqd2db78ngx05x7cxxn3iy1sb4qfgbwcn045qh6a8cdz"))))
+                "0i1rkxz730vw1nqghrp189jhhp53pw81k0h71hhxmyqlkyclkig6"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

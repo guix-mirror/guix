@@ -1,0 +1,26 @@
+From 0646e4ee471183994f78a759269f0505617711f3 Mon Sep 17 00:00:00 2001
+From: Martin Hosken <martin_hosken@sil.org>
+Date: Tue, 18 Apr 2017 13:17:14 +0100
+Subject: [PATCH] Ensure non linear classes have even number of elements
+
+---
+ src/Silf.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/Silf.cpp b/src/Silf.cpp
+index d661992..9f2f954 100644
+--- a/src/Silf.cpp
++++ b/src/Silf.cpp
+@@ -293,7 +293,8 @@ size_t Silf::readClassMap(const byte *p, size_t data_len, uint32 version, Error
+         if (e.test(*o + 4 > max_off, E_HIGHCLASSOFFSET)                        // LookupClass doesn't stretch over max_off
+          || e.test(lookup[0] == 0                                                   // A LookupClass with no looks is a suspicious thing ...
+                     || lookup[0] * 2 + *o + 4 > max_off                             // numIDs lookup pairs fits within (start of LookupClass' lookups array, max_off]
+-                    || lookup[3] + lookup[1] != lookup[0], E_BADCLASSLOOKUPINFO))   // rangeShift:   numIDs  - searchRange
++                    || lookup[3] + lookup[1] != lookup[0], E_BADCLASSLOOKUPINFO)    // rangeShift:   numIDs  - searchRange
++         || e.test(((o[1] - *o) & 1) != 0, ERROROFFSET))                         // glyphs are in pairs so difference must be even.
+             return ERROROFFSET;
+     }
+ 
+-- 
+2.12.2
+

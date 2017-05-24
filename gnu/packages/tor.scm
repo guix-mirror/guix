@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
@@ -40,14 +43,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.9.10")
+    (version "0.3.0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0h8kpn42mgpkzmnga143hi8nh0ai65ypxh7qhkwbb15j3wz2h4fn"))))
+               "00kxa83bn0axh7479fynp6r8znq5wy26kvb8ghixgjpkir2c8h4n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-expensive-hardening"
@@ -88,6 +91,19 @@ the application layer) you need to install @code{torsocks}.")
                (base32
                 "0byr9ga9w79qz4vp0m11sbmspad7fsal9wm67r4znzb7zb7cis19"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("which" ,which)
+       ("libcap" ,libcap)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'build 'absolutize
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "src/bin/torsocks"
+                        (("getcap=`.*`")
+                         (string-append "getcap=" (which "getcap")))
+                        (("`which")
+                         (string-append "`" (which "which"))))
+                      #t)))))
     (home-page "https://www.torproject.org/")
     (synopsis "Use socks-friendly applications with Tor")
     (description

@@ -44,21 +44,21 @@
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (_ "Usage: guix hash [OPTION] FILE
+  (display (G_ "Usage: guix hash [OPTION] FILE
 Return the cryptographic hash of FILE.
 
 Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
 and 'hexadecimal' can be used as well).\n"))
-  (format #t (_ "
+  (format #t (G_ "
   -x, --exclude-vcs      exclude version control directories"))
-  (format #t (_ "
+  (format #t (G_ "
   -f, --format=FMT       write the hash in the given format"))
-  (format #t (_ "
+  (format #t (G_ "
   -r, --recursive        compute the hash on FILE recursively"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -79,7 +79,7 @@ and 'hexadecimal' can be used as well).\n"))
                       ((or "base16" "hex" "hexadecimal")
                        bytevector->base16-string)
                       (x
-                       (leave (_ "unsupported hash format: ~a~%")
+                       (leave (G_ "unsupported hash format: ~a~%")
                               arg))))
 
                   (alist-cons 'format fmt-proc
@@ -106,7 +106,7 @@ and 'hexadecimal' can be used as well).\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "unrecognized option: ~a~%")
+                  (leave (G_ "unrecognized option: ~a~%")
                          name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
@@ -152,7 +152,7 @@ and 'hexadecimal' can be used as well).\n"))
          (lambda ()
            (format #t "~a~%" (fmt (file-hash file))))
          (lambda args
-           (leave (_ "~a~%")
+           (leave (G_ "~a~%")
                   (strerror (system-error-errno args))))))
       (x
-       (leave (_ "wrong number of arguments~%"))))))
+       (leave (G_ "wrong number of arguments~%"))))))

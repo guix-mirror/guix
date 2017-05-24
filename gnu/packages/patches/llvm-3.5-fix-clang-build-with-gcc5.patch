@@ -1,0 +1,35 @@
+This patch was downloaded from https://sft.its.cern.ch/jira/browse/ROOT-7047.
+It fixes the build of clang 3.5 with GCC 5.  File paths have been adjusted.
+
+From 00f3ed6eee41da871799ad0fd19153c7682d61fe Mon Sep 17 00:00:00 2001
+From: Alexander Klimov <alserkli@inbox.ru>
+Date: Mon, 26 Jan 2015 18:45:23 +0200
+Subject: [PATCH] [ADT/IntrusiveRefCntPtr] Give friend access to
+ IntrusiveRefCntPtr<X> so the relevant move constructor can
+ access 'Obj'.
+
+From LLVM upstream:
+Author: Argyrios Kyrtzidis <akyrtzi@gmail.com>
+Date:   Tue Sep 23 06:06:43 2014 +0000
+git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@218295 91177308-0d34-0410-b5e6-96231b3b80d8
+---
+ interpreter/llvm/src/include/llvm/ADT/IntrusiveRefCntPtr.h |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/llvm/ADT/IntrusiveRefCntPtr.h b/include/llvm/ADT/IntrusiveRefCntPtr.h
+index f9df378..c859c98 100644
+--- a/include/llvm/ADT/IntrusiveRefCntPtr.h
++++ b/include/llvm/ADT/IntrusiveRefCntPtr.h
+@@ -197,6 +197,9 @@ public:
+   private:
+     void retain() { if (Obj) IntrusiveRefCntPtrInfo<T>::retain(Obj); }
+     void release() { if (Obj) IntrusiveRefCntPtrInfo<T>::release(Obj); }
++
++    template <typename X>
++    friend class IntrusiveRefCntPtr;
+   };
+ 
+   template<class T, class U>
+-- 
+1.7.10.4
+

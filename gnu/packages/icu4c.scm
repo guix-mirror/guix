@@ -2,6 +2,8 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu))
 
 (define-public icu4c
@@ -38,6 +41,9 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
+            (patches
+             (search-patches "icu4c-CVE-2017-7867-CVE-2017-7868.patch"
+                             "icu4c-reset-keyword-list-iterator.patch"))
             (sha256
              (base32 "036shcb3f8bm1lynhlsb4kpjm9s9c2vdiir01vg216rs2l8482ib"))))
    (build-system gnu-build-system)
@@ -63,3 +69,30 @@ globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
+
+(define-public java-icu4j
+  (package
+    (name "java-icu4j")
+    (version "59.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.icu-project.org/files/icu4j/"
+                                  version "/icu4j-"
+                                  (string-map (lambda (x)
+                                                (if (char=? x #\.) #\_ x))
+                                              version)
+                                  "-src.jar"))
+              (sha256
+               (base32
+                "0bgxsvgi0qcwj60pvcxrf7a3fbk7aksyxnfwpbzavyfrfzixqh0c"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:jar-name "icu4j.jar"))
+    (home-page "http://site.icu-project.org/")
+    (synopsis "International Components for Unicode")
+    (description
+     "ICU is a set of C/C++ and Java libraries providing Unicode and
+globalisation support for software applications.  This package contains the
+Java part.")
+    (license x11)))

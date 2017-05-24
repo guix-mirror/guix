@@ -35,15 +35,15 @@
 (define-public ccid
   (package
     (name "ccid")
-    (version "1.4.26")
+    (version "1.4.27")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4205/"
+                    "https://alioth.debian.org/frs/download.php/file/4218/"
                     "ccid-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bxy835c133ajalpj4gx60nqkjvpf9y1n97n04pw105pi9qbyrrj"))))
+                "0dyikpmhsph36ndgd61bs4yx437v5y0bmm8ahjacp1k9c1ly4q56"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output
@@ -93,15 +93,15 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "1.8.20")
+    (version "1.8.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4203/"
+                    "https://alioth.debian.org/frs/download.php/file/4216/"
                     "pcsc-lite-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ckb0jf4n585a4j26va3jm2nrv3c1y38974514f8qy3c04a02zgc"))))
+                "1b8kwl81f6s3y7qh68ahr8sp8a0w6m464v9b3s4zxq2cgpmnaczy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers")))

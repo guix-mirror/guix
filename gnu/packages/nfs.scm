@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages onc-rpc)
@@ -41,7 +41,7 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "1.3.4")
+    (version "2.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -49,7 +49,7 @@
                    "/nfs-utils-" version ".tar.xz"))
              (sha256
               (base32
-               "0xarqhwy757vazv9gqhyrgxsrx083yhvkkih01jh83fqm305naml"))))
+               "1vqrqzhg9nh2wj1icp7k8v9dibgnn521b45np79nnkmqf16bbbhg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -57,48 +57,47 @@
          ,(string-append "--with-start-statd="
                          (assoc-ref %outputs "out") "/sbin/start-statd")
          ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5")))
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                      'configure 'adjust-command-file-names
-                    (lambda _
-                      ;; Remove assumptions of FHS from start-statd script
-                      (substitute* `("utils/statd/start-statd")
-                        (("^PATH=.*") "")
-                        (("^flock")
-                         (string-append
-                          (assoc-ref %build-inputs "util-linux")
-                          "/bin/flock"))
-                        (("^exec rpc.statd")
-                         (string-append "exec "
-                          (assoc-ref %outputs "out") "/sbin/rpc.statd")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'adjust-command-file-names
+           (lambda _
+             ;; Remove assumptions of FHS from start-statd script
+             (substitute* `("utils/statd/start-statd")
+               (("^PATH=.*") "")
+               (("^flock")
+                (string-append
+                 (assoc-ref %build-inputs "util-linux")
+                 "/bin/flock"))
+               (("^exec rpc.statd")
+                (string-append "exec "
+                 (assoc-ref %outputs "out") "/sbin/rpc.statd")))
 
-                      ;; This hook tries to write to /var
-                      ;; That needs to be done by a service too.
-                      (substitute* `("Makefile.in")
-                        (("^install-data-hook:")
-                         "install-data-hook-disabled-for-guix:"))
+             ;; This hook tries to write to /var
+             ;; That needs to be done by a service too.
+             (substitute* `("Makefile.in")
+               (("^install-data-hook:")
+                "install-data-hook-disabled-for-guix:"))
 
-                      ;; Replace some hard coded paths.
-                      (substitute* `("utils/nfsd/nfssvc.c")
-                        (("/bin/mount")
-                         (string-append
-                          (assoc-ref %build-inputs "util-linux")
-                          "/bin/mount")))
-                      (substitute* `("utils/statd/statd.c")
-                        (("/usr/sbin/")
-                         (string-append (assoc-ref %outputs "out") "/sbin/")))
-                      (substitute* `("utils/osd_login/Makefile.in"
-                                     "utils/mount/Makefile.in"
-                                     "utils/nfsdcltrack/Makefile.in")
-                        (("^sbindir = /sbin")
-                         (string-append "sbindir = "
-                                        (assoc-ref %outputs "out") "/sbin")))
-                      #t)))))
+             ;; Replace some hard coded paths.
+             (substitute* `("utils/nfsd/nfssvc.c")
+               (("/bin/mount")
+                (string-append
+                 (assoc-ref %build-inputs "util-linux")
+                 "/bin/mount")))
+             (substitute* `("utils/statd/statd.c")
+               (("/usr/sbin/")
+                (string-append (assoc-ref %outputs "out") "/sbin/")))
+             (substitute* `("utils/osd_login/Makefile.in"
+                            "utils/mount/Makefile.in"
+                            "utils/nfsdcltrack/Makefile.in")
+               (("^sbindir = /sbin")
+                (string-append "sbindir = "
+                               (assoc-ref %outputs "out") "/sbin")))
+             #t)))))
     (inputs `(("libevent" ,libevent)
               ("libnfsidmap" ,libnfsidmap)
               ("sqlite" ,sqlite)
               ("lvm2" ,lvm2)
-              ("gss" ,gss)
               ("util-linux" ,util-linux)
               ("mit-krb5" ,mit-krb5)
               ("libtirpc" ,libtirpc)))

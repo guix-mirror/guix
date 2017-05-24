@@ -44,7 +44,7 @@
   #:use-module (srfi srfi-26))
 
 ;; Should be one less than the current released version.
-(define %rust-bootstrap-binaries-version "1.14.0")
+(define %rust-bootstrap-binaries-version "1.15.0")
 
 (define %rust-bootstrap-binaries
   (origin
@@ -55,7 +55,7 @@
           "-i686-unknown-linux-gnu.tar.gz"))
     (sha256
      (base32
-      "0h384prpabcl08mxs1bilyb0dbk0knpdylcnz4b84ij4idr7ap4d"))))
+      "0wmkfx8pxmkkw021mrq9s3xhra8f0daqdl6j56pxyn4w39i0rzrw"))))
 
 (define (increment-rust-version rust-version major patch)
   (match (string-split rust-version #\.)
@@ -205,7 +205,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                     "rustc-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0wvn8m1nfg664b95qrdpfh72q1a6ir09rqkrnlzbkay2r7xf8mgn"))))
+                "1d78jq7mc34n265by68amr9r4nzbiqrilfbwh7gx56ydn4gb6rpr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cmake" ,cmake)
@@ -226,7 +226,22 @@ rustc-bootstrap and cargo-bootstrap packages.")
            (lambda _
              (substitute* "configure"
                (("/usr/bin/env") (which "env")) ; Detect target CPU correctly.
-               (("probe_need CFG_CURL curl") "")) ; Avoid curl as a build dependency.
+               (("probe_need CFG_CURL curl") "") ; Avoid curl build dependency.
+               ;; Newer LLVM has a NVPTX (NVIDIA) backend which the Rust
+               ;; Makefiles don't know about, causing a linker failure
+               ;; if we don't intervene.
+               ;; Therefore, we add NVPTX here.
+               ;; See <https://github.com/rust-lang/rust/issues/40698>.
+               ;; For the next release, we will have to use rustbuild.
+               ;; Right now, rustbuild doesn't work yet.
+               (("-DLLVM_TARGETS_TO_BUILD='")
+                "-DLLVM_TARGETS_TO_BUILD='NVPTX;")) ; Make LLVM >= 3.8.1 work.
+             (substitute* "src/tools/compiletest/src/util.rs"
+               (("(\"amd64\", \"x86_64\"),") "(\"amd64\", \"x86_64\"),
+(\"nvptx\", \"nvptx\"),")) ; Make LLVM >= 3.8.1 work.
+             (substitute* "mk/main.mk"
+               (("LLVM_OPTIONAL_COMPONENTS=")
+                "LLVM_OPTIONAL_COMPONENTS=nvptx ")) ; Make LLVM >= 3.8.1 work.
              #t))
          (add-after 'unpack 'set-env
            (lambda _
@@ -263,7 +278,7 @@ rustc-bootstrap and cargo-bootstrap packages.")
                             "--release-channel=stable"
                             "--enable-rpath"
                             "--enable-local-rust"
-                            "--disable-rustbuild" ; use Makefiles
+                            "--disable-rustbuild" ; rustbuild doesn't work yet.
                             "--disable-manage-submodules")))
                ;; Rust uses a custom configure script (no autoconf).
                (zero? (apply system* "./configure" flags)))))
@@ -286,6 +301,8 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+;; This tries very hard not to get into a cyclic dependency like this:
+;;   cargo <- cargo-build-system <- cargo.
 (define-public cargo
   (package
     (name "cargo")
@@ -297,7 +314,7 @@ safety and thread safety guarantees.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "194i06y9nql0p93gahh0vm4qwv6c1kpd9rprpf22w5gav9lpcyjz"))))
+                "1y0zy8gk1ly0wh57y78fisk7cdd92qk0x7z664f6l7lzl2krqs7w"))))
     (build-system cargo-build-system)
     (propagated-inputs
      `(("cmake" ,cmake)
@@ -313,10 +330,10 @@ safety and thread safety guarantees.")
      `(("rust-openssl"
         ,(origin
            (method url-fetch)
-           (uri (crate-uri "openssl" "0.9.1"))
+           (uri (crate-uri "openssl" "0.9.6"))
            (sha256
             (base32
-             "1m2mhiar87qnw4gxci286q9g85ljafbc41salbj2hmcgh8aagchy"))))
+             "0g28g692gby6izp9qmnwnyxyhf9b0870yhd500p18j9l69lxl00c"))))
        ("rust-strsim"
         ,(origin
            (method url-fetch)
@@ -411,17 +428,17 @@ safety and thread safety guarantees.")
        ("rust-libssh2-sys"
         ,(origin
            (method url-fetch)
-           (uri (crate-uri "libssh2-sys" "0.2.4"))
+           (uri (crate-uri "libssh2-sys" "0.2.5"))
            (sha256
             (base32
-             "1pmmh0hcx14856wg9bp740yf618qfl2765vhf67sfs5lmf39227d"))))
+             "0d2r36hrh9vc1821r0v4kywv30svpf37d31calwql69fbij3bqci"))))
        ("rust-libz-sys"
         ,(origin
            (method url-fetch)
-           (uri (crate-uri "libz-sys" "1.0.10"))
+           (uri (crate-uri "libz-sys" "1.0.13"))
            (sha256
             (base32
-             "1rl85x045sk5d345hgcahx99plpbdg2a3bx5vjfxig30qah74p4h"))))
+             "034pgvxzgsv37iafgs0lmvd1ifm0bg0zm1xcsn9x71nn8lm93vp5"))))
        ("rust-curl-sys"
         ,(origin
            (method url-fetch)
@@ -429,13 +446,27 @@ safety and thread safety guarantees.")
            (sha256
             (base32
              "0fi8kjz3f8m8vfazycs3ddm0h6j3x78hw78gwbvybx71129192i1"))))
+       ("rust-error-chain"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "error-chain" "0.7.2"))
+           (sha256
+            (base32
+             "03qjh6l2a9fkiyg0428p7q3dcpi47cbmrqf9zmlymkg43v3v731i"))))
+       ("rust-metadeps"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "metadeps" "1.1.1"))
+           (sha256
+            (base32
+             "0l818461bslb7nrs7r1amkqv45n53fcp5sabyqipwx0xxbkzz7w2"))))
        ("rust-openssl-sys"
         ,(origin
            (method url-fetch)
-           (uri (crate-uri "openssl-sys" "0.9.1"))
+           (uri (crate-uri "openssl-sys" "0.9.6"))
            (sha256
             (base32
-             "1sdhgalfm2zdqf144xhdnxdha7ifjgsfbmlrqbx0j9f3mh4gpscm"))))
+             "1hzpyf9z8xg1yn5r9g17bl5j20nifd6s2zp10xh90v7m0sd2yj5i"))))
        ("rust-fs2"
         ,(origin
            (method url-fetch)
@@ -635,10 +666,10 @@ safety and thread safety guarantees.")
        ("rust-libgit2-sys"
         ,(origin
            (method url-fetch)
-           (uri (crate-uri "libgit2-sys" "0.6.5"))
+           (uri (crate-uri "libgit2-sys" "0.6.6"))
            (sha256
             (base32
-             "0yl80n12ih4jh1halpbj3zqlqvw5zxdr6m6xdcvdz67svjy50bjh"))))
+             "074h9q4p60xh6canb0sj4vrc801wqv6p53l9lp0q724bkwzf7967"))))
        ("rust-env_logger"
         ,(origin
            (method url-fetch)
@@ -785,10 +816,22 @@ safety and thread safety guarantees.")
            (uri (crate-uri "num-complex" "0.1.35"))
            (sha256
             (base32
-             "0bzrjfppnnzf9vmkpklhp2dw9sb1lqzydb8r6k83z76i9l2qxizh"))))))
+             "0bzrjfppnnzf9vmkpklhp2dw9sb1lqzydb8r6k83z76i9l2qxizh"))))
+       ("rust-shell-escape"
+        ,(origin
+           (method url-fetch)
+           (uri (crate-uri "shell-escape" "0.1.3"))
+           (sha256
+            (base32
+             "1y2fp2brv639icv4a0fdqs1zhlrxq8qbz27ygfa86ifmh5jcjp6x"))))))
     (arguments
      `(#:cargo ,cargo-bootstrap
        #:tests? #f ; FIXME
+       #:modules
+       ((ice-9 match)
+        (srfi srfi-1) ; 'every
+        (guix build utils)
+        (guix build cargo-build-system))
        #:phases
        (modify-phases %standard-phases
          ;; Avoid cargo complaining about missmatched checksums.
@@ -797,30 +840,36 @@ safety and thread safety guarantees.")
          (delete 'patch-usr-bin-file)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((unpack (lambda (source target)
-                             (mkdir-p target)
-                             (with-directory-excursion target
-                               (zero? (system* "tar" "xf"
-                                               source
-                                               "--strip-components=1"))))))
+             (define (unpack source target)
+               (mkdir-p target)
+               (with-directory-excursion target
+                 (zero? (system* "tar" "xf"
+                                 source
+                                 "--strip-components=1"))))
+             (define (touch file-name)
+               (call-with-output-file file-name (const #t)))
+             (define (install-rust-library entry)
+               (match entry
+                 ((name . src)
+                  (if (string-prefix? "rust-" name)
+                    (let* ((rust-length (string-length "rust-"))
+                           (rust-name (string-drop name
+                                                   rust-length))
+                           (rsrc (string-append "vendor/"
+                                                rust-name))
+                           (unpack-status (unpack src rsrc)))
+                      (touch (string-append rsrc "/.cargo-ok"))
+                      (generate-checksums rsrc src)
+                      unpack-status)))
+                 (_ #t)))
                (mkdir "vendor")
-               (for-each (lambda (p)
-                           (let ((name (car p)))
-                             (if (string-prefix? "rust-" name)
-                               (let ((rsrc (string-append "vendor/"
-                                                           (string-drop name
-                                                                        (string-length "rust-")))))
-                                 (unpack (assoc-ref inputs name) rsrc)
-                                 (system* "touch" (string-append rsrc "/.cargo-ok"))
-                                 (generate-checksums rsrc (assoc-ref inputs name)))))) inputs))))
-         ;; Set CARGO_HOME to use the vendored dependencies.
-         (add-after 'unpack 'set-cargo-home
+               (every install-rust-library inputs)))
+         (add-after 'unpack 'set-environment-up
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcc (assoc-ref inputs "gcc"))
                     (cc (string-append gcc "/bin/gcc")))
-               (mkdir "cargohome")
-               (setenv "CARGO_HOME" (string-append (getcwd) "/cargohome"))
-               (call-with-output-file "cargohome/config"
+               (mkdir ".cargo")
+               (call-with-output-file ".cargo/config"
                  (lambda (p)
                    (format p "
 [source.crates-io]
@@ -832,7 +881,8 @@ directory = 'vendor'
 ")))
                (setenv "CMAKE_C_COMPILER" cc)
                (setenv "CC" cc))
-             #t)))))
+             #t))
+         (delete 'configure))))
     (home-page "https://github.com/rust-lang/cargo")
     (synopsis "Build tool and package manager for Rust")
     (description "Cargo is a tool that allows Rust projects to declare their

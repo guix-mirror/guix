@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +70,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.85.1")
+    (version "2.86.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bulletphysics/bullet3/"
@@ -77,7 +78,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qpd37ws0xlxwy55dg058a5b4yw2jxiz09yyc3lc0frpa05pq5bf"))))
+                "0nghzcl84p8di215p7xj0gy1hyy072hw2xk9cnmav9hv6bjb4n60"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list (string-append
@@ -186,6 +187,68 @@ and network communications.  A very thin client library can be embedded to
 provide connectivity for client applications written in any language.")
     (license license:gpl3+)))
 
+(define-public python-sge-pygame
+  (package
+    (name "python-sge-pygame")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sge-pygame" version))
+       (sha256
+        (base32
+         "1qhrcja1igqkjjn1w425ni5f41mijdq5dpq0ymkhl29xxrf8hnx8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pygame" ,python-pygame)
+       ("python-six" ,python-six)))
+    (home-page "http://stellarengine.nongnu.org")
+    (synopsis "2D game engine for Python")
+    (description
+     "The SGE Game Engine (\"SGE\", pronounced like \"Sage\") is a
+general-purpose 2D game engine.  It takes care of several details fro you so
+you can focus on the game itself.  This makes more rapid game development
+possible, and it also makes the SGE easy to learn.")
+    (license license:lgpl3+)))
+
+(define-public python2-sge-pygame
+  (package-with-python2 python-sge-pygame))
+
+(define-public python-tmx
+  (package
+    (name "python-tmx")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/python-tmx/tmx-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1is107sx3lr09dqjiyn10xqhyv5x54c2ryhys9mb9j3mxjbm227l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://python-tmx.nongnu.org")
+    (synopsis "Python library for the @code{Tiled} TMX format")
+    (description
+     "Python TMX reads and writes the @code{Tiled} TMX format in a simple way.
+This is useful for map editors or generic level editors, and it's also useful
+for using a map editor or generic level editor like Tiled to edit your game's
+levels.")
+    (license (list license:asl2.0
+                   ;; Documentation (only available in the source tarball) is
+                   ;; under the CC0 license.
+                   license:cc0))))
+
+(define-public python2-tmx
+  (let ((python2-tmx (package-with-python2 python-tmx)))
+    (package
+      (inherit python2-tmx)
+      (propagated-inputs
+       `(("python2-pathlib" ,python2-pathlib)
+         ,@(package-propagated-inputs python2-tmx))))))
+
 (define-public tiled
   (package
     (name "tiled")
@@ -253,7 +316,7 @@ clone.")
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
        ("openal" ,openal)))
-    (home-page "http://www.sfml-dev.org")
+    (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
     (description
      "SFML provides a simple interface to the various computer components,
@@ -305,7 +368,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://icculus.org/physfs/downloads/physfs-"
+                    "https://icculus.org/physfs/downloads/physfs-"
                     version ".tar.bz2"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
@@ -318,7 +381,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      `(("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)))
-    (home-page "http://icculus.org/physfs")
+    (home-page "https://icculus.org/physfs")
     (synopsis "File system abstraction library")
     (description
      "PhysicsFS is a library to provide abstract access to various archives.
@@ -510,7 +573,7 @@ etc.")
     (description "Aseprite is a tool for creating 2D pixel art for video
 games.  In addition to basic pixel editing features, Aseprite can assist in
 the creation of animations, tiled graphics, texture atlases, and more.")
-    (home-page "http://www.aseprite.org/")
+    (home-page "https://www.aseprite.org/")
     (license license:gpl2+)))
 
 (define-public qqwing
@@ -655,7 +718,7 @@ interface (API).")
        ("libsmpeg" ,libsmpeg)
        ("portmidi" ,portmidi)
        ("v4l-utils" ,v4l-utils)))
-    (home-page "http://www.pygame.org")
+    (home-page "https://www.pygame.org")
     (synopsis "SDL wrapper for Python")
     (description "Pygame is a set of Python modules designed for writing games.
 Pygame adds functionality on top of the excellent SDL library. This allows you

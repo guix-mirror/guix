@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -304,14 +305,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.8")
+    (version "4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hsaxcka0ks76k23sb65c46i53hjm465sgxyn3m3301diqlgwga0"))))
+                "1fklbjwr41cvd5b7d1qvpl3bqzc4aak732r3m2wjhhgkxhk9f07h"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -379,7 +380,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
     (description
      "Nload is a console application which monitors network traffic and
 bandwidth usage in real time.  It visualizes the in- and outgoing traffic using
-two graphs and provides additional info like total amount of transfered data
+two graphs, and provides additional info like total amount of transferred data
 and min/max network usage.")
     (license license:gpl2+)))
 
@@ -470,7 +471,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.5")
+    (version "2.2.6")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -479,7 +480,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1j4sc3pmy8l6k41007spglcqiabjlzc7f85pn3jmjr9ksv9qipbm"))))
+         "0jd89i9si43lyv3hsl6p1lkjmz4zagvc37wcbigsxxc5v8gda9zn"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -726,8 +727,7 @@ definitions and structure manipulators for Perl.")
         (base32
           "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
       (patches
-        (search-patches
-          "perl-net-dns-resolver-programmable-Fix-broken-interface.patch"))))
+       (search-patches "perl-net-dns-resolver-programmable-fix.patch"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))
@@ -738,7 +738,7 @@ definitions and structure manipulators for Perl.")
     "Programmable DNS resolver class for offline emulation of DNS")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
 offline emulation of DNS.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-netaddr-ip
  (package
@@ -771,7 +771,7 @@ offline emulation of DNS.")
   (synopsis
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-net-patricia
  (package
@@ -845,7 +845,7 @@ offline emulation of DNS.")
     "Look up location and network information by IP Address in Perl")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
 information by IP Address.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-io-socket-inet6
  (package
@@ -875,7 +875,7 @@ information by IP Address.")
     "Perl object interface for AF_INET/AF_INET6 domain sockets")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public proxychains-ng
   (package
@@ -1121,10 +1121,28 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
            license:bsd-2 license:bsd-3
            license:asl2.0))))           ; all other
 
+(define-public python-ipy
+  (package
+    (name "python-ipy")
+    (version "0.83")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "IPy" version))
+              (sha256
+               (base32
+                "1f6sdrxclifky4gvkf4gvyv5hx3fjh8vzspnfrqki6qm5d9mmnk1"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/autocracy/python-ipy/")
+    (synopsis "Python class and tools for handling IP addresses and networks")
+    (description "The @code{IP} class allows a comfortable parsing and
+handling for most notations in use for IPv4 and IPv6 addresses and
+networks.")
+    (license license:bsd-3)))
+
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.2")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -1133,7 +1151,7 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ir9fqwr7cl9kfq7dgh9vkydkwf59wsx0cwbzbffw8i313xhzxa1"))))
+         "1alambi1ljng6j04k7pq58jqwd0wh1q9630f17nl34ljabji5lwy"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")

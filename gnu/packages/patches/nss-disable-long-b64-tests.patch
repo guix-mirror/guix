@@ -1,0 +1,34 @@
+Disable long b64 tests, which consistently fail on armhf.
+This is based on an excerpt of the following upstream patch:
+
+  https://hg.mozilla.org/projects/nss/rev/00b2cc2b33c7
+
+(we exclude the part of the upstream patch that reverts
+an earlier failed attempt, and adapt the file names)
+
+diff --git a/gtests/util_gtest/util_b64_unittest.cc b/gtests/util_gtest/util_b64_unittest.cc
+--- a/nss/gtests/util_gtest/util_b64_unittest.cc
++++ b/nss/gtests/util_gtest/util_b64_unittest.cc
+@@ -63,17 +63,19 @@ TEST_F(B64EncodeDecodeTest, EncDecTest) 
+ 
+ TEST_F(B64EncodeDecodeTest, FakeDecTest) { EXPECT_TRUE(TestFakeDecode(100)); }
+ 
+ TEST_F(B64EncodeDecodeTest, FakeEncDecTest) {
+   EXPECT_TRUE(TestFakeEncode(100));
+ }
+ 
+ // These takes a while ...
+-TEST_F(B64EncodeDecodeTest, LongFakeDecTest1) {
++TEST_F(B64EncodeDecodeTest, DISABLED_LongFakeDecTest1) {
+   EXPECT_TRUE(TestFakeDecode(0x66666666));
+ }
+-TEST_F(B64EncodeDecodeTest, LongFakeEncDecTest1) { TestFakeEncode(0x3fffffff); }
+-TEST_F(B64EncodeDecodeTest, LongFakeEncDecTest2) {
++TEST_F(B64EncodeDecodeTest, DISABLED_LongFakeEncDecTest1) {
++  TestFakeEncode(0x3fffffff);
++}
++TEST_F(B64EncodeDecodeTest, DISABLED_LongFakeEncDecTest2) {
+   EXPECT_FALSE(TestFakeEncode(0x40000000));
+ }
+ 
+ }  // namespace nss_test

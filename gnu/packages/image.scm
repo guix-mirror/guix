@@ -13,8 +13,9 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,6 +156,41 @@ APNG patch provides APNG support to libpng.")
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+
+(define-public pngcrunch
+  (package
+   (name "pngcrunch")
+   (version "1.8.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/pmt/pngcrush/"
+                                version "/pngcrush-" version ".tar.xz"))
+            (sha256 (base32
+                     "1c7m316i91jp3h1dj1ppppdv6zilm2njk1wrpqy2zj0fcll06lwd"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:make-flags '("-f" "Makefile-nolib")
+      #:tests? #f ; no check target
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Makefile-nolib"
+              (("^(PNG(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "libpng") "/"))
+              (("^(Z(INC|LIB) = )/usr/local/" line vardef)
+               (string-append vardef (assoc-ref inputs "zlib") "/"))
+              ;; The Makefile is written by hand and not using $PREFIX
+              (("\\$\\(DESTDIR\\)/usr/")
+               (string-append (assoc-ref outputs "out") "/"))))))))
+   (inputs
+    `(("libpng" ,libpng)
+      ("zlib" , zlib)))
+   (home-page "https://pmt.sourceforge.net/pngcrush")
+   (synopsis "Utility to compress PNG files")
+   (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
+files.  It can compress them as much as 40% losslessly.")
+   (license license:zlib)))
 
 (define-public libjpeg
   (package
@@ -320,7 +356,10 @@ extracting icontainer icon files.")
                                      "libtiff-divide-by-zero-tiffcp.patch"
                                      "libtiff-assertion-failure.patch"
                                      "libtiff-CVE-2016-10094.patch"
-                                     "libtiff-CVE-2017-5225.patch"))
+                                     "libtiff-CVE-2017-5225.patch"
+                                     "libtiff-CVE-2017-7593.patch"
+                                     "libtiff-CVE-2017-7594.patch"
+                                     "libtiff-multiple-UBSAN-crashes.patch"))
             (sha256
              (base32
               "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
@@ -460,7 +499,10 @@ arithmetic ops.")
         (sha256
           (base32 "04akiwab8iy5iy34razcvh9mcja9wy737civ3sbjxk4j143s1b2s"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"
-                                 "jbig2dec-CVE-2016-9601.patch"))))
+                                 "jbig2dec-CVE-2016-9601.patch"
+                                 "jbig2dec-CVE-2017-7885.patch"
+                                 "jbig2dec-CVE-2017-7975.patch"
+                                 "jbig2dec-CVE-2017-7976.patch"))))
 
     (build-system gnu-build-system)
     (synopsis "Decoder of the JBIG2 image compression format")
@@ -599,7 +641,7 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.4.9")
+    (version "1.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -607,7 +649,7 @@ compose, and analyze GIF images.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "08809xxk2555yj6glixzw9a0x3x8cx55imd89kj3r0h152bn8a3x"))))
+                "0wm2q2xlkbm71k7mw2jyzbxgzylrkcj5yh6nq58w5gybhp98qs9z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
@@ -906,7 +948,8 @@ convert, manipulate, filter and display a wide variety of image formats.")
                                   "/software/jasper-" version ".tar.gz"))
               (sha256
                (base32
-                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))))
+                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))
+              (patches (search-patches "jasper-CVE-2017-6850.patch"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

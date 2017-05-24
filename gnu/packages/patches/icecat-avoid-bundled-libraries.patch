@@ -1,8 +1,8 @@
 Fixes needed when avoiding bundled libraries.
 
---- icecat-45.3.0/xpcom/build/moz.build.orig
-+++ icecat-45.3.0/xpcom/build/moz.build
-@@ -92,10 +92,5 @@
+--- icecat-52.0.2/xpcom/build/moz.build.orig
++++ icecat-52.0.2/xpcom/build/moz.build
+@@ -93,10 +93,5 @@
      '/docshell/base',
  ]
  
@@ -13,38 +13,23 @@ Fixes needed when avoiding bundled libraries.
 -
  if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
      CXXFLAGS += CONFIG['TK_CFLAGS']
---- icecat-45.3.0/storage/moz.build.orig
-+++ icecat-45.3.0/storage/moz.build
-@@ -108,7 +108,6 @@
- DEFINES['SQLITE_MAX_LIKE_PATTERN_LENGTH'] = 50000
+--- icecat-52.0.2/storage/moz.build.orig
++++ icecat-52.0.2/storage/moz.build
+@@ -114,7 +114,6 @@
+     DEFINES['MOZ_MEMORY_TEMP_STORE_PRAGMA'] = True
  
  LOCAL_INCLUDES += [
 -    '/db/sqlite3/src',
      '/dom/base',
  ]
  
---- icecat-45.3.0/dom/indexedDB/moz.build.orig
-+++ icecat-45.3.0/dom/indexedDB/moz.build
-@@ -96,7 +96,6 @@
-     SOURCES['Key.cpp'].flags += ['-Wno-error=type-limits']
+--- icecat-52.0.2/dom/indexedDB/moz.build.orig
++++ icecat-52.0.2/dom/indexedDB/moz.build
+@@ -101,7 +101,6 @@
+     CXXFLAGS += ['-Wno-error=shadow']
  
  LOCAL_INCLUDES += [
 -    '/db/sqlite3/src',
      '/dom/base',
      '/dom/storage',
      '/dom/workers',
---- icecat-45.3.0/modules/libmar/tests/Makefile.in.orig
-+++ icecat-45.3.0/modules/libmar/tests/Makefile.in
-@@ -10,12 +10,5 @@
- ifndef MOZ_PROFILE_GENERATE
- libs::
- 	$(INSTALL) ../tool/signmar$(BIN_SUFFIX) $(TESTROOT)/unit
--	$(INSTALL) $(DEPTH)/dist/bin/$(DLL_PREFIX)nss3$(DLL_SUFFIX) $(TESTROOT)/unit
--ifndef MOZ_FOLD_LIBS
--	$(INSTALL) $(DEPTH)/dist/bin/$(DLL_PREFIX)nssutil3$(DLL_SUFFIX) $(TESTROOT)/unit
--	$(INSTALL) $(DEPTH)/dist/bin/$(DLL_PREFIX)plc4$(DLL_SUFFIX) $(TESTROOT)/unit
--	$(INSTALL) $(DEPTH)/dist/bin/$(DLL_PREFIX)nspr4$(DLL_SUFFIX) $(TESTROOT)/unit
--	$(INSTALL) $(DEPTH)/dist/bin/$(DLL_PREFIX)plds4$(DLL_SUFFIX) $(TESTROOT)/unit
--endif
- endif
- endif # Not Android

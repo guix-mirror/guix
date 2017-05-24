@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -131,6 +131,7 @@ printing, and psresize, for adjusting page sizes.")
   (package
    (name "ghostscript")
    (version "9.14.0")
+   ;; XXX Try removing the bundled copy of jbig2dec.
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
@@ -144,6 +145,7 @@ printing, and psresize, for adjusting page sizes.")
                                      "ghostscript-CVE-2016-7978.patch"
                                      "ghostscript-CVE-2016-7979.patch"
                                      "ghostscript-CVE-2016-8602.patch"
+                                     "ghostscript-CVE-2017-8291.patch"
                                      "ghostscript-runpath.patch"))
             (modules '((guix build utils)))
             (snippet
@@ -208,7 +210,7 @@ output file formats and printers.")
    (properties '((upstream-name . "gnu-ghostscript")))))
 
 (define-public ghostscript/x
-  (package (inherit ghostscript)
+  (package/inherit ghostscript
     (name (string-append (package-name ghostscript) "-with-x"))
     (inputs `(("libxext" ,libxext)
               ("libxt" ,libxt)

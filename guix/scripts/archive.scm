@@ -58,41 +58,41 @@
     (verbosity . 0)))
 
 (define (show-help)
-  (display (_ "Usage: guix archive [OPTION]... PACKAGE...
+  (display (G_ "Usage: guix archive [OPTION]... PACKAGE...
 Export/import one or more packages from/to the store.\n"))
-  (display (_ "
+  (display (G_ "
       --export           export the specified files/packages to stdout"))
-  (display (_ "
+  (display (G_ "
   -r, --recursive        combined with '--export', include dependencies"))
-  (display (_ "
+  (display (G_ "
       --import           import from the archive passed on stdin"))
-  (display (_ "
+  (display (G_ "
       --missing          print the files from stdin that are missing"))
-  (display (_ "
+  (display (G_ "
   -x, --extract=DIR      extract the archive on stdin to DIR"))
   (newline)
-  (display (_ "
+  (display (G_ "
       --generate-key[=PARAMETERS]
                          generate a key pair with the given parameters"))
-  (display (_ "
+  (display (G_ "
       --authorize        authorize imports signed by the public key on stdin"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
-  (display (_ "
+  (display (G_ "
   -S, --source           build the packages' source derivations"))
-  (display (_ "
+  (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
 
   (newline)
   (show-build-options-help)
 
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -140,7 +140,7 @@ Export/import one or more packages from/to the store.\n"))
                                (or arg %key-generation-parameters))))
                          (alist-cons 'generate-key params result)))
                      (lambda (key proc err)
-                       (leave (_ "invalid key generation parameters: ~a: ~a~%")
+                       (leave (G_ "invalid key generation parameters: ~a: ~a~%")
                               (error-source err)
                               (error-string err))))))
          (option '("authorize") #f #f
@@ -179,7 +179,7 @@ derivation of a package."
          (let ((source (package-source p)))
            (if source
                (package-source-derivation store source)
-               (leave (_ "package `~a' has no source~%")
+               (leave (G_ "package `~a' has no source~%")
                       (package-name p))))
          (package-derivation store p system)))
     ((? procedure? proc)
@@ -248,25 +248,25 @@ resulting archive to the standard output port."
             (build-derivations store drv))
         (export-paths store files (current-output-port)
                       #:recursive? (assoc-ref opts 'export-recursive?))
-        (leave (_ "unable to export the given packages~%")))))
+        (leave (G_ "unable to export the given packages~%")))))
 
 (define (generate-key-pair parameters)
   "Generate a key pair with PARAMETERS, a canonical sexp, and store it in the
 right place."
   (when (or (file-exists? %public-key-file)
             (file-exists? %private-key-file))
-    (leave (_ "key pair exists under '~a'; remove it first~%")
+    (leave (G_ "key pair exists under '~a'; remove it first~%")
            (dirname %public-key-file)))
 
   (format (current-error-port)
-          (_ "Please wait while gathering entropy to generate the key pair;
+          (G_ "Please wait while gathering entropy to generate the key pair;
 this may take time...~%"))
 
   (let* ((pair   (catch 'gcry-error
                    (lambda ()
                      (generate-key parameters))
                    (lambda (key proc err)
-                     (leave (_ "key generation failed: ~a: ~a~%")
+                     (leave (G_ "key generation failed: ~a: ~a~%")
                             (error-source err)
                             (error-string err)))))
          (public (find-sexp-token pair 'public-key))
@@ -293,13 +293,13 @@ the input port."
       (lambda ()
         (string->canonical-sexp (read-string (current-input-port))))
       (lambda (key proc err)
-        (leave (_ "failed to read public key: ~a: ~a~%")
+        (leave (G_ "failed to read public key: ~a: ~a~%")
                (error-source err) (error-string err)))))
 
   (let ((key (read-key))
         (acl (current-acl)))
     (unless (eq? 'public-key (canonical-sexp-nth-data key 0))
-      (leave (_ "s-expression does not denote a public key~%")))
+      (leave (G_ "s-expression does not denote a public key~%")))
 
     ;; Add KEY to the ACL and write that.
     (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
@@ -345,5 +345,5 @@ the input port."
                             (restore-file (current-input-port) target)))
                          (else
                           (leave
-                           (_ "either '--export' or '--import' \
+                           (G_ "either '--export' or '--import' \
 must be specified~%"))))))))))))

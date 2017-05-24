@@ -40,14 +40,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.53.1")
+   (version "7.54.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1qpm4qj5llr8f5bbl185gpjqknj47nzhvxd8j1vm6asgk3sly4jb"))))
+              "02h7qhl8ynp75g1vcaw18ks0gp7nahvvkqck19pb1q0kkw1scsnd"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages

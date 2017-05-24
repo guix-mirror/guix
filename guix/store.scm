@@ -23,7 +23,8 @@
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:use-module (guix base16)
-  #:autoload   (guix base32) (bytevector->base32-string)
+  #:use-module (guix base32)
+  #:use-module (guix hash)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
@@ -39,7 +40,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
-  #:export (%daemon-socket-file
+  #:use-module (web uri)
+  #:export (%daemon-socket-uri
             %gc-roots-directory
             %default-substitute-urls
 
@@ -132,6 +134,9 @@
             interned-file
 
             %store-prefix
+            store-path
+            output-path
+            fixed-output-path
             store-path?
             direct-store-path?
             derivation-path?
@@ -216,8 +221,8 @@
 (define %default-socket-path
   (string-append %state-directory "/daemon-socket/socket"))
 
-(define %daemon-socket-file
-  ;; File name of the socket the daemon listens too.
+(define %daemon-socket-uri
+  ;; URI or file name of the socket the daemon listens too.
   (make-parameter (or (getenv "GUIX_DAEMON_SOCKET")
                       %default-socket-path)))
 
@@ -350,6 +355,18 @@
   (message nix-protocol-error-message)
   (status  nix-protocol-error-status))
 
+(define-syntax-rule (system-error-to-connection-error file exp ...)
+  "Catch 'system-error' exceptions and translate them to
+'&nix-connection-error'."
+  (catch 'system-error
+    (lambda ()
+      exp ...)
+    (lambda args
+      (let ((errno (system-error-errno args)))
+        (raise (condition (&nix-connection-error
+                           (file file)
+                           (errno errno))))))))
+
 (define (open-unix-domain-socket file)
   "Connect to the Unix-domain socket at FILE and return it.  Raise a
 '&nix-connection-error' upon error."
@@ -358,21 +375,99 @@
              (socket PF_UNIX SOCK_STREAM 0)))
         (a (make-socket-address PF_UNIX file)))
 
-    (catch 'system-error
-      (lambda ()
-        (connect s a)
-        s)
-      (lambda args
-        ;; Translate the error to something user-friendly.
-        (let ((errno (system-error-errno args)))
-          (raise (condition (&nix-connection-error
-                             (file file)
-                             (errno errno)))))))))
+    (system-error-to-connection-error file
+      (connect s a)
+      s)))
 
-(define* (open-connection #:optional (file (%daemon-socket-file))
+(define (open-inet-socket host port)
+  "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
+'&nix-connection-error' upon error."
+  ;; Define 'TCP_NODELAY' on Guile 2.0.  The value is the same on all GNU
+  ;; systems.
+  (cond-expand (guile-2.2 #t)
+               (else      (define TCP_NODELAY 1)))
+
+  (let ((sock (with-fluids ((%default-port-encoding #f))
+                ;; This trick allows use of the `scm_c_read' optimization.
+                (socket PF_UNIX SOCK_STREAM 0))))
+    (define addresses
+      (getaddrinfo host
+                   (if (number? port) (number->string port) port)
+                   (if (number? port)
+                       (logior AI_ADDRCONFIG AI_NUMERICSERV)
+                       AI_ADDRCONFIG)))
+
+    (let loop ((addresses addresses))
+      (match addresses
+        ((ai rest ...)
+         (let ((s (socket (addrinfo:fam ai)
+                          ;; TCP/IP only
+                          SOCK_STREAM IPPROTO_IP)))
+
+           (catch 'system-error
+             (lambda ()
+               (connect s (addrinfo:addr ai))
+
+               ;; Setting this option makes a dramatic difference because it
+               ;; avoids the "ACK delay" on our RPC messages.
+               (setsockopt s IPPROTO_TCP TCP_NODELAY 1)
+               s)
+             (lambda args
+               ;; Connection failed, so try one of the other addresses.
+               (close s)
+               (if (null? rest)
+                   (raise (condition (&nix-connection-error
+                                      (file host)
+                                      (errno (system-error-errno args)))))
+                   (loop rest))))))))))
+
+(define (connect-to-daemon uri)
+  "Connect to the daemon at URI, a string that may be an actual URI or a file
+name."
+  (define (not-supported)
+    (raise (condition (&nix-connection-error
+                       (file uri)
+                       (errno ENOTSUP)))))
+
+  (define connect
+    (match (string->uri uri)
+      (#f                                         ;URI is a file name
+       open-unix-domain-socket)
+      ((? uri? uri)
+       (match (uri-scheme uri)
+         ((or #f 'file 'unix)
+          (lambda (_)
+            (open-unix-domain-socket (uri-path uri))))
+         ('guix
+          (lambda (_)
+            (unless (uri-port uri)
+              (raise (condition (&nix-connection-error
+                                 (file (uri->string uri))
+                                 (errno EBADR))))) ;bah!
+
+            (open-inet-socket (uri-host uri) (uri-port uri))))
+         ((? symbol? scheme)
+          ;; Try to dynamically load a module for SCHEME.
+          ;; XXX: Errors are swallowed.
+          (match (false-if-exception
+                  (resolve-interface `(guix store ,scheme)))
+            ((? module? module)
+             (match (false-if-exception
+                     (module-ref module 'connect-to-daemon))
+               ((? procedure? connect)
+                (lambda (_)
+                  (connect uri)))
+               (x (not-supported))))
+            (#f (not-supported))))
+         (x
+          (not-supported))))))
+
+  (connect uri))
+
+(define* (open-connection #:optional (uri (%daemon-socket-uri))
                           #:key port (reserve-space? #t) cpu-affinity)
-  "Connect to the daemon over the Unix-domain socket at FILE, or, if PORT is
-not #f, use it as the I/O port over which to communicate to a build daemon.
+  "Connect to the daemon at URI (a string), or, if PORT is not #f, use it as
+the I/O port over which to communicate to a build daemon.
 
 When RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
 space on the file system so that the garbage collector can still operate,
@@ -383,10 +478,10 @@ for this connection will be pinned.  Return a server object."
              ;; One of the 'write-' or 'read-' calls below failed, but this is
              ;; really a connection error.
              (raise (condition
-                     (&nix-connection-error (file (or port file))
+                     (&nix-connection-error (file (or port uri))
                                             (errno EPROTO))
                      (&message (message "build daemon handshake failed"))))))
-    (let ((port (or port (open-unix-domain-socket file))))
+    (let ((port (or port (connect-to-daemon uri))))
       (write-int %worker-magic-1 port)
       (let ((r (read-int port)))
         (and (eqv? r %worker-magic-2)
@@ -495,9 +590,7 @@ encoding conversion errors."
            (let* ((max-len (read-int p))
                   (data    (make-bytevector max-len))
                   (len     (get-bytevector-n! user-port data 0 max-len)))
-             (write-int len p)
-             (put-bytevector p data 0 len)
-             (write-padding len p)
+             (write-bytevector data p)
              #f))
           ((= k %stderr-next)
            ;; Log a string.  Build logs are usually UTF-8-encoded, but they
@@ -1155,6 +1248,10 @@ be used internally by the daemon's build hook."
 (define-alias store-return state-return)
 (define-alias store-bind state-bind)
 
+;; Instantiate templates for %STORE-MONAD since it's syntactically different
+;; from %STATE-MONAD.
+(template-directory instantiations %store-monad)
+
 (define (preserve-documentation original proc)
   "Return PROC with documentation taken from ORIGINAL."
   (set-object-property! proc 'documentation
@@ -1261,6 +1358,57 @@ connection, and return the result."
   ;; Absolute path to the Nix store.
   (make-parameter %store-directory))
 
+(define (compressed-hash bv size)                 ; `compressHash'
+  "Given the hash stored in BV, return a compressed version thereof that fits
+in SIZE bytes."
+  (define new (make-bytevector size 0))
+  (define old-size (bytevector-length bv))
+  (let loop ((i 0))
+    (if (= i old-size)
+        new
+        (let* ((j (modulo i size))
+               (o (bytevector-u8-ref new j)))
+          (bytevector-u8-set! new j
+                              (logxor o (bytevector-u8-ref bv i)))
+          (loop (+ 1 i))))))
+
+(define (store-path type hash name)               ; makeStorePath
+  "Return the store path for NAME/HASH/TYPE."
+  (let* ((s (string-append type ":sha256:"
+                           (bytevector->base16-string hash) ":"
+                           (%store-prefix) ":" name))
+         (h (sha256 (string->utf8 s)))
+         (c (compressed-hash h 20)))
+    (string-append (%store-prefix) "/"
+                   (bytevector->nix-base32-string c) "-"
+                   name)))
+
+(define (output-path output hash name)            ; makeOutputPath
+  "Return an output path for OUTPUT (the name of the output as a string) of
+the derivation called NAME with hash HASH."
+  (store-path (string-append "output:" output) hash
+              (if (string=? output "out")
+                  name
+                  (string-append name "-" output))))
+
+(define* (fixed-output-path name hash
+                            #:key
+                            (output "out")
+                            (hash-algo 'sha256)
+                            (recursive? #t))
+  "Return an output path for the fixed output OUTPUT defined by HASH of type
+HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
+'add-to-store'."
+  (if (and recursive? (eq? hash-algo 'sha256))
+      (store-path "source" hash name)
+      (let ((tag (string-append "fixed:" output ":"
+                                (if recursive? "r:" "")
+                                (symbol->string hash-algo) ":"
+                                (bytevector->base16-string hash) ":")))
+        (store-path (string-append "output:" output)
+                    (sha256 (string->utf8 tag))
+                    name))))
+
 (define (store-path? path)
   "Return #t if PATH is a store path."
   ;; This is a lightweight check, compared to using a regexp, but this has to
@@ -1330,3 +1478,7 @@ must be an absolute store file name, or a derivation file name."
             ;; Return the first that works.
             (any (cut log-file store <>) derivers))
            (_ #f)))))
+
+;;; Local Variables:
+;;; eval: (put 'system-error-to-connection-error 'scheme-indent-function 1)
+;;; End:

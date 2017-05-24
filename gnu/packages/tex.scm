@@ -428,7 +428,7 @@ and processing BibTeX files.  @code{Text::BibTeX} gives you access to the data
 at many different levels: you may work with BibTeX entries as simple field to
 string mappings, or get at the original form of the data as a list of simple
 values (strings, macros, or numbers) pasted together.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public biber
   (package

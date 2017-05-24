@@ -197,8 +197,9 @@ passwords that could be guessed by crack by filtering them out, at source.")
     (source (origin
               (method url-fetch)
               (uri (list
-                    (string-append "https://fedorahosted.org/releases/l/i/"
-                                   name "/" name "-" version ".tar.bz2")
+                    (string-append "https://github.com/" name "/" name
+                                   "/releases/download/" name  "-" version
+                                   "/" name "-" version ".tar.bz2")
                     (string-append "https://launchpad.net/libpwquality/trunk/"
                                    version "/+download/"
                                    name "-" version ".tar.bz2")))
@@ -212,7 +213,7 @@ passwords that could be guessed by crack by filtering them out, at source.")
     (inputs
      `(("cracklib" ,cracklib)))
     (synopsis "Password quality checker")
-    (home-page "https://fedorahosted.org/libpwquality/")
+    (home-page "https://github.com/libpwquality/libpwquality")
     (description
      "Libpwquality is a library for password quality checking and generation of
 random passwords that pass the checks.")
@@ -284,7 +285,7 @@ any X11 window.")
 (define-public password-store
   (package
     (name "password-store")
-    (version "1.7")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -292,8 +293,7 @@ any X11 window.")
                               name "-" version ".tar.xz"))
               (sha256
                (base32
-                "002mw7j0m33bw483rllzhcf41wp3ixka8yma6kqrfaj57jyw66hn"))
-              (patches (search-patches "password-store-gnupg-compat.patch"))))
+                "0scqkpll2q8jhzcgcsh9kqz0gwdpvynivqjmmbzax2irjfaiklpn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

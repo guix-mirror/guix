@@ -163,7 +163,7 @@ assertion failure."
                 (raise (condition
                         (&message
                          (message
-                          (format #f (_ "service '~a' provided more than once")
+                          (format #f (G_ "service '~a' provided more than once")
                                   symbol)))))))
 
             (for-each assert-unique (shepherd-service-provision service))
@@ -178,7 +178,7 @@ assertion failure."
                   (raise (condition
                           (&message
                            (message
-                            (format #f (_ "service '~a' requires '~a', \
+                            (format #f (G_ "service '~a' requires '~a', \
 which is not provided by any service")
                                     (match (shepherd-service-provision service)
                                       ((head . _) head)

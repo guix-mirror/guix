@@ -1095,7 +1095,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.13.4")
+    (version "0.13.5")
     (source
       (origin
         (method url-fetch)
@@ -1105,7 +1105,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1krgryi9ngjr66242v0v5mczihgv0y7rrvx0563arr318mjn9y07"))))
+            "16dr80rdw5bzdyhahvilfjrflj7scs2yl2mmghsb84f3nglm8b3m"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)))
@@ -2393,7 +2393,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.25.0")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2401,7 +2401,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vsmijamfzf6vcljrr0am2qcz33zl2l0lj2mzmbwgrm7ixjx2zxv"))))
+                "1q67hjd67ni1nq7kgxdrrdgkyhzaqvvn2vlnsiiq9w4y3icpv7s8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2812,10 +2812,10 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "7e9e92c86b0fc4c848d164fe571798add5e1e36e"))
+  (let ((commit "b57abe20e81f4b8e4dd203b6a9eda7ff441bc8ce"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917-4-" (string-take commit 7)))
+      (version (string-append "2.99.917-5-" (string-take commit 7)))
       (source
        (origin
          ;; there's no current tarball
@@ -2825,7 +2825,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "0igfw8vpz1q0a2526j81fl65z6avfh6lzzrijcs72gwihqqhb1sv"))
+           "1l08jdrqrpaj2168hlz0hwlx27bm7n7lnv82jjyvy884v47gn2ay"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -2995,7 +2995,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
      (origin
        (method url-fetch)
@@ -3005,11 +3005,11 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1h9izq510m2pvg77d0y9krc0cvvbhp2y3xlrrz6id7y47jdzkpsd"))))
+         "0k0xah72ryjwak4dc4crszxrlkmi9x1s7p3sd4la642n77yi1pmf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://nouveau.freedesktop.org")
+    (home-page "https://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
      "This package provides modern, high-quality Xorg drivers for NVIDIA
@@ -4985,7 +4985,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.2")
+    (version "1.19.3")
     (source
       (origin
         (method url-fetch)
@@ -4994,7 +4994,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))
+          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5053,12 +5053,7 @@ over Xlib, including:
         ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
        `(("python" ,python-minimal-wrapper)
-         ("pkg-config" ,pkg-config)
-         ;; XXX Bootstrapping inputs for 1.19.2. Remove for > 1.19.2.
-         ("font-util" ,font-util)
-         ("libtool" ,libtool)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)))
+         ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
@@ -5085,10 +5080,6 @@ over Xlib, including:
 
        #:phases
        (modify-phases %standard-phases
-         ;; XXX The 1.19.2 release of xorg-server was not bootstrapped:
-         ;; <https://lists.x.org/archives/xorg-announce/2017-March/002780.html>
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
          (add-before
           'configure 'pre-configure
           (lambda _
@@ -5114,13 +5105,16 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
-;;; This package is intended to be used when building GTK+.
-(define-public xorg-server-1.19.2
-  (package
-    (inherit xorg-server)
-    (name "xorg-server")
-    (version "1.19.2")
-    (source
+;; This package is intended to be used when building GTK+.
+;; Note: It's currently marked as "hidden" to avoid having two non-eq?
+;; packages with the same name and version.
+(define-public xorg-server-1.19.3
+  (hidden-package
+   (package
+     (inherit xorg-server)
+     (name "xorg-server")
+     (version "1.19.3")
+     (source
       (origin
         (method url-fetch)
         (uri (string-append
@@ -5128,7 +5122,7 @@ draggable titlebars and borders.")
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1fw4b2lf75nsqkiyhn95b1c2if1l3cw5a188a1szx1d8l7sbk2jg"))))))
+          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7")))))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5726,7 +5720,7 @@ programs that cannot use the window system directly.")
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
 in many cases better than @code{Xlib}), and provides an object oriented
 interface to its methods (using @code{Mouse}).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-x11-protocol
   (package
@@ -5754,7 +5748,7 @@ perl programs to display windows and graphics on X11 servers.")
     ;; distribution, has another, less restrictive copying policy, as do some
     ;; of the extension modules in the directory Protocol/Ext: see those files
     ;; for details)."
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public xcompmgr
   (package

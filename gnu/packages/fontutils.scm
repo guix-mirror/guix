@@ -381,7 +381,12 @@ applications should be.")
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/graphite/releases/"
                            "download/" version "/" name "-" version ".tgz"))
-       (patches (search-patches "graphite2-ffloat-store.patch"))
+       (patches (search-patches
+                 "graphite2-ffloat-store.patch"
+                 "graphite2-check-code-point-limit.patch"
+                 "graphite2-CVE-2017-5436.patch"
+                 "graphite2-fix-32-bit-wrap-arounds.patch"
+                 "graphite2-non-linear-classes-even-number.patch"))
        (sha256
         (base32
          "0rs5h7m340z75kygx8d72cps0q6yvvqa9i788vym7585cfv8a0gc"))))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +45,7 @@
 (define-public abiword
   (package
     (name "abiword")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
       (origin
         (method url-fetch)
@@ -52,16 +53,11 @@
           (string-append "http://abisource.org/downloads/" name "/" version
                          "/source/" name "-" version ".tar.gz"))
         (sha256
-          (base32 "1ik591rx15nn3n1297cwykl8wvrlgj78i528id9wbidgy3xzd570"))
-        (modules '((guix build utils)))
-        (snippet
-         ;; Ensure reproducibility.
-         '(substitute* "src/wp/main/xp/abi_ver.cpp"
-            (("__DATE__") "\"2017\"")
-            (("__TIME__") "\"00:00\"")))
+         (base32 "08imry821g81apdwym3gcs4nss0l9j5blqk31j5rv602zmcd9gxg"))
         (patches
          (search-patches "abiword-wmf-version-lookup-fix.patch"
-                         "abiword-explictly-cast-bools.patch"))))
+                         "abiword-explictly-cast-bools.patch"
+                         "abiword-black-drawing-with-gtk322.patch"))))
 
     (build-system glib-or-gtk-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword
@@ -84,7 +80,9 @@
         ;;                  assertion 'G_IS_OBJECT (object)' failed
         ;; Manually starting the X server before the test phase did not help
         ;; the tests to pass.
-        #:tests? #f))
+        #:tests? #f
+        #:make-flags
+        (list "CXXFLAGS=-std=c++11")))
     (inputs
       `(("boost" ,boost)
         ("enchant" ,enchant)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +85,22 @@
                                     (profile-self-size profile2)
                                     (profile-self-size profile3)
                                     (profile-self-size profile4))))))))))))
+
+(test-assertm "store-profile with multiple items"
+  (mlet* %store-monad ((file1 (gexp->derivation "file1"
+                                                #~(symlink #$%bootstrap-guile
+                                                           #$output)))
+                       (file2 (text-file* "file2"
+                                          "the file => " file1)))
+    (mbegin %store-monad
+      (built-derivations (list file2))
+      (mlet %store-monad ((profiles  (store-profile
+                                      (list (derivation->output-path file2)
+                                            (derivation->output-path file1))))
+                          (reference (store-profile
+                                      (list (derivation->output-path file2)))))
+        (return (and (= (length profiles) 4)
+                     (lset= equal? profiles reference)))))))
 
 (test-end "size")
 

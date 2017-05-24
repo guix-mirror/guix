@@ -53,7 +53,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.1.3")
+    (version "7.1.5")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -61,7 +61,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1c0brdq5aqh4i127pq1g904dfb6klz2gbg9gjvykg3kp6hk7r274"))
+                "1b7njiqgy66ga5c8wsm78mqqjr7lj3hlpwbbvksi2mn4jv1s6jfi"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -119,6 +119,7 @@
                ;; extension of php.
                "--with-iconv"
                "--with-openssl"
+               "--with-mysqli"          ; Required for, e.g. wordpress
                "--with-pdo-mysql"
                "--with-zlib"
                "--enable-calendar"
@@ -130,8 +131,7 @@
                "--enable-inifile"
                "--enable-mbstring"
                "--enable-pcntl"
-               "--enable-sockets"
-               "--enable-threads"))
+               "--enable-sockets"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-record-build-flags
@@ -168,12 +168,6 @@
                             "ext/standard/tests/general_functions/bug44667.phpt"
                             "ext/standard/tests/general_functions/proc_open.phpt")
                (("/bin/cat") (which "cat")))
-
-             ;; These tests fail because they include a file whose modification
-             ;; time is 0. Touch them to make the test pass. The issue is reported
-             ;; upstream as #74137.
-             (utime "sapi/phpdbg/tests/include.inc" 1 1)
-             (utime "sapi/phpdbg/tests/phpdbg_get_executable_stream_wrapper.inc" 1 1)
 
              ;; The encoding of this file is not recognized, so we simply drop it.
              (delete-file "ext/mbstring/tests/mb_send_mail07.phpt")

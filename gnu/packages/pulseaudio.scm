@@ -3,6 +3,9 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,14 +45,17 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.0.27")
+    (version "1.0.28")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
+             (patches (search-patches "libsndfile-armhf-type-checks.patch"
+                                      "libsndfile-CVE-2017-8361-8363-8365.patch"
+                                      "libsndfile-CVE-2017-8362.patch"))
              (sha256
               (base32
-               "1h7s61nhf7vklh9sdsbbqzb6x287q4x4j1jc5gmjragl4wprb4d3"))))
+               "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
@@ -75,14 +81,14 @@ for reading and writing new sound file formats.")
 (define-public libsamplerate
   (package
     (name "libsamplerate")                     ; aka. Secret Rabbit Code (SRC)
-    (version "0.1.8")
+    (version "0.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/SRC/libsamplerate-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01hw5xjbjavh412y63brcslj5hi9wdgkjd3h9csx5rnm8vglpdck"))))
+               "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -108,7 +114,7 @@ against computation cost.  The current best converter provides a
 signal-to-noise ratio of 145dB with -3dB passband extending from DC to 96% of
 the theoretical best bandwidth for a given pair of input and output sample
 rates.")
-    (license l:gpl2+)))
+    (license l:bsd-2)))
 
 (define-public pulseaudio
   (package
@@ -218,3 +224,38 @@ sound server.")
 graphical user interface to connect to a PulseAudio server and
 easily control the volume of all clients, sinks, etc.")
     (license l:gpl2+)))
+
+(define-public ponymix
+  (package
+    (name "ponymix")
+    (version "5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/falconindy/ponymix/"
+                                 "archive/" version ".tar.gz"))
+             (sha256
+              (base32
+               "1c0ch98zry3c4ixywwynjid1n1nh4xl4l1p548giq2w3zwflaghn"))
+             (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no test suite.
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr") ""))))
+         (delete 'configure)))) ; There's no configure phase.
+    (inputs
+     `(("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/falconindy/ponymix")
+    (synopsis "Console-based PulseAudio mixer")
+    (description "Ponymix is a PulseAudio mixer and volume controller with a
+command-line interface.  In addition, it is possible to use named sources and
+sinks.")
+    (license l:expat)))

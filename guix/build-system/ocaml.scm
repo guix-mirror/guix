@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15,7 +16,6 @@
 ;;;
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
-
 (define-module (guix build-system ocaml)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -25,7 +25,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:export (%ocaml-build-system-modules
+            package-with-ocaml4.01
+            strip-ocaml4.01-variant
             ocaml-build
             ocaml-build-system))
 
@@ -70,6 +73,77 @@
   ;; Do not use `@' to avoid introducing circular dependencies.
   (let ((module (resolve-interface '(gnu packages ocaml))))
     (module-ref module 'ocaml-findlib)))
+
+(define (default-ocaml4.01)
+  (let ((ocaml (resolve-interface '(gnu packages ocaml))))
+    (module-ref ocaml 'ocaml-4.01)))
+
+(define (default-ocaml4.01-findlib)
+  (let ((module (resolve-interface '(gnu packages ocaml))))
+    (module-ref module 'ocaml4.01-findlib)))
+
+(define* (package-with-explicit-ocaml ocaml findlib old-prefix new-prefix
+                                       #:key variant-property)
+  "Return a procedure of one argument, P.  The procedure creates a package
+with the same fields as P, which is assumed to use OCAML-BUILD-SYSTEM, such
+that it is compiled with OCAML and FINDLIB instead.  The inputs are changed
+recursively accordingly.  If the name of P starts with OLD-PREFIX, this is
+replaced by NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name.
+
+When VARIANT-PROPERTY is present, it is used as a key to search for
+pre-defined variants of this transformation recorded in the 'properties' field
+of packages.  The property value must be the promise of a package.  This is a
+convenient way for package writers to force the transformation to use
+pre-defined variants."
+  (define package-variant
+    (if variant-property
+        (lambda (package)
+          (assq-ref (package-properties package)
+                    variant-property))
+        (const #f)))
+
+  (define (transform p)
+    (cond
+     ;; If VARIANT-PROPERTY is present, use that.
+     ((package-variant p)
+      => force)
+
+     ;; Otherwise build the new package object graph.
+     ((eq? (package-build-system p) ocaml-build-system)
+      (package
+        (inherit p)
+        (location (package-location p))
+        (name (let ((name (package-name p)))
+                (string-append new-prefix
+                               (if (string-prefix? old-prefix name)
+                                   (substring name
+                                              (string-length old-prefix))
+                                   name))))
+        (arguments
+         (let ((ocaml   (if (promise? ocaml) (force ocaml) ocaml))
+               (findlib (if (promise? findlib) (force findlib) findlib)))
+           (ensure-keyword-arguments (package-arguments p)
+                                     `(#:ocaml   ,ocaml
+                                       #:findlib ,findlib))))))
+     (else p)))
+
+  (define (cut? p)
+    (or (not (eq? (package-build-system p) ocaml-build-system))
+        (package-variant p)))
+
+  (package-mapping transform cut?))
+
+(define package-with-ocaml4.01
+  (package-with-explicit-ocaml (delay (default-ocaml4.01))
+                               (delay (default-ocaml4.01-findlib))
+                               "ocaml-" "ocaml4.01-"
+                               #:variant-property 'ocaml4.01-variant))
+
+(define (strip-ocaml4.01-variant p)
+  "Remove the 'ocaml4.01-variant' property from P."
+  (package
+    (inherit p)
+    (properties (alist-delete 'ocaml4.01-variant (package-properties p)))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

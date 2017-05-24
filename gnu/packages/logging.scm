@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,10 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages autotools))
 
 (define-public log4cpp
@@ -62,7 +65,8 @@ staying as close to their API as is reasonable.")
               (sha256
                (base32
                 "0ym5g15m7c8kjfr2c3zq6bz08ghin2d1r1nb6v2vnkfh1vn945x1"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (patches (search-patches "glog-gcc-5-demangling.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)                             ;for tests
@@ -87,4 +91,43 @@ This library provides logging APIs based on C++-style streams and various
 helper macros.  You can log a message by simply streaming things to log at a
 particular severity level.  It allows logging to be controlled from the
 command line.")
+    (license license:bsd-3)))
+
+(define-public tailon
+  (package
+    (name "tailon")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "08clrwpfdxcv2z2b5ardpmim4alahbw4l7631dhw62xhbcf6wjzz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-sockjs-tornado" ,python-sockjs-tornado)
+       ("python-tornado" ,python-tornado)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-commands.py
+                     (lambda args
+                       (substitute* "tailon/commands.py"
+                         (("self\\.first_in_path\\('grep'\\)")
+                          (string-append"'" (which "grep") "'"))
+                         (("self\\.first_in_path\\('gawk', 'awk'\\)")
+                          (string-append"'" (which "gawk") "'"))
+                         (("self\\.first_in_path\\('gsed', 'sed'\\)")
+                          (string-append"'" (which "sed") "'"))
+                         (("self\\.first_in_path\\('gtail', 'tail'\\)")
+                          (string-append"'" (which "tail") "'")))
+                       #t)))))
+    (home-page "https://tailon.readthedocs.io/")
+    (synopsis
+     "Webapp for looking at and searching through log files")
+    (description
+     "Tailon provides a web interface around the tail, grep, awk and sed
+commands, displaying the results via a web interface.")
     (license license:bsd-3)))

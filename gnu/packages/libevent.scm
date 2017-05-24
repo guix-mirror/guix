@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,9 @@
                                       ;; https://github.com/libevent/libevent/issues/452
                                       "libevent-2.1-skip-failing-test.patch"))))
     (build-system gnu-build-system)
+    (arguments
+      ;; This skips some of the tests which fail on armhf and aarch64.
+     '(#:configure-flags '("--disable-libevent-regress")))
     (inputs
      `(("python" ,python-2)))           ; for 'event_rpcgen.py'
     (native-inputs
@@ -87,7 +91,8 @@ loop.")
                 "libevent-2.0-CVE-2016-10195.patch"
                 "libevent-2.0-CVE-2016-10196.patch"
                 "libevent-2.0-CVE-2016-10197.patch"
-                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))))
+                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))
+    (arguments '())))
 
 (define-public libev
   (package
@@ -182,12 +187,12 @@ resolution, asynchronous file system operations, and threading primitives.")
      "API for I/O, timer, signal, child process and completion events")
     (description
      "This module allows using a variety of events without forcing module
-authors to pick a specific event loop, and without noticable overhead.
+authors to pick a specific event loop, and without noticeable overhead.
 Currently supported event loops are EV, Event, Glib/Gtk2, Tk, Qt,
 @code{Event::Lib}, Irssi, @code{IO::Async} and POE (and thus also WxWidgets
 and Prima).  It also comes with a very fast Pure Perl event loop that does
 not rely on XS.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-ev
   (package
@@ -228,4 +233,4 @@ not rely on XS.")
      "This module provides an interface to @code{libev}, a high performance
 full-featured event loop.  It can be used through the @code{AnyEvent} module
 and still be faster than other event loops currently supported in Perl.")
-    (license (package-license perl))))
+    (license perl-license)))

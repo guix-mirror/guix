@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Mathieu OTHACEHE <m.othacehe@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,7 +41,7 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.33")
+    (version "1.34")
     (source
       (origin
         (method url-fetch)
@@ -49,7 +49,7 @@
                             name "-" version ".tar.xz"))
     (sha256
      (base32
-      "187mknq2i907gf8dz0i79359gn1qc9mryvqkcgb280d7dw1ld2dw"))))
+      "07n71wcy1c4cc01ca4dl9k1jpdqr5nsyr33dqf7k87wwfa681859"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -135,7 +135,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
 (define-public cmst
   (package
     (name "cmst")
-    (version "2016.10.03")
+    (version "2017.03.18")
     (source
      (origin
        (method url-fetch)
@@ -143,7 +143,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
              "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
              version "/cmst-" version ".tar.gz"))
        (sha256
-        (base32 "1xpn4sqnxzpsjjwh9hva9sn55xlryiz2f2mwpyj2l31janj7a082"))))
+        (base32 "16g9byxr1rkmrnzi6sjplpmkr8h6pqj7418jz30czqviw5qlkqwl"))))
     (inputs
      `(("qt" ,qt)))
     (native-inputs

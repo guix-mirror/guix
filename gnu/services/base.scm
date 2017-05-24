@@ -129,6 +129,8 @@
             guix-publish-configuration-host
             guix-publish-configuration-compression-level
             guix-publish-configuration-nar-path
+            guix-publish-configuration-cache
+            guix-publish-configuration-ttl
             guix-publish-service
             guix-publish-service-type
 
@@ -1147,7 +1149,16 @@ the tty to run, among other things."
   #~(begin
       (use-modules (guix build utils))
       (mkdir-p "/var/run/nscd")
-      (mkdir-p "/var/db/nscd")))                  ;for the persistent cache
+      (mkdir-p "/var/db/nscd")                    ;for the persistent cache
+
+      ;; In libc 2.25 nscd uses inotify to watch /etc/resolv.conf, but only if
+      ;; that file exists when it is started.  Thus create it here.  Note: on
+      ;; some systems, such as when NetworkManager is used, /etc/resolv.conf
+      ;; is a symlink, hence 'lstat'.
+      (unless (false-if-exception (lstat "/etc/resolv.conf"))
+        (call-with-output-file "/etc/resolv.conf"
+          (lambda (port)
+            (display "# This is a placeholder.\n" port))))))
 
 (define nscd-service-type
   (service-type (name 'nscd)
@@ -1321,7 +1332,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
-  (list (file-append guix "/share/guix/hydra.gnu.org.pub")))
+  (list (file-append guix "/share/guix/hydra.gnu.org.pub")
+        (file-append guix "/share/guix/bayfront.guixsd.org.pub")))
 
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
@@ -1424,7 +1436,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
           (service-extension account-service-type guix-accounts)
           (service-extension activation-service-type guix-activation)
           (service-extension profile-service-type
-                             (compose list guix-configuration-guix))))))
+                             (compose list guix-configuration-guix))))
+   (default-value (guix-configuration))))
 
 (define* (guix-service #:optional (config %default-guix-configuration))
   "Return a service that runs the Guix build daemon according to
@@ -1441,14 +1454,21 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
            (default 80))
   (host    guix-publish-configuration-host        ;string
            (default "localhost"))
-  (compression-level guix-publish-compression-level ;integer
+  (compression-level guix-publish-configuration-compression-level ;integer
                      (default 3))
-  (nar-path    guix-publish-nar-path              ;string
-               (default "nar")))
+  (nar-path    guix-publish-configuration-nar-path ;string
+               (default "nar"))
+  (cache       guix-publish-configuration-cache   ;#f | string
+               (default #f))
+  (workers     guix-publish-configuration-workers ;#f | integer
+               (default #f))
+  (ttl         guix-publish-configuration-ttl     ;#f | integer
+               (default #f)))
 
 (define guix-publish-shepherd-service
   (match-lambda
-    (($ <guix-publish-configuration> guix port host compression nar-path)
+    (($ <guix-publish-configuration> guix port host compression
+                                     nar-path cache workers ttl)
      (list (shepherd-service
             (provision '(guix-publish))
             (requirement '(guix-daemon))
@@ -1458,7 +1478,20 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                             "-p" #$(number->string port)
                             "-C" #$(number->string compression)
                             (string-append "--nar-path=" #$nar-path)
-                            (string-append "--listen=" #$host))))
+                            (string-append "--listen=" #$host)
+                            #$@(if workers
+                                   #~((string-append "--workers="
+                                                     #$(number->string
+                                                        workers)))
+                                   #~())
+                            #$@(if ttl
+                                   #~((string-append "--ttl="
+                                                     #$(number->string ttl)
+                                                     "s"))
+                                   #~())
+                            #$@(if cache
+                                   #~((string-append "--cache=" #$cache))
+                                   #~()))))
             (stop #~(make-kill-destructor)))))))
 
 (define %guix-publish-accounts
@@ -1471,13 +1504,30 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define (guix-publish-activation config)
+  (let ((cache (guix-publish-configuration-cache config)))
+    (if cache
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+
+              (mkdir-p #$cache)
+              (let* ((pw  (getpw "guix-publish"))
+                     (uid (passwd:uid pw))
+                     (gid (passwd:gid pw)))
+                (chown #$cache uid gid))))
+        #t)))
+
 (define guix-publish-service-type
   (service-type (name 'guix-publish)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           guix-publish-shepherd-service)
                        (service-extension account-service-type
-                                          (const %guix-publish-accounts))))))
+                                          (const %guix-publish-accounts))
+                       (service-extension activation-service-type
+                                          guix-publish-activation)))
+                (default-value (guix-publish-configuration))))
 
 (define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
   "Return a service that runs @command{guix publish} listening on @var{host}

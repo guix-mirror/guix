@@ -239,8 +239,8 @@ generator library for C++.")
 (define-public kodi
   ;; We package the git version because the current released
   ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "ec5d53da72868ad37df8bc005452a6daaa20f20b")
-        (revision "1"))
+  (let ((commit "b8ad238aa8010063eaf7d608d139002a50075e8d")
+        (revision "4"))
   (package
     (name "kodi")
     (version (string-append "18.0_alpha-" revision "-" (string-take commit 7)))
@@ -252,7 +252,7 @@ generator library for C++.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "05f0bip0w784ya72plw3p2bism5m501q07si2xbmg03vhqsagjl5"))
+                "192agb8lpbajljbnnpn7y1pk2c6bvqbcpqhlgq4pja4pdf664xzg"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
@@ -263,7 +263,6 @@ generator library for C++.")
                               ;; And these sources:
                               ;; "tools/depend/native/JsonSchemaBuilder"
                               ;; "tools/depend/native/TexturePacker"
-                              ;; "lib/UnrarXlib"
                               ;; "lib/gtest"
                               ;; "lib/cpluff"
                               ;; "lib/libexif"
@@ -287,8 +286,7 @@ generator library for C++.")
              (string-append "-Dlibdvdcss_URL="
                             (assoc-ref %build-inputs "libdvdcss-bootstrapped"))
              (string-append "-DSYSTEM_LDFLAGS=-Wl,-rpath="
-                            (assoc-ref %build-inputs "curl") "/lib")
-             "-DENABLE_NONFREE=OFF")
+                            (assoc-ref %build-inputs "curl") "/lib"))
        #:phases
        (modify-phases %standard-phases
          ;; The build system tries to bootstrap these bundled components

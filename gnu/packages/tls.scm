@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
@@ -431,7 +431,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.2")
+    (version "2.5.4")
     (source
      (origin
       (method url-fetch)
@@ -440,8 +440,13 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "10hw434azw0gvfkmfm46r85r7my1c6592rg9jsna914jh1q7vyhg"))))
+        "1ykf6dqlbafafhbdfmcj19pjj1z6wmsq0rmyqga1i0xv5x95nyhh"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Do as if 'getentropy' was missing since older Linux kernels lack it
+     ;; and libc would return ENOSYS, which is not properly handled.
+     ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
+     '(#:configure-flags '("ac_cv_func_getentropy=no")))
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
       ;; and are not actually "search paths."  In practice it works OK in
@@ -453,7 +458,7 @@ required structures.")
            (search-path-specification
             (variable "SSL_CERT_FILE")
             (files '("etc/ssl/certs/ca-certificates.crt")))))
-    (home-page "http://www.libressl.org/")
+    (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
     (description "LibreSSL is a version of the TLS/crypto stack forked
 from OpenSSL in 2014, with the goals of modernizing the codebase, improving
@@ -469,26 +474,36 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.12.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "1pzv8fcfwdqzvvpyhgjz412is0b98yj9495k8sidzzqgbdmvlp50"))))
+        "0asmkfkzbswnkrvbj5m01xgy4f6g1fjbj2nir1hhrn3ipcdrsv8f"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'docs
+         (add-after 'unpack 'patch-dependency
+           ;; This module is part of the Python standard library, so we don't
+           ;; need to use an external package.
+           ;; https://github.com/certbot/certbot/pull/2249
+           (lambda _
+             (substitute* "setup.py"
+               (("'argparse',") ""))
+             #t))
+         (add-after 'build 'build-documentation
+           (lambda _
+             (zero? (system* "make" "-C" "docs" "man" "info"))))
+         (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (info (string-append out "/info")))
-               (and (zero? (system* "make" "-C" "docs" "man" "info"))
-                    (install-file "docs/_build/texinfo/acme-python.info" info)
-                    (install-file "docs/_build/man/acme-python.1" man)
-                    #t)))))))
+               (install-file "docs/_build/texinfo/acme-python.info" info)
+               (install-file "docs/_build/man/acme-python.1" man)
+               #t))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -498,9 +513,7 @@ security, and applying best practice development processes.")
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("python-ndg-httpsclient" ,python-ndg-httpsclient)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-six" ,python-six)
+     `(("python-six" ,python-six)
        ("python-requests" ,python-requests)
        ("python-pytz" ,python-pytz)
        ("python-pyrfc3339" ,python-pyrfc3339)
@@ -526,24 +539,23 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1dw86gb8lyap5ckjawmli1hxgbchw2g62g1lqfvxyqjv0df94waa"))))
+                "0rdby57hw35qdrbl7kigscphnz4kqb608bqzrcb73nb99092i6si"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (man1 (string-append out "/share/man/man1"))
-                    (man7 (string-append out "/share/man/man7"))
-                    (info (string-append out "/info")))
-               (and
-                 (zero? (system* "make" "-C" "docs" "man" "info"))
-                 (install-file "docs/_build/texinfo/Certbot.info" info)
-                 (install-file "docs/_build/man/certbot.1" man1)
-                 (install-file "docs/_build/man/certbot.7" man7)
-                 #t)))))))
+       ,@(substitute-keyword-arguments (package-arguments python-acme)
+           ((#:phases phases)
+            `(modify-phases ,phases
+              (replace 'install-documentation
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let* ((out (assoc-ref outputs "out"))
+                         (man1 (string-append out "/share/man/man1"))
+                         (man7 (string-append out "/share/man/man7"))
+                         (info (string-append out "/info")))
+                    (install-file "docs/_build/texinfo/Certbot.info" info)
+                    (install-file "docs/_build/man/certbot.1" man1)
+                    (install-file "docs/_build/man/certbot.7" man7)
+                    #t))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python2-nose" ,python2-nose)
@@ -557,7 +569,6 @@ security, and applying best practice development processes.")
     (propagated-inputs
      `(("python2-acme" ,python2-acme)
        ("python2-zope-interface" ,python2-zope-interface)
-       ("python2-pythondialog" ,python2-pythondialog)
        ("python2-pyrfc3339" ,python2-pyrfc3339)
        ("python2-pyopenssl" ,python2-pyopenssl)
        ("python2-configobj" ,python2-configobj)
@@ -622,7 +633,7 @@ web pages on SSL servers (for symmetry, the same API is offered for accessing
 http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
-    (license (package-license perl))
+    (license license:perl-license)
     (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
 
 (define-public perl-crypt-openssl-rsa
@@ -651,7 +662,7 @@ servers or clients for more complicated applications.")
     "RSA encoding and decoding, using the openSSL libraries")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
 OpenSSL libraries).")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define perl-crypt-arguments
    `(#:phases (modify-phases %standard-phases
@@ -687,7 +698,7 @@ OpenSSL libraries).")
   (description "Crypt::OpenSSL::Bignum provides multiprecision integer
 arithmetic in Perl.")
   ;; At your option either gpl1+ or the Artistic License
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public perl-crypt-openssl-random
  (package
@@ -712,7 +723,7 @@ arithmetic in Perl.")
     "OpenSSL/LibreSSL pseudo-random number generator access")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
 number generator")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public acme-client
   (package

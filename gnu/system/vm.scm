@@ -2,6 +2,8 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,10 +47,11 @@
                 #:select (%guile-static-stripped))
   #:use-module (gnu packages admin)
 
+  #:use-module (gnu bootloader)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
-  #:use-module (gnu system grub)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
@@ -175,8 +178,9 @@ made available under the /xchg CIFS share."
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      file-system-label
-                     os-derivation
-                     grub-configuration
+                     os-drv
+                     bootcfg-drv
+                     bootloader
                      (register-closures? #t)
                      (inputs '())
                      copy-inputs?)
@@ -200,7 +204,7 @@ the image."
                       (guix build utils))
 
          (let ((inputs
-                '#$(append (list qemu parted grub e2fsprogs)
+                '#$(append (list qemu parted e2fsprogs dosfstools)
                            (map canonical-package
                                 (list sed grep coreutils findutils gawk))
                            (if register-closures? (list guix) '())))
@@ -222,17 +226,36 @@ the image."
                                #:closures graphs
                                #:copy-closures? #$copy-inputs?
                                #:register-closures? #$register-closures?
-                               #:system-directory #$os-derivation))
+                               #:system-directory #$os-drv))
                   (partitions (list (partition
                                      (size #$(- disk-image-size
-                                                (* 10 (expt 2 20))))
+                                                (* 50 (expt 2 20))))
                                      (label #$file-system-label)
                                      (file-system #$file-system-type)
-                                     (bootable? #t)
-                                     (initializer initialize)))))
+                                     (flags '(boot))
+                                     (initializer initialize))
+                                    ;; Append a small EFI System Partition for
+                                    ;; use with UEFI bootloaders.
+                                    (partition
+                                     ;; The standalone grub image is about 10MiB, but
+                                     ;; leave some room for custom or multiple images.
+                                     (size (* 40 (expt 2 20)))
+                                     (label "GNU-ESP")             ;cosmetic only
+                                     ;; Use "vfat" here since this property is used
+                                     ;; when mounting. The actual FAT-ness is based
+                                     ;; on filesystem size (16 in this case).
+                                     (file-system "vfat")
+                                     (flags '(esp))))))
              (initialize-hard-disk "/dev/vda"
                                    #:partitions partitions
-                                   #:grub.cfg #$grub-configuration)
+                                   #:grub-efi #$grub-efi
+                                   #:bootloader-package
+                                   #$(bootloader-package bootloader)
+                                   #:bootcfg #$bootcfg-drv
+                                   #:bootcfg-location
+                                   #$(bootloader-configuration-file bootloader)
+                                   #:bootloader-installer
+                                   #$(bootloader-installer bootloader))
              (reboot)))))
    #:system system
    #:make-disk-image? #t
@@ -284,10 +307,12 @@ to USB sticks meant to be read-only."
                                   file-systems-to-keep)))))
 
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                         (grub.cfg (operating-system-grub.cfg os)))
+                         (bootcfg  (operating-system-bootcfg os)))
       (qemu-image #:name name
-                  #:os-derivation os-drv
-                  #:grub-configuration grub.cfg
+                  #:os-drv os-drv
+                  #:bootcfg-drv bootcfg
+                  #:bootloader (bootloader-configuration-bootloader
+                                (operating-system-bootloader os))
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
                   #:file-system-type file-system-type
@@ -295,7 +320,7 @@ to USB sticks meant to be read-only."
                   #:copy-inputs? #t
                   #:register-closures? #t
                   #:inputs `(("system" ,os-drv)
-                             ("grub.cfg" ,grub.cfg))))))
+                             ("bootcfg" ,bootcfg))))))
 
 (define* (system-qemu-image os
                             #:key
@@ -328,13 +353,15 @@ of the GNU system as described by OS."
                                   file-systems-to-keep)))))
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
-         (grub.cfg    (operating-system-grub.cfg os)))
-      (qemu-image  #:os-derivation os-drv
-                   #:grub-configuration grub.cfg
+         (bootcfg     (operating-system-bootcfg os)))
+      (qemu-image  #:os-drv os-drv
+                   #:bootcfg-drv bootcfg
+                   #:bootloader (bootloader-configuration-bootloader
+                                 (operating-system-bootloader os))
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
                    #:inputs `(("system" ,os-drv)
-                              ("grub.cfg" ,grub.cfg))
+                              ("bootcfg" ,bootcfg))
                    #:copy-inputs? #t))))
 
 
@@ -423,16 +450,18 @@ When FULL-BOOT? is true, return an image that does a complete boot sequence,
 bootloaded included; thus, make a disk image that contains everything the
 bootloader refers to: OS kernel, initrd, bootloader data, etc."
   (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                       (grub.cfg (operating-system-grub.cfg os)))
+                       (bootcfg  (operating-system-bootcfg os)))
     ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
-    ;; GRUB.CFG and all its dependencies, including the output of OS-DRV.
+    ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
     ;; This is more than needed (we only need the kernel, initrd, GRUB for its
     ;; font, and the background image), but it's hard to filter that.
-    (qemu-image #:os-derivation os-drv
-                #:grub-configuration grub.cfg
+    (qemu-image #:os-drv os-drv
+                #:bootcfg-drv bootcfg
+                #:bootloader (bootloader-configuration-bootloader
+                              (operating-system-bootloader os))
                 #:disk-image-size disk-image-size
                 #:inputs (if full-boot?
-                             `(("grub.cfg" ,grub.cfg))
+                             `(("bootcfg" ,bootcfg))
                              '())
 
                 ;; XXX: Passing #t here is too slow, so let it off by default.
@@ -470,7 +499,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 (mappings '())
                                                 full-boot?
                                                 (disk-image-size
-                                                 (* (if full-boot? 500 30)
+                                                 (* (if full-boot? 500 70)
                                                     (expt 2 20))))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host.
@@ -489,11 +518,8 @@ it is mostly useful when FULL-BOOT?  is true."
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
     (define kernel-arguments
-      #~(list "--root=/dev/vda1"
-              (string-append "--system=" #$os-drv)
-              (string-append "--load=" #$os-drv "/boot")
-              #$@(if graphic? #~() #~("console=ttyS0"))
-              #+@(operating-system-kernel-arguments os)))
+      #~(list #$@(if graphic? #~() #~("console=ttyS0"))
+              #+@(operating-system-kernel-arguments os os-drv "/dev/vda1")))
 
     (define qemu-exec
       #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))

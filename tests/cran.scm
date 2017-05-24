@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-cran)
+  #:use-module (gnu packages statistics)
   #:use-module (guix import cran)
   #:use-module (guix tests)
   #:use-module (srfi srfi-1)
@@ -85,6 +87,10 @@ Date/Publication: 2015-07-14 14:15:16
 (test-equal "listify: ignore values that are no lists"
   '()
   ((@@ (guix import cran) listify) simple-alist "BadList"))
+
+(test-equal "r-mininal is not a cran package"
+  #f
+  ((@@ (guix import cran) cran-package?) r-minimal))
 
 (test-assert "description->package"
   ;; Replace network resources with sample data.

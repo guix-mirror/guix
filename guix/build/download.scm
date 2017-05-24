@@ -140,6 +140,13 @@ Otherwise return STORE-PATH."
                        (string-drop base 32)))
       store-path))
 
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
+
 (define* (progress-proc file size
                         #:optional (log-port (current-output-port))
                         #:key (abbreviation basename))
@@ -389,7 +396,21 @@ host name without trailing dot."
     ;;(set-log-level! 10)
     ;;(set-log-procedure! log)
 
-    (handshake session)
+    (catch 'gnutls-error
+      (lambda ()
+        (handshake session))
+      (lambda (key err proc . rest)
+        (cond ((eq? err error/warning-alert-received)
+               ;; Like Wget, do no stop upon non-fatal alerts such as
+               ;; 'alert-description/unrecognized-name'.
+               (format (current-error-port)
+                       "warning: TLS warning alert received: ~a~%"
+                       (alert-description->string (alert-get session)))
+               (handshake session))
+              (else
+               ;; XXX: We'd use 'gnutls_error_is_fatal' but (gnutls) doesn't
+               ;; provide a binding for this.
+               (apply throw key err proc rest)))))
 
     ;; Verify the server's certificate if needed.
     (when verify-certificate?

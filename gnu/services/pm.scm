@@ -20,6 +20,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix records)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -27,7 +28,10 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:export (tlp-service-type
-            tlp-configuration))
+            tlp-configuration
+
+            thermald-configuration
+            thermald-service-type))
 
 (define (uglify-field-name field-name)
   (let ((str (symbol->string field-name)))
@@ -396,9 +400,45 @@ shutdown on system startup."))
      (service-extension udev-service-type
                         (compose list tlp-configuration-tlp))
      (service-extension activation-service-type
-                        tlp-activation)))))
+                        tlp-activation)))
+   (default-value (tlp-configuration))))
 
 (define (generate-tlp-documentation)
   (generate-documentation
    `((tlp-configuration ,tlp-configuration-fields))
    'tlp-configuration))
+
+
+
+;;;
+;;; thermald
+;;;
+;;; This service implements cpu scaling.  Helps prevent overheating!
+
+(define-record-type* <thermald-configuration>
+  thermald-configuration make-thermald-configuration
+  thermald-configuration?
+  (ignore-cpuid-check? thermald-ignore-cpuid-check?    ;boolean
+                       (default #f))
+  (thermald            thermald-thermald               ;package
+                       (default thermald)))
+
+(define (thermald-shepherd-service config)
+  (list
+   (shepherd-service
+    (provision '(thermald))
+    (documentation "Run thermald cpu frequency scaling.")
+    (start #~(make-forkexec-constructor
+              '(#$(file-append (thermald-thermald config) "/sbin/thermald")
+                "--no-daemon"
+                #$@(if (thermald-ignore-cpuid-check? config)
+                       '("--ignore-cpuid-check")
+                       '()))))
+    (stop #~(make-kill-destructor)))))
+
+(define thermald-service-type
+  (service-type
+   (name 'thermald)
+   (extensions (list (service-extension shepherd-root-service-type
+                                        thermald-shepherd-service)))
+   (default-value (thermald-configuration))))

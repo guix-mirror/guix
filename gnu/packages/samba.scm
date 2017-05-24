@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,8 +25,11 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (guix utils)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages tls)
@@ -33,9 +37,53 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
+
+(define-public cifs-utils
+  (package
+    (name "cifs-utils")
+    (version "6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.samba.org/pub/linux-cifs/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256 (base32
+                "1ayghnkryy1n1zm5dyvyyr7n3807nsm6glfcbbki5c2a8w91dwmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("keytuils" ,keyutils)
+       ("linux-pam" ,linux-pam)
+       ("libcap-ng" ,libcap-ng)
+       ("mit-krb5" ,mit-krb5)
+       ("samba" ,samba)
+       ("talloc" ,talloc)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The 6.7 tarball is missing ‘install.sh’. Create it.
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-i"))))
+         (add-before 'configure 'set-root-sbin
+           (lambda _ ; Don't try to install in "/sbin".
+             (setenv "ROOTSBINDIR"
+                     (string-append (assoc-ref %outputs "out") "/sbin"))
+             #t)))))
+    (synopsis "User-space utilities for Linux CIFS (Samba) mounts")
+    (description "@code{cifs-utils} is a set of user-space utilities for
+mounting and managing @dfn{Common Internet File System} (CIFS) shares using
+the Linux kernel CIFS client.")
+    (home-page "https://wiki.samba.org/index.php/LinuxCIFS_utils")
+    ;; cifs-utils is licensed as GPL3 or later, but 3 files contain LGPL code.
+    (license gpl3+)))
 
 (define-public iniparser
   (package
@@ -99,14 +147,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.5.7")
+    (version "4.5.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "004lzl059bc2wvkmivxiy96y87l4ajjw16qvkqcdhf86z2dg0w5c"))))
+               "1w41pxszv5z6gjclg6zymn47mk8n51lnpgcx1k2q18i3i1nnafzn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -204,6 +252,44 @@ Desktops into Active Directory environments using the winbind daemon.")
      "Talloc is a hierarchical, reference counted memory pool system with
 destructors.  It is the core memory allocator used in Samba.")
     (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
+
+(define-public talloc/static
+  (package
+    (inherit talloc)
+    (name "talloc-static")
+    (synopsis
+     "Hierarchical, reference counted memory pool system (static library)")
+    (arguments
+     (substitute-keyword-arguments (package-arguments talloc)
+       ((#:phases phases)
+        ;; Since Waf, the build system talloc uses, apparently does not
+        ;; support building static libraries from a ./configure flag, roll our
+        ;; own build process.  No need to be ashamed, we're not the only ones
+        ;; doing that:
+        ;; <https://github.com/proot-me/proot-static-build/blob/master/GNUmakefile>.
+        ;; :-)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda _
+               (letrec-syntax ((shell (syntax-rules ()
+                                        ((_ (command ...) rest ...)
+                                         (and (zero? (system* command ...))
+                                              (shell rest ...)))
+                                        ((_)
+                                         #t))))
+                 (shell ("gcc" "-c" "-Ibin/default" "-I" "lib/replace"
+                         "-I." "-Wall" "-g" "talloc.c")
+                        ("ar" "rc" "libtalloc.a" "talloc.o")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out     (assoc-ref outputs "out"))
+                      (lib     (string-append out "/lib"))
+                      (include (string-append out "/include")))
+                 (mkdir-p lib)
+                 (install-file "libtalloc.a" lib)
+                 (install-file "talloc.h" include)
+                 #t)))
+           (delete 'check)))))))            ;XXX: tests rely on Python modules
 
 (define-public tevent
   (package

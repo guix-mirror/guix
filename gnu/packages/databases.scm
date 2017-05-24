@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
@@ -290,7 +292,7 @@ mapping from string keys to string values.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.17")
+    (version "5.7.18")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -302,7 +304,7 @@ mapping from string keys to string values.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0lcn9cm36n14g22bcppq5vf4nxbrl3khvlsp9hsixqdfb3l27gyf"))))
+               "18m1mr55k9zmvnyqs0wr50csqsz3scs09fykh60wsml6c3np2p8b"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -370,7 +372,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.22")
+    (version "10.1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -378,11 +380,20 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kk674mx2bf22yivvzv1al5gdg9kyxar47m282bylb6kg8p5gc5w"))))
+                "1gq08dj9skr0gli1nj7a8wl92w8lmmqy0sbxvkmy79dz4i713n2l"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
+         ;; Linking with libarchive fails, like this:
+
+         ;; ld: /gnu/store/...-libarchive-3.2.2/lib/libarchive.a(archive_entry.o):
+         ;; relocation R_X86_64_32 against `.bss' can not be used when
+         ;; making a shared object; recompile with -fPIC
+
+         ;; For now, disable the features that that use libarchive (xtrabackup).
+         "-DWITH_LIBARCHIVE=OFF"
+
          "-DDEFAULT_CHARSET=utf8"
          "-DDEFAULT_COLLATION=utf8_general_ci"
          "-DMYSQL_DATADIR=/var/lib/mysql"
@@ -438,14 +449,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.5.6")
+    (version "9.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bz1b9r249ffjfvldaiah2g78ccwq30ddh8hdvlq61z26inmz7mv"))))
+                "1imrjp4vfslxj5rrvphcrrk21zv8kqw3gacmwradixh1d5rv6i8n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -575,48 +586,51 @@ types are supported, as is encryption.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          ;; Make the resulting library position-independent so the
-                          ;; static version can be included in shared objects.
-                          "EXTRA_CXXFLAGS=-fPIC"
+     `(#:make-flags (list "CC=gcc"
                           (string-append "INSTALL_PATH="
                                          (assoc-ref %outputs "out")))
+       ;; Many tests fail on 32-bit platforms. There are multiple reports about
+       ;; this upstream, but it's not going to be supported any time soon.
+       #:tests? (let ((system ,(or (%current-target-system)
+                                   (%current-system))))
+                  (or (string-prefix? "x86_64-linux" system)
+                      (string-prefix? "aarch64-linux" system)))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-Makefile
            (lambda _
              (substitute* "Makefile"
                (("build_tools/gnu_parallel") "parallel")
+               ;; Don't depend on the static library when installing.
+               (("install: install-static")
+                "install: install-shared")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              #t))
          (delete 'configure)
+         ;; The default target is only needed for tests and built on demand.
+         (delete 'build)
+         (add-before 'check 'disable-optimizations
+           (lambda _
+             ;; Prevent the build from passing '-march=native' to the compiler.
+             (setenv "PORTABLE" "1")
+             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
+               ;; This test fails with GCC-5 and is unmaintained.
+               ;; https://github.com/facebook/rocksdb/issues/2148
+               (("^[[:blank:]]+spatial_db_test[[:blank:]]+\\\\") "\\")
                ;; These tests reliably fail due to "Too many open files".
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
                (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
              #t))
-         (add-after
-          'check 'build-release-libraries
-          ;; The 'check' target depends on the default target which is compiled
-          ;; with debug symbols. The 'install' target depends on shared and
-          ;; static release targets so we build them here for clarity.
-          ;; TODO: Add debug output.
-          (lambda* (#:key (make-flags '()) #:allow-other-keys)
-            ;; Prevent the build from adding machine-specific optimizations.
-            ;; This does not work if passed as a make flag...
-            (setenv "PORTABLE" "1")
-            (and (zero? (apply system* "make" "static_lib" make-flags))
-                 (zero? (apply system* "make" "shared_lib" make-flags)))))
-         (add-after 'install 'delete-static-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (delete-file file))
-                         (find-files lib "\\.l?a$"))
-               #t))))))
+         (add-after 'check 'build-release-libraries
+           ;; The default build target is a debug build for tests. The
+           ;; install target depends on "shared_lib" and "static_lib"
+           ;; targets for release builds so we build them here for clarity.
+           ;; TODO: Add debug output.
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "shared_lib" make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
        ("perl" ,perl)
@@ -796,7 +810,7 @@ extremely small.")
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
     (home-page "http://search.cpan.org/dist/DBI")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class
   (package
@@ -850,7 +864,7 @@ still providing access to as many of the capabilities of the database as
 possible, including retrieving related records from multiple tables in a
 single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 \"ORDER BY\" and \"HAVING\" support.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-cursor-cached
   (package
@@ -875,7 +889,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
 built-in caching support.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-introspectablem2m
   (package
@@ -900,7 +914,7 @@ relationships are actually just a collection of convenience methods installed
 to bridge two relationships.  This DBIx::Class component can be used to store
 all relevant information about these non-relationships so they can later be
 introspected and examined.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbix-class-schema-loader
   (package
@@ -955,12 +969,12 @@ introspected and examined.")
     (description "DBIx::Class::Schema::Loader automates the definition of a
 DBIx::Class::Schema by scanning database table definitions and setting up the
 columns, primary keys, unique constraints and relationships.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-pg
   (package
     (name "perl-dbd-pg")
-    (version "3.5.1")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
@@ -968,7 +982,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-Pg-" version ".tar.gz"))
        (sha256
         (base32
-         "0z0kf1kjgbi5f6nr63i2fnrx7629d9lvxg1q8sficwb3zdf1ggzx"))))
+         "03m9w1cd0yyrbqwkwcl92j1cpmasmm69f3hwvcrlfsi5fnwsk63y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbi" ,perl-dbi)))
@@ -979,7 +993,7 @@ columns, primary keys, unique constraints and relationships.")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-mysql
   (package
@@ -1003,12 +1017,12 @@ columns, primary keys, unique constraints and relationships.")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.52")
+    (version "1.54")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1016,7 +1030,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0kimb2qr1rh07yylbbfybwcizpmy61ck667amypn4clmkfg0knm6"))))
+                "0sbj9lx9syzpknvjv8cz9jndg32qz775vy2prgq305npv3dsca9r"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1025,7 +1039,7 @@ columns, primary keys, unique constraints and relationships.")
 the entire thing in the distribution.  So in order to get a fast transaction
 capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
-    (license (package-license perl))
+    (license license:perl-license)
     (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
 
 (define-public perl-sql-abstract
@@ -1058,7 +1072,7 @@ been modified to make the SQL easier to generate from Perl data structures.
 The underlying idea is for this module to do what you mean, based on the data
 structures you provide it, so that you don't have to modify your code every
 time your data changes.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-sql-splitstatement
   (package
@@ -1084,7 +1098,7 @@ time your data changes.")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
 non-standard extensions, into the atomic statements it is composed of.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-sql-tokenizer
   (package
@@ -1104,7 +1118,7 @@ non-standard extensions, into the atomic statements it is composed of.")
     (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
 claim to be a parser or query verifier.  It just creates sane tokens from a
 valid SQL query.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public unixodbc
   (package
@@ -1275,12 +1289,12 @@ more efficient access and storage of column subsets) and log-structured merge
 trees (LSM), for sustained throughput under random insert workloads.")
     (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
-    (supported-systems '("x86_64-linux" "mips64el-linux"))))
+    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
 
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.838")
+  (version "1.840")
   (source
     (origin
       (method url-fetch)
@@ -1290,7 +1304,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
              ".tar.gz"))
       (sha256
         (base32
-          "0yp5d5zr8dk9g6xdh7ygi5bq63q7nxvhd58dk2i3ki4nb7yv2yh9"))))
+          "1i5jz85z4hpx15lw6ix27pyvrf0ziyh4z33lii4d3wnhz83lg1mp"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -1307,7 +1321,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
     "Perl5 access to Berkeley DB version 1.x")
   (description
     "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
-  (license (package-license perl))))
+  (license license:perl-license)))
 
 (define-public lmdb
   (package
@@ -1477,3 +1491,42 @@ for ODBC.")
 
 (define-public python2-pyodbc-c
   (package-with-python2 python-pyodbc-c))
+
+(define-public mdbtools
+  (package
+    (name "mdbtools")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/brianb/mdbtools/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "05hbmxcq173kzb899gdi3bz2qcc1vi3n1qbbkwpsvrq7ggf11wyw"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("txt2man" ,txt2man)
+       ("which" ,which)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
+    (home-page "http://mdbtools.sourceforge.net/")
+    (synopsis "Read Microsoft Access databases")
+    (description "MDB Tools is a set of tools and applications to read the
+proprietary MDB file format used in Microsoft's Access database package.  This
+includes programs to export schema and data from Microsoft's Access database
+file format to other databases such as MySQL, Oracle, Sybase, PostgreSQL,
+etc., and an SQL engine for performing simple SQL queries.")
+    (license (list license:lgpl2.0
+                   license:gpl2+))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (guix config)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
+  #:use-module (ice-9 match)
   #:export (build))
 
 ;;; Commentary:
@@ -58,11 +59,43 @@
 (define xz
   (first (find-best-packages-by-name "xz" #f)))
 
+(define (false-if-wrong-guile package)
+  "Return #f if PACKAGE depends on the \"wrong\" major version of Guile (e.g.,
+2.0 instead of 2.2), otherwise return PACKAGE."
+  (let ((guile (any (match-lambda
+                      ((label (? package? dep) _ ...)
+                       (and (string=? (package-name dep) "guile")
+                            dep)))
+                    (package-direct-inputs package))))
+    (and (or (not guile)
+             (string-prefix? (effective-version)
+                             (package-version guile)))
+         package)))
+
+(define (package-for-current-guile . names)
+  "Return the package with one of the given NAMES that depends on the current
+Guile major version (2.0 or 2.2), or #f if none of the packages matches."
+  (let loop ((names names))
+    (match names
+      (()
+       #f)
+      ((name rest ...)
+       (match (find-best-packages-by-name name #f)
+         (()
+          (loop rest))
+         ((first _ ...)
+          (or (false-if-wrong-guile first)
+              (loop rest))))))))
+
 (define guile-json
-  (first (find-best-packages-by-name "guile-json" #f)))
+  (package-for-current-guile "guile-json"
+                             "guile2.2-json"
+                             "guile2.0-json"))
 
 (define guile-ssh
-  (first (find-best-packages-by-name "guile-ssh" #f)))
+  (package-for-current-guile "guile-ssh"
+                             "guile2.2-ssh"
+                             "guile2.0-ssh"))
 
 
 ;; The actual build procedure.
@@ -79,6 +112,17 @@
 person's version identifier."
   ;; XXX: Replace with a Git commit id.
   (date->string (current-date 0) "~Y~m~d.~H"))
+
+(define (guile-for-build)
+  "Return a derivation for Guile 2.0 or 2.2, whichever matches the currently
+running Guile."
+  (package->derivation (cond-expand
+                         (guile-2.2
+                          (canonical-package
+                           (specification->package "guile@2.2")))
+                         (else
+                          (canonical-package
+                           (specification->package "guile@2.0"))))))
 
 ;; The procedure below is our return value.
 (define* (build source
@@ -104,15 +148,19 @@ files."
     #~(begin
         (use-modules (guix build pull))
 
-        (let ((json (string-append #$guile-json "/share/guile/site/2.0")))
+        (let ((json (string-append #$guile-json "/share/guile/site/"
+                                   #$(effective-version))))
           (set! %load-path
-                (cons* json
-                       (string-append #$guile-ssh "/share/guile/site/2.0")
-                       %load-path))
+            (cons* json
+                   (string-append #$guile-ssh "/share/guile/site/"
+                                  #$(effective-version))
+                   %load-path))
           (set! %load-compiled-path
-                (cons* json
-                       (string-append #$guile-ssh "/lib/guile/2.0/site-ccache")
-                       %load-compiled-path)))
+            (cons* json
+                   (string-append #$guile-ssh "/lib/guile/"
+                                  #$(effective-version)
+                                  "/site-ccache")
+                   %load-compiled-path)))
 
         ;; XXX: The 'guile-ssh' package prior to Guix commit 92b7258 was
         ;; broken: libguile-ssh could not be found.  Work around that.
@@ -146,13 +194,21 @@ files."
                                      (current-error-port)
                                      (%make-void-port "w")))))
 
-  (gexp->derivation "guix-latest" builder
-                    #:modules '((guix build pull)
-                                (guix build utils))
+  (mlet %store-monad ((guile (guile-for-build)))
+    (gexp->derivation "guix-latest" builder
+                      #:modules '((guix build pull)
+                                  (guix build utils)
 
-                    ;; Arrange so that our own (guix build …) modules are
-                    ;; used.
-                    #:module-path (list (top-source-directory))))
+                                  ;; Closure of (guix modules).
+                                  (guix modules)
+                                  (guix memoization)
+                                  (guix sets))
+
+                      ;; Arrange so that our own (guix build …) modules are
+                      ;; used.
+                      #:module-path (list (top-source-directory))
+
+                      #:guile-for-build guile)))
 
 ;; This file is loaded by 'guix pull'; return it the build procedure.
 build

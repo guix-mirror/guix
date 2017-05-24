@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,6 +188,10 @@ Second line" 24))
 (test-equal "duration, 1 month == 30 days"
   (string->duration "1m")
   (string->duration "30d"))
+
+(test-equal "duration, 2 hours"
+  7200
+  (time-second (string->duration "2h")))
 
 (test-equal "duration, 1 second"
   (make-time time-duration 0 1)

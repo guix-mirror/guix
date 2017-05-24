@@ -28,14 +28,15 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.0.20161216")
+    (version "2.0.20170421")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
+       (patches (search-patches "miniupnpc-CVE-2017-8798.patch"))
        (sha256
-        (base32 "0gpxva9jkjvqwawff5y51r6bmsmdhixl3i5bmzlqsqpwsq449q81"))))
+        (base32 "0n11m2wq812zms5b21h8ihw1kbyaihj9nqjiida0hskf4dmw4m13"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -45,8 +46,7 @@
      ;; the configure phase.
      '(#:make-flags
        (list
-        (string-append
-         "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
+        (string-append "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
         (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
         "CC=gcc"
 
@@ -65,11 +65,12 @@
     (synopsis "UPnP protocol client library")
     (description
      "The MiniUPnPc client library facilitates access to the services provided
-by any Universal Plug and Play (UPnP) Internet Gateway Device (IGD) present on
-the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.  It is
-useful whenever an application needs to listen for incoming connections while
-running behind a UPnP-enabled router or firewall.  Such applications include
-peer-to-peer applications, active-mode FTP clients, DCC file transfers over
-IRC, instant messaging, network games, and most server software.")
+by any @dfn{Universal Plug and Play} (UPnP) @dfn{Internet Gateway Device} (IGD)
+present on the network.  In UPnP terminology, MiniUPnPc is a UPnP Control Point.
+
+It is useful whenever an application needs to listen for incoming connections
+while running behind a UPnP-enabled router or firewall.  Such applications
+include peer-to-peer applications, active-mode FTP clients, DCC file transfers
+over IRC, instant messaging, network games, and most server software.")
     (license
      (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))

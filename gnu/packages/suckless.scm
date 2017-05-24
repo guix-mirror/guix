@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -137,14 +137,14 @@ optimising the environment for the application in use and the task performed.")
 (define-public dmenu
   (package
     (name "dmenu")
-    (version "4.6")
+    (version "4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1cwnvamqqlgczvd5dv5rsgqbhv8kp0ddjnhmavb3q732i8028yja"))))
+                "1fgph549i0yw62x02jhfc8qmqk2rnzcnm46bxq6jig1cvkw3amm7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -174,7 +174,7 @@ numbers of user-defined menu items efficiently.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -189,7 +189,7 @@ numbers of user-defined menu items efficiently.")
        ("libxkbfile" ,libxkbfile)
        ("alsa-lib" ,alsa-lib)
        ("libmpdclient" ,libmpdclient)))
-    (home-page "http://git.2f30.org/spoon/")
+    (home-page "https://git.2f30.org/spoon/")
     (synopsis "Set dwm status")
     (description
      "Spoon can be used to set the dwm status.")
@@ -266,7 +266,7 @@ drawing.")
 (define-public surf
   (package
     (name "surf")
-    (version "0.7")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -274,7 +274,7 @@ drawing.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0jj93izd8fizxfa6ln9w1h9bwki81sz5dhskh5x1rl34zd38aq4m"))))
+         "07cmajyafljigy10d21kkyvv5jf3hxkx06pz3rwwk3y3c9x4rvps"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -294,7 +294,7 @@ drawing.")
      `(("dmenu" ,dmenu)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("webkitgtk" ,webkitgtk)
        ("xprop" ,xprop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -355,7 +355,7 @@ few minutes.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -367,7 +367,7 @@ few minutes.")
                           (string-append "PREFIX=" %output))))
     (inputs
      `(("libx11" ,libx11)))
-    (home-page "http://git.2f30.org/xbattmon/")
+    (home-page "https://git.2f30.org/xbattmon/")
     (synopsis "Simple battery monitor for X")
     (description
      "Xbattmon is a simple battery monitor for X.")
@@ -380,7 +380,7 @@ few minutes.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -393,7 +393,7 @@ few minutes.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
-    (home-page "http://git.2f30.org/wificurse/")
+    (home-page "https://git.2f30.org/wificurse/")
     (synopsis "Wifi DoS attack tool")
     (description
      "Wificurses listens for beacons sent from wireless access points
@@ -413,7 +413,7 @@ drivers capable of injecting packets in wireless networks.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -426,7 +426,7 @@ drivers capable of injecting packets in wireless networks.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
-    (home-page "http://2f30.org")
+    (home-page "https://2f30.org/")
     (synopsis "Commandline utility which scrolls text")
     (description
      "Skroll is a small utility that you can use to make a text scroll.
@@ -441,7 +441,7 @@ left.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -454,7 +454,7 @@ left.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
-    (home-page "http://git.2f30.org/sbm/")
+    (home-page "https://git.2f30.org/sbm/")
     (synopsis "Simple bandwidth monitor")
     (description
      "Sbm is a simple bandwidth monitor.")
@@ -467,7 +467,7 @@ left.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -483,7 +483,7 @@ left.")
     (inputs
      `(("cups-minimal" ,cups-minimal)
        ("zlib" ,zlib)))
-    (home-page "http://git.2f30.org/prout/")
+    (home-page "https://git.2f30.org/prout/")
     (synopsis "Smaller lp command")
     (description
      "Prout (PRint OUT) is a small utility one can use to send
@@ -500,7 +500,7 @@ cups server to be installed.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -519,7 +519,7 @@ cups server to be installed.")
                (("lcurses") "lncurses")))))))
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "http://git.2f30.org/noice/")
+    (home-page "https://git.2f30.org/noice/")
     (synopsis "Small file browser")
     (description
      "Noice is a small curses-based file browser.")
@@ -550,7 +550,7 @@ cups server to be installed.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
-    (home-page "http://git.2f30.org/human/")
+    (home-page "https://git.2f30.org/human/")
     (synopsis "Convert bytes to human readable formats")
     (description
      "Human is a small program which translate numbers into a
@@ -567,7 +567,7 @@ environment variable.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -580,22 +580,22 @@ environment variable.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script
-    (home-page "http://git.2f30.org/fortify-headers/")
+    (home-page "https://git.2f30.org/fortify-headers/")
     (synopsis "Standalone fortify-source implementation")
     (description
      "This is a standalone implementation of fortify source.  It provides
 compile time buffer checks.  It is libc-agnostic and simply overlays the
 system headers by using the @code{#include_next} extension found in GCC.  It was
-initially intended to be used on musl based Linux distributions.
+initially intended to be used on musl-based Linux distributions.
 
 @itemize
 @item It is portable, works on *BSD, Linux, Solaris and possibly others.
 @item It will only trap non-conformant programs.  This means that fortify
   level 2 is treated in the same way as level 1.
 @item Avoids making function calls when undefined behaviour has already been
-  invoked.  This is handled by using __builtin_trap().
-@item Support for out-of-bounds read interfaces, such as send(), write(),
-  fwrite() etc.
+  invoked.  This is handled by using @code{__builtin_trap()}.
+@item Support for out-of-bounds read interfaces, such as @code{send()},
+  @code{write()}, @code{fwrite()}, etc.
 @item No ABI is enforced.  All of the fortify check functions are inlined
   into the resulting binary.
 @end itemize\n")
@@ -608,7 +608,7 @@ initially intended to be used on musl based Linux distributions.
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.2f30.org/releases/"
+       (uri (string-append "https://dl.2f30.org/releases/"
                            name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -623,7 +623,7 @@ initially intended to be used on musl based Linux distributions.
          (delete 'configure)))) ; No configure script
     (inputs
      `(("libpng" ,libpng)))
-    (home-page "http://git.2f30.org/colors/")
+    (home-page "https://git.2f30.org/colors/")
     (synopsis "Extract colors from pictures")
     (description
      "Extract colors from PNG files.  It is similar to
@@ -681,8 +681,8 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "1")
-        (commit "bbde23732f8c7769b982f0c1bda9b99fbf93f932"))
+  (let ((revision "2")
+        (commit "25d90f4630b45e2b609d2e3daecb32cf5ff065fd"))
     (package
       (name "lchat")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -695,7 +695,7 @@ as -1, to be used instead of U+FFFD.
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "00q3rc0aa5416jvjvrj71x1wnr0331kxhvjjs7pyxgnq4xf36k63"))))
+           "0dvljyq3m7rxxkqv7rkmijak6vj8i4db3iq2z988bvf76chz268b"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; No tests

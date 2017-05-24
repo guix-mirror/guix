@@ -209,9 +209,9 @@ values: 'interactive' (default), 'always', and 'never'."
           (if ret
               tarball
               (begin
-                (warning (_ "signature verification failed for `~a'~%")
+                (warning (G_ "signature verification failed for `~a'~%")
                          url)
-                (warning (_ "(could be because the public key is not in your keyring)~%"))
+                (warning (G_ "(could be because the public key is not in your keyring)~%"))
                 #f))))))
 
 (define (find2 pred lst1 lst2)
@@ -290,12 +290,12 @@ if an update was made, and #f otherwise."
                          old-version version old-hash hash))
                    version)
               (begin
-                (warning (_ "~a: could not locate source file")
+                (warning (G_ "~a: could not locate source file")
                          (location-file loc))
                 #f)))
         (begin
           (format (current-error-port)
-                  (_ "~a: ~a: no `version' field in source; skipping~%")
+                  (G_ "~a: ~a: no `version' field in source; skipping~%")
                   (location->string (package-location package))
                   name)))))
 

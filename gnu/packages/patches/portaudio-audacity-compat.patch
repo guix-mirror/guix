@@ -7,9 +7,9 @@ See <http://music.columbia.edu/pipermail/portaudio/2015-March/016611.html>.
 --- a/include/pa_win_ds.h
 +++ b/include/pa_win_ds.h
 @@ -89,6 +89,21 @@
- 
+
  }PaWinDirectSoundStreamInfo;
- 
+
 +/** Retrieve the GUID of the input device.
 +
 + @param stream The stream to query.
@@ -25,8 +25,8 @@ See <http://music.columbia.edu/pipermail/portaudio/2015-March/016611.html>.
 + @return A pointer to the GUID, or NULL if none.
 +*/
 +LPGUID PaWinDS_GetStreamOutputGUID( PaStream* s );
- 
- 
+
+
  #ifdef __cplusplus
 --- a/include/portaudio.h
 +++ b/include/portaudio.h

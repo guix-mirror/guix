@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +31,13 @@
   (let ((m (make-module)))
     (beautify-user-module! m)
     m))
+
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
 
 (define (call-with-time thunk kont)
   "Call THUNK and pass KONT the elapsed time followed by THUNK's return

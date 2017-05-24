@@ -227,7 +227,11 @@ numeric gid or #f."
                      #:supplementary-groups supplementary-groups
                      #:comment comment
                      #:home home
+
+                     ;; Home directories of non-system accounts are created by
+                     ;; 'activate-user-home'.
                      #:create-home? (and create-home? system?)
+
                      #:shell shell
                      #:password password)
 
@@ -282,7 +286,10 @@ they already exist."
     (match-lambda
       ((name uid group supplementary-groups comment home create-home?
              shell password system?)
-       (unless (or (not home) (directory-exists? home))
+       ;; The home directories of system accounts are created during
+       ;; activation, not here.
+       (unless (or (not home) (not create-home?) system?
+                   (directory-exists? home))
          (let* ((pw  (getpwnam name))
                 (uid (passwd:uid pw))
                 (gid (passwd:gid pw)))

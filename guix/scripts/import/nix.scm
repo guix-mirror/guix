@@ -38,11 +38,11 @@
   '())
 
 (define (show-help)
-  (display (_ "Usage: guix import nix NIXPKGS ATTRIBUTE
+  (display (G_ "Usage: guix import nix NIXPKGS ATTRIBUTE
 Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -68,7 +68,7 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
@@ -87,4 +87,4 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
                  (location-file loc) (location-line loc))
          expr))
       (x
-       (leave (_ "wrong number of arguments~%"))))))
+       (leave (G_ "wrong number of arguments~%"))))))

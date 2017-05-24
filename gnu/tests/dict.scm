@@ -97,15 +97,16 @@
                '(begin
                   (use-modules (ice-9 rdelim))
                   (let ((sock (socket PF_INET SOCK_STREAM 0)))
-                    (let loop ()
-                      (pk 'try)
+                    (let loop ((i 0))
+                      (pk 'try i)
                       (catch 'system-error
                         (lambda ()
                           (connect sock AF_INET INADDR_LOOPBACK 2628))
                         (lambda args
                           (pk 'connection-error args)
-                          (sleep 1)
-                          (loop))))
+                          (when (< i 20)
+                            (sleep 1)
+                            (loop (+ 1 i))))))
                     (read-line sock 'concat)))
                marionette))
 

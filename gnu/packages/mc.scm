@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,8 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages zip))
 
 (define-public mc
   (package
@@ -51,7 +52,8 @@
               ("ncurses" ,ncurses)
               ("libssh2" ,libssh2)
               ("glib" ,glib)
-              ("check" ,check)))
+              ("check" ,check)
+              ("unzip" ,unzip)))
     (arguments
      `(#:configure-flags
        '("--with-screen=ncurses" "--enable-aspell")

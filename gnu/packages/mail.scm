@@ -15,13 +15,15 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +42,7 @@
 
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
@@ -50,11 +53,13 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -63,6 +68,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -70,6 +76,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -85,9 +92,11 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
@@ -95,7 +104,7 @@
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2 x11-style agpl3))
+                           bsd-2 x11-style agpl3 asl2.0 perl-license))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -216,14 +225,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.0")
+    (version "1.8.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
-                                 version ".tar.gz"))
+             (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
+                                 "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1axdcylyv0p194y6lj1jx127g5yc74zqzzxdc014cjw02bd1x125"))
+               "0dgjjryp1ggbc6ivy9cfz5jl3gnbahb6d6hcwn7c7wk5npqpn18x"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -256,16 +265,15 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170306")
+    (version "20170428")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/" name "/" name
                            "/archive/" name "-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qwcbjm9j1hgzmybw15w53pvfbqcdf47d4sw21s6r2yaj8kx1hag"))))
+         "01nkq0lyxcs0pk2i3rvzplg8bi1ga7kcm6hfh6r6w2qjzdm0q466"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -284,6 +292,7 @@ operating systems.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
@@ -330,8 +339,7 @@ operating systems.")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
-It adds a large amount of features to mutt, and they all find their way
-into mutt, so it is not a fork but a large set of feature patches.")))
+It adds a large amount of new and improved features to mutt.")))
 
 (define-public gmime
   (package
@@ -413,7 +421,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.0.14")
+    (version "7.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -421,7 +429,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i5dvygps1ai2qwgamab8kngrp0c5m3bgaw0jk34l8ypsk54wj8r"))))
+                "1r0sbgwyirpbks82ri9g88raf3mp8shq9rg0r92gkr7h6888v6fw"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -829,14 +837,14 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.7.2")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
-               (base32 "081ixgj3skglq9i7v0jb835lmfx21zi4i5b7997igwr0lj174y9j"))))
+               (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
@@ -867,7 +875,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license (non-copyleft "file://COPYING"))))
+    (license bsd-3)))
 
 (define-public compface
   (package
@@ -1081,7 +1089,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.28")
+    (version "2.2.29.1")
     (source
      (origin
        (method url-fetch)
@@ -1089,7 +1097,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "098zpkmkk93372qnv6drgbfg8hp5mynspzc1735qgar6wdcqya70"))))
+                "127kn3fgmahw9fvgz2w3zaghq98ip4j8640wqa3rw7mrgvxrzync"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1132,44 +1140,41 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
 
 (define-public dovecot-trees
-  (let ((commit "006059c8a47d68f14f73c09743e45b9a73014dbf")
-        (revision "1"))
-    (package
-      (name "dovecot-trees")
-      (version (string-append "2.0.0-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://0xacab.org/riseuplabs/trees.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0ax90bzc66x179wi1m7ywqwa8nssyhjngs7ij109hqqxg5ymfp73"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("automake" ,automake)
-         ("autoconf" ,autoconf)
-         ("libtool" ,libtool)
-         ("dovecot" ,dovecot)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libsodium" ,libsodium)))
-      (arguments
-       `(#:tests? #f ;No tests exist.
-         #:configure-flags (list (string-append "--with-dovecot="
-                                                (assoc-ref %build-inputs "dovecot")
-                                                "/lib/dovecot"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'autogen
-             (lambda _
-               (zero? (system* "./autogen.sh")))))))
-      (home-page "https://0xacab.org/riseuplabs/trees")
-      (synopsis "NaCL-based Dovecot email storage encryption plugin")
-      (description
-       "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
+  (package
+    (name "dovecot-trees")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://0xacab.org/riseuplabs/trees/repository/"
+                           "archive.tar.gz?ref=v" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("dovecot" ,dovecot)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (arguments
+     `(#:tests? #f ;No tests exist.
+       #:configure-flags (list (string-append "--with-dovecot="
+                                              (assoc-ref %build-inputs "dovecot")
+                                              "/lib/dovecot"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (home-page "https://0xacab.org/riseuplabs/trees")
+    (synopsis "NaCL-based Dovecot email storage encryption plugin")
+    (description
+     "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
 Dovecot encryption plugin.  This plugin adds individually encrypted mail
 storage to the Dovecot IMAP server.  It is inspired by Posteo's scrambler
 which uses OpenSSL and RSA keypairs.  TREES works in a similar way, but uses
@@ -1185,7 +1190,7 @@ How it works:
 using lidsodium sealed boxes.
 @item New mail is encrypted as it arrives using the Curve25519 public key.
 @end enumerate\n")
-      (license agpl3))))
+    (license agpl3)))
 
 (define-public dovecot-libsodium-plugin
   (let ((commit "044de73c01c35385df0105f6b387bec5d5317ce7")
@@ -1272,7 +1277,7 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
     (synopsis "Interface to mail representations")
     (description "Email::Abstract provides module writers with the ability to
 write simple, representation-independent mail handling code.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-address
   (package
@@ -1292,7 +1297,7 @@ write simple, representation-independent mail handling code.")
     (description "Email::Address implements a regex-based RFC 2822 parser that
 locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-date-format
   (package
@@ -1311,7 +1316,7 @@ objects found.  Alternatively you may construct objects manually.")
     (synopsis "Produce RFC 2822 date strings")
     (description "Email::Date::Format provides a means for generating an RFC
 2822 compliant datetime string.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-messageid
   (package
@@ -1330,12 +1335,12 @@ objects found.  Alternatively you may construct objects manually.")
     (synopsis "Generate world unique message-ids")
     (description "Email::MessageID generates recommended message-ids to
 identify a message uniquely.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime
   (package
     (name "perl-email-mime")
-    (version "1.937")
+    (version "1.940")
     (source
      (origin
        (method url-fetch)
@@ -1343,7 +1348,7 @@ identify a message uniquely.")
                            "Email-MIME-" version ".tar.gz"))
        (sha256
         (base32
-         "0s50i3nxi9dr81p4rn017nrarc40yrwz0qcw34q8k3pvdf46fr9n"))))
+         "0pnxbr16cn5qy96xqhp9zmd94ashc9ivqh10qbgbc3f637a0mfir"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-address" ,perl-email-address)
@@ -1358,7 +1363,7 @@ identify a message uniquely.")
 handle MIME encoded messages.  It takes a message as a string, splits it up
 into its constituent parts, and allows you access to various parts of the
 message.  Headers are decoded from MIME encoding.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime-contenttype
   (package
@@ -1379,7 +1384,7 @@ message.  Headers are decoded from MIME encoding.")
     (synopsis "Parse MIME Content-Type headers")
     (description "Email::MIME::ContentType parses a MIME Content-Type
 header.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-mime-encodings
   (package
@@ -1399,7 +1404,7 @@ header.")
     (home-page "http://search.cpan.org/dist/Email-MIME-Encodings")
     (synopsis "Unified interface to MIME encoding and decoding")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-sender
   (package
@@ -1431,12 +1436,12 @@ header.")
     (synopsis "Perl library for sending email")
     (description "Email::Sender replaces the old and sometimes problematic
 Email::Send library.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
-    (version "2.211")
+    (version "2.213")
     (source
      (origin
        (method url-fetch)
@@ -1444,7 +1449,7 @@ Email::Send library.")
                            "Email-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1if4a2wh4iwlcycqrd2fhkx04ngmd75q444gh43w0r9p15ym5f8w"))))
+         "1ibwsng63gvqqc6r2135mjwfdzazxkb1x8q7f87wqcbjcjfpmffd"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-date-format" ,perl-email-date-format)))
@@ -1452,7 +1457,7 @@ Email::Send library.")
     (synopsis "Parsing of RFC 2822 messages")
     (description "Email::Simple provides simple parsing of RFC 2822 message
 format and headers.")
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public libesmtp
   (package
@@ -1603,13 +1608,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.11.3")
+    (version "0.11.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1v66khq5w17xdbkpb00pf9xbl84dlzx4lq286fvzskb949b3y4yn"))))
+                "1shhlq6ljbd8095hd82v4mw56rjcfxf1ymmgknbgh8gix02nsxw1"))))
     (build-system python-build-system)
     (arguments
       `(#:phases
@@ -2050,7 +2055,7 @@ the GNU Mailman 3 REST API.")
     (description
      "Mlmmj is a simple and slim mailing list manager (MLM) inspired by ezmlm.
 It works with many different Mail Transport Agents (MTAs) and is simple for a
-system adminstrator to install, configure and integrate with other software.
+system administrator to install, configure and integrate with other software.
 As it uses very few resources, and requires no daemons, it is ideal for
 installation on systems where resources are limited.  Its features include:
 @enumerate
@@ -2064,6 +2069,74 @@ installation on systems where resources are limited.  Its features include:
 @item Rich and customisable texts for automated operations.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public python-django-mailman3
+  (package
+    (name "python-django-mailman3")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-mailman3" version))
+       (sha256
+        (base32
+         "1adxyh8knw9knjlh73xq0jpn5adml0ck4alsv0swakm95wfyx46z"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-oauthlib" ,python-requests-oauthlib)
+       ("python-openid" ,python-openid)
+       ("python-mailmanclient" ,python-mailmanclient)
+       ("python-django-allauth" ,python-django-allauth)
+       ("python-django-gravatar2" ,python-django-gravatar2)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://gitlab.com/mailman/django-mailman3")
+    (synopsis "Django library for Mailman UIs")
+    (description
+     "Libraries and templates for Django-based interfaces
+interacting with Mailman.")
+    (license gpl3+)))
+
+(define-public python2-django-mailman3
+  (let ((base (package-with-python2
+               python-django-mailman3)))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-openid" ,python2-openid)
+         ,@(package-propagated-inputs base))))))
+
+(define-public postorius
+  (package
+    (name "postorius")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "postorius" version "+post2.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wymcpv2icjjy8h1ni52p6dr7wwxf71ivqgbqhzx4i82yqphcaq5"))))
+    (build-system python-build-system)
+    (arguments
+     `(; One test dependency relies on Persona, which was shut down in
+       ;; November 2016.
+       #:tests? #f
+       ;; The part of the frontend of Mailman is still python 2.7.
+       #:python ,python-2))
+    (inputs
+     `(("python2-django" ,python2-django)
+       ("python2-django-mailman3" ,python2-django-mailman3)
+       ("python2-mailmanclient" ,python2-mailmanclient)))
+    (home-page "https://gitlab.com/mailman/postorius")
+    (synopsis "Web user interface for GNU Mailman")
+    (description
+     "Postorius is a Django app which provides a web user interface
+to access GNU Mailman.")
+    (license (list gpl3+ lgpl3+))))
 
 (define-public blists
   (package
@@ -2148,3 +2221,123 @@ Options can be specified in environment variables, configuration files, and
 the command line allowing maximum configurability and ease of use for
 operators and scripters.")
     (license gpl2+)))
+
+(define-public alpine
+  (package
+    (name "alpine")
+    (version "2.21")
+    (source
+     (origin
+       (method url-fetch)
+       ;; There are two versions: the plain continuation of Alpine without extra
+       ;; patches and the version which adds extra fixes. Every distro uses
+       ;; the patched version, and so do we to not break expectations.
+       ;; http://patches.freeiz.com/alpine/readme/README.patches
+       (uri (string-append "http://patches.freeiz.com/alpine/patches/alpine-"
+                           version "/alpine-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1k9hcfjywfk3mpsl71hjza3nk6icgf1b6xxzgx10kdzg5yci5x5m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:configure-flags (list (string-append "--with-ssl-include-dir="
+                                              (assoc-ref %build-inputs "openssl")
+                                              "/include/openssl")
+                               (string-append "--with-ssl-dir="
+                                              (assoc-ref %build-inputs "openssl"))
+                               (string-append "--with-ssl-certs-dir="
+                                              "/etc/ssl/certs/")
+                               (string-append "--with-ssl-lib-dir="
+                                              (assoc-ref %build-inputs "openssl")
+                                              "/lib")
+                               (string-append "--with-interactive-spellcheck="
+                                              (assoc-ref %build-inputs "aspell")
+                                              "/bin/aspell"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; This removes time-dependent code to make alpine reproducible.
+             (substitute* "pico/blddate.c"
+               (("%02d-%s-%d") "1970-01-01"))
+             (substitute* (list "alpine/Makefile.in"
+                                "web/src/alpined.d/Makefile.in")
+               (("`date`") "1970-01-01"))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("gnutls" ,gnutls)
+       ("openldap" ,openldap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("mit-krb5" ,mit-krb5)
+       ("aspell" ,aspell)
+       ("tcl" ,tcl)
+       ("linux-pam" ,linux-pam)))
+    (home-page "http://patches.freeiz.com/alpine/")
+    (synopsis "Alternatively Licensed Program for Internet News and Email")
+    (description
+     "Alpine is a text-based mail and news client.  Alpine includes several
+tools and applications:
+@enumerate
+@item alpine, the Alpine mailer
+@item pico, the standalone text editor, GNU nano's predecessor
+@item pilot, the standalone file system navigator
+@end enumerate\n")
+    (license asl2.0)))
+
+(define-public balsa
+  (package
+    (name "balsa")
+    (version "2.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pawsa.fedorapeople.org/balsa/balsa-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "15jkwp3ylbwd8iha4dr37z1xb6mkk31ym90vv3h2a5xk2rmym5mq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '(;; Balsa tries to install additional MIME icons
+         ;; under gtk+ directory.
+         "--enable-extra-mimeicons=no"
+         "--with-gtksourceview"
+         "--with-canberra"
+         "--with-spell-checker=gtkspell"
+         "--with-gpgme"
+         "--with-sqlite"
+         "--with-compface"
+         "--with-ldap")))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("enchant" ,enchant)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gmime" ,gmime)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("gtkspell3" ,gtkspell3)
+       ("libcanberra" ,libcanberra)
+       ("libesmtp" ,libesmtp)
+       ("libnotify" ,libnotify)
+       ("openldap" ,openldap)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
+    (native-inputs
+     `(("compface" ,compface)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (home-page "https://pawsa.fedorapeople.org/balsa")
+    (synopsis "E-mail client for GNOME")
+    (description "Balsa is a highly configurable and robust mail client for
+the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
+mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
+the use of a local MTA such as Sendemail.")
+    (license gpl3+)))

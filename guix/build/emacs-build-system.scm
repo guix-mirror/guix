@@ -47,10 +47,12 @@
 (define (store-file->elisp-source-file file)
   "Convert FILE, a store file name for an Emacs Lisp source file, into a file
 name that has been stripped of the hash and version number."
-  (let-values (((name version)
-                (package-name->name+version
-                 (strip-store-file-name file))))
-    (string-append name ".el")))
+  (let ((suffix ".el"))
+    (let-values (((name version)
+                  (package-name->name+version
+                   (basename
+                    (strip-store-file-name file) suffix))))
+      (string-append name suffix))))
 
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE into the build directory.  SOURCE may be a compressed
@@ -93,14 +95,30 @@ store in '.el' files."
           (substitute-cmd))))
     #t))
 
-(define* (install #:key outputs #:allow-other-keys)
+(define* (install #:key outputs
+                  (include '("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
+                  (exclude '("^\\.dir-locals\\.el$" "-pkg\\.el$" "^[^/]*tests?\\.el$"))
+                  #:allow-other-keys)
   "Install the package contents."
+
+  (define source (getcwd))
+
+  (define (install-file? file stat)
+    (let ((stripped-file (string-trim (string-drop file (string-length source)) #\/)))
+      (and (any (cut string-match <> stripped-file) include)
+           (not (any (cut string-match <> stripped-file) exclude)))))
+
   (let* ((out (assoc-ref outputs "out"))
          (elpa-name-ver (store-directory->elpa-name-version out))
-         (src-dir (getcwd))
-         (tgt-dir (string-append out %install-suffix "/" elpa-name-ver)))
-    (copy-recursively src-dir tgt-dir)
-    #t))
+         (target-directory (string-append out %install-suffix "/" elpa-name-ver)))
+    (for-each
+     (lambda (file)
+       (let* ((stripped-file (string-drop file (string-length source)))
+              (target-file (string-append target-directory stripped-file)))
+         (format #t "`~a' -> `~a'~%" file target-file)
+         (install-file file (dirname target-file))))
+     (find-files source install-file?)))
+  #t)
 
 (define* (move-doc #:key outputs #:allow-other-keys)
   "Move info files from the ELPA package directory to the info directory."

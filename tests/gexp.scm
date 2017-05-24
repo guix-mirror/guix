@@ -627,6 +627,10 @@
    #~(foo #$@(list (with-imported-modules '((foo)) #~+)
                    (with-imported-modules '((bar)) #~-)))))
 
+(test-equal "gexp-modules and literal Scheme object"
+  '()
+  (gexp-modules #t))
+
 (test-assertm "gexp->derivation #:modules"
   (mlet* %store-monad
       ((build ->  #~(begin
@@ -945,6 +949,13 @@
                                (derivation->output-path guile-drv))
                      (string=? (readlink (string-append comp "/text"))
                                text)))))))
+
+(test-assert "lower-object & gexp-input-error?"
+  (guard (c ((gexp-input-error? c)
+             (gexp-error-invalid-input c)))
+    (run-with-store %store
+      (lower-object (current-module))
+      #:guile-for-build (%guile-for-build))))
 
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -35,14 +35,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.2.4")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "1lz7v5sscj5489panz5ng372g9l66ng0srx6xaz8drnsgi7m64zk"))
+        (base32 "051rky4rpm73flxxkhfdxqq23ncnk4ixhscbg74w82sa4d93f54k"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -75,11 +75,9 @@
               (("\\/\\$\\{APPLICATION_EXECUTABLE\\}\\\"") "\""))
             #t))
          (add-after 'unpack 'delete-failing-tests
-           ;; These tests fail for no apparent reason
+           ;; "Could not create autostart folder"
            (lambda _
              (substitute* "test/CMakeLists.txt"
-                          (("owncloud_add_test\\(FileSystem \"\"\\)" test)
-                           (string-append "#" test))
                           (("owncloud_add_test\\(Utility \"\"\\)" test)
                            (string-append "#" test)))
              #t)))

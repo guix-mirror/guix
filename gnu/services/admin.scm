@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,6 +115,7 @@
                      ;; Add Rottlog to the global profile so users can access
                      ;; the documentation.
                      (service-extension profile-service-type
-                                        (compose list rottlog-rottlog))))))
+                                        (compose list rottlog-rottlog))))
+   (default-value (rottlog-configuration))))
 
 ;;; admin.scm ends here

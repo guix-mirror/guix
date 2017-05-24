@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -424,7 +426,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.3")
+   (version "2.36.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -432,7 +434,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1v1rssjd8p5s3lymsfhiq5mbs2pc0h1r6jd0asrwdbrign7i68sj"))
+              "034279k49ydawnagqd7b1rz741n20k4y3grybzwp26zd146bjpj5"))
             (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -651,7 +653,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.6")
+   (version "3.22.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -659,7 +661,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0bqpx8825b1fdjmz14wq20zq58gq1yi1p5xjps8l6zqid8hmm9zb"))
+              "1359w81sxs2izkan2rni985x78s6zr1arf469qmyw4bazg7f1yl4"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -691,9 +693,9 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
       ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-1.19.2)))
+      ("xorg-server" ,xorg-server-1.19.3)))
    (arguments
-    `(#:disallowed-references (,xorg-server-1.19.2)
+    `(#:disallowed-references (,xorg-server-1.19.3)
       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
@@ -1208,7 +1210,7 @@ extensive documentation, including API reference and a tutorial.")
     (synopsis "Python bindings for GTK+")
     (description
      "PyGTK allows you to write full featured GTK programs in Python.  It is
-targetted at GTK 2.x, and can be used in conjunction with gnome-python to
+targeted at GTK 2.x, and can be used in conjunction with gnome-python to
 write GNOME applications.")
     (license license:lgpl2.1+)))
 
@@ -1419,3 +1421,41 @@ misspelled words in a GtkTextView widget.")
 thereof, global hotkeys and clipboard item actions.  It was forked from
 Parcellite and adds bugfixes and features.")
     (license license:gpl2+)))
+
+(define-public graphene
+  (package
+    (name "graphene")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ebassi/graphene/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1zd2daj7y590wnzn4jw0niyc4fnzgxrcl9i7nwhy8b25ks2hz5wq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-introspection=yes")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("which" ,which)
+       ("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("python" ,python)
+       ("python-2" ,python-2)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "http://ebassi.github.io/graphene")
+    (synopsis "Thin layer of graphic data types")
+    (description "This library provides graphic types and their relative API;
+it does not deal with windowing system surfaces, drawing, scene graphs, or
+input.")
+    (license license:expat)))

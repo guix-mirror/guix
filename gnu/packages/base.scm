@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -345,6 +346,29 @@ functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
 
+;; We add version 8.27 here for use in (gnu system) due to a time
+;; zone bug in `date' versions 8.25 - 8.26.
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=23035
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26238
+(define-public coreutils-8.27
+  (package
+    (inherit coreutils)
+    (version "8.27")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))
+    (arguments
+     (if (string-prefix? "arm" (or (%current-target-system)
+                                   (%current-system)))
+         (substitute-keyword-arguments (package-arguments coreutils)
+           ((#:phases phases)
+            `(alist-delete 'patch-cut-test ,phases)))
+         (package-arguments coreutils)))))
+
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
   (package
@@ -622,6 +646,19 @@ store.")
                         ;; 4.7.1.
                         ((" -lgcc_s") ""))
 
+                      ;; Apply patch only on i686.
+                      ;; TODO: Move the patch to 'patches' in the next update cycle.
+                      ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                       (%current-system)))
+                            `((unless (zero? (system* "patch" "-p1" "--force"
+                                                      "--input"
+                                                      (or (assoc-ref native-inputs
+                                                                     "glibc-memchr-overflow-i686.patch")
+                                                          (assoc-ref inputs
+                                                                     "glibc-memchr-overflow-i686.patch"))))
+                                (error "patch failed for glibc-memchr-overflow-i686.patch")))
+                            '())
+
                       ;; Have `system' use that Bash.
                       (substitute* "sysdeps/posix/system.c"
                         (("#define[[:blank:]]+SHELL_PATH.*$")
@@ -665,7 +702,15 @@ store.")
    ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)
-                    ("gettext" ,gettext-minimal)))
+                    ("gettext" ,gettext-minimal)
+
+                    ;; Apply this patch only on i686 to avoid a full rebuild.
+                    ;; TODO: Move to 'patches' in the next update cycle.
+                    ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                     (%current-system)))
+                          `(("glibc-memchr-overflow-i686.patch"
+                             ,(search-patch "glibc-memchr-overflow-i686.patch")))
+                          '())))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
@@ -713,35 +758,98 @@ with the Linux kernel.")
        ((#:phases original-phases)
         ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
         ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
-        `(alist-cons-after
-          'install 'augment-libc.so
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out")))
-              (substitute* (string-append out "/lib/libc.so")
-                (("/[^ ]+/lib/libc.so.0.3")
-                 (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
-            #t)
-          (alist-cons-after
-           'pre-configure 'pre-configure-set-pwd
-           (lambda _
-             ;; Use the right 'pwd'.
-             (substitute* "configure"
-               (("/bin/pwd") "pwd")))
-           (alist-replace
-            'build
-            (lambda _
-              ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
-              ;; linking errors.
-              ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
-              (let ((-j (list "-j" (number->string (parallel-job-count)))))
-                (let-syntax ((make (syntax-rules ()
-                                     ((_ target)
-                                      (zero? (apply system* "make" target -j))))))
-                  (and (make "mach/subdir_lib")
-                       (make "hurd/subdir_lib")
-                       (make "libpthread/subdir_lib")
-                       (zero? (apply system* "make" -j))))))
-            ,original-phases))))
+        `(modify-phases ,original-phases
+           ;; TODO: This is almost an exact copy of the phase of the same name
+           ;; in glibc/linux.  The only difference is that the i686 patch is
+           ;; not applied here.  In the next update cycle the patch moves to
+           ;; the patches field and this overwritten phase won't be needed any
+           ;; more.
+           (replace 'pre-configure
+             (lambda* (#:key inputs native-inputs outputs
+                       #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      ;; FIXME: Normally we would look it up only in INPUTS
+                      ;; but cross-base uses it as a native input.
+                      (bash (or (assoc-ref inputs "static-bash")
+                                (assoc-ref native-inputs "static-bash"))))
+                 ;; Install the rpc data base file under `$out/etc/rpc'.
+                 ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
+                 (substitute* "sunrpc/Makefile"
+                   (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                    (string-append out "/etc/rpc" suffix "\n"))
+                   (("^install-others =.*$")
+                    (string-append "install-others = " out "/etc/rpc\n")))
+
+                 (substitute* "Makeconfig"
+                   ;; According to
+                   ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
+                   ;; linking against libgcc_s is not needed with GCC
+                   ;; 4.7.1.
+                   ((" -lgcc_s") ""))
+
+                 ;; Have `system' use that Bash.
+                 (substitute* "sysdeps/posix/system.c"
+                   (("#define[[:blank:]]+SHELL_PATH.*$")
+                    (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                            bash)))
+
+                 ;; Same for `popen'.
+                 (substitute* "libio/iopopen.c"
+                   (("/bin/sh")
+                    (string-append bash "/bin/sh")))
+
+                 ;; Same for the shell used by the 'exec' functions for
+                 ;; scripts that lack a shebang.
+                 (substitute* (find-files "." "^paths\\.h$")
+                   (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
+                    (string-append "#define _PATH_BSHELL \""
+                                   bash "/bin/sh\"\n")))
+
+                 ;; Nscd uses __DATE__ and __TIME__ to create a string to
+                 ;; make sure the client and server come from the same
+                 ;; libc.  Use something deterministic instead.
+                 (substitute* "nscd/nscd_stat.c"
+                   (("static const char compilation\\[21\\] =.*$")
+                    (string-append
+                     "static const char compilation[21] = \""
+                     (string-take (basename out) 20) "\";\n")))
+
+                 ;; Make sure we don't retain a reference to the
+                 ;; bootstrap Perl.
+                 (substitute* "malloc/mtrace.pl"
+                   (("^#!.*")
+                    ;; The shebang can be omitted, because there's the
+                    ;; "bilingual" eval/exec magic at the top of the file.
+                    "")
+                   (("exec @PERL@")
+                    "exec perl")))))
+           (add-after 'install 'augment-libc.so
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (substitute* (string-append out "/lib/libc.so")
+                   (("/[^ ]+/lib/libc.so.0.3")
+                    (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
+               #t))
+           (add-after 'pre-configure 'pre-configure-set-pwd
+             (lambda _
+               ;; Use the right 'pwd'.
+               (substitute* "configure"
+                 (("/bin/pwd") "pwd"))
+               #t))
+           (replace 'build
+             (lambda _
+               ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
+               ;; linking errors.
+               ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
+               (let ((-j (list "-j" (number->string (parallel-job-count)))))
+                 (let-syntax ((make (syntax-rules ()
+                                      ((_ target)
+                                       (zero? (apply system* "make" target -j))))))
+                   (and (make "mach/subdir_lib")
+                        (make "hurd/subdir_lib")
+                        (make "libpthread/subdir_lib")
+                        (zero? (apply system* "make" -j)))))))))
         ((#:configure-flags original-configure-flags)
         `(append (list "--host=i586-pc-gnu"
 
@@ -981,7 +1089,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2017a")
+    (version "2017b")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -989,7 +1097,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1mmv4rvcs12lrvgghw4fidczvb69yv69cmzknghcvw1c196mqfnz"))))
+               "11l0s43vx33dcs78p80122i8s5s9l1sjwkzzwh66njd35r92l97q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1037,7 +1145,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1b1q7gnlsh5hjgs5065pvajd37rmbc3k9b8cgzad1vcrifswdwh2"))))))
+                            "0h1d567gn8l3iqgyadcswwdy2yh07nhz3lfl8ds8saz2ajxka5sd"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1082,7 +1190,14 @@ and daylight-saving rules.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y1ij745r4p48mxq84rax40p10ln7fc7m243p8k8sia519i3dxfc"))))
+                "0y1ij745r4p48mxq84rax40p10ln7fc7m243p8k8sia519i3dxfc"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Work around "declared gets" error on glibc systems (fixed by
+               ;; Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348.)
+               '(substitute* "srclib/stdio.in.h"
+                  (("^#undef gets") "")
+                  (("^_GL_WARN_ON_USE \\(gets.*") "")))))
     (build-system gnu-build-system)
     (synopsis "Character set conversion library")
     (description

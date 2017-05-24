@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -337,3 +338,46 @@ project to detect and manipulate partition tables.  Optional file system tools
 permit managing file systems not included in libparted.")
     ;; The home page says GPLv2, but the source code says GPLv2+.
     (license license:gpl2+)))
+
+
+(define-public f3
+  (package
+    (name "f3")
+    (version "6.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/AltraMayor/f3/archive/"
+                          "v" version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1mgbzc1swvgil45md1336j0aqkmkhwmpxical0ln5g09b2qxsanp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; Install without setting owner and group
+               (("\\$\\(INSTALL\\) -oroot -groot ") "$(INSTALL) ")
+               ;; also build and install experimental tools
+               (("^all: ") "all: $(EXPERIMENTAL_TARGETS) ")
+               (("^install: ") "install-all: ")
+               (("^install-experimental: ") "install: install-all "))
+             #t)))))
+    (inputs
+     `(("eudev" ,eudev)
+       ("parted" ,parted)))
+    (home-page "http://oss.digirati.com.br/f3/")
+    (synopsis "Test real capacity of flash memory cards and such.")
+    (description "F3 (Fight Flash Fraud or Fight Fake Flash) tests the full
+capacity of a flash card (flash drive, flash disk, pendrive).  F3 writes to
+the card and then checks if can read it.  It will assure you haven't been sold
+a card with a smaller capacity than stated.")
+    (license license:gpl3+)))

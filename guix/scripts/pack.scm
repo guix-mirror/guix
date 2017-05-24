@@ -35,7 +35,7 @@
   #:autoload   (gnu packages base) (tar)
   #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (libgcrypt)
-  #:autoload   (gnu packages guile) (guile-json)
+  #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-37)
@@ -71,7 +71,7 @@ found."
               (($ <compressor> name*)
                (string=? name* name)))
             %compressors)
-      (leave (_ "~a: compressor not found~%") name)))
+      (leave (G_ "~a: compressor not found~%") name)))
 
 (define* (self-contained-tarball name profile
                                  #:key target
@@ -217,6 +217,13 @@ the image."
                        (define %libgcrypt
                          #+(file-append libgcrypt "/lib/libgcrypt"))))))
 
+  (define json
+    ;; Pick the guile-json package that corresponds to the Guile used to build
+    ;; derivations.
+    (if (string-prefix? "2.0" (package-version (default-guile)))
+        guile2.0-json
+        guile-json))
+
   (define build
     (with-imported-modules `(,@(source-module-closure '((guix docker))
                                                       #:select? not-config?)
@@ -224,7 +231,7 @@ the image."
       #~(begin
           ;; Guile-JSON is required by (guix docker).
           (add-to-load-path
-           (string-append #$guile-json "/share/guile/site/"
+           (string-append #+json "/share/guile/site/"
                           (effective-version)))
 
           (use-modules (guix docker) (srfi srfi-19))
@@ -280,6 +287,9 @@ the image."
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -304,7 +314,7 @@ the image."
                                     `((,source -> ,target) ,@symlinks)
                                     (alist-delete 'symlinks result eq?))))
                      (x
-                      (leave (_ "~a: invalid symlink specification~%")
+                      (leave (G_ "~a: invalid symlink specification~%")
                              arg)))))
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
@@ -314,28 +324,30 @@ the image."
                  %standard-build-options)))
 
 (define (show-help)
-  (display (_ "Usage: guix pack [OPTION]... PACKAGE...
+  (display (G_ "Usage: guix pack [OPTION]... PACKAGE...
 Create a bundle of PACKAGE.\n"))
   (show-build-options-help)
   (newline)
   (show-transformation-options-help)
   (newline)
-  (display (_ "
+  (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
-  (display (_ "
+  (display (G_ "
+  -e, --expression=EXPR  consider the package EXPR evaluates to"))
+  (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
-  (display (_ "
+  (display (G_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
-  (display (_ "
+  (display (G_ "
   -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""))
-  (display (_ "
+  (display (G_ "
   -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
-  (display (_ "
+  (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (newline)
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -349,20 +361,22 @@ Create a bundle of PACKAGE.\n"))
   (define opts
     (parse-command-line args %options (list %default-options)))
 
+  (define maybe-package-argument
+    ;; Given an option pair, return a package, a package/output tuple, or #f.
+    (match-lambda
+      (('argument . spec)
+       (call-with-values
+           (lambda ()
+             (specification->package+output spec))
+         list))
+      (('expression . exp)
+       (read/eval-package-expression exp))
+      (x #f)))
+
   (with-error-handling
     (parameterize ((%graft? (assoc-ref opts 'graft?)))
-      (let* ((dry-run? (assoc-ref opts 'dry-run?))
-             (specs    (filter-map (match-lambda
-                                     (('argument . name)
-                                      name)
-                                     (x #f))
-                                   opts))
-             (packages (map (lambda (spec)
-                              (call-with-values
-                                  (lambda ()
-                                    (specification->package+output spec))
-                                list))
-                            specs))
+      (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+             (packages    (filter-map maybe-package-argument opts))
              (pack-format (assoc-ref opts 'format))
              (name        (string-append (symbol->string pack-format)
                                          "-pack"))
@@ -372,7 +386,7 @@ Create a bundle of PACKAGE.\n"))
              (build-image (match (assq-ref %formats pack-format)
                             ((? procedure? proc) proc)
                             (#f
-                             (leave (_ "~a: unknown pack format")
+                             (leave (G_ "~a: unknown pack format")
                                     format))))
              (localstatedir? (assoc-ref opts 'localstatedir?)))
         (with-store store

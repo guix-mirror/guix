@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,14 +21,14 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix records)
+  #:use-module (gnu bootloader grub)
   #:use-module (gnu system)
-  #:use-module (gnu system grub)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system shadow)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
-  #:use-module ((gnu packages) #:select (scheme-modules))
+  #:use-module (guix discovery)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (ice-9 match)
@@ -263,17 +264,12 @@ the system under test."
 (define (fold-system-tests proc seed)
   "Invoke PROC on each system test, passing it the test and the previous
 result."
-  (fold (lambda (module result)
-          (fold (lambda (thing result)
-                  (if (system-test? thing)
-                      (proc thing result)
-                      result))
-                result
-                (module-map (lambda (sym var)
-                              (false-if-exception (variable-ref var)))
-                            module)))
-        '()
-        (test-modules)))
+  (fold-module-public-variables (lambda (obj result)
+                                  (if (system-test? obj)
+                                      (cons obj result)
+                                      result))
+                                '()
+                                (test-modules)))
 
 (define (all-system-tests)
   "Return the list of system tests."

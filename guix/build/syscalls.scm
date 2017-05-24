@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,8 +45,6 @@
             MNT_EXPIRE
             UMOUNT_NOFOLLOW
             restart-on-EINTR
-            mount
-            umount
             mount-points
             swapon
             swapoff
@@ -83,17 +82,11 @@
 
             PF_PACKET
             AF_PACKET
-            IFF_UP
-            IFF_BROADCAST
-            IFF_LOOPBACK
             all-network-interface-names
             network-interface-names
-            network-interface-flags
             network-interface-netmask
             loopback-network-interface?
             network-interface-address
-            set-network-interface-flags
-            set-network-interface-address
             set-network-interface-netmask
             set-network-interface-up
             configure-network-interface
@@ -149,8 +142,19 @@
 ;;; Commentary:
 ;;;
 ;;; This module provides bindings to libc's syscall wrappers.  It uses the
-;;; FFI, and thus requires a dynamically-linked Guile.  (For statically-linked
-;;; Guile, we instead apply 'guile-linux-syscalls.patch'.)
+;;; FFI, and thus requires a dynamically-linked Guile.
+;;;
+;;; Some syscalls are already defined in statically-linked Guile by applying
+;;; 'guile-linux-syscalls.patch'.
+;;;
+;;; Visibility of syscall's symbols shared between this module and static Guile
+;;; is a bit delicate. It is handled by 'define-as-needed' macro.
+;;;
+;;; This macro is used to export symbols in dynamic Guile context, and to
+;;; re-export them in static Guile context.
+;;;
+;;; This way, even if they don't appear in #:export list, it is safe to use
+;;; syscalls from this module in static or dynamic Guile context.
 ;;;
 ;;; Code:
 
@@ -409,6 +413,25 @@ the returned procedure is called."
         (error (format #f "~a: syscall->procedure failed: ~s"
                        name args))))))
 
+(define-syntax define-as-needed
+  (syntax-rules ()
+    "Define VARIABLE.  If VARIABLE already exists in (guile) then re-export it,
+  otherwise export the newly-defined VARIABLE."
+    ((_ (proc args ...) body ...)
+     (define-as-needed proc (lambda* (args ...) body ...)))
+    ((_ variable value)
+     (begin
+       (when (module-defined? the-scm-module 'variable)
+         (re-export variable))
+
+       (define variable
+         (if (module-defined? the-scm-module 'variable)
+             (module-ref the-scm-module 'variable)
+             value))
+
+       (unless (module-defined? the-scm-module 'variable)
+         (export variable))))))
+
 
 ;;;
 ;;; File systems.
@@ -461,48 +484,50 @@ the returned procedure is called."
 (define MNT_EXPIRE      4)
 (define UMOUNT_NOFOLLOW 8)
 
-(define mount
+(define-as-needed (mount source target type
+                         #:optional (flags 0) options
+                         #:key (update-mtab? #f))
+  "Mount device SOURCE on TARGET as a file system TYPE.
+Optionally, FLAGS may be a bitwise-or of the MS_* <sys/mount.h>
+constants, and OPTIONS may be a string.  When FLAGS contains
+MS_REMOUNT, SOURCE and TYPE are ignored.  When UPDATE-MTAB? is true,
+update /etc/mtab.  Raise a 'system-error' exception on error."
+  ;; XXX: '#:update-mtab?' is not implemented by core 'mount'.
   (let ((proc (syscall->procedure int "mount" `(* * * ,unsigned-long *))))
-    (lambda* (source target type #:optional (flags 0) options
-                     #:key (update-mtab? #f))
-      "Mount device SOURCE on TARGET as a file system TYPE.  Optionally, FLAGS
-may be a bitwise-or of the MS_* <sys/mount.h> constants, and OPTIONS may be a
-string.  When FLAGS contains MS_REMOUNT, SOURCE and TYPE are ignored.  When
-UPDATE-MTAB? is true, update /etc/mtab.  Raise a 'system-error' exception on
-error."
-      (let-values (((ret err)
-                    (proc (if source
-                              (string->pointer source)
-                              %null-pointer)
-                          (string->pointer target)
-                          (if type
-                              (string->pointer type)
-                              %null-pointer)
-                          flags
-                          (if options
-                              (string->pointer options)
-                              %null-pointer))))
-        (unless (zero? ret)
-          (throw 'system-error "mount" "mount ~S on ~S: ~A"
-                 (list source target (strerror err))
-                 (list err)))
-        (when update-mtab?
-          (augment-mtab source target type options))))))
+    (let-values (((ret err)
+                  (proc (if source
+                            (string->pointer source)
+                            %null-pointer)
+                        (string->pointer target)
+                        (if type
+                            (string->pointer type)
+                            %null-pointer)
+                        flags
+                        (if options
+                            (string->pointer options)
+                            %null-pointer))))
+      (unless (zero? ret)
+        (throw 'system-error "mount" "mount ~S on ~S: ~A"
+               (list source target (strerror err))
+               (list err)))
+      (when update-mtab?
+        (augment-mtab source target type options)))))
 
-(define umount
-  (let ((proc (syscall->procedure int "umount2" `(* ,int))))
-    (lambda* (target #:optional (flags 0)
-                     #:key (update-mtab? #f))
-      "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
+(define-as-needed (umount target
+                          #:optional (flags 0)
+                          #:key (update-mtab? #f))
+  "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
 constants from <sys/mount.h>."
-      (let-values (((ret err)
-                    (proc (string->pointer target) flags)))
-        (unless (zero? ret)
-          (throw 'system-error "umount" "~S: ~A"
-                 (list target (strerror err))
-                 (list err)))
-        (when update-mtab?
-          (remove-from-mtab target))))))
+  ;; XXX: '#:update-mtab?' is not implemented by core 'umount'.
+  (let ((proc (syscall->procedure int "umount2" `(* ,int))))
+    (let-values (((ret err)
+                  (proc (string->pointer target) flags)))
+      (unless (zero? ret)
+        (throw 'system-error "umount" "~S: ~A"
+               (list target (strerror err))
+               (list err)))
+      (when update-mtab?
+        (remove-from-mtab target)))))
 
 (define (mount-points)
   "Return the mounts points for currently mounted file systems."
@@ -536,6 +561,34 @@ constants from <sys/mount.h>."
           (throw 'system-error "swapoff" "~S: ~A"
                  (list device (strerror err))
                  (list err)))))))
+
+(define-as-needed RB_AUTOBOOT    #x01234567)
+(define-as-needed RB_HALT_SYSTEM #xcdef0123)
+(define-as-needed RB_ENABLED_CAD #x89abcdef)
+(define-as-needed RB_DISABLE_CAD 0)
+(define-as-needed RB_POWER_OFF   #x4321fedc)
+(define-as-needed RB_SW_SUSPEND  #xd000fce2)
+(define-as-needed RB_KEXEC       #x45584543)
+
+(define-as-needed (reboot #:optional (cmd RB_AUTOBOOT))
+  (let ((proc (syscall->procedure int "reboot" (list int))))
+    (let-values (((ret err) (proc cmd)))
+      (unless (zero? ret)
+        (throw 'system-error "reboot" "~S: ~A"
+               (list cmd (strerror err))
+               (list err))))))
+
+(define-as-needed (load-linux-module data #:optional (options ""))
+  (let ((proc (syscall->procedure int "init_module"
+                                  (list '* unsigned-long '*))))
+    (let-values (((ret err)
+                  (proc (bytevector->pointer data)
+                        (bytevector-length data)
+                        (string->pointer options))))
+      (unless (zero? ret)
+        (throw 'system-error "load-linux-module" "~A"
+               (list (strerror err))
+               (list err))))))
 
 (define (kernel? pid)
   "Return #t if PID designates a \"kernel thread\" rather than a normal
@@ -873,9 +926,9 @@ exception if it's already taken."
 
 ;; Flags and constants from <net/if.h>.
 
-(define IFF_UP #x1)                               ;Interface is up
-(define IFF_BROADCAST #x2)                        ;Broadcast address valid.
-(define IFF_LOOPBACK #x8)                         ;Is a loopback net.
+(define-as-needed IFF_UP #x1)                     ;Interface is up
+(define-as-needed IFF_BROADCAST #x2)              ;Broadcast address valid.
+(define-as-needed IFF_LOOPBACK #x8)               ;Is a loopback net.
 
 (define IF_NAMESIZE 16)                           ;maximum interface name size
 
@@ -1022,7 +1075,7 @@ that are not up."
                 (else
                  (loop interfaces))))))))
 
-(define (network-interface-flags socket name)
+(define-as-needed (network-interface-flags socket name)
   "Return a number that is the bit-wise or of 'IFF*' flags for network
 interface NAME."
   (let ((req (make-bytevector ifreq-struct-size)))
@@ -1033,8 +1086,8 @@ interface NAME."
                           (bytevector->pointer req))))
       (if (zero? ret)
 
-          ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the beginning of
-          ;; 'struct ifreq', and it's a short int.
+          ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the
+          ;; beginning of 'struct ifreq', and it's a short int.
           (bytevector-sint-ref req IF_NAMESIZE (native-endianness)
                                (sizeof short))
 
@@ -1050,7 +1103,7 @@ interface NAME."
     (close-port sock)
     (not (zero? (logand flags IFF_LOOPBACK)))))
 
-(define (set-network-interface-flags socket name flags)
+(define-as-needed (set-network-interface-flags socket name flags)
   "Set the flag of network interface NAME to FLAGS."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0
@@ -1067,7 +1120,7 @@ interface NAME."
                (list name (strerror err))
                (list err))))))
 
-(define (set-network-interface-address socket name sockaddr)
+(define-as-needed (set-network-interface-address socket name sockaddr)
   "Set the address of network interface NAME to SOCKADDR."
   (let ((req (make-bytevector ifreq-struct-size)))
     (bytevector-copy! (string->utf8 name) 0 req 0

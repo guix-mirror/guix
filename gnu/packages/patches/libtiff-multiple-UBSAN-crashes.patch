@@ -1,0 +1,449 @@
+Fixes CVE-2017-{7595,7596,7597,7598,7599,7600,7601,7602}:
+
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7595
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7596
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7597
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7598
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7599
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7600
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7601
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7602
+
+2017-01-11 Even Rouault <even.rouault at spatialys.com>
+
+        * libtiff/tif_dir.c, tif_dirread.c, tif_dirwrite.c: implement various
+        clampings
+        of double to other data types to avoid undefined behaviour if the
+        output range
+        isn't big enough to hold the input value.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2643
+        http://bugzilla.maptools.org/show_bug.cgi?id=2642
+        http://bugzilla.maptools.org/show_bug.cgi?id=2646
+        http://bugzilla.maptools.org/show_bug.cgi?id=2647
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <--  ChangeLog
+new revision: 1.1204; previous revision: 1.1203
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_dir.c,v  <--  libtiff/tif_dir.c
+new revision: 1.129; previous revision: 1.128
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_dirread.c,v  <-- libtiff/tif_dirread.c
+new revision: 1.207; previous revision: 1.206
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_dirwrite.c,v  <-- libtiff/tif_dirwrite.c
+new revision: 1.85; previous revision: 1.84
+
+2017-01-11 Even Rouault <even.rouault at spatialys.com>
+
+        * libtiff/tif_dirread.c: avoid division by floating point 0 in
+        TIFFReadDirEntryCheckedRational() and
+        TIFFReadDirEntryCheckedSrational(),
+        and return 0 in that case (instead of infinity as before presumably)
+        Apparently some sanitizers do not like those divisions by zero.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2644
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <-- ChangeLog
+new revision: 1.1203; previous revision: 1.1202
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_dirread.c,v  <-- libtiff/tif_dirread.c
+new revision: 1.206; previous revision: 1.205
+
+2017-01-11 Even Rouault <even.rouault at spatialys.com>
+
+        * libtiff/tif_jpeg.c: validate BitsPerSample in JPEGSetupEncode() to
+        avoid undefined behaviour caused by invalid shift exponent.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2648
+
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <-- ChangeLog
+new revision: 1.1205; previous revision: 1.1204
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_jpeg.c,v  <-- libtiff/tif_jpeg.c
+new revision: 1.126; previous revision: 1.125
+
+2017-01-11 Even Rouault <even.rouault at spatialys.com>
+
+        * libtiff/tif_read.c: avoid potential undefined behaviour on signed
+        integer addition in TIFFReadRawStrip1() in isMapped() case.
+        Fixes http://bugzilla.maptools.org/show_bug.cgi?id=2650
+
+/cvs/maptools/cvsroot/libtiff/ChangeLog,v  <-- ChangeLog
+new revision: 1.1206; previous revision: 1.1205
+/cvs/maptools/cvsroot/libtiff/libtiff/tif_read.c,v  <-- libtiff/tif_read.c
+new revision: 1.51; previous revision: 1.50
+
+Index: libtiff/libtiff/tif_dir.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_dir.c,v
+retrieving revision 1.128
+retrieving revision 1.129
+diff -u -r1.128 -r1.129
+--- libtiff/libtiff/tif_dir.c	3 Dec 2016 15:30:31 -0000	1.128
++++ libtiff/libtiff/tif_dir.c	11 Jan 2017 16:09:02 -0000	1.129
+@@ -1,4 +1,4 @@
+-/* $Id: tif_dir.c,v 1.128 2016-12-03 15:30:31 erouault Exp $ */
++/* $Id: tif_dir.c,v 1.129 2017-01-11 16:09:02 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -31,6 +31,7 @@
+  * (and also some miscellaneous stuff)
+  */
+ #include "tiffiop.h"
++#include <float.h>
+ 
+ /*
+  * These are used in the backwards compatibility code...
+@@ -154,6 +155,15 @@
+ 	return (0);
+ }
+ 
++static float TIFFClampDoubleToFloat( double val )
++{
++    if( val > FLT_MAX )
++        return FLT_MAX;
++    if( val < -FLT_MAX )
++        return -FLT_MAX;
++    return (float)val;
++}
++
+ static int
+ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
+ {
+@@ -312,13 +322,13 @@
+         dblval = va_arg(ap, double);
+         if( dblval < 0 )
+             goto badvaluedouble;
+-		td->td_xresolution = (float) dblval;
++		td->td_xresolution = TIFFClampDoubleToFloat( dblval );
+ 		break;
+ 	case TIFFTAG_YRESOLUTION:
+         dblval = va_arg(ap, double);
+         if( dblval < 0 )
+             goto badvaluedouble;
+-		td->td_yresolution = (float) dblval;
++		td->td_yresolution = TIFFClampDoubleToFloat( dblval );
+ 		break;
+ 	case TIFFTAG_PLANARCONFIG:
+ 		v = (uint16) va_arg(ap, uint16_vap);
+@@ -327,10 +337,10 @@
+ 		td->td_planarconfig = (uint16) v;
+ 		break;
+ 	case TIFFTAG_XPOSITION:
+-		td->td_xposition = (float) va_arg(ap, double);
++		td->td_xposition = TIFFClampDoubleToFloat( va_arg(ap, double) );
+ 		break;
+ 	case TIFFTAG_YPOSITION:
+-		td->td_yposition = (float) va_arg(ap, double);
++		td->td_yposition = TIFFClampDoubleToFloat( va_arg(ap, double) );
+ 		break;
+ 	case TIFFTAG_RESOLUTIONUNIT:
+ 		v = (uint16) va_arg(ap, uint16_vap);
+Index: libtiff/libtiff/tif_dirread.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_dirread.c,v
+retrieving revision 1.206
+retrieving revision 1.207
+diff -u -r1.206 -r1.207
+--- libtiff/libtiff/tif_dirread.c	11 Jan 2017 13:28:01 -0000	1.206
++++ libtiff/libtiff/tif_dirread.c	11 Jan 2017 16:09:02 -0000	1.207
+@@ -1,4 +1,4 @@
+-/* $Id: tif_dirread.c,v 1.205 2016-12-03 11:02:15 erouault Exp $ */
++/* $Id: tif_dirread.c,v 1.207 2017-01-11 16:09:02 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -40,6 +40,7 @@
+  */
+ 
+ #include "tiffiop.h"
++#include <float.h>
+ 
+ #define IGNORE 0          /* tag placeholder used below */
+ #define FAILED_FII    ((uint32) -1)
+@@ -2406,7 +2407,14 @@
+ 				ma=(double*)origdata;
+ 				mb=data;
+ 				for (n=0; n<count; n++)
+-					*mb++=(float)(*ma++);
++                                {
++                                    double val = *ma++;
++                                    if( val > FLT_MAX )
++                                        val = FLT_MAX;
++                                    else if( val < -FLT_MAX )
++                                        val = -FLT_MAX;
++                                    *mb++=(float)val;
++                                }
+ 			}
+ 			break;
+ 	}
+Index: libtiff/libtiff/tif_dirwrite.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_dirwrite.c,v
+retrieving revision 1.84
+retrieving revision 1.85
+diff -u -r1.84 -r1.85
+--- libtiff/libtiff/tif_dirwrite.c	11 Jan 2017 12:51:59 -0000	1.84
++++ libtiff/libtiff/tif_dirwrite.c	11 Jan 2017 16:09:02 -0000	1.85
+@@ -1,4 +1,4 @@
+-/* $Id: tif_dirwrite.c,v 1.83 2016-10-25 21:35:15 erouault Exp $ */
++/* $Id: tif_dirwrite.c,v 1.85 2017-01-11 16:09:02 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1988-1997 Sam Leffler
+@@ -30,6 +30,7 @@
+  * Directory Write Support Routines.
+  */
+ #include "tiffiop.h"
++#include <float.h>
+ 
+ #ifdef HAVE_IEEEFP
+ #define TIFFCvtNativeToIEEEFloat(tif, n, fp)
+@@ -939,6 +940,69 @@
+ 	return(0);
+ }
+ 
++static float TIFFClampDoubleToFloat( double val )
++{
++    if( val > FLT_MAX )
++        return FLT_MAX;
++    if( val < -FLT_MAX )
++        return -FLT_MAX;
++    return (float)val;
++}
++
++static int8 TIFFClampDoubleToInt8( double val )
++{
++    if( val > 127 )
++        return 127;
++    if( val < -128 || val != val )
++        return -128;
++    return (int8)val;
++}
++
++static int16 TIFFClampDoubleToInt16( double val )
++{
++    if( val > 32767 )
++        return 32767;
++    if( val < -32768 || val != val )
++        return -32768;
++    return (int16)val;
++}
++
++static int32 TIFFClampDoubleToInt32( double val )
++{
++    if( val > 0x7FFFFFFF )
++        return 0x7FFFFFFF;
++    if( val < -0x7FFFFFFF-1 || val != val )
++        return -0x7FFFFFFF-1;
++    return (int32)val;
++}
++
++static uint8 TIFFClampDoubleToUInt8( double val )
++{
++    if( val < 0 )
++        return 0;
++    if( val > 255 || val != val )
++        return 255;
++    return (uint8)val;
++}
++
++static uint16 TIFFClampDoubleToUInt16( double val )
++{
++    if( val < 0 )
++        return 0;
++    if( val > 65535 || val != val )
++        return 65535;
++    return (uint16)val;
++}
++
++static uint32 TIFFClampDoubleToUInt32( double val )
++{
++    if( val < 0 )
++        return 0;
++    if( val > 0xFFFFFFFFU || val != val )
++        return 0xFFFFFFFFU;
++    return (uint32)val;
++}
++
+ static int
+ TIFFWriteDirectoryTagSampleformatArray(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, double* value)
+ {
+@@ -959,7 +1023,7 @@
+ 			if (tif->tif_dir.td_bitspersample<=32)
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((float*)conv)[i] = (float)value[i];
++					((float*)conv)[i] = TIFFClampDoubleToFloat(value[i]);
+ 				ok = TIFFWriteDirectoryTagFloatArray(tif,ndir,dir,tag,count,(float*)conv);
+ 			}
+ 			else
+@@ -971,19 +1035,19 @@
+ 			if (tif->tif_dir.td_bitspersample<=8)
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((int8*)conv)[i] = (int8)value[i];
++					((int8*)conv)[i] = TIFFClampDoubleToInt8(value[i]);
+ 				ok = TIFFWriteDirectoryTagSbyteArray(tif,ndir,dir,tag,count,(int8*)conv);
+ 			}
+ 			else if (tif->tif_dir.td_bitspersample<=16)
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((int16*)conv)[i] = (int16)value[i];
++					((int16*)conv)[i] = TIFFClampDoubleToInt16(value[i]);
+ 				ok = TIFFWriteDirectoryTagSshortArray(tif,ndir,dir,tag,count,(int16*)conv);
+ 			}
+ 			else
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((int32*)conv)[i] = (int32)value[i];
++					((int32*)conv)[i] = TIFFClampDoubleToInt32(value[i]);
+ 				ok = TIFFWriteDirectoryTagSlongArray(tif,ndir,dir,tag,count,(int32*)conv);
+ 			}
+ 			break;
+@@ -991,19 +1055,19 @@
+ 			if (tif->tif_dir.td_bitspersample<=8)
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((uint8*)conv)[i] = (uint8)value[i];
++					((uint8*)conv)[i] = TIFFClampDoubleToUInt8(value[i]);
+ 				ok = TIFFWriteDirectoryTagByteArray(tif,ndir,dir,tag,count,(uint8*)conv);
+ 			}
+ 			else if (tif->tif_dir.td_bitspersample<=16)
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((uint16*)conv)[i] = (uint16)value[i];
++					((uint16*)conv)[i] = TIFFClampDoubleToUInt16(value[i]);
+ 				ok = TIFFWriteDirectoryTagShortArray(tif,ndir,dir,tag,count,(uint16*)conv);
+ 			}
+ 			else
+ 			{
+ 				for (i = 0; i < count; ++i)
+-					((uint32*)conv)[i] = (uint32)value[i];
++					((uint32*)conv)[i] = TIFFClampDoubleToUInt32(value[i]);
+ 				ok = TIFFWriteDirectoryTagLongArray(tif,ndir,dir,tag,count,(uint32*)conv);
+ 			}
+ 			break;
+@@ -2102,7 +2102,7 @@
+ 		m[0]=0;
+ 		m[1]=1;
+ 	}
+-	else if (value==(double)(uint32)value)
++	else if (value <= 0xFFFFFFFFU && value==(double)(uint32)value)
+ 	{
+ 		m[0]=(uint32)value;
+ 		m[1]=1;
+@@ -2148,12 +2217,13 @@
+ 	}
+ 	for (na=value, nb=m, nc=0; nc<count; na++, nb+=2, nc++)
+ 	{
+-		if (*na<=0.0)
++		if (*na<=0.0 || *na != *na)
+ 		{
+ 			nb[0]=0;
+ 			nb[1]=1;
+ 		}
+-		else if (*na==(float)(uint32)(*na))
++		else if (*na >= 0 && *na <= (float)0xFFFFFFFFU &&
++                         *na==(float)(uint32)(*na))
+ 		{
+ 			nb[0]=(uint32)(*na);
+ 			nb[1]=1;
+Index: libtiff/libtiff/tif_dirread.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_dirread.c,v
+retrieving revision 1.205
+retrieving revision 1.206
+diff -u -r1.205 -r1.206
+--- libtiff/libtiff/tif_dirread.c	3 Dec 2016 11:02:15 -0000	1.205
++++ libtiff/libtiff/tif_dirread.c	11 Jan 2017 13:28:01 -0000	1.206
+@@ -2872,7 +2872,10 @@
+ 		m.l = direntry->tdir_offset.toff_long8;
+ 	if (tif->tif_flags&TIFF_SWAB)
+ 		TIFFSwabArrayOfLong(m.i,2);
+-	if (m.i[0]==0)
++        /* Not completely sure what we should do when m.i[1]==0, but some */
++        /* sanitizers do not like division by 0.0: */
++        /* http://bugzilla.maptools.org/show_bug.cgi?id=2644 */
++	if (m.i[0]==0 || m.i[1]==0)
+ 		*value=0.0;
+ 	else
+ 		*value=(double)m.i[0]/(double)m.i[1];
+@@ -2900,7 +2903,10 @@
+ 		m.l=direntry->tdir_offset.toff_long8;
+ 	if (tif->tif_flags&TIFF_SWAB)
+ 		TIFFSwabArrayOfLong(m.i,2);
+-	if ((int32)m.i[0]==0)
++        /* Not completely sure what we should do when m.i[1]==0, but some */
++        /* sanitizers do not like division by 0.0: */
++        /* http://bugzilla.maptools.org/show_bug.cgi?id=2644 */
++	if ((int32)m.i[0]==0 || m.i[1]==0)
+ 		*value=0.0;
+ 	else
+ 		*value=(double)((int32)m.i[0])/(double)m.i[1];
+Index: libtiff/libtiff/tif_jpeg.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_jpeg.c,v
+retrieving revision 1.125
+retrieving revision 1.126
+diff -u -r1.125 -r1.126
+--- libtiff/libtiff/tif_jpeg.c	11 Jan 2017 12:15:01 -0000	1.125
++++ libtiff/libtiff/tif_jpeg.c	11 Jan 2017 16:13:50 -0000	1.126
+@@ -1,4 +1,4 @@
+-/* $Id: tif_jpeg.c,v 1.123 2016-01-23 21:20:34 erouault Exp $ */
++/* $Id: tif_jpeg.c,v 1.126 2017-01-11 16:13:50 erouault Exp $ */
+ 
+ /*
+  * Copyright (c) 1994-1997 Sam Leffler
+@@ -1632,6 +1632,13 @@
+                             "Invalig horizontal/vertical sampling value");
+                     return (0);
+                 }
++                if( td->td_bitspersample > 16 )
++                {
++                    TIFFErrorExt(tif->tif_clientdata, module,
++                                 "BitsPerSample %d not allowed for JPEG",
++                                 td->td_bitspersample);
++                    return (0);
++                }
+ 
+ 		/*
+ 		 * A ReferenceBlackWhite field *must* be present since the
+Index: libtiff/libtiff/tif_read.c
+===================================================================
+RCS file: /cvs/maptools/cvsroot/libtiff/libtiff/tif_read.c,v
+retrieving revision 1.50
+retrieving revision 1.51
+diff -u -r1.50 -r1.51
+--- libtiff/libtiff/tif_read.c	2 Dec 2016 21:56:56 -0000	1.50
++++ libtiff/libtiff/tif_read.c	11 Jan 2017 16:33:34 -0000	1.51
+@@ -420,16 +420,25 @@
+ 			return ((tmsize_t)(-1));
+ 		}
+ 	} else {
+-		tmsize_t ma,mb;
++		tmsize_t ma;
+ 		tmsize_t n;
+-		ma=(tmsize_t)td->td_stripoffset[strip];
+-		mb=ma+size;
+-		if ((td->td_stripoffset[strip] > (uint64)TIFF_TMSIZE_T_MAX)||(ma>tif->tif_size))
+-			n=0;
+-		else if ((mb<ma)||(mb<size)||(mb>tif->tif_size))
+-			n=tif->tif_size-ma;
+-		else
+-			n=size;
++		if ((td->td_stripoffset[strip] > (uint64)TIFF_TMSIZE_T_MAX)||
++                    ((ma=(tmsize_t)td->td_stripoffset[strip])>tif->tif_size))
++                {
++                    n=0;
++                }
++                else if( ma > TIFF_TMSIZE_T_MAX - size )
++                {
++                    n=0;
++                }
++                else
++                {
++                    tmsize_t mb=ma+size;
++                    if (mb>tif->tif_size)
++                            n=tif->tif_size-ma;
++                    else
++                            n=size;
++                }
+ 		if (n!=size) {
+ #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
+ 			TIFFErrorExt(tif->tif_clientdata, module,

@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -219,7 +220,7 @@ interfaces (GUIs) in the Tcl language.")
     ;; those of the orignal Tix4.1.3 or Tk8.4.* sources. See the files
     ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
     ;; details of this license."
-    (license (package-license perl))))
+    (license perl-license)))
 
 (define-public tcllib
   (package
@@ -290,3 +291,35 @@ callback is evaluated.")
     (license (non-copyleft
               "file://LICENCE"
               "See LICENCE in the distribution."))))
+
+(define-public tclx
+  (package
+    (name "tclx")
+    (version "8.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/tclx/TclX/"
+                                  version "/tclx" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1v2qwzzidz0is58fd1p7wfdbscxm3ip2wlbqkj5jdhf6drh1zd59"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; a test named profile.test segfaults
+       #:configure-flags (list (string-append "--with-tcl="
+                                              (assoc-ref %build-inputs "tcl")
+                                              "/lib")
+                               (string-append "--libdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (inputs
+     `(("tcl" ,tcl)
+       ("tk" ,tk)))
+    (home-page "http://tclx.sourceforge.net/")
+    (synopsis "System programming extensions for Tcl")
+    (description
+     "Extended Tcl is oriented towards system programming tasks and large
+application development.  TclX provides additional interfaces to the operating
+system, and adds many new programming constructs, text manipulation tools, and
+debugging tools.")
+    (license tcl/tk)))

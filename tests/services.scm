@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,17 @@
 
 
 (test-begin "services")
+
+(test-equal "services, default value"
+  '(42 123 234 error)
+  (let* ((t1 (service-type (name 't1) (extensions '())))
+         (t2 (service-type (name 't2) (extensions '())
+                           (default-value 42))))
+    (list (service-value (service t2))
+          (service-value (service t2 123))
+          (service-value (service t1 234))
+          (guard (c ((missing-value-service-error? c) 'error))
+            (service t1)))))
 
 (test-assert "service-back-edges"
   (let* ((t1 (service-type (name 't1) (extensions '())
@@ -75,7 +86,7 @@
                                         (iota 5 1)))
                             #:target-type t1)))
     (and (eq? (service-kind r) t1)
-         (service-parameters r))))
+         (service-value r))))
 
 (test-assert "fold-services, ambiguity"
   (let* ((t1 (service-type (name 't1) (extensions '())

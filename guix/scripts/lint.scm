@@ -132,11 +132,11 @@ monad."
 
 (define (list-checkers-and-exit)
   ;; Print information about all available checkers and exit.
-  (format #t (_ "Available checkers:~%"))
+  (format #t (G_ "Available checkers:~%"))
   (for-each (lambda (checker)
               (format #t "- ~a: ~a~%"
                       (lint-checker-name checker)
-                      (_ (lint-checker-description checker))))
+                      (G_ (lint-checker-description checker))))
             %checkers)
   (exit 0))
 
@@ -156,7 +156,7 @@ monad."
   (define (check-not-empty description)
     (when (string-null? description)
       (emit-warning package
-                    (_ "description should not be empty")
+                    (G_ "description should not be empty")
                     'description)))
 
   (define (check-texinfo-markup description)
@@ -166,7 +166,7 @@ markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
       (lambda () (texi->plain-text description))
       (lambda (keys . args)
         (emit-warning package
-                      (_ "Texinfo markup in description is invalid")
+                      (G_ "Texinfo markup in description is invalid")
                       'description)
         #f)))
 
@@ -176,7 +176,7 @@ http://www.gnu.org/prep/standards/html_node/Trademarks.html."
     (match (string-index description (char-set #\™ #\®))
       ((and (? number?) index)
        (emit-warning package
-                     (format #f (_ "description should not contain ~
+                     (format #f (G_ "description should not contain ~
 trademark sign '~a' at ~d")
                              (string-ref description index) index)
                      'description))
@@ -189,14 +189,14 @@ trademark sign '~a' at ~d")
 
                     ;; TRANSLATORS: '@code' is Texinfo markup and must be kept
                     ;; as is.
-                    (_ "use @code or similar ornament instead of quotes")
+                    (G_ "use @code or similar ornament instead of quotes")
                     'description)))
 
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
       (emit-warning package
-                    (_ "description should start with an upper-case letter or digit")
+                    (G_ "description should start with an upper-case letter or digit")
                     'description)))
 
   (define (check-end-of-sentence-space description)
@@ -212,7 +212,7 @@ trademark sign '~a' at ~d")
                            r (cons (match:start m) r)))))))
       (unless (null? infractions)
         (emit-warning package
-                      (format #f (_ "sentences in description should be followed ~
+                      (format #f (G_ "sentences in description should be followed ~
 by two spaces; possible infraction~p at ~{~a~^, ~}")
                               (length infractions)
                               infractions)
@@ -230,35 +230,33 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
           (and=> (check-texinfo-markup description)
                  check-proper-start))
         (emit-warning package
-                      (format #f (_ "invalid description: ~s") description)
+                      (format #f (G_ "invalid description: ~s") description)
                       'description))))
 
-(define (warn-if-package-has-input linted inputs-to-check input-names message)
-  ;; Emit a warning MESSAGE if some of the inputs named in INPUT-NAMES are
-  ;; contained in INPUTS-TO-CHECK, which are assumed to be inputs of package
-  ;; LINTED.
+(define (package-input-intersection inputs-to-check input-names)
+  "Return the intersection between INPUTS-TO-CHECK, the list of input tuples
+of a package, and INPUT-NAMES, a list of package specifications such as
+\"glib:bin\"."
   (match inputs-to-check
     (((labels packages . outputs) ...)
-     (for-each (lambda (package output)
-                 (when (package? package)
-                   (let ((input (string-append
-                                 (package-name package)
-                                 (if (> (length output) 0)
-                                     (string-append ":" (car output))
-                                     ""))))
-                     (when (member input input-names)
-                       (emit-warning linted
-                                     (format #f (_ message) input)
-                                     'inputs-to-check)))))
-               packages outputs))))
+     (filter-map (lambda (package output)
+                   (and (package? package)
+                        (let ((input (string-append
+                                      (package-name package)
+                                      (if (> (length output) 0)
+                                          (string-append ":" (car output))
+                                          ""))))
+                          (and (member input input-names)
+                               input))))
+                 packages outputs))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
   ;; native inputs.
-  (let ((message "'~a' should probably be a native input")
-        (inputs (package-inputs package))
+  (let ((inputs (package-inputs package))
         (input-names
-          '("pkg-config"
+         '("pkg-config"
+            "cmake"
             "extra-cmake-modules"
             "glib:bin"
             "intltool"
@@ -274,24 +272,29 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
             "python-sphinx" "python2-sphinx")))
-    (warn-if-package-has-input package inputs input-names message)))
+    (for-each (lambda (input)
+                (emit-warning
+                 package
+                 (format #f (G_ "'~a' should probably be a native input")
+                         input)
+                 'inputs-to-check))
+              (package-input-intersection inputs input-names))))
 
 (define (check-inputs-should-not-be-an-input-at-all package)
   ;; Emit a warning if some inputs of PACKAGE are likely to should not be
   ;; an input at all.
-  (let ((message "'~a' should probably not be an input at all")
-        (inputs (package-inputs package))
-        (input-names
-          '("python-setuptools"
-            "python2-setuptools"
-            "python-pip"
-            "python2-pip")))
-    (warn-if-package-has-input package (package-inputs package)
-                               input-names message)
-    (warn-if-package-has-input package (package-native-inputs package)
-                               input-names message)
-    (warn-if-package-has-input package (package-propagated-inputs package)
-                               input-names message)))
+  (let ((input-names '("python-setuptools"
+                       "python2-setuptools"
+                       "python-pip"
+                       "python2-pip")))
+    (for-each (lambda (input)
+                (emit-warning
+                 package
+                 (format #f
+                         (G_ "'~a' should probably not be an input at all")
+                         input)))
+              (package-input-intersection (package-direct-inputs package)
+                                          input-names))))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a
@@ -305,7 +308,7 @@ line."
   (define (check-not-empty synopsis)
     (when (string-null? synopsis)
       (emit-warning package
-                    (_ "synopsis should not be empty")
+                    (G_ "synopsis should not be empty")
                     'synopsis)))
 
   (define (check-final-period synopsis)
@@ -313,7 +316,7 @@ line."
     (when (and (string-suffix? "." synopsis)
                (not (string-suffix? "etc." synopsis)))
       (emit-warning package
-                    (_ "no period allowed at the end of the synopsis")
+                    (G_ "no period allowed at the end of the synopsis")
                     'synopsis)))
 
   (define check-start-article
@@ -325,27 +328,27 @@ line."
           (when (or (string-prefix-ci? "A " synopsis)
                     (string-prefix-ci? "An " synopsis))
             (emit-warning package
-                          (_ "no article allowed at the beginning of \
+                          (G_ "no article allowed at the beginning of \
 the synopsis")
                           'synopsis)))))
 
   (define (check-synopsis-length synopsis)
     (when (>= (string-length synopsis) 80)
       (emit-warning package
-                    (_ "synopsis should be less than 80 characters long")
+                    (G_ "synopsis should be less than 80 characters long")
                     'synopsis)))
 
   (define (check-proper-start synopsis)
     (unless (properly-starts-sentence? synopsis)
       (emit-warning package
-                    (_ "synopsis should start with an upper-case letter or digit")
+                    (G_ "synopsis should start with an upper-case letter or digit")
                     'synopsis)))
 
   (define (check-start-with-package-name synopsis)
     (when (and (regexp-exec (package-name-regexp package) synopsis)
                (not (starts-with-abbreviation? synopsis)))
       (emit-warning package
-                    (_ "synopsis should not start with the package name")
+                    (G_ "synopsis should not start with the package name")
                     'synopsis)))
 
   (define (check-texinfo-markup synopsis)
@@ -355,7 +358,7 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
       (lambda () (texi->plain-text synopsis))
       (lambda (keys . args)
         (emit-warning package
-                      (_ "Texinfo markup in synopsis is invalid")
+                      (G_ "Texinfo markup in synopsis is invalid")
                       'synopsis)
         #f)))
 
@@ -374,7 +377,7 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
                  (proc synopsis))
                checks))
     (invalid
-     (emit-warning package (format #f (_ "invalid synopsis: ~s") invalid)
+     (emit-warning package (format #f (G_ "invalid synopsis: ~s") invalid)
                    'synopsis))))
 
 (define* (probe-uri uri #:key timeout)
@@ -474,7 +477,7 @@ warning for PACKAGE mentionning the FIELD."
                   (begin
                     (emit-warning package
                                   (format #f
-                                          (_ "URI ~a returned \
+                                          (G_ "URI ~a returned \
 suspiciously small file (~a bytes)")
                                           (uri->string uri)
                                           length))
@@ -483,7 +486,7 @@ suspiciously small file (~a bytes)")
            (begin
              (emit-warning package
                            (format #f
-                                   (_ "URI ~a not reachable: ~a (~s)")
+                                   (G_ "URI ~a not reachable: ~a (~s)")
                                    (uri->string uri)
                                    (response-code argument)
                                    (response-reason-phrase argument))
@@ -495,14 +498,14 @@ suspiciously small file (~a bytes)")
          (('error port command code message)
           (emit-warning package
                         (format #f
-                                (_ "URI ~a not reachable: ~a (~s)")
+                                (G_ "URI ~a not reachable: ~a (~s)")
                                 (uri->string uri)
                                 code (string-trim-both message)))
           #f)))
       ((getaddrinfo-error)
        (emit-warning package
                      (format #f
-                             (_ "URI ~a domain not found: ~a")
+                             (G_ "URI ~a domain not found: ~a")
                              (uri->string uri)
                              (gai-strerror (car argument)))
                      field)
@@ -510,7 +513,7 @@ suspiciously small file (~a bytes)")
       ((system-error)
        (emit-warning package
                      (format #f
-                             (_ "URI ~a unreachable: ~a")
+                             (G_ "URI ~a unreachable: ~a")
                              (uri->string uri)
                              (strerror
                               (system-error-errno
@@ -519,7 +522,7 @@ suspiciously small file (~a bytes)")
        #f)
       ((tls-certificate-error)
        (emit-warning package
-                     (format #f (_ "TLS certificate error: ~a")
+                     (format #f (G_ "TLS certificate error: ~a")
                              (tls-certificate-error-string argument))))
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
@@ -540,10 +543,10 @@ suspiciously small file (~a bytes)")
       (unless (or (string-contains (package-name package) "bootstrap")
                   (string=? (package-name package) "ld-wrapper"))
         (emit-warning package
-                      (_ "invalid value for home page")
+                      (G_ "invalid value for home page")
                       'home-page)))
      (else
-      (emit-warning package (format #f (_ "invalid home page URL: ~s")
+      (emit-warning package (format #f (G_ "invalid home page URL: ~s")
                                     (package-home-page package))
                     'home-page)))))
 
@@ -563,7 +566,7 @@ patch could not be found."
                        '()))
       (emit-warning
        package
-       (_ "file names of patches should start with the package name")
+       (G_ "file names of patches should start with the package name")
        'patch-file-names))))
 
 (define (escape-quotes str)
@@ -601,7 +604,7 @@ descriptions maintained upstream."
                   (or (not (string? downstream))
                       (not (string=? upstream downstream))))
          (format (guix-warning-port)
-                 (_ "~a: ~a: proposed synopsis: ~s~%")
+                 (G_ "~a: ~a: proposed synopsis: ~s~%")
                  (location->string loc) (package-full-name package)
                  upstream)))
 
@@ -614,7 +617,7 @@ descriptions maintained upstream."
                       (not (string=? (fill-paragraph upstream 100)
                                      (fill-paragraph downstream 100)))))
          (format (guix-warning-port)
-                 (_ "~a: ~a: proposed description:~%     \"~a\"~%")
+                 (G_ "~a: ~a: proposed description:~%     \"~a\"~%")
                  (location->string loc) (package-full-name package)
                  (fill-paragraph (escape-quotes upstream) 77 7)))))))
 
@@ -656,7 +659,7 @@ descriptions maintained upstream."
             ;; where *all* the URIs are unreachable.
             (unless success?
               (emit-warning package
-                            (_ "all the source URIs are unreachable:")
+                            (G_ "all the source URIs are unreachable:")
                             'source)
               (for-each (lambda (warning)
                           (display warning (guix-warning-port)))
@@ -665,21 +668,20 @@ descriptions maintained upstream."
 (define (check-source-file-name package)
   "Emit a warning if PACKAGE's origin has no meaningful file name."
   (define (origin-file-name-valid? origin)
-    ;; Return #t if the source file name contains only a version or is #f;
+    ;; Return #f if the source file name contains only a version or is #f;
     ;; indicates that the origin needs a 'file-name' field.
     (let ((file-name (origin-actual-file-name origin))
           (version (package-version package)))
       (and file-name
-           (not (or (string-prefix? version file-name)
-                    ;; Common in many projects is for the filename to start
-                    ;; with a "v" followed by the version,
-                    ;; e.g. "v3.2.0.tar.gz".
-                    (string-prefix? (string-append "v" version) file-name))))))
+           ;; Common in many projects is for the filename to start
+           ;; with a "v" followed by the version,
+           ;; e.g. "v3.2.0.tar.gz".
+           (not (string-match (string-append "^v?" version) file-name)))))
 
   (let ((origin (package-source package)))
     (unless (or (not origin) (origin-file-name-valid? origin))
       (emit-warning package
-                    (_ "the source file name should contain the package name")
+                    (G_ "the source file name should contain the package name")
                     'source))))
 
 (define (check-mirror-url package)
@@ -695,7 +697,7 @@ descriptions maintained upstream."
             (loop rest))
            (prefix
             (emit-warning package
-                          (format #f (_ "URL should be \
+                          (format #f (G_ "URL should be \
 'mirror://~a/~a'")
                                   mirror-id
                                   (string-drop uri (string-length prefix)))
@@ -713,11 +715,11 @@ descriptions maintained upstream."
     (lambda ()
       (guard (c ((nix-protocol-error? c)
                  (emit-warning package
-                               (format #f (_ "failed to create derivation: ~a")
+                               (format #f (G_ "failed to create derivation: ~a")
                                        (nix-protocol-error-message c))))
                 ((message-condition? c)
                  (emit-warning package
-                               (format #f (_ "failed to create derivation: ~a")
+                               (format #f (G_ "failed to create derivation: ~a")
                                        (condition-message c)))))
         (with-store store
           ;; Disable grafts since it can entail rebuilds.
@@ -731,7 +733,7 @@ descriptions maintained upstream."
              (package-derivation store replacement #:graft? #f))))))
     (lambda args
       (emit-warning package
-                    (format #f (_ "failed to create derivation: ~s~%")
+                    (format #f (G_ "failed to create derivation: ~s~%")
                             args)))))
 
 (define (check-license package)
@@ -741,7 +743,7 @@ descriptions maintained upstream."
          ((? license?) ...))
      #t)
     (x
-     (emit-warning package (_ "invalid license field")
+     (emit-warning package (G_ "invalid license field")
                    'license))))
 
 (define (patch-file-name patch)
@@ -758,26 +760,26 @@ be determined."
 or HTTP errors.  This allows network-less operation and makes problems with
 the NIST server non-fatal.."
   (guard (c ((http-get-error? c)
-             (warning (_ "failed to retrieve CVE vulnerabilities \
+             (warning (G_ "failed to retrieve CVE vulnerabilities \
 from ~s: ~a (~s)~%")
                       (uri->string (http-get-error-uri c))
                       (http-get-error-code c)
                       (http-get-error-reason c))
-             (warning (_ "assuming no CVE vulnerabilities~%"))
+             (warning (G_ "assuming no CVE vulnerabilities~%"))
              '()))
     (catch #t
       (lambda ()
         (current-vulnerabilities))
       (match-lambda*
         (('getaddrinfo-error errcode)
-         (warning (_ "failed to lookup NIST host: ~a~%")
+         (warning (G_ "failed to lookup NIST host: ~a~%")
                   (gai-strerror errcode))
-         (warning (_ "assuming no CVE vulnerabilities~%"))
+         (warning (G_ "assuming no CVE vulnerabilities~%"))
          '())
         (('tls-certificate-error args ...)
-         (warning (_ "TLS certificate error: ~a")
+         (warning (G_ "TLS certificate error: ~a")
                   (tls-certificate-error-string args))
-         (warning (_ "assuming no CVE vulnerabilities~%"))
+         (warning (G_ "assuming no CVE vulnerabilities~%"))
          '())
         (args
          (apply throw args))))))
@@ -815,7 +817,7 @@ from ~s: ~a (~s)~%")
                                  vulnerabilities)))
          (unless (null? unpatched)
            (emit-warning package
-                         (format #f (_ "probably vulnerable to ~a")
+                         (format #f (G_ "probably vulnerable to ~a")
                                  (string-join (map vulnerability-id unpatched)
                                               ", ")))))))))
 
@@ -830,7 +832,7 @@ from ~s: ~a (~s)~%")
     (#f #t)
     (index
      (emit-warning package
-                   (format #f (_ "tabulation on line ~a, column ~a")
+                   (format #f (G_ "tabulation on line ~a, column ~a")
                            line-number index)))))
 
 (define (report-trailing-white-space package line line-number)
@@ -839,7 +841,7 @@ from ~s: ~a (~s)~%")
               (string=? line (string #\page)))
     (emit-warning package
                   (format #f
-                          (_ "trailing white space on line ~a")
+                          (G_ "trailing white space on line ~a")
                           line-number))))
 
 (define (report-long-line package line line-number)
@@ -849,7 +851,7 @@ from ~s: ~a (~s)~%")
   ;; much noise.
   (when (> (string-length line) 90)
     (emit-warning package
-                  (format #f (_ "line ~a is way too long (~a characters)")
+                  (format #f (G_ "line ~a is way too long (~a characters)")
                           line-number (string-length line)))))
 
 (define %hanging-paren-rx
@@ -860,7 +862,7 @@ from ~s: ~a (~s)~%")
   (when (regexp-exec %hanging-paren-rx line)
     (emit-warning package
                   (format #f
-                          (_ "line ~a: parentheses feel lonely, \
+                          (G_ "line ~a: parentheses feel lonely, \
 move to the previous or next line")
                           line-number))))
 
@@ -999,17 +1001,17 @@ or a list thereof")
   '())
 
 (define (show-help)
-  (display (_ "Usage: guix lint [OPTION]... [PACKAGE]...
+  (display (G_ "Usage: guix lint [OPTION]... [PACKAGE]...
 Run a set of checkers on the specified package; if none is specified,
 run the checkers on all packages.\n"))
-  (display (_ "
+  (display (G_ "
   -c, --checkers=CHECKER1,CHECKER2...
                          only run the specified checkers"))
-  (display (_ "
+  (display (G_ "
   -h, --help             display this help and exit"))
-  (display (_ "
+  (display (G_ "
   -l, --list-checkers    display the list of available lint checkers"))
-  (display (_ "
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -1027,7 +1029,7 @@ run the checkers on all packages.\n"))
                                 (unless (memq c
                                               (map lint-checker-name
                                                    %checkers))
-                                  (leave (_ "~a: invalid checker~%") c)))
+                                  (leave (G_ "~a: invalid checker~%") c)))
                               names)
                     (alist-cons 'checkers
                                 (filter (lambda (checker)
@@ -1056,7 +1058,7 @@ run the checkers on all packages.\n"))
     ;; Return the alist of option values.
     (args-fold* args %options
                 (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
+                  (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))

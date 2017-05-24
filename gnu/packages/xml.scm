@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
@@ -11,9 +11,10 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,9 +40,11 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages zip)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -187,7 +190,7 @@ There are two base classes. @code{Graph::Reader} is the base class for classes
 which read a graph file and create an instance of the Graph class.
 @code{Graph::Writer} is the base class for classes which take an instance of
 the @code{Graph} class and write it out in a specific file format.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-atom
   (package
@@ -219,7 +222,7 @@ the @code{Graph} class and write it out in a specific file format.")
     (description
      "Atom is a syndication, API, and archiving format for weblogs and other data.
 @code{XML::Atom} implements the feed format as well as a client for the API.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-descent
   (package
@@ -247,7 +250,7 @@ the @code{Graph} class and write it out in a specific file format.")
 
 XML grammar is recursive - so it's nice to be able to write recursive
 parsers for it.  @code{XML::Descent} allows such parsers to be created.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-parser
   (package
@@ -267,7 +270,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
                    (list (string-append "EXPATLIBPATH=" expat "/lib")
                          (string-append "EXPATINCPATH=" expat "/include")))))
     (inputs `(("expat" ,expat)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl bindings to the Expat XML parsing library")
     (description
      "This module provides ways to parse XML documents.  It is built on top of
@@ -301,7 +304,7 @@ to @code{XML::Parser} in much the same way that Gisle Aas'
 @code{HTML::TokeParser} provides a procedural interface to @code{HTML::Parser}.
 @code{XML::TokeParser} splits its XML input up into \"tokens\", each
 corresponding to an @code{XML::Parser} event.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-libxml
   (package
@@ -318,7 +321,7 @@ corresponding to an @code{XML::Parser} event.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl SAX parser using XML::Parser")
     (description
      "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
@@ -349,7 +352,7 @@ module.")
 library which provides interfaces for parsing and manipulating XML files.  This
 module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-libxml-simple
   (package
@@ -371,7 +374,7 @@ XML parser and the high performance DOM implementation.")
     (description
      "This package provides the same API as @code{XML::Simple} but is based on
 @code{XML::LibXML}.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-libxslt
   (package
@@ -394,7 +397,7 @@ XML parser and the high performance DOM implementation.")
     (synopsis "Perl bindings to GNOME libxslt library")
     (description "This Perl module is an interface to the GNOME project's
 libxslt library.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-namespacesupport
   (package
@@ -415,7 +418,7 @@ libxslt library.")
 names (unames) from within any application that may need them.  It also helps
 maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-rss
   (package
@@ -450,7 +453,7 @@ checks.")
 RDF Site Summary (RSS) files.  This distribution also contains many examples
 that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
 1.0 version, and more.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-sax
   (package
@@ -484,7 +487,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
 building Perl SAX2 XML parsers, filters, and drivers.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-sax-base
   (package
@@ -506,7 +509,7 @@ PerlSAX drivers and filters.  It's default behaviour is to pass the input
 directly to the output unchanged.  It can be useful to use this module as a
 base class so you don't have to, for example, implement the characters()
 callback.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-simple
   (package
@@ -524,7 +527,7 @@ callback.")
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-sax" ,perl-xml-sax)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl module for easy reading/writing of XML files")
     (description
      "The XML::Simple module provides a simple API layer on top of an
@@ -547,7 +550,7 @@ parser modules).")
     (build-system perl-build-system)
     (inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis "Perl regular expressions for XML tokens")
     (description
      "XML::RegExp contains regular expressions for the following XML tokens:
@@ -573,7 +576,7 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
        ("perl-libxml" ,perl-libxml)
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-regexp" ,perl-xml-regexp)))
-    (license (package-license perl))
+    (license license:perl-license)
     (synopsis
      "Perl module for building DOM Level 1 compliant document structures")
     (description
@@ -605,7 +608,7 @@ that conforms to the API of the Document Object Model.")
      "The @code{XML::Compile} module suite has extensive regression testing.
 This module provide functions which simplify writing tests for
 @code{XML::Compile} related distributions.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile
   (package
@@ -630,7 +633,7 @@ This module provide functions which simplify writing tests for
      "@code{XML::Compile} can be used to translate a Perl data-structure into
 XML or XML into a Perl data-structure, both directions under rigid control by
 a schema.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-cache
   (package
@@ -653,7 +656,7 @@ a schema.")
     (synopsis "Cache compiled XML translators")
     (description
      "This package provides methods to cache compiled XML translators.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-soap
   (package
@@ -681,7 +684,7 @@ a schema.")
 implementation is @url{SOAP1.1,
 http://www.w3.org/TR/2000/NOTE-SOAP-20000508/}, which is still most often
 used.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-compile-wsdl11
   (package
@@ -707,7 +710,7 @@ used.")
 messages to be send and received over SOAP connections.  This involves
 encoding of the message to be send into XML, sending the message to the
 server, collect the answer, and finally decoding the XML to Perl.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-feed
   (package
@@ -746,7 +749,7 @@ server, collect the answer, and finally decoding the XML to Perl.")
 Atom feeds.  It also implements feed auto-discovery for finding feeds, given a URI.
 @code{XML::Feed} supports the following syndication feed formats:
 RSS 0.91, RSS 1.0, RSS 2.0, Atom")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-xml-xpath
   (package
@@ -770,7 +773,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
      "This module aims to comply exactly to the @url{XPath specification,
 https://www.w3.org/TR/xpath} and yet allow extensions to be added in
 the form of functions.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public pugixml
   (package
@@ -893,18 +896,19 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.msweet.org/files/project3/mxml-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/michaelrsweet/mxml/"
+                                  "releases/download/release-" version
+                                  "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "14pzhlfidj5v1qbxy7a59yn4jz9pnjrs2zwalz228jsq7ijm9vfd"))))
+                "14bqfq4lymhb31snz6wsvzhlavy0573v1nki1lbngiyxcj5zazr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))  ;no "check" target
-    (home-page "http://www.minixml.org/")
+    (home-page "https://michaelrsweet.github.io/mxml")
     (synopsis "Small XML parsing library")
     (description
      "Mini-XML is a small C library to read and write XML files and strings in
@@ -1068,3 +1072,137 @@ XSLT and EXSLT.")
 XLSM) format spreadsheets into plaintext @dfn{comma separated values} (CSV)
 files.  It is designed to be fast and to handle large input files.")
     (license license:gpl2+)))
+
+(define-public python-defusedxml
+  (package
+    (name "python-defusedxml")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "defusedxml" version))
+       (sha256
+        (base32
+         "0y147zy3jqmk6ly7fbhqmzn1hf41xcb53f2vcc3m8x4ba5d1smfd"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/tiran/defusedxml")
+    (synopsis "XML bomb protection for Python stdlib modules")
+    (description
+     "Defusedxml provides XML bomb protection for Python stdlib modules.")
+    (license license:psfl)))
+
+(define-public python2-defusedxml
+  (package-with-python2 python-defusedxml))
+
+(define-public libxls
+  (package
+    (name "libxls")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/"
+                                  name "/files/" name "-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "1g8ds7wbhsa4hdcn77xc2c0l3vvz5bx2hx9ng9c9n7aii92ymfnk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Bootstrapping is required in order to fix the test driver script.
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "bash" "bootstrap")))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "http://libxls.sourceforge.net/")
+    (synopsis "Read Excel files")
+    (description
+     "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
+libxls cannot write Excel files.")
+    (license license:bsd-2)))
+
+(define-public freexl
+  (package
+    (name "freexl")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
+                                  name  "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17a0yrjb0gln7819j0vp7y25imhvwpil2b0rm44mwgzml0a4i6mk"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gaia-gis.it/fossil/freexl/index")
+    (synopsis "Read Excel files")
+    (description
+     "FreeXL is a C library to extract valid data from within an Excel (.xls)
+spreadsheet.")
+    ;; Any of these licenses may be picked.
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:mpl1.1))))
+
+(define-public xerces-c
+  (package
+    (name "xerces-c")
+    (version "3.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/xerces/c/3/sources/"
+                                  "xerces-c-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hb29c0smqlpxj0zdm09s983z5jx37szlliccnvgh0qq91wwqwwr"))))
+    (build-system gnu-build-system)
+    (arguments
+     (let ((system (or (%current-target-system)
+                       (%current-system))))
+       (if (string-prefix? "x86_64" system)
+           '()
+           '(#:configure-flags '("--disable-sse2")))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://xerces.apache.org/xerces-c/")
+    (synopsis "Validating XML parser library for C++")
+    (description "Xerces-C++ is a validating XML parser written in a portable
+subset of C++.  Xerces-C++ makes it easy to give your application the ability
+to read and write XML data.  A shared library is provided for parsing,
+generating, manipulating, and validating XML documents using the DOM, SAX, and
+SAX2 APIs.")
+    (license license:asl2.0)))
+
+(define-public java-simple-xml
+  (package
+    (name "java-simple-xml")
+    (version "2.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/simple/simple-xml-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "build"
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "jar")))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://simple.sourceforge.net/")
+    (synopsis "XML serialization framework for Java")
+    (description "Simple is a high performance XML serialization and
+configuration framework for Java.  Its goal is to provide an XML framework
+that enables rapid development of XML configuration and communication systems.
+This framework aids the development of XML systems with minimal effort and
+reduced errors.  It offers full object serialization and deserialization,
+maintaining each reference encountered.")
+    (license license:asl2.0)))

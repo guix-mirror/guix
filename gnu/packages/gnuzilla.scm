@@ -5,6 +5,8 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,10 +32,10 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages libcanberra)
@@ -56,7 +58,8 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:use-module (gnu packages readline))
 
 (define-public mozjs
   (package
@@ -158,6 +161,92 @@ in C/C++.")
      `(("libffi" ,libffi)
        ("zlib" ,zlib)))))
 
+(define-public mozjs-38
+  (package
+    (inherit mozjs)
+    (name "mozjs")
+    (version "38.2.1.rc0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://people.mozilla.org/~sstangl/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p4bmbpgkfsj54xschcny0a118jdrdgg0q29rwxigg3lh5slr681"))
+              (patches
+               (search-patches
+                ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1269317 for
+                ;; GCC 6 compatibility.
+
+                "mozjs38-version-detection.patch" ; for 0ad
+                "mozjs38-tracelogger.patch"
+
+                ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1339931.
+                "mozjs38-pkg-config-version.patch"
+                "mozjs38-shell-version.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix incompatibility with sed 4.4.
+                  (substitute* "js/src/configure"
+                    (("\\^\\[:space:\\]") "^[[:space:]]"))
+
+                  ;; The headers are symlinks to files that are in /tmp, so they
+                  ;; end up broken.  Copy them instead.
+                  (substitute*
+                      "python/mozbuild/mozbuild/backend/recursivemake.py"
+                    (("\\['dist_include'\\].add_symlink")
+                     "['dist_include'].add_copy"))
+
+                  ;; Remove bundled libraries.
+                  (for-each delete-file-recursively
+                            '("intl"
+                              "js/src/ctypes/libffi"
+                              "js/src/ctypes/libffi-patches"
+                              "modules/zlib"))
+                  #t))))
+    (arguments
+     `(;; XXX: parallel build fails, lacking:
+       ;;   mkdir -p "system_wrapper_js/"
+       #:parallel-build? #f
+       ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1008470.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chdir "js/src")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               "--enable-ctypes"
+                               "--enable-gcgenerational"
+                               "--enable-optimize"
+                               "--enable-pie"
+                               "--enable-readline"
+                               "--enable-shared-js"
+                               "--enable-system-ffi"
+                               "--enable-threadsafe"
+                               "--enable-xterm-updates"
+                               "--with-system-icu"
+                               "--with-system-nspr"
+                               "--with-system-zlib"
+
+                               ;; Intl API requires bundled ICU.
+                               "--without-intl-api"))))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (inputs
+     `(("libffi" ,libffi)
+       ("readline" ,readline)
+       ("icu4c" ,icu4c)
+       ("zlib" ,zlib)))))
+
 (define-public nspr
   (package
     (name "nspr")
@@ -193,7 +282,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.29.3")
+    (version "3.30.2")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -204,9 +293,10 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1sz1r2iml9bhd4iqiqz75gii855a25895vpy9scjky0y4lqwrp9m"))
+                "096frzvyp3z257x84rxknscfgsbavzh2a0gyibx7kvmw4vzpfjhd"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
+                                       "nss-disable-long-b64-tests.patch"
                                        "nss-increase-test-timeout.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
@@ -239,6 +329,16 @@ in the Mozilla clients.")
                   `((setenv "USE_64" "1")))
                  (_
                   '()))
+             ;; The timeout values in "increase-test-timeouts" are still
+             ;; too low, so apply this workaround on armhf for now to avoid
+             ;; rebuilding on all platforms. This should be incorporated in
+             ;; the patch for the next update.
+             ;; https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00472.html
+             ,@(if (string-prefix? "armhf" (or (%current-target-system)
+                                               (%current-system)))
+                   `((substitute* "nss/gtests/ssl_gtest/tls_connect.cc"
+                       (("25000\\);") "300000);")))
+                   '())
              #t))
          (replace 'check
            (lambda _
@@ -300,10 +400,10 @@ standards.")
     (license license:mpl2.0)))
 
 (define (mozilla-patch file-name changeset hash)
-  "Return an origin for CHANGESET from the mozilla-esr45 repository."
+  "Return an origin for CHANGESET from the mozilla-esr52 repository."
   (origin
     (method url-fetch)
-    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr45/raw-rev/"
+    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/"
                         changeset))
     (sha256 (base32 hash))
     (file-name file-name)))
@@ -311,7 +411,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "45.7.0-gnu1")
+    (version "52.1.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -320,62 +420,38 @@ standards.")
                           "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1mn73liylqzxk441f28wk326yglqs8zcwqs4zz51s8i2id2jsnv3"))
+        "1wr4bc5806xzyqpi6m4rjaf61za6ylpx4g0kfk95c6yw9yhg5vqb"))
       (patches
        (list
         (search-patch "icecat-avoid-bundled-libraries.patch")
-        (search-patch "icecat-binutils.patch")
-        (mozilla-patch "icecat-CVE-2017-5398-pt01.patch" "1a39a54b5fea" "0k3sbf2w2yng2rpv6wl9zrm5cbsgq3pslr19xwrk8sk753as79fp")
-        (mozilla-patch "icecat-CVE-2017-5402.patch"      "9828c3bb7b73" "0zgks0v9sqhwwkmry4daswvjwk6aqln6abx0iac1vwqqpg6swff6")
-        (mozilla-patch "icecat-CVE-2017-5398-pt02.patch" "fa3268a1147e" "1jyd1hvp42pz5l15agmb1jhw74b38x8xnj9ih5v4pskv41bgmyg5")
-        (mozilla-patch "icecat-CVE-2017-5400.patch"      "347c10e4d6d1" "1w6yrm97l477q4ripbj0nimc87p4jscabvihpncxqbq9xzc4km7p")
-        (mozilla-patch "icecat-CVE-2017-5410.patch"      "fe4a2cda54ad" "0spcs93hpz13d8670jgvww80f0ynrbhwbh62fkv27lpr6wmqwqh1")
-        (mozilla-patch "icecat-CVE-2017-5401.patch"      "c38f8546be5f" "1sa22w9kzgynsn4c6zh4d66byskk5kffzbvlzrhyzvqjddypf9p8")
-        (mozilla-patch "icecat-CVE-2017-5398-pt03.patch" "41c80ecafa99" "0r33arr5wcgl00zgncasiyl65bmm6jy45clxnbb75nzjmsd1zx1s")
-        (mozilla-patch "icecat-CVE-2017-5405.patch"      "381552c888b4" "1sjhh390cx1jqx74lxk6qd8f8ccppqgagqfhc9pnbm2m67hxvkj9")
-        (mozilla-patch "icecat-CVE-2017-5407.patch"      "4ba337cdb998" "0vyknizid2z9nvl31m08c7fknizhv8dh8m54apm39k8lx77vf70p")
-        (mozilla-patch "icecat-CVE-2017-5398-pt04.patch" "886650fac531" "18fsr5dmav96ja0dah7mj34n8mjpckp0bbc32zjyaj5qx0m4h5cw")
-        (mozilla-patch "icecat-CVE-2017-5409.patch"      "0a22becb23cd" "19fshrq4qkj5s0mjrads6by84gy7rsq3k57gha6sw6rvx8chjaz6")
-        (mozilla-patch "icecat-CVE-2017-5398-pt05.patch" "a0ead6ef09eb" "1hpsq81hhhq2a2dcq2dfndiwx93vvp5rfq0cgv6kwk2bsrq77wqq")
-        (mozilla-patch "icecat-CVE-2017-5398-pt06.patch" "d3fede027d06" "1aw02p367cm0ayijdiiawlb7qhab6jwqwkakj317yd1cjnmkalwr")
-        (mozilla-patch "icecat-CVE-2017-5398-pt07.patch" "ffca0f060bb4" "0qwisfp7idjj5nc1vp1afrf5lj66l2gp7rllkjmrqpz6cyfc708v")
-        (mozilla-patch "icecat-CVE-2017-5398-pt08.patch" "4aa65b44dcb9" "07j6dz2b7hp1bkfvkxwgpn2wc3hqrgjgwpaz96fcpz8yadg2fssw")
-        (mozilla-patch "icecat-bug-1318914.patch"        "30e2382d800f" "0w8zky5i7zc5q943x37rdvi4wbcing0q7w9fcgvnnh5li2sbrsy8")
-        (mozilla-patch "icecat-CVE-2017-5408.patch"      "403d2300adc2" "06r4j48rc1fd9gvmvqy68mlqah5xfxpkvwmxk0gnqc364kpq9slk")
-        (mozilla-patch "icecat-CVE-2017-5398-pt09.patch" "546ab5e99568" "05rdb9bm3n4lj0zq5a95xnwsb0vzirb9mbc2wf9xbi4xlamsgvvw")
-        (mozilla-patch "icecat-bug-1311380.patch"        "ef6eeb7f8846" "1w19is5blbrwf3wlmy6wzgabih8sxp2kmkffqcj2g4jypfwyqn73")
-        (mozilla-patch "icecat-CVE-2017-5398-pt10.patch" "eec69810d80e" "1r20abhw7b38igsrdpkhcfwx9i9gmcxikv4y3sjr4wkbp684f7av")
-        (mozilla-patch "icecat-CVE-2017-5398-pt11.patch" "fec35ce6e68b" "1imdfrs8dxz44rhsmvydh29w5j64cij6g5ggrmhvz3386xvlil2v")
-        (mozilla-patch "icecat-CVE-2017-5398-pt12.patch" "725e2a217722" "06gfhi2ich279rjnxi15fb4igimsxnv5w6bx4g91js8wbvp2r3v0")
-        (mozilla-patch "icecat-CVE-2017-5398-pt13.patch" "d905a2e3a4d9" "1ibxi2s0czj47b739zmmjzbln8lpn27hdg4b17w58vhbhzkq31cx")
-        (mozilla-patch "icecat-CVE-2017-5398-pt14.patch" "0032560ae945" "0md3p5cix6nzbj5m199awc9gk52pygy5s9lx3a38vh3xvd92lsbj")
-        (mozilla-patch "icecat-CVE-2017-5398-pt15.patch" "91dda1e79ad8" "0b5h8fhagczfqkdgby982w6qgkw9y11zxxpdbn89rwmjpyp9nghx")
-        (mozilla-patch "icecat-CVE-2017-5404.patch"      "556dd9e4a9e3" "0mbdx4xn1xs67n47ys9m42lc5ny96rz21ala848yajpdlxsz680g")
-        (mozilla-patch "icecat-bug-1341137-pt1.patch"    "e86e0423dad1" "0dk1v7lcs61nx76qxcibha3ygqri15ldcvwwsrsayff9fq6k0v4y")
-        (mozilla-patch "icecat-bug-1341137-pt2.patch"    "9aebee8b8cb9" "0m7p5iprhhwdv89aqqg7fla5szw6v7x2sll4ns0zg60pk4vm6izq")
-        (mozilla-patch "icecat-bug-1341137-pt3.patch"    "69f3d44bdb48" "1ad7rw6nmg3c49ylqxlqqkb6cm2f0ygfzrigs6b60a2zkjqhbl0h")
-        (mozilla-patch "icecat-bug-1341137-pt4.patch"    "22546e2cee64" "0gbwxa3p7qkq53hwnvxcqhx8h34qmnjdxy0h3ajik4mw76vrna9s")
-        (mozilla-patch "icecat-bug-1341137-pt5.patch"    "e5083d8a855a" "1247vbpqzf007nigbxxqd6nwgr1dxd4p8cd0dr45afqh19vhlapj")
-        (mozilla-patch "icecat-bug-1339122.patch"        "b0d156c7445e" "026jp5bb565yvhkmmicgygcn1lmak85p0466yl1vnjlx1rc8n724")
-        (mozilla-patch "icecat-bug-1319087.patch"        "9cd44507fd65" "0mcfvby53r2150libazgrgaqrdyvl0g6cr1f01dsya3cgmc9mkcn")
-        (mozilla-patch "icecat-bug-1342661.patch"        "d449995ef7d9" "1kz8k2jxvhqpjgrsj7r0kqq79036lrkfnx5pvdnsl59np9128j81")
-        (mozilla-patch "icecat-bug-1343261.patch"        "9b5374019b58" "0v5w50r5ys4jjy1lpks280cq8paw7wdy9mrk7szzq7nlcxz90is7")
-        (mozilla-patch "icecat-bug-1343552-pt1.patch"    "08bc7a3330e4" "1hsvffscqc4zflni866ilylgi3a13wz0n882z85xplbhwhc9lcfj")
-        (mozilla-patch "icecat-bug-1343552-pt2.patch"    "8c61ebe37f1b" "1fjsr6bzfyd1zqzz2pglwh2ckys95h21wy3j4rlwkz66057z53qq")
-        (mozilla-patch "icecat-bug-1340718.patch"        "bfa75fc20c2b" "08gksd06lwbb5ykdrk9gh2cb9bximwxhbxl3rprz64jj2bnmd3dq")
-        (mozilla-patch "icecat-bug-1345461.patch"        "bcd5e51251dd" "1ms2ad8j04lz761cvdwi9rj5qv3qbjmg0zwyp3fykcf01a323ygd")
-        (mozilla-patch "icecat-bug-1343505.patch"        "290f10412f92" "1dsj22fkz60zfa6isnxj54clg32dwzapwh5f1vz6jsin9r67ik2p")
-        (mozilla-patch "icecat-bug-1346648.patch"        "9369ede30cc1" "1wrdn2aixbzifz7wyqnfi65gaiva8i746pi53z6w62lmn1hwd3ji")
-        (mozilla-patch "icecat-bug-1347979.patch"        "4ae2261bfab0" "1yi3jicwjy7w8f0sv5di4rx05bfpkhcwj3r6dhl5315yz4ifqy30")
-        (mozilla-patch "icecat-bug-1343795.patch"        "dcf468969700" "0syfq35s2r86ajmnqsxlfanvxd9ax57qkfmxpkvmk447s3mxsk08")
-        (mozilla-patch "icecat-bug-1347168.patch"        "5a6390274b64" "1lg5px4sncalh82y61ni9rlg50d83jmmrrvn0944x4zfrzlfaz8x")
-        (mozilla-patch "icecat-bug-1341096.patch"        "64158495e5ae" "1lyh8m159hhzrxj5hr0yib2sb8rkd20qxpykrf398v18s3yc08cx")
-        (mozilla-patch "icecat-bug-1346654.patch"        "f359ec604627" "0j6rzbnzlz8x9sj2r79d1zr4p89c5zq7y49xa4kn6am5ay3ws0ri")
-        (mozilla-patch "icecat-bug-1344461.patch"        "6f14d2ef7981" "0n24hqvjj7vxqdvxhk38swnmvcv7h7vvn5invbidhv22m0qqzs2c")
-        (mozilla-patch "icecat-bug-1292534.patch"        "c709d4b36145" "18cdck3fr4a1ygszb6qk07g6fi3kv6i697pjfcipvqrk358qb0hq")
-        (mozilla-patch "icecat-bug-1336830.patch"        "18e355831dd5" "042487xhq9zkky3pxiqy1rpy69z0j20w0jnl7kwg2j1bzfbnniip")
-        (mozilla-patch "icecat-bug-1336832.patch"        "ebeb0b45a84b" "17ch2aqsrnkiwbnkf6x7a1cpi8jgfjhwr6wp0bsa89s8v1dax6w4")
-        (mozilla-patch "icecat-bug-1349946.patch"        "ccbecbe17a45" "19vwmhvqarpzai8mcq6i7szkrp1h9m8v5lyimkmmdlmagrivjw7f")))
+        (mozilla-patch "icecat-bug-1342366.patch"        "fb43f6690a26" "1vnkjpq2bcqwzmjkgyqv8wj0ndrrsyix3qy1rsb5is6pjmi9sbaa")
+        (mozilla-patch "icecat-bug-1343818.patch"        "90f870bbec29" "0mbki955f71n4yr9p0yc7kh5jwq7vs4bs4rhaazdncirbr564hm6")
+        (mozilla-patch "icecat-bug-1348454.patch"        "c1cd8a02669f" "1wf0107763rw45kxkak7478vlax06ay7076cbm7ysxl7vijbr52w")
+        (mozilla-patch "icecat-bug-1297111.patch"        "2553531f83b9" "0ibf59pa8czdyhc25sas6zhh2gf1k8vr8fklis2b1ms3n1qnzrha")
+        (mozilla-patch "icecat-bug-1355873.patch"        "9ee455ddcd68" "0d38hi4556635g9ag805vfyffdgfsp4a8v3d9ldffdp99ypv2ixj")
+        (mozilla-patch "icecat-bug-1348424-pt1.patch"    "6472c7006a73" "1fgydas23fzj49n4g43133bgjn98b2h38bii4knl7z7pm3fs2wws")
+        (mozilla-patch "icecat-bug-1348424-pt2.patch"    "0d5a26b29816" "03mkghl9i83jk1axr8bvw8la6shbggkabf23if8a9vi5jdv8182x")
+        (mozilla-patch "icecat-bug-1357092.patch"        "e78c943af07f" "0r830k6hja8z9rjk2nqjg8zfzr0wjcnic8rddh7jmc1inr1w3crm")
+        (mozilla-patch "icecat-bug-1352093.patch"        "d7c06f2d0d13" "1ahyns5v37w91bilvb3pa8kkdzkkn3fcxmi49jr5bycjlawljrm4")
+        (mozilla-patch "icecat-bug-1349595.patch"        "9071c7d4cc9c" "12128sf8s3zwv2w16kfl5jry9d6ky7hvps2006184rg23p32aj6n")
+        (mozilla-patch "icecat-bug-1336979.patch"        "8bbc7b586d68" "0c13imyp1nq18in3yb1zcyi41b69svh4fn8msyj0c2lhbf8qnqcw")
+        (mozilla-patch "icecat-bug-1352556.patch"        "6d80ca63ff8b" "0s893fn6v0p323lcnl4cbkg1zd7gs1p0bw76ki6cmiapkn63gs13")
+        (mozilla-patch "icecat-bug-1359547.patch"        "43d7b98d8743" "1dhgy1jkvn3c4k27hbv8p16w7l09b8hd4w9zzpk8dpn4h78ncs3h")
+        (mozilla-patch "icecat-CVE-2017-5031.patch"      "bd4fcdee9a06" "0xz1r342023a0bsllhjbzn6v75lpqznwacqyikb7q8i4hxkxh78a")
+        (mozilla-patch "icecat-bug-1346499.patch"        "747fd6c81983" "00iscyn4wr69205ppiaghlnd32845f5lcsl303v0fcdd4d1v04vc")
+        (mozilla-patch "icecat-bug-1334443-pt1.patch"    "16201e8478df" "1k91xaai25vn1svkaldnsd2s8br3fgvnk5l54k3n3lk3m5vj55hv")
+        (mozilla-patch "icecat-bug-1334443-pt2.patch"    "f100e5cf3bcb" "1cgbbbnkrd3ydfw99rhnpqdp5zq65537mg8sa1s9ajxkjjd1dkwj")
+        (mozilla-patch "icecat-bug-1354810.patch"        "e579ef6e8d11" "0cmrh8dl85lzjxpbni08xbs8qq15sljnpg70a7rsl0jdbgih3mdx")
+        (mozilla-patch "icecat-bug-1356755.patch"        "4a3fce67b52d" "126i9nwxsb3sjwb7dvhafacq86glnhx7r7jjv0h9v21s1w0kx4wj")
+        (mozilla-patch "icecat-bug-1273265.patch"        "7902fea300b8" "1jkrl8hdycsi17dd1m1vvl6gm1skhpf10q2m29zwfr8l40fd6a3q")
+        (mozilla-patch "icecat-bug-1353204.patch"        "b5a21502aeff" "13rbrhvr37w95av9d4hkgi913nq0j6k2iijydylvprcn18cwibp0")
+        (mozilla-patch "icecat-bug-1028195.patch"        "69a5ca2bf867" "0q8cgi6837ikpg7gsvywmzhq0i102845apcbrd6mw0205qqsnw5c")
+        (mozilla-patch "icecat-bug-1347835.patch"        "bc635f45af37" "1fny422l6yc80901x6swybr8nk0in1wxfgy97ky4bdkcqlnmzpqv")
+        (mozilla-patch "icecat-bug-1241066.patch"        "b922ca70cce5" "09hcf9rm7ng3vj5y267w0c9h6pqinnz8gjlkwx1337xh43mdvqjv")
+        (mozilla-patch "icecat-bug-1346012.patch"        "1ce6d0652921" "163ji64a86h682frh1jq016w1mjf8g24r8cni0irsdmiihis7zxc")
+        (mozilla-patch "icecat-bug-1324140.patch"        "8886f9cd5dd3" "0byabs9md8r3pc4r67sv2759427n1za0gfayln40nx47n2p52kmg")
+        (mozilla-patch "icecat-bug-1342552.patch"        "ad995e90916b" "02nq9sg675p26z99nr2pykbz51hi2phf0gmrb1bjpq9pjbll7gsa")
+        (mozilla-patch "icecat-bug-1355039.patch"        "4ae71415fecf" "0yfkkdkkimad9a3w734xx85lb7hrl870c8k8an7w78fq3vl3fjnd")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -433,9 +509,8 @@ standards.")
        ("dbus-glib" ,dbus-glib)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
        ("pango" ,pango)
        ("freetype" ,freetype)
        ("hunspell" ,hunspell)
@@ -449,6 +524,7 @@ standards.")
        ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
+       ("ffmpeg" ,ffmpeg)
        ("libvpx" ,libvpx)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
@@ -460,19 +536,19 @@ standards.")
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
-       ("yasm" ,yasm)
        ("zip" ,zip)
        ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
+       ("yasm" ,yasm)
        ("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf-2.13)
        ("which" ,which)))
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
-       #:parallel-build? #f
 
        ;; XXX: There are RUNPATH issues such as
        ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
@@ -480,17 +556,11 @@ standards.")
        ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
        #:validate-runpath? #f
 
-       #:configure-flags '("--enable-default-toolkit=cairo-gtk2"
-                           "--enable-pango"
+       #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
                            "--enable-gio"
-                           "--enable-svg"
-                           "--enable-canvas"
-                           "--enable-mathml"
                            "--enable-startup-notification"
                            "--enable-pulseaudio"
-                           "--enable-gstreamer=1.0"
 
-                           "--disable-gnomevfs"
                            "--disable-gconf"
                            "--disable-gnomeui"
 
@@ -548,16 +618,6 @@ standards.")
                          #t))
               #t)))
          (add-after
-          'unpack 'remove-h264parse-from-blacklist
-          (lambda _
-            ;; Remove h264parse from gstreamer format helper blacklist.  It
-            ;; was put there to work around a bug in a pre-1.0 version of
-            ;; gstreamer.  See:
-            ;; https://www.mozilla.org/en-US/security/advisories/mfsa2015-47/
-            (substitute* "dom/media/gstreamer/GStreamerFormatHelper.cpp"
-              (("^  \"h264parse\",\n") ""))
-            #t))
-         (add-after
           'unpack 'use-skia-by-default
           (lambda _
             ;; Use the bundled Skia library by default, since IceCat appears
@@ -580,10 +640,11 @@ standards.")
             ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
             ;; work.  More investigation is needed.
             (substitute* "toolkit/library/moz.build"
-              (("^# This needs to be last")
-               "OS_LIBS += [
+              (("^# This library needs to be last" all)
+               (string-append "OS_LIBS += [
     'GL', 'gnome-2', 'canberra', 'Xss', 'cups', 'gssapi_krb5',
-    'gstreamer-1.0', 'gstapp-1.0', 'gstvideo-1.0' ]\n\n"))
+    'avcodec', 'avutil', 'pulse' ]\n\n"
+                              all)))
             #t))
          (replace
           'configure
@@ -600,6 +661,7 @@ standards.")
                             ,@configure-flags)))
               (setenv "SHELL" bash)
               (setenv "CONFIG_SHELL" bash)
+              (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
               (mkdir "../build")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))
@@ -661,7 +723,16 @@ standards.")
                       (copy-file file (string-append icons "/icecat.png"))))
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
-                    "mozicon128.png" "default256.png")))))))))
+                    "mozicon128.png" "default256.png"))))))
+         ;; This fixes the file chooser crash that happens with GTK 3.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program (car (find-files lib "^icecat$"))
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description

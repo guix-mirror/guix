@@ -66,7 +66,7 @@
        "ftp://gcc.gnu.org/pub/gcc/"
        ,@(map (cut string-append <> "/gcc") gnu-mirrors))
       (gnupg
-       "ftp://gd.tuwien.ac.at/privacy/gnupg/"
+       "http://gd.tuwien.ac.at/privacy/gnupg/"
        "ftp://mirrors.dotsrc.org/gcrypt/"
        "ftp://mirror.cict.fr/gnupg/"
        "http://artfiles.org/gnupg.org"
@@ -124,6 +124,11 @@
        "http://tenet.dl.sourceforge.net/project/"
        "http://vorboss.dl.sourceforge.net/project/"
        "http://netassist.dl.sourceforge.net/project/")
+      (netfilter.org ; https://www.netfilter.org/mirrors.html
+       "http://ftp.netfilter.org/pub/"
+       "ftp://ftp.es.netfilter.org/mirrors/netfilter/"
+       "ftp://ftp.hu.netfilter.org/"
+       "ftp://www.lt.netfilter.org/pub/")
       (kernel.org
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
        "http://linux-kernel.uio.no/pub/"
@@ -208,7 +213,6 @@
        ;; mirrors keeping old versions at the top level
        "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
        ;; mirrors moving old versions to "legacy"
-       "http://mirrors-au.go-parts.com/mirrors/ImageMagick/"
        "ftp://mirror.aarnet.edu.au/pub/imagemagick/"
        "http://mirror.checkdomain.de/imagemagick/"
        "ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/"
@@ -217,9 +221,7 @@
        "http://ftp.surfnet.nl/pub/ImageMagick/"
        "http://mirror.searchdaimon.com/ImageMagick"
        "ftp://ftp.tpnet.pl/pub/graphics/ImageMagick/"
-       "http://mirrors-ru.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.is.co.za/pub/imagemagick/"
-       "http://mirrors-uk.go-parts.com/mirrors/ImageMagick/"
        "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
        "ftp://ftp.fifi.org/pub/ImageMagick/"
        "http://www.imagemagick.org/download/"

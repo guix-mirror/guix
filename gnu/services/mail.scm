@@ -35,6 +35,7 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (srfi srfi-1)
   #:export (dovecot-service
             dovecot-service-type
             dovecot-configuration
@@ -56,6 +57,8 @@
             opensmtpd-configuration?
             opensmtpd-service-type
             %default-opensmtpd-config-file
+
+            mail-aliases-service-type
 
             exim-configuration
             exim-configuration?
@@ -1662,6 +1665,31 @@ accept from local for any relay
 
 
 ;;;
+;;; mail aliases.
+;;;
+
+(define (mail-aliases-etc aliases)
+  `(("aliases" ,(plain-file "aliases"
+                            ;; Ideally we'd use a format string like
+                            ;; "~:{~a: ~{~a~^,~}\n~}", but it gives a
+                            ;; warning that I can't figure out how to fix,
+                            ;; so we'll just use string-join below instead.
+                            (format #f "~:{~a: ~a\n~}"
+                                    (map (match-lambda
+                                           ((alias addresses ...)
+                                            (list alias (string-join addresses ","))))
+                                         aliases))))))
+
+(define mail-aliases-service-type
+  (service-type
+   (name 'mail-aliases)
+   (extensions
+    (list (service-extension etc-service-type mail-aliases-etc)))
+   (compose concatenate)
+   (extend append)))
+
+
+;;;
 ;;; Exim.
 ;;;
 
@@ -1671,9 +1699,7 @@ accept from local for any relay
   (package       exim-configuration-package ;<package>
                  (default exim))
   (config-file   exim-configuration-config-file ;file-like
-                 (default #f))
-  (aliases       exim-configuration-aliases ;; list of lists
-                 (default '())))
+                 (default #f)))
 
 (define %exim-accounts
   (list (user-group
@@ -1700,7 +1726,7 @@ exim_group = exim
 
 (define exim-shepherd-service
   (match-lambda
-    (($ <exim-configuration> package config-file aliases)
+    (($ <exim-configuration> package config-file)
      (list (shepherd-service
             (provision '(exim mta))
             (documentation "Run the exim daemon.")
@@ -1713,7 +1739,7 @@ exim_group = exim
 
 (define exim-activation
   (match-lambda
-    (($ <exim-configuration> package config-file aliases)
+    (($ <exim-configuration> package config-file)
      (with-imported-modules '((guix build utils))
        #~(begin
            (use-modules (guix build utils))
@@ -1726,20 +1752,6 @@ exim_group = exim
            (zero? (system* #$(file-append package "/bin/exim")
                            "-bV" "-C" #$(exim-computed-config-file package config-file))))))))
 
-(define exim-etc
-  (match-lambda
-    (($ <exim-configuration> package config-file aliases)
-     `(("aliases" ,(plain-file "aliases"
-                               ;; Ideally we'd use a format string like
-                               ;; "~:{~a: ~{~a~^,~}\n~}", but it gives a
-                               ;; warning that I can't figure out how to fix,
-                               ;; so we'll just use string-join below instead.
-                               (format #f "~:{~a: ~a\n~}"
-                                       (map (lambda (entry)
-                                              (list (car entry)
-                                                    (string-join (cdr entry) ",")))
-                                            aliases))))))))
-
 (define exim-profile
   (compose list exim-configuration-package))
 
@@ -1751,4 +1763,4 @@ exim_group = exim
           (service-extension account-service-type (const %exim-accounts))
           (service-extension activation-service-type exim-activation)
           (service-extension profile-service-type exim-profile)
-          (service-extension etc-service-type exim-etc)))))
+          (service-extension mail-aliases-service-type (const '()))))))

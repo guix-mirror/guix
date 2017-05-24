@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
-  #:use-module (gnu system grub)
+  #:use-module (gnu bootloader)
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system locale)
@@ -92,7 +93,7 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg
+            operating-system-bootcfg
             operating-system-etc-directory
             operating-system-locale-directory
             operating-system-boot-script
@@ -103,12 +104,14 @@
             boot-parameters?
             boot-parameters-label
             boot-parameters-root-device
+            boot-parameters-boot-name
             boot-parameters-store-device
             boot-parameters-store-mount-point
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
             read-boot-parameters
+            read-boot-parameters-file
 
             local-host-aliases
             %setuid-programs
@@ -121,6 +124,14 @@
 ;;;
 ;;; Code:
 
+(define (bootable-kernel-arguments kernel-arguments system.drv root-device)
+  "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
+booted from ROOT-DEVICE"
+  (cons* (string-append "--root=" root-device)
+         #~(string-append "--system=" #$system.drv)
+         #~(string-append "--load=" #$system.drv "/boot")
+         kernel-arguments))
+
 ;; System-wide configuration.
 ;; TODO: Add per-field docstrings/stexi.
 (define-record-type* <operating-system> operating-system
@@ -128,9 +139,9 @@
   operating-system?
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
-  (kernel-arguments operating-system-kernel-arguments
+  (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
-  (bootloader operating-system-bootloader)        ; <grub-configuration>
+  (bootloader operating-system-bootloader)        ; <bootloader-configuration>
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default base-initrd))
@@ -181,6 +192,113 @@
   (sudoers-file operating-system-sudoers-file     ; file-like
                 (default %sudoers-specification)))
 
+(define (operating-system-kernel-arguments os system.drv root-device)
+  "Return all the kernel arguments, including the ones not specified
+directly by the user."
+  (bootable-kernel-arguments (operating-system-user-kernel-arguments os)
+                             system.drv
+                             root-device))
+
+
+;;;
+;;; Boot parameters
+;;;
+
+(define-record-type* <boot-parameters>
+  boot-parameters make-boot-parameters boot-parameters?
+  (label            boot-parameters-label)
+  ;; Because we will use the 'store-device' to create the GRUB search command,
+  ;; the 'store-device' has slightly different semantics than 'root-device'.
+  ;; The 'store-device' can be a file system uuid, a file system label, or #f,
+  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
+  ;; understand that.  The 'root-device', on the other hand, corresponds
+  ;; exactly to the device field of the <file-system> object representing the
+  ;; OS's root file system, so it might be a device path like "/dev/sda3".
+  (root-device      boot-parameters-root-device)
+  (boot-name        boot-parameters-boot-name)
+  (store-device     boot-parameters-store-device)
+  (store-mount-point boot-parameters-store-mount-point)
+  (kernel           boot-parameters-kernel)
+  (kernel-arguments boot-parameters-kernel-arguments)
+  (initrd           boot-parameters-initrd))
+
+(define (read-boot-parameters port)
+  "Read boot parameters from PORT and return the corresponding
+<boot-parameters> object or #f if the format is unrecognized."
+  (match (read port)
+    (('boot-parameters ('version 0)
+                       ('label label) ('root-device root)
+                       ('kernel linux)
+                       rest ...)
+     (boot-parameters
+      (label label)
+      (root-device root)
+
+      (boot-name
+       (match (assq 'boot-name rest)
+         ((_ args) args)
+         (#f       'grub))) ; for compatibility reasons.
+
+      ;; In the past, we would store the directory name of the kernel instead
+      ;; of the absolute file name of its image.  Detect that and correct it.
+      (kernel (if (string=? linux (direct-store-path linux))
+                  (string-append linux "/"
+                                 (system-linux-image-file-name))
+                  linux))
+
+      (kernel-arguments
+       (match (assq 'kernel-arguments rest)
+         ((_ args) args)
+         (#f       '())))                         ;the old format
+
+      (initrd
+       (match (assq 'initrd rest)
+         (('initrd ('string-append directory file)) ;the old format
+          (string-append directory file))
+         (('initrd (? string? file))
+          file)))
+
+      (store-device
+       (match (assq 'store rest)
+         (('store ('device device) _ ...)
+          device)
+         (_                                       ;the old format
+          ;; Root might be a device path like "/dev/sda1", which is not a
+          ;; suitable GRUB device identifier.
+          (if (string-prefix? "/" root)
+              #f
+              root))))
+
+      (store-mount-point
+       (match (assq 'store rest)
+         (('store ('device _) ('mount-point mount-point) _ ...)
+          mount-point)
+         (_                                       ;the old format
+          "/")))))
+    (x                                            ;unsupported format
+     (warning (G_ "unrecognized boot parameters for '~a'~%")
+              system)
+     #f)))
+
+(define (read-boot-parameters-file system)
+  "Read boot parameters from SYSTEM's (system or generation) \"parameters\"
+file and returns the corresponding <boot-parameters> object or #f if the
+format is unrecognized.
+The object has its kernel-arguments extended in order to make it bootable."
+  (let* ((file (string-append system "/parameters"))
+         (params (call-with-input-file file read-boot-parameters))
+         (root (boot-parameters-root-device params))
+         (root-device (if (bytevector? root)
+                          (uuid->string root)
+                          root))
+         (kernel-arguments (boot-parameters-kernel-arguments params)))
+    (if params
+      (boot-parameters
+        (inherit params)
+        (kernel-arguments (bootable-kernel-arguments kernel-arguments
+                                                     system
+                                                     root-device)))
+      #f)))
 
 ;;;
 ;;; Services.
@@ -277,7 +395,7 @@ value of the SYSTEM-SERVICE-TYPE service."
         (mlet %store-monad
             ((kernel  ->  (operating-system-kernel os))
              (initrd      (operating-system-initrd-file os))
-             (params      (operating-system-parameters-file os)))
+             (params      (operating-system-boot-parameters-file os)))
           (return `(("kernel" ,kernel)
                     ("parameters" ,params)
                     ("initrd" ,initrd)
@@ -384,7 +502,7 @@ explicitly appear in OS."
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.0 bash coreutils findutils grep sed
+              (list guile-2.2 bash coreutils-8.27 findutils grep sed
                     diffutils patch gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
@@ -521,7 +639,7 @@ This is for backward-compatibility of fields that used to be strings and are
 now file-like objects.."
   (match thing
     ((? string?)
-     (warning (_ "using a string for file '~a' is deprecated; \
+     (warning (G_ "using a string for file '~a' is deprecated; \
 use 'plain-file' instead~%")
               file-name)
      (plain-file file-name thing))
@@ -537,7 +655,7 @@ and are now file-like objects."
   (with-monad %store-monad
     (match thing
       ((? procedure?)
-       (warning (_ "using a monadic value for '~a' is deprecated; \
+       (warning (G_ "using a monadic value for '~a' is deprecated; \
 use 'plain-file' instead~%")
                 file-name)
        thing)
@@ -614,7 +732,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
-    (service-parameters boot)))
+    (service-value boot)))
 
 (define (operating-system-user-accounts os)
   "Return the list of user accounts of OS."
@@ -622,12 +740,12 @@ hardware-related operations as necessary when booting a Linux container."
          (account  (fold-services services
                                   #:target-type account-service-type)))
     (filter user-account?
-            (service-parameters account))))
+            (service-value account))))
 
 (define (operating-system-shepherd-service-names os)
   "Return the list of Shepherd service names for OS."
   (append-map shepherd-service-provision
-              (service-parameters
+              (service-value
                (fold-services (operating-system-services os)
                               #:target-type
                               shepherd-root-service-type))))
@@ -637,7 +755,7 @@ hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (system   (fold-services services)))
     ;; SYSTEM contains the derivation as a monadic value.
-    (service-parameters system)))
+    (service-value system)))
 
 (define* (operating-system-profile os #:key container?)
   "Return a derivation that builds the system profile of OS."
@@ -679,7 +797,7 @@ hardware-related operations as necessary when booting a Linux container."
     (#f
      (raise (condition
              (&message
-              (message (format #f (_ "~a: invalid locale name") name))))))
+              (message (format #f (G_ "~a: invalid locale name") name))))))
     (def def)))
 
 (define (operating-system-locale-directory os)
@@ -700,8 +818,8 @@ listed in OS.  The C library expects to find it under
   (locale-directory definitions
                     #:libcs (operating-system-locale-libcs os)))
 
-(define (kernel->grub-label kernel)
-  "Return a label for the GRUB menu entry that boots KERNEL."
+(define (kernel->boot-label kernel)
+  "Return a label for the bootloader menu entry that boots KERNEL."
   (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
@@ -728,39 +846,22 @@ listed in OS.  The C library expects to find it under
   "Return the file system that contains the store of OS."
   (store-file-system (operating-system-file-systems os)))
 
-(define* (operating-system-grub.cfg os #:optional (old-entries '()))
-  "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
-\"old entries\" menu."
+(define* (operating-system-bootcfg os #:optional (old-entries '()))
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES to
+populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
-       (store-fs -> (operating-system-store-file-system os))
-       (label ->    (kernel->grub-label (operating-system-kernel os)))
-       (kernel ->   (operating-system-kernel-file os))
-       (initrd      (operating-system-initrd-file os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entries ->  (list (menu-entry
-                           (label label)
+       (entry (operating-system-boot-parameters os system root-device))
+       (bootloader-conf -> (operating-system-bootloader os)))
+    ((bootloader-configuration-file-generator
+      (bootloader-configuration-bootloader bootloader-conf))
+     bootloader-conf (list entry) #:old-entries old-entries)))
 
-                           ;; The device where the kernel and initrd live.
-                           (device (grub-device store-fs))
-                           (device-mount-point
-                            (file-system-mount-point store-fs))
-
-                           (linux kernel)
-                           (linux-arguments
-                            (cons* (string-append "--root=" root-device)
-                                   #~(string-append "--system=" #$system)
-                                   #~(string-append "--load=" #$system
-                                                    "/boot")
-                                   (operating-system-kernel-arguments os)))
-                           (initrd initrd)))))
-    (grub-configuration-file (operating-system-bootloader os) entries
-                             #:old-entries old-entries)))
-
-(define (grub-device fs)
+(define (fs->boot-device fs)
   "Given FS, a <file-system> object, return a value suitable for use as the
 device in a <menu-entry>."
   (case (file-system-title fs)
@@ -768,101 +869,56 @@ device in a <menu-entry>."
     ((label) (file-system-device fs))
     (else #f)))
 
-(define (operating-system-parameters-file os)
-  "Return a file that describes the boot parameters of OS.  The primary use of
-this file is the reconstruction of GRUB menu entries for old configurations."
-  (mlet %store-monad ((initrd   (operating-system-initrd-file os))
-                      (root ->  (operating-system-root-file-system os))
-                      (store -> (operating-system-store-file-system os))
-                      (label -> (kernel->grub-label
-                                 (operating-system-kernel os))))
-    (gexp->file "parameters"
-                #~(boot-parameters
-                   (version 0)
-                   (label #$label)
-                   (root-device #$(file-system-device root))
-                   (kernel #$(operating-system-kernel-file os))
-                   (kernel-arguments
-                    #$(operating-system-kernel-arguments os))
-                   (initrd #$initrd)
-                   (store
-                    (device #$(grub-device store))
-                    (mount-point #$(file-system-mount-point store))))
-                #:set-load-path? #f)))
+(define (operating-system-boot-parameters os system.drv root-device)
+  "Return a monadic <boot-parameters> record that describes the boot parameters
+of OS.  SYSTEM.DRV is either a derivation or #f.  If it's a derivation, adds
+kernel arguments for that derivation to <boot-parameters>."
+  (mlet* %store-monad
+      ((initrd (operating-system-initrd-file os))
+       (store -> (operating-system-store-file-system os))
+       (bootloader  -> (bootloader-configuration-bootloader
+                        (operating-system-bootloader os)))
+       (boot-name   -> (bootloader-name bootloader))
+       (label -> (kernel->boot-label (operating-system-kernel os))))
+    (return (boot-parameters
+             (label label)
+             (root-device root-device)
+             (kernel (operating-system-kernel-file os))
+             (kernel-arguments
+              (if system.drv
+                (operating-system-kernel-arguments os system.drv root-device)
+                (operating-system-user-kernel-arguments os)))
+             (initrd initrd)
+             (boot-name boot-name)
+             (store-device (fs->boot-device store))
+             (store-mount-point (file-system-mount-point store))))))
 
-
-;;;
-;;; Boot parameters
-;;;
-
-(define-record-type* <boot-parameters>
-  boot-parameters make-boot-parameters boot-parameters?
-  (label            boot-parameters-label)
-  ;; Because we will use the 'store-device' to create the GRUB search command,
-  ;; the 'store-device' has slightly different semantics than 'root-device'.
-  ;; The 'store-device' can be a file system uuid, a file system label, or #f,
-  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
-  ;; understand that.  The 'root-device', on the other hand, corresponds
-  ;; exactly to the device field of the <file-system> object representing the
-  ;; OS's root file system, so it might be a device path like "/dev/sda3".
-  (root-device      boot-parameters-root-device)
-  (store-device     boot-parameters-store-device)
-  (store-mount-point boot-parameters-store-mount-point)
-  (kernel           boot-parameters-kernel)
-  (kernel-arguments boot-parameters-kernel-arguments)
-  (initrd           boot-parameters-initrd))
-
-(define (read-boot-parameters port)
-  "Read boot parameters from PORT and return the corresponding
-<boot-parameters> object or #f if the format is unrecognized."
-  (match (read port)
-    (('boot-parameters ('version 0)
-                       ('label label) ('root-device root)
-                       ('kernel linux)
-                       rest ...)
-     (boot-parameters
-      (label label)
-      (root-device root)
-
-      ;; In the past, we would store the directory name of the kernel instead
-      ;; of the absolute file name of its image.  Detect that and correct it.
-      (kernel (if (string=? linux (direct-store-path linux))
-                  (string-append linux "/"
-                                 (system-linux-image-file-name))
-                  linux))
-
-      (kernel-arguments
-       (match (assq 'kernel-arguments rest)
-         ((_ args) args)
-         (#f       '())))                         ;the old format
-
-      (initrd
-       (match (assq 'initrd rest)
-         (('initrd ('string-append directory file)) ;the old format
-          (string-append directory file))
-         (('initrd (? string? file))
-          file)))
-
-      (store-device
-       (match (assq 'store rest)
-         (('store ('device device) _ ...)
-          device)
-         (_                                       ;the old format
-          ;; Root might be a device path like "/dev/sda1", which is not a
-          ;; suitable GRUB device identifier.
-          (if (string-prefix? "/" root)
-              #f
-              root))))
-
-      (store-mount-point
-       (match (assq 'store rest)
-         (('store ('device _) ('mount-point mount-point) _ ...)
-          mount-point)
-         (_                                       ;the old format
-          "/")))))
-    (x                                            ;unsupported format
-     (warning (_ "unrecognized boot parameters for '~a'~%")
-              system)
-     #f)))
+(define* (operating-system-boot-parameters-file os #:optional (system.drv #f))
+   "Return a file that describes the boot parameters of OS.  The primary use of
+this file is the reconstruction of GRUB menu entries for old configurations.
+SYSTEM.DRV is optional.  If given, adds kernel arguments for that system to the
+returned file (since the returned file is then usually stored into the
+content-addressed \"system\" directory, it's usually not a good idea
+to give it because the content hash would change by the content hash
+being stored into the \"parameters\" file)."
+  (mlet* %store-monad ((root -> (operating-system-root-file-system os))
+                       (device -> (file-system-device root))
+                       (params (operating-system-boot-parameters os
+                                                                 system.drv
+                                                                 device)))
+     (gexp->file "parameters"
+                 #~(boot-parameters
+                    (version 0)
+                    (label #$(boot-parameters-label params))
+                    (root-device #$(boot-parameters-root-device params))
+                    (kernel #$(boot-parameters-kernel params))
+                    (kernel-arguments
+                     #$(boot-parameters-kernel-arguments params))
+                    (initrd #$(boot-parameters-initrd params))
+                    (boot-name #$(boot-parameters-boot-name params))
+                    (store
+                     (device #$(boot-parameters-store-device params))
+                     (mount-point #$(boot-parameters-store-mount-point params))))
+                 #:set-load-path? #f)))
 
 ;;; system.scm ends here

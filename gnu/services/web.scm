@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -154,12 +154,16 @@ of index files."
                          (nginx-server-configuration-server-name server))
                         ";\n"
    (if (nginx-server-configuration-ssl-certificate server)
-       (string-append "      ssl_certificate "
-                      (nginx-server-configuration-ssl-certificate server) ";\n")
+       (let ((certificate (nginx-server-configuration-ssl-certificate server)))
+         ;; lstat fails when the certificate file does not exist: it aborts
+         ;; and lets the user fix their configuration.
+         (lstat certificate)
+         (string-append "      ssl_certificate " certificate ";\n"))
        "")
    (if (nginx-server-configuration-ssl-certificate-key server)
-       (string-append "      ssl_certificate_key "
-                      (nginx-server-configuration-ssl-certificate-key server) ";\n")
+       (let ((key (nginx-server-configuration-ssl-certificate-key server)))
+         (lstat key)
+         (string-append "      ssl_certificate_key " key ";\n"))
        "")
    "      root " (nginx-server-configuration-root server) ";\n"
    "      index " (config-index-strings (nginx-server-configuration-index server)) ";\n"
@@ -180,7 +184,7 @@ of index files."
          (nginx-upstream-configuration-servers upstream)))
    "    }\n"))
 
-(define (default-nginx-config log-directory run-directory server-list upstream-list)
+(define (default-nginx-config nginx log-directory run-directory server-list upstream-list)
   (mixed-text-file "nginx.conf"
                "user nginx nginx;\n"
                "pid " run-directory "/pid;\n"
@@ -192,6 +196,7 @@ of index files."
                "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
                "    scgi_temp_path " run-directory "/scgi_temp;\n"
                "    access_log " log-directory "/access.log;\n"
+               "    include " nginx "/share/nginx/conf/mime.types;\n"
                "\n"
                (string-join
                 (filter (lambda (section) (not (null? section)))
@@ -232,10 +237,13 @@ of index files."
          (mkdir-p (string-append #$run-directory "/fastcgi_temp"))
          (mkdir-p (string-append #$run-directory "/uwsgi_temp"))
          (mkdir-p (string-append #$run-directory "/scgi_temp"))
+         ;; Start-up logs. Once configuration is loaded, nginx switches to
+         ;; log-directory.
+         (mkdir-p (string-append #$run-directory "/logs"))
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$(or config-file
-                             (default-nginx-config log-directory
+                             (default-nginx-config nginx log-directory
                                run-directory server-blocks upstream-blocks))
                   "-t")))))
 
@@ -250,7 +258,7 @@ of index files."
                    (zero?
                     (system* #$nginx-binary "-c"
                              #$(or config-file
-                                   (default-nginx-config log-directory
+                                   (default-nginx-config nginx log-directory
                                      run-directory server-blocks upstream-blocks))
                              #$@args))))))
 

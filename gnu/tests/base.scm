@@ -31,6 +31,7 @@
   #:use-module (gnu services networking)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -56,7 +57,7 @@ passed a gexp denoting the marionette, and it must return gexp that is
 inserted before the first test.  This is used to introduce an extra
 initialization step, such as entering a LUKS passphrase."
   (define special-files
-    (service-parameters
+    (service-value
      (fold-services (operating-system-services os)
                     #:target-type special-files-service-type)))
 
@@ -198,6 +199,28 @@ info --version")
                          ',users+homes))
                marionette)))
 
+          (test-equal "no extra home directories"
+            '()
+
+            ;; Make sure the home directories that are not supposed to be
+            ;; created are indeed not created.
+            (let ((nonexistent
+                   '#$(filter-map (lambda (user)
+                                    (and (not
+                                          (user-account-create-home-directory?
+                                           user))
+                                         (user-account-home-directory user)))
+                                  (operating-system-user-accounts os))))
+              (marionette-eval
+               `(begin
+                  (use-modules (srfi srfi-1))
+
+                  ;; Note: Do not flag "/var/empty".
+                  (filter file-exists?
+                          ',(remove (cut string-prefix? "/var/" <>)
+                                    nonexistent)))
+               marionette)))
+
           (test-equal "login on tty1"
             "root\n"
             (begin
@@ -296,28 +319,24 @@ info --version")
                                 (setlocale LC_ALL before))
                              marionette))
 
-          (test-assert "/run/current-system is a GC root"
+          (test-eq "/run/current-system is a GC root"
+            'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
-                                (eval-when (expand load eval)
-                                  (set! %load-path
-                                    (cons
-                                     (string-append
-                                      "/run/current-system/profile/share/guile/site/"
-                                      (effective-version))
-                                     %load-path))
-                                  (set! %load-compiled-path
-                                    (cons
-                                     (string-append
-                                      "/run/current-system/profile/share/guile/site/"
-                                      (effective-version))
-                                     %load-compiled-path)))
+                                ;;
+                                ;; XXX: Currently shepherd and marionette run
+                                ;; on Guile 2.0 whereas Guix is on 2.2.  Yet
+                                ;; we should be able to load the 2.0 Scheme
+                                ;; files since it's pure Scheme.
+                                (add-to-load-path
+                                 #+(file-append guix "/share/guile/site/2.2"))
 
                                 (use-modules (srfi srfi-34) (guix store))
 
                                 (let ((system (readlink "/run/current-system")))
                                   (guard (c ((nix-protocol-error? c)
-                                             (file-exists? system)))
+                                             (and (file-exists? system)
+                                                  'success!)))
                                     (with-store store
                                       (delete-paths store (list system))
                                       #f))))

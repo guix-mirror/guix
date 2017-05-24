@@ -52,7 +52,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1))
 
 (define-public libssh
   (package
@@ -67,6 +68,7 @@
                (base32
                 "03bcp9ksqp0s1pmwfmzhcknvkxay5k0mjzzxp3rjlifbng1vxq9r"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
@@ -134,8 +136,8 @@ a server that supports the SSH-2 protocol.")
             (sha256 (base32
                      "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
    (build-system gnu-build-system)
-   (inputs `(("groff" ,groff)
-             ("openssl" ,openssl)
+   (native-inputs `(("groff" ,groff)))
+   (inputs `(("openssl" ,openssl)
              ("pam" ,linux-pam)
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
@@ -212,7 +214,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.10.2")
+    (version "0.11.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
@@ -224,8 +226,20 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pkiq3fm15pr4w1r420rrwwfmi4jz492r6l6vzjk6v73xlyfyfl3"))))
+                "0r261i8kc3avbmbwgyzak2vnqwssjlgz37g2y2fwm80w9bmn2m7j"))
+              (patches (search-patches "guile-ssh-rexec-bug.patch"
+                                       "guile-ssh-double-free.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; 'configure.ac' mistakenly tries to link files from examples/
+               ;; that are not instantiated yet.  Work around it.
+               '(substitute* "configure.ac"
+                  (("AC_CONFIG_LINKS\\(\\[examples/([^:]+):.*" _ file)
+                   (string-append "AC_CONFIG_FILES([examples/" file
+                                  "], [chmod +x examples/"
+                                  file "])\n"))))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
@@ -255,7 +269,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("libssh" ,libssh)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
@@ -264,6 +278,16 @@ Additionally, various channel-specific options can be negotiated.")
 programs written in GNU Guile interpreter.  It is a wrapper to the underlying
 libssh library.")
     (license license:gpl3+)))
+
+(define-public guile2.2-ssh
+  (deprecated-package "guile2.2-ssh" guile-ssh))
+
+(define-public guile2.0-ssh
+  (package
+    (inherit guile-ssh)
+    (name "guile2.0-ssh")
+    (inputs `(("guile" ,guile-2.0)
+              ,@(alist-delete "guile" (package-inputs guile-ssh))))))
 
 (define-public corkscrew
   (package
@@ -358,7 +382,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2016.74")
+    (version "2017.75")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -366,7 +390,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "14c8f4gzixf0j9fkx68jgl85q7b05852kk0vf09gi6h0xmafl817"))))
+                "1309cm2aw62n9m3h38prvgsqr8bj85hfasgnvwkd42cp3k5ivg3c"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))
