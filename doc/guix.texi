@@ -7696,9 +7696,11 @@ Boot the USB installation image in an VM:
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
   -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd.img \
-  -drive file=guixsd-usb-install-@value{VERSION}.@var{system}
+  -drive file=guixsd-usb-install-@value{VERSION}.@var{system} \
+  -drive file=guixsd.img
 @end example
+
+The ordering of the drives matters.
 
 In the VM console, quickly press the @kbd{F12} key to enter the boot
 menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
