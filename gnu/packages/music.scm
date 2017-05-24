@@ -1894,7 +1894,8 @@ computer's keyboard.")
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
-     `(("qt" ,qt)
+     `(("qt" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -1909,7 +1910,8 @@ computer's keyboard.")
        ("liblo" ,liblo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (home-page "http://qtractor.org/")
     (synopsis "Audio/MIDI multi-track sequencer")
     (description
