@@ -14703,3 +14703,34 @@ JSON APIs with Behave.")
 
 (define-public python2-behave-web-api
   (package-with-python2 python-behave-web-api))
+
+(define-public python-flask-script
+  (package
+  (name "python-flask-script")
+  (version "2.0.5")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-Script" version))
+      (sha256
+        (base32
+          "0zqh2yq8zk7m9b4xw1ryqmrljkdigfb3hk5155a3b5hkfnn6xxyf"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-flask" ,python-flask)
+     ("python-argcomplete" ,python-argcomplete)
+     ("python-werkzeug" ,python-werkzeug)))
+  (native-inputs
+   `(("python-pytest" ,python-pytest)))
+  (home-page
+    "http://github.com/smurfix/flask-script")
+  (synopsis "Scripting support for Flask")
+  (description "The Flask-Script extension provides support for writing
+external scripts in Flask.  This includes running a development server,
+a customised Python shell, scripts to set up your database, cronjobs,
+and other command-line tasks that belong outside the web application
+itself.")
+  (license license:bsd-3)))
+
+(define-public python2-flask-script
+  (package-with-python2 python-flask-script))
