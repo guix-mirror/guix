@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
@@ -1689,6 +1689,10 @@ system.")
               ("gzip" ,gzip)
               ("bzip2" ,bzip2)
               ("pam" ,linux-pam)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LOADKEYS_KEYMAP_PATH")
+            (files (list "share/keymaps")))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
