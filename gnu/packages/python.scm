@@ -14734,3 +14734,31 @@ itself.")
 
 (define-public python2-flask-script
   (package-with-python2 python-flask-script))
+
+(define-public python-flask-migrate
+  (package
+  (name "python-flask-migrate")
+  (version "2.0.3")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-Migrate" version))
+      (sha256
+        (base32
+          "107x78lkqsnbg92dld3dkagg07jvchp3ib3y0sivc4ipz6n1y7rk"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-flask" ,python-flask)
+     ("python-alembic" ,python-alembic)
+     ("python-sqlalchemy" ,python-sqlalchemy)
+     ("python-flask-script" ,python-flask-script)
+     ("python-flask-sqlalchemy" ,python-flask-sqlalchemy)))
+  (home-page "http://github.com/miguelgrinberg/flask-migrate/")
+  (synopsis "SQLAlchemy database migrations for Flask programs using
+Alembic")
+  (description "This package contains SQLAlchemy database migration tools
+for Flask programs that are using @code{python-alembic}.")
+  (license license:expat)))
+
+(define-public python2-flask-migrate
+  (package-with-python2 python-flask-migrate))
