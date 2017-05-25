@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:export (build-guix))
 
 ;;; Commentary:
@@ -36,13 +37,18 @@
 ;;;
 ;;; Code:
 
-(define (depends-on-guile-ssh? file)
-  "Return true if FILE is a Scheme source file that depends, directly or
-indirectly, on Guile-SSH."
-  (find (match-lambda
-          (('ssh _ ...) #t)
-          (_ #f))
-        (source-module-closure file #:select? (const #t))))
+(define (has-all-its-dependencies? file)
+  "Return true if the dependencies of the module defined in FILE are
+available, false otherwise."
+  (let ((module (call-with-input-file file
+                  (lambda (port)
+                    (match (read port)
+                      (('define-module name _ ...)
+                       name))))))
+    ;; If one of the dependencies of MODULE is missing, we get a
+    ;; '&missing-dependency-error'.
+    (guard (c ((missing-dependency-error? c) #f))
+      (source-module-closure (list module) #:select? (const #t)))))
 
 (define (all-scheme-files directory)
   "Return a sorted list of Scheme files found in DIRECTORY."
@@ -145,10 +151,7 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
     ;; Compile the .scm files.  Load all the files before compiling them to
     ;; work around <http://bugs.gnu.org/15602> (FIXME).
     ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
-    (let* ((files (remove (if (false-if-exception
-                               (resolve-interface '(ssh session)))
-                              (const #f)
-                              depends-on-guile-ssh?)
+    (let* ((files (filter has-all-its-dependencies?
                           (all-scheme-files out)))
            (total (length files)))
       (let loop ((files files)
