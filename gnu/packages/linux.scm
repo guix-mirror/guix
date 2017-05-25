@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3948,3 +3949,39 @@ available in the kernel Linux.")
                    #t))))))
        ((#:allowed-references _ '("out"))
         '("out"))))))
+
+(define-public cpuid
+  (package
+    (name "cpuid")
+    (version "20170122")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
+                                  version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0ra8ph9m1dckqaikfnbsh408fp2w9k49fkl423fl2hvhwsm14xk6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("CC=gcc")
+       #:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'install 'fix-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "Makefile"
+                        (("\\$\\(BUILDROOT\\)/usr") (assoc-ref outputs "out")))
+                      ;; Make the compressed manpages writable so that the
+                      ;; reset-gzip-timestamps phase does not error out.
+                      (substitute* "Makefile"
+                        (("-m 444") "-m 644"))
+                      #t)))))
+    (inputs `(("perl" ,perl)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page "http://www.etallen.com/cpuid.html")
+    (synopsis "Linux tool to dump x86 CPUID information about the CPU(s)")
+    (description "cpuid dumps detailed information about the CPU(s) gathered
+from the CPUID instruction, and also determines the exact model of CPU(s).  It
+supports Intel, AMD, and VIA CPUs, as well as older Transmeta, Cyrix, UMC,
+NexGen, Rise, and SiS CPUs.")
+    (license license:gpl2+)))
