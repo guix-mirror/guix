@@ -225,7 +225,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2k")
+   (version "1.0.2l")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -235,7 +235,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
+               "037kvpisc6qh5dkppcwbm5bg2q800xh2hma3vghz8xcycmdij1yf"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
