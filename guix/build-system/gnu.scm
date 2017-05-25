@@ -30,6 +30,7 @@
             gnu-build
             gnu-build-system
             standard-packages
+            standard-cross-packages
             package-with-explicit-inputs
             package-with-extra-configure-variable
             static-libgcc-package
