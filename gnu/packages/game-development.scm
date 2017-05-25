@@ -262,13 +262,22 @@ levels.")
                (base32
                 "1kcj2blrlfpghjv0qigip2qcbxfx7vv9i8nr4997hkwhsh6i2pjp"))))
     (build-system gnu-build-system)
-    (inputs `(("qt" ,qt)
-              ("zlib" ,zlib)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("qttools" ,qttools)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "translations/translations.pro"
+               (("LRELEASE =.*")
+                (string-append "LRELEASE = "
+                               (assoc-ref inputs "qttools")
+                               "/bin/lrelease\n")))
              (let ((out (assoc-ref outputs "out")))
                (system* "qmake"
                         (string-append "PREFIX=" out))))))))
