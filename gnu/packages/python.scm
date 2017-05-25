@@ -27,7 +27,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -13469,6 +13469,33 @@ faster ones are not available.")
      "Python module dedicated to rendering RST (reStructuredText) documents
 to ansi-escaped strings suitable for display in a terminal.")
     (license license:expat)))
+
+(define-public python-ansi2html
+  (package
+    (name "python-ansi2html")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ansi2html" version))
+       (sha256
+        (base32
+         "1wa00zffprb78w1mqq90dk47czz1knanys2a40zbw2vyapd5lp9y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://github.com/ralphbean/ansi2html")
+    (synopsis "Convert ANSI-decorated console output to HTML")
+    (description
+     "@command{ansi2html} is a Python library and command line utility for
+convering text with ANSI color codes to HTML or LaTeX.")
+    (license license:gpl3+)))
+
+(define-public python2-ansi2html
+  (package-with-python2 python-ansi2html))
 
 (define-public python-ddt
   (package
