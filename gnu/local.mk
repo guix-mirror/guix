@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
+  %D%/packages/accessibility.scm		\
   %D%/packages/acct.scm				\
   %D%/packages/acl.scm				\
   %D%/packages/admin.scm			\
