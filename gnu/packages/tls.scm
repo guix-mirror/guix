@@ -156,9 +156,7 @@ living in the same process.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-guile-site-dir="
-                            (assoc-ref %outputs "out")
-                            "/share/guile/site/2.0")
+       (list
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
              ;; configure-time option.  Unless specified, its configure script
@@ -195,7 +193,7 @@ living in the same process.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
@@ -214,16 +212,14 @@ required structures.")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
 (define-public gnutls/guile-2.2
-  ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
+  (deprecated-package "guile2.2-gnutls" gnutls))
+
+(define-public gnutls/guile-2.0
+  ;; GnuTLS for Guile 2.0.
   (package
     (inherit gnutls)
-    (name "guile2.2-gnutls")
-    (arguments
-     ;; Remove '--with-guile-site-dir=…/2.0'.
-     (substitute-keyword-arguments (package-arguments gnutls)
-       ((#:configure-flags flags)
-        `(cdr ,flags))))
-    (inputs `(("guile" ,guile-2.2)
+    (name "guile2.0-gnutls")
+    (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
 
 (define-public openssl
