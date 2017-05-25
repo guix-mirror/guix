@@ -2784,6 +2784,12 @@ fullscreen, use F5 or Alt+Enter.")
            (lambda _
              (substitute* "icons/Makefile.in"
                (("\\$\\(INSTALL_DATA\\) \\$\\(srcdir\\)/warzone2100.appdata.xml.*") ""))
+             #t))
+         (add-after 'unpack 'patch-for-qt5.8
+           (lambda _
+             (substitute* "lib/widget/editbox.cpp"
+               (("== '\\\\0'")
+                "== QChar('\\0')"))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
@@ -2797,7 +2803,8 @@ fullscreen, use F5 or Alt+Enter.")
               ("libxrandr" ,libxrandr)
               ("openal" ,openal)
               ("physfs" ,physfs)
-              ("qt" ,qt)
+              ("qtbase" ,qtbase)
+              ("qtscript" ,qtscript)
               ("openssl" ,openssl)
               ("quesoglc" ,quesoglc)
               ("sdl2" ,sdl2)))
