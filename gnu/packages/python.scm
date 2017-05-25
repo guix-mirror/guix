@@ -14767,3 +14767,35 @@ for Flask programs that are using @code{python-alembic}.")
 
 (define-public python2-flask-migrate
   (package-with-python2 python-flask-migrate))
+
+(define-public python-packaging
+  (package
+    (name "python-packaging")
+    (version "16.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "packaging" version))
+        (sha256
+         (base32
+          "17k1xbjshackwvbsnxqixbph8rbqhz4bf4g3al5xyzhavxgq6l2x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pypa/packaging")
+    (synopsis "Core utilities for Python packages")
+    (description "Packaging is a Python module for dealing with Python packages.
+It offers an interface for working with package versions, names, and dependency
+information.")
+    ;; From 'LICENSE': This software is made available under the terms of
+    ;; *either* of the licenses found in LICENSE.APACHE or LICENSE.BSD.
+    ;; Contributions to this software is made under the terms of *both* these
+    ;; licenses.
+    (license (list license:asl2.0 license:bsd-2))))
+
+(define-public python2-packaging
+  (package-with-python2 python-packaging))
