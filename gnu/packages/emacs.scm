@@ -335,28 +335,7 @@ metadata.")
               (sha256
                (base32
                 "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
-    (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-minimal)))
-    (arguments
-     `(#:modules ((guix build utils)
-                  (guix build emacs-utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (use-modules (guix build emacs-utils))
-
-         (let* ((emacs    (string-append (assoc-ref %build-inputs "emacs")
-                                         "/bin/emacs"))
-                (source   (assoc-ref %build-inputs "source"))
-                (lisp-dir (string-append %output
-                                         "/share/emacs/site-lisp"))
-                (target   (string-append lisp-dir "/paredit.el")))
-           (mkdir-p lisp-dir)
-           (copy-file source target)
-           (with-directory-excursion lisp-dir
-             (parameterize ((%emacs emacs))
-               (emacs-generate-autoloads ,name lisp-dir)
-               (emacs-batch-eval '(byte-compile-file "paredit.el"))))))))
+    (build-system emacs-build-system)
     (home-page "http://mumble.net/~campbell/emacs/paredit/")
     (synopsis "Emacs minor mode for editing parentheses")
     (description
