@@ -4765,10 +4765,16 @@ a front-end for C compilers or analysis tools.")
      `(("python-cffi" ,python-cffi) ; used at run time
        ("python-six" ,python-six)))
     (arguments
-     `(;; FIXME: Tests cannot load libxcb.so.1
+     `(;; FIXME: Tests need more work. See ".travis.yml" in the repository.
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libxcb-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxcb (assoc-ref inputs "libxcb")))
+               (substitute* '("xcffib/__init__.py")
+                 (("^soname = \"") (string-append "soname = \"" libxcb "/lib/")))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "out") "/share"
