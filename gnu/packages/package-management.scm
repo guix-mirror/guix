@@ -248,7 +248,7 @@
                          (base32
                           "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
       (propagated-inputs
-       `(("gnutls" ,gnutls/guile-2.2)             ;for 'guix download' & co.
+       `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
          ("guile-ssh" ,guile-ssh)))
 
@@ -274,7 +274,7 @@ the Nix package manager.")
      `(("guile" ,guile-2.0)
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
-     `(("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls/guile-2.0)
        ("guile-json" ,guile2.0-json)
        ("guile-ssh" ,guile2.0-ssh)))))
 
