@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4853,3 +4854,26 @@ Emacs.")
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
       (license license:gpl3+))))
+
+(define-public emacs-disable-mouse
+  (package
+    (name "emacs-disable-mouse")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/purcell/disable-mouse/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0haqpq23r1wx04lsqrrg3p5visg9hx5i36dg55ab003wfsrlrzbc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/disable-mouse")
+    (synopsis "Disable mouse commands globally")
+    (description
+     "Provides @code{disable-mouse-mode} and @code{global-disable-mouse-mode},
+pair of minor modes which suppress all mouse events by intercepting them and
+running a customisable handler command (@code{ignore} by default). ")
+    (license license:gpl3+)))
