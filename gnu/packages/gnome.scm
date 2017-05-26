@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -237,6 +237,56 @@ includes support for UML static structure diagrams (class diagrams), entity
 relationship modeling, and network diagrams.  The program supports various file
 formats like PNG, SVG, PDF and EPS.")
       (license license:gpl2+))))
+
+(define-public libgdata
+  (package
+    (name "libgdata")
+    (version "0.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09q8h1129xjpw33rvzz7856drygxwlm0s64z9cm0vbmjxiqy0h47"))
+              (patches
+               (search-patches "libgdata-fix-tests.patch"
+                               "libgdata-glib-duplicate-tests.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'use-empty-ssl-cert-file
+           (lambda _
+             ;; The ca-certificates.crt is not available in the build
+             ;; environment.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("uhttpmock" ,uhttpmock)))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("json-glib" ,json-glib)
+       ("libsoup" ,libsoup)))
+    (propagated-inputs
+     `(("gcr" ,gcr)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("liboauth" ,liboauth)
+       ("libxml2" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Projects/libgdata")
+    (synopsis "Library for accessing online service APIs")
+    (description
+     "libgdata is a GLib-based library for accessing online service APIs using
+the GData protocol — most notably, Google's services.  It provides APIs to
+access the common Google services, and has full asynchronous support.")
+    (license license:lgpl2.1+)))
 
 (define-public gnome-common
   (package
