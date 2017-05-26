@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -707,6 +709,34 @@ protocols, and supports browsing and requesting pages while offline, indexing,
 modifying pages and incoming and outgoing headers, monitoring pages for
 changes, and much more.")
     (license l:gpl2+)))
+
+(define-public liboauth
+  (package
+    (name "liboauth")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/liboauth/liboauth-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "07w1aq8y8wld43wmbk2q8134p3bfkp2vma78mmsfgw2jn1bh3xhd"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-nss")))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("curl" ,curl)
+       ("nss" ,nss)))
+    (home-page "https://sourceforge.net/projects/liboauth")
+    (synopsis "C library implementing the http://oauth.net API")
+    (description
+     "liboauth is a collection of C functions implementing the http://oauth.net
+API.  liboauth provides functions to escape and encode stings according to
+OAuth specifications and offers high-level functionality built on top to sign
+requests or verify signatures using either NSS or OpenSSL for calculating the
+hash/signatures.")
+    ;; Source code may be distributed under either license.
+    (license (list l:expat l:gpl2+))))
 
 (define-public libyaml
   (package
