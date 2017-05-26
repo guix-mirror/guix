@@ -649,30 +649,7 @@ programs.")
               (sha256
                (base32
                 "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (guix build emacs-utils))
-
-       #:builder (begin
-                   (use-modules (guix build emacs-utils)
-                                (guix build utils))
-
-                   (let* ((out     (assoc-ref %outputs "out"))
-                          (lispdir (string-append out
-                                                  "/share/emacs/site-lisp/"
-                                                  "guix.d/let-alist-"
-                                                  ,version))
-                          (emacs   (assoc-ref %build-inputs "emacs")))
-
-                     (mkdir-p lispdir)
-                     (copy-file (assoc-ref %build-inputs "source")
-                                (string-append lispdir "/let-alist.el"))
-
-                     (setenv "PATH" (string-append emacs "/bin"))
-                     (emacs-byte-compile-directory lispdir)
-                     #t))))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
