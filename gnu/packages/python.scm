@@ -4749,15 +4749,14 @@ a front-end for C compilers or analysis tools.")
 (define-public python-xcffib
   (package
     (name "python-xcffib")
-    (version "0.1.9")
+    (version "0.5.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/x/"
-                          "xcffib/xcffib-" version ".tar.gz"))
+      (uri (pypi-uri "xcffib" version))
       (sha256
        (base32
-        "0655hzxv57h1a9ja9kwp0ichbkhf3djw32k33d66xp0q37dq2y81"))))
+        "09gbnmr5vn58mm8xi3fmd7fz6743cks6c46dphnxzwax6zsxmy60"))))
     (build-system python-build-system)
     (inputs
      `(("libxcb" ,libxcb)))
