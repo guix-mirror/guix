@@ -494,8 +494,8 @@ XBINUTILS and the cross tool chain."
 ;; (define-public xgcc-armhf
 ;;   (let ((triplet "arm-linux-gnueabihf"))
 ;;     (cross-gcc triplet
-;;                (cross-binutils triplet)
-;;                (cross-libc triplet))))
+;;                #:xbinutils (cross-binutils triplet)
+;;                #:libc (cross-libc triplet))))
 ;;
 ;;; We don't do that here because we'd be referring to bindings from (gnu
 ;;; packages gcc) from the top level, which doesn't play well with circular
