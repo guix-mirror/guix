@@ -386,31 +386,7 @@ when typing parentheses directly or commenting out code line by line.")
               (sha256
                (base32
                 "0xxrmf0jnyljxvllc22qa0v8lgi4k1ldnayjm5hf68m25jsr378l"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build emacs-utils)
-                  (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          ;; Don't put .el files in a 'git-modes'
-                          ;; sub-directory.
-                          (string-append "LISPDIR="
-                                         (assoc-ref %outputs "out")
-                                         "/share/emacs/site-lisp"))
-       #:tests? #f  ; no check target
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'install 'emacs-autoloads
-                             (lambda* (#:key outputs #:allow-other-keys)
-                               (let* ((out  (assoc-ref outputs "out"))
-                                      (lisp (string-append
-                                             out "/share/emacs/site-lisp/")))
-                                 (emacs-generate-autoloads ,name lisp)))))))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
     (description
