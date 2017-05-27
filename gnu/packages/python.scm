@@ -14890,3 +14890,39 @@ for more filetypes can be easily added by creating plugins for them.")
 
 (define-public python2-relatorio
   (package-with-python2 python-relatorio))
+
+(define-public python-radon
+  (package
+    (name "python-radon")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "radon" version))
+       (sha256
+        (base32
+         "1h6jv36am0i827182a04ki6291lyx4kp957xfr5njgprj4nd0qsl"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-flake8-polyfill" ,python-flake8-polyfill)
+       ("python-mando" ,python-mando-0.3.1)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-tox" ,python-tox)
+       ("python-pytest" ,python-pytest)
+       ("python-paramunittest" ,python-paramunittest)))
+    (home-page "https://radon.readthedocs.org/")
+    (synopsis "Code Metrics in Python")
+    (description "Radon is a Python tool which computes various code metrics.
+Supported metrics are:
+@itemize @bullet
+@item raw metrics: SLOC, comment lines, blank lines, &c.
+@item Cyclomatic Complexity (i.e.  McCabe’s Complexity)
+@item Halstead metrics (all of them)
+@item the Maintainability Index (a Visual Studio metric)
+@end itemize")
+    (license license:expat)))
+
+(define-public python2-radon
+  (package-with-python2 python-radon))
