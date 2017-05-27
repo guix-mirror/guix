@@ -95,6 +95,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
   %D%/packages/cpio.scm				\
+  %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
