@@ -236,7 +236,7 @@ Trailing spaces are trimmed."
 ;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-119.pdf>.
 
 (define (iso9660-superblock? sblock)
-  "Return #t when SBLOCK is a iso9660 superblock."
+  "Return #t when SBLOCK is an iso9660 volume descriptor."
   (bytevector=? (sub-bytevector sblock 1 6)
                 ;; Note: "\x01" is the volume descriptor format version
                 (string->utf8 "CD001\x01")))
@@ -252,13 +252,14 @@ Trailing spaces are trimmed."
       (_ (read-iso9660-primary-volume-descriptor device (+ offset 2048))))))
 
 (define (read-iso9660-superblock device)
-  "Return the raw contents of DEVICE's iso9660 superblock as a bytevector, or
-#f if DEVICE does not contain a iso9660 file system."
+  "Return the raw contents of DEVICE's iso9660 primary volume descriptor
+as a bytevector, or #f if DEVICE does not contain an iso9660 file system."
   ;; Start reading at sector 16.
   (read-iso9660-primary-volume-descriptor device (* 2048 16)))
 
 (define (iso9660-superblock-uuid sblock)
-  "Return the modification time of a iso9660 superblock SBLOCK as a bytevector."
+  "Return the modification time of an iso9660 primary volume descriptor
+SBLOCK as a bytevector."
   ;; Drops GMT offset for compatibility with Grub, blkid and /dev/disk/by-uuid.
   ;; Compare Grub: "2014-12-02-19-30-23-00".
   ;; Compare blkid result: "2014-12-02-19-30-23-00".
