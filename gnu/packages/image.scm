@@ -335,7 +335,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
+   (replacement libtiff-4.0.8)
    (version "4.0.7")
    (source (origin
             (method url-fetch)
@@ -384,18 +384,18 @@ collection of tools for doing simple manipulations of TIFF images.")
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
 
-(define libtiff/fixed
+(define libtiff-4.0.8
   (package
     (inherit libtiff)
+    (version "4.0.8")
     (source
      (origin
-       (inherit (package-source libtiff))
-       (patches
-        (append
-         (origin-patches (package-source libtiff))
-         (search-patches "libtiff-CVE-2017-7593.patch"
-                         "libtiff-CVE-2017-7594.patch"
-                         "libtiff-multiple-UBSAN-crashes.patch")))))))
+       (method url-fetch)
+       (uri (string-append "http://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))))
 
 (define-public libwmf
   (package
