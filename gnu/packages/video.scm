@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
@@ -2052,3 +2054,63 @@ file format that has been used as a multimedia file format in a variety of platf
 applications.  It is a very powerful and extensible format that can accommodate
 practically any type of media.")
     (license license:mpl1.1)))
+
+(define-public libmediainfo
+  (package
+    (name "libmediainfo")
+    (version "0.7.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mediaarea.net/download/source/"
+                                  name "/" version"/"
+                                  name "_" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1kchh6285b07z5nixv619hc9gml2ysdayicdiv30frrlqiyxqw4b"))))
+    ;; TODO add a Big Buck Bunny webm for tests.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)
+       ("tinyxml2" ,tinyxml2)
+       ("curl" ,curl)
+       ("libzen" ,libzen)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; see above TODO
+       #:phases
+       ;; build scripts not in root of archive
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (chdir "Project/GNU/Library")))
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (home-page "https://mediaarea.net/en/MediaInfo")
+    (synopsis "Library for retrieving media metadata")
+    (description "MediaInfo is a library used for retrieving technical
+information and other metadata about audio or video files.  A non-exhaustive
+list of the information MediaInfo can retrieve from media files include:
+
+@itemize
+@item General: title, author, director, album, track number, date, duration...
+@item Video: codec, aspect, fps, bitrate...
+@item Audio: codec, sample rate, channels, language, bitrate...
+@item Text: language of subtitle
+@item Chapters: number of chapters, list of chapters
+@end itemize
+
+MediaInfo supports the following formats:
+
+@itemize
+@item Video: MKV, OGM, AVI, DivX, WMV, QuickTime, Real, MPEG-1,
+MPEG-2, MPEG-4, DVD (VOB)...
+@item Video Codecs: DivX, XviD, MSMPEG4, ASP, H.264, AVC...)
+@item Audio: OGG, MP3, WAV, RA, AC3, DTS, AAC, M4A, AU, AIFF...
+@item  Subtitles: SRT, SSA, ASS, SAMI...
+@end itemize\n")
+    (license license:bsd-2)))
+
