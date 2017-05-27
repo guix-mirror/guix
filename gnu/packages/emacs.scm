@@ -2084,6 +2084,7 @@ source code using IPython.")
                (base32
                 "07wgcvg038l88gxvjr0gjpjhyk743w22x1rqghz3gkmif0g70say"))))
     (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
     (home-page "https://elpa.gnu.org/packages/debbugs.html")
