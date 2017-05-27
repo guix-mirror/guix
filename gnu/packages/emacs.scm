@@ -1228,6 +1228,37 @@ or XEmacs.")
 the Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-direnv
+  (package
+    (name "emacs-direnv")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/wbolster/emacs-direnv/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m9nxawklhiiysyibzzhh2zkxgq1fskqvaqb06f7r8dnhabfy9fr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("with-editor" ,emacs-with-editor)))
+    (home-page "https://github.com/wbolster/emacs-direnv")
+    (synopsis "Direnv integration for Emacs")
+    (description
+     "This package provides support for invoking direnv to get the environment
+for the current file and updating the environment within Emacs to match.
+
+Direnv can be invoked manually, and a global minor mode is included that will
+update the environment when the active buffer changes.
+
+Using emacs-direnv means that programs started from Emacs will use the
+environment set through Direnv.")
+    (license license:gpl3+)))
+
 (define-public emacs-google-maps
   (package
     (name "emacs-google-maps")
