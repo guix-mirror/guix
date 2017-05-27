@@ -640,11 +640,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
-  %D%/packages/patches/graphite2-CVE-2017-5436.patch		\
-  %D%/packages/patches/graphite2-check-code-point-limit.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
-  %D%/packages/patches/graphite2-fix-32-bit-wrap-arounds.patch	\
-  %D%/packages/patches/graphite2-non-linear-classes-even-number.patch \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
