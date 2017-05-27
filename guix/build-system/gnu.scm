@@ -403,8 +403,8 @@ is one of `host' or `target'."
       (case kind
         ((host)
          `(("cross-gcc" ,(gcc target
-                              (binutils target)
-                              (libc target)))
+                              #:xbinutils (binutils target)
+                              #:libc (libc target)))
            ("cross-binutils" ,(binutils target))))
         ((target)
          `(("cross-libc" ,(libc target))))))))

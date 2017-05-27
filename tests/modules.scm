@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,9 @@
 (define-module (test-modules)
   #:use-module (guix modules)
   #:use-module ((guix build-system gnu) #:select (%gnu-build-system-modules))
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 (test-begin "modules")
@@ -41,5 +43,26 @@
   (lset= equal?
          (live-module-closure '((gnu build vm)))
          (source-module-closure '((gnu build vm)))))
+
+(test-equal "&missing-dependency-error"
+  '(something that does not exist)
+  (call-with-temporary-directory
+   (lambda (directory)
+     (call-with-output-file (string-append directory "/foobar.scm")
+       (lambda (port)
+         (write '(define-module (foobar)
+                   #:use-module (something that does not exist))
+                port)))
+
+     (call-with-output-file (string-append directory "/baz.scm")
+       (lambda (port)
+         (write '(define-module (baz)
+                   #:use-module (foobar))
+                port)))
+
+     (guard (c ((missing-dependency-error? c)
+                (missing-dependency-module c)))
+       (source-module-closure '((baz)) (list directory)
+                              #:select? (const #t))))))
 
 (test-end)

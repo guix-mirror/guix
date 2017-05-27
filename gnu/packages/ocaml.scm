@@ -2650,3 +2650,260 @@ match expressions, and if expressions.")
     (synopsis "Generation of runtime types from type declarations")
     (description "Automatic generation of runtime types from type definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-value
+  (package
+    (name "ocaml-ppx-sexp-value")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_value" version
+              "0m3ag23mbqm0i2pv1dzilfks15ipa5q60mf57a0cd3p0pvarq10g"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_value/")
+    (synopsis "Simplify building s-expressions from ocaml values")
+    (description "A ppx rewriter that simplifies building s-expressions from
+ocaml values.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-pipebang
+  (package
+    (name "ocaml-ppx-pipebang")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_pipebang" version
+              "1965c7hymp26ncmjs0pfxi2s5jlj60z2c9b194lgcwxqiav56pcw"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_pipebang/")
+    (synopsis "Inline reverse application operators `|>` and `|!`")
+    (description "A ppx rewriter that inlines reverse application operators
+@code{|>} and @code{|!}.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-bin-prot
+  (package
+    (name "ocaml-ppx-bin-prot")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_bin_prot" version
+              "173kjv36giik11zgfvsbzwfbpr66dm2pcha9vf990jgzh8hqz39h"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("bin-prot" ,ocaml-bin-prot)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_bin_prot/")
+    (synopsis "Generation of bin_prot readers and writers from types")
+    (description "Generation of binary serialization and deserialization
+functions from type definitions.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-fail
+  (package
+    (name "ocaml-ppx-fail")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_fail" version
+              "1dwgad0f05gqp5rnwf9dcasidpfi7q3mrpazsw3a2vijjblbhjgn"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_fail/")
+    (synopsis "Add location to calls to failwiths")
+    (description "Syntax extension that makes [failwiths] always include a
+position.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-custom-printf
+  (package
+    (name "ocaml-ppx-custom-printf")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_custom_printf" version
+              "11jlx0n87g2j1vyyp343dibx7lvvwig5j5q0nq0b80kbsq0k6yr8"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-driver" ,ocaml-ppx-driver)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_custom_printf/")
+    (synopsis "Printf-style format-strings for user-defined string conversion")
+    (description "Extensions to printf-style format-strings for user-defined
+string conversion.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-message
+  (package
+    (name "ocaml-ppx-sexp-message")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_sexp_message" version
+              "084w1l3gnyw4ri9vbn7bv9b2xkw1520qczfxpxdarfivdrz8xr68"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_sexp_message/")
+    (synopsis "A ppx rewriter for easy construction of s-expressions")
+    (description "Ppx_sexp_message aims to ease the creation of s-expressions
+in OCaml.  This is mainly motivated by writing error and debugging messages,
+where one needs to construct a s-expression based on various element of the
+context such as function arguments.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-fields-conv
+  (package
+    (name "ocaml-ppx-fields-conv")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_fields_conv" version
+              "1vzbdz27g5qhhfs7wx6rjf979q4xyssxqbmp6sc1sxknbghslbdv"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)
+       ("ppx-core" ,ocaml-ppx-core)))
+    (propagated-inputs
+     `(("fieldslib" ,ocaml-fieldslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_fields_conv/")
+    (synopsis "Generation of accessor and iteration functions for ocaml records")
+    (description "Ppx_fields_conv is a ppx rewriter that can be used to define
+first class values representing record fields, and additional routines, to get
+and set record fields, iterate and fold over all fields of a record and create
+new record values.")
+    (license license:asl2.0)))
+
+(define-public ocaml-re
+  (package
+    (name "ocaml-re")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/ocaml-re//archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s3rcr76cgm4p1xmaazc58arkg2lz3zfcp1icm00m6s5ccnkh67b"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (home-page "https://github.com/ocaml/ocaml-re/")
+    (synopsis "Regular expression library for OCaml")
+    (description "Pure OCaml regular expressions with:
+@enumerate
+@item Perl-style regular expressions (module Re_perl)
+@item Posix extended regular expressions (module Re_posix)
+@item Emacs-style regular expressions (module Re_emacs)
+@item Shell-style file globbing (module Re_glob)
+@item Compatibility layer for OCaml's built-in Str module (module Re_str)
+@end enumerate")
+    (license license:expat)))
+
+(define-public ocaml-ppx-expect
+  (package
+    (name "ocaml-ppx-expect")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_expect" version
+              "03sbs4s5i8l9syr45v25f5hzy7msd2b47k2a9wsq9m43d4imgkrc"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("fieldslib" ,ocaml-fieldslib)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-core" ,ocaml-ppx-core)
+       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)
+       ("re" ,ocaml-re)
+       ("sexplib" ,ocaml-sexplib)
+       ("variantslib" ,ocaml-variantslib)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_expect/")
+    (synopsis "Cram like framework for OCaml")
+    (description "Expect-test is a framework for writing tests in OCaml, similar
+to Cram.  Expect-tests mimic the existing inline tests framework with the
+let%expect_test construct.  The body of an expect-test can contain
+output-generating code, interleaved with %expect extension expressions to denote
+the expected output.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ppx-jane
+  (package
+    (name "ocaml-ppx-jane")
+    (version "113.33.03")
+    (source (janestreet-origin "ppx_jane" version
+              "0bjxkhmzgm6x9dcvjwybbccn34khbvyyjimcbaja30fp6qcqk5yl"))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-bench" ,ocaml-ppx-bench)
+       ("ppx-bin-prot" ,ocaml-ppx-bin-prot)
+       ("ppx-compare" ,ocaml-ppx-compare)
+       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
+       ("ppx-deriving" ,ocaml-ppx-deriving)
+       ("ppx-enumerate" ,ocaml-ppx-enumerate)
+       ("ppx-expect" ,ocaml-ppx-expect)
+       ("ppx-fail" ,ocaml-ppx-fail)
+       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
+       ("ppx-here" ,ocaml-ppx-here)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("ppx-let" ,ocaml-ppx-let)
+       ("ppx-pipebang" ,ocaml-ppx-pipebang)
+       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("ppx-sexp-message" ,ocaml-ppx-sexp-message)
+       ("ppx-sexp-value" ,ocaml-ppx-sexp-value)
+       ("ppx-typerep-conv" ,ocaml-ppx-typerep-conv)
+       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)))
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/ppx_jane/")
+    (synopsis "Standard Jane Street ppx rewriters")
+    (description "Ppx_jane is a ppx_driver including all standard ppx rewriters.")
+    (license license:asl2.0)))

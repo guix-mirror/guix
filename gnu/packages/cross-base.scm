@@ -100,9 +100,9 @@
                binutils)
            target)))
 
-(define (cross-gcc-arguments target libc)
-  "Return build system arguments for a cross-gcc for TARGET, using LIBC (which
-may be either a libc package or #f.)"
+(define (cross-gcc-arguments target xgcc libc)
+  "Return build system arguments for a cross-gcc for TARGET, using XGCC as the
+base compiler and using LIBC (which may be either a libc package or #f.)"
   ;; Set the current target system so that 'glibc-dynamic-linker' returns the
   ;; right name.
   (parameterize ((%current-target-system target))
@@ -111,7 +111,7 @@ may be either a libc package or #f.)"
     ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
     ;; for instance.
     (let ((args `(#:strip-binaries? #f
-                  ,@(package-arguments %xgcc))))
+                  ,@(package-arguments xgcc))))
      (substitute-keyword-arguments args
        ((#:configure-flags flags)
         `(append (list ,(string-append "--target=" target)
@@ -183,18 +183,22 @@ may be either a libc package or #f.)"
         (else #f)))
 
 (define* (cross-gcc target
-                    #:optional (xbinutils (cross-binutils target)) libc)
+                    #:key
+                    (xgcc %xgcc)
+                    (xbinutils (cross-binutils target))
+                    (libc #f))
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
-XBINUTILS as the associated cross-Binutils.  If LIBC is false, then build a
-GCC that does not target a libc; otherwise, target that libc."
-  (package (inherit %xgcc)
+XGCC as the base compiler.  Use XBINUTILS as the associated cross-Binutils.
+If LIBC is false, then build a GCC that does not target a libc; otherwise,
+target that libc."
+  (package (inherit xgcc)
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
-    (source (origin (inherit (package-source %xgcc))
+    (source (origin (inherit (package-source xgcc))
               (patches
                (append
-                (origin-patches (package-source %xgcc))
+                (origin-patches (package-source xgcc))
                 (cons (search-patch "gcc-cross-environment-variables.patch")
                       (cross-gcc-patches target))))
               (modules '((guix build utils)))
@@ -216,7 +220,7 @@ GCC that does not target a libc; otherwise, target that libc."
                   (srfi srfi-26)
                   (ice-9 regex))
 
-       ,@(cross-gcc-arguments target libc)))
+       ,@(cross-gcc-arguments target xgcc libc)))
 
     (native-inputs
      `(("ld-wrapper-cross" ,(make-ld-wrapper
@@ -230,7 +234,7 @@ GCC that does not target a libc; otherwise, target that libc."
        ("libc-native" ,@(assoc-ref (%final-inputs) "libc"))
 
        ;; Remaining inputs.
-       ,@(let ((inputs (append (package-inputs %xgcc)
+       ,@(let ((inputs (append (package-inputs xgcc)
                                (alist-delete "libc" (%final-inputs)))))
            (cond
             ((target-mingw? target)
@@ -490,8 +494,8 @@ XBINUTILS and the cross tool chain."
 ;; (define-public xgcc-armhf
 ;;   (let ((triplet "arm-linux-gnueabihf"))
 ;;     (cross-gcc triplet
-;;                (cross-binutils triplet)
-;;                (cross-libc triplet))))
+;;                #:xbinutils (cross-binutils triplet)
+;;                #:libc (cross-libc triplet))))
 ;;
 ;;; We don't do that here because we'd be referring to bindings from (gnu
 ;;; packages gcc) from the top level, which doesn't play well with circular

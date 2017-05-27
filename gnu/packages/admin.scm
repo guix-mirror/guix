@@ -57,6 +57,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
@@ -1904,20 +1905,48 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
         '(delete-file-recursively "bin"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"
+                                #:xbinutils (cross-binutils "arm-linux-gnueabihf")
+                                #:libc (cross-libc "arm-linux-gnueabihf")))
+       ("cross-libc" ,(cross-libc "arm-linux-gnueabihf"))))
     (inputs
      `(("libusb" ,libusb)))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests exist
+     `(#:tests? #f                      ; no tests exist
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
-                          "CROSS_COMPILE="
-                          "CC=gcc"
-                          "all")
+                          (string-append "CROSS_COMPILE="
+                                         "arm-linux-gnueabihf-")
+                          "CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'set-environment-up
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (define (cross? x)
+               (string-contains x "cross-arm-linux"))
+             (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+             (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
+             (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+             (for-each
+              (lambda (env-name)
+                (let* ((env-value (getenv env-name))
+                       (search-path (search-path-as-string->list env-value))
+                       (new-search-path (filter (lambda (e) (not (cross? e)))
+                                                search-path))
+                       (new-env-value (list->search-path-as-string
+                                       new-search-path ":")))
+                  (setenv env-name new-env-value)))
+              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH" "LIBRARY_PATH"))
+             #t))
+         (replace 'build
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "tools" "misc" make-flags))))
+         (add-after 'build 'build-armhf
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "target-tools" make-flags))))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              (zero? (apply system* "make" "install-all" "install-misc"

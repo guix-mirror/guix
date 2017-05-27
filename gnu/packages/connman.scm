@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,9 +146,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
        (sha256
         (base32 "16g9byxr1rkmrnzi6sjplpmkr8h6pqj7418jz30czqviw5qlkqwl"))))
     (inputs
-     `(("qt" ,qt)))
+     `(("qtbase" ,qtbase)))
     (native-inputs
-     `(("qmake" ,qt)))
+     `(("qttools" ,qttools)))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

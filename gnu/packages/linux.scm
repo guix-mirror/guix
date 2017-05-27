@@ -18,11 +18,12 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
-;;; Copyright © 2016 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -354,8 +355,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.2")
-(define %linux-libre-hash "0vp6hjc7cb6q6bhbg6jcf08r27xbf293cdib2vfng15ygvxpyfij")
+(define %linux-libre-version "4.11.3")
+(define %linux-libre-hash "14fbn9s7n86p5yivr4vmh4axdavny6xw1qk63cfwlcma7426wmva")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -364,14 +365,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.29"
-                    "0yj4gajdzilxnh9lhb2zl0hs654lagdfx8cp7bv2w4q41bnmc3l9"
+  (make-linux-libre "4.9.30"
+                    "1m1ii9n65lwkbwx0ifj13vgdfr0mnx8n7sfvhf5mn4r8krhxi77a"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.69"
-                    "14q5lqsfmwyiilbhffr3bwsm6i3z1jv6y09rg8x3faibcg766wny"
+  (make-linux-libre "4.4.70"
+                    "1dvcj3mk42m91y1x41yh52frjdcwip1wj57qwlkmrpg02icr0b3s"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -824,14 +825,14 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.16")
+    (version "4.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1vzhmpcy989i4k12q4cc438yal2ghhm6x7ychscjbhcf2yspqj4q"))))
+               "06bl4dld5fk4a3iiq4pyrkm6sh63599ah8dmds0glg5vbw45pww1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1641,6 +1642,38 @@ system.")
     (license (list license:gpl2                   ;programs
                    license:lgpl2.1))))            ;library
 
+(define-public kbd-neo
+  (package
+    (name "kbd-neo")
+    (version "2486")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://svn.neo-layout.org/!svn/bc/"
+                           version "/linux/console/neo.map"))
+       (file-name (string-append name "-" version ".map"))
+       (sha256
+        (base32
+         "19mfrd31vzpsjiwc7pshxm0b0sz5dd17xrz6k079cy4im1vf0r4g"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((out (string-append %output "/share/keymaps"))
+                         (source (assoc-ref %build-inputs "source")))
+                     (mkdir-p out)
+                     (copy-file source (string-append out "/neo.map"))
+                     #t))))
+    (home-page "https://neo-layout.org")
+    (synopsis "Neo2 console layout")
+    (description
+     "Kbd-neo provides the Neo2 keyboard layout for use with
+@command{loadkeys(1)} from @code{kbd(4)}.")
+    ;; The file is located in an svn directory, the entire content of
+    ;; the directory is licensed as GPL3.
+    (license license:gpl3+)))
+
 (define-public kbd
   (package
     (name "kbd")
@@ -1689,6 +1722,10 @@ system.")
               ("gzip" ,gzip)
               ("bzip2" ,bzip2)
               ("pam" ,linux-pam)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LOADKEYS_KEYMAP_PATH")
+            (files (list "share/keymaps")))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
@@ -3325,14 +3362,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "150")
+    (version "151")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "1skfiracl3a1afmml8mvnccr4rym4ibv33c342rkyxn0j3088h24"))
+                "1cgfdlz51hv2zbph00ylzm8z94gv8wakx7dva1pa4jcl3hnq0dh5"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3912,3 +3949,39 @@ available in the kernel Linux.")
                    #t))))))
        ((#:allowed-references _ '("out"))
         '("out"))))))
+
+(define-public cpuid
+  (package
+    (name "cpuid")
+    (version "20170122")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
+                                  version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0ra8ph9m1dckqaikfnbsh408fp2w9k49fkl423fl2hvhwsm14xk6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("CC=gcc")
+       #:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'install 'fix-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* "Makefile"
+                        (("\\$\\(BUILDROOT\\)/usr") (assoc-ref outputs "out")))
+                      ;; Make the compressed manpages writable so that the
+                      ;; reset-gzip-timestamps phase does not error out.
+                      (substitute* "Makefile"
+                        (("-m 444") "-m 644"))
+                      #t)))))
+    (inputs `(("perl" ,perl)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page "http://www.etallen.com/cpuid.html")
+    (synopsis "Linux tool to dump x86 CPUID information about the CPU(s)")
+    (description "cpuid dumps detailed information about the CPU(s) gathered
+from the CPUID instruction, and also determines the exact model of CPU(s).  It
+supports Intel, AMD, and VIA CPUs, as well as older Transmeta, Cyrix, UMC,
+NexGen, Rise, and SiS CPUs.")
+    (license license:gpl2+)))

@@ -52,7 +52,8 @@
 ;; See https://launchpadlibrarian.net/218827644/release.txt
 (define-public gcc-arm-none-eabi-4.9
   (let ((xgcc (cross-gcc "arm-none-eabi"
-                         (cross-binutils "arm-none-eabi")))
+                         #:xgcc gcc-4.9
+                         #:xbinutils (cross-binutils "arm-none-eabi")))
         (revision "1")
         (svn-revision 227977))
     (package (inherit xgcc)
@@ -196,6 +197,30 @@ usable on embedded products.")
            "--disable-nls"))))
     (synopsis "Newlib variant for small systems with limited memory")))
 
+(define (make-libstdc++-arm-none-eabi xgcc newlib)
+  (let ((libstdc++ (make-libstdc++ xgcc)))
+    (package (inherit libstdc++)
+      (name "libstdc++-arm-none-eabi")
+      (arguments
+       (substitute-keyword-arguments (package-arguments libstdc++)
+         ((#:configure-flags flags)
+          ``("--target=arm-none-eabi"
+             "--host=arm-none-eabi"
+             "--disable-libstdcxx-pch"
+             "--enable-multilib"
+             "--with-multilib-list=armv6-m,armv7-m,armv7e-m"
+             "--disable-shared"
+             "--disable-tls"
+             "--disable-plugin"
+             "--with-newlib"
+             ,(string-append "--with-gxx-include-dir="
+                             (assoc-ref %outputs "out")
+                             "/arm-none-eabi/include")))))
+      (native-inputs
+       `(("newlib" ,newlib)
+         ("xgcc" ,xgcc)
+         ,@(package-native-inputs libstdc++))))))
+
 (define (arm-none-eabi-toolchain xgcc newlib)
   "Produce a cross-compiler toolchain package with the compiler XGCC and the C
 library variant NEWLIB."
@@ -212,9 +237,19 @@ library variant NEWLIB."
       (version (package-version xgcc))
       (source #f)
       (build-system trivial-build-system)
-      (arguments '(#:builder (mkdir %output)))
+      (arguments
+       '(#:modules ((guix build union))
+         #:builder
+         (begin
+           (use-modules (ice-9 match)
+                        (guix build union))
+           (match %build-inputs
+             (((names . directories) ...)
+              (union-build (assoc-ref %outputs "out")
+                           directories))))))
       (propagated-inputs
        `(("binutils" ,(cross-binutils "arm-none-eabi"))
+         ("libstdc++" ,(make-libstdc++-arm-none-eabi xgcc newlib-with-xgcc))
          ("gcc" ,xgcc)
          ("newlib" ,newlib-with-xgcc)))
       (synopsis "Complete GCC tool chain for ARM bare metal development")
@@ -419,7 +454,7 @@ with a layered architecture of JTAG interface and TAP support.")
 
 (define-public propeller-gcc
   (let ((xgcc (cross-gcc "propeller-elf"
-                         propeller-binutils))
+                         #:xbinutils propeller-binutils))
         (commit "b4f45a4725e0b6d0af59e594c4e3e35ca4105867")
         (revision "1"))
     (package (inherit xgcc)
@@ -776,7 +811,7 @@ the Raspberry Pi chip.")
 
 (define-public gcc-vc4
   (let ((commit "165f6d0e11d2e76ee799533bb45bd5c92bf60dc2")
-        (xgcc (cross-gcc "vc4-elf" binutils-vc4)))
+        (xgcc (cross-gcc "vc4-elf" #:xbinutils binutils-vc4)))
     (package (inherit xgcc)
       (name "gcc-vc4")
       (source (origin

@@ -239,8 +239,8 @@ generator library for C++.")
 (define-public kodi
   ;; We package the git version because the current released
   ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "b8ad238aa8010063eaf7d608d139002a50075e8d")
-        (revision "4"))
+  (let ((commit "1a38948ad068870671042bff2d8ac615dca9e5d8")
+        (revision "5"))
   (package
     (name "kodi")
     (version (string-append "18.0_alpha-" revision "-" (string-take commit 7)))
@@ -252,7 +252,7 @@ generator library for C++.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "192agb8lpbajljbnnpn7y1pk2c6bvqbcpqhlgq4pja4pdf664xzg"))
+                "1apkiicmxb6ncqhznflb8wc4n770jx89asw1drmch7lq7j9m6sns"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
