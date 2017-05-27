@@ -1202,37 +1202,37 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
 
 (define-public font-iosevka
   (package
-   (name "font-iosevka")
-   (version "1.11.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/be5invis/Iosevka/releases/download/v"
-                  version "/iosevka-pack-" version ".zip"))
-            (sha256
-             (base32
-              "0d8prdk7s5z94sdfd0y92cvqq531yqrlg7hnadbnhd7fs9jqr5hj"))))
-   (build-system trivial-build-system)
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let ((font-dir (string-append %output
-                                                 "/share/fonts/truetype"))
-                        (source (assoc-ref %build-inputs "source"))
-                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                               "/bin/unzip")))
-                    (mkdir-p font-dir)
-                    (system* unzip "-d" font-dir source)))))
-   (native-inputs `(("unzip" ,unzip)))
-   (home-page "https://be5invis.github.io/Iosevka/")
-   (synopsis "Coders' typeface, built from code")
-   (description
-    "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+    (name "font-iosevka")
+    (version "1.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/be5invis/Iosevka/releases/download/v"
+                    version "/iosevka-pack-" version ".zip"))
+              (sha256
+               (base32
+                "0s3g6mk0ngwsrw9h9dqinb50cd9i8zhqdcmmh93fhyf4d87yfwyi"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((font-dir (string-append %output
+                                                  "/share/fonts/truetype"))
+                         (source (assoc-ref %build-inputs "source"))
+                         (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                                "/bin/unzip")))
+                     (mkdir-p font-dir)
+                     (system* unzip "-d" font-dir source)))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://be5invis.github.io/Iosevka/")
+    (synopsis "Coders' typeface, built from code")
+    (description
+     "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
 by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
 programming.  Iosevka is completely generated from its source code.")
-   (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
-                  license:bsd-3))))  ; supporting code
+    (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
+                   license:bsd-3)))) ; supporting code
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
