@@ -2114,3 +2114,42 @@ MPEG-2, MPEG-4, DVD (VOB)...
 @end itemize\n")
     (license license:bsd-2)))
 
+;; TODO also have a GUI version available
+(define-public mediainfo
+  (package
+    (name "mediainfo")
+    (version "0.7.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mediaarea.net/download/source/"
+                                  name "/" version "/"
+                                  name "_" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0dy51a3i79jppmg1gi4f6h7jx4hcgnkmfim4d7d3gmnlbkjh8anv"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)
+       ("libmediainfo", libmediainfo)
+       ("libzen" ,libzen)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; lacks tests
+       #:phases
+       ;; build scripts not in root of archive
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (chdir "Project/GNU/CLI")))
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    (home-page "https://mediaarea.net/en/MediaInfo")
+    (synopsis "Utility for reading media metadata")
+    (description "MediaInfo is a utility used for retrieving technical
+information and other metadata about audio or video files.  It supports the
+many codecs and formats supported by libmediainfo.")
+    (license license:bsd-2)))
