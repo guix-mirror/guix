@@ -51,7 +51,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public libsodium
   (package
@@ -414,3 +415,26 @@ utility as a demonstration of the @code{scrypt} key derivation function.
 @code{Scrypt} is designed to be far more resistant against hardware brute-force
 attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (license license:bsd-2)))
+
+(define-public python-asn1crypto
+  (package
+    (name "python-asn1crypto")
+    (version "0.22.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/wbond/asn1crypto/archive/"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1kn910896l3knmilla1c9ly20q181s43w1ah08lzkbm1h3j6pcz0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/wbond/asn1crypto")
+    (synopsis "ASN.1 parser and serializer in Python")
+    (description "asn1crypto is an ASN.1 parser and serializer with definitions
+for private keys, public keys, certificates, CRL, OCSP, CMS, PKCS#3, PKCS#7,
+PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
+    (license license:expat)))
+
+(define-public python2-asn1crypto
+  (package-with-python2 python-asn1crypto))

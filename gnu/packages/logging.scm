@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages autotools))
@@ -129,3 +131,41 @@ command line.")
      "Tailon provides a web interface around the tail, grep, awk and sed
 commands, displaying the results via a web interface.")
     (license license:bsd-3)))
+
+(define-public multitail
+  (package
+    (name "multitail")
+    (version "6.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://vanheusden.com/multitail/multitail-"
+                          version ".tgz"))
+      (sha256
+       (base32
+        "1zd1r89xkxngl1pdrvsc877838nwkfqkbcgfqm3vglwalxc587dg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             "PREFIX="
+             (string-append "DESTDIR="
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-curses-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "mt.h"
+                 (("ncursesw\\/panel.h") "panel.h")
+                 (("ncursesw\\/ncurses.h") "ncurses.h")))
+             #t))
+         (delete 'configure))
+       #:tests? #f)) ; no test suite (make check just runs cppcheck)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://vanheusden.com/multitail/")
+    (synopsis "Monitor multiple logfiles")
+    (description
+     "MultiTail allows you to monitor logfiles and command output in multiple
+windows in a terminal, colorize, filter and merge.")
+    (license license:gpl2+)))

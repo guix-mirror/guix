@@ -52,6 +52,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
+    (replacement libtasn1/fixed)
     (version "4.10")
     (source
      (origin
@@ -72,17 +73,26 @@ networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
 
+(define libtasn1/fixed
+  (package
+    (inherit libtasn1)
+    (source
+      (origin
+        (inherit (package-source libtasn1))
+        (patches
+          (search-patches "libtasn1-CVE-2017-6891.patch"))))))
+
 (define-public asn1c
   (package
     (name "asn1c")
-    (version "0.9.27")
+    (version "0.9.28")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://lionet.info/soft/asn1c-"
                           version ".tar.gz"))
       (sha256
        (base32
-        "17nvn2kzvlryasr9dzqg6gs27b9lvqpval0k31pb64bjqbhn8pq2"))))
+        "1fc64g45ykmv73kdndr4zdm4wxhimhrir4rxnygxvwkych5l81w0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -368,7 +378,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0e")
+    (version "1.1.0f")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -379,7 +389,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "0k47sdd9gs6yxfv6ldlgpld2lyzrkcv9kz4cf88ck04xjwc8dgjp"))))
+                "0r97n4n552ns571diz54qsgarihrxvbn7kvyv8wjyfs9ybrldxqj"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files

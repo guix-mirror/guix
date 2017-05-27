@@ -756,32 +756,16 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.5.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/qTox/qTox/archive/v"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "0y15mc39x54k1kz36cw9412kl1p1p6nzlx97gagv4gg3vybfhbjv"))
-       (file-name (string-append name "-" version ".tar.gz"))))
-    (inputs
-     `(("ffmpeg" ,ffmpeg)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+-2)
-       ("libsodium" ,libsodium)
-       ("libtoxcore" ,libtoxcore)
-       ("libvpx" ,libvpx)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("libx11" ,libx11)
-       ("openal" ,openal)
-       ("qrencode" ,qrencode)
-       ("qt" ,qt)
-       ("sqlcipher" ,sqlcipher)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qmake" ,qt)))
-    (build-system gnu-build-system)
+    (version "1.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/qTox/qTox/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0b37an611i2jdri59vsspyl3yf6cn4h0bn9d2jdrkw8d2rfqc8qy"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -791,13 +775,24 @@ instant messenger with audio and video chat capabilities.")
                (("__DATE__") "\"\"")
                (("__TIME__") "\"\"")
                (("TIMESTAMP") "\"\""))
-             #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero?
-              (system* "qmake"
-                       (string-append "PREFIX="
-                                      (assoc-ref outputs "out")))))))))
+             #t)))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("libsodium" ,libsodium)
+       ("c-toxcore" ,c-toxcore)
+       ("libvpx" ,libvpx)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libx11" ,libx11)
+       ("openal" ,openal)
+       ("qrencode" ,qrencode)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("sqlcipher" ,sqlcipher)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qmake" ,qttools)))
     (home-page "https://qtox.github.io/")
     (synopsis "Tox chat client using Qt")
     (description "qTox is a Tox client that follows the Tox design

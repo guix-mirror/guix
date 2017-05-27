@@ -99,8 +99,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (if (%current-target-system)
         (let ((target (%current-target-system)))
           `(("cross-gcc"      ,(cross-gcc target
-                                          (cross-binutils target)
-                                          (cross-bootstrap-libc)))
+                                          #:xbinutils (cross-binutils target)
+                                          #:libc (cross-bootstrap-libc)))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap))

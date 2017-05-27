@@ -20,8 +20,13 @@
   #:use-module (guix memoization)
   #:use-module (guix sets)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
-  #:export (source-module-closure
+  #:export (missing-dependency-error?
+            missing-dependency-module
+
+            source-module-closure
             live-module-closure
             guix-module-name?))
 
@@ -34,6 +39,11 @@
 ;;; 'with-imported-modules'.
 ;;;
 ;;; Code:
+
+;; The error corresponding to a missing module.
+(define-condition-type &missing-dependency-error &error
+  missing-dependency-error?
+  (module  missing-dependency-module))
 
 (define (colon-symbol? obj)
   "Return true if OBJ is a symbol that starts with a colon."
@@ -106,9 +116,12 @@ depends on."
   "Return the modules used by MODULE by looking at its source code."
   (if (member module %source-less-modules)
       '()
-      (module-file-dependencies
-       (search-path load-path
-                    (module-name->file-name module)))))
+      (match (search-path load-path (module-name->file-name module))
+        ((? string? file)
+         (module-file-dependencies file))
+        (#f
+         (raise (condition (&missing-dependency-error
+                            (module module))))))))
 
 (define* (module-closure modules
                          #:key

@@ -27,7 +27,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -65,6 +65,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages file)
@@ -1487,15 +1488,37 @@ backported for previous versions of Python from 2.4 to 3.3.")
        (base32
         "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "tests/test_parse_type_parse.py"
+               ;; Newer Python versions don't have the problem this test tests.
+               (("self[.]assertRaises[(]parse.TooManyFields, p.parse, ''[)]")
+                ""))
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
-    (arguments '(#:tests? #f))            ;TODO: tests require pytest
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/jenisys/parse_type")
     (synopsis "Extended parse module")
     (description
      "Parse_type extends the python parse module.")
+    (properties
+     `((python2-variant . ,(delay python2-parse-type))))
     (license license:bsd-3)))
+
+(define-public python2-parse-type
+  (let ((base (package-with-python2
+                (strip-python2-variant python-parse-type))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-parse
   (package
@@ -4727,15 +4750,14 @@ a front-end for C compilers or analysis tools.")
 (define-public python-xcffib
   (package
     (name "python-xcffib")
-    (version "0.1.9")
+    (version "0.5.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/x/"
-                          "xcffib/xcffib-" version ".tar.gz"))
+      (uri (pypi-uri "xcffib" version))
       (sha256
        (base32
-        "0655hzxv57h1a9ja9kwp0ichbkhf3djw32k33d66xp0q37dq2y81"))))
+        "09gbnmr5vn58mm8xi3fmd7fz6743cks6c46dphnxzwax6zsxmy60"))))
     (build-system python-build-system)
     (inputs
      `(("libxcb" ,libxcb)))
@@ -4743,10 +4765,16 @@ a front-end for C compilers or analysis tools.")
      `(("python-cffi" ,python-cffi) ; used at run time
        ("python-six" ,python-six)))
     (arguments
-     `(;; FIXME: Tests cannot load libxcb.so.1
+     `(;; FIXME: Tests need more work. See ".travis.yml" in the repository.
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libxcb-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxcb (assoc-ref inputs "libxcb")))
+               (substitute* '("xcffib/__init__.py")
+                 (("^soname = \"") (string-append "soname = \"" libxcb "/lib/")))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "out") "/share"
@@ -7155,14 +7183,14 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.1.9")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "0zraxni14bqi20kr4bi6nwsh32aibz0fq0xaczfisw0zdpcsqg45"))))
+         "1b86yx23c1x74clai05a5ma8c8nfmhlx3j1mxq0ff657i2ylx33k"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -7253,15 +7281,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.0")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "idna/idna-" version ".tar.gz"))
+       (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "0frxgmgi234lr9hylg62j69j4ik5zhg0wz05w5dhyacbjfnrl68n"))))
+         "1ara12a7k2zc69msa0arrvw00gn61a6i6by01xb3lkkc0h4cxd9w"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -7306,14 +7333,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.7.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1x2mz4wggja5ih45c6cw0kzyad4jr8avg327dawjr1gnpdq1psa7"))))
+         "0hzvq0bfy21bc35p8z7zdxpv3hbvi7adg4axc1b5yd3hk16a1nh0"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7328,29 +7355,33 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.7.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0k6v7wq4h0yk9r0x0bl2x9fyrg4a6gj5qp4m9mgpk6m481yyygwm"))))
+         "1nmy4fw3zy7rlvarkhn33g9905rwpy9z7k5kv8j80f0s6ynfp24f"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)
+     `(("python-asn1crypto" ,python-asn1crypto)
+       ("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
-       ("python-pyasn1" ,python-pyasn1)
        ("python-idna" ,python-idna)
+       ;; Packaging is used to check the version of python-cffi in
+       ;; 'src/cryptography/hazmat/primitives/ciphers/base.py'. We should be
+       ;; able to remove this dependency in the next release of cryptography:
+       ;; python-cryptography:
+       ;; https://github.com/pyca/cryptography/commit/0417d00d9ff1e19bc3ab67d39bdd18e1674768c1
+       ("python-packaging" ,python-packaging)
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
      `(("python-cryptography-vectors" ,python-cryptography-vectors)
        ("python-hypothesis" ,python-hypothesis)
        ("python-pretend" ,python-pretend)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-pytz" ,python-pytz)
        ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/cryptography")
@@ -13449,6 +13480,33 @@ faster ones are not available.")
 to ansi-escaped strings suitable for display in a terminal.")
     (license license:expat)))
 
+(define-public python-ansi2html
+  (package
+    (name "python-ansi2html")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ansi2html" version))
+       (sha256
+        (base32
+         "1wa00zffprb78w1mqq90dk47czz1knanys2a40zbw2vyapd5lp9y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "http://github.com/ralphbean/ansi2html")
+    (synopsis "Convert ANSI-decorated console output to HTML")
+    (description
+     "@command{ansi2html} is a Python library and command line utility for
+convering text with ANSI color codes to HTML or LaTeX.")
+    (license license:gpl3+)))
+
+(define-public python2-ansi2html
+  (package-with-python2 python-ansi2html))
+
 (define-public python-ddt
   (package
     (name "python-ddt")
@@ -14623,3 +14681,126 @@ substitute for redis.")
 
 (define-public python2-fakeredis
   (package-with-python2 python-fakeredis))
+
+(define-public python-behave-web-api
+  (package
+    (name "python-behave-web-api")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "behave-web-api" version))
+       (sha256
+        (base32
+         "03kpq2xsy1gab3jy0dccbxlsg7vwfy4lagss0qldwmx3xz6b3i19"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda _
+             (substitute* "setup.py"
+               (("'wheel'") "")                ; We don't use it.
+               (("'ordereddict==1.1'") ""))))))) ; Python >= 2.7 has it built-in.
+    (propagated-inputs
+     `(("behave" ,behave)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/jefersondaniel/behave-web-api")
+    (synopsis "Provides testing for JSON APIs with Behave for Python")
+    (description "This package provides testing utility modules for testing
+JSON APIs with Behave.")
+    (license license:expat)))
+
+(define-public python2-behave-web-api
+  (package-with-python2 python-behave-web-api))
+
+(define-public python-flask-script
+  (package
+  (name "python-flask-script")
+  (version "2.0.5")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-Script" version))
+      (sha256
+        (base32
+          "0zqh2yq8zk7m9b4xw1ryqmrljkdigfb3hk5155a3b5hkfnn6xxyf"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-flask" ,python-flask)
+     ("python-argcomplete" ,python-argcomplete)
+     ("python-werkzeug" ,python-werkzeug)))
+  (native-inputs
+   `(("python-pytest" ,python-pytest)))
+  (home-page
+    "http://github.com/smurfix/flask-script")
+  (synopsis "Scripting support for Flask")
+  (description "The Flask-Script extension provides support for writing
+external scripts in Flask.  This includes running a development server,
+a customised Python shell, scripts to set up your database, cronjobs,
+and other command-line tasks that belong outside the web application
+itself.")
+  (license license:bsd-3)))
+
+(define-public python2-flask-script
+  (package-with-python2 python-flask-script))
+
+(define-public python-flask-migrate
+  (package
+  (name "python-flask-migrate")
+  (version "2.0.3")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "Flask-Migrate" version))
+      (sha256
+        (base32
+          "107x78lkqsnbg92dld3dkagg07jvchp3ib3y0sivc4ipz6n1y7rk"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-flask" ,python-flask)
+     ("python-alembic" ,python-alembic)
+     ("python-sqlalchemy" ,python-sqlalchemy)
+     ("python-flask-script" ,python-flask-script)
+     ("python-flask-sqlalchemy" ,python-flask-sqlalchemy)))
+  (home-page "http://github.com/miguelgrinberg/flask-migrate/")
+  (synopsis "SQLAlchemy database migrations for Flask programs using
+Alembic")
+  (description "This package contains SQLAlchemy database migration tools
+for Flask programs that are using @code{python-alembic}.")
+  (license license:expat)))
+
+(define-public python2-flask-migrate
+  (package-with-python2 python-flask-migrate))
+
+(define-public python-packaging
+  (package
+    (name "python-packaging")
+    (version "16.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "packaging" version))
+        (sha256
+         (base32
+          "17k1xbjshackwvbsnxqixbph8rbqhz4bf4g3al5xyzhavxgq6l2x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pypa/packaging")
+    (synopsis "Core utilities for Python packages")
+    (description "Packaging is a Python module for dealing with Python packages.
+It offers an interface for working with package versions, names, and dependency
+information.")
+    ;; From 'LICENSE': This software is made available under the terms of
+    ;; *either* of the licenses found in LICENSE.APACHE or LICENSE.BSD.
+    ;; Contributions to this software is made under the terms of *both* these
+    ;; licenses.
+    (license (list license:asl2.0 license:bsd-2))))
+
+(define-public python2-packaging
+  (package-with-python2 python-packaging))

@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3248,6 +3249,25 @@ identifiers based on their names.  Each identifier gets a color based on a hash
 of its name.")
     (license license:bsd-2)))
 
+(define-public emacs-rainbow-mode
+  (package
+    (name "emacs-rainbow-mode")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
+              (sha256
+               (base32
+                "10a7qs7fvw4qi4vxj9n56j26gjk61bl79dgz4md1d26slb2j1c04"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/rainbow-mode.html")
+    (synopsis "Colorize color names in buffers")
+    (description
+     "This minor mode sets background color to strings that match color
+names, e.g. #0000ff is displayed in white with a blue background.")
+    (license license:gpl3+)))
+
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
@@ -4525,7 +4545,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.13")
+    (version "0.14")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -4533,7 +4553,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "0n1wzy6chh024r0yaywjbf7mdsrxs6hrfycv5v0ps0drf6q3zldc"))))
+                "14hjjpbasm84p54fxy73fg7g1fdwqkvisdw8dwwgzkflmd647mkx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -4567,12 +4587,9 @@ It should enable you to implement low-level X11 applications.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
-               ;; Set DISPLAY variable to work around
-               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
-                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
@@ -4586,7 +4603,8 @@ It should enable you to implement low-level X11 applications.")
                               (require 'exwm)
                               (require 'exwm-config)
                               (exwm-config-default)
-                              (message "exwm configuration not found. Falling back to default configuration..."))))))
+                              (message (concat "exwm configuration not found. "
+                                               "Falling back to default configuration...")))))))
                (chmod exwm-executable #o555)
                #t))))))
     (home-page "https://github.com/ch11ng/exwm")
@@ -4836,3 +4854,26 @@ Emacs.")
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
       (license license:gpl3+))))
+
+(define-public emacs-disable-mouse
+  (package
+    (name "emacs-disable-mouse")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/purcell/disable-mouse/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0haqpq23r1wx04lsqrrg3p5visg9hx5i36dg55ab003wfsrlrzbc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/disable-mouse")
+    (synopsis "Disable mouse commands globally")
+    (description
+     "Provides @code{disable-mouse-mode} and @code{global-disable-mouse-mode},
+pair of minor modes which suppress all mouse events by intercepting them and
+running a customisable handler command (@code{ignore} by default). ")
+    (license license:gpl3+)))
