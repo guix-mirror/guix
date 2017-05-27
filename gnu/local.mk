@@ -992,7 +992,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/synfig-build-fix.patch			\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
