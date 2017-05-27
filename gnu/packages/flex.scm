@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
@@ -67,6 +68,7 @@
     ;; m4 is not present in PATH when cross-building
     (native-inputs
      `(("help2man" ,help2man)
+       ("lzip" ,lzip)
        ("m4" ,m4)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "https://github.com/westes/flex")
