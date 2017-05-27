@@ -1235,11 +1235,11 @@ programming.  Iosevka is completely generated from its source code.")
                   license:bsd-3))))  ; supporting code
 
 (define-public font-go
-  (let ((commit "b7f8df6bc082334698d4505fb85fa05e99156b72")
+  (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
         (revision "1"))
     (package
      (name "font-go")
-     (version (string-append "20161115-" revision "." (string-take commit 7)))
+     (version (string-append "20170330-" revision "." (string-take commit 7)))
      (source (origin
               (file-name (string-append "go-image-" version "-checkout"))
               (method git-fetch)
@@ -1248,7 +1248,7 @@ programming.  Iosevka is completely generated from its source code.")
                     (commit commit)))
               (sha256
                (base32
-                "1ywxs6dmcyzwwsmnan3qqza7znprnbvmdi260x6sjmydz6dyq2zs"))))
+                "1aq6mnjayks55gd9ahavk6jfydlq5lm4xm0xk4pd5sqa74p5p74d"))))
      (build-system trivial-build-system)
      (arguments
       `(#:modules ((guix build utils))
