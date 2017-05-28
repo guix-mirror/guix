@@ -23,7 +23,6 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages compression)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
@@ -39,10 +38,10 @@
               (uri (string-append
                     "https://github.com/westes/flex"
                     "/releases/download/v" version "/"
-                    "flex-" version ".tar.lz"))
+                    "flex-" version ".tar.gz"))
               (sha256
                (base32
-                "19sc63m09zamy2qlw5x3sg6wb6hrw96gfl0h87vh6flvsqjg9m3g"))))
+                "15g9bv236nzi665p9ggqjlfn4dwck5835vf0bbw2cz7h5c1swyp8"))))
     (build-system gnu-build-system)
     (inputs
      (let ((bison-for-tests
@@ -68,7 +67,6 @@
     ;; m4 is not present in PATH when cross-building
     (native-inputs
      `(("help2man" ,help2man)
-       ("lzip" ,lzip)
        ("m4" ,m4)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "https://github.com/westes/flex")
