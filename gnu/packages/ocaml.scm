@@ -2959,3 +2959,24 @@ the full Core is not available, such as in Javascript.")
     (synopsis "Monadic concurrency library")
     (description "Async-kernel is a library for concurrent programming in OCaml.")
     (license license:asl2.0)))
+
+(define-public ocaml-async-rpc-kernel
+  (package
+    (name "ocaml-async-rpc-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "async_rpc_kernel" version
+             "0y97h9pkb00v7jpf87m8cbb0ffkclj9g26ph6sq97q8dpisnkjwh"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-kernel" ,ocaml-async-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_rpc_kernel/")
+    (synopsis "Platform-independent core of the Async RPC library")
+    (description "Async_rpc_kernel is the platform-independent core of
+the Async RPC library.")
+    (license license:asl2.0)))
