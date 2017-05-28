@@ -14926,3 +14926,30 @@ Supported metrics are:
 
 (define-public python2-radon
   (package-with-python2 python-radon))
+
+(define-public python-sure
+  (package
+    (name "python-sure")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sure" version))
+       (sha256
+        (base32
+         "1iyqsy2d6radi88g1qf0lziy5b39h5cpb3g5jiqyb4xi46ig3x1z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/gabrielfalcao/sure")
+    (synopsis "Automated testing library in python for python")
+    (description
+     "Sure is a python library that leverages a DSL for writing assertions.
+Sure is heavily inspired by @code{RSpec Expectations} and @code{should.js}.")
+    (license license:gpl3+)))
+
+(define-public python2-sure
+  (package-with-python2 python-sure))
