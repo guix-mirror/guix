@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 André <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -422,6 +423,49 @@ repository with encrypted files.  This lets you store your secret material (such
 as keys or passwords) in the same repository as your code, without requiring you
 to lock down your entire repository.")
     (license license:gpl3+)))
+
+(define-public git-remote-gcrypt
+  (package
+   (name "git-remote-gcrypt")
+   (version "1.0.1")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://git.spwhitton.name/git-remote-gcrypt")
+                   (commit version)))
+             (file-name (string-append name "-" version "-checkout"))
+             (sha256
+              (base32
+               "0znrx77vpm4a8l7yiybsxk5vrawijqqfxmp1p2yhaaw8cbgrj7az"))))
+   (build-system trivial-build-system)
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder (begin
+                  (use-modules (guix build utils))
+                  (let* ((source (assoc-ref %build-inputs "source"))
+                         (output (assoc-ref %outputs "out"))
+                         (bindir (string-append output "/bin")))
+                    (install-file (string-append source "/git-remote-gcrypt")
+                                  bindir)
+                    #t))))
+   (home-page "https://spwhitton.name/tech/code/git-remote-gcrypt/")
+   (synopsis "Whole remote repository encryption")
+   (description "git-remote-gcrypt is a Git remote helper to push and pull from
+repositories encrypted with GnuPG.  It works with the standard Git transports,
+including repository hosting services like GitLab.
+
+Remote helper programs are invoked by Git to handle network transport.  This
+helper handles @code{gcrypt:} URLs that access a remote repository encrypted
+with GPG, using our custom format.
+
+Supported locations are local, @code{rsync://} and @code{sftp://}, where the
+repository is stored as a set of files, or instead any Git URL where gcrypt
+will store the same representation in a Git repository, bridged over arbitrary
+Git transport.
+
+The aim is to provide confidential, authenticated Git storage and
+collaboration using typical untrusted file hosts or services.")
+   (license license:gpl3+)))
 
 (define-public cgit
   (package
