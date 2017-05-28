@@ -3088,3 +3088,45 @@ and bigarrays, based on new primitives added in version 4.01.  It works on
 strings, bytes and bigstring (Bigarrys of chars), and provides submodules for
 big- and little-endian, with their unsafe counter-parts.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-cstruct
+  (package
+    (name "ocaml-cstruct")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-cstruct/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "15qpdc8421shq4pprdas9jznpva45229wkfqbwcxw9khaiiz7949"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-lwt" "--enable-async")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-stubs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/cstruct")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllcstruct_stubs.so")
+                        (string-append stubs "/dllcstruct_stubs.so"))))))))
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("camlp4" ,camlp4)))
+    (propagated-inputs
+     `(("ocplib-endian" ,ocaml-ocplib-endian)
+       ("lwt" ,ocaml-lwt)
+       ("async" ,ocaml-async)
+       ("sexplib" ,ocaml-sexplib)))
+    (home-page "https://github.com/mirage/ocaml-cstruct")
+    (synopsis "Access C structures via a camlp4 extension")
+    (description "Cstruct is a library and syntax extension to make it easier
+to access C-like structures directly from OCaml.  It supports both reading and
+writing to these structures, and they are accessed via the Bigarray module.")
+    (license license:isc)))
