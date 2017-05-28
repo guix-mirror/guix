@@ -235,6 +235,13 @@ required structures.")
              (sha256
               (base32
                "037kvpisc6qh5dkppcwbm5bg2q800xh2hma3vghz8xcycmdij1yf"))
+             (snippet
+              '(begin
+                 ;; Remove ELF files.  'substitute*' can't read them.
+                 (delete-file "test/ssltest_old")
+                 (delete-file "test/v3ext")
+                 (delete-file "test/x509aux")
+                 #t))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
