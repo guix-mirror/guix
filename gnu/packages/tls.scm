@@ -58,7 +58,6 @@
       (method url-fetch)
       (uri (string-append "mirror://gnu/libtasn1/libtasn1-"
                           version ".tar.gz"))
-      (patches (search-patches "libtasn1-CVE-2017-6891.patch"))
       (sha256
        (base32
         "0h929bdq6w699y1mdkdajp5a6da8whgg3ba5p4j8x1wy36rlcjll"))))
