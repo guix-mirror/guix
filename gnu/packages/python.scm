@@ -15011,3 +15011,42 @@ renderers (e.g. man pages or LaTeX).")
 
 (define-public python2-misaka
   (package-with-python2 python-misaka))
+
+(define-public python2-steadymark
+  ;; This is forced into being a python2 only variant
+  ;; due to its dependence on couleur that has no support
+  ;; for python3
+  (package
+    (name "python2-steadymark")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "steadymark" version))
+       (sha256
+        (base32
+         "1640i9g8dycql3cc8j0bky0jkzj0q39blfbp4lsgpkprkfgcdk8v"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-couleur" ,python2-couleur)
+       ("python-sure" ,python2-sure)
+       ("python-misaka" ,python2-misaka)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-setup-py
+           (lambda _
+             ;; Update requirements from dependency==version
+             ;; to dependency>=version
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (home-page "https://github.com/gabrielfalcao/steadymark")
+    (synopsis "Markdown-based test runner for python")
+    (description
+     "@code{Steadymark} allows documentation to be written in github-flavoured
+markdown.  The documentation may contain snippets of code surrounded by python
+code blocks and @code{Steadymark} will find these snippets and run them, making
+sure that there are no old malfunctional examples in the documentation examples.")
+    (license license:expat)))
