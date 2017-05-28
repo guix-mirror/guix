@@ -3045,3 +3045,23 @@ standard library that was developed by Jane Street.")
     (description "Async_extra provides additional functionnalities for the
 async library.")
     (license license:asl2.0)))
+
+(define-public ocaml-async
+  (package
+    (name "ocaml-async")
+    (version "113.33.03")
+    (source (janestreet-origin "async" version
+              "0210fyhcs12kpmmd26015bgivkfd2wqkyn3c5wd7688d0f872y25"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-extra" ,ocaml-async-extra)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async")
+    (synopsis "Monadic concurrency library")
+    (description "Async is a library for concurrent programming in OCaml.")
+    (license license:asl2.0)))
