@@ -14979,3 +14979,35 @@ terminal such as coloured output in the shell, overwriting output, indentation, 
     ;; README.md says ASL2.0, but all source code headers are LGPL3+.
     ;; https://github.com/gabrielfalcao/couleur/issues/11
     (license license:lgpl3+)))
+
+(define-public python-misaka
+  (package
+    (name "python-misaka")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "misaka" version))
+       (sha256
+        (base32
+         "1yqrq3a5rracirmvk52n28nn6ckdaz897gnigv89a9gmyn87sqw7"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Line 37 of setup.py calls self.run_command('develop')
+       ;; in the 'check' phase. This command seems to be trying
+       ;; to write to
+       ;; /gnu/store/...-python-<version>/lib/python<version>/site-packages/
+       ;; for which it does not have the permission to write.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/FSX/misaka")
+    (synopsis "Python binding for Hoedown")
+    (description
+     "@code{Misaka} is a CFFI-based binding for @code{Hoedown}, a fast markdown processing
+library written in C.  It features a fast HTML renderer and functionality to make custom
+renderers (e.g. man pages or LaTeX).")
+    (license license:expat)))
+
+(define-public python2-misaka
+  (package-with-python2 python-misaka))
