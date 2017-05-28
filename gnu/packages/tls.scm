@@ -52,7 +52,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.10")
+    (version "4.11")
     (source
      (origin
       (method url-fetch)
@@ -61,7 +61,7 @@
       (patches (search-patches "libtasn1-CVE-2017-6891.patch"))
       (sha256
        (base32
-        "00jsix5hny0g768zv4hk78dib7w0qmk5fbizf4jj37r51nd4s6k8"))))
+        "0h929bdq6w699y1mdkdajp5a6da8whgg3ba5p4j8x1wy36rlcjll"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
