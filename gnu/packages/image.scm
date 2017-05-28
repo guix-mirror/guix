@@ -951,15 +951,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.12")
+    (version "2.0.13")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
-                                  "/software/jasper-" version ".tar.gz"))
+              (uri (string-append "https://github.com/mdadams/jasper/archive/"
+                                  "version-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))
-              (patches (search-patches "jasper-CVE-2017-6850.patch"))))
+                "090cyqcvqp4y12nc57gvcbrk3ap1rnnixd4qj90sx0pw3fs1615m"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
