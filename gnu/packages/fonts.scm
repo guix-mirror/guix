@@ -42,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
@@ -64,18 +65,7 @@
               (sha256
                (base32
                 "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((font-dir (string-append %output
-                                                  "/share/fonts/opentype"))
-                         (source (assoc-ref %build-inputs "source")))
-                     (mkdir-p font-dir)
-                     (copy-file source
-                                (string-append font-dir "/" "inconsolata.otf"))))))
-    (native-inputs `(("source" ,source)))
+    (build-system font-build-system)
     (home-page "http://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
     (description "A monospace font, designed for code listings and the like,
@@ -94,34 +84,7 @@ in print.  With attention to detail for high resolution rendering.")
               (sha256
                (base32
                 "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ubuntu-font-family-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$"))))))
-    (native-inputs `(("source" ,source)
-                     ("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://font.ubuntu.com/")
     (synopsis "The Ubuntu Font Family")
     (description "The Ubuntu Font Family is a unique, custom designed font
@@ -145,42 +108,15 @@ TrueType (TTF) files.")
               (base32
                "1mqpds24wfs5cmfhj57fsfs07mji2z8812i5c4pi5pbi738s977s"))))
     (build-system trivial-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append
-                                    %output "/share/fonts/truetype"))
-                         (conf-dir (string-append
-                                    %output "/share/fontconfig/conf.avail"))
-                         (doc-dir  (string-append
-                                    %output "/share/doc/" ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p conf-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "dejavu-fonts-ttf-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "ttf" "\\.ttf$"))
-                     (for-each (lambda (conf)
-                                 (install-file conf conf-dir))
-                               (find-files "fontconfig" "\\.conf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((conf-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fontconfig/conf.avail")))
+               (copy-recursively "fontconfig" conf-dir)))))))
     (home-page "http://dejavu-fonts.org/")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
@@ -204,38 +140,7 @@ provide serif, sans and monospaced variants.")
              (sha256
               (base32
                "1p3qs51x5327gnk71yq8cvmxc6wgx79sqxfvxcv80cdvgggjfnyv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ttf-bitstream-vera-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.TXT$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+    (build-system font-build-system)
     (home-page "http://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This

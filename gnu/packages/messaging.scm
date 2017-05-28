@@ -490,6 +490,8 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
               (uri (string-append "https://gajim.org/downloads/"
                                   (version-major+minor version)
                                   "/gajim-" version ".tar.bz2"))
+              (patches
+               (search-patches "gajim-CVE-2016-10376.patch"))
               (sha256
                (base32
                 "13sxz0hpvyj2yvcbsfqq9yn0hp1d1zsxsj40r0v16jlibha5da9n"))))

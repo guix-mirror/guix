@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -38,15 +39,15 @@
 (define-public etl
   (package
     (name "etl")
-    (version "0.04.19")
+    (version "0.04.22")
     (source (origin
               (method url-fetch)
               ;; Keep this synchronized with the synfig release version.
               (uri (string-append "mirror://sourceforge/synfig/releases/"
-                                  "1.0.2/source/ETL-" version ".tar.gz"))
+                                  "1.2.0/source/ETL-" version ".tar.gz"))
               (sha256
                (base32
-                "070c70slizrklq1gbgja8m49xfmq65wlcd6hz6418cpx0wd4r55s"))))
+                "0ii73nsd3xzkhz6w1rnxwphl637j9w82xiy6apa9vin2isdynnmc"))))
     (build-system gnu-build-system)
     (home-page "http://www.synfig.org")
     (synopsis "Extended C++ template library")
@@ -59,7 +60,7 @@ C++ @dfn{Standard Template Library} (STL).")
 (define-public synfig
   (package
     (name "synfig")
-    (version "1.0.2")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/synfig/releases/"
@@ -67,8 +68,7 @@ C++ @dfn{Standard Template Library} (STL).")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1d3z2r78j3rkff47q3wl0ami69y3l4nyi5r9zclymb8ar7mgkk9l"))
-              (patches (search-patches "synfig-build-fix.patch"))))
+                "1gqx4gn4c73rqwhsgzx0a460gr9hadmi28csp75rx30qavqsj7k1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -90,16 +90,6 @@ C++ @dfn{Standard Template Library} (STL).")
               (("remove_child\\(") "remove_node("))
             (substitute* "src/modules/mod_svg/svg_parser.cpp"
               (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
-            #t))
-         (add-after 'unpack 'fix-isnan-error
-           (lambda _
-             (substitute* "src/synfig/time.cpp"
-               (("return !::isnan") "return !std::isnan"))
-             #t))
-         (add-before 'configure 'set-flags
-          (lambda _
-            ;; Compile with C++11, required by libsigc++.
-            (setenv "CXXFLAGS" "-D__STDC_CONSTANT_MACROS -std=gnu++11")
             #t)))))
     (inputs
      `(("boost" ,boost)
@@ -110,11 +100,12 @@ C++ @dfn{Standard Template Library} (STL).")
        ("libmng" ,libmng)
        ("zlib" ,zlib)))
     ;; synfig.pc lists the following as required: Magick++ freetype2
-    ;; fontconfig OpenEXR ETL glibmm-2.4 giomm-2.4 libxml++-3.0 sigc++-2.0
+    ;; fontconfig fftw OpenEXR ETL glibmm-2.4 giomm-2.4 libxml++-3.0 sigc++-2.0
     ;; cairo pango pangocairo mlt++
     (propagated-inputs
      `(("cairo" ,cairo)
        ("etl" ,etl)
+       ("fftw" ,fftw)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glibmm" ,glibmm)
@@ -137,7 +128,7 @@ for tweening, preventing the need to hand-draw each frame.")
 (define-public synfigstudio
   (package
     (name "synfigstudio")
-    (version "1.0.2")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/synfig/releases/"
@@ -145,27 +136,17 @@ for tweening, preventing the need to hand-draw each frame.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1xa74dlgkpjn0gzdcs0x25z7wg0806v2wygvvi73f7sn1fm88ig4"))
+                "0fbckfbw8dzf0m2wv7vlmw492k1dqa3zf510z019d0as3zpnp6qm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "src/synfigapp/pluginmanager.cpp"
                     (("xmlpp::Node\\* n =")    "const xmlpp::Node* n =")
                     (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
-                  ;; Some files are ISO-8859-1 encoded.
-                  (with-fluids ((%default-port-encoding #f))
-                    (substitute* (find-files "src/" "\\.(cpp|h)$")
-                      (("#include <sigc\\+\\+/retype\\.h>")
-                       "#include <sigc++/adaptors/retype.h>")
-                      (("#include <sigc\\+\\+/hide\\.h>")
-                       "#include <sigc++/adaptors/hide.h>")
-                      (("#include <sigc\\+\\+/object\\.h>")
-                       "#include <sigc++/trackable.h>")))
-                  #t))))
+                  #t))
+              (patches
+               (search-patches "synfigstudio-fix-ui-with-gtk3.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("gtkmm" ,gtkmm)
        ("libsigc++" ,libsigc++)

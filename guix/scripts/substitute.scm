@@ -39,6 +39,8 @@
                            . guix:open-connection-for-uri)
                           close-connection
                           store-path-abbreviation byte-count->string))
+  #:use-module ((guix build syscalls)
+                #:select (set-thread-name))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -1014,6 +1016,8 @@ default value."
              (find-daemon-option "locale"))
     (#f     #f)
     (locale (false-if-exception (setlocale LC_ALL locale))))
+
+  (set-thread-name "guix substitute")
 
   (with-networking
    (with-error-handling                           ; for signature errors

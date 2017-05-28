@@ -415,22 +415,17 @@ and returns a sequence of positioned glyphids from the font.")
   (package
     (inherit graphite2)
     (name "graphite2")
-    (version "1.3.9")
     (replacement #f)
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/silnrsi/graphite/releases/"
-                           "download/" version "/" name "-" version ".tgz"))
-       (patches (search-patches
-                 "graphite2-ffloat-store.patch"
-                 "graphite2-check-code-point-limit.patch"
-                 "graphite2-CVE-2017-5436.patch"
-                 "graphite2-fix-32-bit-wrap-arounds.patch"
-                 "graphite2-non-linear-classes-even-number.patch"))
+       (uri (let ((version "1.3.10"))
+              (string-append "https://github.com/silnrsi/graphite/releases/"
+                             "download/" version "/" name "-" version ".tgz")))
+       (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
-         "0rs5h7m340z75kygx8d72cps0q6yvvqa9i788vym7585cfv8a0gc"))))))
+         "1bm1rl2ww0m8rvmknh8fpajyz9xqv43qs9qrzf7xd5gaz6rf7zch"))))))
 
 (define-public potrace
   (package

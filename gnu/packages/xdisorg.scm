@@ -682,6 +682,7 @@ compact configuration syntax.")
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
+              (patches (search-patches "rxvt-unicode-escape-sequences.patch"))
               (sha256
                (base32
                 "1pddjn5ynblwfrdmskylrsxb9vfnk3w4jdnq2l8xn2pspkljhip9"))))

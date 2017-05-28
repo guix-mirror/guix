@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
+  %D%/packages/accessibility.scm		\
   %D%/packages/acct.scm				\
   %D%/packages/acl.scm				\
   %D%/packages/admin.scm			\
@@ -321,6 +322,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/protobuf.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/tryton.scm			\
   %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
@@ -426,6 +428,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dbus.scm				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
+  %D%/services/dns.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
@@ -595,6 +598,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/freetype-CVE-2017-8105.patch		\
   %D%/packages/patches/freetype-CVE-2017-8287.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
+  %D%/packages/patches/gajim-CVE-2016-10376.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -639,11 +643,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
-  %D%/packages/patches/graphite2-CVE-2017-5436.patch		\
-  %D%/packages/patches/graphite2-check-code-point-limit.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
-  %D%/packages/patches/graphite2-fix-32-bit-wrap-arounds.patch	\
-  %D%/packages/patches/graphite2-non-linear-classes-even-number.patch \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
@@ -750,9 +750,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
   %D%/packages/patches/libtiff-CVE-2017-5225.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-7593.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-7594.patch		\
-  %D%/packages/patches/libtiff-multiple-UBSAN-crashes.patch	\
   %D%/packages/patches/libtiff-assertion-failure.patch		\
   %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
   %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
@@ -931,6 +928,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
+  %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
+  %D%/packages/patches/python-genshi-buildable-on-python-2.7.patch	\
+  %D%/packages/patches/python-genshi-disable-speedups-on-python-3.3.patch	\
+  %D%/packages/patches/python-genshi-fix-tests-on-python-3.5.patch	\
+  %D%/packages/patches/python-genshi-isstring-helper.patch	\
+  %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
@@ -968,6 +971,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
+  %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/screen-fix-info-syntax-error.patch	\
@@ -986,7 +990,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/synfig-build-fix.patch			\
+  %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
