@@ -143,7 +143,9 @@ for tweening, preventing the need to hand-draw each frame.")
                   (substitute* "src/synfigapp/pluginmanager.cpp"
                     (("xmlpp::Node\\* n =")    "const xmlpp::Node* n =")
                     (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
-                  #t))))
+                  #t))
+              (patches
+               (search-patches "synfigstudio-fix-ui-with-gtk3.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtkmm" ,gtkmm)
