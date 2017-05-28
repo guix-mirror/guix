@@ -3001,3 +3001,24 @@ the Async RPC library.")
     (description "The Core suite of libraries is an alternative to OCaml's
 standard library that was developed by Jane Street.")
     (license license:asl2.0)))
+
+(define-public ocaml-async-unix
+  (package
+    (name "ocaml-async-unix")
+    (version "113.33.03")
+    (source (janestreet-origin "async_unix" version
+              "1fwl0lfrizllcfjk8hk8m7lsz9ha2jg6qgk4gssfyz377qvpcq4h"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-kernel" ,ocaml-async-kernel)
+       ("core" ,ocaml-core)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_unix")
+    (synopsis "Asynchronous execution library for Unix")
+    (description "Async_unix is an asynchronous execution library for Unix.")
+    (license license:asl2.0)))
