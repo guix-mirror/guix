@@ -3130,3 +3130,22 @@ big- and little-endian, with their unsafe counter-parts.")
 to access C-like structures directly from OCaml.  It supports both reading and
 writing to these structures, and they are accessed via the Bigarray module.")
     (license license:isc)))
+
+(define-public ocaml-hex
+  (package
+    (name "ocaml-hex")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-hex/"
+                                  "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0s63g0b8gfv2xm6fv6xg7bva8h76b5pcjb0zw3f8cygs0lq9072v"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (propagated-inputs `(("cstruct" ,ocaml-cstruct)))
+    (home-page "https://github.com/mirage/ocaml-hex/")
+    (synopsis "Minimal library providing hexadecimal converters")
+    (description "Hex is a minimal library providing hexadecimal converters.")
+    (license license:isc)))
