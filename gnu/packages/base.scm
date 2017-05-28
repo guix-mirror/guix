@@ -346,29 +346,6 @@ functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
 
-;; We add version 8.27 here for use in (gnu system) due to a time
-;; zone bug in `date' versions 8.25 - 8.26.
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=23035
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26238
-(define-public coreutils-8.27
-  (package
-    (inherit coreutils)
-    (version "8.27")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/coreutils/coreutils-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))
-    (arguments
-     (if (string-prefix? "arm" (or (%current-target-system)
-                                   (%current-system)))
-         (substitute-keyword-arguments (package-arguments coreutils)
-           ((#:phases phases)
-            `(alist-delete 'patch-cut-test ,phases)))
-         (package-arguments coreutils)))))
-
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
   (package
