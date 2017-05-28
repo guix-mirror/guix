@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -1073,26 +1073,8 @@ designed to work well in user interface environments.")
                                 name "-" version ".zip"))
             (sha256
              (base32
-              "1frhmw41lnnm9rda2zs202pvfi5vzlrsw4xfp4mswl0qgws61mcd"))))
-   (build-system trivial-build-system)
-   (native-inputs
-    `(("unzip" ,unzip)))
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let* ((font-dir (string-append %output
-                                                  "/share/fonts/opentype"))
-                         (source (assoc-ref %build-inputs "source"))
-                         (src-otf-file (string-append "font-awesome-"
-                                                      ,version
-                                                      "/fonts/FontAwesome.otf"))
-                         (dest-otf-file (string-append font-dir "/FontAwesome.otf"))
-                         (unzip (assoc-ref %build-inputs "unzip")))
-                    (setenv "PATH" (string-append unzip "/bin"))
-                    (mkdir-p font-dir)
-                    (system* "unzip" source "-d" ".")
-                    (copy-file src-otf-file dest-otf-file)))))
+              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
+   (build-system font-build-system)
    (home-page "http://fontawesome.io")
    (synopsis "Font that contains a rich iconset")
    (description
