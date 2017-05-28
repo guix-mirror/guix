@@ -3065,3 +3065,26 @@ async library.")
     (synopsis "Monadic concurrency library")
     (description "Async is a library for concurrent programming in OCaml.")
     (license license:asl2.0)))
+
+(define-public ocaml-ocplib-endian
+  (package
+    (name "ocaml-ocplib-endian")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OCamlPro/ocplib-endian/"
+                                  "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hwj09rnzjs0m0kazz5h2mgs6p95j0zlga8cda5srnzqmzhniwkn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("cppo" ,ocaml-cppo)))
+    (home-page "https://github.com/OCamlPro/ocplib-endian")
+    (synopsis "Optimised functions to read and write int16/32/64 from strings
+and bigarrays")
+    (description "Optimised functions to read and write int16/32/64 from strings
+and bigarrays, based on new primitives added in version 4.01.  It works on
+strings, bytes and bigstring (Bigarrys of chars), and provides submodules for
+big- and little-endian, with their unsafe counter-parts.")
+    (license license:lgpl2.1)))
