@@ -107,7 +107,6 @@ TrueType (TTF) files.")
              (sha256
               (base32
                "1mqpds24wfs5cmfhj57fsfs07mji2z8812i5c4pi5pbi738s977s"))))
-    (build-system trivial-build-system)
     (build-system font-build-system)
     (arguments
      `(#:phases
