@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
@@ -28,12 +28,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
@@ -53,7 +55,9 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xfig)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
@@ -383,3 +387,74 @@ developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     (license license:gpl3+)))
+
+(define-public hugin
+  (package
+    (name "hugin")
+    (version "2016.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/hugin/hugin/hugin-"
+                                  (version-major+minor version)
+                                  "/hugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "058zd63vx29yrx2pphbbll7kzcxkai22q26lpw13rn4lvp41pasl"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("enblend-enfuse" ,enblend-enfuse)
+       ("exiv2" ,exiv2)
+       ("fftw" ,fftw)
+       ("flann" ,flann)
+       ("freeglut" ,freeglut)
+       ("glew" ,glew)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpano13" ,libpano13)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("mesa" ,mesa)
+       ("openexr" ,openexr)
+       ("sqlite" ,sqlite)
+       ("vigra" ,vigra)
+       ("wxwidgets" ,wxwidgets)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:configure-flags
+       (list
+        ;; The header files of ilmbase (propagated by openexr) are not found
+        ;; when included by the header files of openexr, and an explicit
+        ;; flag needs to be set.
+        (string-append "-DCMAKE_CXX_FLAGS=-I"
+                       (assoc-ref %build-inputs "ilmbase")
+                       "/include/OpenEXR")
+        ;; Disable installation of the Python scripting interface.
+        ;; It would require the additional inputs python and swig.
+        ;; Installation would need to be tweaked, as it tries to install
+        ;; into the python directory.
+        "-DBUILD_HSI=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'substitute
+           (lambda _
+             (substitute* "src/hugin1/base_wx/StitchingExecutor.cpp"
+               (("wxT\\(\"enblend\"\\)")
+                (string-append "wxT(\"" (which "enblend") "\")"))
+               (("wxT\\(\"enfuse\"\\)")
+                (string-append "wxT(\"" (which "enfuse") "\")")))
+             #t)))))
+    (home-page "http://hugin.sourceforge.net/")
+    (synopsis "Panorama photo stitcher")
+    (description
+     "Hugin is an easy to use panoramic imaging toolchain with a graphical
+user interface.  It can be used to assemble a mosaic of photographs into
+a complete panorama and stitch any series of overlapping pictures.")
+    (license license:gpl2+)))
+
