@@ -2907,3 +2907,35 @@ the expected output.")
     (synopsis "Standard Jane Street ppx rewriters")
     (description "Ppx_jane is a ppx_driver including all standard ppx rewriters.")
     (license license:asl2.0)))
+
+(define-public ocaml-core-kernel
+  (package
+    (name "ocaml-core-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "core_kernel" version
+               "0fl23jrwivixawhxinbwaw9cabqnzn7fini7dxpxjjvkxdc8ip5y"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("bin_prot" ,ocaml-bin-prot)
+       ("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-bench" ,ocaml-ppx-bench)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-expect" ,ocaml-ppx-expect)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("typerep" ,ocaml-typerep)
+       ("sexplib" ,ocaml-sexplib)
+       ("variantslib" ,ocaml-variantslib)
+       ("result" ,ocaml-result)
+       ("fieldslib" ,ocaml-fieldslib)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/core_kernel/")
+    (synopsis "Portable standard library for OCaml")
+    (description "Core is an alternative to the OCaml standard library.
+
+Core_kernel is the system-independent part of Core.  It is aimed for cases when
+the full Core is not available, such as in Javascript.")
+    (license license:asl2.0)))
