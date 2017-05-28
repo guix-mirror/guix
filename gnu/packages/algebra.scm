@@ -132,7 +132,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.9.1")
+   (version "2.9.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -140,7 +140,7 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0rq7wz9df1xs4acdzzb5dapx8vs6m5py39n2wynw2qv4d2b0ylfw"))))
+                "0zi08qz9nk17wwdna4xb2vp3i3mh5sgv1y8wqbf0j2sfryxlr8ls"))))
    (build-system gnu-build-system)
    (native-inputs `(("texlive" ,texlive-minimal)))
    (inputs `(("gmp" ,gmp)
