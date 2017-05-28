@@ -4053,7 +4053,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.25.5")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4061,7 +4061,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10pv3v789hky8h7ladqzzmgvkmgy3c41n4xz0nnyjmpycwl26g29"))))
+                "0xak1f69lp1yx3p8jgmr9c0z3jypi8zjpy3kiknn5n9g2f5cqq0a"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4076,6 +4076,7 @@ metadata in photo and video files of various formats.")
      `(("glib:bin" ,glib "bin")
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
+       ("libgdata" ,libgdata)
        ("libgee" ,libgee)
        ("gexiv2" ,gexiv2)
        ("libraw" ,libraw)
