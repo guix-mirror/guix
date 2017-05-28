@@ -163,7 +163,7 @@ script.")
 
 (define-public graphicsmagick
   (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8") ; fix CVE-2017-6335
-        (revision "2"))
+        (revision "3"))
     (package
       (name "graphicsmagick")
       (version (string-append "1.3.25-" revision "."
@@ -180,7 +180,19 @@ script.")
                 ;;                    "/GraphicsMagick-" version ".tar.xz"))
                 (sha256
                  (base32
-                  "08yfsn8mrqkwpax43vv1crfr55rcf004wwpzsinr5c6m0asqr08b"))))
+                  "08yfsn8mrqkwpax43vv1crfr55rcf004wwpzsinr5c6m0asqr08b"))
+                (modules '((guix build utils)))
+                (snippet
+                  ;; Remove bundled software. This reduces the size of the built
+                  ;; source checkout from 177 MiB to 49 MiB. This should not be
+                  ;; necessary when using the GraphicsMagick release tarball,
+                  ;; because these files are not distributed there.
+                  '(for-each delete-file-recursively '("bzlib" "dcraw" "hp2xx"
+                                                       "jbig" "jp2" "jpeg"
+                                                       "lcms" "libxml" "png"
+                                                       "ralcgm" "tiff" "ttf"
+                                                       "webp" "wmf" "xlib"
+                                                       "zlib")))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags
