@@ -418,17 +418,16 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.27")
+   (version "2.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "125clslv17xh1sab74343fg6v31msavpmaa1c1394zsqa773g5rn"))
+              "0wiasgns7i8km8nrxas265sh2dfpsw93b3qw195ipc90w4z475v2"))
             (patches (search-patches "binutils-ld-new-dtags.patch"
-                                     "binutils-loongson-workaround.patch"
-                                     "binutils-mips-bash-bug.patch"))))
+                                     "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
@@ -439,10 +438,6 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Don't search under /usr/lib & co.
                           "--with-lib-path=/no-ld-lib-path"
-
-                          ;; Glibc 2.17 has a "comparison of unsigned
-                          ;; expression >= 0 is always true" in wchar.h.
-                          "--disable-werror"
 
                           ;; Install BFD.  It ends up in a hidden directory,
                           ;; but it's here.
