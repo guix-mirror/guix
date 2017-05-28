@@ -15050,3 +15050,32 @@ markdown.  The documentation may contain snippets of code surrounded by python
 code blocks and @code{Steadymark} will find these snippets and run them, making
 sure that there are no old malfunctional examples in the documentation examples.")
     (license license:expat)))
+
+(define-public python-nose-randomly
+  (package
+    (name "python-nose-randomly")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nose-randomly" version))
+       (sha256
+        (base32
+         "1cw9dlr1zh3w4i438kin7z0rm8092ki52hayisyc43h9pcplq7rn"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/adamchainz/nose-randomly")
+    (synopsis
+     "Nose plugin to randomly order tests and control random.seed")
+    (description
+     "This is a @code{Nose} plugin to randomly order tests which can be quite
+powerful in discovering hidden flaws in the tests themselves, while helping to
+reduce inter-test dependencies.  It also helps in controlling @code{random.seed},
+by resetting it to a repeatable number for each test, enabling the tests to
+create data based on random numbers and yet remain repeatable.")
+    (license license:bsd-3)))
+
+(define-public python2-nose-randomly
+  (package-with-python2 python-nose-randomly))
