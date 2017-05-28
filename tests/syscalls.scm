@@ -266,6 +266,14 @@
                (close-port file)
                result)))))))))
 
+(test-equal "set-thread-name"
+  "Syscall Test"
+  (let ((name (thread-name)))
+    (set-thread-name "Syscall Test")
+    (let ((new-name (thread-name)))
+      (set-thread-name name)
+      new-name)))
+
 (test-assert "all-network-interface-names"
   (match (all-network-interface-names)
     (((? string? names) ..1)

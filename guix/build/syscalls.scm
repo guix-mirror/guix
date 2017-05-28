@@ -69,6 +69,9 @@
             pivot-root
             fcntl-flock
 
+            set-thread-name
+            thread-name
+
             CLONE_CHILD_CLEARTID
             CLONE_CHILD_SETTID
             CLONE_NEWNS
@@ -881,6 +884,52 @@ exception if it's already taken."
         (unless (zero? ret)
           ;; Presumably we got EAGAIN or so.
           (throw 'flock-error err))))))
+
+
+;;;
+;;; Miscellaneous, aka. 'prctl'.
+;;;
+
+(define %prctl
+  ;; Should it win the API contest against 'ioctl'?  You tell us!
+  (syscall->procedure int "prctl"
+                      (list int unsigned-long unsigned-long
+                            unsigned-long unsigned-long)))
+
+(define PR_SET_NAME 15)                           ;<linux/prctl.h>
+(define PR_GET_NAME 16)
+
+(define %max-thread-name-length
+  ;; Maximum length in bytes of the process name, including the terminating
+  ;; zero.
+  16)
+
+(define (set-thread-name name)
+  "Set the name of the calling thread to NAME.  NAME is truncated to 15
+bytes."
+  (let ((ptr (string->pointer name)))
+    (let-values (((ret err)
+                  (%prctl PR_SET_NAME
+                          (pointer-address ptr) 0 0 0)))
+      (unless (zero? ret)
+        (throw 'set-process-name "set-process-name"
+               "set-process-name: ~A"
+               (list (strerror err))
+               (list err))))))
+
+(define (thread-name)
+  "Return the name of the calling thread as a string."
+  (let ((buf (make-bytevector %max-thread-name-length)))
+    (let-values (((ret err)
+                  (%prctl PR_GET_NAME
+                          (pointer-address (bytevector->pointer buf))
+                          0 0 0)))
+      (if (zero? ret)
+          (bytes->string (bytevector->u8-list buf))
+          (throw 'process-name "process-name"
+                 "process-name: ~A"
+                 (list (strerror err))
+                 (list err))))))
 
 
 ;;;
