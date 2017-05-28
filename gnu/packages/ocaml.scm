@@ -2939,3 +2939,23 @@ the expected output.")
 Core_kernel is the system-independent part of Core.  It is aimed for cases when
 the full Core is not available, such as in Javascript.")
     (license license:asl2.0)))
+
+(define-public ocaml-async-kernel
+  (package
+    (name "ocaml-async-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "async_kernel" version
+              "04bjsaa23j831r09r38x6xx9nhryvp0z5ihickvhxqa4fb2snyvd"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("core-kernel" ,ocaml-core-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_kernel/")
+    (synopsis "Monadic concurrency library")
+    (description "Async-kernel is a library for concurrent programming in OCaml.")
+    (license license:asl2.0)))
