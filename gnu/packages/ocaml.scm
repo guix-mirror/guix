@@ -3022,3 +3022,26 @@ standard library that was developed by Jane Street.")
     (synopsis "Asynchronous execution library for Unix")
     (description "Async_unix is an asynchronous execution library for Unix.")
     (license license:asl2.0)))
+
+(define-public ocaml-async-extra
+  (package
+    (name "ocaml-async-extra")
+    (version "113.33.03")
+    (source (janestreet-origin "async_extra" version
+              "1si8jgiq5xh5sl9f2b7f9p17p7zx5h1pg557x2cxywi2x7pxqg4f"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-rpc-kernel" ,ocaml-async-rpc-kernel)
+       ("async-unix" ,ocaml-async-unix)
+       ("core" ,ocaml-core)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_extra")
+    (synopsis "Extra functionnalities for the async library")
+    (description "Async_extra provides additional functionnalities for the
+async library.")
+    (license license:asl2.0)))
