@@ -2980,3 +2980,24 @@ the full Core is not available, such as in Javascript.")
     (description "Async_rpc_kernel is the platform-independent core of
 the Async RPC library.")
     (license license:asl2.0)))
+
+(define-public ocaml-core
+  (package
+    (name "ocaml-core")
+    (version "113.33.03")
+    (source (janestreet-origin "core" version
+              "1znll157qg56g9d3247fjibv1hxv3r9wxgr4nhy19j2vzdh6a268"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("core-kernel" ,ocaml-core-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/core/")
+    (synopsis "Alternative to OCaml's standard library")
+    (description "The Core suite of libraries is an alternative to OCaml's
+standard library that was developed by Jane Street.")
+    (license license:asl2.0)))
