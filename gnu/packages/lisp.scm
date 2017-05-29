@@ -881,6 +881,16 @@ from other CLXes around the net.")
 (define-public ecl-clx
   (sbcl-package->ecl-package sbcl-clx))
 
+(define-public sbcl-cl-ppcre-unicode
+  (package (inherit sbcl-cl-ppcre)
+    (name "sbcl-cl-ppcre-unicode")
+    (arguments
+     `(#:tests? #f ; tests fail with "Component :CL-PPCRE-TEST not found"
+       #:asd-file "cl-ppcre-unicode.asd"))
+    (inputs
+     `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+       ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
+
 (define-public sbcl-stumpwm
   (package
     (name "sbcl-stumpwm")
