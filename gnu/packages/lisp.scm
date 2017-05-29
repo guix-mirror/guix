@@ -1341,3 +1341,50 @@ compressor.  It works on data produced by @code{parse-js} to generate a
 @item remove some unreachable code
 @end itemize\n")
       (license license:zlib))))
+
+(define-public uglify-js
+  (package
+    (inherit sbcl-cl-uglify-js)
+    (name "uglify-js")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin/"))
+              (script (string-append bin "uglify-js")))
+         (use-modules (guix build utils))
+         (mkdir-p bin)
+         (with-output-to-file script
+           (lambda _
+             (format #t "#!~a/bin/sbcl --script
+ (require :asdf)
+ (push (truename \"~a/lib/sbcl\") asdf:*central-registry*)"
+                     (assoc-ref %build-inputs "sbcl")
+                     (assoc-ref %build-inputs "sbcl-cl-uglify-js"))
+             ;; FIXME: cannot use progn here because otherwise it fails to
+             ;; find cl-uglify-js.
+             (for-each
+              write
+              '(;; Quiet, please!
+                (let ((*standard-output* (make-broadcast-stream))
+                      (*error-output* (make-broadcast-stream)))
+                  (asdf:load-system :cl-uglify-js))
+                (let ((file (cadr *posix-argv*)))
+                  (if file
+                      (format t "~a"
+                              (cl-uglify-js:ast-gen-code
+                               (cl-uglify-js:ast-mangle
+                                (cl-uglify-js:ast-squeeze
+                                 (with-open-file (in file)
+                                                 (parse-js:parse-js in))))
+                               :beautify nil))
+                      (progn
+                       (format *error-output*
+                               "Please provide a JavaScript file.~%")
+                       (sb-ext:exit :code 1))))))))
+         (chmod script #o755)
+         #t)))
+    (inputs
+     `(("sbcl" ,sbcl)
+       ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
+    (synopsis "JavaScript compressor")))
