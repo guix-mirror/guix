@@ -510,14 +510,7 @@ the bootstrap environment."
      (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
-        ("perl" ,perl-boot0)
-        ;; Apply this patch only on i686 to avoid a full rebuild.
-        ;; TODO: Remove in the next update cycle.
-        ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                         (%current-system)))
-              `(("glibc-memchr-overflow-i686.patch"
-                 ,(search-patch "glibc-memchr-overflow-i686.patch")))
-              '())))
+        ("perl" ,perl-boot0)))
      (inputs
       `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
         ;; it in $CPATH, hence the 'pre-configure' phase above.
