@@ -233,13 +233,8 @@ output file formats and printers.")
 (define-public ijs
   (package
    (name "ijs")
-   (version "9.14.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
-                                version ".tar.xz"))
-            (sha256 (base32
-                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
+   (version (package-version ghostscript))
+   (source (package-source ghostscript))
    (build-system gnu-build-system)
    (native-inputs
     `(("libtool"    ,libtool)
@@ -269,7 +264,7 @@ output file formats and printers.")
 provides the reference implementation of the raster printer driver
 architecture.")
    (license license:expat)
-   (home-page "https://www.gnu.org/software/ghostscript/")))
+   (home-page (package-home-page ghostscript))))
 
 (define-public gs-fonts
   (package
