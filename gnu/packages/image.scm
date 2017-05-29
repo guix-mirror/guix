@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -391,7 +391,7 @@ collection of tools for doing simple manipulations of TIFF images.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.osgeo.org/libtiff/tiff-"
+       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
                            version ".tar.gz"))
        (sha256
         (base32
