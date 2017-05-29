@@ -43,6 +43,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -1461,9 +1462,12 @@ by applications to write metadata.")
                 "0q9ng4clqk2dqw43nk1pmq1d61rahc3qr4dmg4y3kjvz3ahnnijw"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("karchive" ,karchive) ; for Krita and OpenRaster images
+       ("openexr" ,openexr) ; for OpenEXR high dynamic-range images
+       ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1471,7 +1475,14 @@ by applications to write metadata.")
            (lambda _
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             #t)))
+       ;; FIXME: The header files of ilmbase (propagated by openexr) are not
+       ;; found when included by the header files of openexr, and an explicit
+       ;; flag needs to be set.
+       #:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                            (assoc-ref %build-inputs "ilmbase")
+                            "/include/OpenEXR"))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Plugins to allow QImage to support extra file formats")
     (description "This framework provides additional image format plugins for
