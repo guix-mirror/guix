@@ -23,7 +23,15 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
-  #:export (bootloader
+  #:export (menu-entry
+            menu-entry?
+            menu-entry-label
+            menu-entry-device
+            menu-entry-linux
+            menu-entry-linux-arguments
+            menu-entry-initrd
+
+            bootloader
             bootloader?
             bootloader-name
             bootloader-package
@@ -47,6 +55,22 @@
 
             %bootloaders
             lookup-bootloader-by-name))
+
+
+;;;
+;;; Menu-entry record.
+;;;
+
+(define-record-type* <menu-entry>
+  menu-entry make-menu-entry
+  menu-entry?
+  (label           menu-entry-label)
+  (device          menu-entry-device       ; file system uuid, label, or #f
+                   (default #f))
+  (linux           menu-entry-linux)
+  (linux-arguments menu-entry-linux-arguments
+                   (default '()))          ; list of string-valued gexps
+  (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
 
 ;;;

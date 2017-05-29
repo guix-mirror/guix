@@ -112,6 +112,7 @@
             boot-parameters-initrd
             read-boot-parameters
             read-boot-parameters-file
+            menu-entry->boot-parameters
 
             local-host-aliases
             %setuid-programs
@@ -299,6 +300,19 @@ The object has its kernel-arguments extended in order to make it bootable."
                                                      system
                                                      root-device)))
       #f)))
+
+(define (menu-entry->boot-parameters menu-entry)
+  "Convert a <menu-entry> instance to a corresponding <boot-parameters>."
+  (boot-parameters
+   (label (menu-entry-label menu-entry))
+   (root-device #f)
+   (boot-name 'custom)
+   (store-device #f)
+   (store-mount-point #f)
+   (kernel (menu-entry-linux menu-entry))
+   (kernel-arguments (menu-entry-linux-arguments menu-entry))
+   (initrd (menu-entry-initrd menu-entry))))
+
 
 ;;;
 ;;; Services.
