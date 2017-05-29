@@ -5,6 +5,7 @@
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,24 +247,22 @@ output file formats and printers.")
       ("autoconf"   ,autoconf)))
    (arguments
     `(#:phases
-      (alist-cons-after
-       'unpack 'autogen
-       (lambda _
-         ;; need to regenerate macros
-         (system* "autoreconf" "-if")
-         ;; do not run configure
-         (substitute* "autogen.sh"
-           (("^.*\\$srcdir/configure.*") ""))
-         (system* "bash" "autogen.sh")
-
-         ;; create configure script in ./ijs/
-         (chdir "ijs")
-         ;; do not run configure
-         (substitute* "autogen.sh"
-           (("^.*\\$srcdir/configure.*") "")
-           (("^ + && echo Now type.*$")  ""))
-         (zero? (system* "bash" "autogen.sh")))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+          (lambda _
+            ;; need to regenerate macros
+            (system* "autoreconf" "-if")
+            ;; do not run configure
+            (substitute* "autogen.sh"
+              (("^.*\\$srcdir/configure.*") ""))
+            (system* "bash" "autogen.sh")
+            ;; create configure script in ./ijs/
+            (chdir "ijs")
+            ;; do not run configure
+            (substitute* "autogen.sh"
+              (("^.*\\$srcdir/configure.*") "")
+              (("^ + && echo Now type.*$")  ""))
+            (zero? (system* "bash" "autogen.sh")))))))
    (synopsis "IJS driver framework for inkjet and other raster devices")
    (description
     "IJS is a protocol for transmission of raster page images.  This package
