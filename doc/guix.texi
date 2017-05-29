@@ -7331,7 +7331,7 @@ Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
 Once this is done, you should be able to reboot the system and boot from
-the USB stick.  The latter usually requires you to get in the BIOS' or
+the USB stick.  The latter usually requires you to get in the BIOS or
 UEFI boot menu, where you can choose to boot from the USB stick.
 
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
