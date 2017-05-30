@@ -245,7 +245,12 @@ Trailing spaces are trimmed."
   "Find and read the first primary volume descriptor, starting at OFFSET.
    Return #f if not found."
   (let* ((sblock    (read-superblock device offset 2048 iso9660-superblock?))
-         (type-code (if sblock (array-ref sblock 0) 255)))
+         (type-code (if sblock
+                        (bytevector-u8-ref sblock 0)
+                        (error (format #f
+                                       "Could not read ISO9660 primary
+volume descriptor from ~s"
+                                       device)))))
     (match type-code
       (255 #f) ; Volume Descriptor Set Terminator.
       (1 sblock) ; Primary Volume Descriptor
