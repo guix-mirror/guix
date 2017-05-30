@@ -640,11 +640,16 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                  (base32
                   "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))))
       (arguments
-       `(#:configure-flags
+       `(#:make-flags
+         ;; Ensure that the initial heap size is smaller than the maximum
+         ;; size.  By default only Xmx is set, which can lead to invalid
+         ;; memory settings on some machines with a lot of memory.
+         '("JAVAC_MEM_OPT=-J-Xms512M -J-Xmx768M")
+         #:configure-flags
          (list (string-append "--with-ecj-jar="
                               (assoc-ref %build-inputs "ecj-bootstrap")
                               "/share/java/ecj-bootstrap.jar")
-               (string-append "JAVAC="
+               (string-append "--with-javac="
                               (assoc-ref %build-inputs "ecj-javac-wrapper")
                               "/bin/javac")
                (string-append "JAVA="
