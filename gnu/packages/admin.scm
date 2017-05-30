@@ -812,7 +812,10 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "07fvh8qy0l1h93lccc625f48d8yp0pkp5rjjykq13pb07ar0x64y"))))
+                "07fvh8qy0l1h93lccc625f48d8yp0pkp5rjjykq13pb07ar0x64y"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "lib/zlib"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -860,6 +863,7 @@ system administrator.")
     (inputs
      `(("groff" ,groff)
        ("linux-pam" ,linux-pam)
+       ("zlib" ,zlib)
        ("coreutils" ,coreutils)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
