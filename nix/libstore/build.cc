@@ -2449,8 +2449,11 @@ void DerivationGoal::registerOutputs()
             Hash h2 = recursive ? hashPath(ht, actualPath).first : hashFile(ht, actualPath);
             if (h != h2)
                 throw BuildError(
-                    format("output path `%1%' should have %2% hash `%3%', instead has `%4%'")
-                    % path % i->second.hashAlgo % printHash16or32(h) % printHash16or32(h2));
+                    format("%1% hash mismatch for output path `%2%'\n"
+			   "  expected: %3%\n"
+			   "  actual:   %4%")
+                    % i->second.hashAlgo % path
+		    % printHash16or32(h) % printHash16or32(h2));
         }
 
         /* Get rid of all weird permissions.  This also checks that
@@ -3096,7 +3099,9 @@ void SubstitutionGoal::finished()
             Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
             Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
             if (expectedHash != actualHash)
-                throw SubstError(format("hash mismatch in downloaded path `%1%': expected %2%, got %3%")
+                throw SubstError(format("hash mismatch in downloaded path `%1%'\n"
+					"  expected: %2%\n"
+					"  actual:   %3%")
                     % storePath % printHash(expectedHash) % printHash(actualHash));
         }
 
