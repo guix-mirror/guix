@@ -147,8 +147,21 @@ for tweening, preventing the need to hand-draw each frame.")
               (patches
                (search-patches "synfigstudio-fix-ui-with-gtk3.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This fixes the file chooser crash that happens with GTK 3.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program (string-append out "/bin/synfigstudio")
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
+               #t))))))
     (inputs
      `(("gtkmm" ,gtkmm)
+       ("gtk+" ,gtk+)
        ("libsigc++" ,libsigc++)
        ("synfig" ,synfig)))
     (native-inputs
