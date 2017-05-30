@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.11")
+    (version "4.12")
     (source
      (origin
       (method url-fetch)
@@ -60,7 +61,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0h929bdq6w699y1mdkdajp5a6da8whgg3ba5p4j8x1wy36rlcjll"))))
+        "0ls7jdq3y5fnrwg0pzhq11m21r8pshac2705bczz6mqjc8pdllv7"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
