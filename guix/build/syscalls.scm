@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -68,6 +69,7 @@
             mkdtemp!
             fdatasync
             pivot-root
+            scandir*
             fcntl-flock
 
             set-thread-name
@@ -816,6 +818,128 @@ system to PUT-OLD."
           (throw 'system-error "pivot_root" "~S ~S: ~A"
                  (list new-root put-old (strerror err))
                  (list err)))))))
+
+
+;;;
+;;; Opendir & co.
+;;;
+
+(define-c-struct %struct-dirent-header
+  sizeof-dirent-header
+  (lambda (inode offset length type name)
+    ;; Convert TYPE to symbols like 'stat:type' does.
+    (let ((type (cond ((= type DT_REG)  'regular)
+                      ((= type DT_LNK)  'symlink)
+                      ((= type DT_DIR)  'directory)
+                      ((= type DT_FIFO) 'fifo)
+                      ((= type DT_CHR)  'char-special)
+                      ((= type DT_BLK)  'block-special)
+                      ((= type DT_SOCK) 'socket)
+                      (else             'unknown))))
+      `((type . ,type)
+        (inode . ,inode))))
+  read-dirent-header
+  write-dirent-header!
+  (inode  int64)
+  (offset int64)
+  (length unsigned-short)
+  (type   uint8)
+  (name   uint8))                                 ;first byte of 'd_name'
+
+;; Constants for the 'type' field, from <dirent.h>.
+(define DT_UNKNOWN 0)
+(define DT_FIFO 1)
+(define DT_CHR 2)
+(define DT_DIR 4)
+(define DT_BLK 6)
+(define DT_REG 8)
+(define DT_LNK 10)
+(define DT_SOCK 12)
+(define DT_WHT 14)
+
+(define string->pointer/utf-8
+  (cut string->pointer <> "UTF-8"))
+
+(define pointer->string/utf-8
+  (cut pointer->string <> <> "UTF-8"))
+
+(define opendir*
+  (let ((proc (syscall->procedure '* "opendir" '(*))))
+    (lambda* (name #:optional (string->pointer string->pointer/utf-8))
+      (let-values (((ptr err)
+                    (proc (string->pointer name))))
+        (if (null-pointer? ptr)
+            (throw 'system-error "opendir*"
+                   "opendir*: ~A"
+                   (list (strerror err))
+                   (list err))
+            ptr)))))
+
+(define closedir*
+  (let ((proc (syscall->procedure int "closedir" '(*))))
+    (lambda (directory)
+      (let-values (((ret err)
+                    (proc directory)))
+        (unless (zero? ret)
+          (throw 'system-error "closedir"
+                 "closedir: ~A" (list (strerror err))
+                 (list err)))))))
+
+(define readdir*
+  (let ((proc (syscall->procedure '* "readdir64" '(*))))
+    (lambda* (directory #:optional (pointer->string pointer->string/utf-8))
+      (let ((ptr (proc directory)))
+        (and (not (null-pointer? ptr))
+             (cons (pointer->string
+                    (make-pointer (+ (pointer-address ptr)
+                                     (c-struct-field-offset
+                                      %struct-dirent-header name)))
+                    -1)
+                   (read-dirent-header
+                    (pointer->bytevector ptr sizeof-dirent-header))))))))
+
+(define* (scandir* name #:optional
+                   (select? (const #t))
+                   (entry<? (lambda (entry1 entry2)
+                              (match entry1
+                                ((name1 . _)
+                                 (match entry2
+                                   ((name2 . _)
+                                    (string<? name1 name2)))))))
+                   #:key
+                   (string->pointer string->pointer/utf-8)
+                   (pointer->string pointer->string/utf-8))
+  "This procedure improves on Guile's 'scandir' procedure in several ways:
+
+   1. Systematically encode decode file names using STRING->POINTER and
+      POINTER->STRING (UTF-8 by default; this works around a defect in Guile 2.0/2.2
+      where 'scandir' decodes file names according to the current locale, which is
+      not always desirable.
+
+   2. Each entry that is returned has the form (NAME . PROPERTIES).
+      PROPERTIES is an alist showing additional properties about the entry, as
+      found in 'struct dirent'.  An entry may look like this:
+
+        (\"foo.scm\" (type . regular) (inode . 123456))
+
+      Callers must be prepared to deal with the case where 'type' is 'unknown'
+      since some file systems do not provide that information.
+
+   3. Raise to 'system-error' when NAME cannot be opened."
+  (let ((directory (opendir* name string->pointer)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (let loop ((result '()))
+          (match (readdir* directory pointer->string)
+            (#f
+             (sort result entry<?))
+            (entry
+             (loop (if (select? entry)
+                       (cons entry result)
+                       result))))))
+      (lambda ()
+        (closedir* directory)))))
 
 
 ;;;
