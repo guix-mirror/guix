@@ -958,6 +958,32 @@ demos.  It also acts as a nice screen locker.")
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
 
+(define-public xsel
+  (package
+    (name "xsel")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.vergenet.net/~conrad/software"
+                                  "/xsel/download/xsel-" version ".tar.gz"))
+              (sha256
+               (base32
+                "070lbcpw77j143jrbkh0y1v10ppn1jwmjf92800w7x42vh4cw9xr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)))
+    (home-page "http://www.vergenet.net/~conrad/software/xsel/")
+    (synopsis "Manipulate X selection")
+    (description
+     "XSel is a command-line program for getting and setting the contents of
+the X selection.  Normally this is only accessible by manually highlighting
+information and pasting it with the middle mouse button.
+
+XSel reads from standard input and writes to standard output by default,
+but can also follow a growing file, display contents, delete entries and more.")
+    (license (license:x11-style "file://COPYING"
+                                "See COPYING in the distribution."))))
+
 (define-public xdpyprobe
   (package
     (name "xdpyprobe")
