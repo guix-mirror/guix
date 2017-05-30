@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,3 +131,39 @@ for parsing and rendering CommonMark.")
     ;; licensed. The CommonMark specification is Creative Commons CC-BY-SA 4.0
     ;; licensed. See 'COPYING' in the source distribution for more information.
     (license (list bsd-2 expat cc-by-sa4.0))))
+
+(define-public smu
+  (package
+    (name "smu")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Gottox/smu/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iazl45rkz8ngsb5hpykl76w0ngvdvqqhym1qz5wykgmrzk293rp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f ;No tests included
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/Gottox/smu")
+    (synopsis "Simple markup")
+    (description
+     "Smu is a very simple and minimal markup language.  It is
+designed for using in wiki-like environments.  Smu makes it very
+easy to write your documents on the fly and convert them into HTML.
+Smu is capable to parse very large documents.  As long as you avoid an huge
+amount of indents it scales just great.
+
+Smu was started as a rewrite of Markdown but became something more
+lightweight and consistent.  The biggest difference between Markdown
+and smu is that smu doesn't support reference style links.")
+    (license x11)))
