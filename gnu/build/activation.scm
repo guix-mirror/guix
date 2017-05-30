@@ -130,14 +130,15 @@ properties.  Return #t on success."
       ;; 'useradd' fails with "Cannot determine your user name" if the root
       ;; account doesn't exist.  Thus, for bootstrapping purposes, create that
       ;; one manually.
-      (begin
+      (let ((home (or home "/root")))
         (call-with-output-file "/etc/shadow"
           (cut format <> "~a::::::::~%" name))
         (call-with-output-file "/etc/passwd"
           (cut format <> "~a:x:~a:~a:~a:~a:~a~%"
                name "0" "0" comment home shell))
         (chmod "/etc/shadow" #o600)
-        (copy-account-skeletons (or home "/root"))
+        (copy-account-skeletons home)
+        (chmod home #o700)
         #t)
 
       ;; Use 'useradd' from the Shadow package.
