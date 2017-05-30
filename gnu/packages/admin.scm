@@ -802,7 +802,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.19p1")
+    (version "1.8.20p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -812,7 +812,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "14pwdwl03kdbbyjkvxrfx409x3c1fjqz8aqz2wgwddinhz7v3bxq"))))
+                "07fvh8qy0l1h93lccc625f48d8yp0pkp5rjjykq13pb07ar0x64y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
