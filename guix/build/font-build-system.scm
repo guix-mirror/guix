@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,9 +51,9 @@ archive, or a font file."
          (source (getcwd))
          (fonts (string-append out "/share/fonts")))
     (for-each (cut install-file <> (string-append fonts "/truetype"))
-              (find-files source "\\.ttf$"))
+              (find-files source "\\.(ttf|ttc)$"))
     (for-each (cut install-file <> (string-append fonts "/opentype"))
-              (find-files source "\\.otf$"))
+              (find-files source "\\.(otf|otc)$"))
     #t))
 
 (define %standard-phases
