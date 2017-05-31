@@ -283,6 +283,7 @@ SBLOCK as a bytevector."
 (define (iso9660-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string.  The volume name is an ASCII
 string.  Trailing spaces are trimmed."
+  ;; Note: Valid characters are of the set "[0-9][A-Z]_" (ECMA-119 Appendix A)
   (string-trim-right (latin1->string (sub-bytevector sblock 40 32)
                                      (lambda (c) #f)) #\space))
 
