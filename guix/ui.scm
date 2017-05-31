@@ -632,6 +632,15 @@ report what is prerequisites are available for download."
                                            download))))
                      download)))
     ;; TODO: Show the installed size of DOWNLOAD.
+    (define download-size
+      (/ (reduce + 0 (map substitutable-download-size download))
+         1e6))
+
+    (define display-download-size?
+      ;; Sometimes narinfos lack information about the download size.  Only
+      ;; display when we have information for all of DOWNLOAD.
+      (not (any (compose zero? substitutable-download-size) download)))
+
     (if dry-run?
         (begin
           (format (current-error-port)
@@ -639,24 +648,40 @@ report what is prerequisites are available for download."
                       "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
-          (format (current-error-port)
-                  (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
-                      (length download))
-                  (null? download)
-                  (map substitutable-path download)))
+          (if display-download-size?
+              (format (current-error-port)
+                      ;; TRANSLATORS: "MB" is for "megabyte"; it should be
+                      ;; translated to the corresponding abbreviation.
+                      (G_ "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]")
+                      (null? download)
+                      download-size
+                      (map substitutable-path download))
+              (format (current-error-port)
+                      (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+                          "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
+                          (length download))
+                      (null? download)
+                      (map substitutable-path download))))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
-          (format (current-error-port)
-                  (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
-                      (length download))
-                  (null? download)
-                  (map substitutable-path download))))
+          (if display-download-size?
+              (format (current-error-port)
+                      ;; TRANSLATORS: "MB" is for "megabyte"; it should be
+                      ;; translated to the corresponding abbreviation.
+                      (G_ "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]")
+                      (null? download)
+                      download-size
+                      (map substitutable-path download))
+              (format (current-error-port)
+                      (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+                          "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
+                          (length download))
+                      (null? download)
+                      (map substitutable-path download)))))
     (pair? build)))
 
 (define show-what-to-build*
