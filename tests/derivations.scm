@@ -919,7 +919,7 @@
         (set! query paths)
         '())
 
-      (mock ((guix store) substitutable-paths
+      (mock ((guix store) substitutable-path-info
              record-substitutable-path-query)
 
             (let ((pred (substitution-oracle store (list drv))))

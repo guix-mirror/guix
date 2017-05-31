@@ -271,13 +271,14 @@ result is the set of prerequisites of DRV not already in valid."
 (define* (substitution-oracle store drv
                               #:key (mode (build-mode normal)))
   "Return a one-argument procedure that, when passed a store file name,
-returns #t if it's substitutable and #f otherwise.  The returned procedure
+returns a 'substitutable?' if it's substitutable and #f otherwise.
+The returned procedure
 knows about all substitutes for all the derivations listed in DRV, *except*
 those that are already valid (that is, it won't bother checking whether an
 item is substitutable if it's already on disk); it also knows about their
 prerequisites, unless they are themselves substitutable.
 
-Creating a single oracle (thus making a single 'substitutable-paths' call) and
+Creating a single oracle (thus making a single 'substitutable-path-info' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
 repeatedly, because it avoids the costs associated with launching the
 substituter many times."
@@ -318,8 +319,15 @@ substituter many times."
                                    (cons* self (dependencies drv) result)))))
                         '()
                         drv))))
-         (subst (list->set (substitutable-paths store paths))))
-    (cut set-contains? subst <>)))
+         (subst (fold (lambda (subst vhash)
+                        (vhash-cons (substitutable-path subst) subst
+                                    vhash))
+                      vlist-null
+                      (substitutable-path-info store paths))))
+    (lambda (item)
+      (match (vhash-assoc item subst)
+        (#f #f)
+        ((key . value) value)))))
 
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
