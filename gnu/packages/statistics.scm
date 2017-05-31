@@ -5231,3 +5231,29 @@ devices that don't have Cairo's capabilities such as alpha support or
 anti-aliasing.  Backends are modular such that any subset of backends
 is supported.")
     (license license:gpl2)))
+
+(define-public r-lubridate
+  (package
+    (name "r-lubridate")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lubridate" version))
+       (sha256
+        (base32
+         "0ci6rwij9i1inn840m0mlh1nqgh6vm2lada9kdnjpcjp5kyfv1qs"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page
+     "http://cran.r-project.org/web/packages/lubridate")
+    (synopsis "Make dealing with dates a little easier")
+    (description
+     "This package provides functions to work with date-times and time-spans:
+fast and user friendly parsing of date-time data, extraction and updating of
+components of a date-time (years, months, days, hours, minutes, and seconds),
+algebraic manipulation on date-time and time-span objects.  The 'lubridate'
+package has a consistent and memorable syntax that makes working with dates
+easy and fun.")
+    (license license:gpl2)))
