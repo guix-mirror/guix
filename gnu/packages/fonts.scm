@@ -1121,9 +1121,25 @@ later hand-tweaked with the gbdfed(1) editor:
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'chdir
-           (lambda _
-             (chdir "Web")
+         (add-after 'install 'install-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((conf-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fontconfig/conf.avail")))
+               (mkdir-p conf-dir)
+               (call-with-output-file
+                   (string-append conf-dir "/30-comic-neue.conf")
+                 (lambda (port)
+                   (format port "<?xml version=\"1.0\"?>
+<!DOCTYPE fontconfig SYSTEM \"fonts.dtd\">
+<fontconfig>
+  <!-- If Comic Sans is missing, use Comic Neue instead. -->
+  <alias>
+    <family>Comic Sans MS</family>
+    <prefer>
+      <family>Comic Neue</family>
+    </prefer>
+  </alias>
+</fontconfig>\n"))))
              #t)))))
     (home-page "http://www.comicneue.com/")
     (synopsis "Font that fixes the shortcomings of Comic Sans")
