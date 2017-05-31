@@ -249,6 +249,47 @@ levels.")
        `(("python2-pathlib" ,python2-pathlib)
          ,@(package-propagated-inputs python2-tmx))))))
 
+(define-public python-xsge
+  (package
+    (name "python-xsge")
+    (version "2017.04.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/xsge/xsge-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "04il5yx0py6kchxxw6ydbbx0wpiyjf9dgkwsdynirpkczlnid3am"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; xSGE's setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero?
+              (system* "python" "setup.py" "install"
+                       (string-append "--prefix=" (assoc-ref outputs "out"))
+                       "--root=/")))))
+       #:tests? #f)) ; no check target
+    (propagated-inputs
+     `(("python-sge-pygame" ,python-sge-pygame)
+       ("python-pygame" ,python-pygame)
+       ("python-six" ,python-six)
+       ("python-tmx" ,python-tmx)))
+    (home-page "http://xsge.nongnu.org")
+    (synopsis "Extensions for the SGE Game Engine")
+    (description
+     "xSGE is a collection of modules that make doing certain tasks with the SGE
+Game Engine easier.  In addition to SGE's conveniences, the user has access to a
+GUI toolkit, lighting and physics frameworks and @code{Tiled} TMX format
+support.")
+    (license license:gpl3+)))
+
+(define-public python2-xsge
+  (package-with-python2 python-xsge))
+
 (define-public tiled
   (package
     (name "tiled")
