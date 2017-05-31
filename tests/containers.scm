@@ -194,11 +194,12 @@
                                    %namespaces 1
                                    (lambda ()
                                      (sleep 100))))
+            (expected (namespaces pid))
             (result (container-excursion* pid
                       (lambda ()
                         (namespaces 1)))))
        (kill pid SIGKILL)
-       (equal? result (namespaces pid))))))
+       (equal? result expected)))))
 
 (skip-if-unsupported)
 (test-equal "container-excursion*, same namespaces"
