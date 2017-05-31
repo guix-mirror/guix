@@ -62,6 +62,7 @@
             file-system-fragment-size
             file-system-mount-flags
             statfs
+            free-disk-space
 
             processes
             mkdtemp!
@@ -696,6 +697,12 @@ mounted at FILE."
             (throw 'system-error "statfs" "~A: ~A"
                    (list file (strerror err))
                    (list err)))))))
+
+(define (free-disk-space file)
+  "Return the free disk space, in bytes, on the file system that hosts FILE."
+  (let ((fs (statfs file)))
+    (* (file-system-block-size fs)
+       (file-system-blocks-available fs))))
 
 
 ;;;
