@@ -1205,26 +1205,14 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
     (name "font-iosevka")
     (version "1.12.5")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append
                     "https://github.com/be5invis/Iosevka/releases/download/v"
                     version "/iosevka-pack-" version ".zip"))
               (sha256
                (base32
                 "0s3g6mk0ngwsrw9h9dqinb50cd9i8zhqdcmmh93fhyf4d87yfwyi"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (source (assoc-ref %build-inputs "source"))
-                         (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                                "/bin/unzip")))
-                     (mkdir-p font-dir)
-                     (system* unzip "-d" font-dir source)))))
-    (native-inputs `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
     (description
