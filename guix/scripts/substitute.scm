@@ -874,15 +874,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
     (format #t "~a~%" (narinfo-hash narinfo))
 
     (format (current-error-port)
-            ;; TRANSLATORS: The second part of this message looks like
-            ;; "(4.1MiB installed)"; it shows the size of the package once
-            ;; installed.
-            (G_ "Downloading ~a~:[~*~; (~a installed)~]...~%")
-            (uri->string uri)
-            ;; Use the Nar size as an estimate of the installed size.
-            (narinfo-size narinfo)
-            (and=> (narinfo-size narinfo)
-                   (cute byte-count->string <>)))
+            (G_ "Downloading ~a...~%") (uri->string uri))
     (let*-values (((raw download-size)
                    ;; Note that Hydra currently generates Nars on the fly
                    ;; and doesn't specify a Content-Length, so
