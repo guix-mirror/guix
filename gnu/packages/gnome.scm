@@ -1733,7 +1733,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.32")
+    (version "1.12.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1741,7 +1741,7 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3dxvdwzmppsp2dfg90rccilf4hknhwjdy7lazr9sys58zchyx0"))))
+                "09f7h4lvwzyl0amd3axapwbsrnrvvpwxyhs540jlrv425n0j0j8b"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -1774,7 +1774,9 @@ Hints specification (EWMH).")
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
+       ("docbook-xml" ,docbook-xml)
        ("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnumeric.org")
