@@ -258,11 +258,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                        ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
                        ;; cases in NAME, for instance, as is the case with
                        ;; "uwsgi".  In that case, fall back to a full URL.
-                       (uri ,(if (equal? (pypi-uri name version) source-url)
-                                 `(pypi-uri ,name version)
-                                 `(string-append
-                                   ,@(factorize-uri source-url version))))
-
+                       (uri (pypi-uri ,(string-downcase name) version))
                        (sha256
                         (base32
                          ,(guix-hash-url temp)))))
