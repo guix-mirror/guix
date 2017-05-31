@@ -38,7 +38,8 @@
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
-  #:use-module ((guix build syscalls) #:select (terminal-columns))
+  #:use-module ((guix build syscalls)
+                #:select (free-disk-space terminal-columns))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -581,6 +582,17 @@ error."
                   (derivation->output-path derivation out-name)))
                (derivation-outputs derivation))))
 
+(define (check-available-space need)
+  "Make sure at least NEED bytes are available in the store.  Otherwise emit a
+warning."
+  (let ((free (catch 'system-error
+                (lambda ()
+                  (free-disk-space (%store-prefix)))
+                (const #f))))
+    (when (and free (>= need free))
+      (warning (G_ "at least ~,1h MB needed but only ~,1h MB available in ~a~%")
+               (/ need 1e6) (/ free 1e6) (%store-prefix)))))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -631,7 +643,9 @@ report what is prerequisites are available for download."
                                            substitutable-references
                                            download))))
                      download)))
-    ;; TODO: Show the installed size of DOWNLOAD.
+    (define installed-size
+      (reduce + 0 (map substitutable-nar-size download)))
+
     (define download-size
       (/ (reduce + 0 (map substitutable-download-size download))
          1e6))
@@ -682,6 +696,9 @@ report what is prerequisites are available for download."
                           (length download))
                       (null? download)
                       (map substitutable-path download)))))
+
+    (check-available-space installed-size)
+
     (pair? build)))
 
 (define show-what-to-build*
