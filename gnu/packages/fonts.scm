@@ -1108,39 +1108,29 @@ later hand-tweaked with the gbdfed(1) editor:
 
 (define-public font-comic-neue
   (package
-   (name "font-comic-neue")
-   (version "2.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://www.comicneue.com/comic-neue-" version ".zip"))
-            (sha256
-             (base32
-              "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
-   (build-system trivial-build-system)
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let ((font-dir (string-append %output
-                                                 "/share/fonts/truetype"))
-                        (source (assoc-ref %build-inputs "source"))
-                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                               "/bin/unzip")))
-                    (mkdir-p font-dir)
-                    (system* unzip source)
-                    (with-directory-excursion
-                     (string-append "Web")
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$")))))))
-   (native-inputs `(("unzip" ,unzip)))
-   (home-page "http://www.comicneue.com/")
-   (synopsis "Font that fixes the shortcomings of Comic Sans")
-   (description
-    "Comic Neue is a font that attempts to create a respectable casual
+    (name "font-comic-neue")
+    (version "2.3")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append
+                    "http://www.comicneue.com/comic-neue-" version ".zip"))
+              (sha256
+               (base32
+                "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'chdir
+           (lambda _
+             (chdir "Web")
+             #t)))))
+    (home-page "http://www.comicneue.com/")
+    (synopsis "Font that fixes the shortcomings of Comic Sans")
+    (description
+     "Comic Neue is a font that attempts to create a respectable casual
 typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
-   (license license:silofl1.1)))
+    (license license:silofl1.1)))
 
 (define-public font-iosevka
   (package
