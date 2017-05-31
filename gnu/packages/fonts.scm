@@ -1226,39 +1226,33 @@ programming.  Iosevka is completely generated from its source code.")
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
         (revision "1"))
     (package
-     (name "font-go")
-     (version (string-append "20170330-" revision "." (string-take commit 7)))
-     (source (origin
-              (file-name (string-append "go-image-" version "-checkout"))
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://go.googlesource.com/image")
-                    (commit commit)))
-              (sha256
-               (base32
-                "1aq6mnjayks55gd9ahavk6jfydlq5lm4xm0xk4pd5sqa74p5p74d"))))
-     (build-system trivial-build-system)
-     (arguments
-      `(#:modules ((guix build utils))
-        #:builder (begin
-                    (use-modules (guix build utils))
-                    (let ((font-dir (string-append %output
-                                                   "/share/fonts/truetype"))
-                          (source (assoc-ref %build-inputs "source")))
-                      (mkdir-p font-dir)
-                      (with-directory-excursion
-                       (string-append source "/font/gofont/ttfs")
-                       (for-each (lambda (ttf)
-                                   (install-file ttf font-dir))
-                                 (find-files "." "\\.ttf$")))))))
-     (home-page "https://blog.golang.org/go-fonts")
-     (synopsis "The Go font family")
-     (description
-      "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
+      (name "font-go")
+      (version (string-append "20170330-" revision "." (string-take commit 7)))
+      (source (origin
+                (file-name (string-append "go-image-" version "-checkout"))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/image")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1aq6mnjayks55gd9ahavk6jfydlq5lm4xm0xk4pd5sqa74p5p74d"))))
+      (build-system font-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'chdir
+             (lambda _
+               (chdir "font/gofont/ttfs")
+               #t)))))
+      (home-page "https://blog.golang.org/go-fonts")
+      (synopsis "The Go font family")
+      (description
+       "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
 Holmes type foundry, released under the same license as the Go programming
 language.  It includes a set of proportional, sans-serif fonts, and a set of
 monospace, slab-serif fonts.")
-     (license (package-license go-1.4)))))
+      (license (package-license go-1.4)))))
 
 (define-public font-google-material-design-icons
   (package
