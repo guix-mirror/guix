@@ -1574,14 +1574,14 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.3.4")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons/" version
                                  "/scons-" version ".tar.gz"))
              (sha256
               (base32
-               "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
+               "1wji1z9jdkhnmm99apx6fhld9cs52rr56aigniyrcsmlwy52298b"))))
     (build-system python-build-system)
     (arguments
      ;; With Python 3.x, fails to build with a syntax error.
