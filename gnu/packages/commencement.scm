@@ -800,13 +800,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
-  ;; to the bootstrap GCC.
+  ;; to the bootstrap GCC.  Use "bash-minimal" to avoid an extra dependency
+  ;; on Readline and ncurses.
   (let ((bash (package
-                (inherit bash)
+                (inherit bash-minimal)
                 (arguments
                  `(#:disallowed-references
                    ,(assoc-ref %boot3-inputs "coreutils&co")
-                   ,@(package-arguments bash))))))
+                   ,@(package-arguments bash-minimal))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs (static-libgcc-package bash)
                                    %boot3-inputs
