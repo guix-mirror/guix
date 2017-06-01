@@ -409,6 +409,64 @@ Chess).  It is similar to standard chess but this variant is far more complicate
     "PrBoom+ is a Doom source port developed from the original PrBoom project.")
    (license license:gpl2+)))
 
+(define-public retux
+  (package
+    (name "retux")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/retux/"
+                                  (version-major+minor version) "/retux-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1wgvh3q96kfgymb2jpd58xsms9hmckhhc4fq7v2k61gh2l11cvdj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no setup.py script
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin"))
+                    (data   (string-append out "/share/retux"))
+                    (doc    (string-append out "/share/doc/retux")))
+               (mkdir-p bin)
+
+               (substitute* "retux.py"
+                 ;; Use the correct data directory.
+                 (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
+                  (string-append "\"" data "\","))
+                 ;; Use Python 3 so the patch-shebangs phase works properly.
+                 ((".*python2.*") "#!/usr/bin/python3"))
+
+               (copy-file "retux.py" (string-append bin "/retux"))
+
+               (copy-recursively "data" data)
+
+               (install-file "COPYING" doc)))))))
+    (inputs
+     `(("python-sge-pygame" ,python-sge-pygame)
+       ("python-six" ,python-six)
+       ("python-xsge" ,python-xsge)))
+    (home-page "http://retux.nongnu.org")
+    (synopsis "Action platformer game")
+    (description
+     "ReTux is an action platformer loosely inspired by the Mario games,
+utilizing the art assets from the @code{SuperTux} project.")
+    ;; GPL version 3 or later is the license for the code and some art.
+    ;; The rest of the licenses are for the art exclusively, as listed in
+    ;; data/LICENSES.
+    (license (list license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0
+                   license:gpl2+
+                   license:gpl3+))))
+
 (define-public xshogi
   (package
     (name "xshogi")
