@@ -448,6 +448,10 @@ written in Objective Caml.")
               (sha256
                (base32
                 "0wyywia0darak2zmc5v0ra9rn0b9whwdfiahralm8v5za499s8w3"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "COQPATH")
+            (files (list "lib/coq/user-contrib")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
