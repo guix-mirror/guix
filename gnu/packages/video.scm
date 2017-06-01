@@ -660,7 +660,10 @@ audio/video codec library.")
                "1a22b913p2227ljz89c4fgjlyln5gcz8z58w32r0wh4srnnd60y4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("git" ,git) ; needed for a test
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("git" ,git) ; needed for a test
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
@@ -688,6 +691,7 @@ audio/video codec library.")
        ("libxinerama" ,libxinerama)
        ("libxml2" ,libxml2)
        ("libxpm" ,libxpm)
+       ("livemedia-utils" ,livemedia-utils)
        ("lua" ,lua-5.1)
        ("mesa" ,mesa)
        ("opus" ,opus)
@@ -715,6 +719,15 @@ audio/video codec library.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _ (zero? (system* "sh" "bootstrap"))))
+         (add-before 'bootstrap 'fix-livemedia-utils-prefix
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((livemedia-utils (assoc-ref inputs "livemedia-utils")))
+               (substitute* "configure.ac"
+                 (("LIVE555_PREFIX=\\$\\{LIVE555_PREFIX-\"/usr\"\\}")
+                  (string-append "LIVE555_PREFIX=" livemedia-utils)))
+               #t)))
          (add-before 'configure 'remove-visual-tests
            ;; Some of the tests require using the display to test out VLC,
            ;; which fails in our sandboxed build system
