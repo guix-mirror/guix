@@ -1093,6 +1093,12 @@ later hand-tweaked with the gbdfed(1) editor:
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Delete Mac OS X specific files. If not deleted, these cause
+         ;; several hidden files to be installed.
+         (add-before 'install 'delete-macosx-files
+           (lambda _
+             (delete-file-recursively "__MACOSX")
+             #t))
          (add-after 'install 'install-conf
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((conf-dir (string-append (assoc-ref outputs "out")
