@@ -410,35 +410,7 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
               (sha256
                (base32
                 "1iad6rklxkx03ji1fav9faq7cmqkci3i6pcyg2ilvh984j5qzhq3"))))
-    (outputs '("out" "tw-kai" "tw-sung"))
-    (build-system trivial-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((font-dir "/share/fonts/truetype/cns11643")
-                (out (string-append
-                      (assoc-ref %outputs "out") font-dir))
-                (tw-kai (string-append
-                         (assoc-ref %outputs "tw-kai") font-dir))
-                (tw-sung (string-append
-                          (assoc-ref %outputs "tw-sung") font-dir))
-                (unzip (string-append
-                        (assoc-ref %build-inputs "unzip") "/bin/unzip")))
-           (system* unzip (assoc-ref %build-inputs "source"))
-           (chdir "Open_Data/Fonts/")
-           (install-file "TW-Kai-98_1.ttf" tw-kai)
-           (install-file "TW-Sung-98_1.ttf" tw-sung)
-           (install-file "TW-Kai-98_1.ttf" out)
-           (install-file "TW-Kai-Ext-B-98_1.ttf" out)
-           (install-file "TW-Kai-Plus-98_1.ttf" out)
-           (install-file "TW-Sung-98_1.ttf" out)
-           (install-file "TW-Sung-Ext-B-98_1.ttf" out)
-           (install-file "TW-Sung-Plus-98_1.ttf" out)
-           #t))))
+    (build-system font-build-system)
     (home-page "http://www.cns11643.gov.tw/AIDB/welcome.do")
     (synopsis "CJK TrueType fonts, TW-Kai and TW-Sung")
     (description
