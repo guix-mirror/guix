@@ -471,19 +471,7 @@ encoded in the user defined area of the Big-5 code.
        (sha256
         (base32
          "1qkljldbmb53zp1rcmpsb8rzy67rnsqcjxi549m9743ifk4isl78"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((font-dir (string-append %output
-                                        "/share/fonts/truetype/cns11643"))
-               (source (assoc-ref %build-inputs "source")))
-           (mkdir-p font-dir)
-           (copy-file source
-                      (string-append font-dir "/" "ebas927.ttf"))
-           #t))))
+    (build-system font-build-system)
     (home-page
      (string-append "http://www.cns11643.gov.tw/AIDB/download.do"
                     "?name=%E5%AD%97%E5%9E%8B%E4%B8%8B%E8%BC%89"))
