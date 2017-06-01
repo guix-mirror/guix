@@ -403,13 +403,13 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
 (define-public font-cns11643
   (package
     (name "font-cns11643")
-    (version "98.1.20170405")
+    (version "98.1.20170524")
     (source (origin
               (method url-fetch)
               (uri "http://www.cns11643.gov.tw/AIDB/Open_Data.zip")
               (sha256
                (base32
-                "02kb3bwjrra0k2hlr2p8xswd2y0xs6j8d9vm6yrby734h02a40qf"))))
+                "1iad6rklxkx03ji1fav9faq7cmqkci3i6pcyg2ilvh984j5qzhq3"))))
     (outputs '("out" "tw-kai" "tw-sung"))
     (build-system trivial-build-system)
     (native-inputs
