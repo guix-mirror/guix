@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
@@ -1604,6 +1606,31 @@ Since most SSH servers already support this protocol it is very easy to set
 up: on the server side there's nothing to do; on the client side mounting the
 file system is as easy as logging into the server with an SSH client.")
     (license license:gpl2+)))
+
+(define-public archivemount
+  (package
+    (name "archivemount")
+    (version "0.8.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.cybernoia.de/software/archivemount/"
+                           "archivemount-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1diiw6pnlnrnikn6l5ld92dx59lhrxjlqms8885vwbynsjl5q127"))))
+    (build-system gnu-build-system)
+    (inputs `(("fuse", fuse)
+              ("libarchive", libarchive)))
+    (native-inputs `(("pkg-config", pkg-config)))
+    (home-page "http://www.cybernoia.de/software/archivemount")
+    (synopsis "Tool for mounting archive files with FUSE")
+    (description "archivemount is a FUSE-based file system for Unix variants,
+including Linux.  Its purpose is to mount archives (i.e. tar, tar.gz, etc.) to a
+mount point where it can be read from or written to as with any other file
+system.  This makes accessing the contents of the archive, which may be
+compressed, transparent to other programs, without decompressing them.")
+    (license license:lgpl2.0+)))
 
 (define-public numactl
   (package
