@@ -208,6 +208,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
+  %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
   %D%/packages/julia.scm			\
