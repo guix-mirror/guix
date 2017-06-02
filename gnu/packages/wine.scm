@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,14 +55,14 @@
 (define-public wine
   (package
     (name "wine")
-    (version "2.4")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/2.x"
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "13klfadvd44zdfrzh38al99s53i02x3mlhcj5z7fq7vqwh3xzdc7"))))
+                "0pslhs3kwjimlz5ad6vzzdw7lgbfpwl8vyg4jmf17p61pfxzfimc"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
