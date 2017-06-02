@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1098,7 +1099,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.5.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1106,7 +1107,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rbdax3i33myg1v938pxy28117ihff2lml1ky6g70c8099fkirjx"))))
+        (base32 "01h9mswlfjk3zpdxwk1ciy5qkq6xq925gvk6wrh8k066b2wx8f8k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
