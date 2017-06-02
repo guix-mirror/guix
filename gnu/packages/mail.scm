@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170428")
+    (version "20170602")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01nkq0lyxcs0pk2i3rvzplg8bi1ga7kcm6hfh6r6w2qjzdm0q466"))))
+         "1kzhkz8bdqbdh5b6pzqb6ikp8d3nsic906b5pkmi6qlaga32yxjk"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
