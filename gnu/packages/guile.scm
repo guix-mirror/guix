@@ -153,7 +153,11 @@ without requiring the source code to be rewritten.")
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)
              ,@(libiconv-if-needed)
-             ,@(if (target-mingw?) '() `(("bash" ,bash)))))
+
+             ;; We need Bash when cross-compiling because some of the scripts
+             ;; in bin/ refer to it.  Use 'bash-minimal' because we don't need
+             ;; an interactive Bash with Readline and all.
+             ,@(if (target-mingw?) '() `(("bash" ,bash-minimal)))))
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
        ;; reads `-lltdl -lunistring', adding them here will add the needed
