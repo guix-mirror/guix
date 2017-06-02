@@ -225,14 +225,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.2")
+    (version "1.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0dgjjryp1ggbc6ivy9cfz5jl3gnbahb6d6hcwn7c7wk5npqpn18x"))
+               "0hpd896mw630sd6ps60hpka8cg691nvr627n8kmabv7zcxnp90cv"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
