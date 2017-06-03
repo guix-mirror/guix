@@ -1198,13 +1198,13 @@ use GNU gettext tools for maintenance.")
 (define-public ruby-test-unit
   (package
     (name "ruby-test-unit")
-    (version "3.1.5")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "test-unit" version))
               (sha256
                (base32
-                "0jxznjzwmrlp8wqjxsd06qbiddffn68pdhz6nrqpjbiln1z3af4w"))))
+                "09mb34lnffracsqxl4dav4c21p5nr4pj9hm5qy2s83k5hbjya3s7"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-power-assert" ,ruby-power-assert)))
