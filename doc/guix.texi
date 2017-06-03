@@ -1146,6 +1146,24 @@ Allow at most @var{n} build jobs in parallel.  The default value is
 locally; instead, the daemon will offload builds (@pxref{Daemon Offload
 Setup}), or simply fail.
 
+@item --max-silent-time=@var{seconds}
+When the build or substitution process remains silent for more than
+@var{seconds}, terminate it and report a build failure.
+
+The default value is @code{0}, which disables the timeout.
+
+The value specified here can be overridden by clients (@pxref{Common
+Build Options, @code{--max-silent-time}}).
+
+@item --timeout=@var{seconds}
+Likewise, when the build or substitution process lasts for more than
+@var{seconds}, terminate it and report a build failure.
+
+The default value is @code{0}, which disables the timeout.
+
+The value specified here can be overridden by clients (@pxref{Common
+Build Options, @code{--timeout}}).
+
 @item --rounds=@var{N}
 Build each derivation @var{n} times in a row, and raise an error if
 consecutive build results are not bit-for-bit identical.  Note that this
@@ -4940,12 +4958,15 @@ instead of offloading builds to remote machines.
 When the build or substitution process remains silent for more than
 @var{seconds}, terminate it and report a build failure.
 
+By default, the daemon's setting is honored (@pxref{Invoking
+guix-daemon, @code{--max-silent-time}}).
+
 @item --timeout=@var{seconds}
 Likewise, when the build or substitution process lasts for more than
 @var{seconds}, terminate it and report a build failure.
 
-By default there is no timeout.  This behavior can be restored with
-@code{--timeout=0}.
+By default, the daemon's setting is honored (@pxref{Invoking
+guix-daemon, @code{--timeout}}).
 
 @item --verbosity=@var{level}
 Use the given verbosity level.  @var{level} must be an integer between 0

@@ -81,6 +81,8 @@ builds derivations on behalf of its clients.");
 #define GUIX_OPT_GC_KEEP_OUTPUTS 15
 #define GUIX_OPT_GC_KEEP_DERIVATIONS 16
 #define GUIX_OPT_BUILD_ROUNDS 17
+#define GUIX_OPT_TIMEOUT 18
+#define GUIX_OPT_MAX_SILENT_TIME 19
 
 static const struct argp_option options[] =
   {
@@ -91,6 +93,10 @@ static const struct argp_option options[] =
     },
     { "max-jobs", 'M', n_("N"), 0,
       n_("allow at most N build jobs") },
+    { "timeout", GUIX_OPT_TIMEOUT, n_("SECONDS"), 0,
+      n_("mark builds as failed after SECONDS of activity") },
+    { "max-silent-time", GUIX_OPT_MAX_SILENT_TIME, n_("SECONDS"), 0,
+      n_("mark builds as failed after SECONDS of silence") },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
       n_("disable chroot builds") },
     { "chroot-directory", GUIX_OPT_CHROOT_DIR, n_("DIR"), 0,
@@ -244,6 +250,12 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case 'M':
       settings.set ("build-max-jobs", arg);
+      break;
+    case GUIX_OPT_TIMEOUT:
+      settings.set ("build-timeout", arg);
+      break;
+    case GUIX_OPT_MAX_SILENT_TIME:
+      settings.set ("build-max-silent-time", arg);
       break;
     case GUIX_OPT_SYSTEM:
       settings.thisSystem = arg;
