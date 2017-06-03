@@ -88,7 +88,7 @@
   "Return the base distribution module for a given module.  E.g. the 'ok'
 module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
 return \"Test-Simple\""
-  (assoc-ref (json-fetch (string-append "https://api.metacpan.org/module/"
+  (assoc-ref (json-fetch (string-append "https://fastapi.metacpan.org/v1/module/"
                                         module
                                         "?fields=distribution"))
              "distribution"))
@@ -113,7 +113,7 @@ return \"Test-Simple\""
   "Return an alist representation of the CPAN metadata for the perl module MODULE,
 or #f on failure.  MODULE should be e.g. \"Test::Script\""
   ;; This API always returns the latest release of the module.
-  (json-fetch (string-append "https://api.metacpan.org/release/" name)))
+  (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/" name)))
 
 (define (cpan-home name)
   (string-append "http://search.cpan.org/dist/" name))
