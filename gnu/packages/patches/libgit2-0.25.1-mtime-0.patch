@@ -1,0 +1,14 @@
+The Clar test framework has a bug whereby it skips the parsing phase
+on files with mtime=0.
+
+Reported upstream at <https://github.com/vmg/clar/pull/78>.
+
+diff --git a/tests/generate.py b/tests/generate.py
+index b639c8f..111ca41 100644
+--- a/tests/generate.py
++++ b/tests/generate.py
+@@ -63,3 +63,3 @@ class Module(object):
+ 
+-        self.mtime = 0
++        self.mtime = None # Guix sets all file mtimes to '0'
+         self.enabled = True
