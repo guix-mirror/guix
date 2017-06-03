@@ -121,7 +121,7 @@ programs.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libuv/libuv/archive/v"
@@ -129,7 +129,7 @@ programs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0yhw86011l2dg2prms0d86szygrix4pxpgnyzs7iljy2xk3fxivf"))))
+                "0l0jrb5q3i8br10c8skc6xdwlxkmlpn3n0kngaqd68fsi1593kj1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -157,8 +157,8 @@ similar IOCP, and event ports, asynchronous TCP/UDP sockets, asynchronous DNS
 resolution, asynchronous file system operations, and threading primitives.")
 
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
-    ;; details.
-    (license x11)))
+    ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
+    (license (list expat cc-by4.0))))
 
 (define-public perl-anyevent
   (package
