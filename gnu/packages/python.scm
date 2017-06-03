@@ -15121,3 +15121,24 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
 
 (define-public python2-rfc3987
   (package-with-python2 python-rfc3987))
+
+(define-public python-validate-email
+  (package
+    (name "python-validate-email")
+    (version "1.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "validate_email" version))
+      (sha256
+       (base32
+        "1bxffaf5yz2cph8ki55vdvdypbwkvn2xr1firlcy62vqbzf1jivq"))))
+    (build-system python-build-system)
+    (home-page "http://github.com/syrusakbary/validate_email")
+    (synopsis "Verifies if an email address is valid and really exists")
+    (description "@code{validate_email} can be used to verify if an email
+address is valid and really exists.")
+    (license license:lgpl3+)))
+
+(define-public python2-validate-email
+  (package-with-python2 python-validate-email))
