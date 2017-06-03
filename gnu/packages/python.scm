@@ -15142,3 +15142,32 @@ address is valid and really exists.")
 
 (define-public python2-validate-email
   (package-with-python2 python-validate-email))
+
+(define-public python-flex
+  (package
+    (name "python-flex")
+    (version "6.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "flex" version))
+      (sha256
+       (base32
+        "00pamnwla3khk8nyla7y28dq9jnh69swd7f4jfsl7sn1izs8n8zk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-iso8601" ,python-iso8601)
+       ("python-jsonpointer" ,python-jsonpointer)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-rfc3987" ,python-rfc3987)
+       ("python-six" ,python-six)
+       ("python-validate-email" ,python-validate-email)))
+    (home-page "https://github.com/pipermerriam/flex")
+    (synopsis "Validates Swagger schemata")
+    (description "@code{flex} can be used to validate Swagger schemata.")
+    (license license:bsd-3)))
+
+(define-public python2-flex
+  (package-with-python2 python-flex))
