@@ -2285,13 +2285,13 @@ documentation for Ruby code.")
 (define-public ruby-gem-hadar
   (package
     (name "ruby-gem-hadar")
-    (version "1.3.1")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "gem_hadar" version))
               (sha256
                (base32
-                "1j8qri4m9wf8nbfv0kakrgsv2x8vg10914xgm6f69nw8zi3i39ws"))))
+                "1zxvd9l95rbks7x3cxn396w0sn7nha5542bf97v8akkn4vm7nby9"))))
     (build-system ruby-build-system)
     ;; This gem needs itself at development time. We disable rebuilding of the
     ;; gemspec to avoid this loop.
@@ -2305,9 +2305,7 @@ documentation for Ruby code.")
     (propagated-inputs
      `(("git" ,git)
        ("ruby-tins" ,ruby-tins)
-       ("ruby-sdoc" ,ruby-sdoc)))
-    (native-inputs
-     `(("bundler" ,bundler)))
+       ("ruby-yard" ,ruby-yard)))
     (synopsis "Library for the development of Ruby gems")
     (description
      "This library contains some useful functionality to support the
