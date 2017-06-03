@@ -2229,9 +2229,15 @@ current line in an external editor.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-rubylib
+         (add-before 'check 'set-rubylib-and-patch-gemfile
           (lambda _
             (setenv "RUBYLIB" "lib")
+            (substitute* "sdoc.gemspec"
+              (("s.add_runtime_dependency.*") "\n")
+              (("s.add_dependency.*") "\n"))
+            (substitute* "Gemfile"
+              (("gem \"rake\".*")
+               "gem 'rake'\ngem 'rdoc'\ngem 'json'\n"))
             #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)))
