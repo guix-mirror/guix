@@ -2436,14 +2436,14 @@ when working with Ruby code.")
 (define-public ruby-json
   (package
     (name "ruby-json")
-    (version "1.8.3")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "json" version))
        (sha256
         (base32
-         "1nsby6ry8l9xg3yw4adlhk2pnc7i0h0rznvcss4vk3v74qg0k8lc"))))
+         "01v6jjpvh3gnq6sgllpfqahlgxzj50ailwhj9b3cd20hi2dx0vxp"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; dependency cycle with sdoc
     (synopsis "JSON library for Ruby")
