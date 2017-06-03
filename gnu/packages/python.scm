@@ -15250,3 +15250,53 @@ Swagger 2.0).")
 
 (define-public python2-apispec
   (package-with-python2 python-apispec))
+
+(define-public python-flasgger
+  (package
+    (name "python-flasgger")
+    (version "0.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/rochacbruno/flasgger/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1gqzlm0rb55fdpsy5ipkganlx9cnpi454fqyycr03jm22zql14ay"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("flake8 flasgger --ignore=F403")
+                "flake8 flasgger --ignore=E731,F403"))
+             (setenv "PYTHONPATH" (string-append (getcwd)
+                                                 ":"
+                                                 (getenv "PYTHONPATH")))
+             (zero? (system* "py.test")))))))
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-mistune" ,python-mistune)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-flake8" ,python-flake8)
+       ("python-flask-restful" ,python-flask-restful)
+       ("python-flex" ,python-flex)
+       ("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-apispec" ,python-apispec)))
+    (home-page "https://github.com/rochacbruno/flasgger/")
+    (synopsis "Extract Swagger specs from your Flask project")
+    (description "@code{python-flasgger} allows extracting Swagger specs
+from your Flask project.  It is a fork of Flask-Swagger.")
+    (license license:expat)))
+
+(define-public python2-flasgger
+  (package-with-python2 python-flasgger))
