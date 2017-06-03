@@ -15219,3 +15219,34 @@ complex datatypes to and from native Python datatypes.")
 
 (define-public python2-bottle
   (package-with-python2 python-bottle))
+
+(define-public python-apispec
+  (package
+    (name "python-apispec")
+    (version "0.22.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "apispec" version))
+      (sha256
+        (base32
+          "0y3jxmgp2d24am3hxl40f5rw9abb0r8037sagax3dv64h4n1azwq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-flask" ,python-flask)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-tornado" ,python-tornado)
+       ("python-bottle" ,python-bottle)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/marshmallow-code/apispec")
+    (synopsis "Swagger 2.0 API specification generator")
+    (description "@code{python-apispec} is a pluggable API specification
+generator. Currently supports the OpenAPI specification (f.k.a.
+Swagger 2.0).")
+    (license license:expat)))
+
+(define-public python2-apispec
+  (package-with-python2 python-apispec))
