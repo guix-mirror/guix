@@ -70,10 +70,10 @@
    (arguments
     `(#:tests? #f
       #:phases
-       (alist-cons-after
-        'configure 'provide-libtool
-        (lambda _ (copy-file (which "libtool") "libtool"))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-after 'configure 'provide-libtool
+          (lambda _ (copy-file (which "libtool") "libtool")
+            #t)))))
    (synopsis "Implementation of the Lightweight Directory Access Protocol")
    (description
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
