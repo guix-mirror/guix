@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,13 +29,16 @@
 ;;; Code:
 
 (define %artwork-repository
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
-          (commit "6998d30")))
-    (sha256
-     (base32
-      "0k7j3pj9s3zqiqmfkapypssvzx3f12yr0cc2rbzxqfii0b4clp1j"))))
+  (let ((commit "6998d30425289b087c64f63e7415df2241e591db"))
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
+             (commit commit)))
+      (file-name (string-append "guix-artwork-" (string-take commit 7)
+                                "-checkout"))
+      (sha256
+       (base32
+        "0k7j3pj9s3zqiqmfkapypssvzx3f12yr0cc2rbzxqfii0b4clp1j")))))
 
 ;;; artwork.scm ends here
