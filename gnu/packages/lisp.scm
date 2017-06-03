@@ -881,6 +881,16 @@ from other CLXes around the net.")
 (define-public ecl-clx
   (sbcl-package->ecl-package sbcl-clx))
 
+(define-public sbcl-cl-ppcre-unicode
+  (package (inherit sbcl-cl-ppcre)
+    (name "sbcl-cl-ppcre-unicode")
+    (arguments
+     `(#:tests? #f ; tests fail with "Component :CL-PPCRE-TEST not found"
+       #:asd-file "cl-ppcre-unicode.asd"))
+    (inputs
+     `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+       ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
+
 (define-public sbcl-stumpwm
   (package
     (name "sbcl-stumpwm")
@@ -1216,3 +1226,165 @@ multiple inspectors with independent history.")
            (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
+
+(define-public sbcl-parse-js
+  (let ((commit "fbadc6029bec7039602abfc06c73bb52970998f6")
+        (revision "1"))
+    (package
+      (name "sbcl-parse-js")
+      (version (string-append "0.0.0-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://marijn.haverbeke.nl/git/parse-js")
+               (commit commit)))
+         (file-name (string-append name "-" commit "-checkout"))
+         (sha256
+          (base32
+           "1wddrnr5kiya5s3gp4cdq6crbfy9fqcz7fr44p81502sj3bvdv39"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "http://marijnhaverbeke.nl/parse-js/")
+      (synopsis "Parse JavaScript")
+      (description "Parse-js is a Common Lisp package for parsing
+JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
+      (license license:zlib))))
+
+(define-public sbcl-parse-number
+  (package
+    (name "sbcl-parse-number")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sharplispers/parse-number/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k6s4v65ksc1j5i0dprvzfvj213v6nah7i0rgd0726ngfjisj9ir"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "http://www.cliki.net/PARSE-NUMBER")
+    (synopsis "Parse numbers")
+    (description "@code{parse-number} is a library of functions for parsing
+strings into one of the standard Common Lisp number types without using the
+reader.  @code{parse-number} accepts an arbitrary string and attempts to parse
+the string into one of the standard Common Lisp number types, if possible, or
+else @code{parse-number} signals an error of type @code{invalid-number}.")
+    (license license:bsd-3)))
+
+(define-public sbcl-iterate
+  (package
+    (name "sbcl-iterate")
+    ;; The latest official release (1.4.3) fails to build so we have to take
+    ;; the current darcs tarball from quicklisp.
+    (version "20160825")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/iterate/"
+                           "2016-08-25/iterate-"
+                           version "-darcs.tgz"))
+       (sha256
+        (base32
+         "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/iterate/")
+    (synopsis "Iteration construct for Common Lisp")
+    (description "@code{iterate} is an iteration construct for Common Lisp.
+It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
+
+@itemize
+@item it is extensible,
+@item it helps editors like Emacs indent iterate forms by having a more
+  lisp-like syntax, and
+@item it isn't part of the ANSI standard for Common Lisp.
+@end itemize\n")
+    (license license:expat)))
+
+(define-public sbcl-cl-uglify-js
+  ;; There have been many bug fixes since the 2010 release.
+  (let ((commit "429c5e1d844e2f96b44db8fccc92d6e8e28afdd5")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-uglify-js")
+      (version (string-append "0.1-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mishoo/cl-uglify-js.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0k39y3c93jgxpr7gwz7w0d8yknn1fdnxrjhd03057lvk5w8js27a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-parse-js" ,sbcl-parse-js)
+         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+         ("sbcl-cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("sbcl-parse-number" ,sbcl-parse-number)
+         ("sbcl-iterate" ,sbcl-iterate)))
+      (home-page "https://github.com/mishoo/cl-uglify-js")
+      (synopsis "JavaScript compressor library for Common Lisp")
+      (description "This is a Common Lisp version of UglifyJS, a JavaScript
+compressor.  It works on data produced by @code{parse-js} to generate a
+@dfn{minified} version of the code.  Currently it can:
+
+@itemize
+@item reduce variable names (usually to single letters)
+@item join consecutive @code{var} statements
+@item resolve simple binary expressions
+@item group most consecutive statements using the ``sequence'' operator (comma)
+@item remove unnecessary blocks
+@item convert @code{IF} expressions in various ways that result in smaller code
+@item remove some unreachable code
+@end itemize\n")
+      (license license:zlib))))
+
+(define-public uglify-js
+  (package
+    (inherit sbcl-cl-uglify-js)
+    (name "uglify-js")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin/"))
+              (script (string-append bin "uglify-js")))
+         (use-modules (guix build utils))
+         (mkdir-p bin)
+         (with-output-to-file script
+           (lambda _
+             (format #t "#!~a/bin/sbcl --script
+ (require :asdf)
+ (push (truename \"~a/lib/sbcl\") asdf:*central-registry*)"
+                     (assoc-ref %build-inputs "sbcl")
+                     (assoc-ref %build-inputs "sbcl-cl-uglify-js"))
+             ;; FIXME: cannot use progn here because otherwise it fails to
+             ;; find cl-uglify-js.
+             (for-each
+              write
+              '(;; Quiet, please!
+                (let ((*standard-output* (make-broadcast-stream))
+                      (*error-output* (make-broadcast-stream)))
+                  (asdf:load-system :cl-uglify-js))
+                (let ((file (cadr *posix-argv*)))
+                  (if file
+                      (format t "~a"
+                              (cl-uglify-js:ast-gen-code
+                               (cl-uglify-js:ast-mangle
+                                (cl-uglify-js:ast-squeeze
+                                 (with-open-file (in file)
+                                                 (parse-js:parse-js in))))
+                               :beautify nil))
+                      (progn
+                       (format *error-output*
+                               "Please provide a JavaScript file.~%")
+                       (sb-ext:exit :code 1))))))))
+         (chmod script #o755)
+         #t)))
+    (inputs
+     `(("sbcl" ,sbcl)
+       ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
+    (synopsis "JavaScript compressor")))

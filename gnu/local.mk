@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
+  %D%/packages/accessibility.scm		\
   %D%/packages/acct.scm				\
   %D%/packages/acl.scm				\
   %D%/packages/admin.scm			\
@@ -94,6 +95,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
   %D%/packages/cpio.scm				\
+  %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
@@ -321,6 +323,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/protobuf.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/tryton.scm			\
   %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
@@ -392,7 +395,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/vpn.scm				\
-  %D%/packages/vtk.scm				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
   %D%/packages/web.scm				\
@@ -426,6 +428,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dbus.scm				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
+  %D%/services/dns.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
@@ -592,6 +595,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
+  %D%/packages/patches/gajim-CVE-2016-10376.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -675,7 +679,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
-  %D%/packages/patches/jasper-CVE-2017-6850.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
   %D%/packages/patches/jbig2dec-CVE-2017-7885.patch		\
@@ -737,25 +740,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-5225.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-7593.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-7594.patch		\
-  %D%/packages/patches/libtiff-multiple-UBSAN-crashes.patch	\
-  %D%/packages/patches/libtiff-assertion-failure.patch		\
-  %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero-tiffcrop.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero.patch		\
-  %D%/packages/patches/libtiff-heap-overflow-pixarlog-luv.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tif-dirread.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tiffcp.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tiffcrop.patch	\
-  %D%/packages/patches/libtiff-invalid-read.patch		\
-  %D%/packages/patches/libtiff-null-dereference.patch		\
-  %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
@@ -858,6 +842,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9572-CVE-2016-9573.patch		\
+  %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
@@ -922,6 +907,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.5-getentropy-on-old-kernels.patch	\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
+  %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
+  %D%/packages/patches/python-genshi-buildable-on-python-2.7.patch	\
+  %D%/packages/patches/python-genshi-disable-speedups-on-python-3.3.patch	\
+  %D%/packages/patches/python-genshi-fix-tests-on-python-3.5.patch	\
+  %D%/packages/patches/python-genshi-isstring-helper.patch	\
+  %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
@@ -959,6 +950,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
+  %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/screen-fix-info-syntax-error.patch	\
@@ -977,7 +969,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/synfig-build-fix.patch			\
+  %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\

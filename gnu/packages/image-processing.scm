@@ -1,6 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +32,8 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages graphviz)
@@ -37,7 +42,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages vtk))
 
 ;; We use the latest snapshot of this package because the latest release is
@@ -128,3 +136,60 @@ is built around a plug-in structure that makes it easy to add functionality
 without compromising the original code base and it makes use of a wide variety
 of external libraries that provide additional functionality.")
     (license license:gpl3+)))
+
+(define-public vtk
+  (package
+    (name "vtk")
+    (version "7.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.vtk.org/files/release/"
+                                  (version-major+minor version)
+                                  "/VTK-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yj96z58haan77gzilnqp7xpf8hg5jk11a3jx55p2ksd400s0gjz"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:build-type "Release"           ;Build without '-g' to save space.
+       ;; -DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE requires netcdf_cxx
+       #:configure-flags '("-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_OGGTHEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+       #:tests? #f))                              ;XXX: no "test" target
+    (inputs
+     `(("libXt" ,libxt)
+       ("xproto" ,xproto)
+       ("libX11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("expat" ,expat)
+       ("freetype" ,freetype)
+       ("hdf5" ,hdf5)
+       ("jpeg" ,libjpeg)
+       ("jsoncpp" ,jsoncpp)
+       ("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("png" ,libpng)
+       ("tiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (home-page "http://www.vtk.org/")
+    (synopsis "Libraries for 3D computer graphics")
+    (description
+     "The Visualization Toolkit (VTK) is a C++ library for 3D computer graphics,
+image processing and visualization.  It supports a wide variety of
+visualization algorithms including: scalar, vector, tensor, texture, and
+volumetric methods; and advanced modeling techniques such as: implicit
+modeling, polygon reduction, mesh smoothing, cutting, contouring, and Delaunay
+triangulation.  VTK has an extensive information visualization framework, has
+a suite of 3D interaction widgets, supports parallel processing, and
+integrates with various databases on GUI toolkits such as Qt and Tk.")
+    (license license:bsd-3)))

@@ -199,6 +199,15 @@ info --version")
                          ',users+homes))
                marionette)))
 
+          (test-equal "permissions on /root"
+            #o700
+            (let ((root-home #$(any (lambda (account)
+                                      (and (zero? (user-account-uid account))
+                                           (user-account-home-directory
+                                            account)))
+                                    (operating-system-user-accounts os))))
+              (stat:perms (marionette-eval `(stat ,root-home) marionette))))
+
           (test-equal "no extra home directories"
             '()
 

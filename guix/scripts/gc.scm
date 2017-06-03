@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +20,7 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix store)
-  #:autoload   (guix build syscalls) (statfs)
+  #:autoload   (guix build syscalls) (free-disk-space)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -184,9 +184,7 @@ Invoke the garbage collector.\n"))
 
   (define (ensure-free-space store space)
     ;; Attempt to have at least SPACE bytes available in STORE.
-    (let* ((fs    (statfs (%store-prefix)))
-           (free  (* (file-system-block-size fs)
-                     (file-system-blocks-available fs))))
+    (let ((free (free-disk-space (%store-prefix))))
       (if (> free space)
           (info (G_ "already ~h bytes available on ~a, nothing to do~%")
                 free (%store-prefix))

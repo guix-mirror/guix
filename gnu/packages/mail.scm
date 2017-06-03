@@ -225,14 +225,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.2")
+    (version "1.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0dgjjryp1ggbc6ivy9cfz5jl3gnbahb6d6hcwn7c7wk5npqpn18x"))
+               "0hpd896mw630sd6ps60hpka8cg691nvr627n8kmabv7zcxnp90cv"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170428")
+    (version "20170602")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01nkq0lyxcs0pk2i3rvzplg8bi1ga7kcm6hfh6r6w2qjzdm0q466"))))
+         "1kzhkz8bdqbdh5b6pzqb6ikp8d3nsic906b5pkmi6qlaga32yxjk"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -421,7 +421,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.0")
+    (version "7.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -429,7 +429,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1r0sbgwyirpbks82ri9g88raf3mp8shq9rg0r92gkr7h6888v6fw"))))
+                "00xpxh0pxcvv3mjgb3vq3x51v498dhqcaixyb3a4srmfgskzh956"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -672,14 +672,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.24.1")
+    (version "0.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18rw0rim6zxhnr2nggial029x4raaxqcgf9klfbdhv89qvi7s4gs"))))
+                "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -1089,7 +1089,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.29.1")
+    (version "2.2.30.1")
     (source
      (origin
        (method url-fetch)
@@ -1097,7 +1097,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "127kn3fgmahw9fvgz2w3zaghq98ip4j8640wqa3rw7mrgvxrzync"))))
+                "1943n0b9zcwvymslai9qmdmnfy47zdnqjwkql586imycyx4xnjch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

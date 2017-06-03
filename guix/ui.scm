@@ -38,7 +38,8 @@
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
-  #:use-module ((guix build syscalls) #:select (terminal-columns))
+  #:use-module ((guix build syscalls)
+                #:select (free-disk-space terminal-columns))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -581,6 +582,17 @@ error."
                   (derivation->output-path derivation out-name)))
                (derivation-outputs derivation))))
 
+(define (check-available-space need)
+  "Make sure at least NEED bytes are available in the store.  Otherwise emit a
+warning."
+  (let ((free (catch 'system-error
+                (lambda ()
+                  (free-disk-space (%store-prefix)))
+                (const #f))))
+    (when (and free (>= need free))
+      (warning (G_ "at least ~,1h MB needed but only ~,1h MB available in ~a~%")
+               (/ need 1e6) (/ free 1e6) (%store-prefix)))))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -588,7 +600,7 @@ error."
 derivations listed in DRV using MODE, a 'build-mode' value.  Return #t if
 there's something to build, #f otherwise.  When USE-SUBSTITUTES?, check and
 report what is prerequisites are available for download."
-  (define substitutable?
+  (define substitutable-info
     ;; Call 'substitutation-oracle' upfront so we don't end up launching the
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
@@ -600,7 +612,7 @@ report what is prerequisites are available for download."
     (or (null? (derivation-outputs drv))
         (let ((out (derivation->output-path drv))) ;XXX: assume "out" exists
           (or (valid-path? store out)
-              (substitutable? out)))))
+              (substitutable-info out)))))
 
   (let*-values (((build download)
                  (fold2 (lambda (drv build download)
@@ -608,7 +620,8 @@ report what is prerequisites are available for download."
                                         (derivation-prerequisites-to-build
                                          store drv
                                          #:mode mode
-                                         #:substitutable? substitutable?)))
+                                         #:substitutable-info
+                                         substitutable-info)))
                             (values (append b build)
                                     (append d download))))
                         '() '()
@@ -622,13 +635,26 @@ report what is prerequisites are available for download."
                  (if use-substitutes?
                      (delete-duplicates
                       (append download
-                              (remove (cut valid-path? store <>)
-                                      (append-map
-                                       substitutable-references
-                                       (substitutable-path-info store
-                                                                download)))))
+                              (filter-map (lambda (item)
+                                            (if (valid-path? store item)
+                                                #f
+                                                (substitutable-info item)))
+                                          (append-map
+                                           substitutable-references
+                                           download))))
                      download)))
-    ;; TODO: Show the installed size of DOWNLOAD.
+    (define installed-size
+      (reduce + 0 (map substitutable-nar-size download)))
+
+    (define download-size
+      (/ (reduce + 0 (map substitutable-download-size download))
+         1e6))
+
+    (define display-download-size?
+      ;; Sometimes narinfos lack information about the download size.  Only
+      ;; display when we have information for all of DOWNLOAD.
+      (not (any (compose zero? substitutable-download-size) download)))
+
     (if dry-run?
         (begin
           (format (current-error-port)
@@ -636,22 +662,43 @@ report what is prerequisites are available for download."
                       "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
-          (format (current-error-port)
-                  (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
-                      (length download))
-                  (null? download) download))
+          (if display-download-size?
+              (format (current-error-port)
+                      ;; TRANSLATORS: "MB" is for "megabyte"; it should be
+                      ;; translated to the corresponding abbreviation.
+                      (G_ "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]")
+                      (null? download)
+                      download-size
+                      (map substitutable-path download))
+              (format (current-error-port)
+                      (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+                          "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
+                          (length download))
+                      (null? download)
+                      (map substitutable-path download))))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
-          (format (current-error-port)
-                  (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
-                      (length download))
-                  (null? download) download)))
+          (if display-download-size?
+              (format (current-error-port)
+                      ;; TRANSLATORS: "MB" is for "megabyte"; it should be
+                      ;; translated to the corresponding abbreviation.
+                      (G_ "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]")
+                      (null? download)
+                      download-size
+                      (map substitutable-path download))
+              (format (current-error-port)
+                      (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+                          "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
+                          (length download))
+                      (null? download)
+                      (map substitutable-path download)))))
+
+    (check-available-space installed-size)
+
     (pair? build)))
 
 (define show-what-to-build*

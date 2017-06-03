@@ -802,7 +802,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.19p1")
+    (version "1.8.20p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -812,7 +812,10 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "14pwdwl03kdbbyjkvxrfx409x3c1fjqz8aqz2wgwddinhz7v3bxq"))))
+                "1na5likm1srnd1g5sjx7b0543sczw0yppacyqsazfdg9b48awhmx"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "lib/zlib"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -860,6 +863,7 @@ system administrator.")
     (inputs
      `(("groff" ,groff)
        ("linux-pam" ,linux-pam)
+       ("zlib" ,zlib)
        ("coreutils" ,coreutils)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")

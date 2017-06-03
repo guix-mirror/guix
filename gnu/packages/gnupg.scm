@@ -410,7 +410,7 @@ and every application benefits from this.")
 (define-public python-gpg
   (package
     (name "python-gpg")
-    (version (package-version gpgme))
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gpg" version))

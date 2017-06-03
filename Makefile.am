@@ -76,6 +76,7 @@ MODULES =					\
   guix/build-system/cmake.scm			\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
+  guix/build-system/font.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
@@ -101,6 +102,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/font-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
   guix/build/hg.scm				\

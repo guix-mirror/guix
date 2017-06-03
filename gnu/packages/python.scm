@@ -1574,14 +1574,14 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.3.4")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons/" version
                                  "/scons-" version ".tar.gz"))
              (sha256
               (base32
-               "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
+               "1wji1z9jdkhnmm99apx6fhld9cs52rr56aigniyrcsmlwy52298b"))))
     (build-system python-build-system)
     (arguments
      ;; With Python 3.x, fails to build with a syntax error.
@@ -14800,3 +14800,125 @@ information.")
 
 (define-public python2-packaging
   (package-with-python2 python-packaging))
+
+(define-public python-sql
+  (package
+    (name "python-sql")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-sql" version))
+       (sha256
+        (base32
+         "0p6kaqj02vz0habmdx37zjk6hjxdfm8aw737zs059vvpr70ird87"))))
+    (build-system python-build-system)
+    (home-page "https://python-sql.tryton.org/")
+    (synopsis "Library to write SQL queries in a pythonic way")
+    (description "@code{python-sql} is a library to write SQL queries, that
+transforms idiomatic python function calls to well-formed SQL queries.")
+    (license license:bsd-3)))
+
+(define-public python2-sql
+  (package-with-python2 python-sql))
+
+(define-public python-genshi
+  (package
+    (name "python-genshi")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://ftp.edgewall.org/pub/genshi/Genshi-"
+             version ".tar.gz"))
+       (patches
+        (search-patches
+         ;; The first 4 patches are in the master branch upstream.
+         ;; See this as a reference https://genshi.edgewall.org/ticket/582
+         ;; The last 2 are NOT in any branch.
+         ;; They were sent as attachments to a ticket opened at
+         ;; https://genshi.edgewall.org/ticket/602#no1
+         "python-genshi-stripping-of-unsafe-script-tags.patch"
+         "python-genshi-disable-speedups-on-python-3.3.patch"
+         "python-genshi-isstring-helper.patch"
+         "python-genshi-add-support-for-python-3.4-AST.patch"
+         "python-genshi-fix-tests-on-python-3.5.patch"
+         "python-genshi-buildable-on-python-2.7.patch"))
+       (sha256
+        (base32
+         "0lkkbp6fbwzv0zda5iqc21rr7rdldkwh3hfabfjl9i4bwq14858x"))))
+    (build-system python-build-system)
+    (home-page "https://genshi.edgewall.org/")
+    (synopsis "Toolkit for generation of output for the web")
+    (description "Genshi is a Python library that provides an integrated set
+of components for parsing, generating, and processing HTML, XML or other
+textual content for output generation on the web.")
+    (license license:bsd-3)))
+
+;; The linter here claims that patch file names should start with the package
+;; name. But, in this case the patches are inherited from python-genshi with
+;; the "python-genshi-" prefix instead of "python2-genshi-".
+(define-public python2-genshi
+  (package-with-python2 python-genshi))
+
+(define-public python-relatorio
+  (package
+    (name "python-relatorio")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "relatorio" version))
+       (sha256
+        (base32
+         "0lincq79mzgazwd9gh41dybjh9c3n87r83pl8nk3j79aihyfk84z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-genshi" ,python-genshi)))
+    (home-page "https://relatorio.tryton.org/")
+    (synopsis "Templating library able to output ODT and PDF files")
+    (description "Relatorio is a templating library which provides a way to
+easily output ODT, ODS, PNG, SVG and several other kinds of files.  Support
+for more filetypes can be easily added by creating plugins for them.")
+    (license license:gpl3+)))
+
+(define-public python2-relatorio
+  (package-with-python2 python-relatorio))
+
+(define-public python-radon
+  (package
+    (name "python-radon")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "radon" version))
+       (sha256
+        (base32
+         "1h6jv36am0i827182a04ki6291lyx4kp957xfr5njgprj4nd0qsl"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-flake8-polyfill" ,python-flake8-polyfill)
+       ("python-mando" ,python-mando-0.3.1)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-tox" ,python-tox)
+       ("python-pytest" ,python-pytest)
+       ("python-paramunittest" ,python-paramunittest)))
+    (home-page "https://radon.readthedocs.org/")
+    (synopsis "Code Metrics in Python")
+    (description "Radon is a Python tool which computes various code metrics.
+Supported metrics are:
+@itemize @bullet
+@item raw metrics: SLOC, comment lines, blank lines, &c.
+@item Cyclomatic Complexity (i.e.  McCabe’s Complexity)
+@item Halstead metrics (all of them)
+@item the Maintainability Index (a Visual Studio metric)
+@end itemize")
+    (license license:expat)))
+
+(define-public python2-radon
+  (package-with-python2 python-radon))

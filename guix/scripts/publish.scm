@@ -58,6 +58,7 @@
                 #:select (with-atomic-file-output compressed-file?))
   #:use-module ((guix build utils)
                 #:select (dump-port mkdir-p find-files))
+  #:use-module ((guix build syscalls) #:select (set-thread-name))
   #:export (%public-key
             %private-key
 
@@ -649,6 +650,7 @@ blocking."
      ;; thread so that the main thread can keep working in the meantime.
      (call-with-new-thread
       (lambda ()
+        (set-thread-name "publish nar")
         (let* ((response (write-response (sans-content-length response)
                                          client))
                (port     (begin
@@ -670,6 +672,7 @@ blocking."
      ;; Send a raw file in a separate thread.
      (call-with-new-thread
       (lambda ()
+        (set-thread-name "publish file")
         (catch 'system-error
           (lambda ()
             (call-with-input-file (utf8->string body)
@@ -858,10 +861,16 @@ consider using the '--user' option!~%")))
                 (sockaddr:port address))
         (when repl-port
           (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
+
+        ;; Set the name of the main thread.
+        (set-thread-name "guix publish")
+
         (with-store store
           (run-publish-server socket store
                               #:cache cache
-                              #:pool (and cache (make-pool workers))
+                              #:pool (and cache (make-pool workers
+                                                           #:thread-name
+                                                           "publish worker"))
                               #:nar-path nar-path
                               #:compression compression
                               #:narinfo-ttl ttl))))))

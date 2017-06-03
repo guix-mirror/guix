@@ -236,7 +236,7 @@ Trailing spaces are trimmed."
 ;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-119.pdf>.
 
 (define (iso9660-superblock? sblock)
-  "Return #t when SBLOCK is a iso9660 superblock."
+  "Return #t when SBLOCK is an iso9660 volume descriptor."
   (bytevector=? (sub-bytevector sblock 1 6)
                 ;; Note: "\x01" is the volume descriptor format version
                 (string->utf8 "CD001\x01")))
@@ -245,20 +245,26 @@ Trailing spaces are trimmed."
   "Find and read the first primary volume descriptor, starting at OFFSET.
    Return #f if not found."
   (let* ((sblock    (read-superblock device offset 2048 iso9660-superblock?))
-         (type-code (if sblock (array-ref sblock 0) 255)))
+         (type-code (if sblock
+                        (bytevector-u8-ref sblock 0)
+                        (error (format #f
+                                       "Could not read ISO9660 primary
+volume descriptor from ~s"
+                                       device)))))
     (match type-code
       (255 #f) ; Volume Descriptor Set Terminator.
       (1 sblock) ; Primary Volume Descriptor
       (_ (read-iso9660-primary-volume-descriptor device (+ offset 2048))))))
 
 (define (read-iso9660-superblock device)
-  "Return the raw contents of DEVICE's iso9660 superblock as a bytevector, or
-#f if DEVICE does not contain a iso9660 file system."
+  "Return the raw contents of DEVICE's iso9660 primary volume descriptor
+as a bytevector, or #f if DEVICE does not contain an iso9660 file system."
   ;; Start reading at sector 16.
   (read-iso9660-primary-volume-descriptor device (* 2048 16)))
 
 (define (iso9660-superblock-uuid sblock)
-  "Return the modification time of a iso9660 superblock SBLOCK as a bytevector."
+  "Return the modification time of an iso9660 primary volume descriptor
+SBLOCK as a bytevector."
   ;; Drops GMT offset for compatibility with Grub, blkid and /dev/disk/by-uuid.
   ;; Compare Grub: "2014-12-02-19-30-23-00".
   ;; Compare blkid result: "2014-12-02-19-30-23-00".
@@ -282,6 +288,7 @@ Trailing spaces are trimmed."
 (define (iso9660-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string.  The volume name is an ASCII
 string.  Trailing spaces are trimmed."
+  ;; Note: Valid characters are of the set "[0-9][A-Z]_" (ECMA-119 Appendix A)
   (string-trim-right (latin1->string (sub-bytevector sblock 40 32)
                                      (lambda (c) #f)) #\space))
 

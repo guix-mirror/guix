@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -336,33 +336,14 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.0.7")
+   (version "4.0.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
                                 version ".tar.gz"))
-            (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
-                                     "libtiff-null-dereference.patch"
-                                     "libtiff-heap-overflow-tif-dirread.patch"
-                                     "libtiff-heap-overflow-pixarlog-luv.patch"
-                                     "libtiff-divide-by-zero.patch"
-                                     "libtiff-divide-by-zero-ojpeg.patch"
-                                     "libtiff-tiffcp-underflow.patch"
-                                     "libtiff-invalid-read.patch"
-                                     "libtiff-CVE-2016-10092.patch"
-                                     "libtiff-heap-overflow-tiffcrop.patch"
-                                     "libtiff-divide-by-zero-tiffcrop.patch"
-                                     "libtiff-CVE-2016-10093.patch"
-                                     "libtiff-divide-by-zero-tiffcp.patch"
-                                     "libtiff-assertion-failure.patch"
-                                     "libtiff-CVE-2016-10094.patch"
-                                     "libtiff-CVE-2017-5225.patch"
-                                     "libtiff-CVE-2017-7593.patch"
-                                     "libtiff-CVE-2017-7594.patch"
-                                     "libtiff-multiple-UBSAN-crashes.patch"))
             (sha256
              (base32
-              "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
+              "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -941,15 +922,15 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.12")
+    (version "2.0.13")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
-                                  "/software/jasper-" version ".tar.gz"))
+              (uri (string-append "https://github.com/mdadams/jasper/archive/"
+                                  "version-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1njdbxv7d4anzrd476wjww2qsi96dd8vfnp4hri0srrqxpszl92v"))
-              (patches (search-patches "jasper-CVE-2017-6850.patch"))))
+                "090cyqcvqp4y12nc57gvcbrk3ap1rnnixd4qj90sx0pw3fs1615m"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -780,7 +781,9 @@ engineering.")
            (let ((gzip (assoc-ref %build-inputs "gzip"))
                  (source (assoc-ref %build-inputs "source"))
                  (texinfo (assoc-ref %build-inputs "texinfo"))
+                 (html-dir (string-append %output "/share/doc/" ,name "/html"))
                  (info-dir (string-append %output "/share/info")))
+             (copy-recursively (string-append source "/html") html-dir)
              (setenv "PATH" (string-append gzip "/bin"
                                            ":" texinfo "/bin"))
              (mkdir-p info-dir)

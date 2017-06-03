@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,20 +31,21 @@
 
 (define-public libntlm
   (package
-   (name "libntlm")
-   (version "1.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.nongnu.org/libntlm/releases/libntlm-" version
-                                ".tar.gz"))
-            (sha256 (base32
-                     "101pr110ardcj2di940g6vaqifsaxc44h6hjn81l63dvmkj5a6ga"))))
-   (build-system gnu-build-system)
-   (synopsis "Library that implements NTLM authentication")
-   (description
-    "Libntlm is a library that implements NTLM authentication.")
-   (license license:lgpl2.1+)
-   (home-page "http://www.nongnu.org/libntlm/")))
+    (name "libntlm")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.nongnu.org/libntlm/releases/"
+                                  "libntlm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "129532iiip2cjr5h03bgz184v64v27sfm1r70v3ms4yk65gdf5c4"))))
+    (build-system gnu-build-system)
+    (synopsis "Library that implements NTLM authentication")
+    (description
+     "Libntlm is a library that implements NTLM authentication.")
+    (license license:lgpl2.1+)
+    (home-page "http://www.nongnu.org/libntlm/")))
 
 (define-public gss
   (package

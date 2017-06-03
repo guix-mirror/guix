@@ -296,6 +296,13 @@ session record port using PORT as its underlying communication port."
   (make-parameter (or (getenv "GUIX_TLS_CERTIFICATE_DIRECTORY")
                       (getenv "SSL_CERT_DIR"))))  ;like OpenSSL
 
+(define (set-certificate-credentials-x509-trust-file!* cred file format)
+  "Like 'set-certificate-credentials-x509-trust-file!', but without the file
+name decoding bug described at
+<https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26948#17>."
+  (let ((data (call-with-input-file file get-bytevector-all)))
+    (set-certificate-credentials-x509-trust-data! cred data format)))
+
 (define (make-credendials-with-ca-trust-files directory)
   "Return certificate credentials with X.509 authority certificates read from
 DIRECTORY.  Those authority certificates are checked when
@@ -309,7 +316,7 @@ DIRECTORY.  Those authority certificates are checked when
                 (let ((file (string-append directory "/" file)))
                   ;; Protect against dangling symlinks.
                   (when (file-exists? file)
-                    (set-certificate-credentials-x509-trust-file!
+                    (set-certificate-credentials-x509-trust-file!*
                      cred file
                      x509-certificate-format/pem))))
               (or files '()))

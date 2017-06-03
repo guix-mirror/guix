@@ -271,13 +271,14 @@ result is the set of prerequisites of DRV not already in valid."
 (define* (substitution-oracle store drv
                               #:key (mode (build-mode normal)))
   "Return a one-argument procedure that, when passed a store file name,
-returns #t if it's substitutable and #f otherwise.  The returned procedure
+returns a 'substitutable?' if it's substitutable and #f otherwise.
+The returned procedure
 knows about all substitutes for all the derivations listed in DRV, *except*
 those that are already valid (that is, it won't bother checking whether an
 item is substitutable if it's already on disk); it also knows about their
 prerequisites, unless they are themselves substitutable.
 
-Creating a single oracle (thus making a single 'substitutable-paths' call) and
+Creating a single oracle (thus making a single 'substitutable-path-info' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
 repeatedly, because it avoids the costs associated with launching the
 substituter many times."
@@ -318,21 +319,28 @@ substituter many times."
                                    (cons* self (dependencies drv) result)))))
                         '()
                         drv))))
-         (subst (list->set (substitutable-paths store paths))))
-    (cut set-contains? subst <>)))
+         (subst (fold (lambda (subst vhash)
+                        (vhash-cons (substitutable-path subst) subst
+                                    vhash))
+                      vlist-null
+                      (substitutable-path-info store paths))))
+    (lambda (item)
+      (match (vhash-assoc item subst)
+        (#f #f)
+        ((key . value) value)))))
 
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
                                             (mode (build-mode normal))
                                             (outputs
                                              (derivation-output-names drv))
-                                            (substitutable?
+                                            (substitutable-info
                                              (substitution-oracle store
                                                                   (list drv)
                                                                   #:mode mode)))
   "Return two values: the list of derivation-inputs required to build the
 OUTPUTS of DRV and not already available in STORE, recursively, and the list
-of required store paths that can be substituted.  SUBSTITUTABLE? must be a
+of required store paths that can be substituted.  SUBSTITUTABLE-INFO must be a
 one-argument procedure similar to that returned by 'substitution-oracle'."
   (define built?
     (cut valid-path? store <>))
@@ -343,7 +351,7 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
   (define input-substitutable?
     ;; Return true if and only if all of SUB-DRVS are subsitutable.  If at
     ;; least one is missing, then everything must be rebuilt.
-    (compose (cut every substitutable? <>) derivation-input-output-paths))
+    (compose (cut every substitutable-info <>) derivation-input-output-paths))
 
   (define (derivation-built? drv* sub-drvs)
     ;; In 'check' mode, assume that DRV is not built.
@@ -351,20 +359,24 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
                    (eq? drv* drv)))
          (every built? (derivation-output-paths drv* sub-drvs))))
 
-  (define (derivation-substitutable? drv sub-drvs)
+  (define (derivation-substitutable-info drv sub-drvs)
     (and (substitutable-derivation? drv)
-         (every substitutable? (derivation-output-paths drv sub-drvs))))
+         (let ((info (filter-map substitutable-info
+                                 (derivation-output-paths drv sub-drvs))))
+           (and (= (length info) (length sub-drvs))
+                info))))
 
   (let loop ((drv        drv)
              (sub-drvs   outputs)
-             (build      '())
-             (substitute '()))
+             (build      '())                     ;list of <derivation-input>
+             (substitute '()))                    ;list of <substitutable>
     (cond ((derivation-built? drv sub-drvs)
            (values build substitute))
-          ((derivation-substitutable? drv sub-drvs)
-           (values build
-                   (append (derivation-output-paths drv sub-drvs)
-                           substitute)))
+          ((derivation-substitutable-info drv sub-drvs)
+           =>
+           (lambda (substitutables)
+             (values build
+                     (append substitutables substitute))))
           (else
            (let ((build  (if (substitutable-derivation? drv)
                              build
@@ -381,8 +393,9 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
                     (append (append-map (lambda (input)
                                           (if (and (not (input-built? input))
                                                    (input-substitutable? input))
-                                              (derivation-input-output-paths
-                                               input)
+                                              (map substitutable-info
+                                                   (derivation-input-output-paths
+                                                    input))
                                               '()))
                                         (derivation-inputs drv))
                             substitute)

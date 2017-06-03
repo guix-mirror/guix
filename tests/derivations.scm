@@ -831,10 +831,10 @@
                     (derivation-prerequisites-to-build store drv))
                    ((build* download*)
                     (derivation-prerequisites-to-build store drv
-                                                       #:substitutable?
+                                                       #:substitutable-info
                                                        (const #f))))
         (and (null? build)
-             (equal? download (list output))
+             (equal? (map substitutable-path download) (list output))
              (null? download*)
              (null? build*))))))
 
@@ -879,7 +879,7 @@
           ;; See <http://bugs.gnu.org/18747>.
           (and (null? build)
                (match download
-                 (((? string? item))
+                 (((= substitutable-path item))
                   (string=? item (derivation->output-path drv))))))))))
 
 (test-assert "derivation-prerequisites-to-build in 'check' mode"
@@ -919,7 +919,7 @@
         (set! query paths)
         '())
 
-      (mock ((guix store) substitutable-paths
+      (mock ((guix store) substitutable-path-info
              record-substitutable-path-query)
 
             (let ((pred (substitution-oracle store (list drv))))

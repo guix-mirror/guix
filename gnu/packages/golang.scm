@@ -203,7 +203,7 @@ sequential processes (CSP) concurrent programming features added.")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.8.1")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
@@ -211,7 +211,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "0mqf8ydxdx1pwmrs8p8wl5y1qrplzxmxzgb6vkghy4l67z0g9nik"))))
+         "19lzv4lqixj3v2gjaff0fdbbmgsq5r8lrfd61z2zvp778wjflpaz"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -257,8 +257,8 @@ sequential processes (CSP) concurrent programming features added.")
                      "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
 
                  ;; Disable failing tests: these tests attempt to access
-                 ;; commands or network resources which are neither available or
-                 ;; necessary for the build to succeed.
+                 ;; commands or network resources which are neither available
+                 ;; nor necessary for the build to succeed.
                  (for-each
                   (match-lambda
                     ((file regex)

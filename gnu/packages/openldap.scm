@@ -31,6 +31,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages)
   #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -39,6 +40,7 @@
 (define-public openldap
   (package
    (name "openldap")
+   (replacement openldap/fixed)
    (version "2.4.44")
    (source (origin
             (method url-fetch)
@@ -78,6 +80,14 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "http://www.openldap.org/")))
+
+(define openldap/fixed
+  (package
+    (inherit openldap)
+    (source
+      (origin
+        (inherit (package-source openldap))
+        (patches (search-patches "openldap-CVE-2017-9287.patch"))))))
 
 (define-public nss-pam-ldapd
   (package

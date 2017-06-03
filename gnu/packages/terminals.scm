@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -146,17 +146,14 @@ insert mode and command mode where keybindings have different functions.")
 (define-public asciinema
   (package
     (name "asciinema")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/06/96/93947d9be78aebb7985014fdf"
-             "4d84896dd0f62514d922ee03f5bb55a21fb/asciinema-" version
-             ".tar.gz"))
+       (uri (pypi-uri "asciinema" version))
        (sha256
         (base32
-         "1crdm9zfdbjflvz1gsqvy5zsbgwdfkj34z69kg6h5by70rrs1hdc"))))
+         "1jrf8c8711gkdilmvyv3d37kp8xfvdc5cqighw5k92a6g9z4acgv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

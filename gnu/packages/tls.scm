@@ -478,13 +478,13 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.14.1")
+    (version "0.14.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "0asmkfkzbswnkrvbj5m01xgy4f6g1fjbj2nir1hhrn3ipcdrsv8f"))))
+        "1kbgpjabbly7r757vyr1050ixnm9hyvrbf9n6aq49cgmb147ysqn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -543,7 +543,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0rdby57hw35qdrbl7kigscphnz4kqb608bqzrcb73nb99092i6si"))))
+                "1b39hybswzm8mkarg1mwpx47wffqg57jcgi52mz5iz60rxym9j2v"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

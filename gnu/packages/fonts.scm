@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -42,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
@@ -64,18 +65,7 @@
               (sha256
                (base32
                 "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((font-dir (string-append %output
-                                                  "/share/fonts/opentype"))
-                         (source (assoc-ref %build-inputs "source")))
-                     (mkdir-p font-dir)
-                     (copy-file source
-                                (string-append font-dir "/" "inconsolata.otf"))))))
-    (native-inputs `(("source" ,source)))
+    (build-system font-build-system)
     (home-page "http://levien.com/type/myfonts/inconsolata.html")
     (synopsis "Monospace font")
     (description "A monospace font, designed for code listings and the like,
@@ -94,34 +84,7 @@ in print.  With attention to detail for high resolution rendering.")
               (sha256
                (base32
                 "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ubuntu-font-family-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$"))))))
-    (native-inputs `(("source" ,source)
-                     ("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://font.ubuntu.com/")
     (synopsis "The Ubuntu Font Family")
     (description "The Ubuntu Font Family is a unique, custom designed font
@@ -144,43 +107,15 @@ TrueType (TTF) files.")
              (sha256
               (base32
                "1mqpds24wfs5cmfhj57fsfs07mji2z8812i5c4pi5pbi738s977s"))))
-    (build-system trivial-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append
-                                    %output "/share/fonts/truetype"))
-                         (conf-dir (string-append
-                                    %output "/share/fontconfig/conf.avail"))
-                         (doc-dir  (string-append
-                                    %output "/share/doc/" ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p conf-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "dejavu-fonts-ttf-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "ttf" "\\.ttf$"))
-                     (for-each (lambda (conf)
-                                 (install-file conf conf-dir))
-                               (find-files "fontconfig" "\\.conf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((conf-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fontconfig/conf.avail")))
+               (copy-recursively "fontconfig" conf-dir)))))))
     (home-page "http://dejavu-fonts.org/")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
@@ -204,38 +139,7 @@ provide serif, sans and monospaced variants.")
              (sha256
               (base32
                "1p3qs51x5327gnk71yq8cvmxc6wgx79sqxfvxcv80cdvgggjfnyv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "bzip2")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "ttf-bitstream-vera-" ,version))
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (doc)
-                                 (install-file doc doc-dir))
-                               (find-files "." "\\.TXT$"))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+    (build-system font-build-system)
     (home-page "http://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
@@ -327,34 +231,7 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
               (sha256
                (base32
                 "010m4zfqan4w04b6bs9pm3gapn9hsb18bmwwgp2p6y6idj52g43q"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                        "/bin/tar"))
-               (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                        "/bin"))
-               (font-dir (string-append %output "/share/fonts/truetype"))
-               (doc-dir  (string-append %output "/share/doc/" ,name)))
-           (setenv "PATH" PATH)
-           (system* tar "xvf" (assoc-ref %build-inputs "source"))
-           (mkdir-p font-dir)
-           (mkdir-p doc-dir)
-           (chdir (string-append "liberation-fonts-ttf-" ,version))
-           (for-each (lambda (ttf)
-                       (install-file ttf font-dir))
-                     (find-files "." "\\.ttf$"))
-           (for-each (lambda (doc)
-                       (install-file doc doc-dir))
-                     '("AUTHORS" "ChangeLog" "LICENSE" "README" "TODO"))))))
-    (native-inputs
-     `(("source" ,source)
-       ("tar" ,tar)
-       ("gzip" ,gzip)))
+    (build-system font-build-system)
     (home-page "https://pagure.io/liberation-fonts/")
     (synopsis
      "Fonts compatible with Arial, Times New Roman, and Courier New")
@@ -526,42 +403,14 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
 (define-public font-cns11643
   (package
     (name "font-cns11643")
-    (version "98.1.20170405")
+    (version "98.1.20170524")
     (source (origin
               (method url-fetch)
               (uri "http://www.cns11643.gov.tw/AIDB/Open_Data.zip")
               (sha256
                (base32
-                "02kb3bwjrra0k2hlr2p8xswd2y0xs6j8d9vm6yrby734h02a40qf"))))
-    (outputs '("out" "tw-kai" "tw-sung"))
-    (build-system trivial-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((font-dir "/share/fonts/truetype/cns11643")
-                (out (string-append
-                      (assoc-ref %outputs "out") font-dir))
-                (tw-kai (string-append
-                         (assoc-ref %outputs "tw-kai") font-dir))
-                (tw-sung (string-append
-                          (assoc-ref %outputs "tw-sung") font-dir))
-                (unzip (string-append
-                        (assoc-ref %build-inputs "unzip") "/bin/unzip")))
-           (system* unzip (assoc-ref %build-inputs "source"))
-           (chdir "Open_Data/Fonts/")
-           (install-file "TW-Kai-98_1.ttf" tw-kai)
-           (install-file "TW-Sung-98_1.ttf" tw-sung)
-           (install-file "TW-Kai-98_1.ttf" out)
-           (install-file "TW-Kai-Ext-B-98_1.ttf" out)
-           (install-file "TW-Kai-Plus-98_1.ttf" out)
-           (install-file "TW-Sung-98_1.ttf" out)
-           (install-file "TW-Sung-Ext-B-98_1.ttf" out)
-           (install-file "TW-Sung-Plus-98_1.ttf" out)
-           #t))))
+                "1iad6rklxkx03ji1fav9faq7cmqkci3i6pcyg2ilvh984j5qzhq3"))))
+    (build-system font-build-system)
     (home-page "http://www.cns11643.gov.tw/AIDB/welcome.do")
     (synopsis "CJK TrueType fonts, TW-Kai and TW-Sung")
     (description
@@ -594,19 +443,7 @@ encoded in the user defined area of the Big-5 code.
        (sha256
         (base32
          "1qkljldbmb53zp1rcmpsb8rzy67rnsqcjxi549m9743ifk4isl78"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((font-dir (string-append %output
-                                        "/share/fonts/truetype/cns11643"))
-               (source (assoc-ref %build-inputs "source")))
-           (mkdir-p font-dir)
-           (copy-file source
-                      (string-append font-dir "/" "ebas927.ttf"))
-           #t))))
+    (build-system font-build-system)
     (home-page
      (string-append "http://www.cns11643.gov.tw/AIDB/download.do"
                     "?name=%E5%AD%97%E5%9E%8B%E4%B8%8B%E8%BC%89"))
@@ -1168,26 +1005,8 @@ designed to work well in user interface environments.")
                                 name "-" version ".zip"))
             (sha256
              (base32
-              "1frhmw41lnnm9rda2zs202pvfi5vzlrsw4xfp4mswl0qgws61mcd"))))
-   (build-system trivial-build-system)
-   (native-inputs
-    `(("unzip" ,unzip)))
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let* ((font-dir (string-append %output
-                                                  "/share/fonts/opentype"))
-                         (source (assoc-ref %build-inputs "source"))
-                         (src-otf-file (string-append "font-awesome-"
-                                                      ,version
-                                                      "/fonts/FontAwesome.otf"))
-                         (dest-otf-file (string-append font-dir "/FontAwesome.otf"))
-                         (unzip (assoc-ref %build-inputs "unzip")))
-                    (setenv "PATH" (string-append unzip "/bin"))
-                    (mkdir-p font-dir)
-                    (system* "unzip" source "-d" ".")
-                    (copy-file src-otf-file dest-otf-file)))))
+              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
+   (build-system font-build-system)
    (home-page "http://fontawesome.io")
    (synopsis "Font that contains a rich iconset")
    (description
@@ -1261,111 +1080,105 @@ later hand-tweaked with the gbdfed(1) editor:
 
 (define-public font-comic-neue
   (package
-   (name "font-comic-neue")
-   (version "2.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://www.comicneue.com/comic-neue-" version ".zip"))
-            (sha256
-             (base32
-              "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
-   (build-system trivial-build-system)
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let ((font-dir (string-append %output
-                                                 "/share/fonts/truetype"))
-                        (source (assoc-ref %build-inputs "source"))
-                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                               "/bin/unzip")))
-                    (mkdir-p font-dir)
-                    (system* unzip source)
-                    (with-directory-excursion
-                     (string-append "Web")
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$")))))))
-   (native-inputs `(("unzip" ,unzip)))
-   (home-page "http://www.comicneue.com/")
-   (synopsis "Font that fixes the shortcomings of Comic Sans")
-   (description
-    "Comic Neue is a font that attempts to create a respectable casual
+    (name "font-comic-neue")
+    (version "2.3")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append
+                    "http://www.comicneue.com/comic-neue-" version ".zip"))
+              (sha256
+               (base32
+                "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Delete Mac OS X specific files. If not deleted, these cause
+         ;; several hidden files to be installed.
+         (add-before 'install 'delete-macosx-files
+           (lambda _
+             (delete-file-recursively "__MACOSX")
+             #t))
+         (add-after 'install 'install-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((conf-dir (string-append (assoc-ref outputs "out")
+                                            "/share/fontconfig/conf.avail")))
+               (mkdir-p conf-dir)
+               (call-with-output-file
+                   (string-append conf-dir "/30-comic-neue.conf")
+                 (lambda (port)
+                   (format port "<?xml version=\"1.0\"?>
+<!DOCTYPE fontconfig SYSTEM \"fonts.dtd\">
+<fontconfig>
+  <!-- If Comic Sans is missing, use Comic Neue instead. -->
+  <alias>
+    <family>Comic Sans MS</family>
+    <prefer>
+      <family>Comic Neue</family>
+    </prefer>
+  </alias>
+</fontconfig>\n"))))
+             #t)))))
+    (home-page "http://www.comicneue.com/")
+    (synopsis "Font that fixes the shortcomings of Comic Sans")
+    (description
+     "Comic Neue is a font that attempts to create a respectable casual
 typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
-   (license license:silofl1.1)))
+    (license license:silofl1.1)))
 
 (define-public font-iosevka
   (package
-   (name "font-iosevka")
-   (version "1.11.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/be5invis/Iosevka/releases/download/v"
-                  version "/iosevka-pack-" version ".zip"))
-            (sha256
-             (base32
-              "0d8prdk7s5z94sdfd0y92cvqq531yqrlg7hnadbnhd7fs9jqr5hj"))))
-   (build-system trivial-build-system)
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let ((font-dir (string-append %output
-                                                 "/share/fonts/truetype"))
-                        (source (assoc-ref %build-inputs "source"))
-                        (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                               "/bin/unzip")))
-                    (mkdir-p font-dir)
-                    (system* unzip "-d" font-dir source)))))
-   (native-inputs `(("unzip" ,unzip)))
-   (home-page "https://be5invis.github.io/Iosevka/")
-   (synopsis "Coders' typeface, built from code")
-   (description
-    "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
-by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
-programming.  Iosevka is completely generated from its source code.")
-   (license (list license:silofl1.1  ; build artifacts (i.e. the fonts)
-                  license:bsd-3))))  ; supporting code
-
-(define-public font-go
-  (let ((commit "b7f8df6bc082334698d4505fb85fa05e99156b72")
-        (revision "1"))
-    (package
-     (name "font-go")
-     (version (string-append "20161115-" revision "." (string-take commit 7)))
-     (source (origin
-              (file-name (string-append "go-image-" version "-checkout"))
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://go.googlesource.com/image")
-                    (commit commit)))
+    (name "font-iosevka")
+    (version "1.12.5")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append
+                    "https://github.com/be5invis/Iosevka/releases/download/v"
+                    version "/iosevka-pack-" version ".zip"))
               (sha256
                (base32
-                "1ywxs6dmcyzwwsmnan3qqza7znprnbvmdi260x6sjmydz6dyq2zs"))))
-     (build-system trivial-build-system)
-     (arguments
-      `(#:modules ((guix build utils))
-        #:builder (begin
-                    (use-modules (guix build utils))
-                    (let ((font-dir (string-append %output
-                                                   "/share/fonts/truetype"))
-                          (source (assoc-ref %build-inputs "source")))
-                      (mkdir-p font-dir)
-                      (with-directory-excursion
-                       (string-append source "/font/gofont/ttfs")
-                       (for-each (lambda (ttf)
-                                   (install-file ttf font-dir))
-                                 (find-files "." "\\.ttf$")))))))
-     (home-page "https://blog.golang.org/go-fonts")
-     (synopsis "The Go font family")
-     (description
-      "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
+                "0s3g6mk0ngwsrw9h9dqinb50cd9i8zhqdcmmh93fhyf4d87yfwyi"))))
+    (build-system font-build-system)
+    (home-page "https://be5invis.github.io/Iosevka/")
+    (synopsis "Coders' typeface, built from code")
+    (description
+     "Iosevka is a slender monospace sans-serif or slab-serif typeface inspired
+by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
+programming.  Iosevka is completely generated from its source code.")
+    (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
+                   license:bsd-3)))) ; supporting code
+
+(define-public font-go
+  (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
+        (revision "1"))
+    (package
+      (name "font-go")
+      (version (string-append "20170330-" revision "." (string-take commit 7)))
+      (source (origin
+                (file-name (string-append "go-image-" version "-checkout"))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/image")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1aq6mnjayks55gd9ahavk6jfydlq5lm4xm0xk4pd5sqa74p5p74d"))))
+      (build-system font-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'chdir
+             (lambda _
+               (chdir "font/gofont/ttfs")
+               #t)))))
+      (home-page "https://blog.golang.org/go-fonts")
+      (synopsis "The Go font family")
+      (description
+       "The Go font family is a set of WGL4 TrueType fonts from the Bigelow &
 Holmes type foundry, released under the same license as the Go programming
 language.  It includes a set of proportional, sans-serif fonts, and a set of
 monospace, slab-serif fonts.")
-     (license (package-license go-1.4)))))
+      (license (package-license go-1.4)))))
 
 (define-public font-google-material-design-icons
   (package

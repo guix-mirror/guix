@@ -23,6 +23,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module ((guix build syscalls) #:select (set-thread-name))
   #:export (pool?
             make-pool
             pool-enqueue!
@@ -60,7 +61,8 @@
     (lambda ()
       (lock-mutex mutex))))
 
-(define (worker-thunk mutex condvar pop-queue)
+(define* (worker-thunk mutex condvar pop-queue
+                       #:key (thread-name "guix worker"))
   "Return the thunk executed by worker threads."
   (define (loop)
     (match (pop-queue)
@@ -80,11 +82,18 @@
     (loop))
 
   (lambda ()
+    (catch 'system-error
+      (lambda ()
+        (set-thread-name thread-name))
+      (const #f))
+
     (with-mutex mutex
       (loop))))
 
-(define* (make-pool #:optional (count (current-processor-count)))
-  "Return a pool of COUNT workers."
+(define* (make-pool #:optional (count (current-processor-count))
+                    #:key (thread-name "guix worker"))
+  "Return a pool of COUNT workers.  Use THREAD-NAME as the name of these
+threads as reported by the operating system."
   (let* ((mutex   (make-mutex))
          (condvar (make-condition-variable))
          (queue   (make-q))
@@ -93,7 +102,8 @@
                             (worker-thunk mutex condvar
                                           (lambda ()
                                             (and (not (q-empty? queue))
-                                                 (q-pop! queue)))))
+                                                 (q-pop! queue)))
+                                          #:thread-name thread-name))
                           1+
                           0))
          (threads (map (lambda (proc)

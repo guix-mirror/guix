@@ -146,7 +146,8 @@ absolute file name and STAT is the result of 'lstat'."
                           (line
                            (loop (cons line lines))))))
          (inodes      (map (lambda (file)
-                             (let ((stat (lstat file)))
+                             (let ((stat (lstat
+                                          (string-append directory "/" file))))
                                (cons (stat:dev stat) (stat:ino stat))))
                            files))
          (status      (close-pipe pipe)))

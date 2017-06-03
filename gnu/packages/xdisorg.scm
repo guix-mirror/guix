@@ -441,7 +441,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.38")
+    (version "6.3.41")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -450,7 +450,7 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jh08k7nqx6hr4rmb5damzqhnqiac439i6i51fmzymzw3fqykas8"))))
+                "1yiv0ak1z7zbmcdw0dwx2gpblrh7l7s3l7y7sgpx071dy8s4rqpb"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -472,7 +472,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.4.62")
+    (version "5.4.63")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -481,7 +481,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "084czvwcicl8apjlv729inxx8rpycra76ignfjmcbaq0hhn6ip6w"))))
+                "0ncly3mmg9pihda3jfwmvfa4sd3xanrm8hpvfq7lr2rl8rqknx80"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -682,6 +682,7 @@ compact configuration syntax.")
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
+              (patches (search-patches "rxvt-unicode-escape-sequences.patch"))
               (sha256
                (base32
                 "1pddjn5ynblwfrdmskylrsxb9vfnk3w4jdnq2l8xn2pspkljhip9"))))
@@ -956,6 +957,32 @@ demos.  It also acts as a nice screen locker.")
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
+
+(define-public xsel
+  (package
+    (name "xsel")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.vergenet.net/~conrad/software"
+                                  "/xsel/download/xsel-" version ".tar.gz"))
+              (sha256
+               (base32
+                "070lbcpw77j143jrbkh0y1v10ppn1jwmjf92800w7x42vh4cw9xr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxt" ,libxt)))
+    (home-page "http://www.vergenet.net/~conrad/software/xsel/")
+    (synopsis "Manipulate X selection")
+    (description
+     "XSel is a command-line program for getting and setting the contents of
+the X selection.  Normally this is only accessible by manually highlighting
+information and pasting it with the middle mouse button.
+
+XSel reads from standard input and writes to standard output by default,
+but can also follow a growing file, display contents, delete entries and more.")
+    (license (license:x11-style "file://COPYING"
+                                "See COPYING in the distribution."))))
 
 (define-public xdpyprobe
   (package

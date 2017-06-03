@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
@@ -1097,7 +1099,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.5.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1105,7 +1107,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rbdax3i33myg1v938pxy28117ihff2lml1ky6g70c8099fkirjx"))))
+        (base32 "01h9mswlfjk3zpdxwk1ciy5qkq6xq925gvk6wrh8k066b2wx8f8k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -4272,3 +4274,58 @@ at their peak of economic growth and military prowess.
                    license:lgpl3
                    license:mpl2.0
                    license:zlib))))
+
+;; There have been no official releases.
+(define-public open-adventure
+  (let* ((commit "2483a23690d205f01ecb66165cf4522b541cd991")
+         (revision "1"))
+    (package
+      (name "open-adventure")
+      (version (string-append "2.5-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/esr/open-adventure")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1gkvkwbq5cl3llfc7nl41van8awn4myx782pg33bxpbx5l9scwb4"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc")
+         #:parallel-build? #f ; not supported
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'use-echo
+             (lambda _
+               (substitute* "tests/Makefile"
+                 (("/bin/echo") (which "echo")))
+               #t))
+           (add-after 'build 'build-manpage
+             (lambda _
+               ;; This target is missing a dependency
+               (substitute* "Makefile"
+                 ((".asc.6:" line)
+                  (string-append line " advent.txt")))
+               (zero? (system* "make" ".asc.6"))))
+           ;; There is no install target
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (man (string-append out "/share/man/man6")))
+                 (install-file "advent" bin)
+                 (install-file "advent.6" man))
+               #t)))))
+      (native-inputs
+       `(("asciidoc" ,asciidoc)))
+      (home-page "https://gitlab.com/esr/open-adventure")
+      (synopsis "Colossal Cave Adventure")
+      (description "The original Colossal Cave Adventure from 1976 was the
+origin of all text adventures, dungeon-crawl (computer) games, and
+computer-hosted roleplaying games.  This is the last version released by
+Crowther & Woods, its original authors, in 1995.  It has been known as
+\"adventure 2.5\" and \"430-point adventure\".")
+      (license license:bsd-2))))

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages tcl))
@@ -200,3 +205,50 @@ work, such as sentence length and other readability measures.")
 It comes with a German-English dictionary with approximately 270,000 entries.")
     (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
     (license gpl2+)))
+
+(define-public translate-shell
+  (package
+    (name "translate-shell")
+    (version "0.9.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/soimort/" name "/archive/v"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "13rjq9v3ykk5c0i5daybpnqnyg09cbcgjzykx49h2h5hvspixvi5"))
+        (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure phase
+         (add-after 'install 'emacs-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (dest  (string-append out "/share/emacs/site-lisp"))
+                    (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
+               (install-file "google-translate-mode.el" dest)
+               (emacs-generate-autoloads ,name dest)))))
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:imported-modules (,@%gnu-build-system-modules (guix build emacs-utils))
+       #:modules ((guix build gnu-build-system)
+                  (guix build emacs-utils)
+                  (guix build utils))
+       #:test-target "test"))
+    (propagated-inputs
+     `(("curl" ,curl)
+       ("fribidi" ,fribidi)
+       ("rlwrap" ,rlwrap)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)
+       ("util-linux" ,util-linux))) ; hexdump, for the test
+    (home-page "https://www.soimort.org/translate-shell")
+    (synopsis "Translations from the command line")
+    (description
+     "Translate Shell (formerly Google Translate CLI) is a command-line
+translator powered by Google Translate (default), Bing Translator,
+Yandex.Translate and Apertium.  It gives you easy access to one of these
+translation engines from your terminal.")
+    (license public-domain)))

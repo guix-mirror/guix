@@ -91,7 +91,11 @@
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
-                     #t)))))
+                     #t)))
+
+       ;; We suspect there are race conditions when running tests in parallel:
+       ;; <https://bugs.gnu.org/26936>.
+       #:parallel-tests? #f))
     (inputs
      `(("gettext" ,gettext-minimal)
 

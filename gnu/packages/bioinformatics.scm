@@ -2093,7 +2093,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.1")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2102,7 +2102,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "062943yk3mp23jpcawamkh1zawx9br95l7w178v0kyr863v4p5a1"))))
+                "1fs5ilvda50vfdg9wll35w8hcpq3jlkp8q2kim4llkwljkj8bls3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -3213,6 +3213,44 @@ data.")
     ;; error: ['khmer', 'khmer.tests', 'oxli'] require 64-bit operating system
     (supported-systems '("x86_64-linux"))
     (license license:bsd-3)))
+
+(define-public kaiju
+  (package
+    (name "kaiju")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bioinformatics-centre/kaiju/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0afbfalfw9y39bkwnqjrh9bghs118ws1pzj5h8l0nblgn3mbjdks"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'move-to-src-dir
+           (lambda _ (chdir "src") #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (chdir "..")
+               (copy-recursively "bin" bin)
+               (copy-recursively "util" bin))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://kaiju.binf.ku.dk/")
+    (synopsis "Fast and sensitive taxonomic classification for metagenomics")
+    (description "Kaiju is a program for sensitive taxonomic classification
+of high-throughput sequencing reads from metagenomic whole genome sequencing
+experiments.")
+    (license license:gpl3+)))
 
 (define-public macs
   (package

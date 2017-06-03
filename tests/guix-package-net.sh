@@ -49,7 +49,7 @@ profile="t-profile-$$"
 profile_alt="t-profile-alt-$$"
 rm -f "$profile"
 
-trap 'rm -f "$profile" "$profile_alt" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
+trap 'rm -f "$profile" "$profile_alt" "$profile-"[0-9]* "$profile_alt-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
 
 guix package --bootstrap -p "$profile" -i guile-bootstrap

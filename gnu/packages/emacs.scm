@@ -335,28 +335,7 @@ metadata.")
               (sha256
                (base32
                 "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
-    (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-minimal)))
-    (arguments
-     `(#:modules ((guix build utils)
-                  (guix build emacs-utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (use-modules (guix build emacs-utils))
-
-         (let* ((emacs    (string-append (assoc-ref %build-inputs "emacs")
-                                         "/bin/emacs"))
-                (source   (assoc-ref %build-inputs "source"))
-                (lisp-dir (string-append %output
-                                         "/share/emacs/site-lisp"))
-                (target   (string-append lisp-dir "/paredit.el")))
-           (mkdir-p lisp-dir)
-           (copy-file source target)
-           (with-directory-excursion lisp-dir
-             (parameterize ((%emacs emacs))
-               (emacs-generate-autoloads ,name lisp-dir)
-               (emacs-batch-eval '(byte-compile-file "paredit.el"))))))))
+    (build-system emacs-build-system)
     (home-page "http://mumble.net/~campbell/emacs/paredit/")
     (synopsis "Emacs minor mode for editing parentheses")
     (description
@@ -386,31 +365,7 @@ when typing parentheses directly or commenting out code line by line.")
               (sha256
                (base32
                 "0xxrmf0jnyljxvllc22qa0v8lgi4k1ldnayjm5hf68m25jsr378l"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build emacs-utils)
-                  (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          ;; Don't put .el files in a 'git-modes'
-                          ;; sub-directory.
-                          (string-append "LISPDIR="
-                                         (assoc-ref %outputs "out")
-                                         "/share/emacs/site-lisp"))
-       #:tests? #f  ; no check target
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'install 'emacs-autoloads
-                             (lambda* (#:key outputs #:allow-other-keys)
-                               (let* ((out  (assoc-ref outputs "out"))
-                                      (lisp (string-append
-                                             out "/share/emacs/site-lisp/")))
-                                 (emacs-generate-autoloads ,name lisp)))))))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
     (description
@@ -694,30 +649,7 @@ programs.")
               (sha256
                (base32
                 "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (guix build emacs-utils))
-
-       #:builder (begin
-                   (use-modules (guix build emacs-utils)
-                                (guix build utils))
-
-                   (let* ((out     (assoc-ref %outputs "out"))
-                          (lispdir (string-append out
-                                                  "/share/emacs/site-lisp/"
-                                                  "guix.d/let-alist-"
-                                                  ,version))
-                          (emacs   (assoc-ref %build-inputs "emacs")))
-
-                     (mkdir-p lispdir)
-                     (copy-file (assoc-ref %build-inputs "source")
-                                (string-append lispdir "/let-alist.el"))
-
-                     (setenv "PATH" (string-append emacs "/bin"))
-                     (emacs-byte-compile-directory lispdir)
-                     #t))))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
@@ -1226,6 +1158,37 @@ or XEmacs.")
     (description
      "This package displays a calendar view with various shedule data in
 the Emacs buffer.")
+    (license license:gpl3+)))
+
+(define-public emacs-direnv
+  (package
+    (name "emacs-direnv")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/wbolster/emacs-direnv/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m9nxawklhiiysyibzzhh2zkxgq1fskqvaqb06f7r8dnhabfy9fr"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("with-editor" ,emacs-with-editor)))
+    (home-page "https://github.com/wbolster/emacs-direnv")
+    (synopsis "Direnv integration for Emacs")
+    (description
+     "This package provides support for invoking direnv to get the environment
+for the current file and updating the environment within Emacs to match.
+
+Direnv can be invoked manually, and a global minor mode is included that will
+update the environment when the active buffer changes.
+
+Using emacs-direnv means that programs started from Emacs will use the
+environment set through Direnv.")
     (license license:gpl3+)))
 
 (define-public emacs-google-maps
@@ -2053,6 +2016,7 @@ source code using IPython.")
                (base32
                 "07wgcvg038l88gxvjr0gjpjhyk743w22x1rqghz3gkmif0g70say"))))
     (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
      `(("emacs-async" ,emacs-async)))
     (home-page "https://elpa.gnu.org/packages/debbugs.html")
@@ -4587,9 +4551,12 @@ It should enable you to implement low-level X11 applications.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
@@ -4877,3 +4844,31 @@ running tests easier.")
 pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
     (license license:gpl3+)))
+
+(define-public emacs-restclient
+  (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
+        (revision "1"))                 ;Guix package revision,
+                                        ;upstream doesn't have official releases
+    (package
+      (name "emacs-restclient")
+      (version (string-append revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pashky/restclient.el.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00lmjhb5im1kgrp54yipf1h9pshxzgjlg71yf2rq5n973gvb0w0q"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/pashky/restclient.el")
+      (synopsis "Explore and test HTTP REST webservices")
+      (description
+       "This tool allows for testing and exploration of HTTP REST Web services
+from within Emacs.  Restclient runs queries from a plan-text query sheet,
+displays results pretty-printed in XML or JSON with @code{restclient-mode}")
+      (license license:public-domain))))

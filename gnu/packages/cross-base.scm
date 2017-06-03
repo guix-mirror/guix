@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -40,10 +40,13 @@
             cross-gcc
             cross-newlib?))
 
-(define %xgcc
+(define-syntax %xgcc
   ;; GCC package used as the basis for cross-compilation.  It doesn't have to
   ;; be 'gcc' and can be a specific variant such as 'gcc-4.8'.
-  gcc)
+  ;;
+  ;; Note: This is a macro so that we do not refer to 'gcc' from the top
+  ;; level, which would lead to circular-dependency issues.
+  (identifier-syntax gcc))
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
