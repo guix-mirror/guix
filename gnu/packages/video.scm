@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2153,3 +2154,43 @@ MPEG-2, MPEG-4, DVD (VOB)...
 information and other metadata about audio or video files.  It supports the
 many codecs and formats supported by libmediainfo.")
     (license license:bsd-2)))
+
+(define-public livemedia-utils
+  (package
+    (name "livemedia-utils")
+    (version "2017.05.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.live555.com/liveMedia/public/live."
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1ra64j3qa89hf3xika8jz9gd8al8mcaqlk5ivw5pclnd2df5f4im"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'fix-makefiles-generation
+                    (lambda _
+                      (substitute* "genMakefiles"
+                        (("/bin/rm") "rm"))
+                      #t))
+                  (replace 'configure
+                    (lambda _
+                      (zero? (system* "./genMakefiles"
+                                      "linux-with-shared-libraries")))))))
+    (home-page "http://www.live555.com/liveMedia/")
+    (synopsis "Set of C++ libraries for multimedia streaming")
+    (description "This code forms a set of C++ libraries for multimedia
+streaming, using open standard protocols (RTP/RTCP, RTSP, SIP).  The libraries
+can be used to stream, receive, and process MPEG, H.265, H.264, H.263+, DV or
+JPEG video, and several audio codecs.  They can easily be extended to support
+additional (audio and/or video) codecs, and can also be used to build basic
+RTSP or SIP clients and servers.")
+    (license license:lgpl3+)))
