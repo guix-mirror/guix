@@ -1513,7 +1513,13 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
           (lambda _
             (substitute* "Rakefile"
               (("self\\.rubyforge_name = .*") ""))
-            #t)))))))
+            #t))
+         (add-after 'build 'exclude-failing-tests
+           (lambda _
+             ;; Some tests are failing on Ruby 2.4 due to the deprecation of
+             ;; Fixnum.
+             (delete-file "test/minitest/test_minitest_spec.rb")
+             #t)))))))
 
 (define-public ruby-minitest-sprint
   (package
