@@ -15171,3 +15171,31 @@ address is valid and really exists.")
 
 (define-public python2-flex
   (package-with-python2 python-flex))
+
+(define-public python-marshmallow
+  (package
+    (name "python-marshmallow")
+    (version "3.0.0b2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "marshmallow" version))
+      (sha256
+       (base32
+        "11bnpvfdbczr74177p295zbkdrax2cahvbj5bqhhlprgz2xxi5d9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-simplejson" ,python-simplejson)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/marshmallow-code/marshmallow")
+    (synopsis "Convert complex datatypes to and from native
+Python datatypes.")
+    (description "@code{marshmallow} provides a library for converting
+complex datatypes to and from native Python datatypes.")
+    (license license:expat)))
+
+(define-public python2-marshmallow
+  (package-with-python2 python-marshmallow))
