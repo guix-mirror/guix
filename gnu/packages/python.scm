@@ -15100,3 +15100,24 @@ by path in a JSON document (see RFC 6901).")
 
 (define-public python2-jsonpointer
   (package-with-python2 python-jsonpointer))
+
+(define-public python-rfc3987
+  (package
+    (name "python-rfc3987")
+    (version "1.3.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "rfc3987" version))
+      (sha256
+       (base32
+        "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
+    (build-system python-build-system)
+    (home-page "http://pypi.python.org/pypi/rfc3987")
+    (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
+    (description "@code{rfc3987} provides routines for parsing and
+validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
+    (license license:gpl3+)))
+
+(define-public python2-rfc3987
+  (package-with-python2 python-rfc3987))
