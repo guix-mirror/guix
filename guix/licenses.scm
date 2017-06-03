@@ -11,6 +11,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,8 @@
             non-copyleft
             bsd-style                             ;deprecated!
             cc0
-            cc-by2.0 cc-by3.0 cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
+            cc-by2.0 cc-by3.0 cc-by4.0
+            cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
             cddl1.0
             cecill cecill-b cecill-c
             artistic2.0 clarified-artistic
@@ -180,6 +182,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "CC-BY-SA 2.0"
            "http://creativecommons.org/licenses/by-sa/2.0/"
            "Creative Commons Attribution-ShareAlike 2.0 Generic"))
+
+(define cc-by4.0
+  (license "CC-BY 4.0"
+           "http://creativecommons.org/licenses/by/4.0/"
+           "Creative Commons Attribution 4.0 Unported"))
 
 (define cc-by3.0
   (license "CC-BY 3.0"
