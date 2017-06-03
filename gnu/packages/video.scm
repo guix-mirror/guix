@@ -2207,3 +2207,24 @@ JPEG video, and several audio codecs.  They can easily be extended to support
 additional (audio and/or video) codecs, and can also be used to build basic
 RTSP or SIP clients and servers.")
     (license license:lgpl3+)))
+
+(define-public libdvbpsi
+  (package
+    (name "libdvbpsi")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.videolan.org/pub/libdvbpsi/"
+                    version "/libdvbpsi-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0824r08kaspbrrg2dd5d46s475zb7j59brqkm2y6x3mdsnpng0yn"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.videolan.org/developers/libdvbpsi.html")
+    (synopsis "Library for decoding and generation of MPEG TS and DVB PSI
+tables")
+    (description "libdvbpsi is a simple library designed for decoding and
+generation of MPEG TS and DVB PSI tables according to standards ISO/IEC 13818s
+and ITU-T H.222.0.")
+    (license license:lgpl2.1)))
