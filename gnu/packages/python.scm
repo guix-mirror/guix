@@ -15199,3 +15199,23 @@ complex datatypes to and from native Python datatypes.")
 
 (define-public python2-marshmallow
   (package-with-python2 python-marshmallow))
+
+(define-public python-bottle
+  (package
+    (name "python-bottle")
+    (version "0.12.13")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "bottle" version))
+      (sha256
+        (base32
+          "0m9k2a7yxvggc4kw8fsvj381vgsvfcdshg5nzy6vwrxiw2p53drr"))))
+    (build-system python-build-system)
+    (home-page "http://bottlepy.org/")
+    (synopsis "WSGI framework for small web-applications.")
+    (description "@code{python-bottle} is a WSGI framework for small web-applications.")
+    (license license:expat)))
+
+(define-public python2-bottle
+  (package-with-python2 python-bottle))
