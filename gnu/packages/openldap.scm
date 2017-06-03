@@ -73,7 +73,17 @@
       (modify-phases %standard-phases
         (add-after 'configure 'provide-libtool
           (lambda _ (copy-file (which "libtool") "libtool")
-            #t)))))
+            #t))
+        (add-after 'install 'patch-sasl-path
+          ;; Give -L arguments for cyrus-sasl to avoid propagation.
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (sasl (assoc-ref inputs "cyrus-sasl")))
+              (substitute* (map (lambda (f) (string-append out "/" f))
+                                '("lib/libldap.la" "lib/libldap_r.la"))
+                (("-lsasl2" lib)
+                 (string-append "-L" sasl "/lib " lib)))
+              #t))))))
    (synopsis "Implementation of the Lightweight Directory Access Protocol")
    (description
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
