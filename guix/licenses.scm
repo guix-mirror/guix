@@ -60,7 +60,13 @@
             ibmpl1.0
             imlib2
             ipa
+            knuth
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
+            lppl lppl1.0+ lppl1.2 lppl1.2+
+            lppl1.3 lppl1.3+
+            lppl1.3a lppl1.3a+
+            lppl1.3b lppl1.3b+
+            lppl1.3c lppl1.3c+
             mpl1.0 mpl1.1 mpl2.0
             ms-pl
             ncsa
@@ -351,6 +357,11 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:IPA_Font_License"
            "https://www.gnu.org/licenses/license-list#IPAFONT"))
 
+(define knuth
+  (license "Donald Knuth's license for TeX"
+           "http://www.ctan.org/license/knuth"
+           "Modification are only permitted under a different name."))
+
 (define lgpl2.0
   (license "LGPL 2.0"
            "https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html"
@@ -380,6 +391,66 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LGPL 3+"
            "https://www.gnu.org/licenses/lgpl.html"
            "https://www.gnu.org/licenses/license-list#LGPLv3"))
+
+(define lppl
+  (license "LPPL (any version)"
+           "https://www.latex-project.org/lppl/lppl-1-0/"
+           "LaTeX Project Public License 1.0"))
+
+(define lppl1.0+
+  (license "LPPL 1.0+"
+           "https://www.latex-project.org/lppl/lppl-1-0/"
+           "LaTeX Project Public License 1.0"))
+
+(define lppl1.2
+  (license "LPPL 1.2"
+           "http://directory.fsf.org/wiki/License:LPPLv1.2"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.2"))
+
+(define lppl1.2+
+  (license "LPPL 1.2+"
+           "http://directory.fsf.org/wiki/License:LPPLv1.2"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.2"))
+
+(define lppl1.3
+  (license "LPPL 1.3"
+           "https://www.latex-project.org/lppl/lppl-1-3/"
+           "LaTeX Project Public License 1.3"))
+
+(define lppl1.3+
+  (license "LPPL 1.3+"
+           "https://www.latex-project.org/lppl/lppl-1-3/"
+           "LaTeX Project Public License 1.3+"))
+
+(define lppl1.3a
+  (license "LPPL 1.3a"
+           "http://directory.fsf.org/wiki/License:LPPLv1.3a"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.3a"))
+
+(define lppl1.3a+
+  (license "LPPL 1.3a+"
+           "http://directory.fsf.org/wiki/License:LPPLv1.3a"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.3a"))
+
+(define lppl1.3b
+  (license "LPPL 1.3b"
+           "https://www.latex-project.org/lppl/lppl-1-3b/"
+           "LaTeX Project Public License 1.3b"))
+
+(define lppl1.3b+
+  (license "LPPL 1.3b+"
+           "https://www.latex-project.org/lppl/lppl-1-3b/"
+           "LaTeX Project Public License 1.3b or later"))
+
+(define lppl1.3c
+  (license "LPPL 1.3c"
+           "https://www.latex-project.org/lppl/lppl-1-3c/"
+           "LaTeX Project Public License 1.3c"))
+
+(define lppl1.3c+
+  (license "LPPL 1.3c+"
+           "https://www.latex-project.org/lppl/lppl-1-3c/"
+           "LaTeX Project Public License 1.3c or later"))
 
 (define mpl1.0
   (license "MPL 1.0"
