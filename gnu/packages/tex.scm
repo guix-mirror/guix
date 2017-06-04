@@ -563,6 +563,80 @@ from Donald Knuth, including the plain format, plain base, and the MF logo
 fonts.")
     (license license:knuth)))
 
+(define-public texlive-fonts-latex
+  (package
+    (name "texlive-fonts-latex")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/latex-fonts"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0ypsm4xv9cw0jckk2qc7gi9hcmhf31mrg56pz3llyx3yd9vq2lps"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input " font))))
+                    '("icmcsc10" "icmex10" "icmmi8" "icmsy8" "icmtt8"
+                      "ilasy8" "ilcmss8" "ilcmssb8" "ilcmssi8"
+                      "lasy5" "lasy6" "lasy7" "lasy8" "lasy9" "lasy10" "lasyb10"
+                      "lcircle10" "lcirclew10" "lcmss8" "lcmssb8" "lcmssi8"
+                      "line10" "linew10"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/latex-fonts"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/latex-fonts")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+    (home-page "http://www.ctan.org/pkg/latex-fonts")
+    (synopsis "Collection of fonts used in LaTeX distributions")
+    (description "This is a collection of fonts for use with standard LaTeX
+packages and classes. It includes invisible fonts (for use with the slides
+class), line and circle fonts (for use in the picture environment) and LaTeX
+symbol fonts.")
+    (license license:lppl1.2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
