@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1184,3 +1185,54 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     ;; others under a 4-clause BSD license. Refer to the files in the source
     ;; distribution for clarification.
     (license (list license:bsd-3 license:bsd-4))))
+
+(define-public spiped
+  (package
+    (name "spiped")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.tarsnap.com/spiped/spiped-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "1r51rdcl7nib1yv3yvgd5alwlkkwmr387brqavaklb0p2bwzixz6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:make-flags (let* ((out (assoc-ref %outputs "out"))
+                           (bindir (string-append out "/bin"))
+                           (man1dir (string-append out "/share/man/man1")))
+                      (list "CC=gcc" ; It tries to invoke `c99`.
+                            (string-append "BINDIR=" bindir)
+                            (string-append "MAN1DIR=" man1dir)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-command-invocations
+           (lambda _
+             (substitute* '("Makefile"
+                            "libcperciva/cpusupport/Build/cpusupport.sh"
+                            "libcperciva/POSIX/posix-cflags.sh"
+                            "libcperciva/POSIX/posix-l.sh")
+               (("command -p") ""))
+             #t))
+         (delete 'configure) ; No ./configure script.
+         (add-after 'install 'install-more-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (misc (string-append out "/share/doc/spiped")))
+               (install-file "DESIGN.md" misc)
+               #t))))))
+    (native-inputs
+     `(("procps" ,procps))) ; `ps` is used by the test suite.
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://www.tarsnap.com/spiped.html")
+    (synopsis "Create secure pipes between sockets")
+    (description "Spiped (pronounced \"ess-pipe-dee\") is a utility for creating
+symmetrically encrypted and authenticated pipes between socket addresses, so
+that one may connect to one address (e.g., a UNIX socket on localhost) and
+transparently have a connection established to another address (e.g., a UNIX
+socket on a different system).  This is similar to 'ssh -L' functionality, but
+does not use SSH and requires a pre-shared symmetric key.")
+    (license license:bsd-2)))
