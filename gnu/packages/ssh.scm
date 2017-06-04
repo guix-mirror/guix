@@ -58,15 +58,16 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://red.libssh.org/attachments/download/210/libssh-"
+                    "https://red.libssh.org/attachments/download/218/libssh-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "03bcp9ksqp0s1pmwfmzhcknvkxay5k0mjzzxp3rjlifbng1vxq9r"))))
+                "15bh6dm9c50ndddzh3gqcgw7axp3ghrspjpkb1z3dr90vkanvs2l"))
+              (patches (search-patches "libssh-hostname-parser-bug.patch"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments

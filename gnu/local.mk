@@ -743,6 +743,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
+  %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtasn1-CVE-2017-6891.patch 		\
