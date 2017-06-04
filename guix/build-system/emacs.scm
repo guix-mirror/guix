@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system emacs)
+  #:use-module ((guix build emacs-build-system)
+                #:select (%default-include %default-exclude))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -28,7 +30,10 @@
   #:use-module (srfi srfi-26)
   #:export (%emacs-build-system-modules
             emacs-build
-            emacs-build-system))
+            emacs-build-system)
+  #:re-export (%default-include         ;for convenience
+               %default-exclude))
+
 
 ;; Commentary:
 ;;
@@ -83,8 +88,8 @@
                       (phases '(@ (guix build emacs-build-system)
                                   %standard-phases))
                       (outputs '("out"))
-                      (include ''("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
-                      (exclude ''("^\\.dir-locals\\.el$" "-pkg\\.el$" "^[^/]*tests?\\.el$"))
+                      (include (quote %default-include))
+                      (exclude (quote %default-exclude))
                       (search-paths '())
                       (system (%current-system))
                       (guile #f)
