@@ -1352,6 +1352,10 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default #t))
   (substitute-urls  guix-configuration-substitute-urls ;list of strings
                     (default %default-substitute-urls))
+  (max-silent-time  guix-configuration-max-silent-time ;integer
+                    (default 0))
+  (timeout          guix-configuration-timeout    ;integer
+                    (default 0))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (log-file         guix-configuration-log-file   ;string
@@ -1371,7 +1375,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (match config
     (($ <guix-configuration> guix build-group build-accounts
                              authorize-key? keys
-                             use-substitutes? substitute-urls extra-options
+                             use-substitutes? substitute-urls
+                             max-silent-time timeout
+                             extra-options
                              log-file lsof http-proxy tmpdir)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
@@ -1381,6 +1387,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
              #~(make-forkexec-constructor
                 (list #$(file-append guix "/bin/guix-daemon")
                       "--build-users-group" #$build-group
+                      "--max-silent-time" #$(number->string max-silent-time)
+                      "--timeout" #$(number->string timeout)
                       #$@(if use-substitutes?
                              '()
                              '("--no-substitutes"))

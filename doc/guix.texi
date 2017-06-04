@@ -9260,6 +9260,12 @@ Whether to use substitutes.
 @item @code{substitute-urls} (default: @var{%default-substitute-urls})
 The list of URLs where to look for substitutes by default.
 
+@item @code{max-silent-time} (default: @code{0})
+@itemx @code{timeout} (default: @code{0})
+The number of seconds of silence and the number of seconds of activity,
+respectively, after which a build process times out.  A value of zero
+disables the timeout.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
