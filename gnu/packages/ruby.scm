@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3586,7 +3587,19 @@ It has built-in support for the legacy @code{cookies.txt} and
          ;; be require'd.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "ansi")))))))
+             (zero? (system* "ruby" "-Ilib" "-r" "ansi"))))
+         (add-before 'validate-runpath 'replace-broken-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/lib/ruby/gems/"
+                                         ,(package-version ruby)
+                                         "/gems/ansi-" ,version
+                                         "/lib/ansi.yml")))
+               ;; XXX: This symlink is broken since ruby 2.4.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
+               (delete-file file)
+               (symlink "../.index" file)
+               #t))))))
     (synopsis "ANSI escape code related libraries")
     (description
      "This package is a collection of ANSI escape code related libraries
