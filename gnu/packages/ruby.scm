@@ -3788,7 +3788,19 @@ requirement specifications systems like Cucumber.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "qed")))))))
+           (lambda _ (zero? (system* "qed"))))
+         (add-before 'validate-runpath 'replace-broken-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/lib/ruby/gems/"
+                                         ,(package-version ruby)
+                                         "/gems/ae-" ,version
+                                         "/lib/ae.yml")))
+               ;; XXX: This symlink is broken since ruby 2.4.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
+               (delete-file file)
+               (symlink "../.index" file)
+               #t))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)))
     (native-inputs
