@@ -970,8 +970,7 @@ represented by a QPoint or a QSize.")
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: Regression after update to qt 5.7
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
