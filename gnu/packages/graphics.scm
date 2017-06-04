@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -317,6 +319,47 @@ on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
     (home-page "http://www.openimageio.org")
     (license license:bsd-3)))
+
+(define-public openscenegraph
+  (package
+    (name "openscenegraph")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://trac.openscenegraph.org/downloads/developer_releases/"
+                           "OpenSceneGraph-" version ".zip"))
+       (sha256
+        (base32
+         "03h4wfqqk7rf3mpz0sa99gy715cwpala7964z2npd8jxfn27swjw"))
+       (patches (search-patches "openscenegraph-ffmpeg3.patch"))
+       (file-name (string-append name "-" version ".zip"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; No test target available.
+       #:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_RPATH="
+                            (assoc-ref %outputs "out") "/lib:"
+                            (assoc-ref %outputs "out") "/lib64"))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("giflib", giflib)
+       ("jasper", jasper)
+       ("librsvg", librsvg)
+       ("pth", pth)
+       ("qtbase", qtbase)
+       ("ffmpeg", ffmpeg)
+       ("mesa", mesa)))
+    (synopsis "High performance real-time graphics toolkit")
+    (description
+     "The OpenSceneGraph is an open source high performance 3D graphics toolkit,
+used by application developers in fields such as visual simulation, games,
+virtual reality, scientific visualization and modelling.")
+    (home-page "http://www.openscenegraph.org")
+    ;; The 'LICENSE' file explains that the source is licensed under
+    ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
+    (license license:lgpl2.1)))
 
 (define-public rapicorn
   (package

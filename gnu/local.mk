@@ -861,6 +861,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
+  %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9572-CVE-2016-9573.patch		\
