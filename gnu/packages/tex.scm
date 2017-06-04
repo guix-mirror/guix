@@ -432,6 +432,74 @@ converters, will completely supplant the older patterns.")
 build fonts using the Metafont system.")
     (license license:knuth)))
 
+(define-public texlive-fonts-cm
+  (package
+    (name "texlive-fonts-cm")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/cm"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "045k5b9rdmbxpy1a3006l1x96z1rd18vg3cwrvnld9bqybw5qz44"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input "
+                                                     (basename font ".mf")))))
+                    (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/cm"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/cm")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)))
+    (home-page "http://www.ctan.org/pkg/cm")
+    (synopsis "Computer Modern fonts for TeX")
+    (description "This package provides the Computer Modern fonts by Donald
+Knuth.  The Computer Modern font family is a large collection of text,
+display, and mathematical fonts in a range of styles, based on Monotype Modern
+8A.")
+    (license license:knuth)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
