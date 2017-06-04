@@ -28,9 +28,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages shells)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages shells))
 
 (define-public boost
   (package
@@ -46,7 +47,8 @@
                (base32
                 "0cikd35xfkpg9nnl76yqqnqxnf3hyfjjww8xjd4akflprsm5rk3v"))))
     (build-system gnu-build-system)
-    (inputs `(("zlib" ,zlib)))
+    (inputs `(("icu4c" ,icu4c)
+              ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)
