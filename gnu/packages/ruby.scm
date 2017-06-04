@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,8 +49,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.3.3")
-    (replacement ruby-2.3.4)
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -58,7 +58,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1p0rfk0blrbfjcnv0vb0ha4hxflgkfhv9zbzp4vvld2pi31ahkqs"))
+         "141nnsdk2q83c23p5kl404id8gy1ap261gin48rbjj5sbksgx1rs"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -102,11 +102,11 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
-(define ruby-2.3.4
+(define-public ruby-2.3
   (package
     (inherit ruby)
-    (name "ruby")
     (version "2.3.4")
+    (replacement #f)
     (source
      (origin
        (method url-fetch)
@@ -447,13 +447,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.14.6")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "0h3x2csvlz99v2ryj1w72vn6kixf7rl35lhdryvh7s49brnj0cgl"))))
+                "1mq0n8g08vf2rnd7fvylx3f4sspx15abid49gycf9zzsjj7w8vps"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -1199,13 +1199,13 @@ use GNU gettext tools for maintenance.")
 (define-public ruby-test-unit
   (package
     (name "ruby-test-unit")
-    (version "3.1.5")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "test-unit" version))
               (sha256
                (base32
-                "0jxznjzwmrlp8wqjxsd06qbiddffn68pdhz6nrqpjbiln1z3af4w"))))
+                "09mb34lnffracsqxl4dav4c21p5nr4pj9hm5qy2s83k5hbjya3s7"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-power-assert" ,ruby-power-assert)))
@@ -1460,16 +1460,17 @@ allows mocking and stubbing of methods on real (non-mock) classes.")
 (define-public ruby-net-ssh
   (package
     (name "ruby-net-ssh")
-    (version "3.0.1")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-ssh" version))
               (sha256
                (base32
-                "1dzqkgwi9xm6mbfk1rkk17rzmz8m5xakqi21w1b97ybng6kkw0hf"))))
+                "013p5jb4wy0cq7x7036piw2a3s1i9p752ki1srx2m289mpz4ml3q"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-mocha" ,ruby-mocha)
+     `(("bundler" ,bundler)
+       ("ruby-mocha" ,ruby-mocha)
        ("ruby-test-unit" ,ruby-test-unit)))
     (synopsis "Ruby implementation of the SSH2 client protocol")
     (description "@code{Net::SSH} is a pure-Ruby implementation of the SSH2
@@ -1481,13 +1482,13 @@ with processes on remote servers, via SSH2.")
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
-    (version "5.10.1")
+    (version "5.10.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "1yk2m8sp0p5m1niawa3ncg157a4i0594cg7z91rzjxv963rzrwab"))))
+                "11my86fnihvpndyknn3c14hc82nhsgggnhlxh8h3bdjpmfsvl0my"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -1514,7 +1515,13 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
           (lambda _
             (substitute* "Rakefile"
               (("self\\.rubyforge_name = .*") ""))
-            #t)))))))
+            #t))
+         (add-after 'build 'exclude-failing-tests
+           (lambda _
+             ;; Some tests are failing on Ruby 2.4 due to the deprecation of
+             ;; Fixnum.
+             (delete-file "test/minitest/test_minitest_spec.rb")
+             #t)))))))
 
 (define-public ruby-minitest-sprint
   (package
@@ -2224,9 +2231,15 @@ current line in an external editor.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-rubylib
+         (add-before 'check 'set-rubylib-and-patch-gemfile
           (lambda _
             (setenv "RUBYLIB" "lib")
+            (substitute* "sdoc.gemspec"
+              (("s.add_runtime_dependency.*") "\n")
+              (("s.add_dependency.*") "\n"))
+            (substitute* "Gemfile"
+              (("gem \"rake\".*")
+               "gem 'rake'\ngem 'rdoc'\ngem 'json'\n"))
             #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)))
@@ -2274,13 +2287,13 @@ documentation for Ruby code.")
 (define-public ruby-gem-hadar
   (package
     (name "ruby-gem-hadar")
-    (version "1.3.1")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "gem_hadar" version))
               (sha256
                (base32
-                "1j8qri4m9wf8nbfv0kakrgsv2x8vg10914xgm6f69nw8zi3i39ws"))))
+                "1zxvd9l95rbks7x3cxn396w0sn7nha5542bf97v8akkn4vm7nby9"))))
     (build-system ruby-build-system)
     ;; This gem needs itself at development time. We disable rebuilding of the
     ;; gemspec to avoid this loop.
@@ -2294,9 +2307,7 @@ documentation for Ruby code.")
     (propagated-inputs
      `(("git" ,git)
        ("ruby-tins" ,ruby-tins)
-       ("ruby-sdoc" ,ruby-sdoc)))
-    (native-inputs
-     `(("bundler" ,bundler)))
+       ("ruby-yard" ,ruby-yard)))
     (synopsis "Library for the development of Ruby gems")
     (description
      "This library contains some useful functionality to support the
@@ -2437,14 +2448,14 @@ when working with Ruby code.")
 (define-public ruby-json
   (package
     (name "ruby-json")
-    (version "1.8.3")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "json" version))
        (sha256
         (base32
-         "1nsby6ry8l9xg3yw4adlhk2pnc7i0h0rznvcss4vk3v74qg0k8lc"))))
+         "01v6jjpvh3gnq6sgllpfqahlgxzj50ailwhj9b3cd20hi2dx0vxp"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; dependency cycle with sdoc
     (synopsis "JSON library for Ruby")
@@ -2697,14 +2708,14 @@ unacceptable HTML and/or CSS from a string.")
 (define-public ruby-ox
   (package
     (name "ruby-ox")
-    (version "2.2.1")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ox" version))
        (sha256
         (base32
-         "00i11xd4ayh7349rhgskajfxn0qzkb74ab01217zix9qcapssxax"))))
+         "0rar0xr5qn3zac1r2z18kmpapx121c2l3z8jsgh60vsddwzpdh7h"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -2759,14 +2770,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "0.18.2")
+    (version "0.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "1axxbf6ij1iqi3i1r3asvjc80b0py5bz0m2wy5kdi5xkrpr82kpf"))))
+         "03xcgwjs6faxis81jxf2plnlalg55dhhafqv3kvjxfr8ic7plpw5"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -3576,7 +3587,19 @@ It has built-in support for the legacy @code{cookies.txt} and
          ;; be require'd.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "ansi")))))))
+             (zero? (system* "ruby" "-Ilib" "-r" "ansi"))))
+         (add-before 'validate-runpath 'replace-broken-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/lib/ruby/gems/"
+                                         ,(package-version ruby)
+                                         "/gems/ansi-" ,version
+                                         "/lib/ansi.yml")))
+               ;; XXX: This symlink is broken since ruby 2.4.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
+               (delete-file file)
+               (symlink "../.index" file)
+               #t))))))
     (synopsis "ANSI escape code related libraries")
     (description
      "This package is a collection of ANSI escape code related libraries
@@ -3765,7 +3788,19 @@ requirement specifications systems like Cucumber.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "qed")))))))
+           (lambda _ (zero? (system* "qed"))))
+         (add-before 'validate-runpath 'replace-broken-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/lib/ruby/gems/"
+                                         ,(package-version ruby)
+                                         "/gems/ae-" ,version
+                                         "/lib/ae.yml")))
+               ;; XXX: This symlink is broken since ruby 2.4.
+               ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
+               (delete-file file)
+               (symlink "../.index" file)
+               #t))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)))
     (native-inputs

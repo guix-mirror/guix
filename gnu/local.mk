@@ -638,7 +638,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
-  %D%/packages/patches/gnome-shell-CVE-2017-8288.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -730,6 +729,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
+  %D%/packages/patches/libgdata-fix-tests.patch			\
+  %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgit2-use-after-free.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
