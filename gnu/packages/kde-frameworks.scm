@@ -205,7 +205,8 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "C++ bindings/wrapper for gpgme")
     (description "C++ bindings/wrapper for gpgme.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties `((superseded . ,gpgme)))))
 
 (define-public kpmcore
   (package
