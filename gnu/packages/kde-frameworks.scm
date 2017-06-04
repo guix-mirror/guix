@@ -1013,6 +1013,7 @@ configuration pages, message boxes, and password requests.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
+       ("dbus" ,dbus) ; for the tests
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
@@ -1021,7 +1022,31 @@ configuration pages, message boxes, and password requests.")
        ("qtx11extras" ,qtx11extras)
        ("xcb-utils-keysyms" ,xcb-util-keysyms)))
     (arguments
-     `(#:tests? #f)) ; FIXME: 8/10 tests fail.
+     `(#:tests? #f ; FIXME: 3/12 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             ;; TODO: Simplify and use "common" phases when test-suite passes
+             (if tests?
+                 (begin
+                   (let ((out (assoc-ref outputs "out")))
+                     (setenv "QT_PLUGIN_PATH"
+                             (string-append out "/lib/plugins:"
+                                            (getenv "QT_PLUGIN_PATH"))))
+                   ;; The test suite requires a running X server, setting
+                   ;; QT_QPA_PLATFORM=offscreen does not suffice and even make
+                   ;; some tests fail.
+                   (system (string-append (assoc-ref inputs "xorg-server")
+                                          "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+                   (setenv "DISPLAY" ":1")
+                   (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
+                   (zero? (system* "dbus-launch" "ctest" ".")))
+                 (begin
+                   (format #t "test suite not run~%")
+                   #t)))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE access to the windowing system")
     (description "KWindowSystem provides information about and allows
