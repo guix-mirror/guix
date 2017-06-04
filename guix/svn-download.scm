@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,12 +24,15 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module ((guix build svn) #:prefix build:)
   #:use-module (ice-9 match)
   #:export (svn-reference
             svn-reference?
             svn-reference-url
             svn-reference-revision
-            svn-fetch))
+            svn-fetch
+            download-svn-to-store))
 
 ;;; Commentary:
 ;;;
@@ -78,5 +82,22 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                       #:recursive? #t
                       #:guile-for-build guile
                       #:local-build? #t)))
+
+(define* (download-svn-to-store store ref
+                                #:optional (name (basename (svn-reference-url ref)))
+                                #:key (log (current-error-port)))
+  "Download from REF, a <svn-reference> object to STORE.  Write progress
+reports to LOG."
+  (call-with-temporary-directory
+   (lambda (temp)
+     (let ((result
+            (parameterize ((current-output-port log))
+              (build:svn-fetch (svn-reference-url ref)
+                               (svn-reference-revision ref)
+                               temp
+                               #:user-name (svn-reference-user-name ref)
+                               #:password (svn-reference-password ref)))))
+       (and result
+            (add-to-store store name #t "sha256" temp))))))
 
 ;;; svn-download.scm ends here
