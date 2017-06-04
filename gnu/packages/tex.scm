@@ -381,6 +381,57 @@ converters, will completely supplant the older patterns.")
                    license:public-domain
                    license:wtfpl2))))
 
+(define-public texlive-metafont-base
+  (package
+    (name "texlive-metafont-base")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/metafont"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1yl4n8cn5xqk2nc22zgzq6ymd7bhm6xx1mz3azip7i3ki4bhb5q5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((cwd (getcwd)))
+               (setenv "MFINPUTS"
+                       (string-append cwd "/base:"
+                                      cwd "/misc:"
+                                      cwd "/roex:"
+                                      cwd "/feynmf:"
+                                      cwd "/mfpic:"
+                                      cwd "/config")))
+             (mkdir "build")
+             (with-directory-excursion "build"
+               (zero? (system* "inimf" "mf.mf")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (base (string-append out "/share/texmf-dist/web2c"))
+                    (mf   (string-append out "/share/texmf-dist/metafont/base")))
+               (mkdir-p base)
+               (mkdir-p mf)
+               (install-file "build/mf.base" base)
+               (copy-recursively "base" mf)
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)))
+    (home-page "http://www.ctan.org/pkg/metafont")
+    (synopsis "Metafont base files")
+    (description "This package provides the Metafont base files needed to
+build fonts using the Metafont system.")
+    (license license:knuth)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
