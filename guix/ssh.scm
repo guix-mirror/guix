@@ -150,23 +150,44 @@ can be written."
   ;; makes a round trip every time 32 KiB have been transferred.  This
   ;; procedure instead opens a separate channel to use the remote
   ;; 'import-paths' procedure, which consumes all the data in a single round
-  ;; trip.
+  ;; trip.  This optimizes the successful case at the expense of error
+  ;; conditions: errors can only be reported once all the input has been
+  ;; consumed.
   (define import
     `(begin
-       (use-modules (guix))
+       (use-modules (guix) (srfi srfi-34)
+                    (rnrs io ports) (rnrs bytevectors))
 
-       (with-store store
-         (setvbuf (current-input-port) _IONBF)
+       (define (consume-input port)
+         (let ((bv (make-bytevector 32768)))
+           (let loop ()
+             (let ((n (get-bytevector-n! port bv 0
+                                         (bytevector-length bv))))
+               (unless (eof-object? n)
+                 (loop))))))
 
-         ;; FIXME: Exceptions are silently swallowed.  We should report them
-         ;; somehow.
-         (import-paths store (current-input-port)))))
+       ;; Upon completion, write an sexp that denotes the status.
+       (write
+        (catch #t
+          (lambda ()
+            (guard (c ((nix-protocol-error? c)
+                       ;; Consume all the input since the only time we can
+                       ;; report the error is after everything has been
+                       ;; consumed.
+                       (consume-input (current-input-port))
+                       (list 'protocol-error (nix-protocol-error-message c))))
+              (with-store store
+                (setvbuf (current-input-port) _IONBF)
+                (import-paths store (current-input-port))
+                '(success))))
+          (lambda args
+            (cons 'error args))))))
 
-  (open-remote-output-pipe session
-                           (string-join
-                            `("guile" "-c"
-                              ,(object->string
-                                (object->string import))))))
+  (open-remote-pipe session
+                    (string-join
+                     `("guile" "-c"
+                       ,(object->string (object->string import))))
+                    OPEN_BOTH))
 
 (define* (store-export-channel session files
                                #:key recursive?)
@@ -224,10 +245,29 @@ Return the list of store items actually sent."
     ;; mark of 'export-paths' would be enough, but in practice it's not.)
     (channel-send-eof port)
 
-    ;; Wait for completion of the remote process.
-    (let ((result (zero? (channel-get-exit-status port))))
+    ;; Wait for completion of the remote process and read the status sexp from
+    ;; PORT.
+    (let* ((result (false-if-exception (read port)))
+           (status (zero? (channel-get-exit-status port))))
       (close-port port)
-      missing)))
+      (match result
+        (('success . _)
+         missing)
+        (('protocol-error message)
+         (raise (condition
+                 (&nix-protocol-error (message message) (status 42)))))
+        (('error key args ...)
+         (raise (condition
+                 (&nix-protocol-error
+                  (message (call-with-output-string
+                             (lambda (port)
+                               (print-exception port #f key args))))
+                  (status 43)))))
+        (_
+         (raise (condition
+                 (&nix-protocol-error
+                  (message "unknown error while sending files over SSH")
+                  (status 44)))))))))
 
 (define (remote-store-session remote)
   "Return the SSH channel beneath REMOTE, a remote store as returned by
