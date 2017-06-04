@@ -34,14 +34,14 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.78.3")
+    (version "0.79.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xrnl2hl9rpl50n8cihvclcd951zj640fj5kpi3d6ihwcqjcdi0a"))))
+                "14rhr9nv1022r7m94agb3299y0k093aq1ps22zgii3aa7cf9h1w4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -54,10 +54,10 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((commit "d4420bbcc9f994e2cce430cf156f383dc4092bca")
+  (let ((commit "7fdca75d2188b28df806b34ec92627d57aafa9ae")
         (revision "0")
         (triplet "i686-unknown-linux-gnu")
-        (version "0.6"))
+        (version "0.7"))
     (package
       (name "mes")
       (version (string-append version "-" revision "." (string-take commit 7)))
@@ -68,7 +68,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
-                 (base32 "0qqywk3siyhf08v7xac08lqldklrqfndlp495wgy6ii9fn93197k"))))
+                 (base32 "0fvzr1ai2rmi46zdi5b2bdjb6s8ip78mkmsk02yxl46rajmp2pb1"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs

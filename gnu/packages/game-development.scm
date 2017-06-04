@@ -483,8 +483,9 @@ programming language.")
     (version "4.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gna.org/allegro/allegro/"
-                                  version "/allegro-" version ".tar.gz"))
+              (uri (string-append "https://github.com/liballeg/allegro5/"
+                                  "releases/download/" version "/allegro-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "1p0ghkmpc4kwij1z9rzxfv7adnpy4ayi0ifahlns1bdzgmbyf88v"))))
@@ -518,14 +519,18 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.0")
+    (version "5.2.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gna.org/allegro/allegro/"
-                                  version "/allegro-" version ".tar.gz"))
+              (uri (string-append "https://github.com/liballeg/allegro5/releases"
+                                  "/download/" version "/allegro-"
+                                  (if (equal? "0" (string-take-right version 1))
+                                    (string-drop-right version 2)
+                                    version)
+                                  ".tar.gz"))
               (sha256
                (base32
-                "1mwzgzc4nb5k5zkbq7yrc6hg63yxq3wk69lmjag1h19x8b6njnmg"))))
+                "1z4lrrlmn471wb7vzbd9iw7g379vj0k964vy1s64hcvv5bhvk1g2"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (inputs
@@ -561,8 +566,12 @@ etc.")
     (version "5.0.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gna.org/allegro/allegro/"
-                                  version "/allegro-" version ".tar.gz"))
+              (uri (string-append "https://github.com/liballeg/allegro5/releases"
+                                  "/download/" version "/allegro-"
+                                  (if (equal? "0" (string-take-right version 1))
+                                    (string-drop-right version 2)
+                                    version)
+                                  ".tar.gz"))
               (sha256
                (base32
                 "0cd51qrh97jrr0xdmnivqgwljpmizg8pixsgvc4blqqlaz4i9zj9"))))))

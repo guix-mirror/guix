@@ -45,8 +45,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages vtk))
+  #:use-module (gnu packages xorg))
 
 ;; We use the latest snapshot of this package because the latest release is
 ;; from 2011 and has known vulnerabilities that cannot easily be fixed by

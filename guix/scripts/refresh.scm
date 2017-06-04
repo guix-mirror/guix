@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix profiles)
   #:use-module (guix upstream)
   #:use-module (guix discovery)
   #:use-module (guix graph)
@@ -79,6 +81,9 @@
         (option '(#\L "list-updaters") #f #f
                 (lambda args
                   (list-updaters-and-exit)))
+        (option '(#\m "manifest") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'manifest arg result)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression arg result)))
@@ -124,6 +129,8 @@ specified with `--select'.\n"))
   (display (G_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
+  (display (G_ "
+  -m, --manifest=FILE    select all the packages from the manifest in FILE"))
   (display (G_ "
   -t, --type=UPDATER,... restrict to updates from the specified updaters
                          (e.g., 'gnu')"))
@@ -308,6 +315,24 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
 
 
 ;;;
+;;; Manifest.
+;;;
+
+(define (manifest->packages manifest)
+  "Return the list of packages in MANIFEST."
+  (filter-map (lambda (entry)
+                (let ((item (manifest-entry-item entry)))
+                  (if (package? item) item #f)))
+              (manifest-entries manifest)))
+
+(define (packages-from-manifest manifest)
+  "Return the list of packages in loaded MANIFEST."
+  (let* ((user-module (make-user-module '((guix profiles) (gnu))))
+         (manifest    (load* manifest user-module)))
+    (manifest->packages manifest)))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -378,8 +403,7 @@ update would trigger a complete rebuild."
          ;; the command line.
          (warn?           (or (assoc-ref opts 'argument)
                               (assoc-ref opts 'expression)))
-
-         (packages
+         (args-packages
           (match (filter-map (match-lambda
                                (('argument . spec)
                                 ;; Take either the specified version or the
@@ -400,7 +424,11 @@ update would trigger a complete rebuild."
                                     result))
                               '())))
             (some                                 ; user-specified packages
-             some))))
+             some)))
+         (packages
+          (match (assoc-ref opts 'manifest)
+            (#f args-packages)
+            ((? string? file) (packages-from-manifest file)))))
     (with-error-handling
       (with-store store
         (run-with-store store

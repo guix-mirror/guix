@@ -14922,3 +14922,377 @@ Supported metrics are:
 
 (define-public python2-radon
   (package-with-python2 python-radon))
+
+(define-public python-sure
+  (package
+    (name "python-sure")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sure" version))
+       (sha256
+        (base32
+         "1iyqsy2d6radi88g1qf0lziy5b39h5cpb3g5jiqyb4xi46ig3x1z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/gabrielfalcao/sure")
+    (synopsis "Automated testing library in python for python")
+    (description
+     "Sure is a python library that leverages a DSL for writing assertions.
+Sure is heavily inspired by @code{RSpec Expectations} and @code{should.js}.")
+    (license license:gpl3+)))
+
+(define-public python2-sure
+  (package-with-python2 python-sure))
+
+(define-public python2-couleur
+  ;; This package does not seem to support python3 at all, hence,
+  ;; only the python2 variant definition is provided.
+  (package
+    (name "python2-couleur")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "couleur" version))
+       (sha256
+        (base32
+         "1qqaxyqz74wvid0cr119dhcwz0h0if5b5by44zl49pd5z65v58k1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/gabrielfalcao/couleur")
+    (synopsis
+     "ANSI terminal tool for python, colored shell and other handy fancy features")
+    (description
+     "@code{Couleur} provides python programs a way to use the ANSI features in a unix
+terminal such as coloured output in the shell, overwriting output, indentation, etc.")
+    ;; README.md says ASL2.0, but all source code headers are LGPL3+.
+    ;; https://github.com/gabrielfalcao/couleur/issues/11
+    (license license:lgpl3+)))
+
+(define-public python-misaka
+  (package
+    (name "python-misaka")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "misaka" version))
+       (sha256
+        (base32
+         "1yqrq3a5rracirmvk52n28nn6ckdaz897gnigv89a9gmyn87sqw7"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Line 37 of setup.py calls self.run_command('develop')
+       ;; in the 'check' phase. This command seems to be trying
+       ;; to write to
+       ;; /gnu/store/...-python-<version>/lib/python<version>/site-packages/
+       ;; for which it does not have the permission to write.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/FSX/misaka")
+    (synopsis "Python binding for Hoedown")
+    (description
+     "@code{Misaka} is a CFFI-based binding for @code{Hoedown}, a fast markdown processing
+library written in C.  It features a fast HTML renderer and functionality to make custom
+renderers (e.g. man pages or LaTeX).")
+    (license license:expat)))
+
+(define-public python2-misaka
+  (package-with-python2 python-misaka))
+
+(define-public python2-steadymark
+  ;; This is forced into being a python2 only variant
+  ;; due to its dependence on couleur that has no support
+  ;; for python3
+  (package
+    (name "python2-steadymark")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "steadymark" version))
+       (sha256
+        (base32
+         "1640i9g8dycql3cc8j0bky0jkzj0q39blfbp4lsgpkprkfgcdk8v"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-couleur" ,python2-couleur)
+       ("python-sure" ,python2-sure)
+       ("python-misaka" ,python2-misaka)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-setup-py
+           (lambda _
+             ;; Update requirements from dependency==version
+             ;; to dependency>=version
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (home-page "https://github.com/gabrielfalcao/steadymark")
+    (synopsis "Markdown-based test runner for python")
+    (description
+     "@code{Steadymark} allows documentation to be written in github-flavoured
+markdown.  The documentation may contain snippets of code surrounded by python
+code blocks and @code{Steadymark} will find these snippets and run them, making
+sure that there are no old malfunctional examples in the documentation examples.")
+    (license license:expat)))
+
+(define-public python-nose-randomly
+  (package
+    (name "python-nose-randomly")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nose-randomly" version))
+       (sha256
+        (base32
+         "1cw9dlr1zh3w4i438kin7z0rm8092ki52hayisyc43h9pcplq7rn"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/adamchainz/nose-randomly")
+    (synopsis
+     "Nose plugin to randomly order tests and control random.seed")
+    (description
+     "This is a @code{Nose} plugin to randomly order tests which can be quite
+powerful in discovering hidden flaws in the tests themselves, while helping to
+reduce inter-test dependencies.  It also helps in controlling @code{random.seed},
+by resetting it to a repeatable number for each test, enabling the tests to
+create data based on random numbers and yet remain repeatable.")
+    (license license:bsd-3)))
+
+(define-public python2-nose-randomly
+  (package-with-python2 python-nose-randomly))
+
+(define-public python-jsonpointer
+  (package
+    (name "python-jsonpointer")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsonpointer" version))
+       (sha256
+        (base32
+         "1cg0gvgqjysydv6p45v4jywg1jb3v48c7m3cbpi57zgf6nndr9cz"))))
+  (build-system python-build-system)
+  (home-page "https://github.com/stefankoegl/python-json-pointer")
+  (synopsis "Identify specific nodes in a JSON document")
+  (description "@code{jsonpointer} allows you to access specific nodes
+by path in a JSON document (see RFC 6901).")
+  (license license:bsd-3)))
+
+(define-public python2-jsonpointer
+  (package-with-python2 python-jsonpointer))
+
+(define-public python-rfc3987
+  (package
+    (name "python-rfc3987")
+    (version "1.3.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "rfc3987" version))
+      (sha256
+       (base32
+        "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
+    (build-system python-build-system)
+    (home-page "http://pypi.python.org/pypi/rfc3987")
+    (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
+    (description "@code{rfc3987} provides routines for parsing and
+validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
+    (license license:gpl3+)))
+
+(define-public python2-rfc3987
+  (package-with-python2 python-rfc3987))
+
+(define-public python-validate-email
+  (package
+    (name "python-validate-email")
+    (version "1.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "validate_email" version))
+      (sha256
+       (base32
+        "1bxffaf5yz2cph8ki55vdvdypbwkvn2xr1firlcy62vqbzf1jivq"))))
+    (build-system python-build-system)
+    (home-page "http://github.com/syrusakbary/validate_email")
+    (synopsis "Verifies if an email address is valid and really exists")
+    (description "@code{validate_email} can be used to verify if an email
+address is valid and really exists.")
+    (license license:lgpl3+)))
+
+(define-public python2-validate-email
+  (package-with-python2 python-validate-email))
+
+(define-public python-flex
+  (package
+    (name "python-flex")
+    (version "6.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "flex" version))
+      (sha256
+       (base32
+        "00pamnwla3khk8nyla7y28dq9jnh69swd7f4jfsl7sn1izs8n8zk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-iso8601" ,python-iso8601)
+       ("python-jsonpointer" ,python-jsonpointer)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-rfc3987" ,python-rfc3987)
+       ("python-six" ,python-six)
+       ("python-validate-email" ,python-validate-email)))
+    (home-page "https://github.com/pipermerriam/flex")
+    (synopsis "Validates Swagger schemata")
+    (description "@code{flex} can be used to validate Swagger schemata.")
+    (license license:bsd-3)))
+
+(define-public python2-flex
+  (package-with-python2 python-flex))
+
+(define-public python-marshmallow
+  (package
+    (name "python-marshmallow")
+    (version "3.0.0b2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "marshmallow" version))
+      (sha256
+       (base32
+        "11bnpvfdbczr74177p295zbkdrax2cahvbj5bqhhlprgz2xxi5d9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-simplejson" ,python-simplejson)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/marshmallow-code/marshmallow")
+    (synopsis "Convert complex datatypes to and from native
+Python datatypes.")
+    (description "@code{marshmallow} provides a library for converting
+complex datatypes to and from native Python datatypes.")
+    (license license:expat)))
+
+(define-public python2-marshmallow
+  (package-with-python2 python-marshmallow))
+
+(define-public python-bottle
+  (package
+    (name "python-bottle")
+    (version "0.12.13")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "bottle" version))
+      (sha256
+        (base32
+          "0m9k2a7yxvggc4kw8fsvj381vgsvfcdshg5nzy6vwrxiw2p53drr"))))
+    (build-system python-build-system)
+    (home-page "http://bottlepy.org/")
+    (synopsis "WSGI framework for small web-applications.")
+    (description "@code{python-bottle} is a WSGI framework for small web-applications.")
+    (license license:expat)))
+
+(define-public python2-bottle
+  (package-with-python2 python-bottle))
+
+(define-public python-apispec
+  (package
+    (name "python-apispec")
+    (version "0.22.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "apispec" version))
+      (sha256
+        (base32
+          "0y3jxmgp2d24am3hxl40f5rw9abb0r8037sagax3dv64h4n1azwq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-flask" ,python-flask)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-tornado" ,python-tornado)
+       ("python-bottle" ,python-bottle)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/marshmallow-code/apispec")
+    (synopsis "Swagger 2.0 API specification generator")
+    (description "@code{python-apispec} is a pluggable API specification
+generator. Currently supports the OpenAPI specification (f.k.a.
+Swagger 2.0).")
+    (license license:expat)))
+
+(define-public python2-apispec
+  (package-with-python2 python-apispec))
+
+(define-public python-flasgger
+  (package
+    (name "python-flasgger")
+    (version "0.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/rochacbruno/flasgger/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1gqzlm0rb55fdpsy5ipkganlx9cnpi454fqyycr03jm22zql14ay"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("flake8 flasgger --ignore=F403")
+                "flake8 flasgger --ignore=E731,F403"))
+             (setenv "PYTHONPATH" (string-append (getcwd)
+                                                 ":"
+                                                 (getenv "PYTHONPATH")))
+             (zero? (system* "py.test")))))))
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-mistune" ,python-mistune)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-flake8" ,python-flake8)
+       ("python-flask-restful" ,python-flask-restful)
+       ("python-flex" ,python-flex)
+       ("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-apispec" ,python-apispec)))
+    (home-page "https://github.com/rochacbruno/flasgger/")
+    (synopsis "Extract Swagger specs from your Flask project")
+    (description "@code{python-flasgger} allows extracting Swagger specs
+from your Flask project.  It is a fork of Flask-Swagger.")
+    (license license:expat)))
+
+(define-public python2-flasgger
+  (package-with-python2 python-flasgger))

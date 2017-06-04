@@ -723,6 +723,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
+  %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgit2-use-after-free.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
@@ -931,6 +932,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2017-7493.patch			\
+  %D%/packages/patches/qemu-CVE-2017-8112.patch			\
+  %D%/packages/patches/qemu-CVE-2017-8309.patch			\
+  %D%/packages/patches/qemu-CVE-2017-8379.patch			\
+  %D%/packages/patches/qemu-CVE-2017-8380.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\

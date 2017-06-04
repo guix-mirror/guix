@@ -136,6 +136,82 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
+(define-public cataclysm-dda
+  (package
+    (name "cataclysm-dda")
+    (version "0.C")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/CleverRaven/Cataclysm-DDA/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xlajmgl9cviqyjpp5g5q4rbljy9gqc49v54bi8gpzr68s14gsb9"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Import cmath header for the std::pow function.
+               '(for-each (lambda (file)
+                            (substitute* file
+                              (("#include <math.h>")
+                               "#include <cmath>")))
+                          (find-files "src")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("ncursesw5-config") "ncursesw6-config")
+               (("RELEASE_FLAGS = -Werror") "RELEASE_FLAGS ="))
+             #t))
+         (add-after 'build 'build-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             ;; Change prefix directory and enable tile graphics and sound.
+             (zero?
+              (apply system* "make" "TILES=1" "SOUND=1"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "tiles"))
+                     (cdr make-flags)))))
+         (add-after 'install 'install-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (zero?
+              (apply system* "make" "install" "TILES=1" "SOUND=1"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "tiles"))
+                     (cdr make-flags))))))
+       ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
+       ;;       input in order to support tests.
+       #:tests? #f))
+    (outputs '("out"
+               "tiles")) ; For tile graphics and sound support.
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("ncurses" ,ncurses)
+       ("sdl2" ,sdl2)
+       ("sdl2-image", sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "http://en.cataclysmdda.com/")
+    (synopsis "Survival horror roguelike video game")
+    (description
+     "Cataclysm: Dark Days Ahead is a roguelike set in a post-apocalyptic world.
+Struggle to survive in a harsh, persistent, procedurally generated world.
+Scavenge the remnants of a dead civilization for food, equipment, or, if you are
+lucky, a vehicle with a full tank of gas to get you out of Dodge.  Fight to
+defeat or escape from a wide variety of powerful monstrosities, from zombies to
+giant insects to killer robots and things far stranger and deadlier, and against
+the others like yourself, that want what you have.")
+    (license license:cc-by-sa3.0)))
+
 (define-public freedoom
   (package
    (name "freedoom")
@@ -3405,16 +3481,20 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.5.6")
+   (version "2.5.7")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append
-           "http://download.gna.org/freeciv/"
-           "stable/freeciv-" version ".tar.bz2"))
+     (uri (list (string-append
+                  "http://files.freeciv.org/stable/freeciv-"
+                  version ".tar.bz2")
+                (string-append
+                  "mirror://sourceforge/freeciv/Freeciv%20"
+                  (version-major+minor version) "/" version
+                  "/freeciv-" version ".tar.bz2")))
      (sha256
       (base32
-       "16wrnsx5rmbz6rjs03bhy0vn20i6n6g73lx7fjpai98ixhzc5bfg"))))
+       "1lmydnnqraa947l7gdz6xgm0bgks1ywsivp9h4v8jr3avcv6gqzz"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)

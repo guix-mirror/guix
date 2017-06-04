@@ -145,3 +145,39 @@ guile -c '
            (exit
             (= 42 (pk (call-with-input-file (derivation->output-path drv)
                         read)))))))'
+
+
+kill "$daemon_pid"
+
+# Make sure the daemon's default 'timeout' and 'max-silent-time' settings are
+# honored.
+
+client_code='
+  (use-modules (guix) (gnu packages) (guix tests) (srfi srfi-34))
+
+  (with-store store
+    (let* ((build  (add-text-to-store store "build.sh"
+                                      "while true ; do : ; done"))
+           (bash   (add-to-store store "bash" #t "sha256"
+                                 (search-bootstrap-binary "bash"
+                                                          (%current-system))))
+           (drv    (derivation store "the-thing" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("x" . ,(random-text))))))
+      (exit (guard (c ((nix-protocol-error? c)
+                       (->bool
+                        (string-contains (pk (nix-protocol-error-message c))
+                                         "failed"))))
+              (build-derivations store (list drv))
+              #f))))'
+
+
+for option in --max-silent-time=1 --timeout=1
+do
+    guix-daemon --listen="$socket" --disable-chroot "$option" &
+    daemon_pid=$!
+
+    GUIX_DAEMON_SOCKET="$socket" guile -c "$client_code"
+    kill "$daemon_pid"
+done
