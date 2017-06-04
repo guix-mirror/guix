@@ -47,6 +47,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pdf)
@@ -1192,7 +1193,9 @@ system.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("hunspell" ,hunspell)
+       ;; TODO: hspell (for Hebrew), Voikko (for Finish)
+       ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Multi-language spell checker")
     (description "Sonnet is a plugin-based spell checking library for Qt-based
