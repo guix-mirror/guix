@@ -1459,16 +1459,17 @@ allows mocking and stubbing of methods on real (non-mock) classes.")
 (define-public ruby-net-ssh
   (package
     (name "ruby-net-ssh")
-    (version "3.0.1")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-ssh" version))
               (sha256
                (base32
-                "1dzqkgwi9xm6mbfk1rkk17rzmz8m5xakqi21w1b97ybng6kkw0hf"))))
+                "013p5jb4wy0cq7x7036piw2a3s1i9p752ki1srx2m289mpz4ml3q"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-mocha" ,ruby-mocha)
+     `(("bundler" ,bundler)
+       ("ruby-mocha" ,ruby-mocha)
        ("ruby-test-unit" ,ruby-test-unit)))
     (synopsis "Ruby implementation of the SSH2 client protocol")
     (description "@code{Net::SSH} is a pure-Ruby implementation of the SSH2
