@@ -15079,3 +15079,24 @@ create data based on random numbers and yet remain repeatable.")
 
 (define-public python2-nose-randomly
   (package-with-python2 python-nose-randomly))
+
+(define-public python-jsonpointer
+  (package
+    (name "python-jsonpointer")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsonpointer" version))
+       (sha256
+        (base32
+         "1cg0gvgqjysydv6p45v4jywg1jb3v48c7m3cbpi57zgf6nndr9cz"))))
+  (build-system python-build-system)
+  (home-page "https://github.com/stefankoegl/python-json-pointer")
+  (synopsis "Identify specific nodes in a JSON document")
+  (description "@code{jsonpointer} allows you to access specific nodes
+by path in a JSON document (see RFC 6901).")
+  (license license:bsd-3)))
+
+(define-public python2-jsonpointer
+  (package-with-python2 python-jsonpointer))
