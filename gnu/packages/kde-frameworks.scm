@@ -123,6 +123,8 @@ common build settings used in software produced by the KDE community.")
                 "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
     (build-system cmake-build-system)
     (native-inputs
+     ;; TODO: Add qttools to build the Qt Designer plugin.
+     ;; TODO: Think about adding pulseaudio. Is it required for sound?
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)))
@@ -296,6 +298,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(("dbus" ,dbus)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
+     ;; TODO: qtdeclarative (yields one failing test)
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
@@ -643,6 +646,10 @@ infrastructure.")
                (base32
                 "1nmlwvy2jdmh0m6bmahvk68vl2rs9s28c10dkncpi6gvhsdkigqx"))))
     (build-system cmake-build-system)
+    ;; TODO: Build packages for the Python bindings.  Ideally this will be
+    ;; done for all versions of python guix supports.  Requires python,
+    ;; python-sip, clang-python, libclang.  Requires python-2 in all cases for
+    ;; clang-python.
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -1193,6 +1200,7 @@ which are used in DBus communication.")
     (inputs
      `(("qtbase" ,qtbase)
        ("udev" ,eudev)))
+    ;; TODO: Add runtime-only dependency MediaPlayerInfo
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Desktop hardware abstraction")
     (description "Solid is a device integration framework.  It provides a way of
@@ -1573,6 +1581,9 @@ asynchronous jobs.")
        ("kwindowsystem" ,kwindowsystem)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
+       ;; TODO: qtspeech (new in Qt 5.9)
+       ;; TODO: Think about adding dbusmenu-qt5 from
+       ;; https://launchpad.net/libdbusmenu-qt
        ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:phases
@@ -1615,7 +1626,7 @@ covers feedback and persistent events.")
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: 1/4 tests fail.
+     `(#:tests? #f ; FIXME: 3/9 tests fail.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
@@ -1648,6 +1659,7 @@ were traditional plugins.")
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("ki18n" ,ki18n)
+       ;; TODO: utempter, for managing UTMP entries
        ("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f ; FIXME: 1/1 tests fail.
@@ -2013,7 +2025,8 @@ their settings.")
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
+             ;; The test suite requires a running X server, setting
+             ;; QT_QPA_PLATFORM=offscreen does not suffice.
              (system (string-append (assoc-ref inputs "xorg-server")
                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
              (setenv "DISPLAY" ":1")
@@ -2695,7 +2708,8 @@ types or handled by application specific code.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("karchive" ,karchive)
+     `(;; TODO: editor-config
+       ("karchive" ,karchive)
        ("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)
        ("kcodecs" ,kcodecs)
@@ -2774,6 +2788,7 @@ library.")
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
+       ;; TODO: qtspeech (new in Qt 5.9)
        ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
@@ -2978,7 +2993,7 @@ setUrl, setUserAgent and call.")
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)))
     (arguments
-     `(#:tests? #f ; FIXME: 13/14 tests fail.
+     `(#:tests? #f ; FIXME: 9/15 tests fail.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup

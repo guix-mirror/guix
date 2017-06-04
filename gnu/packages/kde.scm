@@ -293,6 +293,8 @@ used in KDE development tools Kompare and KDevelop.")
        (modify-phases %standard-phases
          (add-before 'configure 'patch-cmakelists
            (lambda _
+             ;; TODO: Verify: This should no longer be necessary, since
+             ;; KF5AuthConfig.cmake.in contains this already.
              (substitute* "processcore/CMakeLists.txt"
                (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
          (replace 'check
