@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +32,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
@@ -178,6 +179,44 @@ world.
 This package contains the binaries.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
+
+;; These variables specify the SVN tag and the matching SVN revision.
+(define %texlive-tag "texlive-2017.0")
+(define %texlive-revision 44445)
+
+(define-public texlive-dvips
+  (package
+    (name "texlive-dvips")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/dvips"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1k11yvz4q95bxyxczwvd4r177h6a2gg03xmf51kmgjgz8an2gq2w"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/dvips")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/dvips")
+    (synopsis "DVI to PostScript drivers")
+    (description "This package provides files needed for converting DVI files
+to PostScript.")
+    ;; Various free software licenses apply to individual files.
+    (license (list license:lppl1.3c+
+                   license:expat
+                   license:lgpl3+))))
 
 (define texlive-texmf
   (package
