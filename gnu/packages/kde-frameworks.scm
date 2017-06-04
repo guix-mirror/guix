@@ -2664,7 +2664,8 @@ types or handled by application specific code.")
     (propagated-inputs
      `(("kparts" ,kparts)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("karchive" ,karchive)
        ("kauth" ,kauth)
