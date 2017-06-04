@@ -218,6 +218,44 @@ to PostScript.")
                    license:expat
                    license:lgpl3+))))
 
+(define-public texlive-generic-unicode-data
+  (package
+    (name "texlive-generic-unicode-data")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/unicode-data"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0ivrhp6jz31pl4z841g4ws41lmvdiwz4sslmhf02inlib79gz6r2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/unicode-data")))
+             (mkdir-p target)
+             (copy-recursively (assoc-ref %build-inputs "source") target)
+             #t))))
+    (home-page "http://www.ctan.org/pkg/unicode-data")
+    (synopsis "Unicode data and loaders for TeX")
+    (description "This bundle provides generic access to Unicode Consortium
+data for TeX use.  It contains a set of text files provided by the Unicode
+Consortium which are currently all from Unicode 8.0.0, with the exception of
+@code{MathClass.txt} which is not currently part of the Unicode Character
+Database.  Accompanying these source data are generic TeX loader files
+allowing this data to be used as part of TeX runs, in particular in building
+format files.  Currently there are two loader files: one for general character
+set up and one for initializing XeTeX character classes as has been carried
+out to date by @code{unicode-letters.tex}. ")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
