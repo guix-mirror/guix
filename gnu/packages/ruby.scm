@@ -2706,14 +2706,14 @@ unacceptable HTML and/or CSS from a string.")
 (define-public ruby-ox
   (package
     (name "ruby-ox")
-    (version "2.2.1")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ox" version))
        (sha256
         (base32
-         "00i11xd4ayh7349rhgskajfxn0qzkb74ab01217zix9qcapssxax"))))
+         "0rar0xr5qn3zac1r2z18kmpapx121c2l3z8jsgh60vsddwzpdh7h"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
