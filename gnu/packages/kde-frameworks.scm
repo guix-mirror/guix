@@ -2784,7 +2784,7 @@ It supports rich text as well as plain text.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("gpgmepp" ,gpgmepp)
+     `(("gpgme" ,gpgme) ;; TODO: Add gpgme Qt-bindings
        ("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
        ("kconfig" ,kconfig)
