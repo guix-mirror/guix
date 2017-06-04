@@ -1740,6 +1740,29 @@ keep pressing the key until it selects what you want.  There's also
 column by drawing a thin line down the length of the editing window.")
     (license license:gpl3+)))
 
+(define-public emacs-inf-ruby
+  (package
+    (name "emacs-inf-ruby")
+    (version "2.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nonsequitur/inf-ruby/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m7323k649ckxql1grsdnf71bjhys7l4qb8wbpphb1mr1q8i4066"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/nonsequitur/inf-ruby")
+    (synopsis "Provides a REPL buffer connected to a Ruby subprocess in Emacs")
+    (description
+     "@code{inf-ruby} provides a Read Eval Print Loop (REPL) buffer, allowing
+for easy interaction with a ruby subprocess.  Features include support for
+detecting specific uses of Ruby, e.g. when using rails, and using a
+appropriate console.")
+    (license license:gpl3+)))
+
 (define-public emacs-znc
   (package
     (name "emacs-znc")
