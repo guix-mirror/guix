@@ -1583,6 +1583,7 @@ covers feedback and persistent events.")
      `(("karchive" ,karchive)
        ("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
+       ("kdoctools" ,kdoctools)
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (arguments
