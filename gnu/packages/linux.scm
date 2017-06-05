@@ -2861,7 +2861,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.6")
+    (version "1.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2869,7 +2869,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rvq4hapy2anal1vg1yidv4x8rg4iw5sxfwqixkw0q2qsxb54471"))))
+                "0df0ccnd0dgwc6rvk9qmrz0nfb8whc5s3wg9qnw1mzbrh4rcvhw2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
