@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -221,7 +222,8 @@ possible, and it also makes the SGE easy to learn.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/python-tmx/tmx-"
+       (uri (string-append "mirror://savannah/python-tmx/"
+                           (version-major+minor version) "/tmx-"
                            version ".tar.gz"))
        (sha256
         (base32
