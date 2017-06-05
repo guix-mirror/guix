@@ -2219,8 +2219,7 @@ window does not need focus for them to be activated.")
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f ; FIXME: Test failure
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
