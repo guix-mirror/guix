@@ -35,6 +35,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -266,6 +267,46 @@ extracted out as a separate project.  Elogind integrates with PAM to provide
 the org.freedesktop.login1 interface over the system bus, allowing other parts
 of a the system to know what users are logged in, and where.")
     (license license:lgpl2.1+)))
+
+(define-public packagekit
+  (package
+    (name "packagekit")
+    (version "1.1.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://www.freedesktop.org/software/"
+                   "PackageKit/releases/"
+                   "PackageKit-" version ".tar.xz"))
+             (sha256
+              (base32
+               "035pqxgkyki813hyw2frrbpfllq113zfk5qcp9wvsq5lsp74ix2h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "BASH_COMPLETIONS_DIR="
+                                         %output "/etc/bash_completion.d"))
+       #:configure-flags
+       '("--disable-systemd")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("glib" ,glib)
+       ("bash-completion", bash-completion)
+       ("polkit" ,polkit)))
+    (propagated-inputs
+     `(("sqlite" ,sqlite)))
+    (home-page "https://www.freedesktop.org/software/PackageKit/")
+    (synopsis "API for package management, through D-Bus")
+    (description
+     "PackageKit provides a way of performing package management tasks,
+e.g. updating, removing and installing software.  Through supporting many
+backends, PackageKit can perform these tasks using the appropriate package
+manager for the current system.")
+    (license license:gpl2+)))
 
 (define-public python-pyxdg
   (package
