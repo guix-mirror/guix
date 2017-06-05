@@ -1043,7 +1043,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.10.0")
+    (version "4.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1051,7 +1051,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1a59y1zkddvr7z0lh2y9iasbh9wpfc1n39p56xcd6jkhzk0y3c92"))))
+                "09l0phf09mw17bn3xlzfr80sbhw14mq8xv28iz5x15m6pll10rvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
