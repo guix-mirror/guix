@@ -728,11 +728,11 @@ changes, and much more.")
      `(("curl" ,curl)
        ("nss" ,nss)))
     (home-page "https://sourceforge.net/projects/liboauth")
-    (synopsis "C library implementing the http://oauth.net API")
+    (synopsis "C library implementing the OAuth API")
     (description
-     "liboauth is a collection of C functions implementing the http://oauth.net
-API.  liboauth provides functions to escape and encode stings according to
-OAuth specifications and offers high-level functionality built on top to sign
+     "liboauth is a collection of C functions implementing the OAuth API.
+liboauth provides functions to escape and encode strings according to OAuth
+specifications and offers high-level functionality built on top to sign
 requests or verify signatures using either NSS or OpenSSL for calculating the
 hash/signatures.")
     ;; Source code may be distributed under either license.
