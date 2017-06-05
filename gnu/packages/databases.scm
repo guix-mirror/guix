@@ -459,7 +459,8 @@ as a drop-in replacement of MySQL.")
                 "1imrjp4vfslxj5rrvphcrrk21zv8kqw3gacmwradixh1d5rv6i8n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--with-uuid=e2fs")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
                      (lambda _
@@ -467,9 +468,16 @@ as a drop-in replacement of MySQL.")
                        (substitute* '("src/bin/pg_ctl/pg_ctl.c"
                                       "src/bin/psql/command.c")
                          (("/bin/sh") (which "sh")))
-                       #t)))))
+                       #t))
+         (add-after 'build 'build-contrib
+           (lambda _
+             (zero? (system* "make" "-C" "contrib"))))
+         (add-after 'install 'install-contrib
+           (lambda _
+             (zero? (system* "make" "-C" "contrib" "install")))))))
     (inputs
      `(("readline" ,readline)
+       ("libuuid" ,util-linux)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
     (synopsis "Powerful object-relational database system")
