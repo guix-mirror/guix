@@ -1066,7 +1066,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
   %D%/packages/patches/wxwidgets-fix-windowGTK.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
-  %D%/packages/patches/xf86-input-wacom-xorg-abi-25.patch	\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\

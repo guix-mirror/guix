@@ -823,7 +823,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.34.0")
+    (version "0.34.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -831,9 +831,7 @@ Wacom tablet applet.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0idhkigl0pnyp08sqm6bqfb4h20v6rjrb71z1gdv59gk7d7qwpgi"))
-              (patches
-               (search-patches "xf86-input-wacom-xorg-abi-25.patch"))))
+                "073bf12ka1mcqvr1sviixb51bsfx37jalrj9xw53f10i2kdvkl9a"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
