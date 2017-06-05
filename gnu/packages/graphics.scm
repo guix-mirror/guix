@@ -353,9 +353,9 @@ visual effects work for film.")
        ("mesa", mesa)))
     (synopsis "High performance real-time graphics toolkit")
     (description
-     "The OpenSceneGraph is an open source high performance 3D graphics toolkit,
+     "The OpenSceneGraph is a high performance 3D graphics toolkit
 used by application developers in fields such as visual simulation, games,
-virtual reality, scientific visualization and modelling.")
+virtual reality, scientific visualization and modeling.")
     (home-page "http://www.openscenegraph.org")
     ;; The 'LICENSE' file explains that the source is licensed under
     ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
