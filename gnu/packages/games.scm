@@ -580,6 +580,92 @@ utilizing the art assets from the @code{SuperTux} project.")
                    license:gpl2+
                    license:gpl3+))))
 
+(define-public roguebox-adventures
+  (let ((commit "19a2c340b34d5b4e7cc89118c7aedc058babbd93")
+        (revision "1"))
+      (package
+        (name "roguebox-adventures")
+        (version (git-version "2.1.2" revision commit))
+        (source
+         (origin
+           (method git-fetch)
+           (uri
+            (git-reference
+             (url "https://git.postactiv.com/themightyglider/RogueBoxAdventures.git")
+                 (commit commit)))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "0afmg8fjdcs3sqdp5rc7irgr7riil8jwysfjn1imfxslf1wcx5ah"))))
+        (build-system python-build-system)
+        (arguments
+         '(#:tests? #f ; no check target
+           #:phases
+           (modify-phases %standard-phases
+             ;; no setup.py script
+             (replace 'build
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (data (string-append
+                               out "/share/games/roguebox-adventures")))
+                   ;; Use the correct data directory.
+                   (substitute* '("main.py" "LIB/getch.py" "LIB/getch_gcwz.py")
+                     (("basic_path + os\\.sep + 'DATA'")
+                      (string-append "'" data "'"))
+                     (("^basic_path.*$")
+                      (string-append "basic_path ='" data "'\n")))
+                   (substitute* "LIB/gra_files.py"
+                     (("basic_path = b_path\\.replace\\('/LIB',''\\)")
+                      (string-append "basic_path ='" data "'\n")))
+
+                   ;; The game must save in the user's home directory because
+                   ;; the store is read-only.
+                   (substitute* "main.py"
+                     (("home_save = False") "home_save = True")
+                     (("'icon_small.png'")
+                      (string-append "'" data "/icon_small.png'"))))
+                 #t))
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (bin (string-append out "/bin"))
+                        (data (string-append
+                               out "/share/games/roguebox-adventures"))
+                        (doc (string-append
+                              out "/share/doc/roguebox-adventures")))
+                   (mkdir-p bin)
+                   (mkdir-p doc)
+                   (copy-file "main.py"
+                              (string-append bin "/roguebox-adventures"))
+                   (chmod (string-append bin "/roguebox-adventures") #o555)
+
+                   (for-each (lambda (file)
+                               (copy-recursively file
+                                                 (string-append data "/" file)))
+                             '("AUDIO" "FONT" "GRAPHIC" "LIB" "LICENSE"
+                               "icon_big.png" "icon_small.png"))
+
+                   (copy-recursively "DOC" doc)
+
+                   (wrap-program (string-append bin "/roguebox-adventures")
+                     `("PYTHONPATH" ":" prefix (,(string-append data "/LIB")))))
+                 #t)))))
+        (inputs
+         `(("python-pygame" ,python-pygame)
+           ("python-tmx" ,python-tmx)))
+        (home-page "https://rogueboxadventures.tuxfamily.org")
+        (synopsis "A classical roguelike/sandbox game")
+        (description
+         "RogueBox Adventures is a graphical roguelike with strong influences
+from sandbox games like Minecraft or Terraria.  The main idea of RogueBox
+Adventures is to offer the player a kind of roguelike toy-world.  This world
+can be explored and changed freely.")
+        ;; The GPL3+ is for code, the rest are for art.
+        (license (list license:cc0
+                       license:cc-by3.0
+                       license:gpl3+
+                       license:silofl1.1)))))
+
 (define-public xshogi
   (package
     (name "xshogi")
