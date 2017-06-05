@@ -39,6 +39,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages web)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages image)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages pdf)

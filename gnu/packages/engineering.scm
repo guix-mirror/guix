@@ -44,6 +44,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)

@@ -968,3 +968,35 @@ library to access fingerprint readers, over the D-Bus interprocess
 communication bus.  This daemon layer above libfprint solves problems related
 to applications simultaneously competing for fingerprint readers.")
     (license license:gpl2+)))
+
+(define-public desktop-file-utils
+  (package
+    (name "desktop-file-utils")
+    (version "0.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.freedesktop.org/software/" name
+                                  "/releases/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://www.freedesktop.org/wiki/Software/desktop-file-utils/")
+    (synopsis "Utilities for working with desktop entries")
+    (description
+     "This package contains a few command line utilities for working with
+desktop entries:
+
+desktop-file-validate: validates a desktop file and prints warnings/errors
+                       about desktop entry specification violations.
+
+desktop-file-install: installs a desktop file to the applications directory,
+                      optionally munging it a bit in transit.
+
+update-desktop-database: updates the database containing a cache of MIME types
+                         handled by desktop files.")
+    (license license:gpl2+)))

@@ -39,6 +39,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
