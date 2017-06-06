@@ -2047,7 +2047,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.39.0")
+    (version "5.40.0")
     (source
      (origin
        (method url-fetch)
@@ -2055,7 +2055,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cvignn5y6qzrby6qb885yc8zdcdqdr1d50vcvc3gapw2f0gk3zm"))
+         "15pp35ayglv723bjbqc60gcdv2bm54s6pywsm4i4cwbjsf64dzkl"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
