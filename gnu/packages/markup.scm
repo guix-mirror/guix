@@ -26,7 +26,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system perl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web))
@@ -143,6 +145,50 @@ convert it to structurally valid XHTML (or HTML).")
 @command{markdown} command, and a library.")
     (home-page "http://www.pell.portland.or.us/~orc/Code/discount/")
     (license bsd-3)))
+
+(define-public perl-text-markdown-discount
+  (package
+    (name "perl-text-markdown-discount")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/S/SE/SEKIMURA/Text-Markdown-Discount-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xx7v3wnla7m6wa3h33whxw3vvincaicg4yra1b9wbzf2aix9rnw"))
+       (patches
+        (search-patches "perl-text-markdown-discount-use-system-markdown.patch"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-ldflags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("OTHERLDFLAGS = ")
+                (string-append
+                      "OTHERLDFLAGS = -lmarkdown -Wl,-rpath="
+                      (assoc-ref inputs "discount")
+                      "/lib"))))))))
+    (inputs
+     `(("discount" ,discount)))
+    (home-page
+     "http://search.cpan.org/dist/Text-Markdown-Discount")
+    (synopsis
+     "Fast function for converting Markdown to HTML using Discount")
+    (description
+     "Text::Markdown::Discount is a Perl extension to the Discount markdown
+implementation.
+
+@example
+  use Text::Markdown::Discount;
+  my $html = markdown($text)
+@end example")
+    (license perl-license)))
 
 (define-public cmark
   (package
