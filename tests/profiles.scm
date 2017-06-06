@@ -288,6 +288,42 @@
            (manifest-entry-search-paths
             (package->manifest-entry mpl)))))
 
+(test-equal "packages->manifest, propagated inputs"
+  (map (match-lambda
+         ((label package)
+          (list (package-name package) (package-version package)
+                package)))
+       (package-propagated-inputs packages:guile-2.2))
+  (map (lambda (entry)
+         (list (manifest-entry-name entry)
+               (manifest-entry-version entry)
+               (manifest-entry-item entry)))
+       (manifest-entry-dependencies
+        (package->manifest-entry packages:guile-2.2))))
+
+(test-assertm "read-manifest"
+  (mlet* %store-monad ((manifest -> (packages->manifest
+                                     (list (package
+                                             (inherit %bootstrap-guile)
+                                             (native-search-paths
+                                              (package-native-search-paths
+                                               packages:guile-2.0))))))
+                       (drv (profile-derivation manifest
+                                                #:hooks '()
+                                                #:locales? #f))
+                       (out -> (derivation->output-path drv)))
+    (define (entry->sexp entry)
+      (list (manifest-entry-name entry)
+            (manifest-entry-version entry)
+            (manifest-entry-search-paths entry)
+            (manifest-entry-dependencies entry)))
+
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let ((manifest2 (profile-manifest out)))
+        (return (equal? (map entry->sexp (manifest-entries manifest))
+                        (map entry->sexp (manifest-entries manifest2))))))))
+
 (test-assertm "etc/profile"
   ;; Make sure we get an 'etc/profile' file that at least defines $PATH.
   (mlet* %store-monad

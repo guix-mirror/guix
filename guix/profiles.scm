@@ -154,7 +154,7 @@
   (output       manifest-entry-output             ; string
                 (default "out"))
   (item         manifest-entry-item)              ; package | store path
-  (dependencies manifest-entry-dependencies       ; (store path | package)*
+  (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
                 (default '())))
@@ -179,10 +179,10 @@
   "Return a manifest entry for the OUTPUT of package PACKAGE."
   (let ((deps (map (match-lambda
                     ((label package)
-                     (gexp-input package))
+                     (package->manifest-entry package))
                     ((label package output)
-                     (gexp-input package output)))
-                   (package-transitive-propagated-inputs package))))
+                     (package->manifest-entry package output)))
+                   (package-propagated-inputs package))))
     (manifest-entry
      (name (package-name package))
      (version (package-version package))
@@ -210,20 +210,20 @@ denoting a specific output of a package."
       (($ <manifest-entry> name version output (? string? path)
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output #$path
-                 (propagated-inputs #$deps)
+                 (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))
       (($ <manifest-entry> name version output (? package? package)
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
-                 (propagated-inputs #$deps)
+                 (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))))
 
   (match manifest
     (($ <manifest> (entries ...))
-     #~(manifest (version 2)
+     #~(manifest (version 3)
                  (packages #$(map entry->gexp entries))))))
 
 (define (find-package name version)
@@ -254,17 +254,27 @@ procedure is here for backward-compatibility and will eventually vanish."
           (package-native-search-paths package)
           '())))
 
+  (define (infer-dependency item)
+    ;; Return a <manifest-entry> for ITEM.
+    (let-values (((name version)
+                  (package-name->name+version
+                   (store-path-package-name item))))
+      (manifest-entry
+        (name name)
+        (version version)
+        (item item))))
+
   (match sexp
     (('manifest ('version 0)
                 ('packages ((name version output path) ...)))
      (manifest
       (map (lambda (name version output path)
              (manifest-entry
-              (name name)
-              (version version)
-              (output output)
-              (item path)
-              (search-paths (infer-search-paths name version))))
+               (name name)
+               (version version)
+               (output output)
+               (item path)
+               (search-paths (infer-search-paths name version))))
            name version output path)))
 
     ;; Version 1 adds a list of propagated inputs to the
@@ -286,7 +296,7 @@ procedure is here for backward-compatibility and will eventually vanish."
                  (version version)
                  (output output)
                  (item path)
-                 (dependencies deps)
+                 (dependencies (map infer-dependency deps))
                  (search-paths (infer-search-paths name version)))))
            name version output path deps)))
 
@@ -304,10 +314,30 @@ procedure is here for backward-compatibility and will eventually vanish."
                (version version)
                (output output)
                (item path)
-               (dependencies deps)
+               (dependencies (map infer-dependency deps))
                (search-paths (map sexp->search-path-specification
                                   search-paths))))
            name version output path deps search-paths)))
+
+    ;; Version 3 represents DEPS as full-blown manifest entries.
+    (('manifest ('version 3 minor-version ...)
+                ('packages (entries ...)))
+     (letrec ((sexp->manifest-entry
+               (match-lambda
+                 ((name version output path
+                        ('propagated-inputs deps)
+                        ('search-paths search-paths)
+                        extra-stuff ...)
+                  (manifest-entry
+                    (name name)
+                    (version version)
+                    (output output)
+                    (item path)
+                    (dependencies (map sexp->manifest-entry deps))
+                    (search-paths (map sexp->search-path-specification
+                                       search-paths)))))))
+
+       (manifest (map sexp->manifest-entry entries))))
     (_
      (raise (condition
              (&message (message "unsupported manifest format")))))))
@@ -471,12 +501,15 @@ replace it."
 
 (define (manifest-inputs manifest)
   "Return a list of <gexp-input> objects for MANIFEST."
-  (append-map (match-lambda
-               (($ <manifest-entry> name version output thing deps)
-                ;; THING may be a package or a file name.  In the latter case,
-                ;; assume it's already valid.  Ditto for DEPS.
-                (cons (gexp-input thing output) deps)))
-              (manifest-entries manifest)))
+  (define entry->input
+    (match-lambda
+      (($ <manifest-entry> name version output thing deps)
+       ;; THING may be a package or a file name.  In the latter case, assume
+       ;; it's already valid.
+       (cons (gexp-input thing output)
+             (append-map entry->input deps)))))
+
+  (append-map entry->input (manifest-entries manifest)))
 
 (define* (manifest-lookup-package manifest name #:optional version)
   "Return as a monadic value the first package or store path referenced by
