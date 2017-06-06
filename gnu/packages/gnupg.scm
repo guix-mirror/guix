@@ -407,6 +407,35 @@ instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
     (license license:lgpl2.1+)))
 
+(define-public qgpgme
+  (package
+    (inherit gpgme)
+    (name "qgpgme")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'chdir-and-symlink
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gpgme (assoc-ref inputs "gpgme")))
+               (symlink (string-append gpgme "/lib/libgpgmepp.la")
+                        "lang/cpp/src/libgpgmepp.la")
+               (symlink (string-append gpgme "/lib/libgpgme.la")
+                        "src/libgpgme.la"))
+             (chdir "lang/qt")
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gpgme" ,gpgme)
+       ("qtbase" ,qtbase)
+       ,@(package-inputs gpgme)))
+    (synopsis "Qt API bindings for gpgme")
+    (description "QGpgme provides a very high level Qt API around GpgMEpp.
+
+QGpgME was originally developed as part of libkleo and incorporated into
+gpgpme starting with version 1.7.")
+    (license license:gpl2+))) ;; Note: this differs from gpgme
+
 (define-public python-gpg
   (package
     (name "python-gpg")
