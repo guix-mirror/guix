@@ -51,6 +51,7 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
+    (replacement perl/fixed)
     (version "5.24.0")
     (source (origin
              (method url-fetch)
@@ -146,6 +147,18 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
+
+(define perl/fixed
+  (package
+    (inherit perl)
+    (replacement #f)
+    (source
+      (origin
+        (inherit (package-source perl))
+        (patches
+          (append
+            (origin-patches (package-source perl))
+            (search-patches "perl-file-path-CVE-2017-6512.patch")))))))
 
 (define-public perl-algorithm-c3
   (package
