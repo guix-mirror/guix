@@ -1291,15 +1291,16 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.2.25")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.infradead.org/~tgr/libnl/files/libnl-"
-                    version ".tar.gz"))
+                    "https://github.com/thom311/libnl/releases/download/"
+                    "libnl" (string-join (string-split version #\.) "_")
+                    "/libnl-" version ".tar.gz"))
               (sha256
                (base32
-                "1icfrv8yihcb74as1gcgmp0wfpdq632q2zvbvqqvjms9cy87bswb"))))
+                "1r3lw3hjvqxi5zqyq2w1qadm3gisd9nlf71dkl4yplacmssnhm3h"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex) ("bison" ,bison)))
     (home-page "http://www.infradead.org/~tgr/libnl/")
