@@ -102,6 +102,48 @@ convert it to structurally valid XHTML (or HTML).")
     (license (non-copyleft "file://License.text"
                            "See License.text in the distribution."))))
 
+(define-public discount
+  (package
+    (name "discount")
+    (version "2.2.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.pell.portland.or.us/~orc/Code/"
+                   name "/" name "-" version ".tar.bz2"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0r4gjyk1ngx47zhb25q0gkjm3bz2m5x8ngrk6rim3y1y3rricygc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list
+                     (string-append "LFLAGS=-L. -Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-AC_PATH
+           (lambda _
+             ;; The default value is not suitable, so override using an
+             ;; environment variable. This just affects the build, and not the
+             ;; resulting store item.
+             (setenv "AC_PATH" (getenv "PATH"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (zero? (system*
+                     "./configure.sh"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--shared")))))))
+    (synopsis "Markdown processing library, written in C")
+    (description
+     "Discount is a markdown implementation, written in C.  It provides a
+@command{markdown} command, and a library.")
+    (home-page "http://www.pell.portland.or.us/~orc/Code/discount/")
+    (license bsd-3)))
+
 (define-public cmark
   (package
     (name "cmark")
