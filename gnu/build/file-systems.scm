@@ -268,12 +268,18 @@ as a bytevector, or #f if DEVICE does not contain an iso9660 file system."
 
 (define (iso9660-superblock-uuid sblock)
   "Return the modification time of an iso9660 primary volume descriptor
-SBLOCK as a bytevector."
+SBLOCK as a bytevector.  If that's not set, returns the creation time."
   ;; Drops GMT offset for compatibility with Grub, blkid and /dev/disk/by-uuid.
   ;; Compare Grub: "2014-12-02-19-30-23-00".
   ;; Compare blkid result: "2014-12-02-19-30-23-00".
   ;; Compare /dev/disk/by-uuid entry: "2014-12-02-19-30-23-00".
-  (sub-bytevector sblock 830 16))
+  (let* ((creation-time (sub-bytevector sblock 813 17))
+         (modification-time (sub-bytevector sblock 830 17))
+         (unset-time (make-bytevector 17 0))
+         (time (if (bytevector=? unset-time modification-time)
+                   creation-time
+                   modification-time)))
+    (sub-bytevector time 0 16))) ; strips GMT offset.
 
 (define (iso9660-uuid->string uuid)
   "Given an UUID bytevector, return its timestamp string."
