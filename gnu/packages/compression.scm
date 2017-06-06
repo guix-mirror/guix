@@ -1183,16 +1183,16 @@ or junctions, and always follows hard links.")
        ("unshield-avigomanager11b22.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/\"
-unshield-avigomanager11b22.zip?dl=1"))
+           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/"
+                               "unshield-avigomanager11b22.zip?dl=1"))
            (sha256
             (base32 "0fwq7lih04if68wpwpsk5wjqyvh32db76a41sq6gbx4dn1lc3ddn"))
            (file-name "unshield-avigomanager11b22.zip")))
        ("unshield-the-feeble-files-spanish.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/\"
-unshield-the-feeble-files-spanish.zip?dl=1"))
+           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/"
+                               "unshield-the-feeble-files-spanish.zip?dl=1"))
            (sha256
             (base32 "1k5cw6vnpja8yjlnhx5124xrw9i8s1l539hfdqqrqz3l5gn0bnyd"))
            (file-name "unshield-the-feeble-files-spanish.zip")))))
