@@ -301,6 +301,15 @@
        (manifest-entry-dependencies
         (package->manifest-entry packages:guile-2.2))))
 
+(test-assert "manifest-entry-parent"
+  (let ((entry (package->manifest-entry packages:guile-2.2)))
+    (match (manifest-entry-dependencies entry)
+      ((dependencies ..1)
+       (and (every (lambda (parent)
+                     (eq? entry (force parent)))
+                   (map manifest-entry-parent dependencies))
+            (not (force (manifest-entry-parent entry))))))))
+
 (test-assertm "read-manifest"
   (mlet* %store-monad ((manifest -> (packages->manifest
                                      (list (package
@@ -316,7 +325,8 @@
       (list (manifest-entry-name entry)
             (manifest-entry-version entry)
             (manifest-entry-search-paths entry)
-            (manifest-entry-dependencies entry)))
+            (manifest-entry-dependencies entry)
+            (force (manifest-entry-parent entry))))
 
     (mbegin %store-monad
       (built-derivations (list drv))

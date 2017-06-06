@@ -68,6 +68,7 @@
             manifest-entry-item
             manifest-entry-dependencies
             manifest-entry-search-paths
+            manifest-entry-parent
 
             manifest-pattern
             manifest-pattern?
@@ -157,7 +158,9 @@
   (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
-                (default '())))
+                (default '()))
+  (parent       manifest-entry-parent        ; promise (#f | <manifest-entry>)
+                (default (delay #f))))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -175,21 +178,28 @@
         (call-with-input-file file read-manifest)
         (manifest '()))))
 
-(define* (package->manifest-entry package #:optional (output "out"))
+(define* (package->manifest-entry package #:optional (output "out")
+                                  #:key (parent (delay #f)))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
-  (let ((deps (map (match-lambda
-                    ((label package)
-                     (package->manifest-entry package))
-                    ((label package output)
-                     (package->manifest-entry package output)))
-                   (package-propagated-inputs package))))
-    (manifest-entry
-     (name (package-name package))
-     (version (package-version package))
-     (output output)
-     (item package)
-     (dependencies (delete-duplicates deps))
-     (search-paths (package-transitive-native-search-paths package)))))
+  ;; For each dependency, keep a promise pointing to its "parent" entry.
+  (letrec* ((deps  (map (match-lambda
+                          ((label package)
+                           (package->manifest-entry package
+                                                    #:parent (delay entry)))
+                          ((label package output)
+                           (package->manifest-entry package output
+                                                    #:parent (delay entry))))
+                        (package-propagated-inputs package)))
+            (entry (manifest-entry
+                     (name (package-name package))
+                     (version (package-version package))
+                     (output output)
+                     (item package)
+                     (dependencies (delete-duplicates deps))
+                     (search-paths
+                      (package-transitive-native-search-paths package))
+                     (parent parent))))
+    entry))
 
 (define (packages->manifest packages)
   "Return a list of manifest entries, one for each item listed in PACKAGES.
@@ -254,7 +264,7 @@ procedure is here for backward-compatibility and will eventually vanish."
           (package-native-search-paths package)
           '())))
 
-  (define (infer-dependency item)
+  (define (infer-dependency item parent)
     ;; Return a <manifest-entry> for ITEM.
     (let-values (((name version)
                   (package-name->name+version
@@ -262,7 +272,28 @@ procedure is here for backward-compatibility and will eventually vanish."
       (manifest-entry
         (name name)
         (version version)
-        (item item))))
+        (item item)
+        (parent parent))))
+
+  (define* (sexp->manifest-entry sexp #:optional (parent (delay #f)))
+    (match sexp
+      ((name version output path
+             ('propagated-inputs deps)
+             ('search-paths search-paths)
+             extra-stuff ...)
+       ;; For each of DEPS, keep a promise pointing to ENTRY.
+       (letrec* ((deps* (map (cut sexp->manifest-entry <> (delay entry))
+                             deps))
+                 (entry (manifest-entry
+                          (name name)
+                          (version version)
+                          (output output)
+                          (item path)
+                          (dependencies deps*)
+                          (search-paths (map sexp->search-path-specification
+                                             search-paths))
+                          (parent parent))))
+         entry))))
 
   (match sexp
     (('manifest ('version 0)
@@ -291,13 +322,17 @@ procedure is here for backward-compatibility and will eventually vanish."
                             directories)
                            ((directories ...)
                             directories))))
-               (manifest-entry
-                 (name name)
-                 (version version)
-                 (output output)
-                 (item path)
-                 (dependencies (map infer-dependency deps))
-                 (search-paths (infer-search-paths name version)))))
+               (letrec* ((deps* (map (cute infer-dependency <> (delay entry))
+                                     deps))
+                         (entry (manifest-entry
+                                  (name name)
+                                  (version version)
+                                  (output output)
+                                  (item path)
+                                  (dependencies deps*)
+                                  (search-paths
+                                   (infer-search-paths name version)))))
+                 entry)))
            name version output path deps)))
 
     ;; Version 2 adds search paths and is slightly more verbose.
@@ -309,35 +344,24 @@ procedure is here for backward-compatibility and will eventually vanish."
                             ...)))
      (manifest
       (map (lambda (name version output path deps search-paths)
-             (manifest-entry
-               (name name)
-               (version version)
-               (output output)
-               (item path)
-               (dependencies (map infer-dependency deps))
-               (search-paths (map sexp->search-path-specification
-                                  search-paths))))
+             (letrec* ((deps* (map (cute infer-dependency <> (delay entry))
+                                   deps))
+                       (entry (manifest-entry
+                                (name name)
+                                (version version)
+                                (output output)
+                                (item path)
+                                (dependencies deps*)
+                                (search-paths
+                                 (map sexp->search-path-specification
+                                      search-paths)))))
+               entry))
            name version output path deps search-paths)))
 
     ;; Version 3 represents DEPS as full-blown manifest entries.
     (('manifest ('version 3 minor-version ...)
                 ('packages (entries ...)))
-     (letrec ((sexp->manifest-entry
-               (match-lambda
-                 ((name version output path
-                        ('propagated-inputs deps)
-                        ('search-paths search-paths)
-                        extra-stuff ...)
-                  (manifest-entry
-                    (name name)
-                    (version version)
-                    (output output)
-                    (item path)
-                    (dependencies (map sexp->manifest-entry deps))
-                    (search-paths (map sexp->search-path-specification
-                                       search-paths)))))))
-
-       (manifest (map sexp->manifest-entry entries))))
+     (manifest (map sexp->manifest-entry entries)))
     (_
      (raise (condition
              (&message (message "unsupported manifest format")))))))
