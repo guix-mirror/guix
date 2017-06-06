@@ -2986,17 +2986,17 @@ platforms.")
 (define-public perl-file-path
   (package
     (name "perl-file-path")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/R/RI/RICHE/File-Path-"
+             "mirror://cpan/authors/id/J/JK/JKEENAN/File-Path-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "0znihrlcnlpa0ziml0hkq9s59p1bjd2a6khgx2accdf16w6imxmv"))))
+         "039gc0i5cbdmidl8j8x195yykwcdmzwawmpapnysvljl8l33jqwj"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/File-Path")
     (synopsis "Create or remove directory trees")
