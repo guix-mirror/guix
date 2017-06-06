@@ -7056,6 +7056,34 @@ namespace::autoclean or namespace::clean and are therefore available to be
 called as methods, which usually isn't want you want.")
     (license (package-license perl))))
 
+(define-public perl-test-cpan-meta-json
+  (package
+    (name "perl-test-cpan-meta-json")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/B/BA/BARBIE/Test-CPAN-Meta-JSON-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jg9ka50ixwq083wd4k12rhdjq87w0ihb34gd8jjn7gvvyd51b37"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (inputs
+     `(("perl-json" ,perl-json)))
+    (home-page
+     "http://search.cpan.org/dist/Test-CPAN-Meta-JSON")
+    (synopsis "Validate your CPAN META.json files")
+    (description
+     "This module was written to ensure that a META.json file meets the
+specification.")
+    (license artistic2.0)))
+
 (define-public perl-test-deep
   (package
     (name "perl-test-deep")
