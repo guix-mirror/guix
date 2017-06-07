@@ -2172,7 +2172,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2017.05.24")
+    (version "2017.06.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2180,7 +2180,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ra64j3qa89hf3xika8jz9gd8al8mcaqlk5ivw5pclnd2df5f4im"))))
+                "0xf3vynxqpxpd762zni0jkblnjlgbqxjx99m83m7gqx6zriph271"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
