@@ -35,6 +35,7 @@
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix profiles) module.
@@ -333,6 +334,71 @@
       (let ((manifest2 (profile-manifest out)))
         (return (equal? (map entry->sexp (manifest-entries manifest))
                         (map entry->sexp (manifest-entries manifest2))))))))
+
+(test-equal "collision"
+  '(("guile-bootstrap" "2.0") ("guile-bootstrap" "42"))
+  (guard (c ((profile-collision-error? c)
+             (let ((entry1 (profile-collision-error-entry c))
+                   (entry2 (profile-collision-error-conflict c)))
+               (list (list (manifest-entry-name entry1)
+                           (manifest-entry-version entry1))
+                     (list (manifest-entry-name entry2)
+                           (manifest-entry-version entry2))))))
+    (run-with-store %store
+      (mlet* %store-monad ((p0 -> (package
+                                    (inherit %bootstrap-guile)
+                                    (version "42")))
+                           (p1 -> (dummy-package "p1"
+                                    (propagated-inputs `(("p0" ,p0)))))
+                           (manifest -> (packages->manifest
+                                         (list %bootstrap-guile p1)))
+                           (drv (profile-derivation manifest
+                                                    #:hooks '()
+                                                    #:locales? #f)))
+        (return #f)))))
+
+(test-equal "collision of propagated inputs"
+  '(("guile-bootstrap" "2.0") ("guile-bootstrap" "42"))
+  (guard (c ((profile-collision-error? c)
+             (let ((entry1 (profile-collision-error-entry c))
+                   (entry2 (profile-collision-error-conflict c)))
+               (list (list (manifest-entry-name entry1)
+                           (manifest-entry-version entry1))
+                     (list (manifest-entry-name entry2)
+                           (manifest-entry-version entry2))))))
+    (run-with-store %store
+      (mlet* %store-monad ((p0 -> (package
+                                    (inherit %bootstrap-guile)
+                                    (version "42")))
+                           (p1 -> (dummy-package "p1"
+                                    (propagated-inputs
+                                     `(("guile" ,%bootstrap-guile)))))
+                           (p2 -> (dummy-package "p2"
+                                    (propagated-inputs
+                                     `(("guile" ,p0)))))
+                           (manifest -> (packages->manifest (list p1 p2)))
+                           (drv (profile-derivation manifest
+                                                    #:hooks '()
+                                                    #:locales? #f)))
+        (return #f)))))
+
+(test-assertm "no collision"
+  ;; Here we have an entry that is "lowered" (its 'item' field is a store file
+  ;; name) and another entry (its 'item' field is a package) that is
+  ;; equivalent.
+  (mlet* %store-monad ((p -> (dummy-package "p"
+                               (propagated-inputs
+                                `(("guile" ,%bootstrap-guile)))))
+                       (guile    (package->derivation %bootstrap-guile))
+                       (entry -> (manifest-entry
+                                   (inherit (package->manifest-entry
+                                             %bootstrap-guile))
+                                   (item (derivation->output-path guile))))
+                       (manifest -> (manifest
+                                     (list entry
+                                           (package->manifest-entry p))))
+                       (drv (profile-derivation manifest)))
+    (return (->bool drv))))
 
 (test-assertm "etc/profile"
   ;; Make sure we get an 'etc/profile' file that at least defines $PATH.

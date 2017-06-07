@@ -35,6 +35,8 @@
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix store)
+  #:use-module (guix sets)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -51,6 +53,10 @@
             profile-error-profile
             &profile-not-found-error
             profile-not-found-error?
+            &profile-collistion-error
+            profile-collision-error?
+            profile-collision-error-entry
+            profile-collision-error-conflict
             &missing-generation-error
             missing-generation-error?
             missing-generation-error-generation
@@ -58,6 +64,7 @@
             manifest make-manifest
             manifest?
             manifest-entries
+            manifest-transitive-entries
 
             <manifest-entry>              ; FIXME: eventually make it internal
             manifest-entry
@@ -130,6 +137,11 @@
 (define-condition-type &profile-not-found-error &profile-error
   profile-not-found-error?)
 
+(define-condition-type &profile-collision-error &error
+  profile-collision-error?
+  (entry    profile-collision-error-entry)        ;<manifest-entry>
+  (conflict profile-collision-error-conflict))    ;<manifest-entry>
+
 (define-condition-type &missing-generation-error &profile-error
   missing-generation-error?
   (generation missing-generation-error-generation))
@@ -146,6 +158,23 @@
 
 ;; Convenient alias, to avoid name clashes.
 (define make-manifest manifest)
+
+(define (manifest-transitive-entries manifest)
+  "Return the entries of MANIFEST along with their propagated inputs,
+recursively."
+  (let loop ((entries (manifest-entries manifest))
+             (result  '())
+             (visited (set)))                     ;compare with 'equal?'
+    (match entries
+      (()
+       (reverse result))
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (loop (append (manifest-entry-dependencies head)
+                         tail)
+                 (cons head result)
+                 (set-insert head visited)))))))
 
 (define-record-type* <manifest-entry> manifest-entry
   make-manifest-entry
@@ -177,6 +206,70 @@
     (if (file-exists? file)
         (call-with-input-file file read-manifest)
         (manifest '()))))
+
+(define (manifest-entry-lookup manifest)
+  "Return a lookup procedure for the entries of MANIFEST.  The lookup
+procedure takes two arguments: the entry name and output."
+  (define mapping
+    (let loop ((entries (manifest-entries manifest))
+               (mapping vlist-null))
+      (fold (lambda (entry result)
+              (vhash-cons (cons (manifest-entry-name entry)
+                                (manifest-entry-output entry))
+                          entry
+                          (loop (manifest-entry-dependencies entry)
+                                result)))
+            mapping
+            entries)))
+
+  (lambda (name output)
+    (match (vhash-assoc (cons name output) mapping)
+      ((_ . entry) entry)
+      (#f          #f))))
+
+(define* (lower-manifest-entry entry system #:key target)
+  "Lower ENTRY for SYSTEM and TARGET such that its 'item' field is a store
+file name."
+  (let ((item (manifest-entry-item entry)))
+    (if (string? item)
+        (with-monad %store-monad
+          (return entry))
+        (mlet %store-monad ((drv (lower-object item system
+                                               #:target target))
+                            (output -> (manifest-entry-output entry)))
+          (return (manifest-entry
+                    (inherit entry)
+                    (item (derivation->output-path drv output))))))))
+
+(define* (check-for-collisions manifest system #:key target)
+  "Check whether the entries of MANIFEST conflict with one another; raise a
+'&profile-collision-error' when a conflict is encountered."
+  (define lookup
+    (manifest-entry-lookup manifest))
+
+  (with-monad %store-monad
+    (foldm %store-monad
+           (lambda (entry result)
+             (match (lookup (manifest-entry-name entry)
+                            (manifest-entry-output entry))
+               ((? manifest-entry? second)        ;potential conflict
+                (mlet %store-monad ((first (lower-manifest-entry entry system
+                                                                 #:target
+                                                                 target))
+                                    (second (lower-manifest-entry second system
+                                                                  #:target
+                                                                  target)))
+                  (if (string=? (manifest-entry-item first)
+                                (manifest-entry-item second))
+                      (return result)
+                      (raise (condition
+                              (&profile-collision-error
+                               (entry first)
+                               (conflict second)))))))
+               (#f                                ;no conflict
+                (return result))))
+           #t
+           (manifest-transitive-entries manifest))))
 
 (define* (package->manifest-entry package #:optional (output "out")
                                   #:key (parent (delay #f)))
@@ -1116,15 +1209,17 @@ a dependency on the 'glibc-utf8-locales' package.
 
 When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
 are cross-built for TARGET."
-  (mlet %store-monad ((system (if system
-                                  (return system)
-                                  (current-system)))
-                      (extras (if (null? (manifest-entries manifest))
-                                  (return '())
-                                  (sequence %store-monad
-                                            (map (lambda (hook)
-                                                   (hook manifest))
-                                                 hooks)))))
+  (mlet* %store-monad ((system (if system
+                                   (return system)
+                                   (current-system)))
+                       (ok?    (check-for-collisions manifest system
+                                                     #:target target))
+                       (extras (if (null? (manifest-entries manifest))
+                                   (return '())
+                                   (sequence %store-monad
+                                             (map (lambda (hook)
+                                                    (hook manifest))
+                                                  hooks)))))
     (define inputs
       (append (filter-map (lambda (drv)
                             (and (derivation? drv)
