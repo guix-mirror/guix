@@ -2176,7 +2176,7 @@ many codecs and formats supported by libmediainfo.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.live555.com/liveMedia/public/live."
+                    "https://download.videolan.org/contrib/live555/live."
                     version ".tar.gz"))
               (sha256
                (base32
