@@ -312,7 +312,10 @@ of relevance scores."
              ((=)
               (let ((candidate-path (derivation->output-path
                                      (package-derivation (%store) pkg))))
-                (if (string=? path candidate-path)
+                ;; XXX: When there are propagated inputs, assume we need to
+                ;; upgrade the whole entry.
+                (if (and (string=? path candidate-path)
+                         (null? (package-propagated-inputs pkg)))
                     transaction
                     (manifest-transaction-install-entry
                      (package->manifest-entry pkg output)
