@@ -74,10 +74,10 @@
         (mock ((guix http-client) http-fetch
                (lambda (url . rest)
                  (match url
-                   ("https://api.metacpan.org/release/Foo-Bar"
+                   ("https://fastapi.metacpan.org/v1/release/Foo-Bar"
                     (values (open-input-string test-json)
                             (string-length test-json)))
-                   ("https://api.metacpan.org/module/Test::Script?fields=distribution"
+                   ("https://fastapi.metacpan.org/v1/module/Test::Script?fields=distribution"
                     (let ((result "{ \"distribution\" : \"Test-Script\" }"))
                       (values (open-input-string result)
                               (string-length result))))

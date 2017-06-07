@@ -50,6 +50,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -72,7 +73,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.22.0")
+   (version "2.24.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -80,7 +81,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1dj47ndvspa7lghw1jvjhv3v08q5f9ab5rb395mcgjbl975gajfk"))))
+              "0jbs90vacl95mwgvmqsizi1bwx5sw0rz70r9knksfwwch2dalbdv"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -170,7 +171,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.4.3")
+   (version "1.4.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -178,7 +179,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "08akv3qzwnf48xajb60dfcchkmfdjkpp65a0xd8s98w81901g343"))))
+               "14yj514yfy373np3gxk930a443j1zgnwg6mm0kdzzjr0rn0qp9r1"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -208,7 +209,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.5")
+   (version "1.40.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -216,7 +217,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1j81kmdq2kndayahfck60myd05hj5qd7mixj0w5kchkc8m082x14"))))
+              "0wz5b5knpw4gfvz3ny8l6h2ca3bpqqyh55mffkyzgsd1hdrjn5fa"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -378,7 +379,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.22.2")
+   (version "3.24.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -386,7 +387,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0pmgff3p9q1z500aiqfn5l4mmij4yfi4qhq8fxscqc89vlql5s3c"))))
+               "17xqrnh2v9gba57ij2m9kngxwh19fzsqkx1rfasnv4zaqvqqhv69"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -508,7 +509,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.22.0")
+   (version "2.24.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -516,7 +517,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "02n8ybhg8344mpjwvkhnzvr0qbvvl6ryi2q9irwhi0ri46ps6pj1"))))
+              "0nwvjmd30rgq6d1zznavx0bdfa1xwv3jl8wnkbkwzaipp5jd140y"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -553,7 +554,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.22.0")
+   (version "2.24.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -561,7 +562,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1h8k271ad78smm41c9bmw5dc4gki0wfy324cn2g25svkp2zfvgg8"))))
+              "0zcmsq7g4jg5dpmfzkyfpa0v6hx4119c4qwkdblzzf3l9yn91p30"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -653,7 +654,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.12")
+   (version "3.22.15")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -661,7 +662,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1359w81sxs2izkan2rni985x78s6zr1arf469qmyw4bazg7f1yl4"))
+              "1nqgb71vx222g9fd2p017948hqybnyi69xs3n2d64clim7115868"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -673,8 +674,12 @@ application suites.")
       ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
+      ("libxkbcommon" ,libxkbcommon)
       ("libxdamage" ,libxdamage)
-      ("pango" ,pango)))
+      ("mesa" ,mesa)
+      ("pango" ,pango)
+      ("wayland" ,wayland)
+      ("wayland-protocols" ,wayland-protocols)))
    (inputs
     `(("libxml2" ,libxml2)
       ;; XXX: colord depends on mozjs (through polkit), which fails on
@@ -700,7 +705,12 @@ application suites.")
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc/html"))
+                                             "/share/gtk-doc/html")
+                              ;; The header file <gdk/gdkwayland.h> is required
+                              ;; by gnome-control-center
+                              "--enable-wayland-backend"
+                              ;; This is necessary to build both backends.
+                              "--enable-x11-backend")
       #:phases (modify-phases %standard-phases
         (add-before 'configure 'pre-configure
           (lambda _

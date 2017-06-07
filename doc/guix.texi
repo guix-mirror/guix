@@ -5329,7 +5329,7 @@ a container similar to the one the build daemon creates:
 $ guix build -K foo
 @dots{}
 $ cd /tmp/guix-build-foo.drv-0
-$ guix environment -C foo --ad-hoc strace gdb
+$ guix environment --no-grafts -C foo --ad-hoc strace gdb
 [env]# source ./environment-variables
 [env]# cd foo-1.2
 @end example
@@ -5337,7 +5337,10 @@ $ guix environment -C foo --ad-hoc strace gdb
 Here, @command{guix environment -C} creates a container and spawns a new
 shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
 strace gdb} part adds the @command{strace} and @command{gdb} commands to
-the container, which would may find handy while debugging.
+the container, which would may find handy while debugging.  The
+@option{--no-grafts} option makes sure we get the exact same
+environment, with ungrafted packages (@pxref{Security Updates}, for more
+info on grafts).
 
 To get closer to a container like that used by the build daemon, we can
 remove @file{/bin/sh}:
@@ -9259,6 +9262,12 @@ Whether to use substitutes.
 
 @item @code{substitute-urls} (default: @var{%default-substitute-urls})
 The list of URLs where to look for substitutes by default.
+
+@item @code{max-silent-time} (default: @code{0})
+@itemx @code{timeout} (default: @code{0})
+The number of seconds of silence and the number of seconds of activity,
+respectively, after which a build process times out.  A value of zero
+disables the timeout.
 
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.

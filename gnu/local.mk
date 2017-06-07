@@ -208,6 +208,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
+  %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
   %D%/packages/julia.scm			\
@@ -631,7 +632,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
-  %D%/packages/patches/gnome-shell-CVE-2017-8288.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -724,6 +724,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
+  %D%/packages/patches/libgdata-fix-tests.patch			\
+  %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgit2-use-after-free.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
@@ -738,6 +740,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
+  %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
@@ -840,6 +843,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
+  %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9850-CVE-2016-9851.patch		\
   %D%/packages/patches/openjpeg-CVE-2016-9572-CVE-2016-9573.patch		\
@@ -859,6 +863,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pcre-CVE-2017-7186.patch			\
   %D%/packages/patches/pcre2-CVE-2017-7186.patch		\
   %D%/packages/patches/pcre2-CVE-2017-8786.patch		\
+  %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -1041,7 +1046,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
   %D%/packages/patches/wxwidgets-fix-windowGTK.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
-  %D%/packages/patches/xf86-input-wacom-xorg-abi-25.patch	\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\

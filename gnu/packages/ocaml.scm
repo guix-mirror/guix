@@ -448,6 +448,10 @@ written in Objective Caml.")
               (sha256
                (base32
                 "0wyywia0darak2zmc5v0ra9rn0b9whwdfiahralm8v5za499s8w3"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "COQPATH")
+            (files (list "lib/coq/user-contrib")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
@@ -2907,3 +2911,245 @@ the expected output.")
     (synopsis "Standard Jane Street ppx rewriters")
     (description "Ppx_jane is a ppx_driver including all standard ppx rewriters.")
     (license license:asl2.0)))
+
+(define-public ocaml-core-kernel
+  (package
+    (name "ocaml-core-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "core_kernel" version
+               "0fl23jrwivixawhxinbwaw9cabqnzn7fini7dxpxjjvkxdc8ip5y"))
+    (native-inputs
+     `(("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("bin_prot" ,ocaml-bin-prot)
+       ("ppx-assert" ,ocaml-ppx-assert)
+       ("ppx-bench" ,ocaml-ppx-bench)
+       ("ppx-driver" ,ocaml-ppx-driver)
+       ("ppx-expect" ,ocaml-ppx-expect)
+       ("ppx-inline-test" ,ocaml-ppx-inline-test)
+       ("typerep" ,ocaml-typerep)
+       ("sexplib" ,ocaml-sexplib)
+       ("variantslib" ,ocaml-variantslib)
+       ("result" ,ocaml-result)
+       ("fieldslib" ,ocaml-fieldslib)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/core_kernel/")
+    (synopsis "Portable standard library for OCaml")
+    (description "Core is an alternative to the OCaml standard library.
+
+Core_kernel is the system-independent part of Core.  It is aimed for cases when
+the full Core is not available, such as in Javascript.")
+    (license license:asl2.0)))
+
+(define-public ocaml-async-kernel
+  (package
+    (name "ocaml-async-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "async_kernel" version
+              "04bjsaa23j831r09r38x6xx9nhryvp0z5ihickvhxqa4fb2snyvd"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("core-kernel" ,ocaml-core-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_kernel/")
+    (synopsis "Monadic concurrency library")
+    (description "Async-kernel is a library for concurrent programming in OCaml.")
+    (license license:asl2.0)))
+
+(define-public ocaml-async-rpc-kernel
+  (package
+    (name "ocaml-async-rpc-kernel")
+    (version "113.33.03")
+    (source (janestreet-origin "async_rpc_kernel" version
+             "0y97h9pkb00v7jpf87m8cbb0ffkclj9g26ph6sq97q8dpisnkjwh"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-kernel" ,ocaml-async-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_rpc_kernel/")
+    (synopsis "Platform-independent core of the Async RPC library")
+    (description "Async_rpc_kernel is the platform-independent core of
+the Async RPC library.")
+    (license license:asl2.0)))
+
+(define-public ocaml-core
+  (package
+    (name "ocaml-core")
+    (version "113.33.03")
+    (source (janestreet-origin "core" version
+              "1znll157qg56g9d3247fjibv1hxv3r9wxgr4nhy19j2vzdh6a268"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("core-kernel" ,ocaml-core-kernel)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/core/")
+    (synopsis "Alternative to OCaml's standard library")
+    (description "The Core suite of libraries is an alternative to OCaml's
+standard library that was developed by Jane Street.")
+    (license license:asl2.0)))
+
+(define-public ocaml-async-unix
+  (package
+    (name "ocaml-async-unix")
+    (version "113.33.03")
+    (source (janestreet-origin "async_unix" version
+              "1fwl0lfrizllcfjk8hk8m7lsz9ha2jg6qgk4gssfyz377qvpcq4h"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-kernel" ,ocaml-async-kernel)
+       ("core" ,ocaml-core)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_unix")
+    (synopsis "Asynchronous execution library for Unix")
+    (description "Async_unix is an asynchronous execution library for Unix.")
+    (license license:asl2.0)))
+
+(define-public ocaml-async-extra
+  (package
+    (name "ocaml-async-extra")
+    (version "113.33.03")
+    (source (janestreet-origin "async_extra" version
+              "1si8jgiq5xh5sl9f2b7f9p17p7zx5h1pg557x2cxywi2x7pxqg4f"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-rpc-kernel" ,ocaml-async-rpc-kernel)
+       ("async-unix" ,ocaml-async-unix)
+       ("core" ,ocaml-core)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async_extra")
+    (synopsis "Extra functionnalities for the async library")
+    (description "Async_extra provides additional functionnalities for the
+async library.")
+    (license license:asl2.0)))
+
+(define-public ocaml-async
+  (package
+    (name "ocaml-async")
+    (version "113.33.03")
+    (source (janestreet-origin "async" version
+              "0210fyhcs12kpmmd26015bgivkfd2wqkyn3c5wd7688d0f872y25"))
+    (native-inputs
+     `(("oasis" ,ocaml-oasis)
+       ("js-build-tools" ,ocaml-js-build-tools)
+       ("ppx-jane" ,ocaml-ppx-jane)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("async-extra" ,ocaml-async-extra)))
+    (build-system ocaml-build-system)
+    (arguments janestreet-arguments)
+    (home-page "https://github.com/janestreet/async")
+    (synopsis "Monadic concurrency library")
+    (description "Async is a library for concurrent programming in OCaml.")
+    (license license:asl2.0)))
+
+(define-public ocaml-ocplib-endian
+  (package
+    (name "ocaml-ocplib-endian")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OCamlPro/ocplib-endian/"
+                                  "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hwj09rnzjs0m0kazz5h2mgs6p95j0zlga8cda5srnzqmzhniwkn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("cppo" ,ocaml-cppo)))
+    (home-page "https://github.com/OCamlPro/ocplib-endian")
+    (synopsis "Optimised functions to read and write int16/32/64 from strings
+and bigarrays")
+    (description "Optimised functions to read and write int16/32/64 from strings
+and bigarrays, based on new primitives added in version 4.01.  It works on
+strings, bytes and bigstring (Bigarrys of chars), and provides submodules for
+big- and little-endian, with their unsafe counter-parts.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-cstruct
+  (package
+    (name "ocaml-cstruct")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-cstruct/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "15qpdc8421shq4pprdas9jznpva45229wkfqbwcxw9khaiiz7949"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-lwt" "--enable-async")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-stubs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                    (lib (string-append out "/lib/ocaml/site-lib/cstruct")))
+               (mkdir-p stubs)
+               (symlink (string-append lib "/dllcstruct_stubs.so")
+                        (string-append stubs "/dllcstruct_stubs.so"))))))))
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)
+       ("ppx-tools" ,ocaml-ppx-tools)
+       ("camlp4" ,camlp4)))
+    (propagated-inputs
+     `(("ocplib-endian" ,ocaml-ocplib-endian)
+       ("lwt" ,ocaml-lwt)
+       ("async" ,ocaml-async)
+       ("sexplib" ,ocaml-sexplib)))
+    (home-page "https://github.com/mirage/ocaml-cstruct")
+    (synopsis "Access C structures via a camlp4 extension")
+    (description "Cstruct is a library and syntax extension to make it easier
+to access C-like structures directly from OCaml.  It supports both reading and
+writing to these structures, and they are accessed via the Bigarray module.")
+    (license license:isc)))
+
+(define-public ocaml-hex
+  (package
+    (name "ocaml-hex")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-hex/"
+                                  "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0s63g0b8gfv2xm6fv6xg7bva8h76b5pcjb0zw3f8cygs0lq9072v"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (propagated-inputs `(("cstruct" ,ocaml-cstruct)))
+    (home-page "https://github.com/mirage/ocaml-hex/")
+    (synopsis "Minimal library providing hexadecimal converters")
+    (description "Hex is a minimal library providing hexadecimal converters.")
+    (license license:isc)))

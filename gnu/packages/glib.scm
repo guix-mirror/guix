@@ -67,7 +67,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.10.16")
+    (version "1.10.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +75,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "121kqkjsd3vgf8vca8364xl44qa5086h7qy5zs5f1l78ldpbmc57"))
+                "0jjirhw6xwz2ffmbg5kr79108l8i1bdaw7szc67n3qpkygaxsjb0"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -137,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.50.3")
+   (version "2.52.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -145,7 +145,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "16frrwhc1yqkzx6bgh3060g94dr2biab17fb01mrni819jzr9vl2"))
+              "1l65kab6jr9zlllgbjcbvrbgah3sdd577fpw4pdb2j195ag5s3ph"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -289,14 +289,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.50.0")
+    (version "1.52.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1i9pccig8mv6qf0c1z8fcapays190nmr7j6pyc7cfhzmcv39fr8w"))
+              (base32 "1x5gkyrglv3dn9b4fsgw6asqgjw1wj7qc37g9pyac6pyaa6w7l1f"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "tools/g-ir-tool-template.in"
@@ -492,7 +492,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.50.0")
+    (version "2.50.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -500,7 +500,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "152yz5w0lx0y5j9ml72az7pc83p4l92bc0sb8whpcazldqy6wwnz"))))
+               "1926b3adx903hzvdp8glblsgjyadzqnwgkj8hg605d4wv98m1n0z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -573,7 +573,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.22.0")
+    (version "3.24.1")
     (source
      (origin
        (method url-fetch)
@@ -582,11 +582,13 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1ryblpc4wbhxcwf7grgib4drrab5xi6p78ihhrx0zj7g13xrrch8"))))
+         "1zdzznrj2s1gsrv2z4r0n88fzba8zjc1n2r313xi77lhl1daja56"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
-       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ;for tests: dbus-run-session and glib-compile-schemas
+       ("dbus" ,dbus)
+       ("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
@@ -596,16 +598,6 @@ useful for C++.")
      ;; pygobject-3.0.pc refers to all these.
      `(("glib" ,glib)
        ("libffi" ,libffi)))
-    (arguments
-     ;; TODO: failing tests: test_native_calls_async
-     ;; test_native_calls_async_errors test_native_calls_sync
-     ;; test_native_calls_sync_errors test_python_calls_async
-     ;; test_python_calls_async_error test_python_calls_async_error_result
-     ;; test_python_calls_sync test_python_calls_sync_errors
-     ;; test_python_calls_sync_noargs test_callback_user_data_middle_none
-     ;; test_callback_user_data_middle_single
-     ;; test_callback_user_data_middle_tuple
-     '(#:tests? #f))
     ;; For finding typelib files, since gobject-introscpetion isn't propagated.
     (native-search-paths (package-native-search-paths gobject-introspection))
     (home-page "https://live.gnome.org/PyGObject")

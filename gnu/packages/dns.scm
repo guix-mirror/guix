@@ -321,14 +321,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kvhibnnk77nqi9gdw2zbnp0dydfcy6zy96qv0f3a7wwnay5h0pr"))
+                "0g2n5r2n03bqz322xlwdw4bqhj8l4n8q0hzrqngi4rgmk4rp97ly"))
               (modules '((guix build utils)))
               (snippet
                '(begin

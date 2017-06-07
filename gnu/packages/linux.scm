@@ -1043,7 +1043,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.10.0")
+    (version "4.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1051,7 +1051,7 @@ packet filter.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1a59y1zkddvr7z0lh2y9iasbh9wpfc1n39p56xcd6jkhzk0y3c92"))))
+                "09l0phf09mw17bn3xlzfr80sbhw14mq8xv28iz5x15m6pll10rvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1291,15 +1291,16 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.2.25")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.infradead.org/~tgr/libnl/files/libnl-"
-                    version ".tar.gz"))
+                    "https://github.com/thom311/libnl/releases/download/"
+                    "libnl" (string-join (string-split version #\.) "_")
+                    "/libnl-" version ".tar.gz"))
               (sha256
                (base32
-                "1icfrv8yihcb74as1gcgmp0wfpdq632q2zvbvqqvjms9cy87bswb"))))
+                "1r3lw3hjvqxi5zqyq2w1qadm3gisd9nlf71dkl4yplacmssnhm3h"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex) ("bison" ,bison)))
     (home-page "http://www.infradead.org/~tgr/libnl/")
@@ -2801,7 +2802,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.44")
+    (version "5.45")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2809,7 +2810,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "11bc6pndivd0rkqr3c8a1xd9ar9bb60gx79piskycicb3wliwchc"))))
+                "1sb4aflgyrl7apricjipa8wx95qm69yja0lmn2f19g560c3v1b2c"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2861,7 +2862,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.6")
+    (version "1.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2869,7 +2870,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rvq4hapy2anal1vg1yidv4x8rg4iw5sxfwqixkw0q2qsxb54471"))))
+                "0df0ccnd0dgwc6rvk9qmrz0nfb8whc5s3wg9qnw1mzbrh4rcvhw2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

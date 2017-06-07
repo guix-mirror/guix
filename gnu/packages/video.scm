@@ -311,7 +311,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.13.6")
+    (version "0.13.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -319,7 +319,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "0b9cj5xfsa7zwlk5m146fhv102v51iqs3rapq0n2xrz30k8p9a7q"))))
+                "17byv926w1mxn56n896sxvdq4m0yv1l7qbm688h6zr3nzgsyarbh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -411,7 +411,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.8.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
@@ -419,7 +419,7 @@ SMPTE 314M.")
              "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "0wswfznj93jpnxhc3jwdk5j3pmyki0rs6k9vk4vnzds0dddximf1"))))
+        (base32 "1pnfl3q7dzxs26l3jk9xi97gr0qwnaz6dhvf9ifp2yplr3fy7lwy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -629,14 +629,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.11")
+    (version "2.8.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1rhz7rhmhhh8bjcj3dc82haisn3qjbzqlr7k6d6v7064jgn3maiq"))))
+               "1gc32akvdms3rywphnap94lqqici8l5898a09ir1ad5rif5g24v2"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -1001,7 +1001,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.05.07")
+    (version "2017.06.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1009,7 +1009,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q3b9xkbk1lmy1wxm1jcnmaj70sdksqbc8zsqxz6b6z4nmv8qc25"))))
+                "132f4csbl4bv71b01pnqfkd7hbbc6wclrh1h12fr1182954ahk5m"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2172,7 +2172,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2017.05.24")
+    (version "2017.06.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2180,7 +2180,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ra64j3qa89hf3xika8jz9gd8al8mcaqlk5ivw5pclnd2df5f4im"))))
+                "0xf3vynxqpxpd762zni0jkblnjlgbqxjx99m83m7gqx6zriph271"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
