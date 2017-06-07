@@ -363,6 +363,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
               (patches (search-patches "gcc-arm-link-spec-fix.patch"
+                                       "gcc-asan-missing-include.patch"
                                        "gcc-fix-texi2pod.patch"))
               (modules '((guix build utils)))
               ;; This is required for building with glibc-2.26.
