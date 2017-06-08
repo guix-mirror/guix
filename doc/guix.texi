@@ -138,7 +138,7 @@ Programming Interface
 
 Defining Packages
 
-* package Reference::           The package data type.
+* package Reference ::          The package data type.
 * origin Reference::            The origin data type.
 
 Utilities
@@ -163,6 +163,7 @@ Invoking @command{guix build}
 * Common Build Options::        Build options for most commands.
 * Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
+* Debugging Build Failures::    Real life packaging experience.
 
 GNU Distribution
 
@@ -4866,7 +4867,7 @@ described in the subsections below.
 * Common Build Options::        Build options for most commands.
 * Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
-* Debugging Build Failures::    Real life packaging experience
+* Debugging Build Failures::    Real life packaging experience.
 @end menu
 
 @node Common Build Options
