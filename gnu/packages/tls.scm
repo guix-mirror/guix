@@ -484,25 +484,17 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.14.2")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "1kbgpjabbly7r757vyr1050ixnm9hyvrbf9n6aq49cgmb147ysqn"))))
+        "11zwgj663vr575pbqw74ia10wxaw16i8rnkcivsrbsx148rxdbcz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-dependency
-           ;; This module is part of the Python standard library, so we don't
-           ;; need to use an external package.
-           ;; https://github.com/certbot/certbot/pull/2249
-           (lambda _
-             (substitute* "setup.py"
-               (("'argparse',") ""))
-             #t))
          (add-after 'build 'build-documentation
            (lambda _
              (zero? (system* "make" "-C" "docs" "man" "info"))))
@@ -549,7 +541,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1b39hybswzm8mkarg1mwpx47wffqg57jcgi52mz5iz60rxym9j2v"))))
+                "1srvmjxz75dbafx7xfg1w3n9h3srr9p2ljnfsih9dwwd5cxh9i5q"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
