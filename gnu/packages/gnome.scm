@@ -5111,6 +5111,10 @@ properties, screen resolution, and other GNOME parameters.")
        ("startup-notification" ,startup-notification)
        ("telepathy-logger" ,telepathy-logger)
        ("upower" ,upower)
+       ;; XXX: These requirements were added in 3.24, but no mention in NEWS.
+       ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
+       ("librsvg" ,librsvg)
+       ("geoclue" ,geoclue)
        ;; XXX: required by libgjs.la.
        ("readline" ,readline)))
     (synopsis "Desktop shell for GNOME")
