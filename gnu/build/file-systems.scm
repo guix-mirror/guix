@@ -43,6 +43,7 @@
 
             uuid->string
             string->uuid
+            string->iso9660-uuid
 
             bind-mount
 
@@ -234,6 +235,27 @@ Trailing spaces are trimmed."
 ;;;
 
 ;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-119.pdf>.
+
+(define %iso9660-uuid-rx
+  ;;                   Y                m                d                H                M                S                ss
+  (make-regexp "^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})$"))
+
+(define (string->iso9660-uuid str)
+  "Parse STR as a ISO9660 UUID (which is really a timestamp - see /dev/disk/by-uuid).
+Return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
+ISO9660 UUID representation."
+  (and=> (regexp-exec %iso9660-uuid-rx str)
+         (lambda (match)
+           (letrec-syntax ((match-numerals
+                            (syntax-rules ()
+                              ((_ index (name rest ...) body)
+                               (let ((name (match:substring match index)))
+                                 (match-numerals (+ 1 index) (rest ...) body)))
+                              ((_ index () body)
+                               body))))
+            (match-numerals 1 (year month day hour minute second hundredths)
+              (string->utf8 (string-append year month day
+                                           hour minute second hundredths)))))))
 
 (define (iso9660-superblock? sblock)
   "Return #t when SBLOCK is an iso9660 volume descriptor."
