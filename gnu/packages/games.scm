@@ -959,7 +959,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.15")
+    (version "0.4.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -968,7 +968,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12kxklcd1b5n0f369zf3xxhvkrizxj4d9xv0dh8crfqiymaym0zm"))))
+                "0nibpm600rbv9dg1zgcsl5grlbqx0b5l6cg1lp6sqkwvjialb4ga"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -1000,7 +1000,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.15")
+    (version "0.4.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1009,7 +1009,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ag3jcj7kpq3ph12zirk1c0mj9i0g50wmw932f8gi11liq8yd12n"))))
+                "0mbnf1ma4gsw9ah68ply04059xkfx5psdxwalxp78sgmx4ypkwqf"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
