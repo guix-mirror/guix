@@ -164,6 +164,12 @@ for ROTATION."
                      ;; the documentation.
                      (service-extension profile-service-type
                                         (compose list rottlog-rottlog))))
+   (compose concatenate)
+   (extend (lambda (config rotations)
+             (rottlog-configuration
+              (inherit config)
+              (rotations (append (rottlog-rotations config)
+                                 rotations)))))
    (default-value (rottlog-configuration))))
 
 ;;; admin.scm ends here

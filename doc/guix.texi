@@ -9561,6 +9561,9 @@ with the default settings, for commonly encountered log files.
 This is the type of the Rottlog service, whose value is a
 @code{rottlog-configuration} object.
 
+Other services can extend this one with new @code{log-rotation} objects
+(see below), thereby augmenting the set of files to be rotated.
+
 This service type can define mcron jobs (@pxref{Scheduled Job
 Execution}) to run the rottlog service.
 @end defvr
