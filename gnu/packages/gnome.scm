@@ -2634,6 +2634,7 @@ output devices.")
                          (("/bin/true") (which "true"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
     (inputs
      `(("avahi" ,avahi)
