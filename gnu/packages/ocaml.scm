@@ -3153,3 +3153,48 @@ writing to these structures, and they are accessed via the Bigarray module.")
     (synopsis "Minimal library providing hexadecimal converters")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
+
+(define-public coq-flocq
+  (package
+    (name "coq-flocq")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
+                                  "/36199/flocq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h5mlasirfzc0wwn2isg4kahk384n73145akkpinrxq5jsn5d22h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Flocq"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+             ;; TODO: requires coq-gappa and coq-interval.
+             ;(zero? (system* "./remake" "check-more"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://flocq.gforge.inria.fr/")
+    (synopsis "Floating-point formalization for the Coq system")
+    (description "Flocq (Floats for Coq) is a floating-point formalization for
+the Coq system.  It provides a comprehensive library of theorems on a multi-radix
+multi-precision arithmetic.  It also supports efficient numerical computations
+inside Coq.")
+    (license license:lgpl3+)))
