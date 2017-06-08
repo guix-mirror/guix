@@ -256,7 +256,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/man.scm				\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
-  %D%/packages/markdown.scm			\
+  %D%/packages/markup.scm			\
   %D%/packages/marst.scm			\
   %D%/packages/mate.scm             \
   %D%/packages/maths.scm			\
