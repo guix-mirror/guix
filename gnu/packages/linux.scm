@@ -72,6 +72,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
@@ -3853,6 +3854,36 @@ programming interface to the in-kernel nf_tables subsystem.  The library
 libnftnl has been previously known as libnftables.  This library is currently
 used by nftables.")
     (license license:gpl2+)))
+
+(define-public nftables
+  (package
+    (name "nftables")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.nftables.org/projects/nftables"
+                           "/files/nftables-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0hzdqigdx4i6jbpxbdyq4zy4p4waqn8l6vvz7685ikh1v0wr4qzy"))))
+    (build-system gnu-build-system)
+    (inputs `(("bison", bison)
+              ("flex", flex)
+              ("gmp", gmp)
+              ("libmnl", libmnl)
+              ("libnftnl", libnftnl)
+              ("readline", readline)))
+    (native-inputs `(("pkg-config", pkg-config)))
+    (home-page "http://www.nftables.org")
+    (synopsis "Userspace utility for Linux packet filtering")
+    (description "nftables is the project that aims to replace the existing
+{ip,ip6,arp,eb}tables framework.  Basically, this project provides a new packet
+filtering framework, a new userspace utility and also a compatibility layer for
+{ip,ip6}tables.  nftables is built upon the building blocks of the Netfilter
+infrastructure such as the existing hooks, the connection tracking system, the
+userspace queueing component and the logging subsystem.")
+    (license license:gpl2)))
 
 (define-public proot
   (package
