@@ -9543,7 +9543,7 @@ services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
 log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
 
 The example below defines an operating system that provides log rotation
-with the default settings.
+with the default settings, for commonly encountered log files.
 
 @lisp
 (use-modules (guix) (gnu))
@@ -9576,23 +9576,8 @@ The Rottlog package to use.
 The Rottlog configuration file to use (@pxref{Mandatory RC Variables,,,
 rottlog, GNU Rot[t]log Manual}).
 
-@item @code{periodic-rotations} (default: @code{`(("weekly" %default-rotations))})
-A list of Rottlog period-name/period-config tuples.
-
-For example, taking an example from the Rottlog manual (@pxref{Period
-Related File Examples,,, rottlog, GNU Rot[t]log Manual}), a valid tuple
-might be:
-
-@example
-("daily" ,(plain-file "daily"
-                      "\
-     /var/log/apache/* @{
-        storedir apache-archives
-        rotate 6
-        notifempty
-        nocompress
-     @}"))
-@end example
+@item @code{rotations} (default: @code{%default-rotations})
+A list of @code{log-rotation} objects as defined below.
 
 @item @code{jobs}
 This is a list of gexps where each gexp corresponds to an mcron job
@@ -9600,9 +9585,44 @@ specification (@pxref{Scheduled Job Execution}).
 @end table
 @end deftp
 
+@deftp {Data Type} log-rotation
+Data type representing the rotation of a group of log files.
+
+Taking an example from the Rottlog manual (@pxref{Period Related File
+Examples,,, rottlog, GNU Rot[t]log Manual}), a log rotation might be
+defined like this:
+
+@example
+(log-rotation
+  (frequency 'daily)
+  (files '("/var/log/apache/*"))
+  (options '("storedir apache-archives"
+             "rotate 6"
+             "notifempty"
+             "nocompress")))
+@end example
+
+The list of fields is as follows:
+
+@table @asis
+@item @code{frequency} (default: @code{'weekly})
+The log rotation frequency, a symbol.
+
+@item @code{files}
+The list of files or file glob patterns to rotate.
+
+@item @code{options} (default: @code{'()})
+The list of rottlog options for this rotation (@pxref{Configuration
+parameters,,, rottlog, GNU Rot[t]lg Manual}).
+
+@item @code{post-rotate} (default: @code{#f})
+Either @code{#f} or a gexp to execute once the rotation has completed.
+@end table
+@end deftp
+
 @defvr {Scheme Variable} %default-rotations
 Specifies weekly rotation of @var{%rotated-files} and
-@code{"/var/log/shepherd.log"}.
+a couple of other files.
 @end defvr
 
 @defvr {Scheme Variable} %rotated-files

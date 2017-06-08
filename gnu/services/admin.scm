@@ -27,8 +27,17 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 vlist)
   #:export (%default-rotations
             %rotated-files
+
+            log-rotation
+            log-rotation?
+            log-rotation-frequency
+            log-rotation-files
+            log-rotation-options
+            log-rotation-post-rotate
+
             rottlog-configuration
             rottlog-configuration?
             rottlog-service
@@ -40,41 +49,78 @@
 ;;; /etc/rottlog/{rc,hourly|daily|weekly}.  Example usage
 ;;;
 ;;;     (mcron-service)
-;;;     (service rottlog-service-type (rottlog-configuration))
+;;;     (service rottlog-service-type)
 ;;;
 ;;; Code:
+
+(define-record-type* <log-rotation> log-rotation make-log-rotation
+  log-rotation?
+  (files       log-rotation-files)                ;list of strings
+  (frequency   log-rotation-frequency             ;symbol
+               (default 'weekly))
+  (post-rotate log-rotation-post-rotate           ;#f | gexp
+               (default #f))
+  (options     log-rotation-options               ;list of strings
+               (default '())))
 
 (define %rotated-files
   ;; Syslog files subject to rotation.
   '("/var/log/messages" "/var/log/secure" "/var/log/maillog"))
 
-(define (syslog-rotation-config files)
-  #~(string-append #$(string-join files ",")
-                 " {
-        sharedscripts
-        postrotate
-        " #$coreutils "/bin/kill -HUP $(cat /var/run/syslog.pid) 2> /dev/null
-        endscript
-}
-"))
-
-(define (simple-rotation-config files)
-  #~(string-append #$(string-join files ",") " {
-        sharedscripts
-}
-"))
-
 (define %default-rotations
-  `(("weekly"
-     ,(computed-file "rottlog.weekly"
-                     #~(call-with-output-file #$output
-                         (lambda (port)
-                           (display #$(syslog-rotation-config %rotated-files)
-                                    port)
-                           (display #$(simple-rotation-config
-                                       '("/var/log/shepherd.log"
-                                         "/var/log/guix-daemon.log"))
-                                    port)))))))
+  (list (log-rotation                             ;syslog files
+         (files %rotated-files)
+
+         ;; Restart syslogd after rotation.
+         (options '("sharedscripts"))
+         (post-rotate #~(let ((pid (call-with-input-file "/var/run/syslog.pid"
+                                     read)))
+                          (kill pid SIGHUP))))
+        (log-rotation
+         (files '("/var/log/shepherd.log" "/var/log/guix-daemon.log")))))
+
+(define (log-rotation->config rotation)
+  "Return a string-valued gexp representing the rottlog configuration snippet
+for ROTATION."
+  (define post-rotate
+    (let ((post (log-rotation-post-rotate rotation)))
+      (and post
+           (program-file "rottlog-post-rotate.scm" post))))
+
+  #~(let ((post #$post-rotate))
+      (string-append (string-join '#$(log-rotation-files rotation) ",")
+                     " {"
+                     #$(string-join (log-rotation-options rotation)
+                                    "\n  " 'prefix)
+                     (if post
+                         (string-append "\n  postrotate\n    " post
+                                        "\n  endscript\n")
+                         "")
+                     "\n}\n")))
+
+(define (log-rotations->/etc-entries rotations)
+  "Return the list of /etc entries for ROTATIONS, a list of <log-rotation>."
+  (define (frequency-file frequency rotations)
+    (computed-file (string-append "rottlog." (symbol->string frequency))
+                   #~(call-with-output-file #$output
+                       (lambda (port)
+                         (for-each (lambda (str)
+                                     (display str port))
+                                   (list #$@(map log-rotation->config
+                                                 rotations)))))))
+
+  (let* ((frequencies (delete-duplicates
+                       (map log-rotation-frequency rotations)))
+         (table       (fold (lambda (rotation table)
+                              (vhash-consq (log-rotation-frequency rotation)
+                                           rotation table))
+                            vlist-null
+                            rotations)))
+    (map (lambda (frequency)
+           `(,(symbol->string frequency)
+             ,(frequency-file frequency
+                              (vhash-foldq* cons '() frequency table))))
+         frequencies)))
 
 (define (default-jobs rottlog)
   (list #~(job '(next-hour '(0))                  ;midnight
@@ -91,15 +137,17 @@
                       (default rottlog))
   (rc-file            rottlog-rc-file             ;file-like
                       (default (file-append rottlog "/etc/rc")))
-  (periodic-rotations rottlog-periodic-rotations  ;list of (name file) tuples
+  (rotations          rottlog-rotations           ;list of <log-rotation>
                       (default %default-rotations))
   (jobs               rottlog-jobs                ;list of <mcron-job>
                       (default #f)))
 
 (define (rottlog-etc config)
-  `(("rottlog" ,(file-union "rottlog"
-                            (cons `("rc" ,(rottlog-rc-file config))
-                                  (rottlog-periodic-rotations config))))))
+  `(("rottlog"
+     ,(file-union "rottlog"
+                  (cons `("rc" ,(rottlog-rc-file config))
+                        (log-rotations->/etc-entries
+                         (rottlog-rotations config)))))))
 
 (define (rottlog-jobs-or-default config)
   (or (rottlog-jobs config)
