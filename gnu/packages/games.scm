@@ -4035,7 +4035,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.19.5")
+    (version "0.20.0")
     (source
      (origin
        (method url-fetch)
@@ -4049,7 +4049,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "00yl2lb2shglxlxzpyk99zvglfx4amjybqwnzdcasvbiggb4cj18"))))
+         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
