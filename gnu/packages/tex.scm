@@ -1330,6 +1330,30 @@ T2* and X2 encodings. These encodings cover (between them) pretty much every
 language that is written in a Cyrillic alphabet.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-psnfss
+  (package
+    (name "texlive-latex-psnfss")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "psnfss"))
+              (sha256
+               (base32
+                "1920dcq8613yzprasbg80fh4fcjcidvvl54wkx438nimyxcri7qz"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/psnfss"))
+    (home-page "http://www.ctan.org/pkg/psnfss")
+    (synopsis "Font support for common PostScript fonts")
+    (description
+     "The PSNFSS collection includes a set of files that provide a complete
+working setup of the LaTeX font selection scheme (NFSS2) for use with common
+PostScript fonts.  It covers the so-called \"Base\" fonts (which are built
+into any Level 2 PostScript printing device and the Ghostscript interpreter)
+and a number of free fonts.  It provides font definition files, macros and
+font metrics.  The bundle as a whole is part of the LaTeX required set of
+packages.")
+    (license license:lppl1.2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
