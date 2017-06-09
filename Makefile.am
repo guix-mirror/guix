@@ -6,6 +6,7 @@
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
+# Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 #
 # This file is part of GNU Guix.
 #
@@ -87,6 +88,7 @@ MODULES =					\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
+  guix/build-system/texlive.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/http-client.scm				\
@@ -114,6 +116,7 @@ MODULES =					\
   guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
+  guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
   guix/build/store-copy.scm			\

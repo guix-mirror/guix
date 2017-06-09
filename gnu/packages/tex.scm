@@ -30,6 +30,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system texlive)
   #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
@@ -179,10 +180,6 @@ world.
 This package contains the binaries.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
-
-;; These variables specify the SVN tag and the matching SVN revision.
-(define %texlive-tag "texlive-2017.0")
-(define %texlive-revision 44445)
 
 (define-public texlive-dvips
   (package
@@ -671,15 +668,6 @@ symbol fonts.")
 TeXbook, together with various supporting files (some also discussed in the
 book).")
     (license license:knuth)))
-
-(define (texlive-ref component id)
-  "Return a <svn-reference> object for the package ID, which is part of the
-given Texlive COMPONENT."
-  (svn-reference
-   (url (string-append "svn://www.tug.org/texlive/tags/"
-                       %texlive-tag "/Master/texmf-dist/"
-                       "source/" component "/" id))
-   (revision %texlive-revision)))
 
 (define-public texlive-latex-base
   (let ((texlive-dir
