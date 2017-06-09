@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +30,36 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
+
+(define-public kdecoration
+  (package
+    (name "kdecoration")
+    (version "5.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version
+                                  "/kdecoration-" version ".tar.xz"))
+              (sha256
+               (base32
+                "115pli0qpa8lx0jasg1886fcg7gb2kk8v6k8r8l8c820l97sq7in"))))
+    (properties `((tags . '("Desktop" "KDE" "Plasma"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
+    (home-page "https://cgit.kde.org/kdecoration.git")
+    (synopsis "Plugin based library to create window decorations")
+    (description "KDecoration is a library to create window decorations.
+These window decorations can be used by for example an X11 based window
+manager which re-parents a Client window to a window decoration frame.")
+    (license license:lgpl3+)))
 
 (define-public libkscreen
   (package
