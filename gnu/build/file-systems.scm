@@ -44,6 +44,10 @@
             uuid->string
             string->uuid
             string->iso9660-uuid
+            string->ext2-uuid
+            string->ext3-uuid
+            string->ext4-uuid
+            string->btrfs-uuid
 
             bind-mount
 
@@ -551,6 +555,11 @@ UUID representation."
                (put! uuid 0
                      (time-low 4) (time-mid 2) (time-hi 2)
                      (clock-seq 2) (node 6)))))))
+
+(define string->ext2-uuid string->uuid)
+(define string->ext3-uuid string->uuid)
+(define string->ext4-uuid string->uuid)
+(define string->btrfs-uuid string->uuid)
 
 
 (define* (canonicalize-device-spec spec #:optional (title 'any))
