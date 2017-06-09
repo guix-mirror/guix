@@ -1052,6 +1052,45 @@ rawfonts, showkeys, somedefs, tabularx, theorem, trace, varioref, verbatim,
 xr, and xspace.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-url
+  (package
+    (name "texlive-latex-url")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/url"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "184s2543cwia5l7iibhlkl1ffbncfhjpv5p56zq0c15by5sghlac"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/url")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/url")
+    (synopsis "Verbatim with URL-sensitive line breaks")
+    (description "The command @code{\\url} is a form of verbatim command that
+allows linebreaks at certain characters or combinations of characters, accepts
+reconfiguration, and can usually be used in the argument to another command.
+The command is intended for email addresses, hypertext links,
+directories/paths, etc., which normally have no spaces, so by default the
+package ignores spaces in its argument.  However, a package option allows
+spaces, which is useful for operating systems where spaces are a common part
+of file names.")
+    ;; The license header states that it is under LPPL version 2 or later, but
+    ;; the latest version is 1.3c.
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
