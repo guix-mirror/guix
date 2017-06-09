@@ -1274,6 +1274,40 @@ material.  The material is made available as part of the AMS-LaTeX
 distribution.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-babel
+  (package
+    (name "texlive-latex-babel")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "babel"))
+              (sha256
+               (base32
+                "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/babel"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This package tries to produce babel.aux twice but refuses to
+         ;; overwrite the first one.
+         (add-before 'build 'fix-ins
+           (lambda _
+             (substitute* "babel.ins"
+               (("askonceonly") "askforoverwritefalse"))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/babel")
+    (synopsis "Multilingual support for Plain TeX or LaTeX")
+    (description
+     "The package manages culturally-determined typographical (and other)
+rules, and hyphenation patterns for a wide range of languages.  A document may
+select a single language to be supported, or it may select several, in which
+case the document may switch from one language to another in a variety of
+ways.  Babel uses contributed configuration files that provide the detail of
+what has to be done for each language.  Users of XeTeX are advised to use the
+polyglossia package rather than Babel.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
