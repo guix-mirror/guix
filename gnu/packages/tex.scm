@@ -256,6 +256,41 @@ set up and one for initializing XeTeX character classes as has been carried
 out to date by @code{unicode-letters.tex}. ")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-dehyph-exptl
+  (package
+    (name "texlive-generic-dehyph-exptl")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/dehyph-exptl"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1l9wgv99qq0ysvlxqpj4g8bl0dywbzra4g8m2kmpg2fb0i0hczap"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/dehyph-exptl")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://projekte.dante.de/Trennmuster/WebHome")
+    (synopsis "Hyphenation patterns for German")
+    (description "The package provides experimental hyphenation patterns for
+the German language, covering both traditional and reformed orthography.  The
+patterns can be used with packages Babel and hyphsubst from the Oberdiek
+bundle.")
+    ;; Hyphenation patterns are under the Expat license; documentation is
+    ;; under LPPL.
+    (license (list license:expat license:lppl))))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
