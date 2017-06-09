@@ -672,6 +672,153 @@ TeXbook, together with various supporting files (some also discussed in the
 book).")
     (license license:knuth)))
 
+(define (texlive-ref component id)
+  "Return a <svn-reference> object for the package ID, which is part of the
+given Texlive COMPONENT."
+  (svn-reference
+   (url (string-append "svn://www.tug.org/texlive/tags/"
+                       %texlive-tag "/Master/texmf-dist/"
+                       "source/" component "/" id))
+   (revision %texlive-revision)))
+
+(define-public texlive-latex-base
+  (let ((texlive-dir
+         (lambda (dir hash)
+           (origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "svn://www.tug.org/texlive/tags/"
+                                       %texlive-tag "/Master/texmf-dist/"
+                                       dir))
+                   (revision %texlive-revision)))
+             (sha256 (base32 hash))))))
+    (package
+      (name "texlive-latex-base")
+      (version (number->string %texlive-revision))
+      (source (origin
+                (method svn-fetch)
+                (uri (texlive-ref "latex" "base"))
+                (sha256
+                 (base32
+                  "1h9pir2hz6i9avc4lrl733p3zf4rpkg8537x1zdbhs91hvhikw9k"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 match)
+                    (srfi srfi-1)
+                    (srfi srfi-26))
+         #:tests? #f                    ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Find required fonts
+               (setenv "TFMFONTS"
+                       (string-append (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/tfm/public/cm:"
+                                      (assoc-ref inputs "texlive-fonts-latex")
+                                      "/share/texmf-dist/fonts/tfm/public/latex-fonts:"
+                                      (assoc-ref inputs "texlive-fonts-knuth-lib")
+                                      "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
+               (setenv "TEXINPUTS"
+                       (string-append
+                        (getcwd) ":"
+                        (getcwd) "/build:"
+                        (string-join
+                         (append-map (match-lambda
+                                       ((_ . dir)
+                                        (find-files dir
+                                                    (lambda (_ stat)
+                                                      (eq? 'directory (stat:type stat)))
+                                                    #:directories? #t
+                                                    #:stat stat)))
+                                     inputs)
+                         ":")))
+
+               ;; Create an empty texsys.cfg, because latex.ltx wants to include
+               ;; it.  This file must exist and it's fine if it's empty.
+               (with-output-to-file "texsys.cfg"
+                 (lambda _ (format #t "%")))
+
+               (mkdir "build")
+               (mkdir "web2c")
+               (and (zero? (system* "luatex" "-ini" "-interaction=batchmode"
+                                    "-output-directory=build"
+                                    "unpack.ins"))
+                    ;; LaTeX and XeTeX require e-TeX, which is enabled only in
+                    ;; extended mode (activated with a leading asterisk).  We
+                    ;; should not use luatex here, because that would make the
+                    ;; generated format files incompatible with any other TeX
+                    ;; engine.
+
+                    ;; FIXME: XeTeX fails to build because neither
+                    ;; \XeTeXuseglyphmetrics nor \XeTeXdashbreakstate are
+                    ;; defined.
+                    (every
+                     (lambda (format)
+                       (zero? (system* "latex" "-ini" "-interaction=batchmode"
+                                       "-output-directory=web2c"
+                                       "-translate-file=cp227.tcx"
+                                       (string-append "*" format ".ini"))))
+                     '("latex" ;"xetex"
+                       ))
+                    (every
+                     (lambda (format)
+                       (zero? (system* "luatex" "-ini" "-interaction=batchmode"
+                                       "-output-directory=web2c"
+                                       (string-append format ".ini"))))
+                     '("dviluatex" "dvilualatex" "luatex" "lualatex" "xelatex")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (target (string-append
+                               out "/share/texmf-dist/tex/latex/base"))
+                      (web2c (string-append
+                              out "/share/texmf-dist/web2c")))
+                 (mkdir-p target)
+                 (mkdir-p web2c)
+                 (for-each delete-file (find-files "." "\\.(log|aux)$"))
+                 (for-each (cut install-file <> target)
+                           (find-files "build" ".*"))
+                 (for-each (cut install-file <> web2c)
+                           (find-files "web2c" ".*"))
+                 #t))))))
+      (native-inputs
+       `(("texlive-bin" ,texlive-bin)
+         ("texlive-generic-unicode-data" ,texlive-generic-unicode-data)
+         ("texlive-generic-dehyph-exptl" ,texlive-generic-dehyph-exptl)
+         ("texlive-generic-tex-ini-files" ,texlive-generic-tex-ini-files)
+         ("texlive-latex-latexconfig"
+          ,(texlive-dir "tex/latex/latexconfig/"
+                        "1zb3j49cj8p75yph6c8iysjp7qbdvghwf0mn9j0l7qq3qkbz2xaf"))
+         ("texlive-generic-hyph-utf8" ,texlive-generic-hyph-utf8)
+         ("texlive-generic-hyphen"
+          ,(texlive-dir "tex/generic/hyphen/"
+                        "0xim36wybw2625yd0zwlp9m2c2xrcybw58gl4rih9nkph0wqwwhd"))
+         ("texlive-generic-ruhyphen"
+          ,(texlive-dir "tex/generic/ruhyphen/"
+                        "14rjkpl4zkjqs13rcf9kcd24mn2kx7i1jbdwxq8ds94bi66ylzsd"))
+         ("texlive-generic-ukrhyph"
+          ,(texlive-dir "tex/generic/ukrhyph/"
+                        "1cfwdg2rhbayl3w0x1xqd36d45zbc96f029myp13s7cb6kbmbppv"))
+         ("texlive-generic-config"
+          ,(texlive-dir "tex/generic/config/"
+                        "19vj088p4kkp6xll0141m4kl6ssgdzhs3g10i232khb07aqiag8s"))
+         ("texlive-tex-plain" ,texlive-tex-plain)
+         ("texlive-fonts-cm" ,texlive-fonts-cm)
+         ("texlive-fonts-latex" ,texlive-fonts-latex)
+         ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)))
+      (home-page "http://www.ctan.org/pkg/latex-base")
+      (synopsis "Base sources of LaTeX")
+      (description
+       "This bundle comprises the source of LaTeX itself, together with several
+packages which are considered \"part of the kernel\".  This bundle, together
+with the required packages, constitutes what every LaTeX distribution should
+contain.")
+      (license license:lppl1.3c+))))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
