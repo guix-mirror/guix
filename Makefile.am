@@ -145,6 +145,7 @@ MODULES =					\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
+  guix/import/texlive.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
@@ -167,6 +168,7 @@ MODULES =					\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
   guix/scripts/import/elpa.scm  		\
+  guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
@@ -303,6 +305,7 @@ SCM_TESTS =					\
   tests/hackage.scm				\
   tests/cran.scm				\
   tests/elpa.scm				\
+  tests/texlive.scm				\
   tests/store.scm				\
   tests/monads.scm				\
   tests/gexp.scm				\

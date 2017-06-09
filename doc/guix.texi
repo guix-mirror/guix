@@ -21,7 +21,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
-Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
+Copyright @copyright{} 2015, 2016, 2017 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
@@ -5669,6 +5669,38 @@ R package:
 
 @example
 guix import cran --archive=bioconductor GenomicRanges
+@end example
+
+@item texlive
+@cindex TeX Live
+@cindex CTAN
+Import metadata from @uref{http://www.ctan.org/, CTAN}, the
+comprehensive TeX archive network for TeX packages that are part of the
+@uref{https://www.tug.org/texlive/, TeX Live distribution}.
+
+Information about the package is obtained through the XML API provided
+by CTAN, while the source code is downloaded from the SVN repository of
+the Tex Live project.  This is done because the CTAN does not keep
+versioned archives.
+
+The command command below imports metadata for the @code{fontspec}
+TeX package:
+
+@example
+guix import texlive fontspec
+@end example
+
+When @code{--archive=DIRECTORY} is added, the source code is downloaded
+not from the @file{latex} sub-directory of the @file{texmf-dist/source}
+tree in the TeX Live SVN repository, but from the specified sibling
+directory under the same root.
+
+The command below imports metadata for the @code{ifxetex} package from
+CTAN while fetching the sources from the directory
+@file{texmf/source/generic}:
+
+@example
+guix import texlive --archive=generic ifxetex
 @end example
 
 @item nix
