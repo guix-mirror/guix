@@ -625,13 +625,14 @@ forgotten when the session ends.")
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("libspectre" ,libspectre)
+     `(("libarchive" ,libarchive)
+       ("libgxps" ,libgxps)
+       ("libspectre" ,libspectre)
        ("djvulibre" ,djvulibre)
        ("ghostscript" ,ghostscript)
        ("poppler" ,poppler)
        ("libtiff" ,libtiff)
        ;; TODO:
-       ;;   Add libgxps for XPS support.
        ;;   Build libkpathsea as a shared library for DVI support.
        ;; ("libkpathsea" ,texlive-bin)
        ("gnome-desktop" ,gnome-desktop)
