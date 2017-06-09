@@ -500,6 +500,69 @@ display, and mathematical fonts in a range of styles, based on Monotype Modern
 8A.")
     (license license:knuth)))
 
+(define-public texlive-fonts-knuth-lib
+  (package
+    (name "texlive-fonts-knuth-lib")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/knuth-lib"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0in9aqyi8jkyf9d16z0li50z5fpwj1iwgwm83gmvwqcf7chfs04y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES"
+                       (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base")))
+             (mkdir "build")
+             (zero? (system* "mf" "-progname=mf"
+                             "-output-directory=build"
+                             (string-append "\\"
+                                            "mode:=ljfour; "
+                                            "mag:=1; "
+                                            "batchmode; "
+                                            "input manfnt")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/knuth-lib")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)))
+    (home-page "https://www.ctan.org/pkg/knuth-lib")
+    (synopsis "Small library of METAFONT sources")
+    (description "This is a collection of core TeX and METAFONT macro files
+from Donald Knuth, including the plain format, plain base, and the MF logo
+fonts.")
+    (license license:knuth)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
