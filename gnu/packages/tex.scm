@@ -1027,6 +1027,31 @@ better accessibility support for PDF files; extensible chemists reaction
 arrows; record information about document class(es) used; and many more.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-tools
+  (package
+    (name "texlive-latex-tools")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "tools"))
+              (sha256
+               (base32
+                "052a0pch2k5zls5jlay9xxcf93rw3i60a2x28y3ip3rhbsv3xgiz"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/tools"
+       #:build-targets '("tools.ins")))
+    (home-page "http://www.ctan.org/pkg/latex-tools")
+    (synopsis "LaTeX standard tools bundle")
+    (description
+     "This package is a collection of (variously) simple tools provided as
+part of the LaTeX required tools distribution, comprising the following
+packages: afterpage, array, bm, calc, dcolumn, delarray, enumerate, fileerr,
+fontsmpl, ftnright, hhline, indentfirst, layout, longtable, multicol,
+rawfonts, showkeys, somedefs, tabularx, theorem, trace, varioref, verbatim,
+xr, and xspace.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
