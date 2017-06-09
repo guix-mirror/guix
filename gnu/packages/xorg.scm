@@ -3019,7 +3019,7 @@ graphics cards.")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
@@ -3029,7 +3029,7 @@ graphics cards.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1fsmr455lk89zl795d6b5ypyqjim40j3h2vjch52lcssjw9xdza9"))))
+          "0x9gq3hw6k661k82ikd1y2kkk4dmgv310xr5q59dwn4k6z37aafs"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
