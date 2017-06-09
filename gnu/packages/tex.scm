@@ -291,6 +291,40 @@ bundle.")
     ;; under LPPL.
     (license (list license:expat license:lppl))))
 
+(define-public texlive-generic-tex-ini-files
+  (package
+    (name "texlive-generic-tex-ini-files")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/tex-ini-files"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1wh42n1lmzcvi3g6mm31nm3yd5ha5bl260xqc444jg1m9fdp3wz5"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/tex-ini-files")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://ctan.org/pkg/tex-ini-files")
+    (synopsis "Files for creating TeX formats")
+    (description "This bundle provides a collection of model \".ini\" files
+for creating TeX formats.  These files are commonly used to introduced
+distribution-dependent variations in formats.  They are also used to
+allow existing format source files to be used with newer engines, for example
+to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
+    (license license:public-domain)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
