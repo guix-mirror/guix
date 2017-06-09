@@ -807,6 +807,30 @@ with the required packages, constitutes what every LaTeX distribution should
 contain.")
       (license license:lppl1.3c+))))
 
+(define-public texlive-latex-filecontents
+  (package
+    (name "texlive-latex-filecontents")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "filecontents"))
+              (sha256
+               (base32
+                "0swkbxv8vg0yizadfnvrwjb4cj0pn34v9wm6v7wqq903fdav7k7q"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/filecontents"))
+    (home-page "http://www.ctan.org/pkg/filecontents")
+    (synopsis "Extended filecontents and filecontents* environments")
+    (description
+     "LaTeX2e's @code{filecontents} and @code{filecontents*} environments
+enable a LaTeX source file to generate external files as it runs through
+LaTeX.  However, there are two limitations of these environments: they refuse
+to overwrite existing files, and they can only be used in the preamble of a
+document.  The filecontents package removes these limitations, letting you
+overwrite existing files and letting you use @code{filecontents} /
+@code{filecontents*} anywhere.")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
