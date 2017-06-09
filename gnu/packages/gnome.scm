@@ -288,6 +288,38 @@ the GData protocol — most notably, Google's services.  It provides APIs to
 access the common Google services, and has full asynchronous support.")
     (license license:lgpl2.1+)))
 
+(define-public libgxps
+  (package
+    (name "libgxps")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libarchive" ,libarchive)
+       ("libjpeg" ,libjpeg)
+       ("lcms" ,lcms)
+       ("libtiff" ,libtiff)
+       ("nettle" ,nettle)))
+    (home-page "https://wiki.gnome.org/Projects/libgxps")
+    (synopsis "GObject-based library for handling and rendering XPS documents")
+    (description
+     "libgxps is a GObject-based library for handling and rendering XPS
+documents.  This package also contains binaries that can convert XPS documents
+to other formats.")
+    (license license:lgpl2.1+)))
+
 (define-public gnome-common
   (package
     (name "gnome-common")
