@@ -882,6 +882,70 @@ verbatim mode; build \"example\" environments (showing both result and
 verbatim source).")
     (license license:lppl1.0+)))
 
+(define-public texlive-latex-graphics
+  (package
+    (name "texlive-latex-graphics")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "graphics"))
+              (sha256
+               (base32
+                "17ka701xr9nqsjlhz30hphr8d9j4zzwgv5zl5r2f118yzqh9c34v"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/graphics"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-config
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((cfg (assoc-ref inputs "graphics-cfg"))
+                   (target (string-append (assoc-ref outputs "out")
+                                          "/share/texmf-dist/tex/latex/graphics-cfg")))
+               (mkdir-p target)
+               (install-file (string-append cfg "/graphics.cfg") target)
+               (install-file (string-append cfg "/color.cfg")    target)
+               #t)))
+         (add-after 'install 'install-defs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((def (assoc-ref inputs "graphics-def"))
+                   (target (string-append (assoc-ref outputs "out")
+                                          "/share/texmf-dist/tex/latex/graphics-def")))
+               (mkdir-p target)
+               (copy-recursively def target)
+               #t))))))
+    (native-inputs
+     `(("graphics-cfg"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/latex3/graphics-cfg.git")
+                 (commit "19d1238af17df376cd46333b229579b0f7f3a41f")))
+           (sha256
+            (base32
+             "12kbgbm52gmmgn8zajb74s8n5rvnxcfdvs3iyj8vcw5vrsw5i6mh"))))
+       ("graphics-def"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/graphics-def"))
+                 (revision %texlive-revision)))
+           (sha256
+            (base32
+             "1q5l0x3jsy74v0zq4c9g0x0rb9jfzf7cbhdzkbchyydv49iav802"))))))
+    (home-page "http://www.ctan.org/pkg/latex-graphics")
+    (synopsis "LaTeX standard graphics bundle")
+    (description
+     "This is a collection of LaTeX packages for producing color, including
+graphics (e.g. PostScript) files, and rotation and scaling of text in LaTeX
+documents.  It comprises the packages color, graphics, graphicx, trig, epsfig,
+keyval, and lscape.")
+    ;; The configuration files are released under CC0.
+    (license (list license:lppl1.3c+
+                   license:cc0))))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
