@@ -325,6 +325,62 @@ allow existing format source files to be used with newer engines, for example
 to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
     (license license:public-domain)))
 
+(define-public texlive-generic-hyph-utf8
+  (package
+    (name "texlive-generic-hyph-utf8")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/hyph-utf8"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0ghizcz7ps16dzfqf66wwg5i181assc6qsm0g7g5dbmp909931vi"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/hyph-utf8")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://ctan.org/pkg/hyph-utf8")
+    (synopsis "Hyphenation patterns expressed in UTF-8")
+    (description "Modern native UTF-8 engines such as XeTeX and LuaTeX need
+hyphenation patterns in UTF-8 format, whereas older systems require
+hyphenation patterns in the 8-bit encoding of the font in use (such encodings
+are codified in the LaTeX scheme with names like OT1, T2A, TS1, OML, LY1,
+etc).  The present package offers a collection of conversions of existing
+patterns to UTF-8 format, together with converters for use with 8-bit fonts in
+older systems.  Since hyphenation patterns for Knuthian-style TeX systems are
+only read at iniTeX time, it is hoped that the UTF-8 patterns, with their
+converters, will completely supplant the older patterns.")
+    ;; Individual files each have their own license.  Most of these files are
+    ;; independent hyphenation patterns.
+    (license (list license:lppl1.0+
+                   license:lppl1.2+
+                   license:lppl1.3
+                   license:lppl1.3+
+                   license:lppl1.3a+
+                   license:lgpl2.1
+                   license:lgpl2.1+
+                   license:lgpl3+
+                   license:gpl2+
+                   license:gpl3+
+                   license:mpl1.1
+                   license:asl2.0
+                   license:expat
+                   license:bsd-3
+                   license:cc0
+                   license:public-domain
+                   license:wtfpl2))))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
