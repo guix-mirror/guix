@@ -1440,6 +1440,13 @@ distribution.")
                        '()
                        (append default-packages packages)))))))
 
+(define-public texlive-tiny
+  (package
+    (inherit (texlive-union))
+    (name "texlive-tiny")
+    (description "This is a very limited subset of the TeX Live distribution.
+It includes little more than the required set of LaTeX packages.")))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
