@@ -25,8 +25,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
@@ -60,6 +62,70 @@
 These window decorations can be used by for example an X11 based window
 manager which re-parents a Client window to a window decoration frame.")
     (license license:lgpl3+)))
+
+(define-public kscreenlocker
+  (package
+    (name "kscreenlocker")
+    (version "5.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version
+                                  "/kscreenlocker-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16amr7pz0k6w5vkk1dwn2qi3s1mln0jypwmjazqq2lbwimn8k56m"))))
+    (properties `((tags . '("Desktop" "KDE" "Plasma"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                   "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t))
+         (delete 'check)
+         ;; Tests use the installed library and require a DBus session.
+         (add-after 'install 'check
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (invoke "dbus-launch" "ctest" "."))))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("dbus" ,dbus)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("kcmutils" ,kcmutils)
+       ("kcrash" ,kcrash)
+       ("kdeclarative" ,kdeclarative)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kidletime" ,kidletime)
+       ("knotifications" ,knotifications)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwayland" ,kwayland)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libseccomp" ,libseccomp) ;for sandboxing the look'n'feel package
+       ("libxcursor" ,libxcursor) ;missing in CMakeList.txt
+       ("libxi" ,libxi)           ;XInput, required for grabbing XInput2 devices
+       ("linux-pam" ,linux-pam)
+       ("logind" ,elogind)        ;optional loginctl support
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)
+       ("wayland" ,wayland)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (home-page "https://cgit.kde.org/kscreenlocker.git")
+    (synopsis "Screen locking library")
+    (description
+     "@code{kscreenlocker} is a library for creating secure lock screens.")
+    (license license:gpl2+)))
 
 (define-public libkscreen
   (package
