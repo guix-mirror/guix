@@ -1091,6 +1091,29 @@ of file names.")
     ;; the latest version is 1.3c.
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-l3kernel
+  (package
+    (name "texlive-latex-l3kernel")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "l3kernel"))
+              (sha256
+               (base32
+                "0ndqw0flhl20f4ny5lssp8rqpnj5kglyg59whbdrxbh2zc7w7j0b"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/l3kernel"))
+    (home-page "http://www.ctan.org/pkg/l3kernel")
+    (synopsis "LaTeX3 programmers’ interface")
+    (description
+     "The l3kernel bundle provides an implementation of the LaTeX3
+programmers’ interface, as a set of packages that run under LaTeX 2e.  The
+interface provides the foundation on which the LaTeX3 kernel and other future
+code are built: it is an API for TeX programmers.  The packages are set up so
+that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
