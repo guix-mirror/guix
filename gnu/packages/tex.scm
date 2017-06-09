@@ -637,6 +637,41 @@ class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
 
+;; This provides etex.src which is needed to build various formats, including
+;; luatex.fmt and pdflatex.fmt
+(define-public texlive-tex-plain
+  (package
+    (name "texlive-tex-plain")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/plain"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1ifmbyl3ir8k0v1g25xjb5rcyy5vhj8a3fa2088nczga09hna5vn"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/plain")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/plain")
+    (synopsis "Plain TeX format and supporting files")
+    (description
+     "Contains files used to build the Plain TeX format, as described in the
+TeXbook, together with various supporting files (some also discussed in the
+book).")
+    (license license:knuth)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
