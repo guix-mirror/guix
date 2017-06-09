@@ -637,7 +637,7 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
-       ("eudev" ,eudev-with-hwdb)))
+       ("eudev" ,eudev)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -1843,6 +1843,15 @@ from the module-init-tools project.")
               (patches (search-patches "eudev-rules-directory.patch"
                                        "eudev-conflicting-declaration.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -1861,19 +1870,7 @@ time.")
     (license license:gpl2+)))
 
 (define-public eudev-with-hwdb
-  ;; TODO: Merge with 'eudev'.
-  (package
-    (inherit eudev)
-    (name "eudev-with-hwdb")
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'install 'build-hwdb
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
-                      ;; similar tools to display product names.
-                      (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* (string-append out "/bin/udevadm")
-                                        "hwdb" "--update"))))))))))
+  (deprecated-package "eudev-with-hwdb" eudev))
 
 (define-public lvm2
   (package
