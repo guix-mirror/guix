@@ -881,16 +881,18 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.25")
+    (version "0.26")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "http://www.exiv2.org/exiv2-"
+             (uri (list (string-append "http://www.exiv2.org/builds/exiv2-"
+                                       version "-trunk.tar.gz")
+                        (string-append "http://www.exiv2.org/exiv2-"
                                        version ".tar.gz")
                         (string-append "https://fossies.org/linux/misc/exiv2-"
                                        version ".tar.gz")))
              (sha256
               (base32
-               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
+               "1hsdzlzgkipprqh93yj81mrckl2l7c2mn2i84691pallnjz5qqhc"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (propagated-inputs
