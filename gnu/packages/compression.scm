@@ -728,7 +728,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
-    (home-page "https://github.com/lz4/lz4")
+    (home-page "http://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
 compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an
