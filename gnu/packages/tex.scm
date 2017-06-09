@@ -998,6 +998,35 @@ pdf and HTML backends.  The package is distributed with the backref and
 nameref packages, which make use of the facilities of hyperref.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-oberdiek
+  (package
+    (name "texlive-latex-oberdiek")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "oberdiek"))
+              (sha256
+               (base32
+                "0aswvsxgsn709xmvpcg50d2xl7vcy1ckdxb9c1cligqqfjjvviqf"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/oberdiek"
+       #:phases
+       (modify-phases %standard-phases
+         ;; "ifpdf.ins" is not generated, so we cannot process it.
+         (add-after 'unpack 'do-not-process-ifpdf.ins
+           (lambda _
+             (substitute* "oberdiek.ins"
+               (("\\\\batchinput\\{ifpdf.ins\\}") ""))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/oberdiek")
+    (synopsis "Bundle of packages submitted by Heiko Oberdiek")
+    (description
+     "The bundle comprises various LaTeX packages, providing among others:
+better accessibility support for PDF files; extensible chemists reaction
+arrows; record information about document class(es) used; and many more.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
