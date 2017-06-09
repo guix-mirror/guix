@@ -1114,6 +1114,53 @@ code are built: it is an API for TeX programmers.  The packages are set up so
 that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-l3packages
+  (package
+    (name "texlive-latex-l3packages")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "l3packages"))
+              (sha256
+               (base32
+                "1p1y9my6ccmp2ab91fzqqgih8ifrk4y3wyh397kagiq9f6a6v91f"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/l3packages"
+       #:phases
+       (modify-phases %standard-phases
+         ;; All package sources are in sub-directories, so we need to add them
+         ;; to TEXINPUTS.
+         (add-after 'unpack 'set-TEXINPUTS
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "TEXINPUTS"
+                       (string-append cwd "/l3keys2e:"
+                                      cwd "/xparse:"
+                                      cwd "/xfrac:"
+                                      cwd "/xfp:"
+                                      cwd "/xtemplate")))
+             #t)))))
+    (inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+    (home-page "http://www.ctan.org/pkg/l3packages")
+    (synopsis "High-level LaTeX3 concepts")
+    (description
+     "This bundle holds prototype implementations of concepts for a LaTeX
+designer interface, to be used with the experimental LaTeX kernel as
+programming tools and kernel sup­port.  Packages provided in this release are:
+
+@enumerate
+@item l3keys2e, which makes the facilities of the kernel module l3keys
+  available for use by LaTeX 2e packages;
+@item xfrac, which provides flexible splitlevel fractions;
+@item xparse, which provides a high-level interface for declaring document
+  commands; and
+@item xtemplate, which provides a means of defining generic functions using a
+  key-value syntax.
+@end enumerate\n")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
