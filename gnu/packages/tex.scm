@@ -855,6 +855,33 @@ so that other code can determine that it is running under XeTeX.  The package
 requires the etexe-TeX extensions to the TeX primitive set.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-fancyvrb
+  (package
+    (name "texlive-latex-fancyvrb")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "fancyvrb"))
+              (sha256
+               (base32
+                "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/fancyvrb"
+       ;; We exclude "fvrb-ex" to avoid a dependency on texlive-luaotfload and
+       ;; thus texlive-luatex-lualibs.
+       #:build-targets '("fancyvrb.ins")))
+    (home-page "http://www.ctan.org/pkg/fancyvrb")
+    (synopsis "Sophisticated verbatim text")
+    (description
+     "This package provides tools for the flexible handling of verbatim text
+including: verbatim commands in footnotes; a variety of verbatim environments
+with many parameters; ability to define new customized verbatim environments;
+save and restore verbatim text and environments; write and read files in
+verbatim mode; build \"example\" environments (showing both result and
+verbatim source).")
+    (license license:lppl1.0+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
