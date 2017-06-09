@@ -61,6 +61,7 @@
   #:use-module (gnu packages zip)
   #:autoload   (gnu packages texinfo) (texinfo)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:hide (zip)))
 
 (define texlive-extra-src
@@ -1353,6 +1354,91 @@ and a number of free fonts.  It provides font definition files, macros and
 font metrics.  The bundle as a whole is part of the LaTeX required set of
 packages.")
     (license license:lppl1.2+)))
+
+(define-public texlive-union
+  (lambda* (#:optional (packages '()))
+    "Return 'texlive-union' package which is a union of PACKAGES and the
+standard LaTeX packages."
+    (let ((default-packages
+            (list texlive-bin
+                  texlive-dvips
+                  texlive-fonts-cm
+                  texlive-fonts-latex
+                  texlive-metafont-base
+                  texlive-latex-base
+                  ;; LaTeX packages from the "required" set.
+                  texlive-latex-amsmath
+                  texlive-latex-amscls
+                  texlive-latex-babel
+                  texlive-latex-cyrillic
+                  texlive-latex-graphics
+                  texlive-latex-psnfss
+                  texlive-latex-tools)))
+      (package
+        (name "texlive-union")
+        (version (number->string %texlive-revision))
+        (source #f)
+        (build-system trivial-build-system)
+        (arguments
+         '(#:modules ((guix build union)
+                      (guix build utils)
+                      (guix build texlive-build-system)
+                      (guix build gnu-build-system)
+                      (guix build gremlin)
+                      (guix elf))
+           #:builder
+           (begin
+             (use-modules (ice-9 match)
+                          (srfi srfi-26)
+                          (guix build union)
+                          (guix build utils)
+                          (guix build texlive-build-system))
+             (let* ((out       (assoc-ref %outputs "out"))
+                    (texmf.cnf (string-append out "/share/texmf-dist/web2c/texmf.cnf")))
+               ;; Build a modifiable union of all inputs (but exclude bash)
+               (match (filter (match-lambda
+                                ((name . _)
+                                 (not (string=? "bash" name))))
+                              %build-inputs)
+                 (((names . directories) ...)
+                  (union-build (assoc-ref %outputs "out")
+                               directories
+                               #:create-all-directories? #t)))
+
+               ;; The configuration file "texmf.cnf" is provided by the
+               ;; "texlive-bin" package.  We take it and override only the
+               ;; setting for TEXMFROOT and TEXMF.  This file won't be consulted
+               ;; by default, though, so we still need to set TEXMFCNF.
+               (substitute* texmf.cnf
+                 (("^TEXMFROOT = .*")
+                  (string-append "TEXMFROOT = " out "/share\n"))
+                 (("^TEXMF = .*")
+                  "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
+               (setenv "PATH" (string-append (assoc-ref %build-inputs "bash")
+                                             "/bin"))
+               (for-each
+                (cut wrap-program <>
+                     `("TEXMFCNF" ":" = (,(dirname texmf.cnf)))
+                     `("TEXMF"    ":" = (,(string-append out "/share/texmf-dist"))))
+                (find-files (string-append out "/bin") ".*"))
+               #t))))
+        (inputs
+         `(("bash" ,bash)
+           ,@(map (lambda (package)
+                    (list (package-name package) package))
+                  (append default-packages packages))))
+        (home-page (package-home-page texlive-bin))
+        (synopsis "Union of TeX Live packages")
+        (description "This package provides a subset of the TeX Live
+distribution.")
+        (license (fold (lambda (package result)
+                         (match (package-license package)
+                           ((lst ...)
+                            (append lst result))
+                           ((? license:license? license)
+                            (cons license result))))
+                       '()
+                       (append default-packages packages)))))))
 
 (define texlive-texmf
   (package
