@@ -1553,7 +1553,7 @@ by the legacy X11 font system.")
 (define-public presentproto
   (package
     (name "presentproto")
-    (version "1.0")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
@@ -1563,7 +1563,7 @@ by the legacy X11 font system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
+            "1f96dlgfwhsd0834z8ydjzjnb0cwha5r6lxgia4say4zhsl276zn"))))
     (build-system gnu-build-system)
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PresentProto protocol headers")
