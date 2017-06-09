@@ -61,7 +61,7 @@
   #:use-module (gnu packages zip)
   #:autoload   (gnu packages texinfo) (texinfo)
   #:use-module (ice-9 ftw)
-  #:use-module (srfi srfi-1))
+  #:use-module ((srfi srfi-1) #:hide (zip)))
 
 (define texlive-extra-src
   (origin
@@ -1185,6 +1185,43 @@ automatic and unified interface to feature-rich AAT and OpenType fonts through
 the NFSS in LaTeX running on XeTeX or LuaTeX engines.  The package requires
 the l3kernel and xparse bundles from the LaTeX 3 development team.")
     (license license:lppl1.3+)))
+
+;; The SVN directory contains little more than a dtx file that generates three
+;; of the many lua files that should be installed as part of this package.
+;; This is why we take the release from GitHub instead.
+(define-public texlive-luatex-lualibs
+  (package
+    (name "texlive-luatex-lualibs")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lualatex/lualibs/"
+                                  "releases/download/v"
+                                  version "/lualibs.zip"))
+              (sha256
+               (base32
+                "1xx9blvrmx9hyhrl345lpai9m6xxnw997261a1ahn1bm5r2j5fqy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "DESTDIR="
+                            (assoc-ref %outputs "out")
+                            "/share/texmf-dist"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("unzip" ,unzip)
+       ("zip" ,zip)))
+    (home-page "https://github.com/lualatex/lualibs")
+    (synopsis "Lua modules for general programming (in the (La)TeX world)")
+    (description
+     "Lualibs is a collection of Lua modules useful for general programming.
+The bundle is based on Lua modules shipped with ConTeXt, and made available in
+this bundle for use independent of ConTeXt.")
+    ;; GPL version 2 only
+    (license license:gpl2)))
 
 (define texlive-texmf
   (package
