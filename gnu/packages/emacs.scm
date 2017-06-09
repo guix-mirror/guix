@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4896,3 +4897,45 @@ running a customisable handler command (@code{ignore} by default). ")
 from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
+
+(define-public emacs-dired-hacks
+  (let ((commit "eda68006ce73bbf6b9b995bfd70d08bec8cade36")
+        (revision "1"))
+    (package
+      (name "emacs-dired-hacks")
+      (version (string-append "0.0.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Fuco1/dired-hacks.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1w7ssl9zssn5rcha6apf4h8drkd02k4xgvs203bdbqyqp9wz9brx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/Fuco1/dired-hacks")
+      (synopsis
+       "Collection of useful dired additions")
+      (description
+       "Collection of Emacs dired mode additions:
+@itemize
+@item dired-avfs
+@item dired-columns
+@item dired-filter
+@item dired-hacks-utils
+@item dired-images
+@item dired-list
+@item dired-narrow
+@item dired-open
+@item dired-rainbow
+@item dired-ranger
+@item dired-subtree
+@item dired-tagsistant
+@end itemize\n")
+      (license license:gpl3+))))
