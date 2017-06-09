@@ -970,6 +970,34 @@ row colors plus repeated non-aligned material (like horizontal lines) in
 tables.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-hyperref
+  (package
+    (name "texlive-latex-hyperref")
+    (version "6.84a2")
+    ;; The sources in the TeX Live SVN repository do not contain hluatex.dtx,
+    ;; so we fetch the release from GitHub.
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ho-tex/hyperref/"
+                                  "archive/release-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d3rmjgzh0025a1dza55zb6nzzlgd1y9snwx45wq1c1vf42m79h2"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/hyperref"))
+    (home-page "http://www.ctan.org/pkg/hyperref")
+    (synopsis "Extensive support for hypertext in LaTeX")
+    (description
+     "The hyperref package is used to handle cross-referencing commands in
+LaTeX to produce hypertext links in the document.  The package provides
+backends for the special set defined for HyperTeX DVI processors; for embedded
+pdfmark commands for processing by Acrobat Distiller (dvips and dvipsone); for
+dviwindo; for PDF control within pdfTeX and dvipdfm; for TeX4ht; and for VTeX
+pdf and HTML backends.  The package is distributed with the backref and
+nameref packages, which make use of the facilities of hyperref.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
