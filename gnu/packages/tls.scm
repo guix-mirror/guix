@@ -112,23 +112,15 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.2")
+    (version "0.23.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://p11-glue.freedesktop.org/releases/p11-kit-"
-                          version ".tar.gz"))
+      (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
+                          "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "1w7szm190phlkg7qx05ychlj2dbvkgkhx9gw6dx4d5rw62l6wwms"))
-      (modules '((guix build utils))) ; for substitute*
-      (snippet
-        '(begin
-           ;; Drop one test that fails, also when trying to compile manually.
-           ;; Reported upstream at
-           ;; https://bugs.freedesktop.org/show_bug.cgi?id=89027
-           (substitute* "Makefile.in"
-             (("test-module\\$\\(EXEEXT\\) ") ""))))))
+        "0hdy4h8byvcvd4av504xqfqyd1h6xy914j034mq3c6v4ya37r3lq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
