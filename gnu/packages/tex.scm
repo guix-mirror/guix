@@ -946,6 +946,30 @@ keyval, and lscape.")
     (license (list license:lppl1.3c+
                    license:cc0))))
 
+(define-public texlive-latex-xcolor
+  (package
+    (name "texlive-latex-xcolor")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "xcolor"))
+              (sha256
+               (base32
+                "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/xcolor"))
+    (home-page "http://www.ctan.org/pkg/xcolor")
+    (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
+    (description
+     "The package starts from the basic facilities of the colorcolor package,
+and provides easy driver-independent access to several kinds of color tints,
+shades, tones, and mixes of arbitrary colors.  It allows a user to select a
+document-wide target color model and offers complete tools for conversion
+between eight color models.  Additionally, there is a command for alternating
+row colors plus repeated non-aligned material (like horizontal lines) in
+tables.")
+    (license license:lppl1.2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
