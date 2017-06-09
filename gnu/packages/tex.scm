@@ -1161,6 +1161,31 @@ programming tools and kernel sup­port.  Packages provided in this release are:
 @end enumerate\n")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-fontspec
+  (package
+    (name "texlive-latex-fontspec")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "fontspec"))
+              (sha256
+               (base32
+                "1rx43y5xmjqvc27pjdnmqwp4pcw3czcfd6nfpmzc1gnqfl1hlc0q"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/fontspec"
+       #:build-targets '("fontspec.dtx")))
+    (inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+    (home-page "http://www.ctan.org/pkg/fontspec")
+    (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
+    (description
+     "Fontspec is a package for XeLaTeX and LuaLaTeX.  It provides an
+automatic and unified interface to feature-rich AAT and OpenType fonts through
+the NFSS in LaTeX running on XeTeX or LuaTeX engines.  The package requires
+the l3kernel and xparse bundles from the LaTeX 3 development team.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
