@@ -486,14 +486,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.4.4")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g2n5r2n03bqz322xlwdw4bqhj8l4n8q0hzrqngi4rgmk4rp97ly"))
+                "1643q2pj5sjhgv19jp8r2bhvqyk6mmlajdmr6qhjcbhql30cs23c"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -518,7 +518,11 @@ Extensions} (DNSSEC).")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
-       ("nettle" ,nettle)))
+       ("nettle" ,nettle)
+
+       ;; For ‘pykeymgr’, needed to migrate keys from versions <= 2.4.
+       ("python" ,python-2)
+       ("python-lmdb" ,python2-lmdb)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -535,11 +539,18 @@ Extensions} (DNSSEC).")
                (zero?
                 (system* "make"
                          (string-append "config_dir=" etc)
-                         "install"))))))
+                         "install")))))
+         (add-after 'install 'wrap-python-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/sbin/pykeymgr")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
-             "--enable-rosedb"          ; serve static records from a database
+             "--with-module-rosedb=yes" ; serve static records from a database
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))))
