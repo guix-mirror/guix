@@ -1251,6 +1251,29 @@ mathematics, and @code{ntheoremntheorem}, for specifying theorem (and similar)
 definitions.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-amscls
+  (package
+    (name "texlive-latex-amscls")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "amscls"))
+              (sha256
+               (base32
+                "0jmcr37mcdi7drczppvr6lmz5d5yd9m67ii79gp2nglg1xpw934j"))))
+    (build-system texlive-build-system)
+    (arguments
+     `(#:tex-directory "latex/amscls"))
+    (home-page "http://www.ctan.org/pkg/amscls")
+    (synopsis "AMS document classes for LaTeX")
+    (description
+     "This bundle contains three AMS classes: @code{amsartamsart} (for writing
+articles for the AMS), @code{amsbookamsbook} (for books) and
+@code{amsprocamsproc} (for proceedings), together with some supporting
+material.  The material is made available as part of the AMS-LaTeX
+distribution.")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
