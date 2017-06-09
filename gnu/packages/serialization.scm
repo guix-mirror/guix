@@ -282,7 +282,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -290,7 +290,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0gpp1cxsb9nfd7qkjjykzknx03y0z0n4bq5q0fmxci7w38ci22g5"))))
+                "010s9yhq4531wvdfrdf2477zswhck6cjfby79w73rff3v06090l0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
