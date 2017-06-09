@@ -831,6 +831,30 @@ overwrite existing files and letting you use @code{filecontents} /
 @code{filecontents*} anywhere.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-generic-ifxetex
+  (package
+    (name "texlive-generic-ifxetex")
+    (version "0.6")
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "generic" "ifxetex"))
+              (sha256
+               (base32
+                "0w2xj7n0szavj329kds09q626szkc378p3w0sk022q0ln4ksz86d"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "generic/ifxetex"
+       #:tex-format "xelatex"))
+    (inputs
+     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (home-page "http://www.ctan.org/pkg/ifxetex")
+    (synopsis "Am I running under XeTeX?")
+    (description
+     "This is a simple package which provides an @code{\\ifxetex} conditional,
+so that other code can determine that it is running under XeTeX.  The package
+requires the etexe-TeX extensions to the TeX primitive set.")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
