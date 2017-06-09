@@ -1308,6 +1308,28 @@ what has to be done for each language.  Users of XeTeX are advised to use the
 polyglossia package rather than Babel.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-cyrillic
+  (package
+    (name "texlive-latex-cyrillic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "cyrillic"))
+              (sha256
+               (base32
+                "1mdhl35hwas68ki56qqngzar37dwv4mm64l2canihr255bz34lbv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/cyrillic"))
+    (home-page "http://www.ctan.org/pkg/latex-cyrillic")
+    (synopsis "Support for Cyrillic fonts in LaTeX")
+    (description
+     "This bundle of macros files provides macro support (including font
+encoding macros) for the use of Cyrillic characters in fonts encoded under the
+T2* and X2 encodings. These encodings cover (between them) pretty much every
+language that is written in a Cyrillic alphabet.")
+    (license license:lppl1.3c+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
