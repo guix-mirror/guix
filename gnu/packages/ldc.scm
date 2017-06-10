@@ -77,105 +77,105 @@ and freshness without requiring additional information from the user.")
     (license license:boost1.0)))
 
 (define-public ldc-bootstrap
-  (package
-    (name "ldc")
-    (version "0.17.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ldc-developers/ldc/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "135rgwwk82ccqp4n3fhqz4696jmvip90fg5ql2kccq5h1r71gb82"))))
-    (build-system cmake-build-system)
-    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-submodule-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((unpack (lambda (source target)
-                             (with-directory-excursion target
-                               (zero? (system* "tar" "xvf"
-                                               (assoc-ref inputs source)
-                                               "--strip-components=1"))))))
-               (and (unpack "phobos-src" "runtime/phobos")
-                    (unpack "druntime-src" "runtime/druntime")
-                    (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
-         (add-after 'unpack-submodule-sources 'patch-dmd2
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "dmd2/root/port.c"
-               ((" ::isnan") " isnan")
-               ((" ::isinf") " isinf")
-               (("#undef isnan") "")
-               (("#undef isinf") ""))
-             #t))
-         (add-after 'unpack-submodule-sources 'patch-phobos
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "runtime/phobos/std/process.d"
-               (("/bin/sh") (which "sh"))
-               (("echo") (which "echo")))
-             (substitute* "runtime/phobos/std/datetime.d"
-               (("/usr/share/zoneinfo/")
-                (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
-             (substitute* "tests/d2/dmd-testsuite/Makefile"
-               (("/bin/bash") (which "bash")))
-             ;; FIXME: this test cannot be linked.
-             (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
-             #t)))))
-    (inputs
-     `(("libconfig" ,libconfig)
-       ("libedit" ,libedit)
-       ("tzdata" ,tzdata)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("llvm" ,llvm)
-       ("clang" ,clang)
-       ("python-lit" ,python-lit)
-       ("python-wrapper" ,python-wrapper)
-       ("unzip" ,unzip)
-       ("phobos-src"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/ldc-developers/phobos/archive/ldc-v"
-                 version ".tar.gz"))
-           (sha256
-            (base32
-             "0qywnvnp019mmmr74aw90ir9f03iz0hc7cgzna609agsar0b27jl"))
-           (patches (search-patches "ldc-disable-tests.patch"))))
-       ("druntime-src"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/ldc-developers/druntime/archive/ldc-v"
-                 version ".tar.gz"))
-           (sha256
-            (base32
-             "0z418n6x2fxac07sxpi4rl69069qiym4w6r9sjppn91q58qh8hjs"))))
-       ("dmd-testsuite-src"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
-                 version ".tar.gz"))
-           (sha256
-            (base32
-             "196mkfax5y3yqm3gz7jhqhnkjwrvr2m4a8nc9k41l0511ldzsk9x"))))))
-    (home-page "http://wiki.dlang.org/LDC")
-    (synopsis "LLVM compiler for the D programming language")
-    (description
-     "LDC is a compiler for the D programming language.  It is based on the
+  (let ((runtime-version "0.17.3"))
+    (package
+      (name "ldc")
+      (version "0.17.4")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://github.com/ldc-developers/ldc/archive/v"
+                      version ".tar.gz"))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1kw0j378k6bh0k66dvx99bjq8ilp8bb24w3jrmibn8rhmqv0d5q8"))))
+      (build-system cmake-build-system)
+      (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (zero? (system* "tar" "xvf"
+                                                 (assoc-ref inputs source)
+                                                 "--strip-components=1"))))))
+                 (and (unpack "phobos-src" "runtime/phobos")
+                      (unpack "druntime-src" "runtime/druntime")
+                      (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
+           (add-after 'unpack-submodule-sources 'patch-dmd2
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "dmd2/root/port.c"
+                 ((" ::isnan") " isnan")
+                 ((" ::isinf") " isinf")
+                 (("#undef isnan") "")
+                 (("#undef isinf") ""))
+               #t))
+           (add-after 'unpack-submodule-sources 'patch-phobos
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "runtime/phobos/std/process.d"
+                 (("/bin/sh") (which "sh"))
+                 (("echo") (which "echo")))
+               (substitute* "runtime/phobos/std/datetime.d"
+                 (("/usr/share/zoneinfo/")
+                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+               (substitute* "tests/d2/dmd-testsuite/Makefile"
+                 (("/bin/bash") (which "bash")))
+               ;; FIXME: this test cannot be linked.
+               (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
+               #t)))))
+      (inputs
+       `(("libconfig" ,libconfig)
+         ("libedit" ,libedit)
+         ("tzdata" ,tzdata)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("llvm" ,llvm)
+         ("clang" ,clang)
+         ("python-lit" ,python-lit)
+         ("python-wrapper" ,python-wrapper)
+         ("unzip" ,unzip)
+         ("phobos-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/phobos/archive/ldc-v"
+                   runtime-version ".tar.gz"))
+             (sha256
+              (base32
+               "0qywnvnp019mmmr74aw90ir9f03iz0hc7cgzna609agsar0b27jl"))
+             (patches (search-patches "ldc-disable-tests.patch"))))
+         ("druntime-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/druntime/archive/ldc-v"
+                   runtime-version ".tar.gz"))
+             (sha256
+              (base32
+               "0z418n6x2fxac07sxpi4rl69069qiym4w6r9sjppn91q58qh8hjs"))))
+         ("dmd-testsuite-src"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
+                   runtime-version ".tar.gz"))
+             (sha256
+              (base32
+               "196mkfax5y3yqm3gz7jhqhnkjwrvr2m4a8nc9k41l0511ldzsk9x"))))))
+      (home-page "http://wiki.dlang.org/LDC")
+      (synopsis "LLVM compiler for the D programming language")
+      (description
+       "LDC is a compiler for the D programming language.  It is based on the
 latest DMD frontend and uses LLVM as backend.")
-    ;; Most of the code is released under BSD-3, except for code originally
-    ;; written for GDC, which is released under GPLv2+, and the DMD frontend,
-    ;; which is released under the "Boost Software License version 1.0".
-    (license (list license:bsd-3
-                   license:gpl2+
-                   license:boost1.0))))
-
+      ;; Most of the code is released under BSD-3, except for code originally
+      ;; written for GDC, which is released under GPLv2+, and the DMD frontend,
+      ;; which is released under the "Boost Software License version 1.0".
+      (license (list license:bsd-3
+                     license:gpl2+
+                     license:boost1.0)))))
 
 (define-public ldc
   ;; The phobos, druntime and dmd-testsuite dependencies do not have a newer
