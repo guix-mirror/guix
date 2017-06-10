@@ -117,7 +117,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.15.1")
+    (version "0.15.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/stellarium/"
@@ -125,7 +125,7 @@ programs for the manipulation and analysis of astronomical data.")
                                  version "/stellarium-" version ".tar.gz"))
              (sha256
               (base32
-               "04avigz8i8mi2x6x71bqr9np85n1p9qnvbj2hxr947f1jv22zr8g"))))
+               "19nxj482g1hh9qicgskpcgy61pri254jgxnkd10icxbnza4c0hv9"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
