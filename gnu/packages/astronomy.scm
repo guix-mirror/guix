@@ -141,6 +141,14 @@ programs for the manipulation and analysis of astronomical data.")
     (arguments
       `(#:test-target "tests"
         #:phases (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-version-check
+                     (lambda _
+                       ;; Previously-deprecated cmake variable vanished in
+                       ;; Qt 5.9.
+                       ;; See <https://bugreports.qt.io/browse/QTBUG-60936>.
+                       (substitute* "CMakeLists.txt"
+                         (("Qt5Core_VERSION_STRING") "Qt5Core_VERSION"))
+                       #t))
                    (add-before 'check 'set-offscreen-display
                      (lambda _
                        ;; make Qt render "offscreen", required for tests
