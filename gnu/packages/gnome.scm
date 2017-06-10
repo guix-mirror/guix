@@ -24,6 +24,7 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2448,6 +2449,37 @@ and the GLib main loop, to integrate well with GNOME applications.")
      "Libsecret is a GObject based library for storing and retrieving passwords
 and other secrets.  It communicates with the \"Secret Service\" using DBus.")
     (license license:lgpl2.1+)))
+
+(define-public five-or-more
+  (package
+    (name "five-or-more")
+    (version "3.22.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b26afyjr26wqy5j008gzsi3hpblbmabh0192lx6414lml1qxkxs"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Five%20or%20more")
+    (synopsis "Logic puzzle game")
+    (description "Five or More is a game where you try to align
+ five or more objects of the same color and shape causing them to disappear.
+ On every turn more objects will appear, until the board is full.
+ Try to last as long as possible.")
+    (license license:gpl2+)))
 
 (define-public gnome-mines
   (package
