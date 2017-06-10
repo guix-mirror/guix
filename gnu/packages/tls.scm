@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,6 +143,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
+    (replacement gnutls-3.5.13)
     (version "3.5.9")
     (source (origin
              (method url-fetch)
@@ -214,10 +216,32 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
+(define gnutls-3.5.13               ;GNUTLS-SA-2017-{3,4}
+  (package
+    (inherit gnutls)
+    ;; We use 'D' instead of '13' here to keep the store file name at
+    ;; the same length. See <https://bugs.gnu.org/27308>.
+    (version "3.5.D")
+    (replacement #f)
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://gnupg/gnutls/v"
+                              (version-major+minor version)
+                              "/gnutls-3.5.13.tar.xz"))
+              (patches
+               (search-patches "gnutls-skip-trust-store-test.patch"
+                               "gnutls-skip-pkgconfig-test.patch"))
+              (sha256
+               (base32
+                "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))))
+
 (define-public gnutls/guile-2.2
   ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
   (package
     (inherit gnutls)
+    (replacement #f)
+    (source (package-source gnutls-3.5.13))
     (name "guile2.2-gnutls")
     (arguments
      ;; Remove '--with-guile-site-dir=…/2.0'.
