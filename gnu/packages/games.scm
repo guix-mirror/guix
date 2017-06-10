@@ -4049,7 +4049,8 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))))
+         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
@@ -4101,6 +4102,9 @@ fabulous Orb of Zot.")
                    license:zlib
                    license:asl2.0))))
 
+;; The linter here claims that patch file names should start with the package
+;; name. But, in this case, the patches are inherited from crawl with the
+;; "crawl-" prefix instead of "crawl-tiles-".
 (define-public crawl-tiles
   (package
     (inherit crawl)
