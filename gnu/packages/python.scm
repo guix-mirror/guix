@@ -15298,3 +15298,28 @@ from your Flask project.  It is a fork of Flask-Swagger.")
 
 (define-public python2-flasgger
   (package-with-python2 python-flasgger))
+
+(define-public python-swagger-spec-validator
+  (package
+    (name "python-swagger-spec-validator")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "swagger-spec-validator" version))
+       (sha256
+        (base32
+         "13hkpn2lycwr0468yqhjb3kwszqf7hjwlq61w7vdxq1caz31k4nw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jsonschema" ,python-jsonschema)
+       ("python-six" ,python-six)))
+    (home-page
+     "http://github.com/Yelp/swagger_spec_validator")
+    (synopsis "Validation of Swagger specifications")
+    (description "@code{swagger_spec_validator} provides a library for
+validating Swagger API specifications.")
+    (license license:asl2.0)))
+
+(define-public python2-swagger-spec-validator
+  (package-with-python2 python-swagger-spec-validator))
