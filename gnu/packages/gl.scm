@@ -30,6 +30,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -217,7 +218,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.0.6")
+    (version "17.1.2")
     (source
       (origin
         (method url-fetch)
@@ -227,10 +228,9 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "17d60jjzg4ddm95gk2cqx0xz6b9anmmz6ax4majwr3gis2yg7v49"))
+          "0fc2g6cqffr8mh705r60xv9v66saiff8y3alz6qkjqvl8d7q0dq9"))
         (patches
-         (search-patches "mesa-fix-32bit-test-failures.patch"
-                         "mesa-wayland-egl-symbols-check-mips.patch"
+         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
@@ -247,6 +247,7 @@ also known as DXTn or DXTC) for Mesa.")
       `(("expat" ,expat)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
+        ("libelf" ,libelf)    ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
@@ -262,7 +263,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-2)))
+        ("python" ,python-2)
+        ("which" ,(@ (gnu packages base) which))))
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
@@ -294,7 +296,7 @@ also known as DXTn or DXTC) for Mesa.")
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
               '("--with-dri-drivers=i915,i965,nouveau,r200,radeon,swrast"
-                "--enable-gallium-llvm")) ; default is x86/x86_64 only
+                "--enable-llvm"))         ; default is x86/x86_64 only
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases
