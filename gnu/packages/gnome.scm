@@ -294,7 +294,7 @@ access the common Google services, and has full asynchronous support.")
     (version "0.2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources" name "/"
+              (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
