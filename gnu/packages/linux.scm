@@ -880,7 +880,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.3")
+    (version "1.1.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -888,7 +888,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "174n2psp0328xcy2f1ayls67598bxli6q9cf00d2qnac3012aa3i"))))
+               "0xjvi381105gldhv0z872a0x58sghznyx19j45lw5iyi2h68gfwi"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
