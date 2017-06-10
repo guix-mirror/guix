@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -604,6 +605,27 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+(define-public ddate
+  (package
+    (name "ddate")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bo0ts/ddate/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1bbqqq8mswj4bp9083gxjaky5ysfznax4cynsqwmy125z053yg6m"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/bo0ts/ddate")
+    (synopsis "PERPETUAL DATE CONVERTER FROM GREGORIAN TO POEE CALENDAR")
+    (description
+     "ddate displays the Discordian date and holidays of a given date.
+The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
+by Robert Shea and Robert Anton Wilson.")
+    (license license:public-domain)))
 
 (define-public procps
   (package
