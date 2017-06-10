@@ -306,7 +306,7 @@ The object has its kernel-arguments extended in order to make it bootable."
   (boot-parameters
    (label (menu-entry-label menu-entry))
    (root-device #f)
-   (boot-name 'custom)
+   (bootloader-name 'custom)
    (store-device #f)
    (store-mount-point #f)
    (kernel (menu-entry-linux menu-entry))
