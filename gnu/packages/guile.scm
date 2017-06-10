@@ -239,7 +239,8 @@ without requiring the source code to be rewritten.")
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
     (properties '((timeout . 72000)               ;20 hours
-                  (max-silent-time . 10800)))     ;3 hours (needed on ARM)
+                  (max-silent-time . 21600)))     ;6 hours (needed on ARM
+                                                  ;  when heavily loaded)
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -393,18 +394,17 @@ program can be installed in one go.")
 (define-public artanis
   (package
     (name "artanis")
-    (version "0.1.2")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19m3ak12cqk8js9d2mdg11kh4fjsq8frfpd10qw75h0zpr5cywpp"))
-              (patches (search-patches "artanis-fix-Makefile.in.patch"))))
+                "041ajcg2pz918kd9iqcj4inpzddc3impvz3r2nhlpbv8zrz011hn"))))
     (build-system gnu-build-system)
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
                      ("pkgconfig"  ,pkg-config)
                      ("util-linux" ,util-linux))) ;for the `script' command
@@ -412,15 +412,15 @@ program can be installed in one go.")
      '(#:make-flags
        ;; TODO: The documentation must be built with the `docs' target.
        (let* ((out (assoc-ref %outputs "out"))
-              (dir (string-append out "/share/guile/site/2.0")))
+              (scm (string-append out "/share/guile/site/2.2"))
+              (go  (string-append out "/lib/guile/2.2/site-ccache")))
          ;; Don't use (%site-dir) for site paths.
-         (list (string-append "MOD_PATH=" dir)
-               (string-append "MOD_COMPILED_PATH=" dir)))
+         (list (string-append "MOD_PATH=" scm)
+               (string-append "MOD_COMPILED_PATH=" go)))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'install 'substitute-root-dir
+         (add-before 'install 'substitute-root-dir
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out  (assoc-ref outputs "out")))
               (substitute* "Makefile"   ;ignore the execution of bash.bashrc
@@ -428,7 +428,17 @@ program can be installed in one go.")
               (substitute* "Makefile"   ;set the root of config files to OUT
                 ((" /etc") (string-append " " out "/etc")))
               (mkdir-p (string-append out "/bin")) ;for the `art' executable
-              #t))))))
+              #t)))
+         (add-after 'install 'wrap-art
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (scm (string-append out "/share/guile/site/2.2"))
+                    (go  (string-append out "/lib/guile/2.2/site-ccache")))
+               (wrap-program (string-append bin "/art")
+                 `("GUILE_LOAD_PATH" ":" prefix (,scm))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,go)))
+               #t))))))
     (synopsis "Web application framework written in Guile")
     (description "GNU Artanis is a web application framework written in Guile
 Scheme.  A web application framework (WAF) is a software framework that is

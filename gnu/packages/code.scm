@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,7 +192,7 @@ COCOMO model or user-provided parameters.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "1.0.2")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -199,7 +200,7 @@ COCOMO model or user-provided parameters.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0v54himv65w294l0k4lhdyc6kvpgijn8b9g5356479fzy7hphjkg"))))
+                "04wm3r5p2mgv8mdkvysak0d5199h5y0yzl032624brfxpzmqfcq0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

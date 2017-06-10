@@ -503,11 +503,11 @@ Its features include:
 @end enumerate\n")
     (license bsd-2)))
 
-(define-public s
+(define-public s-shell
   (let ((commit "6604341edb3a775ff94415762af3ee9bd86bfb3c")
         (revision "1"))
     (package
-      (name "s")
+      (name "s-shell")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
       (source
        (origin

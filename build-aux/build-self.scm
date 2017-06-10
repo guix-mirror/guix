@@ -97,6 +97,13 @@ Guile major version (2.0 or 2.2), or #f if none of the packages matches."
                              "guile2.2-ssh"
                              "guile2.0-ssh"))
 
+(define guile-git
+  (package-for-current-guile "guile-git"
+                             "guile2.0-git"))
+
+(define guile-bytestructures
+  (package-for-current-guile "guile-bytestructures"
+                             "guile2.0-bytestructures"))
 
 ;; The actual build procedure.
 
@@ -148,19 +155,42 @@ files."
     #~(begin
         (use-modules (guix build pull))
 
-        (let ((json (string-append #$guile-json "/share/guile/site/"
-                                   #$(effective-version))))
+        (letrec-syntax ((maybe-load-path
+                         (syntax-rules ()
+                           ((_ item rest ...)
+                            (let ((tail (maybe-load-path rest ...)))
+                              (if (string? item)
+                                  (cons (string-append item
+                                                       "/share/guile/site/"
+                                                       #$(effective-version))
+                                        tail)
+                                  tail)))
+                           ((_)
+                            '()))))
           (set! %load-path
-            (cons* json
-                   (string-append #$guile-ssh "/share/guile/site/"
-                                  #$(effective-version))
-                   %load-path))
+                (append
+                 (maybe-load-path #$guile-json #$guile-ssh
+                                  #$guile-git #$guile-bytestructures)
+                 %load-path)))
+
+        (letrec-syntax ((maybe-load-compiled-path
+                         (syntax-rules ()
+                           ((_ item rest ...)
+                            (let ((tail (maybe-load-compiled-path rest ...)))
+                              (if (string? item)
+                                  (cons (string-append item
+                                                       "/lib/guile/"
+                                                       #$(effective-version)
+                                                       "/site-ccache")
+                                        tail)
+                                  tail)))
+                           ((_)
+                            '()))))
           (set! %load-compiled-path
-            (cons* json
-                   (string-append #$guile-ssh "/lib/guile/"
-                                  #$(effective-version)
-                                  "/site-ccache")
-                   %load-compiled-path)))
+                (append
+                 (maybe-load-compiled-path #$guile-json #$guile-ssh
+                                           #$guile-git #$guile-bytestructures)
+                 %load-compiled-path)))
 
         ;; XXX: The 'guile-ssh' package prior to Guix commit 92b7258 was
         ;; broken: libguile-ssh could not be found.  Work around that.

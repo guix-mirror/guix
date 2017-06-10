@@ -53,6 +53,8 @@
              (method url-fetch)
              (uri (string-append "http://download.librdf.org/source/" name
                                  "-" version ".tar.gz"))
+             (patches
+              (search-patches "raptor2-heap-overflow.patch"))
              (sha256
               (base32
                "1vc02im4mpc28zxzgli68k6j0dakh0k3s389bm436yvqajxg19xd"))))

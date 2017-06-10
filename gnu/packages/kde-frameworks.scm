@@ -43,8 +43,11 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pdf)
@@ -120,6 +123,8 @@ common build settings used in software produced by the KDE community.")
                 "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
     (build-system cmake-build-system)
     (native-inputs
+     ;; TODO: Add qttools to build the Qt Designer plugin.
+     ;; TODO: Think about adding pulseaudio. Is it required for sound?
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)))
@@ -202,7 +207,8 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "C++ bindings/wrapper for gpgme")
     (description "C++ bindings/wrapper for gpgme.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties `((superseded . ,gpgme)))))
 
 (define-public kpmcore
   (package
@@ -292,6 +298,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(("dbus" ,dbus)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
+     ;; TODO: qtdeclarative (yields one failing test)
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
@@ -639,11 +646,16 @@ infrastructure.")
                (base32
                 "1nmlwvy2jdmh0m6bmahvk68vl2rs9s28c10dkncpi6gvhsdkigqx"))))
     (build-system cmake-build-system)
+    ;; TODO: Build packages for the Python bindings.  Ideally this will be
+    ;; done for all versions of python guix supports.  Requires python,
+    ;; python-sip, clang-python, libclang.  Requires python-2 in all cases for
+    ;; clang-python.
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -743,19 +755,17 @@ or user activity.")
                 "1liq1ppa7xb1dcncv25c2a0xy3l9bvb2a56cff90c0b0vwr239q5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item models extending the Qt model-view framework")
@@ -805,8 +815,7 @@ model to observers
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -815,13 +824,8 @@ model to observers
          (add-before 'check 'check-setup
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t))
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item views extending the Qt model-view framework")
@@ -845,19 +849,16 @@ to flat and hierarchical lists.")
                 "1ffy9b08128ym024wlfgnzk52vpy0mbaa91dhndpr40qcz0i67sh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _ ; kplotting
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
@@ -976,8 +977,7 @@ represented by a QPoint or a QSize.")
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: Regression after update to qt 5.7
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
@@ -1020,6 +1020,7 @@ configuration pages, message boxes, and password requests.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
+       ("dbus" ,dbus) ; for the tests
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
@@ -1028,7 +1029,31 @@ configuration pages, message boxes, and password requests.")
        ("qtx11extras" ,qtx11extras)
        ("xcb-utils-keysyms" ,xcb-util-keysyms)))
     (arguments
-     `(#:tests? #f)) ; FIXME: 8/10 tests fail.
+     `(#:tests? #f ; FIXME: 3/12 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             ;; TODO: Simplify and use "common" phases when test-suite passes
+             (if tests?
+                 (begin
+                   (let ((out (assoc-ref outputs "out")))
+                     (setenv "QT_PLUGIN_PATH"
+                             (string-append out "/lib/plugins:"
+                                            (getenv "QT_PLUGIN_PATH"))))
+                   ;; The test suite requires a running X server, setting
+                   ;; QT_QPA_PLATFORM=offscreen does not suffice and even make
+                   ;; some tests fail.
+                   (system (string-append (assoc-ref inputs "xorg-server")
+                                          "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+                   (setenv "DISPLAY" ":1")
+                   (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
+                   (zero? (system* "dbus-launch" "ctest" ".")))
+                 (begin
+                   (format #t "test suite not run~%")
+                   #t)))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE access to the windowing system")
     (description "KWindowSystem provides information about and allows
@@ -1175,6 +1200,7 @@ which are used in DBus communication.")
     (inputs
      `(("qtbase" ,qtbase)
        ("udev" ,eudev)))
+    ;; TODO: Add runtime-only dependency MediaPlayerInfo
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Desktop hardware abstraction")
     (description "Solid is a device integration framework.  It provides a way of
@@ -1200,7 +1226,9 @@ system.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("hunspell" ,hunspell)
+       ;; TODO: hspell (for Hebrew), Voikko (for Finish)
+       ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Multi-language spell checker")
     (description "Sonnet is a plugin-based spell checking library for Qt-based
@@ -1301,8 +1329,7 @@ utilities.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server)))
+       ("qttools" ,qttools)))
     (inputs
      `(("kconfig" ,kconfig)
        ("kwidgetsaddons" ,kwidgetsaddons)
@@ -1337,8 +1364,7 @@ integrated it into your application's other widgets.")
                 "1cshay7dhbqgh62nq85vd9sm20gq9s9f70mdnzjjh1q7cajybkp3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("kwindowsystem" ,kwindowsystem)
@@ -1347,12 +1373,10 @@ integrated it into your application's other widgets.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system "Xvfb :1 &")
-             (sleep 2)              ;XXX: give the server enough time to start
-             (setenv "DISPLAY" ":1")
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Graceful handling of application crashes")
@@ -1476,19 +1500,26 @@ by applications to write metadata.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server)))
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("karchive" ,karchive) ; for Krita and OpenRaster images
+       ("openexr" ,openexr) ; for OpenEXR high dynamic-range images
+       ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'start-xorg-server
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
-             (setenv "DISPLAY" ":1")
-             #t)))))
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))
+       ;; FIXME: The header files of ilmbase (propagated by openexr) are not
+       ;; found when included by the header files of openexr, and an explicit
+       ;; flag needs to be set.
+       #:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                            (assoc-ref %build-inputs "ilmbase")
+                            "/include/OpenEXR"))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Plugins to allow QImage to support extra file formats")
     (description "This framework provides additional image format plugins for
@@ -1550,6 +1581,9 @@ asynchronous jobs.")
        ("kwindowsystem" ,kwindowsystem)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
+       ;; TODO: qtspeech (new in Qt 5.9)
+       ;; TODO: Think about adding dbusmenu-qt5 from
+       ;; https://launchpad.net/libdbusmenu-qt
        ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:phases
@@ -1588,10 +1622,11 @@ covers feedback and persistent events.")
      `(("karchive" ,karchive)
        ("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
+       ("kdoctools" ,kdoctools)
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: 1/4 tests fail.
+     `(#:tests? #f ; FIXME: 3/9 tests fail.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
@@ -1624,6 +1659,7 @@ were traditional plugins.")
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("ki18n" ,ki18n)
+       ;; TODO: utempter, for managing UTMP entries
        ("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f ; FIXME: 1/1 tests fail.
@@ -1989,7 +2025,8 @@ their settings.")
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; The test suite requires a running X server.
+             ;; The test suite requires a running X server, setting
+             ;; QT_QPA_PLATFORM=offscreen does not suffice.
              (system (string-append (assoc-ref inputs "xorg-server")
                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
              (setenv "DISPLAY" ":1")
@@ -2219,8 +2256,7 @@ window does not need focus for them to be activated.")
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f ; FIXME: Test failure
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2252,7 +2288,8 @@ in applications using the KDE Frameworks.")
                 "08429kjihpaip73wszr3rsii8sdlwgm3kxx7g0hpjhkj9d2jq3m1"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)
@@ -2262,6 +2299,7 @@ in applications using the KDE Frameworks.")
        ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
        ("kcrash" ,kcrash)
+       ("kdoctools" ,kdoctools)
        ("kio" ,kio)
        ("kitemviews" ,kitemviews)
        ("ki18n" ,ki18n)
@@ -2270,6 +2308,7 @@ in applications using the KDE Frameworks.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
+       ("libcap" ,libcap) ; to install start_kdeinit with CAP_SYS_RESOURCE
        ("qtbase" ,qtbase)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
@@ -2310,6 +2349,7 @@ makes starting KDE applications faster and reduces memory consumption.")
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(("acl" ,acl)
+       ("krb5" ,mit-krb5)
        ("karchive" ,karchive)
        ("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
@@ -2326,6 +2366,7 @@ makes starting KDE applications faster and reduces memory consumption.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
        ("qtx11extras" ,qtx11extras)
        ("sonnet" ,sonnet)))
     (arguments
@@ -2664,9 +2705,11 @@ types or handled by application specific code.")
     (propagated-inputs
      `(("kparts" ,kparts)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("karchive" ,karchive)
+     `(;; TODO: editor-config
+       ("karchive" ,karchive)
        ("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)
        ("kcodecs" ,kcodecs)
@@ -2745,6 +2788,7 @@ library.")
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
+       ;; TODO: qtspeech (new in Qt 5.9)
        ("qtbase" ,qtbase)))
     (arguments
      `(#:phases
@@ -2778,7 +2822,7 @@ It supports rich text as well as plain text.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("gpgmepp" ,gpgmepp)
+     `(("gpgme" ,gpgme) ;; TODO: Add gpgme Qt-bindings
        ("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
        ("kconfig" ,kconfig)
@@ -2915,7 +2959,8 @@ setUrl, setUserAgent and call.")
      `(("kpackage" ,kpackage)
        ("kservice" ,kservice)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("kactivities" ,kactivities)
        ("karchive" ,karchive)
@@ -2937,6 +2982,7 @@ setUrl, setUserAgent and call.")
        ("ki18n" ,ki18n)
        ("kjobwidgets" ,kjobwidgets)
        ("knotificantions" ,knotifications)
+       ("kwayland" ,kwayland)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
@@ -2947,7 +2993,7 @@ setUrl, setUserAgent and call.")
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)))
     (arguments
-     `(#:tests? #f ; FIXME: 13/14 tests fail.
+     `(#:tests? #f ; FIXME: 9/15 tests fail.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup

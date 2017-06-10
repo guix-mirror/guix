@@ -66,12 +66,15 @@
 (define (strip-mount-point mount-point file)
   "Strip MOUNT-POINT from FILE, which is a gexp or other lowerable object
 denoting a file name."
-  (if (string=? mount-point "/")
-      file
-      #~(let ((file #$file))
-          (if (string-prefix? #$mount-point file)
-              (substring #$file #$(string-length mount-point))
-              file))))
+  (match mount-point
+    ((? string? mount-point)
+     (if (string=? mount-point "/")
+         file
+         #~(let ((file #$file))
+             (if (string-prefix? #$mount-point file)
+                 (substring #$file #$(string-length mount-point))
+                 file))))
+    (#f file)))
 
 (define-record-type* <grub-image>
   grub-image make-grub-image
@@ -102,19 +105,6 @@ denoting a file name."
    (images (list %background-image))
    (color-highlight '((fg . yellow) (bg . black)))
    (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
-
-(define-record-type* <menu-entry>
-  menu-entry make-menu-entry
-  menu-entry?
-  (label           menu-entry-label)
-  (device          menu-entry-device       ; file system uuid, label, or #f
-                   (default #f))
-  (device-mount-point menu-entry-device-mount-point
-                      (default "/"))
-  (linux           menu-entry-linux)
-  (linux-arguments menu-entry-linux-arguments
-                   (default '()))          ; list of string-valued gexps
-  (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
 
 ;;;
@@ -312,16 +302,6 @@ code."
         (#f
          #~(format #f "search --file --set ~a" #$file)))))
 
-(define (boot-parameters->menu-entry conf)
-  "Convert a <boot-parameters> instance to a corresponding <menu-entry>."
-  (menu-entry
-   (label (boot-parameters-label conf))
-   (device (boot-parameters-store-device conf))
-   (device-mount-point (boot-parameters-store-mount-point conf))
-   (linux (boot-parameters-kernel conf))
-   (linux-arguments (boot-parameters-kernel-arguments conf))
-   (initrd (boot-parameters-initrd conf))))
-
 (define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
@@ -331,33 +311,36 @@ code."
 STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
 entries corresponding to old generations of the system."
   (define all-entries
-    (map boot-parameters->menu-entry
-         (append entries
-                 (bootloader-configuration-menu-entries config))))
+    (append entries (map menu-entry->boot-parameters
+                         (bootloader-configuration-menu-entries config))))
 
-  (define entry->gexp
-    (match-lambda
-     (($ <menu-entry> label device device-mount-point
-                      linux arguments initrd)
+  (define (boot-parameters->gexp params)
+    (let ((device (boot-parameters-store-device params))
+          (device-mount-point (boot-parameters-store-mount-point params))
+          (label (boot-parameters-label params))
+          (kernel (boot-parameters-kernel params))
+          (arguments (boot-parameters-kernel-arguments params))
+          (initrd (boot-parameters-initrd params)))
       ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
-      ;; Use the right file names for LINUX and INITRD in case
+      ;; Use the right file names for KERNEL and INITRD in case
       ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
       ;; separate partition.
-      (let ((linux  (strip-mount-point device-mount-point linux))
-            (initrd (strip-mount-point device-mount-point initrd)))
+      (let ((kernel  (strip-mount-point device-mount-point kernel))
+            (initrd  (strip-mount-point device-mount-point initrd)))
         #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
                   #$label
-                  #$(grub-root-search device linux)
-                  #$linux (string-join (list #$@arguments))
-                  #$initrd)))))
+                  #$(grub-root-search device kernel)
+                  #$kernel (string-join (list #$@arguments))
+                  #$initrd))))
 
   (mlet %store-monad ((sugar (eye-candy config
-                                        (menu-entry-device (first all-entries))
-                                        (menu-entry-device-mount-point
+                                        (boot-parameters-store-device
+                                         (first all-entries))
+                                        (boot-parameters-store-mount-point
                                          (first all-entries))
                                         #:system system
                                         #:port #~port)))
@@ -374,12 +357,12 @@ set default=~a
 set timeout=~a~%"
                     #$(bootloader-configuration-default-entry config)
                     #$(bootloader-configuration-timeout config))
-            #$@(map entry->gexp all-entries)
+            #$@(map boot-parameters->gexp all-entries)
 
             #$@(if (pair? old-entries)
                    #~((format port "
 submenu \"GNU system, old configurations...\" {~%")
-                      #$@(map entry->gexp (map boot-parameters->menu-entry old-entries))
+                      #$@(map boot-parameters->gexp old-entries)
                       (format port "}~%"))
                    #~()))))
 

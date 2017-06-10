@@ -2621,7 +2621,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.8.0")
+    (version "7.9.0")
     (source
       (origin
         (method url-fetch)
@@ -2631,7 +2631,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1ynnm4v4261xmg94b7jam9hjyym4n2nqba23rv23v3wjfbkms7s0"))))
+            "0xcq0lncb5p4sas5866qpkjyp1v8ksalw7m1gmqb3brhccp8gb9w"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -3019,7 +3019,7 @@ graphics cards.")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
@@ -3029,7 +3029,7 @@ graphics cards.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1fsmr455lk89zl795d6b5ypyqjim40j3h2vjch52lcssjw9xdza9"))))
+          "0x9gq3hw6k661k82ikd1y2kkk4dmgv310xr5q59dwn4k6z37aafs"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)

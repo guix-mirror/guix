@@ -29,6 +29,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:export (%standard-phases
+            %default-include
+            %default-exclude
             emacs-build))
 
 ;; Commentary:
@@ -41,6 +43,11 @@
 ;; Emacs expects to find the ELPA repository 'archive-contents' file and the
 ;; archive signature.
 (define %install-suffix "/share/emacs/site-lisp/guix.d")
+
+;; These are the default inclusion/exclusion regexps for the install phase.
+(define %default-include '("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
+(define %default-exclude '("^\\.dir-locals\\.el$" "-pkg\\.el$"
+                           "^[^/]*tests?\\.el$"))
 
 (define gnu:unpack (assoc-ref gnu:%standard-phases 'unpack))
 
@@ -96,8 +103,8 @@ store in '.el' files."
     #t))
 
 (define* (install #:key outputs
-                  (include '("^[^/]*\\.el$" "^[^/]*\\.info$" "^doc/.*\\.info$"))
-                  (exclude '("^\\.dir-locals\\.el$" "-pkg\\.el$" "^[^/]*tests?\\.el$"))
+                  (include %default-include)
+                  (exclude %default-exclude)
                   #:allow-other-keys)
   "Install the package contents."
 

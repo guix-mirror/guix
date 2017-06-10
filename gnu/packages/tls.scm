@@ -103,23 +103,15 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.2")
+    (version "0.23.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://p11-glue.freedesktop.org/releases/p11-kit-"
-                          version ".tar.gz"))
+      (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
+                          "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "1w7szm190phlkg7qx05ychlj2dbvkgkhx9gw6dx4d5rw62l6wwms"))
-      (modules '((guix build utils))) ; for substitute*
-      (snippet
-        '(begin
-           ;; Drop one test that fails, also when trying to compile manually.
-           ;; Reported upstream at
-           ;; https://bugs.freedesktop.org/show_bug.cgi?id=89027
-           (substitute* "Makefile.in"
-             (("test-module\\$\\(EXEEXT\\) ") ""))))))
+        "0hdy4h8byvcvd4av504xqfqyd1h6xy914j034mq3c6v4ya37r3lq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -478,25 +470,17 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.14.2")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "1kbgpjabbly7r757vyr1050ixnm9hyvrbf9n6aq49cgmb147ysqn"))))
+        "11zwgj663vr575pbqw74ia10wxaw16i8rnkcivsrbsx148rxdbcz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-dependency
-           ;; This module is part of the Python standard library, so we don't
-           ;; need to use an external package.
-           ;; https://github.com/certbot/certbot/pull/2249
-           (lambda _
-             (substitute* "setup.py"
-               (("'argparse',") ""))
-             #t))
          (add-after 'build 'build-documentation
            (lambda _
              (zero? (system* "make" "-C" "docs" "man" "info"))))
@@ -543,7 +527,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1b39hybswzm8mkarg1mwpx47wffqg57jcgi52mz5iz60rxym9j2v"))))
+                "1srvmjxz75dbafx7xfg1w3n9h3srr9p2ljnfsih9dwwd5cxh9i5q"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

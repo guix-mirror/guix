@@ -5231,3 +5231,57 @@ devices that don't have Cairo's capabilities such as alpha support or
 anti-aliasing.  Backends are modular such that any subset of backends
 is supported.")
     (license license:gpl2)))
+
+(define-public r-lubridate
+  (package
+    (name "r-lubridate")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lubridate" version))
+       (sha256
+        (base32
+         "0ci6rwij9i1inn840m0mlh1nqgh6vm2lada9kdnjpcjp5kyfv1qs"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page
+     "http://cran.r-project.org/web/packages/lubridate")
+    (synopsis "Make dealing with dates a little easier")
+    (description
+     "This package provides functions to work with date-times and time-spans:
+fast and user friendly parsing of date-time data, extraction and updating of
+components of a date-time (years, months, days, hours, minutes, and seconds),
+algebraic manipulation on date-time and time-span objects.  The 'lubridate'
+package has a consistent and memorable syntax that makes working with dates
+easy and fun.")
+    (license license:gpl2)))
+
+(define-public r-fdrtool
+  (package
+    (name "r-fdrtool")
+    (version "1.2.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fdrtool" version))
+       (sha256
+        (base32
+         "1h46frlk7d9f4qx0bg6p55nrm9wwwz2sv6d1nz7061wdfsm69yb5"))))
+    (build-system r-build-system)
+    (home-page "http://strimmerlab.org/software/fdrtool/")
+    (synopsis "Estimation of false discovery rates and higher criticism")
+    (description
+     "This package provides tools to estimate both tail area-based false
+discovery rates (Fdr) as well as local false discovery rates (fdr) for a
+variety of null models (p-values, z-scores, correlation coefficients,
+t-scores).  The proportion of null values and the parameters of the null
+distribution are adaptively estimated from the data.  In addition, the package
+contains functions for non-parametric density estimation (Grenander
+estimator), for monotone regression (isotonic regression and antitonic
+regression with weights), for computing the greatest convex minorant (GCM) and
+the least concave majorant (LCM), for the half-normal and correlation
+distributions, and for computing empirical higher criticism (HC) scores and
+the corresponding decision threshold.")
+    (license license:gpl3+)))

@@ -256,7 +256,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/man.scm				\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
-  %D%/packages/markdown.scm			\
+  %D%/packages/markup.scm			\
   %D%/packages/marst.scm			\
   %D%/packages/mate.scm             \
   %D%/packages/maths.scm			\
@@ -504,7 +504,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
-  %D%/packages/patches/artanis-fix-Makefile.in.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -945,6 +944,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
+  %D%/packages/patches/raptor2-heap-overflow.patch		\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/rcs-5.9.4-noreturn.patch			\
   %D%/packages/patches/readline-link-ncurses.patch		\

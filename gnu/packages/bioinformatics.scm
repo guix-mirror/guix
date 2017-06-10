@@ -85,6 +85,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -2093,7 +2094,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.3")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2102,7 +2103,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1fs5ilvda50vfdg9wll35w8hcpq3jlkp8q2kim4llkwljkj8bls3"))))
+                "1y8a10b695pvgn7kk2s87jdwbdf7iszpnr6139pw8ina1ajs4w8y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -9223,3 +9224,311 @@ working with SAM and BAM files.  Current parallelised functionality is
 an important subset of samtools functionality, including view, index,
 sort, markdup, and depth.")
     (license license:gpl2+)))
+
+(define-public ritornello
+  (package
+    (name "ritornello")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/KlugerLab/"
+                                  "Ritornello/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02nik86gq9ljjriv6pamwlmqnfky3ads1fpklx6mc3hx6k40pg38"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-samtools-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("src/SamStream.h"
+                            "src/BufferedGenomeReader.h")
+               (("<sam.h>") "<samtools/sam.h>"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin/")))
+               (mkdir-p bin)
+               (install-file "bin/Ritornello" bin)
+               #t))))))
+    (inputs
+     `(("samtools" ,samtools-0.1)
+       ("fftw" ,fftw)
+       ("boost" ,boost)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/KlugerLab/Ritornello")
+    (synopsis "Control-free peak caller for ChIP-seq data")
+    (description "Ritornello is a ChIP-seq peak calling algorithm based on
+signal processing that can accurately call binding events without the need to
+do a pair total DNA input or IgG control sample.  It has been tested for use
+with narrow binding events such as transcription factor ChIP-seq.")
+    (license license:gpl3+)))
+
+(define-public trim-galore
+  (package
+    (name "trim-galore")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
+                           "projects/trim_galore/trim_galore_v"
+                           version ".zip"))
+       (sha256
+        (base32
+         "0b9qdxi4521gsrjvbhgky8g7kry9b5nx3byzaxkgxz7p4k8bn1mn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; The archive contains plain files.
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (zero? (system* "unzip" source))))
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'unpack 'hardcode-tool-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "trim_galore"
+               (("\\$path_to_cutadapt = 'cutadapt'")
+                (string-append "$path_to_cutadapt = '"
+                               (assoc-ref inputs "cutadapt")
+                               "/bin/cutadapt'"))
+               (("\\| gzip")
+                (string-append "| "
+                               (assoc-ref inputs "gzip")
+                               "/bin/gzip"))
+               (("\"gunzip")
+                (string-append "\""
+                               (assoc-ref inputs "gzip")
+                               "/bin/gunzip")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (mkdir-p bin)
+               (install-file "trim_galore" bin)
+               #t))))))
+    (inputs
+     `(("gzip" ,gzip)
+       ("perl" ,perl)
+       ("cutadapt" ,cutadapt)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/")
+    (synopsis "Wrapper around Cutadapt and FastQC")
+    (description "Trim Galore! is a wrapper script to automate quality and
+adapter trimming as well as quality control, with some added functionality to
+remove biased methylation positions for RRBS sequence files.")
+    (license license:gpl3+)))
+
+(define-public gess
+  (package
+    (name "gess")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://compbio.uthscsa.edu/"
+                                  "GESS_Web/files/"
+                                  "gess-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0hyk403kxscclzfs24pvdgiv0wm03kjcziqdrp5w46cb049gz0d7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((python (assoc-ref inputs "python"))
+                    (out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin/"))
+                    (target (string-append
+                             out "/lib/python2.7/site-packages/gess/")))
+               (mkdir-p target)
+               (copy-recursively "." target)
+               ;; Make GESS.py executable
+               (chmod (string-append target "GESS.py") #o555)
+               ;; Add Python shebang to the top and make Matplotlib
+               ;; usable.
+               (substitute* (string-append target "GESS.py")
+                 (("\"\"\"Description:" line)
+                  (string-append "#!" (which "python") "
+import matplotlib
+matplotlib.use('Agg')
+" line)))
+               ;; Make sure GESS has all modules in its path
+               (wrap-program (string-append target "GESS.py")
+                 `("PYTHONPATH" ":" prefix (,target ,(getenv "PYTHONPATH"))))
+               (mkdir-p bin)
+               (symlink (string-append target "GESS.py")
+                        (string-append bin "GESS.py"))
+               #t))))))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pysam" ,python2-pysam)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-networkx" ,python2-networkx)
+       ("python2-biopython" ,python2-biopython)))
+    (home-page "http://compbio.uthscsa.edu/GESS_Web/")
+    (synopsis "Detect exon-skipping events from raw RNA-seq data")
+    (description
+     "GESS is an implementation of a novel computational method to detect de
+novo exon-skipping events directly from raw RNA-seq data without the prior
+knowledge of gene annotation information.  GESS stands for the graph-based
+exon-skipping scanner detection scheme.")
+    (license license:bsd-3)))
+
+(define-public phylip
+  (package
+    (name "phylip")
+    (version "3.696")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://evolution.gs.washington.edu/phylip/"
+                           "download/phylip-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01jar1rayhr2gba2pgbw49m56rc5z4p5wn3ds0m188hrlln4a2nd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list "-f" "Makefile.unx" "install")
+       #:parallel-build? #f             ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "src") #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/bin")))
+               (mkdir-p target)
+               (for-each (lambda (file)
+                           (install-file file target))
+                         (find-files "../exe" ".*")))
+             #t)))))
+    (home-page "http://evolution.genetics.washington.edu/phylip/")
+    (synopsis "Tools for inferring phylogenies")
+    (description "PHYLIP (the PHYLogeny Inference Package) is a package of
+programs for inferring phylogenies (evolutionary trees).")
+    (license license:bsd-2)))
+
+(define-public imp
+  (package
+    (name "imp")
+    (version "2.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://integrativemodeling.org/"
+                           version "/download/imp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lxqx7vh79d771svr611dkilp6sn30qrbw8zvscbrm37v38d2j6h"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; FIXME: Some tests fail because they produce warnings, others fail
+       ;; because the PYTHONPATH does not include the modeller's directory.
+       #:tests? #f
+       ;; Do not place libraries in an architecture-specific directory.
+       #:configure-flags
+       (list "-DCMAKE_INSTALL_LIBDIR=lib")))
+    (inputs
+     `(("boost" ,boost)
+       ("gsl" ,gsl)
+       ("swig" ,swig)
+       ("hdf5" ,hdf5)
+       ("fftw" ,fftw)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-pandas" ,python2-pandas)
+       ("python2-scikit-learn" ,python2-scikit-learn)
+       ("python2-networkx" ,python2-networkx)))
+    (home-page "https://integrativemodeling.org")
+    (synopsis "Integrative modeling platform")
+    (description "IMP's broad goal is to contribute to a comprehensive
+structural characterization of biomolecules ranging in size and complexity
+from small peptides to large macromolecular assemblies, by integrating data
+from diverse biochemical and biophysical experiments.  IMP provides a C++ and
+Python toolbox for solving complex modeling problems, and a number of
+applications for tackling some common problems in a user-friendly way.")
+    ;; IMP is largely available under the GNU Lesser GPL; see the file
+    ;; COPYING.LGPL for the full text of this license. Some IMP modules are
+    ;; available under the GNU GPL (see the file COPYING.GPL).
+    (license (list license:lgpl2.1+
+                   license:gpl3+))))
+
+(define-public tadbit
+  (package
+    (name "tadbit")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/3DGenomes/TADbit/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cnfqrl4685zar4nnw94j94nhvl2h29jm448nadqi1h05z6fdk4f"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Tests are included and must be run after installation, but
+       ;; they are incomplete and thus cannot be run.
+       #:tests? #f
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-problems-with-setup.py
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; setup.py opens these files for writing
+             (chmod "_pytadbit/_version.py" #o664)
+             (chmod "README.rst" #o664)
+
+             ;; Don't attempt to install the bash completions to
+             ;; the home directory.
+             (rename-file "extras/.bash_completion"
+                          "extras/tadbit")
+             (substitute* "setup.py"
+               (("\\(path.expanduser\\('~'\\)")
+                (string-append "(\""
+                               (assoc-ref outputs "out")
+                               "/etc/bash_completion.d\""))
+               (("extras/\\.bash_completion")
+                "extras/tadbit"))
+             #t)))))
+    (inputs
+     ;; TODO: add Chimera for visualization
+     `(("imp" ,imp)
+       ("mcl" ,mcl)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-matplotlib" ,python2-matplotlib)
+       ("python2-pysam" ,python2-pysam)))
+    (home-page "http://3dgenomes.github.io/TADbit/")
+    (synopsis "Analyze, model, and explore 3C-based data")
+    (description
+     "TADbit is a complete Python library to deal with all steps to analyze,
+model, and explore 3C-based data.  With TADbit the user can map FASTQ files to
+obtain raw interaction binned matrices (Hi-C like matrices), normalize and
+correct interaction matrices, identify adn compare the so-called
+@dfn{Topologically Associating Domains} (TADs), build 3D models from the
+interaction matrices, and finally, extract structural properties from the
+models.  TADbit is complemented by TADkit for visualizing 3D models.")
+    (license license:gpl3+)))

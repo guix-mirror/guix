@@ -72,6 +72,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
@@ -357,8 +358,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.3")
-(define %linux-libre-hash "14fbn9s7n86p5yivr4vmh4axdavny6xw1qk63cfwlcma7426wmva")
+(define %linux-libre-version "4.11.4")
+(define %linux-libre-hash "11nd9pv18vz3g82ja71dkz9mbs0ffb8yamsd44d381szmmm2kpj8")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -367,14 +368,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.30"
-                    "1m1ii9n65lwkbwx0ifj13vgdfr0mnx8n7sfvhf5mn4r8krhxi77a"
+  (make-linux-libre "4.9.31"
+                    "0amc35c9f2rym6grb277yscnx8ybn8d4fbc2a59sgkg1lsdv7n4q"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.70"
-                    "1dvcj3mk42m91y1x41yh52frjdcwip1wj57qwlkmrpg02icr0b3s"
+  (make-linux-libre "4.4.71"
+                    "0nrd165crx9m9s1px98if6q5dcdqwmas9kh8i4rw51gz2xinh0gx"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3849,6 +3850,36 @@ programming interface to the in-kernel nf_tables subsystem.  The library
 libnftnl has been previously known as libnftables.  This library is currently
 used by nftables.")
     (license license:gpl2+)))
+
+(define-public nftables
+  (package
+    (name "nftables")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.nftables.org/projects/nftables"
+                           "/files/nftables-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0hzdqigdx4i6jbpxbdyq4zy4p4waqn8l6vvz7685ikh1v0wr4qzy"))))
+    (build-system gnu-build-system)
+    (inputs `(("bison", bison)
+              ("flex", flex)
+              ("gmp", gmp)
+              ("libmnl", libmnl)
+              ("libnftnl", libnftnl)
+              ("readline", readline)))
+    (native-inputs `(("pkg-config", pkg-config)))
+    (home-page "http://www.nftables.org")
+    (synopsis "Userspace utility for Linux packet filtering")
+    (description "nftables is the project that aims to replace the existing
+{ip,ip6,arp,eb}tables framework.  Basically, this project provides a new packet
+filtering framework, a new userspace utility and also a compatibility layer for
+{ip,ip6}tables.  nftables is built upon the building blocks of the Netfilter
+infrastructure such as the existing hooks, the connection tracking system, the
+userspace queueing component and the logging subsystem.")
+    (license license:gpl2)))
 
 (define-public proot
   (package

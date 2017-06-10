@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
@@ -47,6 +47,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -117,22 +118,29 @@ program.")
 (define-public xclip
   (package
     (name "xclip")
-    (version "0.12")
+    (version "0.13")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "mirror://sourceforge/" name "/" name "/" version "/"
-              name "-" version ".tar.gz"))
+        (uri (string-append "https://github.com/astrand/xclip"
+                            "/archive/" version ".tar.gz"))
         (sha256
           (base32
-           "0ibcf46rldnv0r424qcnai1fa5iq3lm5q5rdd7snsi5sb78gmixp"))))
+           "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))   ; There is no test suite
+     '(#:tests? #f     ; There is no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; Since version 0.13, bootstrapped releases are no longer available.
+         (add-after 'unpack 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-v")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs `(("libxmu" ,libxmu)
               ("libxt" ,libxt)))
-    (home-page "http://xclip.sourceforge.net/")
+    (home-page "https://github.com/astrand/xclip")
     (synopsis "Command line interface to X11 clipboard")
     (description "Xclip is a command line interface to the X11 clipboard.  It
 can also be used for copying files, as an alternative to sftp/scp, thus
@@ -441,7 +449,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.41")
+    (version "6.3.43")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -450,7 +458,7 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1yiv0ak1z7zbmcdw0dwx2gpblrh7l7s3l7y7sgpx071dy8s4rqpb"))))
+                "0kazcnnarc61d3rjysaym9vadf31wisfd3sn076rsjnsldm4y66h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target

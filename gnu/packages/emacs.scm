@@ -4814,7 +4814,8 @@ Emacs.")
                           ;; determined by emacs' standard initialization
                           ;; procedure
                           (list ""))))
-                 #t))))))
+                 #t))))
+         #:include (cons* "^reporters/.*\\.el$" %default-include)))
       (home-page "https://github.com/rejeep/ert-runner.el")
       (synopsis "Opinionated Ert testing workflow")
       (description "@code{ert-runner} is a tool for Emacs projects tested

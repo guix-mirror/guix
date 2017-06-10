@@ -37,7 +37,8 @@
 corresponding to old generations of the system."
 
   (define all-entries
-    (append entries (bootloader-configuration-menu-entries config)))
+    (append entries (map menu-entry->boot-parameters
+                         (bootloader-configuration-menu-entries config))))
 
   (define (boot-parameters->gexp params)
     (let ((label (boot-parameters-label params))
