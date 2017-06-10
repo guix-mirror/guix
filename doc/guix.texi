@@ -13907,26 +13907,21 @@ The serial number of the zone.  As this is used to keep track of changes by
 both slaves and resolvers, it is mandatory that it @emph{never} decreases.
 Always increment it when you make a change in your zone.
 
-@item @code{refresh} (default: @code{"2d"})
-The frequency at which slaves will do a zone transfer.  This value can be
-a number of seconds or a number of some unit between:
-@itemize
-@item m: minute
-@item h: hour
-@item d: day
-@item w: week
-@end itemize
+@item @code{refresh} (default: @code{(* 2 24 3600)})
+The frequency at which slaves will do a zone transfer.  This value is a number
+of seconds.  It can be computed by multiplications or with
+@code{(string->duration)}.
 
-@item @code{retry} (default: @code{"15m"})
+@item @code{retry} (default: @code{(* 15 60)})
 The period after which a slave will retry to contact its master when it fails
 to do so a first time.
 
-@item @code{expiry} (default: @code{"2w"})
+@item @code{expiry} (default: @code{(* 14 24 3600)})
 Default TTL of records.  Existing records are considered correct for at most
 this amount of time.  After this period, resolvers will invalidate their cache
 and check again that it still exists.
 
-@item @code{nx} (default: @code{"1h"})
+@item @code{nx} (default: @code{3600})
 Default TTL of inexistant records.  This delay is usually short because you want
 your new domains to reach everyone quickly.
 
@@ -14029,17 +14024,17 @@ algorithm, but would be unsecure for other algorithms.
 The TTL value for DNSKEY records added into zone apex.  The special
 @code{'default} value means same as the zone SOA TTL.
 
-@item @code{zsk-lifetime} (default: @code{"30d"})
+@item @code{zsk-lifetime} (default: @code{(* 30 24 3600)})
 The period between ZSK publication and the next rollover initiation.
 
-@item @code{propagation-delay} (default: @code{"1d"})
+@item @code{propagation-delay} (default: @code{(* 24 3600)})
 An extra delay added for each key rollover step.  This value should be high
 enough to cover propagation of data from the master server to all slaves.
 
-@item @code{rrsig-lifetime} (default: @code{"14d"})
+@item @code{rrsig-lifetime} (default: @code{(* 14 24 3600)})
 A validity period of newly issued signatures.
 
-@item @code{rrsig-refresh} (default: @code{"7d"})
+@item @code{rrsig-refresh} (default: @code{(* 7 24 3600)})
 A period how long before a signature expiration the signature will be refreshed.
 
 @item @code{nsec3?} (default: @code{#f})
@@ -14052,7 +14047,7 @@ The number of additional times the hashing is performed.
 The length of a salt field in octets, which is appended to the original owner
 name before hashing.
 
-@item @code{nsec3-salt-lifetime} (default: @code{"30d"})
+@item @code{nsec3-salt-lifetime} (default: @code{(* 30 24 3600)})
 The validity period of newly issued salt field.
 
 @end table

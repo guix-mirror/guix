@@ -99,13 +99,13 @@
   (serial  zone-file-serial
            (default 1))
   (refresh zone-file-refresh
-           (default "2d"))
+           (default (* 2 24 3600)))
   (retry   zone-file-retry
-           (default "15m"))
+           (default (* 15 60)))
   (expiry  zone-file-expiry
-           (default "2w"))
+           (default (* 2 7 24 3600)))
   (nx      zone-file-nx
-           (default "1h")))
+           (default 3600)))
 (define-record-type* <knot-keystore-configuration>
   knot-keystore-configuration make-knot-keystore-configuration
   knot-keystore-configuration?
@@ -136,13 +136,13 @@
   (dnskey-ttl           knot-policy-configuration-dnskey-ttl
                         (default 'default))
   (zsk-lifetime         knot-policy-configuration-zsk-lifetime
-                        (default "30d"))
+                        (default (* 30 24 3600)))
   (propagation-delay    knot-policy-configuration-propagation-delay
-                        (default "1d"))
+                        (default (* 24 3600)))
   (rrsig-lifetime       knot-policy-configuration-rrsig-lifetime
-                        (default "14d"))
+                        (default (* 14 24 3600)))
   (rrsig-refresh        knot-policy-configuration-rrsig-refresh
-                        (default "7d"))
+                        (default (* 7 24 3600)))
   (nsec3?               knot-policy-configuration-nsec3?
                         (default #f))
   (nsec3-iterations     knot-policy-configuration-nsec3-iterations
@@ -150,7 +150,7 @@
   (nsec3-salt-length    knot-policy-configuration-nsec3-salt-length
                         (default 8))
   (nsec3-salt-lifetime  knot-policy-configuration-nsec3-salt-lifetime
-                        (default "30d")))
+                        (default (* 30 24 3600))))
 
 (define-record-type* <knot-zone-configuration>
   knot-zone-configuration make-knot-zone-configuration
@@ -248,7 +248,7 @@
           (error-out "backend must be one of: 'pem or 'pkcs11")))
 
 (define (verify-knot-policy-configuration policy)
-  (unless (knot-keystore-configuration? policy)
+  (unless (knot-policy-configuration? policy)
     (error-out "policies must be a list of only knot-policy-configuration."))
   (let ((id (knot-policy-configuration-id policy)))
     (unless (and (string? id) (not (equal? id "")))
