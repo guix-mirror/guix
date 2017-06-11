@@ -13134,6 +13134,9 @@ asynchronous messaging environments.")
 @command{nosetests} command of the Python Nose unit test framework.")
     (license license:bsd-3)))
 
+(define-public python2-rednose
+  (package-with-python2 python-rednose))
+
 (define-public python-flask-restplus
   (package
     (name "python-flask-restplus")
