@@ -34,6 +34,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
@@ -225,22 +226,21 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.12.1")
+   (version "2.12.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
-            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"
-                                     "fontconfig-path-max.patch"))
             (sha256 (base32
-                     "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
+                     "1ggq6jmz3mlzk4xjs615aqw9h3hq33chjn82bhli26kk09kby95x"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
-      `(("pkg-config" ,pkg-config)))
+    `(("gperf" ,gperf) ; Try dropping this for > 2.12.3.
+      ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags
       (list "--with-cache-dir=/var/cache/fontconfig"
@@ -258,10 +258,12 @@ fonts to/from the WOFF2 format.")
             "PYTHON=false")
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'fix-tests-for-freetype-2.7.1
+        (add-before 'configure 'regenerate-fcobjshash
+          ;; XXX The pre-generated gperf files are broken.
+          ;; See <https://bugs.freedesktop.org/show_bug.cgi?id=101280>.
           (lambda _
-            (substitute* "test/run-test.sh"
-              (("\\\| sort") "| cut -d' ' -f2 | sort"))
+            (delete-file "src/fcobjshash.h")
+            (delete-file "src/fcobjshash.gperf")
             #t))
         (replace 'install
                  (lambda _
