@@ -2780,7 +2780,7 @@ highlighted.  Pressing that character will switch to that window.")
 (define-public emacs-iedit
   (package
     (name "emacs-iedit")
-    (version "0.9.9")
+    (version "0.9.9.9")
     (source
      (origin
        (method url-fetch)
@@ -2789,7 +2789,7 @@ highlighted.  Pressing that character will switch to that window.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00v86zllcsivmiibigbr91qij2zdf1lr9db8z8again1sn63wkdj"))))
+         "1hv8q6pr85ss9g3158l1fqv3m62vsq8rslsi86jicr2dcxyascr0"))))
     (build-system emacs-build-system)
     (home-page "http://www.emacswiki.org/emacs/Iedit")
     (synopsis "Edit multiple regions in the same way simultaneously")
