@@ -164,7 +164,7 @@ and provides a \"top-like\" mode (monitoring).")
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
