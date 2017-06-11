@@ -15931,10 +15931,10 @@ The type of a bootloader configuration declaration.
 @cindex UEFI, bootloader
 @cindex BIOS, bootloader
 The bootloader to use, as a @code{bootloader} object. For now
-@code{grub-bootloader}, @code{grub-efi-bootloader} and
-@code{extlinux-bootloader} are supported.  @code{grub-efi-bootloader},
-allows to boot on modern systems using the @dfn{Unified Extensible
-Firmware Interface} (UEFI).
+@code{grub-bootloader}, @code{grub-efi-bootloader},
+@code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
+@code{grub-efi-bootloader} allows to boot on modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).
 
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
 modules.
