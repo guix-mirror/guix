@@ -92,7 +92,7 @@ themes for both gtk+-2 and gtk+-3.")
 (define-public mate-desktop
   (package
     (name "mate-desktop")
-    (version "1.16.1")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -100,11 +100,8 @@ themes for both gtk+-2 and gtk+-3.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pzncfgrzp2mp9407ivk1113hkadpf110blr058h31jkwsk8syjq"))))
+                "12iv2y4dan962fs7vkkxbjkp77pbvjnwfa43ggr0zkdsc3ydjbbg"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags '("--with-gtk=3.0"
-                           "--enable-mpaste")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -115,7 +112,6 @@ themes for both gtk+-2 and gtk+-3.")
     (inputs
      `(("gtk+" ,gtk+)
        ("libxrandr" ,libxrandr)
-       ("python2" ,python-2)
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
      `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
