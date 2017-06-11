@@ -66,22 +66,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.3")
+   (version "1.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0zvv7wd011npcx7yphw9bpgivyxz6mlp87a57n96nv85k96dd2l6"))
-            (patches (search-patches "libextractor-ffmpeg-3.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             ;; Nowadays libmagic (from 'file') returns 'audio/ogg' and not
-             ;; 'application/ogg'.  Adjust accordingly.
-             '(substitute* "src/plugins/test_mime.c"
-                (("application/ogg")
-                 "audio/ogg")))))
+              "0v7ns5jhsyp1wzvbaydfgxnva5zd63gkzm9djhckmam9liq824l4"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
