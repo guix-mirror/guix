@@ -125,7 +125,7 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.16.1")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -133,14 +133,13 @@ desktop and the mate-about program.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0w1b8b1ckmkbvwnqi9yh2lwbskzhz99s5yxdkar5xiqylnjrwmm3"))))
+                "0z6vfh42fv9rqjrraqfpf6h9nd9h662bxy3l3r48j19xvxrwmx3a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `("--with-gtk=3.0"
-         ,(string-append "--with-zoneinfo-dir="
-                         (assoc-ref %build-inputs "tzdata")
-                         "/share/zoneinfo"))
+       (list (string-append "--with-zoneinfo-dir="
+                            (assoc-ref %build-inputs "tzdata")
+                            "/share/zoneinfo"))
        #:phases
        (modify-phases %standard-phases
          (add-before
