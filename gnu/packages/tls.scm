@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,7 +134,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.5.10")
+    (version "3.5.13")
     (source (origin
              (method url-fetch)
              (uri
@@ -142,9 +143,12 @@ living in the same process.")
               (string-append "mirror://gnupg/gnutls/v"
                              (version-major+minor version)
                              "/gnutls-" version ".tar.xz"))
+             (patches
+              (search-patches "gnutls-skip-trust-store-test.patch"
+                              "gnutls-skip-pkgconfig-test.patch"))
              (sha256
               (base32
-               "17apwvdkkazh5w8z8mbanpj2yj8s2002qwy46wz4v3akpa33wi5g"))))
+               "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

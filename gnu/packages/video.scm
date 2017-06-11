@@ -1449,6 +1449,7 @@ filtering and encoding tasks.  It supports many file types, including AVI,
 DVD compatible MPEG files, MP4 and ASF, using a variety of codecs.  Tasks
 can be automated using projects, job queue and powerful scripting
 capabilities.")
+    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     ;; Software with various licenses is included, see License.txt.
     (license license:gpl2+)))
 

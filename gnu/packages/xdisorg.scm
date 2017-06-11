@@ -55,6 +55,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
@@ -449,7 +450,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.43")
+    (version "6.3.45")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -458,12 +459,13 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kazcnnarc61d3rjysaym9vadf31wisfd3sn076rsjnsldm4y66h"))))
+                "0lzyjcg6yff1vzlsda45i57khajp56yrmcjfa5faw3i60fnqqiy7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
     (inputs
      `(("glm" ,glm)
+       ("icu4c" ,icu4c)
        ("libxext" ,libxext)
        ("libxrender" ,libxrender)
        ("mesa" ,mesa)))

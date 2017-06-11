@@ -425,7 +425,7 @@ generation as its default entry.  STORE is an open connection to the store."
   "Return the bootloader name stored in SYSTEM's \"parameters\" file."
   (let ((params (unless-file-not-found
                  (read-boot-parameters-file system))))
-    (boot-parameters-boot-name params)))
+    (boot-parameters-bootloader-name params)))
 
 (define (reinstall-bootloader store number)
   "Re-install bootloader for existing system profile generation NUMBER.
@@ -521,7 +521,7 @@ list of services."
     (let* ((generation  (generation-file-name profile number))
            (params      (read-boot-parameters-file generation))
            (label       (boot-parameters-label params))
-           (boot-name   (boot-parameters-boot-name params))
+           (bootloader-name (boot-parameters-bootloader-name params))
            (root        (boot-parameters-root-device params))
            (root-device (if (bytevector? root)
                             (uuid->string root)
@@ -532,7 +532,7 @@ list of services."
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
-      (format #t (G_ "  bootloader: ~a~%") boot-name)
+      (format #t (G_ "  bootloader: ~a~%") bootloader-name)
       (format #t (G_ "  root device: ~a~%") root-device)
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
