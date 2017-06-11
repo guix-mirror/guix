@@ -1742,18 +1742,17 @@ of packages:
        (list guile-2.0 "debug")))
 @end example
 
-@findex specification->package+output
+@findex specifications->manifest
 In this example we have to know which modules define the @code{emacs}
 and @code{guile-2.0} variables to provide the right
 @code{use-package-modules} line, which can be cumbersome.  We can
 instead provide regular package specifications and let
-@code{specification->package-output} look up the corresponding package
+@code{specifications->manifest} look up the corresponding package
 objects, like this:
 
 @example
-(packages->manifest
- (map (compose list specification->package+output)
-      '("emacs" "guile@@2.0" "guile@@2.0:debug")))
+(specifications->manifest
+ '("emacs" "guile@@2.2" "guile@@2.2:debug"))
 @end example
 
 @item --roll-back

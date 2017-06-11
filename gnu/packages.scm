@@ -29,6 +29,7 @@
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)))
+  #:autoload   (guix profiles) (packages->manifest)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -53,7 +54,8 @@
             find-newest-available-packages
 
             specification->package
-            specification->package+output))
+            specification->package+output
+            specifications->manifest))
 
 ;;; Commentary:
 ;;;
@@ -278,3 +280,11 @@ version; if SPEC does not specify an output, return OUTPUT."
            (leave (G_ "package `~a' lacks output `~a'~%")
                   (package-full-name package)
                   sub-drv))))))
+
+(define (specifications->manifest specs)
+  "Given SPECS, a list of specifications such as \"emacs@25.2\" or
+\"guile:debug\", return a profile manifest."
+  ;; This procedure exists mostly so users of 'guix package -m' don't have to
+  ;; fiddle with multiple-value returns.
+  (packages->manifest
+   (map (compose list specification->package+output) specs)))
