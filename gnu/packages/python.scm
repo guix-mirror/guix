@@ -3134,16 +3134,14 @@ sources.")
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
-    (version "0.1.6")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/s/"
-                           "sphinx_rtd_theme/sphinx_rtd_theme-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "sphinx_rtd_theme" version))
        (sha256
         (base32
-         "19nw3rn7awplcdrz63kg1njqwkbymfg9lwn7l2grhdyhyr2gaa8g"))))
+         "05rlhjzdyapr2w74jjs7mrm8hi69qskcr5vya9f9drpsys7lpxrd"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; No tests.
     (propagated-inputs
