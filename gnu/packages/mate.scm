@@ -173,7 +173,7 @@ the MATE desktop environment.")
 (define-public mate-menus
   (package
     (name "mate-menus")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -181,7 +181,7 @@ the MATE desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0crw07iszwsqk54y8znfqdgfz76rjdz8992v4q9kpwwlrl11xmc5"))))
+                "05kyr37xqv6hm1rlvnqd5ng0x1n883brqynkirkk5drl56axnz7h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
