@@ -14,6 +14,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,12 +32,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages networking)
-  #:use-module (guix build-system perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -64,7 +65,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages valgrind))
+  #:use-module (gnu packages valgrind)
+  #:use-module (ice-9 match))
 
 (define-public macchanger
   (package
@@ -634,7 +636,12 @@ live network and disk I/O bandwidth monitor.")
                       "libnl=true"
                       "pcre=true"
                       "experimental=true" ;build wesside-ng, etc.
-                      "AVX2FLAG=N" "AVX1FLAG=N" "SSEFLAG=Y"
+                      "AVX2FLAG=N" "AVX1FLAG=N"
+                      ,,@(match (%current-system)
+                           ((or "x86_64-linux" "i686-linux")
+                            `("SSEFLAG=Y"))
+                           (_
+                            `("NEWSSE=false")))
                       ,(string-append "prefix=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
