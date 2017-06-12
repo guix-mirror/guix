@@ -590,6 +590,7 @@ text documents, vector drawings, presentations and spreadsheets.")
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
                           version "/" name "-" version ".tar.xz"))
+      (patches (search-patches "libmwaw-CVE-2017-9433.patch"))
       (sha256 (base32
                "16i9s9p4sjpdpbm3gq6jkc9r3nyfy47ggkdlgh7vr0mydccklj2b"))))
     (build-system gnu-build-system)
