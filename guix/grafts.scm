@@ -156,7 +156,7 @@ name of the output of that derivation ITEM corresponds to (for example
     (()                                           ;ITEM is a plain file
      (values #f #f))
     ((drv-file _ ...)
-     (let ((drv (call-with-input-file drv-file read-derivation)))
+     (let ((drv (read-derivation-from-file drv-file)))
        (values drv
                (any (match-lambda
                       ((name . path)

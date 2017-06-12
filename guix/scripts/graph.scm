@@ -221,15 +221,11 @@ GNU-BUILD-SYSTEM have zero dependencies."
 ;;; Derivation DAG.
 ;;;
 
-(define (file->derivation file)
-  "Read the derivation from FILE and return it."
-  (call-with-input-file file read-derivation))
-
 (define (derivation-dependencies obj)
   "Return the <derivation> objects and store items corresponding to the
 dependencies of OBJ, a <derivation> or store item."
   (if (derivation? obj)
-      (append (map (compose file->derivation derivation-input-path)
+      (append (map (compose read-derivation-from-file derivation-input-path)
                    (derivation-inputs obj))
               (derivation-sources obj))
       '()))
@@ -263,7 +259,7 @@ a plain store file."
               ((? derivation-path? item)
                (mbegin %store-monad
                  ((store-lift add-temp-root) item)
-                 (return (list (file->derivation item)))))
+                 (return (list (read-derivation-from-file item)))))
               (x
                (raise
                 (condition (&message (message "unsupported argument for \

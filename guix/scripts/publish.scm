@@ -225,10 +225,6 @@ compression disabled~%"))
     ("WantMassQuery" . 0)
     ("Priority" . 100)))
 
-(define (load-derivation file)
-  "Read the derivation from FILE."
-  (call-with-input-file file read-derivation))
-
 (define (signed-string s)
   "Sign the hash of the string S with the daemon's key."
   (let* ((public-key (%public-key))
@@ -286,7 +282,7 @@ References: ~a~%~a"
                          base-info
                          (catch 'system-error
                            (lambda ()
-                             (let ((drv (load-derivation deriver)))
+                             (let ((drv (read-derivation-from-file deriver)))
                                (format #f "~aSystem: ~a~%Deriver: ~a~%"
                                        base-info (derivation-system drv)
                                        (basename deriver))))

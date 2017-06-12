@@ -652,9 +652,8 @@ machine."
                       (with-error-handling
                        (process-request (equal? (match:substring match 1) "1")
                                         (match:substring match 2) ; system
-                                        (call-with-input-file
-                                            (match:substring match 3)
-                                          read-derivation)
+                                        (read-derivation-from-file
+                                         (match:substring match 3))
                                         (string-tokenize
                                          (match:substring match 4) not-coma)
                                         #:print-build-trace? print-build-trace?
