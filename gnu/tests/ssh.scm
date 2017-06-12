@@ -69,20 +69,6 @@ When SFTP? is true, run an SFTP server test."
               (make-marionette (list #$command "-net"
                                      "user,hostfwd=tcp::2222-:22")))
 
-            (define (wait-for-file file)
-              ;; Wait until FILE exists in the guest; 'read' its content and
-              ;; return it.
-              (marionette-eval
-               `(let loop ((i 10))
-                  (cond ((file-exists? ,file)
-                         (call-with-input-file ,file read))
-                        ((> i 0)
-                         (sleep 1)
-                         (loop (- i 1)))
-                        (else
-                         (error "file didn't show up" ,file))))
-               marionette))
-
             (define (make-session-for-test)
               "Make a session with predefined parameters for a test."
               (make-session #:user "root"
@@ -141,7 +127,7 @@ root with an empty password."
 
             ;; Check sshd's PID file.
             (test-equal "sshd PID"
-              (wait-for-file #$pid-file)
+              (wait-for-file #$pid-file marionette)
               (marionette-eval
                '(begin
                   (use-modules (gnu services herd)
@@ -166,7 +152,7 @@ root with an empty password."
                    (channel-open-session channel)
                    (channel-request-exec channel "echo hello > /root/witness")
                    (and (zero? (channel-get-exit-status channel))
-                        (wait-for-file "/root/witness"))))))
+                        (wait-for-file "/root/witness" marionette))))))
 
             ;; Connect to the guest over SFTP.  Make sure we can write and
             ;; read a file there.

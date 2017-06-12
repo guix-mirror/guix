@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:export (marionette?
             make-marionette
             marionette-eval
+            wait-for-file
             marionette-control
             marionette-screen-text
             wait-for-screen-text
@@ -163,6 +164,20 @@ QEMU monitor and to the guest's backdoor REPL."
      (write exp repl)
      (newline repl)
      (read repl))))
+
+(define* (wait-for-file file marionette #:key (timeout 10))
+  "Wait until FILE exists in MARIONETTE; 'read' its content and return it.  If
+FILE has not shown up after TIMEOUT seconds, raise an error."
+  (marionette-eval
+   `(let loop ((i ,timeout))
+      (cond ((file-exists? ,file)
+             (call-with-input-file ,file read))
+            ((> i 0)
+             (sleep 1)
+             (loop (- i 1)))
+            (else
+             (error "file didn't show up" ,file))))
+   marionette))
 
 (define (marionette-control command marionette)
   "Run COMMAND in the QEMU monitor of MARIONETTE.  COMMAND is a string such as
