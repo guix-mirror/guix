@@ -830,10 +830,11 @@ bits are kept.  HASH-ALGO must be a string such as \"sha256\".
 When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
 where FILE is the entry's absolute file name and STAT is the result of
 'lstat'; exclude entries for which SELECT? does not return true."
-      (let* ((st    (false-if-exception (lstat file-name)))
-             (args  `(,st ,basename ,recursive? ,hash-algo ,select?))
+      ;; Note: We don't stat FILE-NAME at each call, and thus we assume that
+      ;; the file remains unchanged for the lifetime of SERVER.
+      (let* ((args  `(,file-name ,basename ,recursive? ,hash-algo ,select?))
              (cache (nix-server-add-to-store-cache server)))
-        (or (and st (hash-ref cache args))
+        (or (hash-ref cache args)
             (let ((path (add-to-store server basename recursive?
                                       hash-algo file-name
                                       #:select? select?)))
