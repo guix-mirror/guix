@@ -282,7 +282,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.30.2")
+    (version "3.31")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -293,10 +293,9 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "096frzvyp3z257x84rxknscfgsbavzh2a0gyibx7kvmw4vzpfjhd"))
+                "0pd643a8ns7q5az5ai3ascrw666i2kbfiyy1c9hlhw9jd8jn21g9"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
-                                       "nss-disable-long-b64-tests.patch"
                                        "nss-increase-test-timeout.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
@@ -329,16 +328,6 @@ in the Mozilla clients.")
                   `((setenv "USE_64" "1")))
                  (_
                   '()))
-             ;; The timeout values in "increase-test-timeouts" are still
-             ;; too low, so apply this workaround on armhf for now to avoid
-             ;; rebuilding on all platforms. This should be incorporated in
-             ;; the patch for the next update.
-             ;; https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00472.html
-             ,@(if (string-prefix? "armhf" (or (%current-target-system)
-                                               (%current-system)))
-                   `((substitute* "nss/gtests/ssl_gtest/tls_connect.cc"
-                       (("25000\\);") "300000);")))
-                   '())
              #t))
          (replace 'check
            (lambda _
