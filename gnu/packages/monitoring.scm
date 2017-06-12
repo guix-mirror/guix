@@ -27,8 +27,7 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mail)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages perl))
 
 (define-public nagios
   (package

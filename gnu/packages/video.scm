@@ -106,8 +106,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages assembly)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages assembly))
 
 (define-public aalib
   (package

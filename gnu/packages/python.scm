@@ -110,7 +110,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
   #:use-module (guix packages)

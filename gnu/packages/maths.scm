@@ -96,7 +96,6 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 (define-public aris

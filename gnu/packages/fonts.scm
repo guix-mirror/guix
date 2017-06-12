@@ -53,8 +53,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages xorg))
 
 (define-public font-inconsolata
   (package

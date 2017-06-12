@@ -31,7 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages check)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages compression))
 
 (define-public mc
   (package

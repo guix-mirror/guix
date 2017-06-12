@@ -27,11 +27,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flashing-tools)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages vim))
 
 (define-public avr-binutils
   (package

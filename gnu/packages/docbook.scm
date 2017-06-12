@@ -31,8 +31,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system trivial)
-  #:use-module (guix build-system python)
-  #:autoload   (gnu packages zip) (unzip))
+  #:use-module (guix build-system python))
 
 (define-public docbook-xml
   (package

@@ -59,7 +59,6 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages zip)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)

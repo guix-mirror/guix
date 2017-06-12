@@ -68,8 +68,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages assembly)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages assembly))
 
 (define-public crossguid
   (let ((commit "8f399e8bd4252be9952f3dfa8199924cc8487ca4"))

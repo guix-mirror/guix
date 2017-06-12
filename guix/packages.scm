@@ -401,7 +401,7 @@ object."
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
       ("gzip"  ,(ref '(gnu packages compression) 'gzip))
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
-      ("unzip" ,(ref '(gnu packages zip) 'unzip))
+      ("unzip" ,(ref '(gnu packages compression) 'unzip))
       ("patch" ,(ref '(gnu packages base) 'patch))
       ("locales" ,(ref '(gnu packages base) 'glibc-utf8-locales)))))
 

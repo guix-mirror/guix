@@ -51,7 +51,6 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)

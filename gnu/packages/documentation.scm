@@ -37,8 +37,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages xml)
-  #:autoload   (gnu packages zip) (unzip))
+  #:use-module (gnu packages xml))
 
 (define-public asciidoc
   (package

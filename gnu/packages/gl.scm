@@ -44,7 +44,6 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip)
   #:use-module (guix download)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)

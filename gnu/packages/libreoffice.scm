@@ -65,8 +65,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages xorg))
 
 (define-public ixion
   (package

@@ -39,7 +39,6 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages zip)
   #:use-module (guix build-system gnu))
 
 (define-public hydra

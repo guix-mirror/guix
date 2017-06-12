@@ -26,10 +26,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages web)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages web))
 
 (define-public hoedown
   (package

@@ -416,7 +416,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
   %D%/packages/zile.scm				\
-  %D%/packages/zip.scm				\
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\

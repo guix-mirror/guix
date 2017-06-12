@@ -38,14 +38,14 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages slang)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages slang))
 
 (define-public recode
   (package

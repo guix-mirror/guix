@@ -56,13 +56,13 @@
                          '())
                    ,@inputs
                    ,(list "tar" (module-ref (resolve-interface '(gnu packages base)) 'tar))
-                   ,(list "unzip" (module-ref (resolve-interface '(gnu packages zip)) 'unzip))
                    ,@(let ((compression (resolve-interface '(gnu packages compression))))
                        (map (match-lambda
                               ((name package)
                                (list name (module-ref compression package))))
                             `(("gzip" gzip)
                               ("bzip2" bzip2)
+                              ("unzip" unzip)
                               ("xz" xz))))))
     (build-inputs native-inputs)
     (outputs outputs)

@@ -25,10 +25,10 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-26))
 
 (define-public synergy

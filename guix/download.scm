@@ -528,7 +528,7 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
       (_
        (basename url))))
   (define unzip
-    (module-ref (resolve-interface '(gnu packages zip)) 'unzip))
+    (module-ref (resolve-interface '(gnu packages compression)) 'unzip))
 
   (mlet %store-monad ((drv (url-fetch url hash-algo hash
                                       (string-append "zipbomb-"

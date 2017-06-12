@@ -132,7 +132,6 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages qemu)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages speech)
   #:use-module (srfi srfi-1))
 

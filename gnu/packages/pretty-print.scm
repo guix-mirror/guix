@@ -37,7 +37,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages compression))
 
 (define-public a2ps
   (package

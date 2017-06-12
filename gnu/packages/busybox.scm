@@ -24,8 +24,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl))
 
 (define-public busybox
   (package
