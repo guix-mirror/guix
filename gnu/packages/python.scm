@@ -340,8 +340,11 @@ data types.")
                (base32
                 "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
               (snippet
-               '(delete-file
-                  "Lib/ctypes/test/test_win32.py")))) ; fails on aarch64
+               '(begin
+                  (for-each delete-file
+                            '("Lib/ctypes/test/test_win32.py" ; fails on aarch64
+                              "Lib/test/test_fcntl.py"))
+                  #t))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
