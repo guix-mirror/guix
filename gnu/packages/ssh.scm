@@ -229,7 +229,8 @@ Additionally, various channel-specific options can be negotiated.")
                (base32
                 "0r261i8kc3avbmbwgyzak2vnqwssjlgz37g2y2fwm80w9bmn2m7j"))
               (patches (search-patches "guile-ssh-rexec-bug.patch"
-                                       "guile-ssh-double-free.patch"))
+                                       "guile-ssh-double-free.patch"
+                                       "guile-ssh-channel-finalization.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; 'configure.ac' mistakenly tries to link files from examples/
