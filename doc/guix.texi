@@ -1854,7 +1854,7 @@ availability of packages:
 @itemx -s @var{regexp}
 @cindex searching for packages
 List the available packages whose name, synopsis, or description matches
-@var{regexp}.  Print all the metadata of matching packages in
+@var{regexp}, sorted by relevance.  Print all the metadata of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
 GNU recutils manual}).
 
@@ -1862,12 +1862,18 @@ This allows specific fields to be extracted using the @command{recsel}
 command, for instance:
 
 @example
-$ guix package -s malloc | recsel -p name,version
+$ guix package -s malloc | recsel -p name,version,relevance
+name: jemalloc
+version: 4.5.0
+relevance: 6
+
 name: glibc
-version: 2.17
+version: 2.25
+relevance: 1
 
 name: libgc
-version: 7.2alpha6
+version: 7.6.0
+relevance: 1
 @end example
 
 Similarly, to show the name of all the packages available under the
