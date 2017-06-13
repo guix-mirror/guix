@@ -3342,10 +3342,11 @@ as possible!")
        ("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("glib" ,glib)
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)
-       ;; XXX TODO: Add oauth
+       ("liboauth" ,liboauth)
        ("libsoup" ,libsoup)
        ("nettle" ,nettle)
        ("totem-pl-parser" ,totem-pl-parser)))
