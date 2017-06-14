@@ -587,32 +587,19 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.68")
+    (version "1.81")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
+                "0z8vya34g88bc41kx955sv7y4niwbbywji8liqbl52v29qbvdjq0"))))
     (build-system perl-build-system)
-    (native-inputs
-     `(("patch" ,patch)
-       ("patch/disable-ede-test"
-        ,(search-patch "perl-net-ssleay-disable-ede-test.patch"))))
     (inputs `(("openssl" ,openssl)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'apply-patch
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; XXX We apply this patch here instead of in the 'origin' because
-            ;; this package's build system fails badly when the source file
-            ;; times are zeroed.
-            ;; XXX Try removing this patch for perl-net-ssleay > 1.68
-            (zero? (system* "patch" "--force" "-p1" "-i"
-                            (assoc-ref inputs "patch/disable-ede-test")))))
          (add-before
           'configure 'set-ssl-prefix
           (lambda* (#:key inputs #:allow-other-keys)
