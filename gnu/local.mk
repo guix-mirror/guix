@@ -682,6 +682,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
+  %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
