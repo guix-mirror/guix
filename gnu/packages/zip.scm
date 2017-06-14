@@ -136,6 +136,12 @@ recreates the stored directory structure by default.")
       (uri (string-append "mirror://sourceforge/zziplib/zziplib13/"
                           version "/zziplib-"
                           version ".tar.bz2"))
+      (patches (search-patches "zziplib-CVE-2017-5974.patch"
+                               "zziplib-CVE-2017-5975.patch"
+                               "zziplib-CVE-2017-5976.patch"
+                               "zziplib-CVE-2017-5978.patch"
+                               "zziplib-CVE-2017-5979.patch"
+                               "zziplib-CVE-2017-5981.patch"))
       (sha256
        (base32
         "0nsjqxw017hiyp524p9316283jlf5piixc1091gkimhz38zh7f51"))))
