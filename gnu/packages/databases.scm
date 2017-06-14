@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1356,8 +1357,17 @@ trees (LSM), for sustained throughput under random insert workloads.")
                (("/usr/local") (assoc-ref outputs "out")))
             #t)))))
     (home-page "https://symas.com/products/lightning-memory-mapped-database")
-    (synopsis "Lightning memory-mapped database library")
-    (description "Lightning memory-mapped database library.")
+    (synopsis "Lightning Memory-Mapped Database library")
+    (description
+     "The @dfn{Lightning Memory-Mapped Database} (LMDB) is a high-performance
+transactional database.  Unlike more complex relational databases, LMDB handles
+only key-value pairs (stored as arbitrary byte arrays) and relies on the
+underlying operating system for caching and locking, keeping the code small and
+simple.
+The use of ‘zero-copy’ memory-mapped files combines the persistence of classic
+disk-based databases with high read performance that scales linearly over
+multiple cores.  The size of each database is limited only by the size of the
+virtual address space — not physical RAM.")
     (license license:openldap2.8)))
 
 (define-public libpqxx
