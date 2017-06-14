@@ -1026,6 +1026,13 @@ to perl-code, for faster generation of access_log lines.")
         (base32
          "02afhlrdq5hh5g8b32fa79fqq5i76qzwfqqvfi9zi57h31szl536"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           ;; Fix the build with Perl 5.26.0. Try removing this phase for later
+           ;; versions of perl-authen-sasl.
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (propagated-inputs
      `(("perl-digest-hmac" ,perl-digest-hmac)
        ("perl-gssapi" ,perl-gssapi)))
