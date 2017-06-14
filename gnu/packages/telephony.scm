@@ -124,6 +124,7 @@ packet-manipulation library.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/osip/libosip2-" version ".tar.gz"))
+            (patches (search-patches "osip-CVE-2017-7853.patch"))
             (sha256
              (base32
               "00yznbrm9q04wgd4b831km8iwlvwvsnwv87igf79g5vj9yakr88q"))))
