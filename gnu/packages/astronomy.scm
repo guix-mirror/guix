@@ -108,6 +108,10 @@ systems in a FITS image header.")
        ("libjpeg" ,libjpeg-8)
        ("wcslib" ,wcslib)))
     (build-system gnu-build-system)
+    (arguments
+     ;; Reduce the number of required type conversions by enabling arithmetic
+     ;; with all the supported types.
+     `(#:configure-flags '("--enable-bin-op-alltypes")))
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
