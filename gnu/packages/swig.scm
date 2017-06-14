@@ -41,6 +41,14 @@
               (base32
                "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           ;; Required since Perl 5.26.0's removal of the current
+           ;; working directory from @INC.
+           ;; TODO Try removing this for later versions of SWIG.
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(;; Provide these to run the corresponding tests.
