@@ -1334,14 +1334,14 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.18")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LMDB/lmdb/archive/"
                                   "LMDB_" version ".tar.gz"))
               (sha256
                (base32
-                "12crvzxky8in99ibh22k4ppmkgqs28yy3v7yy944za7fsrqv8dfx"))))
+                "0ndmj07hkm2ic60z1f4rdscxs7pq45hk9fibjyv5nhfclhsvd1qi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
