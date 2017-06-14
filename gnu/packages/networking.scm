@@ -435,7 +435,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.15")
+    (version "5.2.16")
     (source
      (origin
        (method url-fetch)
@@ -443,7 +443,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "123ingf699javzh8qm6ny10nl28zbjzasa4k5pcn0qzw1dlnnnks"))))
+         "0fpwac26ja0rdqsbxyjcsk8gxgixfpxk0baj3rhnpaff3jv0ilp9"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
