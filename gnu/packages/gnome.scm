@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
@@ -6271,3 +6273,48 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 application.  It provides a GObject API, spell-checking to text entries and
 text views, and buttons to choose the language.")
     (license license:gpl2+)))
+
+(define-public gnome-planner
+  (package
+    (name "gnome-planner")
+    (version "0.14.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/planner/"
+                                  (version-major+minor version) "/planner-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "15h6ps58giy5r1g66sg1l4xzhjssl362mfny2x09khdqsvk2j38k"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     ;; Disable the Python bindings because the Planner program functions
+     ;; without them, and (as of 2017-06-13) we have not packaged all of
+     ;; packages that are necessary for building the Python bindings.
+     `(#:configure-flags (list "--disable-python")))
+    (inputs
+     `(("libgnomecanvas" ,libgnomecanvas)
+       ("libgnomeui" ,libgnomeui)
+       ("libglade" ,libglade)
+       ("gnome-vfs" ,gnome-vfs)
+       ("gconf" ,gconf)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("scrollkeeper" ,scrollkeeper)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.gnome.org/Apps/Planner")
+    (synopsis "Project management software for the GNOME desktop")
+    (description
+     "GNOME Planner is a project management tool based on the Work Breakdown
+Structure (WBS).  Its goal is to enable you to easily plan projects.  Based on
+the resources, tasks, and constraints that you define, Planner generates
+various views into a project.  For example, Planner can show a Gantt chart of
+the project.  It can show a detailed summary of tasks including their
+duration, cost, and current progress.  It can also show a report of resource
+utilization that highlights under-utilized and over-utilized resources.  These
+views can be printed as PDF or PostScript files, or exported to HTML.")
+    (license license:gpl2)))
