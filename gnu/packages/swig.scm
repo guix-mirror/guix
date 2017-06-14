@@ -31,7 +31,7 @@
 (define-public swig
   (package
     (name "swig")
-    (version "3.0.10")
+    (version "3.0.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -39,7 +39,7 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0k7ljh07rla6223lhvljgg881b2qr7hmrfgic9a0j1pckpislf99"))))
+               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
     (build-system gnu-build-system)
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")))       ;for 'pcre-config'
