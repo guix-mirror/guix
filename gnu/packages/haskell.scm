@@ -8347,4 +8347,32 @@ Haskell's Web Application Interface (WAI).")
 Date in Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-simple-sendfile
+  (package
+    (name "ghc-simple-sendfile")
+    (version "0.2.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "simple-sendfile-" version "/"
+                           "simple-sendfile-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k99j9xfcf83c55jmn202hdinhjaa4yn3dal4rvjk2w2rlhqirha"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-network" ,ghc-network)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/kazu-yamamoto/simple-sendfile")
+    (synopsis "Cross platform library for the sendfile system call")
+    (description "This library tries to call minimum system calls which
+are the bottleneck of web servers.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
