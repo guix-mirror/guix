@@ -4694,7 +4694,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4702,7 +4702,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1y96k82rav8if334jl500zc024d210c4pgprh94yqyz3rmanyaxj"))
+                "17pn7kzilyl0qk525gp9xnbz4x0ssrdmgk1lvw95pyfd6rm5qnps"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -4783,8 +4783,11 @@ users.")
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
     (inputs
-     `(("dbus-glib" ,dbus-glib)
+     `(("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("dbus-glib" ,dbus-glib)
        ("dnsmasq" ,dnsmasq)
+       ("eudev" ,eudev)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
