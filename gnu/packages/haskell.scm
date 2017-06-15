@@ -8460,4 +8460,34 @@ Typical applications of Priority Search Queues include:
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-glob
+  (package
+    (name "ghc-glob")
+    (version "0.7.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "Glob-" version "/"
+                           "Glob-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aw43izg8vlvjl40ms6k92w7gxg7n3l6smdvzla47fp82s4vhdr8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-dlist" ,ghc-dlist)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "http://iki.fi/matti.niemenmaa/glob/")
+    (synopsis "Haskell library matching glob patterns against file paths")
+    (description "This package providesa Haskell library for globbing:
+matching patterns against file paths.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
