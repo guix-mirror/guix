@@ -354,9 +354,6 @@ extracting icontainer icon files.")
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
                                              ,name "-" ,version))))
-   ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
-   (native-inputs
-    `(("gcc@5" ,gcc-5)))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
