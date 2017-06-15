@@ -8375,4 +8375,24 @@ Date in Haskell.")
 are the bottleneck of web servers.")
     (license license:bsd-3)))
 
+(define-public ghc-hex
+  (package
+    (name "ghc-hex")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hex-" version "/"
+                           "hex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v31xiaivrrn0q2jz8919wvkjplv1kxna5ajhsj701fqxm1i5vhj"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/hex")
+    (synopsis "Convert strings into hexadecimal and back")
+    (description "This package provides conversion functions between
+bytestrings and their hexademical representation.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
