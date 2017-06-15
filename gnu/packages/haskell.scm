@@ -4109,7 +4109,7 @@ available in later versions of base to a wider (older) range of compilers.")
 (define-public ghc-auto-update
   (package
     (name "ghc-auto-update")
-    (version "0.1.2.2")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -4119,7 +4119,7 @@ available in later versions of base to a wider (older) range of compilers.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ns4c5mqhnm7hsiqxf1ivjs5fflyq92b16ldzrcl0p85631h0c3v"))))
+         "09dlh2alsx2mw5kvj931yhbj0aw7jmly2cm9xbscm2sf098w35jy"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Efficiently run periodic, on-demand actions")
