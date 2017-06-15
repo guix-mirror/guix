@@ -2729,16 +2729,16 @@ comment or quality sections.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'bin-mkdir
-                     (lambda _
-                       (mkdir-p "bin")
-                       #t))
+          (lambda _
+            (mkdir-p "bin")
+            #t))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (install-file "bin/gemma"
-                                    (string-append
-                                     out "/bin")))
-                    #t)))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "bin/gemma"
+                             (string-append
+                              out "/bin")))
+             #t)))
        #:tests? #f)) ; no tests included yet
     (home-page "https://github.com/xiangzhou/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
