@@ -9652,3 +9652,55 @@ browser.")
     (license (license:non-copyleft
               "http://genome.ucsc.edu/license/"
               "The contents of this package are free for all uses."))))
+
+(define-public f-seq
+  (let ((commit "6ccded34cff38cf432deed8503648b4a66953f9b")
+        (revision "1"))
+    (package
+      (name "f-seq")
+      (version (string-append "1.1-" revision "." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/aboyle/F-seq.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "1nk33k0yajg2id4g59bc4szr58r2q6pdq42vgcw054m8ip9wv26h"))
+                (modules '((guix build utils)))
+                ;; Remove bundled Java library archives.
+                (snippet
+                 '(begin
+                    (for-each delete-file (find-files "lib" ".*"))
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f ; no tests included
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((target (assoc-ref outputs "out"))
+                      (doc (string-append target "/share/doc/f-seq/")))
+                 (mkdir-p target)
+                 (mkdir-p doc)
+                 (substitute* "bin/linux/fseq"
+                   (("java") (which "java")))
+                 (install-file "README.txt" doc)
+                 (install-file "bin/linux/fseq" (string-append target "/bin"))
+                 (install-file "build~/fseq.jar" (string-append target "/lib"))
+                 (copy-recursively "lib" (string-append target "/lib"))
+                 #t))))))
+      (inputs
+       `(("perl" ,perl)
+         ("java-commons-cli" ,java-commons-cli)))
+      (home-page "http://fureylab.web.unc.edu/software/fseq/")
+      (synopsis "Feature density estimator for high-throughput sequence tags")
+      (description
+       "F-Seq is a software package that generates a continuous tag sequence
+density estimation allowing identification of biologically meaningful sites
+such as transcription factor binding sites (ChIP-seq) or regions of open
+chromatin (DNase-seq).  Output can be displayed directly in the UCSC Genome
+Browser.")
+      (license license:gpl3+))))
