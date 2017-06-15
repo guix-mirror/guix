@@ -167,6 +167,11 @@ This package provides the classpath library.")
              "--with-internal-libpopt=no")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-timestamp-for-reproducibility
+           (lambda _
+             (substitute* "src/sablevm/Makefile.in"
+               (("\\$\\(SVMCOMPILETIME\\)") "(unknown)"))
+             #t))
          (add-after 'unpack 'link-with-popt
            (lambda _
              (substitute* "src/sablevm/Makefile.in"
