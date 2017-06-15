@@ -488,6 +488,28 @@ with a layered architecture of JTAG interface and TAP support.")
       (home-page "https://github.com/totalspectrum/gcc-propeller")
       (synopsis "GCC for the Parallax Propeller"))))
 
+(define-public propeller-gcc-4
+  (let ((xgcc propeller-gcc)
+        (commit "f1b01001b760d691a91ff1db4830d41bb712557f")
+        (revision "1"))
+    (package (inherit xgcc)
+      (name "propeller-gcc")
+      (version (string-append "4.6.1-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dbetz/propgcc-gcc.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "15mxrhk2v4vqmdkvcqy33ag1wrg9x9q20kx2w33kkw8pkrijknbi"))
+                (patches
+                 (append
+                  (origin-patches (package-source gcc-4.7))
+                  (search-patches "gcc-4.6-gnu-inline.patch")))))
+      (home-page "https://github.com/dbetz/propgcc-gcc"))))
+
 ;; There is no release, so we take the latest version as referenced from here:
 ;; https://github.com/dbetz/propeller-gcc
 (define-public proplib
