@@ -8295,4 +8295,29 @@ advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
     (license license:gpl3+)))
 
+(define-public ghc-wai-conduit
+  (package
+    (name "ghc-wai-conduit")
+    (version "3.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-conduit-" version "/"
+                           "wai-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zvsiwjq2mvkb9sjgp3ly9m968m7a2jjzr4id6jpi3mmqykj15z4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis "Conduit wrappers for Haskell's WAI")
+    (description "This package provides data streaming abstraction for
+Haskell's Web Application Interface (WAI).")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
