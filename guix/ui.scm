@@ -1326,6 +1326,10 @@ Unlike 'guix-main', this procedure assumes that locale, i18n support,
 and signal handling has already been set up."
   (define option? (cut string-prefix? "-" <>))
 
+  ;; The default %LOAD-EXTENSIONS includes the empty string, which doubles the
+  ;; number of 'stat' calls per entry in %LOAD-PATH.  Shamelessly remove it.
+  (set! %load-extensions '(".scm"))
+
   (match args
     (()
      (format (current-error-port)
