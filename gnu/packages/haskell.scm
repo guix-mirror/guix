@@ -8606,4 +8606,64 @@ based WAI (Web Application Interface in Haskell).")
 a WAI handler, via the native Haskell TLS implementation.")
     (license license:expat)))
 
+(define-public ghc-http-conduit
+  (package
+    (name  "ghc-http-conduit")
+    (version "2.2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-conduit-" version "/" "http-conduit-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "03na2nbm9la0shlijvjyb5mpp1prfskk4jmjy8iz707r0731dbjk"))))
+    (build-system haskell-build-system)
+    ;; FIXME: `httpLbs TLS` in test-suite `test` fails with
+    ;; ConnectionFailure getProtocolByName: does not exist (no such protocol
+    ;; name: tcp)
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-connection" ,ghc-connection)
+       ("ghc-warp-tls" ,ghc-warp-tls)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-network" ,ghc-network)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-wai-conduit" ,ghc-wai-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (home-page "https://hackage.haskell.org/package/http-conduit")
+    (synopsis "HTTP/HTTPS client with conduit interface")
+    (description "This library uses attoparsec for parsing the actual
+contents of the HTTP connection.  It also provides higher-level functions
+which allow you to avoid direct usage of conduits.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
