@@ -157,11 +157,13 @@ module into a binary representation.")
            (add-after 'install 'install-pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
                (zero? (apply system* "make" "install-pywrap" make-flags))))))))
-    (inputs
+    ;; These libraries are in "Requires.private" in libselinux.pc.
+    (propagated-inputs
      `(("libsepol" ,libsepol)
-       ("pcre" ,pcre)
-       ;; For pywrap phase
-       ("python" ,python-wrapper)))
+       ("pcre" ,pcre)))
+    ;; For pywrap phase
+    (inputs
+     `(("python" ,python-wrapper)))
     ;; These inputs are only needed for the pywrap phase.
     (native-inputs
      `(("swig" ,swig)
