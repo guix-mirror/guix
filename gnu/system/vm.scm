@@ -489,20 +489,21 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      #$@(map virtfs-option shared-fs)
      "-vga std"
      (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly"
-             #$image)
-     "-m 256"))
+             #$image)))
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
                                                 (qemu qemu)
                                                 (graphic? #t)
+                                                (memory-size 256)
                                                 (mappings '())
                                                 full-boot?
                                                 (disk-image-size
                                                  (* (if full-boot? 500 70)
                                                     (expt 2 20))))
   "Return a derivation that builds a script to run a virtual machine image of
-OS that shares its store with the host.
+OS that shares its store with the host.  The virtual machine runs with
+MEMORY-SIZE MiB of memory.
 
 MAPPINGS is a list of <file-system-mapping> specifying mapping of host file
 systems into the guest.
@@ -531,7 +532,8 @@ it is mostly useful when FULL-BOOT?  is true."
                                 (string-join #$kernel-arguments " "))))
               #$@(common-qemu-options image
                                       (map file-system-mapping-source
-                                           (cons %store-mapping mappings)))))
+                                           (cons %store-mapping mappings)))
+              "-m " (number->string #$memory-size)))
 
     (define builder
       #~(call-with-output-file #$output
