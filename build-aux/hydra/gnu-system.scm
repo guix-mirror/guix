@@ -245,7 +245,11 @@ valid."
       (cond ((member package base-packages)
              #f)
             ((supported-package? package system)
-             (package-job store (job-name package) package system))
+             (let ((drv (package-derivation store package system
+                                            #:graft? #f)))
+               (and (substitutable-derivation? drv)
+                    (package-job store (job-name package)
+                                 package system))))
             (else
              #f)))))
 
