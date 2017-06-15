@@ -2238,14 +2238,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1q4r5860dpkkw4fpfz3f8mvdd8xjpnwwzr9zybgmgb255bs0g4yz"))
+               "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
