@@ -5085,7 +5085,7 @@ essentially the opposite of pretty-printing.")
 (define-public ghc-wai
   (package
     (name "ghc-wai")
-    (version "3.0.4.0")
+    (version "3.2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5095,7 +5095,7 @@ essentially the opposite of pretty-printing.")
              ".tar.gz"))
        (sha256
         (base32
-         "1551n0g0n22vml33v0jz5xgjcy6j79algvsdqg11a1z5ljjrjlqf"))))
+         "08afasnirja21vr0bmzcywz4w29x736dmdv7h8nnh1l8bn7sd02x"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
