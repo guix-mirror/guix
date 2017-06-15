@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -54,7 +54,9 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xfig)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public libraw
   (package
@@ -285,7 +287,14 @@ scene to produce an image that looks much like a tone-mapped image.")
                (base32
                 "0cfk8jjhs9nbfjfdy98plrj9ayi59aph0nx6ppslgjhlcvacm2xf"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; There are no tests to run.
+    (arguments
+     `(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("x86_64" "i686"))
+        ;; SSE and SSE2 are supported only on Intel processors.
+        '()
+        '(#:configure-flags '("-DBUILD_FOR_SSE=OFF" "-DBUILD_FOR_SSE2=OFF")))
+       #:tests? #f)) ; There are no tests to run.
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
