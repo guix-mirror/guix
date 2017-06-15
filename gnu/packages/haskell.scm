@@ -5890,7 +5890,7 @@ described in @url{http://www.lua.org/}.")
 (define-public ghc-http-client
   (package
     (name "ghc-http-client")
-    (version "0.4.24")
+    (version "0.5.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5898,7 +5898,7 @@ described in @url{http://www.lua.org/}.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xz133kdfiyy2rm6z95bmvjj6y2540xzd86cfmdv9s6kz4p1ir4k"))))
+                "1v9bdb8dkhb5g6jl9azk86ig7ia8xh9arr64n7s8r94fp0vl6c1c"))))
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
