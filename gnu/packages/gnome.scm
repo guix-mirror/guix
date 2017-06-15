@@ -104,6 +104,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
@@ -4806,7 +4807,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.4.2")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4814,12 +4815,9 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16a43sl9aijmvxbb08hbjqyjnlshj8dckycbgi9nm333fr47n6s3"))))
+                "09f9hjpn9nkhw57mk6pi7q1bq3lhf5hvmwas0fknscssak7yjmry"))))
     (build-system glib-or-gtk-build-system)
-    ;; TODO: WWAN support supposedly requires an update of glibmm which in turn
-    ;; requires an update of the its dependencies (glib and others).
-    (arguments '(#:configure-flags '("--disable-migration"
-                                     "--without-wwan")))
+    (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -4834,7 +4832,9 @@ services.")
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
-       ("jansson" ,jansson)))                     ;for team support
+       ("libselinux" ,libselinux)
+       ("jansson" ,jansson) ; for team support
+       ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
