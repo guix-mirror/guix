@@ -1549,3 +1549,49 @@ file format to other databases such as MySQL, Oracle, Sybase, PostgreSQL,
 etc., and an SQL engine for performing simple SQL queries.")
     (license (list license:lgpl2.0
                    license:gpl2+))))
+
+(define-public python-lmdb
+  (package
+    (name "python-lmdb")
+    (version "0.92")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "lmdb" version))
+              (sha256
+               (base32
+                "01nw6r08jkipx6v92kw49z34wmwikrpvc5j9xawdiyg1n2526wrx"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled lmdb source files.
+               '(for-each delete-file (list "lib/lmdb.h"
+                                            "lib/mdb.c"
+                                            "lib/midl.c"
+                                            "lib/midl.h")))))
+    (build-system python-build-system)
+    (inputs
+     `(("lmdb" ,lmdb)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'use-system-lmdb
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lmdb (assoc-ref inputs "lmdb")))
+               (setenv "LMDB_FORCE_SYSTEM" "set")
+               (setenv "LMDB_INCLUDEDIR" (string-append lmdb "/include"))
+               (setenv "LMDB_LIBDIR" (string-append lmdb "/lib"))
+               #t))))
+       ;; Tests fail with: ‘lmdb.tool: Please specify environment (--env)’.
+       #:tests? #f))
+    (home-page "https://github.com/dw/py-lmdb")
+    (synopsis "Python binding for the ‘Lightning’ database (LMDB)")
+    (description
+     "python-lmdb or py-lmdb is a Python binding for the @dfn{Lightning
+Memory-Mapped Database} (LMDB), a high-performance key-value store.")
+    (license
+     (list license:openldap2.8
+           ;; ‘lib/win32/inttypes.h’ and ‘lib/win32-stdint/stdint.h’ are BSD-3,
+           ;; but not actually needed on platforms currently supported by Guix.
+           license:bsd-3))))
+
+(define-public python2-lmdb
+  (package-with-python2 python-lmdb))
