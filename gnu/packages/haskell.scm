@@ -8320,4 +8320,31 @@ advanced user's otherwise working script to fail under future circumstances.
 Haskell's Web Application Interface (WAI).")
     (license license:expat)))
 
+(define-public ghc-http-date
+  (package
+    (name "ghc-http-date")
+    (version "0.0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-date-" version "/"
+                           "http-date-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dknh28kyarnzqrsc80ssalxjrq0qbv7ir49247p2grb7rh0dqgj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-old-locale" ,ghc-old-locale)))
+    (home-page "https://github.com/kazu-yamamoto/http-date")
+    (synopsis "HTTP Date parser/formatter")
+    (description "Library for Parsing and formatting HTTP
+Date in Haskell.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
