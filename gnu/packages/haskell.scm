@@ -8526,4 +8526,56 @@ matching patterns against file paths.")
 and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
     (license license:bsd-3)))
 
+(define-public ghc-warp
+  (package
+    (name "ghc-warp")
+    (version "3.2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "warp-" version "/" "warp-" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1zp5cy0bbj508vdvms1n5z80z37m253kwsqc5a83cfc990n6fgw5"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-iproute" ,ghc-iproute)
+       ("ghc-network" ,ghc-network)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vault" ,ghc-vault)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-http-date" ,ghc-http-date)
+       ("ghc-simple-sendfile" ,ghc-simple-sendfile)
+       ("ghc-http2" ,ghc-http2)))
+    (native-inputs
+     `(("ghc-silently" ,ghc-silently)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-http" ,ghc-http)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "http://github.com/yesodweb/wai")
+    (synopsis "HTTP server library for Haskell's WAI")
+    (description "Warp is a server library for HTTP/1.x and HTTP/2
+based WAI (Web Application Interface in Haskell).")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
