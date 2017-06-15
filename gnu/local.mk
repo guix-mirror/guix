@@ -743,6 +743,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
+  %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\

@@ -341,6 +341,7 @@ extracting icontainer icon files.")
             (method url-fetch)
             (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
                                 version ".tar.gz"))
+            (patches (search-patches "libtiff-tiffgetfield-bugs.patch"))
             (sha256
              (base32
               "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
