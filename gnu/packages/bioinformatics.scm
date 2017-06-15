@@ -9535,7 +9535,7 @@ applications for tackling some common problems in a user-friendly way.")
      "TADbit is a complete Python library to deal with all steps to analyze,
 model, and explore 3C-based data.  With TADbit the user can map FASTQ files to
 obtain raw interaction binned matrices (Hi-C like matrices), normalize and
-correct interaction matrices, identify adn compare the so-called
+correct interaction matrices, identify and compare the so-called
 @dfn{Topologically Associating Domains} (TADs), build 3D models from the
 interaction matrices, and finally, extract structural properties from the
 models.  TADbit is complemented by TADkit for visualizing 3D models.")
