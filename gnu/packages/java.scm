@@ -51,10 +51,12 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -160,8 +162,17 @@ This package provides the classpath library.")
                 "1jyg4bsym6igz94wps5443c7wiwlzinqzkchcw972nz4kf1cql6g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--with-internal-libffi=no"
+             "--with-internal-libpopt=no")
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-popt
+           (lambda _
+             (substitute* "src/sablevm/Makefile.in"
+               (("\\$\\(SVMADD\\)" match)
+                (string-append match " -lpopt")))
+             #t))
          (add-after 'unpack 'patch-path-to-classpath
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile.in"
@@ -179,7 +190,9 @@ This package provides the classpath library.")
     (inputs
      `(("classpath" ,sablevm-classpath)
        ("jikes" ,jikes)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("popt" ,popt)
+       ("libffi" ,libffi)))
     (native-inputs
      `(("libltdl" ,libltdl)))
     (home-page "http://sablevm.org/")
