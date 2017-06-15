@@ -971,7 +971,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
-  %D%/packages/patches/python-pbr-fix-man-page-support.patch	\
   %D%/packages/patches/python-pillow-freetype-2.7-test-failure.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
