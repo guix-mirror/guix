@@ -6371,7 +6371,7 @@ the choice of SSL/TLS, and SOCKS.")
 (define-public ghc-http-client-tls
   (package
     (name "ghc-http-client-tls")
-    (version "0.2.2")
+    (version "0.3.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -6379,7 +6379,7 @@ the choice of SSL/TLS, and SOCKS.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a01r05h5fxswyn6k6cgqgak4scqjan72hyy5wbdqzzhl4rmh7j5"))))
+                "1mbwdfn4hs8lcwml2l6xv4n068l9zlasyv6vwb2ylgm030pyv3xh"))))
     (build-system haskell-build-system)
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
