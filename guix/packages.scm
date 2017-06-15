@@ -477,10 +477,10 @@ specifies modules in scope when evaluating SNIPPET."
 
   (define instantiate-patch
     (match-lambda
-      ((? string? patch)
+      ((? string? patch)                          ;deprecated
        (interned-file patch #:recursive? #t))
-      ((? origin? patch)
-       (origin->derivation patch system))))
+      ((? struct? patch)                          ;origin, local-file, etc.
+       (lower-object patch system))))
 
   (mlet %store-monad ((tar ->     (lookup-input "tar"))
                       (xz ->      (lookup-input "xz"))
