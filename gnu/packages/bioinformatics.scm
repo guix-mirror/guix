@@ -97,7 +97,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public r-ape
   (package
@@ -2718,19 +2719,26 @@ comment or quality sections.")
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("FORCE_DYNAMIC=1") ; use shared libs
+     `(#:make-flags
+       '(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                                (%current-target-system)))
+                    '("x86_64" "mips64el" "aarch64"))
+             '("FORCE_DYNAMIC=1") ; use shared libs
+             '("FORCE_DYNAMIC=1" "FORCE_32BIT=1")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'bin-mkdir
                      (lambda _
-                       (mkdir-p "bin")))
+                       (mkdir-p "bin")
+                       #t))
          (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "out")))
                       (install-file "bin/gemma"
                                     (string-append
-                                     out "/bin"))))))
+                                     out "/bin")))
+                    #t)))
        #:tests? #f)) ; no tests included yet
     (home-page "https://github.com/xiangzhou/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
