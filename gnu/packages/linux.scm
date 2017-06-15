@@ -3964,10 +3964,11 @@ userspace queueing component and the logging subsystem.")
                               ;; build currently.)
                               (system* "make" "-C" "src" "install"
                                        (string-append "PREFIX=" out)))
-                             (begin
-                               (install-file "doc/proot/man.1"
-                                             (string-append out "/share"
-                                                            "/man/man1"))
+                             (let ((man1 (string-append out
+                                                        "/share/man/man1")))
+                               (mkdir-p man1)
+                               (copy-file "doc/proot/man.1"
+                                          (string-append man1 "/proot.1"))
                                #t))))))))
     (native-inputs `(("which" ,which)
 
