@@ -8490,4 +8490,40 @@ Typical applications of Priority Search Queues include:
 matching patterns against file paths.")
     (license license:bsd-3)))
 
+(define-public ghc-http2
+  (package
+    (name "ghc-http2")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http2-" version "/"
+                           "http2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hww0rfsv6lqx62qzycbcqy5q6rh9k09qkyjkdm5m1sp1z50wqk1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-hex" ,ghc-hex)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-psqueues" ,ghc-psqueues)
+       ("ghc-stm" ,ghc-stm)))
+       (native-inputs
+        `(("ghc-glob" ,ghc-glob)
+         ("ghc-hspec" ,ghc-hspec)
+         ("ghc-doctest" ,ghc-doctest)
+         ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/kazu-yamamoto/http2")
+    (synopsis "HTTP/2 library including frames, priority queues and HPACK")
+    (description "This package provides a HTTP/2.0 library including frames
+and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
