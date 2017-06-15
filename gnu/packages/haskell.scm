@@ -8578,4 +8578,32 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
 based WAI (Web Application Interface in Haskell).")
     (license license:expat)))
 
+(define-public ghc-warp-tls
+  (package
+    (name "ghc-warp-tls")
+    (version "3.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "warp-tls-" version "/"
+                           "warp-tls-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14m2bzk5ivz9gdpxlcj6qnh46f2lycm1ybdjnfkj2876zrqwii7m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-tls" ,ghc-tls)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)))
+    (home-page "http://github.com/yesodweb/wai")
+    (synopsis "SSL/TLS support for Warp")
+    (description "This package provides SSL/TLS support for Warp,
+a WAI handler, via the native Haskell TLS implementation.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
