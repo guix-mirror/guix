@@ -8395,4 +8395,69 @@ are the bottleneck of web servers.")
 bytestrings and their hexademical representation.")
     (license license:bsd-3)))
 
+(define-public ghc-psqueues
+  (package
+    (name "ghc-psqueues")
+    (version "0.2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "psqueues-" version "/"
+                           "psqueues-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dd6xv1wjxj1xinx155b14hijw8fafrg4096srzdzj7xyqq7qxbd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bttr/psqueues")
+    (synopsis "Pure priority search queues")
+    (description "The psqueues package provides
+@uref{http://en.wikipedia.org/wiki/Priority_queue, Priority Search Queues} in
+three different flavors:
+
+@itemize
+@item @code{OrdPSQ k p v}, which uses the @code{Ord k} instance to provide
+fast insertion, deletion and lookup.  This implementation is based on Ralf
+Hinze's @uref{http://citeseer.ist.psu.edu/hinze01simple.html, A Simple
+Implementation Technique for Priority Search Queues}.
+
+Hence, it is similar to the @uref{http://hackage.haskell.org/package/PSQueue,
+PSQueue} library, although it is considerably faster and provides a slightly
+different API.
+
+@item @code{IntPSQ p v} is a far more efficient implementation.  It fixes the
+key type to @code{Int} and uses a
+@code{http://en.wikipedia.org/wiki/Radix_tree, radix tree}
+(like @code{IntMap}) with an additional min-heap property.
+
+@item @code{HashPSQ k p v} is a fairly straightforward extension
+of @code{IntPSQ}: it simply uses the keys' hashes as indices in the
+@code{IntPSQ}.  If there are any hash collisions, it uses an
+@code{OrdPSQ} to resolve those.  The performance of this implementation
+is comparable to that of @code{IntPSQ}, but it is more widely
+applicable since the keys are not restricted to @code{Int},
+but rather to any @code{Hashable} datatype.
+@end itemize
+
+Each of the three implementations provides the same API, so they can
+be used interchangeably.
+
+Typical applications of Priority Search Queues include:
+
+@itemize
+@item Caches, and more specifically LRU Caches;
+@item Schedulers;
+@item Pathfinding algorithms, such as Dijkstra's and A*.
+@end itemize")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
