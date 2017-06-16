@@ -1318,7 +1318,14 @@ found."
     (parameterize ((program-name command))
       ;; Disable canonicalization so we don't don't stat unreasonably.
       (with-fluids ((%file-port-name-canonicalization #f))
-        (apply command-main args)))))
+        (dynamic-wind
+          (const #f)
+          (lambda ()
+            (apply command-main args))
+          (lambda ()
+            ;; Abuse 'exit-hook' (which is normally meant to be used by the
+            ;; REPL) to run things like profiling hooks upon completion.
+            (run-hook exit-hook)))))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
