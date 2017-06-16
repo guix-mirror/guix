@@ -80,7 +80,7 @@
     (sha256 (base32
               "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
 
-(define texlive-bin
+(define-public texlive-bin
   (package
    (name "texlive-bin")
    (version "2016")
