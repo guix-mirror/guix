@@ -1441,6 +1441,30 @@ some reason, you want to avoid auto-loading Emacs packages installed
 with Guix, you can do so by running Emacs with @code{--no-site-file}
 option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
+@subsection The GCC toolchain
+
+@cindex GCC
+@cindex ld-wrapper
+
+Guix offers individual compiler packages such as @code{gcc} but if you
+are in need of a complete toolchain for compiling and linking source
+code what you really want is the @code{gcc-toolchain} package.  This
+package provides a complete GCC toolchain for C/C++ development,
+including GCC itself, the GNU C Library (headers and binaries, plus
+debugging symbols in the @code{debug} output), Binutils, and a linker
+wrapper.
+
+@cindex attempt to use impure library, error message
+
+The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
+passed to the linker, add corresponding @code{-rpath} arguments, and
+invoke the actual linker with this new set of arguments.  By default,
+the linker wrapper refuses to link to libraries outside the store to
+ensure ``purity''.  This can be annoying when using the toolchain to
+link with local libraries.  To allow references to libraries outside the
+store you need to define the environment variable
+@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES}.
+
 @c TODO What else?
 
 @c *********************************************************************
