@@ -726,33 +726,7 @@ visual language \"Material Design\".")
               (sha256
                (base32
                 "13liaz2pmww3aqabm55la5npd08m1skh334ky7qfidxaz5s742iv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                        "/bin/tar"))
-               (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                        "/bin"))
-               (font-dir (string-append %output "/share/fonts/truetype"))
-               (doc-dir  (string-append %output "/share/doc/" ,name)))
-           (setenv "PATH" PATH)
-           (system* tar "xvf" (assoc-ref %build-inputs "source"))
-           (mkdir-p font-dir)
-           (mkdir-p doc-dir)
-           (chdir (string-append "un-fonts"))
-           (for-each (lambda (ttf)
-                       (install-file ttf font-dir))
-                     (find-files "." "\\.ttf$"))
-           (for-each (lambda (doc)
-                       (install-file doc doc-dir))
-                     '("COPYING" "README"))))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
+    (build-system font-build-system)
     (home-page "https://kldp.net/projects/unfonts/")
     (synopsis "Collection of Korean fonts")
     (description
