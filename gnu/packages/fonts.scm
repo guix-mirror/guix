@@ -830,26 +830,7 @@ Powerline support.")
               (sha256
                (base32
                 "0arhhsf3i7ss39ykn73d1j8k4n8vx7115xph6jwkd970p1cxvr54"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((tar  (string-append (assoc-ref %build-inputs "tar")
-                                    "/bin/tar"))
-               (PATH (string-append (assoc-ref %build-inputs "gzip")
-                                    "/bin"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (setenv "PATH" PATH)
-           (mkdir-p font-dir)
-           (zero? (system* tar "-C" font-dir "--strip-components=2"
-                           "-xvf" (assoc-ref %build-inputs "source")
-                           (string-append "source-code-pro-"
-                                          ,version "/OTF")))))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
      "Monospaced font family for user interface and coding environments")
