@@ -98,6 +98,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -15324,3 +15325,61 @@ validating Swagger API specifications.")
 
 (define-public python2-swagger-spec-validator
   (package-with-python2 python-swagger-spec-validator))
+
+(define-public python-apache-libcloud
+  (package
+    (name "python-apache-libcloud")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "apache-libcloud" version))
+        (sha256
+          (base32
+            "1a71z02ckcxld72k4qgmdnkjan52c4wczncs3p2mp5yafh7dsan7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ssh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libcloud/compute/ssh.py"
+               (("'ssh'") (string-append "'" (assoc-ref inputs "openssh")
+                                         "/bin/ssh" "'")))
+             #t))
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "./libcloud/test/test_file_fixtures.py"
+               ;; See <https://issues.apache.org/jira/browse/LIBCLOUD-923>.
+               (("def _ascii") "def _raw_data(self, method, url, body, headers):
+        return (httplib.OK,
+                \"1234abcd\",
+                {\"test\": \"value\"},
+                httplib.responses[httplib.OK])
+    def _ascii"))
+             (substitute* "libcloud/test/compute/test_ssh_client.py"
+               (("class ShellOutSSHClientTests")
+                "@unittest.skip(\"Guix container doesn't have ssh service\")
+class ShellOutSSHClientTests")
+               ;; See <https://issues.apache.org/jira/browse/LIBCLOUD-924>.
+               (("'.xf0.x90.x8d.x88'") "b'\\xF0\\x90\\x8D\\x88'")
+               (("'.xF0', '.x90', '.x8D', '.x88'")
+                "b'\\xF0', b'\\x90', b'\\x8D', b'\\x88'"))
+             #t)))))
+    (inputs
+     `(("openssh" ,openssh)))
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-lockfile" ,python-lockfile)
+       ("python-mock" ,python-mock)
+       ("python-requests-mock" ,python-requests-mock)))
+    (home-page "https://libcloud.apache.org/")
+    (synopsis "Unified Cloud API")
+    (description "@code{libcloud} is a Python library for interacting with
+many of the popular cloud service providers using a unified API.")
+    (license license:asl2.0)))
+
+(define-public python2-apache-libcloud
+  (package-with-python2 python-apache-libcloud))
