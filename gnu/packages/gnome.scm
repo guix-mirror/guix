@@ -5599,7 +5599,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5607,7 +5607,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lc0xdgn0y12i87775xyy0p3a5l82w9k49cmwl1my8r8pwf9lp6s"))))
+                "1v7k1wcl5yg9bd4l0rz0z03h32d35zgfp4qzz21widjcyis41jry"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
