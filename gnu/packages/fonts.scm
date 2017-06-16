@@ -794,7 +794,7 @@ glyph designs, not just an added slant.")
     (name "font-hack")
     (version "2.020")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append
                     "https://github.com/chrissimpkins/Hack/releases/download/v"
                     version "/Hack-v"
@@ -803,28 +803,7 @@ glyph designs, not just an added slant.")
               (sha256
                (base32
                 "16kkmc3psckw1b7k07ccn1gi5ymhlg9djh43nqjzg065g6p6d184"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))))))
-    (native-inputs
-     `(("source" ,source)
-       ("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "https://sourcefoundry.org/hack/")
     (synopsis "Typeface designed for source code")
     (description
