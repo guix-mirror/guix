@@ -6221,7 +6221,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.3.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6229,7 +6229,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n4kd5i11l79h8bpvx3cz79ww0b4z89y99h4czvyg80qlarn585w"))
+                "1ghh1xdzf04mfgb13zqpj88krpa44xv2vbyhm6k017kzrpz8hbs4"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
