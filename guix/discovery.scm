@@ -19,6 +19,7 @@
 (define-module (guix discovery)
   #:use-module (guix ui)
   #:use-module (guix combinators)
+  #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -38,28 +39,35 @@
 (define* (scheme-files directory)
   "Return the list of Scheme files found under DIRECTORY, recursively.  The
 returned list is sorted in alphabetical order."
+  (define (entry-type name properties)
+    (match (assoc-ref properties 'type)
+      ('unknown
+       (stat:type (lstat name)))
+      ((? symbol? type)
+       type)))
 
-  ;; Sort entries so that 'fold-packages' works in a deterministic fashion
-  ;; regardless of details of the underlying file system.
-  (sort (file-system-fold (const #t)                 ;enter?
-                          (lambda (path stat result) ;leaf
-                            (if (string-suffix? ".scm" path)
-                                (cons path result)
-                                result))
-                          (lambda (path stat result) ;down
-                            result)
-                          (lambda (path stat result) ;up
-                            result)
-                          (const #f)                 ;skip
-                          (lambda (path stat errno result)
-                            (unless (= ENOENT errno)
-                              (warning (G_ "cannot access `~a': ~a~%")
-                                       path (strerror errno)))
-                            result)
-                          '()
-                          directory
-                          stat)
-        string<?))
+  ;; Use 'scandir*' so we can avoid an extra 'lstat' for each entry, as
+  ;; opposed to Guile's 'scandir' or 'file-system-fold'.
+  (fold-right (lambda (entry result)
+                (match entry
+                  (("." . _)
+                   result)
+                  ((".." . _)
+                   result)
+                  ((name . properties)
+                   (let ((absolute (string-append directory "/" name)))
+                     (case (entry-type absolute properties)
+                       ((directory)
+                        (append (scheme-files absolute) result))
+                       ((regular symlink)
+                        ;; XXX: We don't recurse if we find a symlink.
+                        (if (string-suffix? ".scm" name)
+                            (cons absolute result)
+                            result))
+                       (else
+                        result))))))
+              '()
+              (scandir* directory)))
 
 (define file-name->module-name
   (let ((not-slash (char-set-complement (char-set #\/))))
