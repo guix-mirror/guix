@@ -871,23 +871,7 @@ designed to work well in user interface environments.")
               (sha256
                (base32
                 "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                     "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (mkdir-p font-dir)
-           (system* unzip
-                    "-j"
-                    (assoc-ref %build-inputs "source")
-                    "*.otf"
-                    "-d" font-dir)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://mozilla.github.io/Fira/")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
