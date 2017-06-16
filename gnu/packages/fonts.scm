@@ -555,28 +555,13 @@ fonts.")
     (version "2.005")
     (source
      (origin
-       (method url-fetch)
+       (method url-fetch/zipbomb)
        (uri (string-append "http://www.gust.org.pl/projects/e-foundry/"
                            "tex-gyre/whole/tg-" version "otf.zip"))
        (sha256
         (base32
          "0kph9l3g7jb2bpmxdbdg5zl56wacmnvdvsdn7is1gc750sqvsn31"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let ((unzip    (string-append (assoc-ref %build-inputs "unzip")
-                                        "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (mkdir-p font-dir)
-           (system* unzip
-                    (assoc-ref %build-inputs "source")
-                    "-d" font-dir)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.gust.org.pl/projects/e-foundry/tex-gyre/")
     (synopsis "Remake of Ghostscript fonts")
     (description "The TeX Gyre collection of fonts is the result of an
