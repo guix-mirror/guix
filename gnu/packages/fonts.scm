@@ -583,28 +583,7 @@ Heros, Pagella, Schola, Termes.")
               (sha256
                (base32
                 "1asj6lykvxh46czbal7ymy2k861zlcdqpz8x3s5bbpqwlm3mhrl6"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                     "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/truetype"))
-               (doc-dir  (string-append %output "/share/doc/" ,name)))
-           (system* unzip (assoc-ref %build-inputs "source"))
-           (mkdir-p font-dir)
-           (mkdir-p doc-dir)
-           (chdir (string-append "AnonymousPro-" ,version ".001"))
-           (for-each (lambda (ttf)
-                       (install-file ttf font-dir))
-                     (find-files "." "\\.ttf$"))
-           (for-each (lambda (doc)
-                       (install-file doc doc-dir))
-                     (find-files "." "\\.txt$"))))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.marksimonson.com/fonts/view/anonymous-pro")
     (synopsis "Fixed-width fonts designed with coding in mind")
     (description "Anonymous Pro is a family of four fixed-width fonts designed
