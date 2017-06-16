@@ -704,27 +704,7 @@ display all Unicode symbols.")
        (sha256
         (base32
          "0spscx08fad7i8qs7icns96iwcapniq8lwwqqvbf7bamvs8qfln4"))))
-    (native-inputs `(("unzip" ,unzip)))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH (string-append (assoc-ref %build-inputs
-                                                         "unzip")
-                                              "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (chdir "roboto-hinted")
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))))))
+    (build-system font-build-system)
     (home-page "https://github.com/google/roboto")
     (synopsis "The Roboto family of fonts")
     (description
