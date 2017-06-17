@@ -7796,11 +7796,11 @@ Create a disk image that will hold the installed system.  To make a
 qcow2-formatted disk image, use the @command{qemu-img} command:
 
 @example
-qemu-img create -f qcow2 guixsd.img 5G
+qemu-img create -f qcow2 guixsd.img 50G
 @end example
 
-The resulting file will be much smaller than 5GB, but it will grow as
-the virtualized storage device is filled up.
+The resulting file will be much smaller than 50 GB (typically less than
+1 MB), but it will grow as the virtualized storage device is filled up.
 
 @item
 Boot the USB installation image in an VM:
