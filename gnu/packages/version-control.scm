@@ -186,12 +186,16 @@ as well as the classic centralized workflow.")
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
-        (add-after 'configure 'patch-makefile-shebangs
+        (add-after 'configure 'patch-makefiles
           (lambda _
             (substitute* "Makefile"
               (("/bin/sh") (which "sh"))
               (("/usr/bin/perl") (which "perl"))
-              (("/usr/bin/python") (which "python")))))
+              (("/usr/bin/python") (which "python")))
+            (substitute* "perl/Makefile"
+              ;; Don't create timestamped 'perllocal.pod'.
+              (("\\$< PREFIX=") "$< NO_PERLLOCAL=1 PREFIX="))
+            #t))
         (add-after 'configure 'add-PM.stamp
           (lambda _
             ;; Add the "PM.stamp" to avoid "no rule to make target".
