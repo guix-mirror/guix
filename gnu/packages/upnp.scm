@@ -28,15 +28,14 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.0.20170421")
+    (version "2.0.20170509")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
-       (patches (search-patches "miniupnpc-CVE-2017-8798.patch"))
        (sha256
-        (base32 "0n11m2wq812zms5b21h8ihw1kbyaihj9nqjiida0hskf4dmw4m13"))))
+        (base32 "0spi75q6nafxp3ndnrhrlqagzmjlp8wwlr5x7rnvdpswgxi6ihyk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
