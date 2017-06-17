@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -521,6 +521,31 @@ sniffer}, that lets you capture and interactively browse the contents of
 network frames.")
     (license license:gpl2+)
     (home-page "https://www.wireshark.org/")))
+
+(define-public fping
+  (package
+    (name "fping")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://fping.org/dist/fping-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kp81wchi79l8z8rrj602fpjrd8bi84y3i7fsaclzlwap5943sv7"))))
+    (build-system gnu-build-system)
+    (home-page "http://fping.org/")
+    (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
+    (description
+     "fping is a ping like program which uses the Internet Control Message
+Protocol (ICMP) echo request to determine if a target host is responding.
+fping differs from ping in that you can specify any number of targets on the
+command line, or specify a file containing the lists of targets to ping.
+Instead of sending to one target until it times out or replies, fping will
+send out a ping packet and move on to the next target in a round-robin
+fashion.")
+    (license license:expat)))
 
 (define-public httping
   (package
