@@ -32,6 +32,10 @@
     ((('guix 'import _ ...) ..1)
      #t)))
 
+(test-equal "scheme-modules, non-existent directory"
+  '()
+  (scheme-modules "/does/not/exist"))
+
 (test-assert "all-modules"
   (match (map module-name
               (all-modules `((,%top-srcdir . "guix/build-system"))))

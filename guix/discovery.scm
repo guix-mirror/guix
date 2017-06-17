@@ -38,7 +38,8 @@
 
 (define* (scheme-files directory)
   "Return the list of Scheme files found under DIRECTORY, recursively.  The
-returned list is sorted in alphabetical order."
+returned list is sorted in alphabetical order.  Return the empty list if
+DIRECTORY is not accessible."
   (define (entry-type name properties)
     (match (assoc-ref properties 'type)
       ('unknown
@@ -67,7 +68,15 @@ returned list is sorted in alphabetical order."
                        (else
                         result))))))
               '()
-              (scandir* directory)))
+              (catch 'system-error
+                (lambda ()
+                  (scandir* directory))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (unless (= errno ENOENT)
+                      (warning (G_ "cannot access `~a': ~a~%")
+                               directory (strerror errno)))
+                    '())))))
 
 (define file-name->module-name
   (let ((not-slash (char-set-complement (char-set #\/))))
