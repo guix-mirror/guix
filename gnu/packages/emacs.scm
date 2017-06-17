@@ -4635,6 +4635,27 @@ It should enable you to implement low-level X11 applications.")
 built on top of XELB.")
     (license license:gpl3+)))
 
+(define-public emacs-switch-window
+  (package
+    (name "emacs-switch-window")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dimitri/switch-window/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xyxqrw71krdnj3sdm4x05zw7n40h075s262jih75vmrix95sjlj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dimitri/switch-window")
+    (synopsis "Emacs window switch tool")
+    (description "Switch-window is an emacs window switch tool, which
+offer a visual way to choose a window to switch to, delete, split or
+other operations.")
+    (license license:wtfpl2)))
+
 (define-public emacs-gnuplot
   (package
     (name "emacs-gnuplot")
