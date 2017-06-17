@@ -870,8 +870,7 @@ system to PUT-OLD."
                     (proc (string->pointer name))))
         (if (null-pointer? ptr)
             (throw 'system-error "opendir*"
-                   "opendir*: ~A"
-                   (list (strerror err))
+                   "~A: ~A" (list name (strerror err))
                    (list err))
             ptr)))))
 
