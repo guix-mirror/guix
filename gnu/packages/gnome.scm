@@ -6317,4 +6317,4 @@ the project.  It can show a detailed summary of tasks including their
 duration, cost, and current progress.  It can also show a report of resource
 utilization that highlights under-utilized and over-utilized resources.  These
 views can be printed as PDF or PostScript files, or exported to HTML.")
-    (license license:gpl2)))
+    (license license:gpl2+)))
