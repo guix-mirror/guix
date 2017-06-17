@@ -820,6 +820,7 @@ following features:
                         "subversion/bindings/swig/perl/native"
                       (and (zero?
                             (system* "perl" "Makefile.PL"
+                                     "NO_PERLLOCAL=1"
                                      (string-append "PREFIX=" out)))
                            (zero?
                             (system* "make" "install"
