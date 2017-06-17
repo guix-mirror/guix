@@ -1218,6 +1218,7 @@ sets, bitmaps and hyperloglogs.")
     (arguments
      `(#:configure-flags
        (list
+        "--disable-opt" ;"-march=native". XXX this also turns off -O0.
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("zlib" ,zlib)))
