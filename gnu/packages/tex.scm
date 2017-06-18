@@ -195,7 +195,7 @@ This package contains the binaries.")
                     (revision %texlive-revision)))
               (sha256
                (base32
-                "1k11yvz4q95bxyxczwvd4r177h6a2gg03xmf51kmgjgz8an2gq2w"))))
+                "0fcy2hpapbj01ncpjj3v39yhr0jjxb6rm13qaxjjw66s3vydxls1"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
