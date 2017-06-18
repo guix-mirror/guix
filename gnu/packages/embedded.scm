@@ -507,7 +507,8 @@ with a layered architecture of JTAG interface and TAP support.")
                 (patches
                  (append
                   (origin-patches (package-source gcc-4.7))
-                  (search-patches "gcc-4.6-gnu-inline.patch")))))
+                  (search-patches "gcc-4.6-gnu-inline.patch"
+                                  "gcc-cross-environment-variables.patch")))))
       (home-page "https://github.com/dbetz/propgcc-gcc"))))
 
 ;; There is no release, so we take the latest version as referenced from here:
