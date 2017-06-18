@@ -4656,6 +4656,73 @@ offer a visual way to choose a window to switch to, delete, split or
 other operations.")
     (license license:wtfpl2)))
 
+(define-public emacs-exwm-x
+  (package
+    (name "emacs-exwm-x")
+    (version "1.1")
+    (synopsis "Derivative window manager based on EXWM")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/exwm-x/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06w6mp25prrlbr7p23rmnm4agdvjydw4c9dy32kzasgy0gplzbn7"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-exwm" ,emacs-exwm)
+       ("emacs-switch-window" ,emacs-switch-window)
+       ("emacs-ivy" ,emacs-ivy)))
+    (inputs
+     `(("xhost" ,xhost)
+       ("dbus" ,dbus)))
+    ;; Need emacs instead of emacs-minimal,
+    ;; for emacs's bin path will be inserted into bin/exwm-x file.
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-xsession
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions"))
+                    (bin (string-append out "/bin"))
+                    (exwm-executable (string-append bin "/exwm-x")))
+               ;; Add a .desktop file to xsessions
+               (mkdir-p xsessions)
+               (mkdir-p bin)
+               (with-output-to-file
+                   (string-append xsessions "/exwm-x.desktop")
+                 (lambda _
+                   (format #t "[Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a~@
+                     TryExec=~@*~a~@
+                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
+               (with-output-to-file exwm-executable
+                 (lambda _
+                   (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
+                     ~a +SI:localuser:$USER ~@
+                     exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
+                           (string-append (assoc-ref inputs "bash") "/bin/sh")
+                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
+                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
+                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           '(require 'exwmx-loader))))
+               (chmod exwm-executable #o555)
+               #t))))))
+    (home-page "https://github.com/tumashu/exwm-x")
+    (description "EXWM-X is a derivative window manager based on EXWM, with focus
+on mouse-control.")
+    (license license:gpl3+)))
+
 (define-public emacs-gnuplot
   (package
     (name "emacs-gnuplot")
