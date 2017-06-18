@@ -265,14 +265,14 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.18.0")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "python-efl" version))
         (sha256
          (base32
-          "0x49rb7mx7ysjp23m919r2rx8qnl4xackhl9s9x2697m7cs77n1r"))))
+          "0l0f9bv1134qh5376p5asycncidrhp8hdb6qwd8ybr1a61q9zq67"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
