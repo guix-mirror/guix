@@ -188,6 +188,30 @@ and network communications.  A very thin client library can be embedded to
 provide connectivity for client applications written in any language.")
     (license license:gpl3+)))
 
+(define-public nml
+  (package
+    (name "nml")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://bundles.openttdcoop.org/nml/releases/"
+                           version "/nml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wk9ls5qyjwkra54rkj1gg94xbwzi7b84a5fh1ma1q7pbimi8rmg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pillow" ,python-pillow)
+       ("python-ply" ,python-ply)))
+    (home-page "http://dev.openttdcoop.org/projects/nml")
+    (synopsis "NML compiler")
+    (description
+     "@dfn{NML} (NewGRF Meta Language) is a a python-based compiler, capable of
+compiling NML files (along with their associated language, sound and graphic
+files) into @file{.grf} and/or @file{.nfo} files.")
+    (license license:gpl2+)))
+
 (define-public python-sge-pygame
   (package
     (name "python-sge-pygame")
