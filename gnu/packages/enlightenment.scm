@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -208,7 +209,19 @@ Libraries with some extra bells and whistles.")
                 "1xvngjdsa0p901vfhrh2qpa50k32hwwhc8bgi16a9b5d9byzfhvn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-mount-eeze")))
+     `(#:configure-flags '("--enable-mount-eeze")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-keyboard
+           (lambda _
+             (let ((xkeyboard (assoc-ref %build-inputs "xkeyboard-config")))
+               ;; We need to patch the path to 'base.lst' to be able
+               ;; to switch the keyboard layout in E.
+               (substitute* "src/modules/xkbswitch/e_mod_parse.c"
+                 (("/usr/share/X11/xkb/rules/xorg.lst")
+                  (string-append xkeyboard
+                                 "/share/X11/xkb/rules/base.lst")))
+               #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -220,7 +233,8 @@ Libraries with some extra bells and whistles.")
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xkeyboard-config" ,xkeyboard-config)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description

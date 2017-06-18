@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,22 +66,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.3")
+   (version "1.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0zvv7wd011npcx7yphw9bpgivyxz6mlp87a57n96nv85k96dd2l6"))
-            (patches (search-patches "libextractor-ffmpeg-3.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             ;; Nowadays libmagic (from 'file') returns 'audio/ogg' and not
-             ;; 'application/ogg'.  Adjust accordingly.
-             '(substitute* "src/plugins/test_mime.c"
-                (("application/ogg")
-                 "audio/ogg")))))
+              "0v7ns5jhsyp1wzvbaydfgxnva5zd63gkzm9djhckmam9liq824l4"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -184,14 +176,14 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.54.0")
+   (version "7.54.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/"
                                 name "-" version ".tar.bz2"))
             (sha256
              (base32
-              "1ww346cdsxln6iq158a4wm38bmicg5wspd2c83gnqf1glx22hza0"))))
+              "0szbj352h95sgc9kbx9wzkgjksmg3g5k6cvlc7hz3wrbdh5gb0a4"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages

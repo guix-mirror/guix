@@ -482,6 +482,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libcaca" ,libcaca)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libtheora" ,libtheora)
+       ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
@@ -1001,7 +1002,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.06.05")
+    (version "2017.06.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1009,7 +1010,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "132f4csbl4bv71b01pnqfkd7hbbc6wclrh1h12fr1182954ahk5m"))))
+                "1p4d8g44v8vgr4xwvmbvzkjz6zakl2r89spaak6yw1zxmymd9b1w"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

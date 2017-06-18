@@ -1569,7 +1569,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.5.14")
+    (version "1.7.6.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1577,7 +1577,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1b5q79jkdrck5lq8lvhnpq2mly257r8lylp7b8sp8xn4365f86ch"))))
+                "0l7swvpzq20am4w2rsjpp6fsvbjv07il6wbfy45a7h9zsdihmqhl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2238,14 +2238,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1q4r5860dpkkw4fpfz3f8mvdd8xjpnwwzr9zybgmgb255bs0g4yz"))
+               "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -4049,7 +4049,8 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))))
+         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
@@ -4101,6 +4102,9 @@ fabulous Orb of Zot.")
                    license:zlib
                    license:asl2.0))))
 
+;; The linter here claims that patch file names should start with the package
+;; name. But, in this case, the patches are inherited from crawl with the
+;; "crawl-" prefix instead of "crawl-tiles-".
 (define-public crawl-tiles
   (package
     (inherit crawl)

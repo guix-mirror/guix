@@ -446,20 +446,6 @@ functionality tests.")
             (define marionette
               (make-marionette (list #$command)))
 
-            (define (wait-for-file file)
-              ;; Wait until FILE exists in the guest; 'read' its content and
-              ;; return it.
-              (marionette-eval
-               `(let loop ((i 10))
-                  (cond ((file-exists? ,file)
-                         (call-with-input-file ,file read))
-                        ((> i 0)
-                         (sleep 1)
-                         (loop (- i 1)))
-                        (else
-                         (error "file didn't show up" ,file))))
-               marionette))
-
             (mkdir #$output)
             (chdir #$output)
 
@@ -478,12 +464,12 @@ functionality tests.")
             ;; runs with the right UID/GID.
             (test-equal "root's job"
               '(0 0)
-              (wait-for-file "/root/witness"))
+              (wait-for-file "/root/witness" marionette))
 
             ;; Likewise for Alice's job.  We cannot know what its GID is since
             ;; it's chosen by 'groupadd', but it's strictly positive.
             (test-assert "alice's job"
-              (match (wait-for-file "/home/alice/witness")
+              (match (wait-for-file "/home/alice/witness" marionette)
                 ((1000 gid)
                  (>= gid 100))))
 
@@ -492,7 +478,7 @@ functionality tests.")
             ;; that don't have a read syntax, hence the string.)
             (test-equal "root's job with command"
               "#<eof>"
-              (wait-for-file "/root/witness-touch"))
+              (wait-for-file "/root/witness-touch" marionette))
 
             (test-end)
             (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

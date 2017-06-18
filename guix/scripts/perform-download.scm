@@ -106,11 +106,11 @@ of GnuTLS over HTTPS, before we have built GnuTLS.  See
     (match args
       (((? derivation-path? drv) (? store-path? output))
        (assert-low-privileges)
-       (perform-download (call-with-input-file drv read-derivation)
+       (perform-download (read-derivation-from-file drv)
                          output))
       (((? derivation-path? drv))                 ;backward compatibility
        (assert-low-privileges)
-       (perform-download (call-with-input-file drv read-derivation)))
+       (perform-download (read-derivation-from-file drv)))
       (("--version")
        (show-version-and-exit))
       (x

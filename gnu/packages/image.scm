@@ -415,7 +415,7 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 (define-public leptonica
   (package
     (name "leptonica")
-    (version "1.74.0")
+    (version "1.74.4")
     (source
      (origin
        (method url-fetch)
@@ -424,7 +424,7 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
              ".tar.gz"))
        (file-name (string-append "leptonica-" version ".tar.gz"))
        (sha256
-        (base32 "0i2a4vx9gizki0wgmv03xjz8j9d8agkvbag1a8m4kcw4asd4p87g"))))
+        (base32 "10pw7pwccd0m0fc9rlrr2m41s7j1qvba2wcrav17pw1gclkf34i0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnuplot" ,gnuplot)             ;needed for test suite
@@ -850,16 +850,18 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.25")
+    (version "0.26")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "http://www.exiv2.org/exiv2-"
+             (uri (list (string-append "http://www.exiv2.org/builds/exiv2-"
+                                       version "-trunk.tar.gz")
+                        (string-append "http://www.exiv2.org/exiv2-"
                                        version ".tar.gz")
                         (string-append "https://fossies.org/linux/misc/exiv2-"
                                        version ".tar.gz")))
              (sha256
               (base32
-               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
+               "1hsdzlzgkipprqh93yj81mrckl2l7c2mn2i84691pallnjz5qqhc"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (propagated-inputs

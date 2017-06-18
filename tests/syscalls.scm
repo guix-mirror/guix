@@ -24,6 +24,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
+  #:use-module (system foreign)
+  #:use-module ((ice-9 ftw) #:select (scandir))
   #:use-module (ice-9 match))
 
 ;; Test the (guix build syscalls) module, although there's not much that can
@@ -183,6 +185,64 @@
                         ((_ . status)
                          (status:exit-val status))))
                (eq? #t result))))))))
+
+(test-equal "scandir*, ENOENT"
+  ENOENT
+  (catch 'system-error
+    (lambda ()
+      (scandir* "/does/not/exist"))
+    (lambda args
+      (system-error-errno args))))
+
+(test-equal "scandir*, ASCII file names"
+  (scandir (dirname (search-path %load-path "guix/base32.scm"))
+           (const #t) string<?)
+  (match (scandir* (dirname (search-path %load-path "guix/base32.scm")))
+    (((names . properties) ...)
+     names)))
+
+(test-equal "scandir*, UTF-8 file names"
+  '("." ".." "α" "λ")
+  (call-with-temporary-directory
+   (lambda (directory)
+     ;; Wrap 'creat' to make sure that we really pass a UTF-8-encoded file
+     ;; name to the system call.
+     (let ((creat (pointer->procedure int
+                                      (dynamic-func "creat" (dynamic-link))
+                                      (list '* int))))
+       (creat (string->pointer (string-append directory "/α")
+                               "UTF-8")
+              #o644)
+       (creat (string->pointer (string-append directory "/λ")
+                               "UTF-8")
+              #o644)
+       (let ((locale (setlocale LC_ALL)))
+         (dynamic-wind
+           (lambda ()
+             ;; Make sure that even in a C locale we get the right result.
+             (setlocale LC_ALL "C"))
+           (lambda ()
+             (match (scandir* directory)
+               (((names . properties) ...)
+                names)))
+           (lambda ()
+             (setlocale LC_ALL locale))))))))
+
+(test-assert "scandir*, properties"
+  (let ((directory (dirname (search-path %load-path "guix/base32.scm"))))
+    (every (lambda (entry name)
+             (match entry
+               ((name2 . properties)
+                (and (string=? name2 name)
+                     (let* ((full  (string-append directory "/" name))
+                            (stat  (lstat full))
+                            (inode (assoc-ref properties 'inode))
+                            (type  (assoc-ref properties 'type)))
+                       (and (= inode (stat:ino stat))
+                            (or (eq? type 'unknown)
+                                (eq? type (stat:type stat)))))))))
+           (scandir* directory)
+           (scandir directory (const #t) string<?))))
 
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"

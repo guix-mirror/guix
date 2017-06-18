@@ -24,6 +24,8 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +67,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
@@ -103,6 +106,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
@@ -734,38 +738,6 @@ for settings shared by various components of the GNOME desktop.")
 Specification, the icon naming utility maps the icon names used by the
 GNOME and KDE desktops to the icon names proposed in the specification.")
     (license license:lgpl2.1+)))
-
-(define-public desktop-file-utils
-  (package
-    (name "desktop-file-utils")
-    (version "0.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.freedesktop.org/software/" name
-                                  "/releases/" name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("glib" ,glib)))
-    (home-page "http://www.freedesktop.org/wiki/Software/desktop-file-utils/")
-    (synopsis "Utilities for working with desktop entries")
-    (description
-     "This package contains a few command line utilities for working with
-desktop entries:
-
-desktop-file-validate: validates a desktop file and prints warnings/errors
-                       about desktop entry specification violations.
-
-desktop-file-install: installs a desktop file to the applications directory,
-                      optionally munging it a bit in transit.
-
-update-desktop-database: updates the database containing a cache of MIME types
-                         handled by desktop files.")
-    (license license:gpl2+)))
 
 (define-public gnome-icon-theme
   (package
@@ -2449,6 +2421,37 @@ and the GLib main loop, to integrate well with GNOME applications.")
 and other secrets.  It communicates with the \"Secret Service\" using DBus.")
     (license license:lgpl2.1+)))
 
+(define-public five-or-more
+  (package
+    (name "five-or-more")
+    (version "3.22.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b26afyjr26wqy5j008gzsi3hpblbmabh0192lx6414lml1qxkxs"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Five%20or%20more")
+    (synopsis "Logic puzzle game")
+    (description "Five or More is a game where you try to align
+ five or more objects of the same color and shape causing them to disappear.
+ On every turn more objects will appear, until the board is full.
+ Try to last as long as possible.")
+    (license license:gpl2+)))
+
 (define-public gnome-mines
   (package
     (name "gnome-mines")
@@ -2777,7 +2780,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2785,7 +2788,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ggspn3wmlkdxpfv4ym68qn1mzqc3hv666sykv8sv1ah40rbk28h"))))
+                "0g35xfcw9vh3sfff42blk9ksrlmkrjmj46h3ad0sqgdn6xh329qj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3324,7 +3327,7 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -3333,7 +3336,7 @@ as possible!")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0nvzr2gfk2mpzf99442zawv0n5yjcyy50rqkrvdsibknbm56hvzj"))))
+         "1qx072m0gl6m3d5g5cbbf13p4h217icmlxjnrn829x5xqwi451sw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
@@ -3341,10 +3344,11 @@ as possible!")
        ("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("glib" ,glib)
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)
-       ;; XXX TODO: Add oauth
+       ("liboauth" ,liboauth)
        ("libsoup" ,libsoup)
        ("nettle" ,nettle)
        ("totem-pl-parser" ,totem-pl-parser)))
@@ -4499,7 +4503,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4507,7 +4511,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yy10znqj278lnhdiqjcqxrwwv5c1jdjd0ncjbbdyh8n0q77hbwy"))))
+                "0lgniqmkr6ffdw3kcqd34lvp969j2q2qzcy30zkzl5c09r7anc0a"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -4662,7 +4666,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4670,7 +4674,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1y96k82rav8if334jl500zc024d210c4pgprh94yqyz3rmanyaxj"))
+                "17pn7kzilyl0qk525gp9xnbz4x0ssrdmgk1lvw95pyfd6rm5qnps"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -4751,8 +4755,11 @@ users.")
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
     (inputs
-     `(("dbus-glib" ,dbus-glib)
+     `(("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("dbus-glib" ,dbus-glib)
        ("dnsmasq" ,dnsmasq)
+       ("eudev" ,eudev)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
@@ -4803,7 +4810,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.4.2")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4811,12 +4818,9 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16a43sl9aijmvxbb08hbjqyjnlshj8dckycbgi9nm333fr47n6s3"))))
+                "09f9hjpn9nkhw57mk6pi7q1bq3lhf5hvmwas0fknscssak7yjmry"))))
     (build-system glib-or-gtk-build-system)
-    ;; TODO: WWAN support supposedly requires an update of glibmm which in turn
-    ;; requires an update of the its dependencies (glib and others).
-    (arguments '(#:configure-flags '("--disable-migration"
-                                     "--without-wwan")))
+    (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -4831,7 +4835,9 @@ services.")
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
-       ("jansson" ,jansson)))                     ;for team support
+       ("libselinux" ,libselinux)
+       ("jansson" ,jansson) ; for team support
+       ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
     (home-page "http://www.gnome.org/projects/NetworkManager/")
     (description
@@ -5595,7 +5601,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5603,7 +5609,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lc0xdgn0y12i87775xyy0p3a5l82w9k49cmwl1my8r8pwf9lp6s"))))
+                "1v7k1wcl5yg9bd4l0rz0z03h32d35zgfp4qzz21widjcyis41jry"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -6218,7 +6224,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.3.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6226,7 +6232,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n4kd5i11l79h8bpvx3cz79ww0b4z89y99h4czvyg80qlarn585w"))
+                "1ghh1xdzf04mfgb13zqpj88krpa44xv2vbyhm6k017kzrpz8hbs4"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -6266,4 +6272,49 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
      "gspell provides a flexible API to add spell-checking to a GTK+
 application.  It provides a GObject API, spell-checking to text entries and
 text views, and buttons to choose the language.")
+    (license license:gpl2+)))
+
+(define-public gnome-planner
+  (package
+    (name "gnome-planner")
+    (version "0.14.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/planner/"
+                                  (version-major+minor version) "/planner-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "15h6ps58giy5r1g66sg1l4xzhjssl362mfny2x09khdqsvk2j38k"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     ;; Disable the Python bindings because the Planner program functions
+     ;; without them, and (as of 2017-06-13) we have not packaged all of
+     ;; packages that are necessary for building the Python bindings.
+     `(#:configure-flags (list "--disable-python")))
+    (inputs
+     `(("libgnomecanvas" ,libgnomecanvas)
+       ("libgnomeui" ,libgnomeui)
+       ("libglade" ,libglade)
+       ("gnome-vfs" ,gnome-vfs)
+       ("gconf" ,gconf)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("scrollkeeper" ,scrollkeeper)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.gnome.org/Apps/Planner")
+    (synopsis "Project management software for the GNOME desktop")
+    (description
+     "GNOME Planner is a project management tool based on the Work Breakdown
+Structure (WBS).  Its goal is to enable you to easily plan projects.  Based on
+the resources, tasks, and constraints that you define, Planner generates
+various views into a project.  For example, Planner can show a Gantt chart of
+the project.  It can show a detailed summary of tasks including their
+duration, cost, and current progress.  It can also show a report of resource
+utilization that highlights under-utilized and over-utilized resources.  These
+views can be printed as PDF or PostScript files, or exported to HTML.")
     (license license:gpl2+)))

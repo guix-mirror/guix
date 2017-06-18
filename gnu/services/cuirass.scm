@@ -26,6 +26,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services admin)
   #:use-module (gnu system shadow)
   #:export (<cuirass-configuration>
             cuirass-configuration
@@ -138,6 +139,13 @@
             (chown #$cache uid gid)
             (chown #$db uid gid))))))
 
+(define (cuirass-log-rotations config)
+  "Return the list of log rotations that corresponds to CONFIG."
+  (list (log-rotation
+         (files (list (cuirass-configuration-log-file config)))
+         (frequency 'weekly)
+         (options '("rotate 40")))))              ;worth keeping
+
 (define cuirass-service-type
   (service-type
    (name 'cuirass)
@@ -145,6 +153,7 @@
     (list
      (service-extension profile-service-type      ;for 'info cuirass'
                         (compose list cuirass-configuration-cuirass))
+     (service-extension rottlog-service-type cuirass-log-rotations)
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
      (service-extension account-service-type cuirass-account)))))

@@ -358,8 +358,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.4")
-(define %linux-libre-hash "11nd9pv18vz3g82ja71dkz9mbs0ffb8yamsd44d381szmmm2kpj8")
+(define %linux-libre-version "4.11.6")
+(define %linux-libre-hash "0xay0m2a4la8aqc8ai8zqfh1c1i6sjgh0dywm7nis0g1gqirwrds")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -368,32 +368,22 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.31"
-                    "0amc35c9f2rym6grb277yscnx8ybn8d4fbc2a59sgkg1lsdv7n4q"
+  (make-linux-libre "4.9.33"
+                    "1dam6vqymhlx1vsl0lzxphamiifgyf97snxg18b2czqq402nz094"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.71"
-                    "0nrd165crx9m9s1px98if6q5dcdqwmas9kh8i4rw51gz2xinh0gx"
+  (make-linux-libre "4.4.73"
+                    "144ssqw1dr86z4cgl797pq5rggfibsxqk7wmfbl6j92l1cj6yjrz"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.40"
-                    "0ygc5qaxwd4yxyzyq6qya9w111q24xqzxd33x73pmg3hr7asvy4x"
+  (make-linux-libre "4.1.41"
+                    "02mqfl899jxvrmxlh8lvcgvm3klwd8wbsdz4rr2gpchbggj4vgb2"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4")
-                            (file-name "linux-libre-CVE-2017-6074.patch")
-                            (sha256
-                             (base32
-                              "1x40slfz1qxgiaznyy13bwlh34450pkyyrkljpyjlx6c4mrzb1jj"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -3387,14 +3377,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "152")
+    (version "153")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "0df1kbiw1pl84l6b9g515lpk5a81hmy8r27yakr4hrmi2vwzdfh6"))
+                "0q40d60p1klzg0aznvxhxgjlddwcxfj2q59s4q86sf9ild6rcdhl"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3960,10 +3950,11 @@ userspace queueing component and the logging subsystem.")
                               ;; build currently.)
                               (system* "make" "-C" "src" "install"
                                        (string-append "PREFIX=" out)))
-                             (begin
-                               (install-file "doc/proot/man.1"
-                                             (string-append out "/share"
-                                                            "/man/man1"))
+                             (let ((man1 (string-append out
+                                                        "/share/man/man1")))
+                               (mkdir-p man1)
+                               (copy-file "doc/proot/man.1"
+                                          (string-append man1 "/proot.1"))
                                #t))))))))
     (native-inputs `(("which" ,which)
 

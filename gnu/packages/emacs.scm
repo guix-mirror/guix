@@ -1740,6 +1740,29 @@ keep pressing the key until it selects what you want.  There's also
 column by drawing a thin line down the length of the editing window.")
     (license license:gpl3+)))
 
+(define-public emacs-inf-ruby
+  (package
+    (name "emacs-inf-ruby")
+    (version "2.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nonsequitur/inf-ruby/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m7323k649ckxql1grsdnf71bjhys7l4qb8wbpphb1mr1q8i4066"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/nonsequitur/inf-ruby")
+    (synopsis "Provides a REPL buffer connected to a Ruby subprocess in Emacs")
+    (description
+     "@code{inf-ruby} provides a Read Eval Print Loop (REPL) buffer, allowing
+for easy interaction with a ruby subprocess.  Features include support for
+detecting specific uses of Ruby, e.g. when using rails, and using a
+appropriate console.")
+    (license license:gpl3+)))
+
 (define-public emacs-znc
   (package
     (name "emacs-znc")
@@ -2780,7 +2803,7 @@ highlighted.  Pressing that character will switch to that window.")
 (define-public emacs-iedit
   (package
     (name "emacs-iedit")
-    (version "0.9.9")
+    (version "0.9.9.9")
     (source
      (origin
        (method url-fetch)
@@ -2789,7 +2812,7 @@ highlighted.  Pressing that character will switch to that window.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00v86zllcsivmiibigbr91qij2zdf1lr9db8z8again1sn63wkdj"))))
+         "1hv8q6pr85ss9g3158l1fqv3m62vsq8rslsi86jicr2dcxyascr0"))))
     (build-system emacs-build-system)
     (home-page "http://www.emacswiki.org/emacs/Iedit")
     (synopsis "Edit multiple regions in the same way simultaneously")
@@ -3097,7 +3120,7 @@ strings, and code folding.")
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/jrblevin"
@@ -3106,7 +3129,7 @@ strings, and code folding.")
               (file-name (string-append "markdown-mode-" version ".el"))
               (sha256
                (base32
-                "1faibar32jnjia9202swblw91q6z1g5s4k9xmypwjahfh8yznl6w"))))
+                "04isd2sdnms9acpmkd6n7b7y7j0x2kank2kry0zwbxs3bwdavgav"))))
     (build-system emacs-build-system)
     (home-page "http://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
@@ -3144,7 +3167,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/skeeto/elfeed/archive/"
@@ -3152,7 +3175,7 @@ If you want to mark a folder manually as a project just create an empty
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "145glas04zd0s2rmnif46vhyijs4z03v871gfp1dcrwxvvvns8ap"))))
+                "1wlwc8fbkg6w1c8p856ikc20xm72f51clnzz419p0g8cavy27npw"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -3305,7 +3328,7 @@ that uses the standard completion function completing-read.")
 (define-public emacs-yaml-mode
   (package
     (name "emacs-yaml-mode")
-    (version "0.0.12")
+    (version "0.0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/yoshiki"
@@ -3313,7 +3336,7 @@ that uses the standard completion function completing-read.")
               (file-name (string-append "yaml-mode-" version ".el"))
               (sha256
                (base32
-                "17wq433ycli0qx4gdhgrmb392qblm6y2dwcyn38j5ja1lasfb0ax"))))
+                "0im88sk9dqw03x6d6zaspgvg9i0pfpgb8f2zygrmbifh2w4pwmvj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yoshiki/yaml-mode")
     (synopsis "Major mode for editing YAML files")
@@ -3351,7 +3374,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "2.7.0")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3360,7 +3383,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1scdirpclgq3pi1j2c90gqaaqg1pgvasp98f4jqw8c5xbqcr7jdw"))))
+                "0pay8pi3fszykgskfbxsp4byad497cgfz4m886mxnkba1naxf6h7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)

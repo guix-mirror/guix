@@ -488,6 +488,28 @@ with a layered architecture of JTAG interface and TAP support.")
       (home-page "https://github.com/totalspectrum/gcc-propeller")
       (synopsis "GCC for the Parallax Propeller"))))
 
+(define-public propeller-gcc-4
+  (let ((xgcc propeller-gcc)
+        (commit "f1b01001b760d691a91ff1db4830d41bb712557f")
+        (revision "1"))
+    (package (inherit xgcc)
+      (name "propeller-gcc")
+      (version (string-append "4.6.1-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dbetz/propgcc-gcc.git")
+                      (commit commit)))
+                (file-name (string-append name "-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "15mxrhk2v4vqmdkvcqy33ag1wrg9x9q20kx2w33kkw8pkrijknbi"))
+                (patches
+                 (append
+                  (origin-patches (package-source gcc-4.7))
+                  (search-patches "gcc-4.6-gnu-inline.patch")))))
+      (home-page "https://github.com/dbetz/propgcc-gcc"))))
+
 ;; There is no release, so we take the latest version as referenced from here:
 ;; https://github.com/dbetz/propeller-gcc
 (define-public proplib
@@ -654,7 +676,7 @@ upload binaries to a Parallax Propeller micro-controller.")
 (define-public spin2cpp
   (package
     (name "spin2cpp")
-    (version "3.4.0")
+    (version "3.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/totalspectrum/spin2cpp/"
@@ -662,7 +684,7 @@ upload binaries to a Parallax Propeller micro-controller.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00i8i0dspd5115ggkv5vx2xqb21l6y38wz0bakgby8n3b4k9xnk0"))))
+                "0v5vzh69bp1r2byrpz12rql1w24ff2v9msr31596zq6hd6n82lnh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;; The tests assume that a micro-controller is connected.

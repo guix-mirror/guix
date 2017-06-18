@@ -80,21 +80,6 @@
                                                     (number->string #$port)
                                                     "-:5222"))))
 
-            (define (guest-wait-for-file file)
-              ;; Wait until FILE exists in the guest; 'read' its content and
-              ;; return it.
-              (marionette-eval
-               `(let loop ((i 10))
-                  (cond ((file-exists? ,file)
-                         (call-with-input-file ,file read))
-                        ((> i 0)
-                         (begin
-                           (sleep 1))
-                         (loop (- i 1)))
-                        (else
-                         (error "file didn't show up" ,file))))
-               marionette))
-
             (define (host-wait-for-file file)
               ;; Wait until FILE exists in the host.
               (let loop ((i 60))
@@ -124,7 +109,8 @@
 
             ;; Check XMPP service's PID.
             (test-assert "service process id"
-              (let ((pid (number->string (guest-wait-for-file #$pid-file))))
+              (let ((pid (number->string (wait-for-file #$pid-file
+                                                        marionette))))
                 (marionette-eval `(file-exists? (string-append "/proc/" ,pid))
                                  marionette)))
 

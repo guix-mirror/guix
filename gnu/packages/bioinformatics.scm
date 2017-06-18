@@ -97,7 +97,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public r-ape
   (package
@@ -2094,7 +2095,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.6")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2103,7 +2104,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y8a10b695pvgn7kk2s87jdwbdf7iszpnr6139pw8ina1ajs4w8y"))))
+                "04f501vj3i95i2b4n60831k00ljalifrq33419bbz0y3sjlmcnj3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2718,19 +2719,26 @@ comment or quality sections.")
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("FORCE_DYNAMIC=1") ; use shared libs
+     `(#:make-flags
+       '(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                                (%current-target-system)))
+                    '("x86_64" "mips64el" "aarch64"))
+             '("FORCE_DYNAMIC=1") ; use shared libs
+             '("FORCE_DYNAMIC=1" "FORCE_32BIT=1")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'bin-mkdir
-                     (lambda _
-                       (mkdir-p "bin")))
+          (lambda _
+            (mkdir-p "bin")
+            #t))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (install-file "bin/gemma"
-                                    (string-append
-                                     out "/bin"))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "bin/gemma"
+                             (string-append
+                              out "/bin")))
+             #t)))
        #:tests? #f)) ; no tests included yet
     (home-page "https://github.com/xiangzhou/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
@@ -9527,7 +9535,7 @@ applications for tackling some common problems in a user-friendly way.")
      "TADbit is a complete Python library to deal with all steps to analyze,
 model, and explore 3C-based data.  With TADbit the user can map FASTQ files to
 obtain raw interaction binned matrices (Hi-C like matrices), normalize and
-correct interaction matrices, identify adn compare the so-called
+correct interaction matrices, identify and compare the so-called
 @dfn{Topologically Associating Domains} (TADs), build 3D models from the
 interaction matrices, and finally, extract structural properties from the
 models.  TADbit is complemented by TADkit for visualizing 3D models.")

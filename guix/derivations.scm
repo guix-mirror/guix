@@ -82,6 +82,7 @@
             derivation-hash
 
             read-derivation
+            read-derivation-from-file
             write-derivation
             derivation->output-path
             derivation->output-paths
@@ -241,8 +242,7 @@ result is the set of prerequisites of DRV not already in valid."
              (append inputs result)
              (fold set-insert input-set inputs)
              (map (lambda (i)
-                    (call-with-input-file (derivation-input-path i)
-                      read-derivation))
+                    (read-derivation-from-file (derivation-input-path i)))
                   inputs)))))
 
 (define (offloadable-derivation? drv)
@@ -295,9 +295,8 @@ substituter many times."
     ;; info is not already in cache.
     ;; Also, skip derivations marked as non-substitutable.
     (append-map (lambda (input)
-                  (let ((drv (call-with-input-file
-                                 (derivation-input-path input)
-                               read-derivation)))
+                  (let ((drv (read-derivation-from-file
+                              (derivation-input-path input))))
                     (if (substitutable-derivation? drv)
                         (derivation-input-output-paths input)
                         '())))
@@ -400,13 +399,15 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
                                         (derivation-inputs drv))
                             substitute)
                     (map (lambda (i)
-                           (call-with-input-file (derivation-input-path i)
-                             read-derivation))
+                           (read-derivation-from-file
+                            (derivation-input-path i)))
                          inputs)
                     (map derivation-input-sub-derivations inputs)))))))
 
-(define (%read-derivation drv-port)
-  ;; Actually read derivation from DRV-PORT.
+(define (read-derivation drv-port)
+  "Read the derivation from DRV-PORT and return the corresponding <derivation>
+object.  Most of the time you'll want to use 'read-derivation-from-file',
+which caches things as appropriate and is thus more efficient."
 
   (define comma (string->symbol ","))
 
@@ -482,17 +483,16 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
   ;; XXX: This is redundant with 'atts-cache' in the store.
   (make-weak-value-hash-table 200))
 
-(define (read-derivation drv-port)
-  "Read the derivation from DRV-PORT and return the corresponding
+(define (read-derivation-from-file file)
+  "Read the derivation in FILE, a '.drv' file, and return the corresponding
 <derivation> object."
-  ;; Memoize that operation because `%read-derivation' is quite expensive,
+  ;; Memoize that operation because 'read-derivation' is quite expensive,
   ;; and because the same argument is read more than 15 times on average
   ;; during something like (package-derivation s gdb).
-  (let ((file (port-filename drv-port)))
-    (or (and file (hash-ref %derivation-cache file))
-        (let ((drv (%read-derivation drv-port)))
-          (hash-set! %derivation-cache file drv)
-          drv))))
+  (or (and file (hash-ref %derivation-cache file))
+      (let ((drv (call-with-input-file file read-derivation)))
+        (hash-set! %derivation-cache file drv)
+        drv)))
 
 (define-inlinable (write-sequence lst write-item port)
   ;; Write each element of LST with WRITE-ITEM to PORT, separating them with a
@@ -608,8 +608,7 @@ DRV."
 (define derivation-path->output-path
   ;; This procedure is called frequently, so memoize it.
   (let ((memoized (mlambda (path output)
-                    (derivation->output-path (call-with-input-file path
-                                               read-derivation)
+                    (derivation->output-path (read-derivation-from-file path)
                                              output))))
     (lambda* (path #:optional (output "out"))
       "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the store
@@ -619,7 +618,7 @@ path of its output OUTPUT."
 (define (derivation-path->output-paths path)
   "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the
 list of name/path pairs of its outputs."
-  (derivation->output-paths (call-with-input-file path read-derivation)))
+  (derivation->output-paths (read-derivation-from-file path)))
 
 
 ;;;
@@ -630,10 +629,8 @@ list of name/path pairs of its outputs."
   (mlambda (file)
     "Return a string containing the base16 representation of the hash of the
 derivation at FILE."
-    (call-with-input-file file
-      (compose bytevector->base16-string
-               derivation-hash
-               read-derivation))))
+    (bytevector->base16-string
+     (derivation-hash (read-derivation-from-file file)))))
 
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
   (mlambda (drv)
@@ -896,7 +893,7 @@ recursively."
              ((_ . replacement)
               (list replacement))
              (#f
-              (let* ((drv (loop (call-with-input-file path read-derivation))))
+              (let* ((drv (loop (read-derivation-from-file path))))
                 (cons drv sub-drvs))))))))
 
     (let loop ((drv drv))

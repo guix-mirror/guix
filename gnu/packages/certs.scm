@@ -74,7 +74,7 @@
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version "3.30.2")
+    (version "3.31")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -85,7 +85,7 @@
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "096frzvyp3z257x84rxknscfgsbavzh2a0gyibx7kvmw4vzpfjhd"))))
+                "0pd643a8ns7q5az5ai3ascrw666i2kbfiyy1c9hlhw9jd8jn21g9"))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs

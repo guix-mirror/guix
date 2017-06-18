@@ -4109,7 +4109,7 @@ available in later versions of base to a wider (older) range of compilers.")
 (define-public ghc-auto-update
   (package
     (name "ghc-auto-update")
-    (version "0.1.2.2")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -4119,7 +4119,7 @@ available in later versions of base to a wider (older) range of compilers.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ns4c5mqhnm7hsiqxf1ivjs5fflyq92b16ldzrcl0p85631h0c3v"))))
+         "09dlh2alsx2mw5kvj931yhbj0aw7jmly2cm9xbscm2sf098w35jy"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Efficiently run periodic, on-demand actions")
@@ -5085,7 +5085,7 @@ essentially the opposite of pretty-printing.")
 (define-public ghc-wai
   (package
     (name "ghc-wai")
-    (version "3.0.4.0")
+    (version "3.2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5095,7 +5095,7 @@ essentially the opposite of pretty-printing.")
              ".tar.gz"))
        (sha256
         (base32
-         "1551n0g0n22vml33v0jz5xgjcy6j79algvsdqg11a1z5ljjrjlqf"))))
+         "08afasnirja21vr0bmzcywz4w29x736dmdv7h8nnh1l8bn7sd02x"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
@@ -5153,7 +5153,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.0.11.1")
+    (version "3.0.13.1")
     (source
      (origin
        (method url-fetch)
@@ -5163,7 +5163,7 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kr2s5qyx1dvnwr372h7pca4sgxjv0pdx96xkgsfi180h3mb0vq8"))))
+         "0mh761a1bayr4ydwqmh3h8ndpi19zqw34mmy49lp2abr70r0nm1p"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -5890,7 +5890,7 @@ described in @url{http://www.lua.org/}.")
 (define-public ghc-http-client
   (package
     (name "ghc-http-client")
-    (version "0.4.24")
+    (version "0.5.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5898,7 +5898,7 @@ described in @url{http://www.lua.org/}.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xz133kdfiyy2rm6z95bmvjj6y2540xzd86cfmdv9s6kz4p1ir4k"))))
+                "1v9bdb8dkhb5g6jl9azk86ig7ia8xh9arr64n7s8r94fp0vl6c1c"))))
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
@@ -6371,7 +6371,7 @@ the choice of SSL/TLS, and SOCKS.")
 (define-public ghc-http-client-tls
   (package
     (name "ghc-http-client-tls")
-    (version "0.2.2")
+    (version "0.3.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -6379,7 +6379,7 @@ the choice of SSL/TLS, and SOCKS.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a01r05h5fxswyn6k6cgqgak4scqjan72hyy5wbdqzzhl4rmh7j5"))))
+                "1mbwdfn4hs8lcwml2l6xv4n068l9zlasyv6vwb2ylgm030pyv3xh"))))
     (build-system haskell-build-system)
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
@@ -8294,5 +8294,376 @@ that cause a shell to behave strangely and counter-intuitively.
 advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
     (license license:gpl3+)))
+
+(define-public ghc-wai-conduit
+  (package
+    (name "ghc-wai-conduit")
+    (version "3.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-conduit-" version "/"
+                           "wai-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zvsiwjq2mvkb9sjgp3ly9m968m7a2jjzr4id6jpi3mmqykj15z4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis "Conduit wrappers for Haskell's WAI")
+    (description "This package provides data streaming abstraction for
+Haskell's Web Application Interface (WAI).")
+    (license license:expat)))
+
+(define-public ghc-http-date
+  (package
+    (name "ghc-http-date")
+    (version "0.0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-date-" version "/"
+                           "http-date-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dknh28kyarnzqrsc80ssalxjrq0qbv7ir49247p2grb7rh0dqgj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-old-locale" ,ghc-old-locale)))
+    (home-page "https://github.com/kazu-yamamoto/http-date")
+    (synopsis "HTTP Date parser/formatter")
+    (description "Library for Parsing and formatting HTTP
+Date in Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-simple-sendfile
+  (package
+    (name "ghc-simple-sendfile")
+    (version "0.2.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "simple-sendfile-" version "/"
+                           "simple-sendfile-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k99j9xfcf83c55jmn202hdinhjaa4yn3dal4rvjk2w2rlhqirha"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-network" ,ghc-network)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/kazu-yamamoto/simple-sendfile")
+    (synopsis "Cross platform library for the sendfile system call")
+    (description "This library tries to call minimum system calls which
+are the bottleneck of web servers.")
+    (license license:bsd-3)))
+
+(define-public ghc-hex
+  (package
+    (name "ghc-hex")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hex-" version "/"
+                           "hex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v31xiaivrrn0q2jz8919wvkjplv1kxna5ajhsj701fqxm1i5vhj"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/hex")
+    (synopsis "Convert strings into hexadecimal and back")
+    (description "This package provides conversion functions between
+bytestrings and their hexademical representation.")
+    (license license:bsd-3)))
+
+(define-public ghc-psqueues
+  (package
+    (name "ghc-psqueues")
+    (version "0.2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "psqueues-" version "/"
+                           "psqueues-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dd6xv1wjxj1xinx155b14hijw8fafrg4096srzdzj7xyqq7qxbd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bttr/psqueues")
+    (synopsis "Pure priority search queues")
+    (description "The psqueues package provides
+@uref{http://en.wikipedia.org/wiki/Priority_queue, Priority Search Queues} in
+three different flavors:
+
+@itemize
+@item @code{OrdPSQ k p v}, which uses the @code{Ord k} instance to provide
+fast insertion, deletion and lookup.  This implementation is based on Ralf
+Hinze's @uref{http://citeseer.ist.psu.edu/hinze01simple.html, A Simple
+Implementation Technique for Priority Search Queues}.
+
+Hence, it is similar to the @uref{http://hackage.haskell.org/package/PSQueue,
+PSQueue} library, although it is considerably faster and provides a slightly
+different API.
+
+@item @code{IntPSQ p v} is a far more efficient implementation.  It fixes the
+key type to @code{Int} and uses a
+@code{http://en.wikipedia.org/wiki/Radix_tree, radix tree}
+(like @code{IntMap}) with an additional min-heap property.
+
+@item @code{HashPSQ k p v} is a fairly straightforward extension
+of @code{IntPSQ}: it simply uses the keys' hashes as indices in the
+@code{IntPSQ}.  If there are any hash collisions, it uses an
+@code{OrdPSQ} to resolve those.  The performance of this implementation
+is comparable to that of @code{IntPSQ}, but it is more widely
+applicable since the keys are not restricted to @code{Int},
+but rather to any @code{Hashable} datatype.
+@end itemize
+
+Each of the three implementations provides the same API, so they can
+be used interchangeably.
+
+Typical applications of Priority Search Queues include:
+
+@itemize
+@item Caches, and more specifically LRU Caches;
+@item Schedulers;
+@item Pathfinding algorithms, such as Dijkstra's and A*.
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public ghc-glob
+  (package
+    (name "ghc-glob")
+    (version "0.7.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "Glob-" version "/"
+                           "Glob-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aw43izg8vlvjl40ms6k92w7gxg7n3l6smdvzla47fp82s4vhdr8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-dlist" ,ghc-dlist)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "http://iki.fi/matti.niemenmaa/glob/")
+    (synopsis "Haskell library matching glob patterns against file paths")
+    (description "This package providesa Haskell library for globbing:
+matching patterns against file paths.")
+    (license license:bsd-3)))
+
+(define-public ghc-http2
+  (package
+    (name "ghc-http2")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http2-" version "/"
+                           "http2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hww0rfsv6lqx62qzycbcqy5q6rh9k09qkyjkdm5m1sp1z50wqk1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-hex" ,ghc-hex)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-psqueues" ,ghc-psqueues)
+       ("ghc-stm" ,ghc-stm)))
+       (native-inputs
+        `(("ghc-glob" ,ghc-glob)
+         ("ghc-hspec" ,ghc-hspec)
+         ("ghc-doctest" ,ghc-doctest)
+         ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/kazu-yamamoto/http2")
+    (synopsis "HTTP/2 library including frames, priority queues and HPACK")
+    (description "This package provides a HTTP/2.0 library including frames
+and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
+    (license license:bsd-3)))
+
+(define-public ghc-warp
+  (package
+    (name "ghc-warp")
+    (version "3.2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "warp-" version "/" "warp-" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1zp5cy0bbj508vdvms1n5z80z37m253kwsqc5a83cfc990n6fgw5"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-iproute" ,ghc-iproute)
+       ("ghc-network" ,ghc-network)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vault" ,ghc-vault)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-http-date" ,ghc-http-date)
+       ("ghc-simple-sendfile" ,ghc-simple-sendfile)
+       ("ghc-http2" ,ghc-http2)))
+    (native-inputs
+     `(("ghc-silently" ,ghc-silently)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-http" ,ghc-http)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "http://github.com/yesodweb/wai")
+    (synopsis "HTTP server library for Haskell's WAI")
+    (description "Warp is a server library for HTTP/1.x and HTTP/2
+based WAI (Web Application Interface in Haskell).")
+    (license license:expat)))
+
+(define-public ghc-warp-tls
+  (package
+    (name "ghc-warp-tls")
+    (version "3.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "warp-tls-" version "/"
+                           "warp-tls-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14m2bzk5ivz9gdpxlcj6qnh46f2lycm1ybdjnfkj2876zrqwii7m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-tls" ,ghc-tls)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)))
+    (home-page "http://github.com/yesodweb/wai")
+    (synopsis "SSL/TLS support for Warp")
+    (description "This package provides SSL/TLS support for Warp,
+a WAI handler, via the native Haskell TLS implementation.")
+    (license license:expat)))
+
+(define-public ghc-http-conduit
+  (package
+    (name  "ghc-http-conduit")
+    (version "2.2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-conduit-" version "/" "http-conduit-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "03na2nbm9la0shlijvjyb5mpp1prfskk4jmjy8iz707r0731dbjk"))))
+    (build-system haskell-build-system)
+    ;; FIXME: `httpLbs TLS` in test-suite `test` fails with
+    ;; ConnectionFailure getProtocolByName: does not exist (no such protocol
+    ;; name: tcp)
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-connection" ,ghc-connection)
+       ("ghc-warp-tls" ,ghc-warp-tls)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-network" ,ghc-network)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-wai-conduit" ,ghc-wai-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (home-page "https://hackage.haskell.org/package/http-conduit")
+    (synopsis "HTTP/HTTPS client with conduit interface")
+    (description "This library uses attoparsec for parsing the actual
+contents of the HTTP connection.  It also provides higher-level functions
+which allow you to avoid direct usage of conduits.")
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here

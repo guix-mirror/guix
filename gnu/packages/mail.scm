@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.infotropique.org>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170602")
+    (version "20170609")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1kzhkz8bdqbdh5b6pzqb6ikp8d3nsic906b5pkmi6qlaga32yxjk"))))
+         "1kdhnhdlv84v6brhqgh8g0h6cpcbwfc59b4g09zkkgqc4fnggapy"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -296,10 +296,7 @@ operating systems.")
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list "--enable-smtp"
-             "--enable-imap"
-             "--enable-pop"
-             "--enable-gpgme"
+       (list "--enable-gpgme"
 
              ;; database, implies header caching
              "--without-tokyocabinet"
@@ -325,8 +322,6 @@ operating systems.")
              "--with-mailpath=/var/mail"
 
              "--with-external-dotlock"
-             "--enable-nntp"
-             "--enable-compressed"
 
              (string-append "--with-curses="
                             (assoc-ref %build-inputs "ncurses")))

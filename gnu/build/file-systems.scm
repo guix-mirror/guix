@@ -419,6 +419,10 @@ warning and #f as the result."
                  #f)
                 ((= ENOMEDIUM errno)              ;for removable media
                  #f)
+                ((= EIO errno)                    ;unreadable hardware like audio CDs
+                 (format (current-error-port)
+                         "warning: failed to read from device '~a'~%" device)
+                 #f)
                 (else
                  (apply throw args))))))))
 

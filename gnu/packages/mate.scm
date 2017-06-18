@@ -37,7 +37,7 @@
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
-    (version "1.16.0")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -45,7 +45,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zldw22p1i76iss8car39pmfagpfxxlfk1fdhvr4x5r6gf36gv7d"))))
+                "0si3li3kza7s45zhasjvqn5f85zpkn0x8i4kq1dlnqvjjqzkg4ch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -92,7 +92,7 @@ themes for both gtk+-2 and gtk+-3.")
 (define-public mate-desktop
   (package
     (name "mate-desktop")
-    (version "1.16.1")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -100,11 +100,8 @@ themes for both gtk+-2 and gtk+-3.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pzncfgrzp2mp9407ivk1113hkadpf110blr058h31jkwsk8syjq"))))
+                "12iv2y4dan962fs7vkkxbjkp77pbvjnwfa43ggr0zkdsc3ydjbbg"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags '("--with-gtk=3.0"
-                           "--enable-mpaste")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -115,7 +112,6 @@ themes for both gtk+-2 and gtk+-3.")
     (inputs
      `(("gtk+" ,gtk+)
        ("libxrandr" ,libxrandr)
-       ("python2" ,python-2)
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
      `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
@@ -129,7 +125,7 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.16.1")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -137,14 +133,13 @@ desktop and the mate-about program.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0w1b8b1ckmkbvwnqi9yh2lwbskzhz99s5yxdkar5xiqylnjrwmm3"))))
+                "0z6vfh42fv9rqjrraqfpf6h9nd9h662bxy3l3r48j19xvxrwmx3a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `("--with-gtk=3.0"
-         ,(string-append "--with-zoneinfo-dir="
-                         (assoc-ref %build-inputs "tzdata")
-                         "/share/zoneinfo"))
+       (list (string-append "--with-zoneinfo-dir="
+                            (assoc-ref %build-inputs "tzdata")
+                            "/share/zoneinfo"))
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -178,7 +173,7 @@ the MATE desktop environment.")
 (define-public mate-menus
   (package
     (name "mate-menus")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pub.mate-desktop.org/releases/"
@@ -186,7 +181,7 @@ the MATE desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0crw07iszwsqk54y8znfqdgfz76rjdz8992v4q9kpwwlrl11xmc5"))))
+                "05kyr37xqv6hm1rlvnqd5ng0x1n883brqynkirkk5drl56axnz7h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

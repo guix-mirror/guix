@@ -946,9 +946,10 @@ followed by \"+ \", which makes for a valid multi-line field value in the
                       '()
                       str)))
 
-(define* (package->recutils p port #:optional (width (%text-width)))
+(define* (package->recutils p port #:optional (width (%text-width))
+                            #:key (extra-fields '()))
   "Write to PORT a `recutils' record of package P, arranging to fit within
-WIDTH columns."
+WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
   (define width*
     ;; The available number of columns once we've taken into account space for
     ;; the initial "+ " prefix.
@@ -993,11 +994,11 @@ WIDTH columns."
              (G_ "unknown"))))
   (format port "synopsis: ~a~%"
           (string-map (match-lambda
-                       (#\newline #\space)
-                       (chr       chr))
+                        (#\newline #\space)
+                        (chr       chr))
                       (or (and=> (package-synopsis-string p) P_)
                           "")))
-  (format port "~a~2%"
+  (format port "~a~%"
           (string->recutils
            (string-trim-right
             (parameterize ((%text-width width*))
@@ -1005,7 +1006,16 @@ WIDTH columns."
                (string-append "description: "
                               (or (and=> (package-description p) P_)
                                   ""))))
-            #\newline))))
+            #\newline)))
+  (for-each (match-lambda
+              ((field . value)
+               (let ((field (symbol->string field)))
+                 (format port "~a: ~a~%"
+                         field
+                         (fill-paragraph (object->string value) width*
+                                         (string-length field))))))
+            extra-fields)
+  (newline port))
 
 (define (string->generations str)
   "Return the list of generations matching a pattern in STR.  This function
@@ -1308,13 +1318,24 @@ found."
     (parameterize ((program-name command))
       ;; Disable canonicalization so we don't don't stat unreasonably.
       (with-fluids ((%file-port-name-canonicalization #f))
-        (apply command-main args)))))
+        (dynamic-wind
+          (const #f)
+          (lambda ()
+            (apply command-main args))
+          (lambda ()
+            ;; Abuse 'exit-hook' (which is normally meant to be used by the
+            ;; REPL) to run things like profiling hooks upon completion.
+            (run-hook exit-hook)))))))
 
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
 Unlike 'guix-main', this procedure assumes that locale, i18n support,
 and signal handling has already been set up."
   (define option? (cut string-prefix? "-" <>))
+
+  ;; The default %LOAD-EXTENSIONS includes the empty string, which doubles the
+  ;; number of 'stat' calls per entry in %LOAD-PATH.  Shamelessly remove it.
+  (set! %load-extensions '(".scm"))
 
   (match args
     (()

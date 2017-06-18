@@ -718,6 +718,37 @@ encoding conversion errors."
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
+(define %rpc-calls
+  ;; Mapping from RPC names (symbols) to invocation counts.
+  (make-hash-table))
+
+(define* (show-rpc-profile #:optional (port (current-error-port)))
+  "Write to PORT a summary of the RPCs that have been made."
+  (let ((profile (sort (hash-fold alist-cons '() %rpc-calls)
+                       (lambda (rpc1 rpc2)
+                         (< (cdr rpc1) (cdr rpc2))))))
+    (format port "Remote procedure call summary: ~a RPCs~%"
+            (match profile
+              (((names . counts) ...)
+               (reduce + 0 counts))))
+    (for-each (match-lambda
+                ((rpc . count)
+                 (format port "  ~30a ... ~5@a~%" rpc count)))
+              profile)))
+
+(define record-operation
+  ;; Optionally, increment the number of calls of the given RPC.
+  (let ((profiled (or (and=> (getenv "GUIX_PROFILING") string-tokenize)
+                      '())))
+    (if (member "rpc" profiled)
+        (begin
+          (add-hook! exit-hook show-rpc-profile)
+          (lambda (name)
+            (let ((count (or (hashq-ref %rpc-calls name) 0)))
+              (hashq-set! %rpc-calls name (+ count 1)))))
+        (lambda (_)
+          #t))))
+
 (define-syntax operation
   (syntax-rules ()
     "Define a client-side RPC stub for the given operation."
@@ -725,6 +756,7 @@ encoding conversion errors."
      (lambda (server arg ...)
        docstring
        (let ((s (nix-server-socket server)))
+         (record-operation 'name)
          (write-int (operation-id name) s)
          (write-arg type arg s)
          ...
@@ -830,10 +862,11 @@ bits are kept.  HASH-ALGO must be a string such as \"sha256\".
 When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
 where FILE is the entry's absolute file name and STAT is the result of
 'lstat'; exclude entries for which SELECT? does not return true."
-      (let* ((st    (false-if-exception (lstat file-name)))
-             (args  `(,st ,basename ,recursive? ,hash-algo ,select?))
+      ;; Note: We don't stat FILE-NAME at each call, and thus we assume that
+      ;; the file remains unchanged for the lifetime of SERVER.
+      (let* ((args  `(,file-name ,basename ,recursive? ,hash-algo ,select?))
              (cache (nix-server-add-to-store-cache server)))
-        (or (and st (hash-ref cache args))
+        (or (hash-ref cache args)
             (let ((path (add-to-store server basename recursive?
                                       hash-algo file-name
                                       #:select? select?)))

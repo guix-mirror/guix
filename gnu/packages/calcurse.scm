@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +22,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages ncurses))
 
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "4.0.0")
+    (version "4.2.2")
     (source
      (origin
       (method url-fetch)
@@ -35,14 +36,21 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0d33cpkbhyidvm3xx6iw9ljqdvl6477c2kcwix3bs63nj0ch06v2"))))
+        "0il0y06akdqgy0f9p40m4x6arn66nh7sr1w1i41bszycs7div266"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs `(("ncurses" ,ncurses)
+              ("tzdata" ,tzdata)))
     (arguments
      ;; The ical tests all want to create a ".calcurse" directory, and may
      ;; fail with "cannot create directory '.calcurse': File exists" if run
      ;; concurently.
-     '(#:parallel-tests? #f))
+     '(#:parallel-tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'check-setup
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "TZDIR"   ;for test/ical-007.sh
+                              (string-append (assoc-ref inputs "tzdata")
+                                             "/share/zoneinfo")))))))
     (home-page "http://www.calcurse.org")
     (synopsis "Text-based calendar and scheduling")
     (description

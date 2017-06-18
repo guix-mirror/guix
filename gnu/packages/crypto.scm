@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -315,18 +315,18 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "1j90ab8x4cf10167yw4cs4frz694gb0qwkhgqiz1ly7mnr8ysmby"))))
+                "1hv1w79as7swqj0n137vz8n8mwvcgwlvd91sdyssz41jarg7f1vr"))))
     (build-system gnu-build-system)
+    (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
      `(("zsh" ,zsh)
-       ("sudo" ,sudo)
        ("gnupg" ,gnupg)
        ("cryptsetup" ,cryptsetup)
        ("e2fsprogs" ,e2fsprogs)         ;for mkfs.ext4
@@ -334,8 +334,7 @@ no man page, refer to the home page for usage details.")
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)
-       ("steghide" ,steghide)
-       ("swish-e" ,swish-e)))
+       ("steghide" ,steghide)))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        ;; TODO: Build and install gtk and qt trays
@@ -358,7 +357,7 @@ no man page, refer to the home page for usage details.")
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry" "sudo"
                              "gpg" "cryptsetup" "gettext"
-                             "qrencode" "steghide" "swish-e")))))
+                             "qrencode" "steghide")))))
                #t)))
          (delete 'check)
          (add-after 'wrap 'check

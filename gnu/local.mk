@@ -548,6 +548,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
   %D%/packages/patches/cracklib-fix-buffer-overflow.patch	\
+  %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
@@ -600,6 +601,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-4.6-gnu-inline.patch			\
   %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   %D%/packages/patches/gcc-5-source-date-epoch-1.patch		\
@@ -647,8 +649,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
-  %D%/packages/patches/guile-ssh-rexec-bug.patch		\
+  gnu/packages/patches/guile-ssh-channel-finalization.patch	\
   %D%/packages/patches/guile-ssh-double-free.patch		\
+  %D%/packages/patches/guile-ssh-rexec-bug.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
@@ -721,7 +724,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
-  %D%/packages/patches/libextractor-ffmpeg-3.patch		\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
@@ -736,6 +738,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
+  %D%/packages/patches/libmwaw-CVE-2017-9433.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -828,7 +831,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
   %D%/packages/patches/node-9077.patch				\
-  %D%/packages/patches/nss-disable-long-b64-tests.patch		\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2017-0358.patch		\
@@ -852,6 +854,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
+  %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
@@ -1058,7 +1061,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
+  %D%/packages/patches/zziplib-CVE-2017-5974.patch		\
+  %D%/packages/patches/zziplib-CVE-2017-5975.patch		\
+  %D%/packages/patches/zziplib-CVE-2017-5976.patch		\
+  %D%/packages/patches/zziplib-CVE-2017-5978.patch		\
+  %D%/packages/patches/zziplib-CVE-2017-5979.patch		\
+  %D%/packages/patches/zziplib-CVE-2017-5981.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

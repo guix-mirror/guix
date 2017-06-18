@@ -1,0 +1,83 @@
+Store the crawl version in the textdatabases in SAVEDIR and
+upgrade the databases when the crawl version changes.
+
+By default crawl checks for a mtime difference on files in DATADIR to see if an
+upgrade is required, but guix nulls all file dates,
+and crawl would never upgrade saves.
+
+--- a/source/database.cc	2016-05-31 09:56:08.000000000 +0200
++++ a/source/database.cc	2017-06-05 03:00:19.270632107 +0200
+@@ -25,6 +25,7 @@
+ #include "syscalls.h"
+ #include "threads.h"
+ #include "unicode.h"
++#include "version.h"
+ 
+ // TextDB handles dependency checking the db vs text files, creating the
+ // db, loading, and destroying the DB.
+@@ -55,6 +56,7 @@
+     vector<string> _input_files;
+     DBM* _db;
+     string timestamp;
++    string version;
+     TextDB *_parent;
+     const char* lang() { return _parent ? Options.lang_name : 0; }
+ public:
+@@ -165,7 +167,7 @@
+ 
+ TextDB::TextDB(const char* db_name, const char* dir, ...)
+     : _db_name(db_name), _directory(dir),
+-      _db(nullptr), timestamp(""), _parent(0), translation(0)
++      _db(nullptr), timestamp(""), version(""),  _parent(0), translation(0)
+ {
+     va_list args;
+     va_start(args, dir);
+@@ -187,7 +189,7 @@
+     : _db_name(parent->_db_name),
+       _directory(parent->_directory + Options.lang_name + "/"),
+       _input_files(parent->_input_files), // FIXME: pointless copy
+-      _db(nullptr), timestamp(""), _parent(parent), translation(nullptr)
++      _db(nullptr), timestamp(""), version(""), _parent(parent), translation(nullptr)
+ {
+ }
+ 
+@@ -202,6 +204,9 @@
+         return false;
+ 
+     timestamp = _query_database(*this, "TIMESTAMP", false, false, true);
++    version = _query_database(*this, "VERSION", false, false, true);
++    if (version.empty())
++        return false;
+     if (timestamp.empty())
+         return false;
+ 
+@@ -245,6 +250,9 @@
+     string ts;
+     bool no_files = true;
+ 
++    if (string(Version::Long) != version)
++        return true;
++
+     for (const string &file : _input_files)
+     {
+         string full_input_path = _directory + file;
+@@ -261,7 +269,7 @@
+         ts += buf;
+     }
+ 
+-    if (no_files && timestamp.empty())
++    if (no_files && timestamp.empty() && version.empty())
+     {
+         // No point in empty databases, although for simplicity keep ones
+         // for disappeared translations for now.
+@@ -321,7 +329,10 @@
+             _store_text_db(full_input_path, _db);
+         }
+     }
++
++    string current_version = string(Version::Long);
+     _add_entry(_db, "TIMESTAMP", ts);
++    _add_entry(_db, "VERSION", current_version);
+ 
+     dbm_close(_db);
+     _db = 0;

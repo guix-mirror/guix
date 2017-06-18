@@ -87,7 +87,7 @@ found.  Return #f if no build log was found."
              ;; Usually we'll have more luck with the output file name since
              ;; the deriver that was used by the server could be different, so
              ;; try one of the output file names.
-             (let ((drv (call-with-input-file file read-derivation)))
+             (let ((drv (read-derivation-from-file file)))
                (or (find-url (derivation->output-path drv))
                    (find-url file))))
            (lambda args
@@ -599,7 +599,7 @@ build---packages, gexps, derivations, and so on."
   (append-map (match-lambda
                 (('argument . (? string? spec))
                  (cond ((derivation-path? spec)
-                        (list (call-with-input-file spec read-derivation)))
+                        (list (read-derivation-from-file spec)))
                        ((store-path? spec)
                         ;; Nothing to do; maybe for --log-file.
                         '())

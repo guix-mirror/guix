@@ -50,7 +50,7 @@
       (origin
         (method url-fetch)
         (uri
-          (string-append "http://abisource.org/downloads/" name "/" version
+          (string-append "https://www.abisource.com/downloads/" name "/" version
                          "/source/" name "-" version ".tar.gz"))
         (sha256
          (base32 "08imry821g81apdwym3gcs4nss0l9j5blqk31j5rv602zmcd9gxg"))
@@ -111,7 +111,7 @@
         ("glib:bin" ,glib "bin")
         ("libtool" ,libtool)
         ("pkg-config" ,pkg-config)))
-    (home-page "http://abisource.org/")
+    (home-page "https://www.abisource.com/")
     (synopsis "Word processing program")
 
     ;; HACKERS: The comment below is here so that it shows up early in the

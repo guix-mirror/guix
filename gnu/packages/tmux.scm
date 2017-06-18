@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,3 +90,48 @@ continue running in the background, then later reattached.")
       (description "A collection of various themes for Tmux.")
       (license
        (non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+
+(define-public tmuxifier
+  (package
+    (name "tmuxifier")
+    (version "0.13.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                    "https://github.com/jimeh/tmuxifier/archive/v"
+                    version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1j9fj6zg0j3sdn7svpybzsqh7876rv81zi437976kj7hxnyjkcz7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out    (assoc-ref %outputs "out"))
+                             (bindir (string-append out "/bin"))
+                             (share  (string-append out "/share/" ,name)))
+                        (install-file "bin/tmuxifier" bindir)
+                        (substitute* (string-append bindir "/tmuxifier")
+                          (("set -e")
+                           (string-append "TMUXIFIER=" share "\nset -e")))
+                        (for-each (lambda (init-script)
+                                    (install-file init-script (string-append
+                                                               share "/init")))
+                                  '("init.sh" "init.tcsh" "init.fish"))
+                        (for-each (lambda (dir)
+                                    (copy-recursively dir (string-append
+                                                           share "/" dir)))
+                                  '("completion" "lib" "libexec"
+                                    "templates"))))))))
+    (home-page "https://github.com/jimeh/tmuxifier")
+    (synopsis "Powerful session, window & pane management for Tmux")
+    (description "Tmuxifier allows you to easily create, edit, and load
+@code{layout} files, which are simple shell scripts where you use the tmux
+command and helper commands provided by tmuxifier to manage Tmux sessions and
+windows.")
+    (license expat)))

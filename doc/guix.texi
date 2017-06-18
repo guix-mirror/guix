@@ -21,7 +21,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
-Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
+Copyright @copyright{} 2015, 2016, 2017 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
@@ -1441,6 +1441,30 @@ some reason, you want to avoid auto-loading Emacs packages installed
 with Guix, you can do so by running Emacs with @code{--no-site-file}
 option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
+@subsection The GCC toolchain
+
+@cindex GCC
+@cindex ld-wrapper
+
+Guix offers individual compiler packages such as @code{gcc} but if you
+are in need of a complete toolchain for compiling and linking source
+code what you really want is the @code{gcc-toolchain} package.  This
+package provides a complete GCC toolchain for C/C++ development,
+including GCC itself, the GNU C Library (headers and binaries, plus
+debugging symbols in the @code{debug} output), Binutils, and a linker
+wrapper.
+
+@cindex attempt to use impure library, error message
+
+The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
+passed to the linker, add corresponding @code{-rpath} arguments, and
+invoke the actual linker with this new set of arguments.  By default,
+the linker wrapper refuses to link to libraries outside the store to
+ensure ``purity''.  This can be annoying when using the toolchain to
+link with local libraries.  To allow references to libraries outside the
+store you need to define the environment variable
+@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES}.
+
 @c TODO What else?
 
 @c *********************************************************************
@@ -1742,18 +1766,17 @@ of packages:
        (list guile-2.0 "debug")))
 @end example
 
-@findex specification->package+output
+@findex specifications->manifest
 In this example we have to know which modules define the @code{emacs}
 and @code{guile-2.0} variables to provide the right
 @code{use-package-modules} line, which can be cumbersome.  We can
 instead provide regular package specifications and let
-@code{specification->package-output} look up the corresponding package
+@code{specifications->manifest} look up the corresponding package
 objects, like this:
 
 @example
-(packages->manifest
- (map (compose list specification->package+output)
-      '("emacs" "guile@@2.0" "guile@@2.0:debug")))
+(specifications->manifest
+ '("emacs" "guile@@2.2" "guile@@2.2:debug"))
 @end example
 
 @item --roll-back
@@ -1855,7 +1878,7 @@ availability of packages:
 @itemx -s @var{regexp}
 @cindex searching for packages
 List the available packages whose name, synopsis, or description matches
-@var{regexp}.  Print all the metadata of matching packages in
+@var{regexp}, sorted by relevance.  Print all the metadata of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
 GNU recutils manual}).
 
@@ -1863,12 +1886,18 @@ This allows specific fields to be extracted using the @command{recsel}
 command, for instance:
 
 @example
-$ guix package -s malloc | recsel -p name,version
+$ guix package -s malloc | recsel -p name,version,relevance
+name: jemalloc
+version: 4.5.0
+relevance: 6
+
 name: glibc
-version: 2.17
+version: 2.25
+relevance: 1
 
 name: libgc
-version: 7.2alpha6
+version: 7.6.0
+relevance: 1
 @end example
 
 Similarly, to show the name of all the packages available under the
@@ -3573,6 +3602,25 @@ INSTALL --library=/gnu/store/@dots{}} in an environment where
 @code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
 are run after installation using the R function
 @code{tools::testInstalledPackage}.
+@end defvr
+
+@defvr {Scheme Variable} texlive-build-system
+This variable is exported by @code{(guix build-system texlive)}.  It is
+used to build TeX packages in batch mode with a specified engine.  The
+build system sets the @code{TEXINPUTS} variable to find all TeX source
+files in the inputs.
+
+By default it runs @code{luatex} on all files ending on @code{ins}.  A
+different engine and format can be specified with the
+@code{#:tex-format} argument.  Different build targets can be specified
+with the @code{#:build-targets} argument, which expects a list of file
+names.  The build system adds only @code{texlive-bin} and
+@code{texlive-latex-base} (both from @code{(gnu packages tex}) to the
+inputs.  Both can be overridden with the arguments @code{#:texlive-bin}
+and @code{#:texlive-latex-base}, respectively.
+
+The @code{#:tex-directory} parameter tells the build system where to
+install the built files under the texmf tree.
 @end defvr
 
 @defvr {Scheme Variable} ruby-build-system
@@ -5647,6 +5695,38 @@ R package:
 guix import cran --archive=bioconductor GenomicRanges
 @end example
 
+@item texlive
+@cindex TeX Live
+@cindex CTAN
+Import metadata from @uref{http://www.ctan.org/, CTAN}, the
+comprehensive TeX archive network for TeX packages that are part of the
+@uref{https://www.tug.org/texlive/, TeX Live distribution}.
+
+Information about the package is obtained through the XML API provided
+by CTAN, while the source code is downloaded from the SVN repository of
+the Tex Live project.  This is done because the CTAN does not keep
+versioned archives.
+
+The command command below imports metadata for the @code{fontspec}
+TeX package:
+
+@example
+guix import texlive fontspec
+@end example
+
+When @code{--archive=DIRECTORY} is added, the source code is downloaded
+not from the @file{latex} sub-directory of the @file{texmf-dist/source}
+tree in the TeX Live SVN repository, but from the specified sibling
+directory under the same root.
+
+The command below imports metadata for the @code{ifxetex} package from
+CTAN while fetching the sources from the directory
+@file{texmf/source/generic}:
+
+@example
+guix import texlive --archive=generic ifxetex
+@end example
+
 @item nix
 Import metadata from a local copy of the source of the
 @uref{http://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
@@ -7716,10 +7796,11 @@ Create a disk image that will hold the installed system.  To make a
 qcow2-formatted disk image, use the @command{qemu-img} command:
 
 @example
-qemu-img create -f qcow2 guixsd.img 5G
+qemu-img create -f qcow2 guixsd.img 50G
 @end example
 
-This will create a 5GB file.
+The resulting file will be much smaller than 50 GB (typically less than
+1 MB), but it will grow as the virtualized storage device is filled up.
 
 @item
 Boot the USB installation image in an VM:
@@ -9544,7 +9625,7 @@ services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
 log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
 
 The example below defines an operating system that provides log rotation
-with the default settings.
+with the default settings, for commonly encountered log files.
 
 @lisp
 (use-modules (guix) (gnu))
@@ -9562,6 +9643,9 @@ with the default settings.
 This is the type of the Rottlog service, whose value is a
 @code{rottlog-configuration} object.
 
+Other services can extend this one with new @code{log-rotation} objects
+(see below), thereby augmenting the set of files to be rotated.
+
 This service type can define mcron jobs (@pxref{Scheduled Job
 Execution}) to run the rottlog service.
 @end defvr
@@ -9577,23 +9661,8 @@ The Rottlog package to use.
 The Rottlog configuration file to use (@pxref{Mandatory RC Variables,,,
 rottlog, GNU Rot[t]log Manual}).
 
-@item @code{periodic-rotations} (default: @code{`(("weekly" %default-rotations))})
-A list of Rottlog period-name/period-config tuples.
-
-For example, taking an example from the Rottlog manual (@pxref{Period
-Related File Examples,,, rottlog, GNU Rot[t]log Manual}), a valid tuple
-might be:
-
-@example
-("daily" ,(plain-file "daily"
-                      "\
-     /var/log/apache/* @{
-        storedir apache-archives
-        rotate 6
-        notifempty
-        nocompress
-     @}"))
-@end example
+@item @code{rotations} (default: @code{%default-rotations})
+A list of @code{log-rotation} objects as defined below.
 
 @item @code{jobs}
 This is a list of gexps where each gexp corresponds to an mcron job
@@ -9601,9 +9670,44 @@ specification (@pxref{Scheduled Job Execution}).
 @end table
 @end deftp
 
+@deftp {Data Type} log-rotation
+Data type representing the rotation of a group of log files.
+
+Taking an example from the Rottlog manual (@pxref{Period Related File
+Examples,,, rottlog, GNU Rot[t]log Manual}), a log rotation might be
+defined like this:
+
+@example
+(log-rotation
+  (frequency 'daily)
+  (files '("/var/log/apache/*"))
+  (options '("storedir apache-archives"
+             "rotate 6"
+             "notifempty"
+             "nocompress")))
+@end example
+
+The list of fields is as follows:
+
+@table @asis
+@item @code{frequency} (default: @code{'weekly})
+The log rotation frequency, a symbol.
+
+@item @code{files}
+The list of files or file glob patterns to rotate.
+
+@item @code{options} (default: @code{'()})
+The list of rottlog options for this rotation (@pxref{Configuration
+parameters,,, rottlog, GNU Rot[t]lg Manual}).
+
+@item @code{post-rotate} (default: @code{#f})
+Either @code{#f} or a gexp to execute once the rotation has completed.
+@end table
+@end deftp
+
 @defvr {Scheme Variable} %default-rotations
 Specifies weekly rotation of @var{%rotated-files} and
-@code{"/var/log/shepherd.log"}.
+a couple of other files.
 @end defvr
 
 @defvr {Scheme Variable} %rotated-files

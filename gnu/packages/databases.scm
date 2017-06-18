@@ -459,7 +459,8 @@ as a drop-in replacement of MySQL.")
                 "1imrjp4vfslxj5rrvphcrrk21zv8kqw3gacmwradixh1d5rv6i8n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--with-uuid=e2fs")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
                      (lambda _
@@ -467,9 +468,16 @@ as a drop-in replacement of MySQL.")
                        (substitute* '("src/bin/pg_ctl/pg_ctl.c"
                                       "src/bin/psql/command.c")
                          (("/bin/sh") (which "sh")))
-                       #t)))))
+                       #t))
+         (add-after 'build 'build-contrib
+           (lambda _
+             (zero? (system* "make" "-C" "contrib"))))
+         (add-after 'install 'install-contrib
+           (lambda _
+             (zero? (system* "make" "-C" "contrib" "install")))))))
     (inputs
      `(("readline" ,readline)
+       ("libuuid" ,util-linux)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
     (synopsis "Powerful object-relational database system")
@@ -1210,6 +1218,7 @@ sets, bitmaps and hyperloglogs.")
     (arguments
      `(#:configure-flags
        (list
+        "--disable-opt" ;"-march=native". XXX this also turns off -O0.
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("zlib" ,zlib)))
@@ -1326,14 +1335,14 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.18")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LMDB/lmdb/archive/"
                                   "LMDB_" version ".tar.gz"))
               (sha256
                (base32
-                "12crvzxky8in99ibh22k4ppmkgqs28yy3v7yy944za7fsrqv8dfx"))))
+                "0ndmj07hkm2ic60z1f4rdscxs7pq45hk9fibjyv5nhfclhsvd1qi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

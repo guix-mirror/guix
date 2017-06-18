@@ -39,6 +39,7 @@
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -238,32 +239,45 @@ specified in MANIFEST, a manifest object."
 ;;;
 
 (define (find-packages-by-description regexps)
-  "Return the list of packages whose name matches one of REGEXPS, or whose
-synopsis or description matches all of REGEXPS."
-  (define version<? (negate version>=?))
+  "Return two values: the list of packages whose name, synopsis, or
+description matches at least one of REGEXPS sorted by relevance, and the list
+of relevance scores."
+  (define (score str)
+    (let ((counts (filter-map (lambda (regexp)
+                                (match (regexp-exec regexp str)
+                                  (#f #f)
+                                  (m  (match:count m))))
+                              regexps)))
+      ;; Compute a score that's proportional to the number of regexps matched
+      ;; and to the number of matches for each regexp.
+      (* (length counts) (reduce + 0 counts))))
 
-  (define (matches-all? str)
-    (every (cut regexp-exec <> str) regexps))
+  (define (package-score package)
+    (+ (* 3 (score (package-name package)))
+       (* 2 (match (package-synopsis package)
+              ((? string? str) (score (P_ str)))
+              (#f              0)))
+       (match (package-description package)
+         ((? string? str) (score (P_ str)))
+         (#f              0))))
 
-  (define (matches-one? str)
-    (find (cut regexp-exec <> str) regexps))
-
-  (sort
-   (fold-packages (lambda (package result)
-                    (if (or (matches-one? (package-name package))
-                            (and=> (package-synopsis package)
-                                   (compose matches-all? P_))
-                            (and=> (package-description package)
-                                   (compose matches-all? P_)))
-                        (cons package result)
-                        result))
-                  '())
-   (lambda (p1 p2)
-     (case (string-compare (package-name p1) (package-name p2)
-                           (const '<) (const '=) (const '>))
-       ((=)  (version<? (package-version p1) (package-version p2)))
-       ((<)  #t)
-       (else #f)))))
+  (let ((matches (fold-packages (lambda (package result)
+                                  (match (package-score package)
+                                    ((? zero?)
+                                     result)
+                                    (score
+                                     (cons (list package score) result))))
+                                '())))
+    (unzip2 (sort matches
+                  (lambda (m1 m2)
+                    (match m1
+                      ((package1 score1)
+                       (match m2
+                         ((package2 score2)
+                          (if (= score1 score2)
+                              (string>? (package-full-name package1)
+                                        (package-full-name package2))
+                              (> score1 score2)))))))))))
 
 (define (transaction-upgrade-entry entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
@@ -752,8 +766,14 @@ processed, #f otherwise."
                                     opts))
               (regexps  (map (cut make-regexp* <> regexp/icase) patterns)))
          (leave-on-EPIPE
-          (for-each (cute package->recutils <> (current-output-port))
-                    (find-packages-by-description regexps)))
+          (let-values (((packages scores)
+                        (find-packages-by-description regexps)))
+            (for-each (lambda (package score)
+                        (package->recutils package (current-output-port)
+                                           #:extra-fields
+                                           `((relevance . ,score))))
+                      packages
+                      scores)))
          #t))
 
       (('show requested-name)

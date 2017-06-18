@@ -39,7 +39,7 @@
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
       (origin
         (method url-fetch)
@@ -48,7 +48,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1s4cbkx2a0p73b52yxmf5dhv08xk9pxgrkjsnbzy76ssfr545g60"))))
+          "0m6pnmylp1gij5cr75waz8hjry5894qillj5977h467hnbzs808a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -100,6 +100,7 @@
                     (kio (assoc-ref inputs "kio"))
                     (kcmutils (assoc-ref inputs "kcmutils"))
                     (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
+                    (qtbase (assoc-ref inputs "qtbase"))
                     (qtdeclarative (assoc-ref inputs "qtdeclarative"))
                     (profile "$HOME/.guix-profile")
                     (qml "/qml"))
@@ -107,6 +108,8 @@
                  `("XDG_DATA_DIRS" ":" prefix
                    ,(map (lambda (s) (string-append s "/share"))
                          (list profile out kdevplatform kcmutils)))
+                 `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
+                   (,(string-append qtbase "/plugins/platforms")))
                  `("QT_PLUGIN_PATH" ":" prefix
                    ,(map (lambda (s) (string-append s "/lib/plugins"))
                          (list profile out kdevplatform kio)))
@@ -148,7 +151,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 (define-public kdevplatform
   (package
     (name "kdevplatform")
-    (version "5.1.0")
+    (version "5.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/kdevelop"
@@ -156,7 +159,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1nxf66vk6p7lmckdsha9fpq3zchwbg79qhy49f4hndlxgj03p7zh"))))
+                "09p7lvniw55g6x8v8wl3azlps8c13yx03x1m9cd3qdxi282l8n9i"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

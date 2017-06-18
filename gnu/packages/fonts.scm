@@ -555,28 +555,13 @@ fonts.")
     (version "2.005")
     (source
      (origin
-       (method url-fetch)
+       (method url-fetch/zipbomb)
        (uri (string-append "http://www.gust.org.pl/projects/e-foundry/"
                            "tex-gyre/whole/tg-" version "otf.zip"))
        (sha256
         (base32
          "0kph9l3g7jb2bpmxdbdg5zl56wacmnvdvsdn7is1gc750sqvsn31"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let ((unzip    (string-append (assoc-ref %build-inputs "unzip")
-                                        "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (mkdir-p font-dir)
-           (system* unzip
-                    (assoc-ref %build-inputs "source")
-                    "-d" font-dir)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.gust.org.pl/projects/e-foundry/tex-gyre/")
     (synopsis "Remake of Ghostscript fonts")
     (description "The TeX Gyre collection of fonts is the result of an
@@ -598,28 +583,7 @@ Heros, Pagella, Schola, Termes.")
               (sha256
                (base32
                 "1asj6lykvxh46czbal7ymy2k861zlcdqpz8x3s5bbpqwlm3mhrl6"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                     "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/truetype"))
-               (doc-dir  (string-append %output "/share/doc/" ,name)))
-           (system* unzip (assoc-ref %build-inputs "source"))
-           (mkdir-p font-dir)
-           (mkdir-p doc-dir)
-           (chdir (string-append "AnonymousPro-" ,version ".001"))
-           (for-each (lambda (ttf)
-                       (install-file ttf font-dir))
-                     (find-files "." "\\.ttf$"))
-           (for-each (lambda (doc)
-                       (install-file doc doc-dir))
-                     (find-files "." "\\.txt$"))))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.marksimonson.com/fonts/view/anonymous-pro")
     (synopsis "Fixed-width fonts designed with coding in mind")
     (description "Anonymous Pro is a family of four fixed-width fonts designed
@@ -740,27 +704,7 @@ display all Unicode symbols.")
        (sha256
         (base32
          "0spscx08fad7i8qs7icns96iwcapniq8lwwqqvbf7bamvs8qfln4"))))
-    (native-inputs `(("unzip" ,unzip)))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH (string-append (assoc-ref %build-inputs
-                                                         "unzip")
-                                              "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (chdir "roboto-hinted")
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))))))
+    (build-system font-build-system)
     (home-page "https://github.com/google/roboto")
     (synopsis "The Roboto family of fonts")
     (description
@@ -782,33 +726,7 @@ visual language \"Material Design\".")
               (sha256
                (base32
                 "13liaz2pmww3aqabm55la5npd08m1skh334ky7qfidxaz5s742iv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-
-         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                        "/bin/tar"))
-               (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                        "/bin"))
-               (font-dir (string-append %output "/share/fonts/truetype"))
-               (doc-dir  (string-append %output "/share/doc/" ,name)))
-           (setenv "PATH" PATH)
-           (system* tar "xvf" (assoc-ref %build-inputs "source"))
-           (mkdir-p font-dir)
-           (mkdir-p doc-dir)
-           (chdir (string-append "un-fonts"))
-           (for-each (lambda (ttf)
-                       (install-file ttf font-dir))
-                     (find-files "." "\\.ttf$"))
-           (for-each (lambda (doc)
-                       (install-file doc doc-dir))
-                     '("COPYING" "README"))))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
+    (build-system font-build-system)
     (home-page "https://kldp.net/projects/unfonts/")
     (synopsis "Collection of Korean fonts")
     (description
@@ -876,7 +794,7 @@ glyph designs, not just an added slant.")
     (name "font-hack")
     (version "2.020")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append
                     "https://github.com/chrissimpkins/Hack/releases/download/v"
                     version "/Hack-v"
@@ -885,28 +803,7 @@ glyph designs, not just an added slant.")
               (sha256
                (base32
                 "16kkmc3psckw1b7k07ccn1gi5ymhlg9djh43nqjzg065g6p6d184"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))))))
-    (native-inputs
-     `(("source" ,source)
-       ("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "https://sourcefoundry.org/hack/")
     (synopsis "Typeface designed for source code")
     (description
@@ -933,26 +830,7 @@ Powerline support.")
               (sha256
                (base32
                 "0arhhsf3i7ss39ykn73d1j8k4n8vx7115xph6jwkd970p1cxvr54"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((tar  (string-append (assoc-ref %build-inputs "tar")
-                                    "/bin/tar"))
-               (PATH (string-append (assoc-ref %build-inputs "gzip")
-                                    "/bin"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (setenv "PATH" PATH)
-           (mkdir-p font-dir)
-           (zero? (system* tar "-C" font-dir "--strip-components=2"
-                           "-xvf" (assoc-ref %build-inputs "source")
-                           (string-append "source-code-pro-"
-                                          ,version "/OTF")))))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
      "Monospaced font family for user interface and coding environments")
@@ -974,23 +852,7 @@ designed to work well in user interface environments.")
               (sha256
                (base32
                 "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                     "/bin/unzip"))
-               (font-dir (string-append %output "/share/fonts/opentype")))
-           (mkdir-p font-dir)
-           (system* unzip
-                    "-j"
-                    (assoc-ref %build-inputs "source")
-                    "*.otf"
-                    "-d" font-dir)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://mozilla.github.io/Fira/")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")

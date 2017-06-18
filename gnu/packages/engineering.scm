@@ -44,6 +44,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -812,3 +814,32 @@ the 'showing the effect of'-style of operation.")
 for mathematical functions.  It also provides an machine-independent
 interface to select the best such procedures to use on a given system.")
     (license license:gpl3+)))
+
+(define-public minicom
+  (package
+    (name "minicom")
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://alioth.debian.org/frs/download.php/"
+                           "file/4215/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wa1l36fa4npd21xa9nz60yrqwkk5cq713fa3p5v0zk7g9mq6bsk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-lock-dir=/var/lock")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lock-check
+           (lambda _
+             (substitute* "configure"
+               (("test -d [$]UUCPLOCK") "true"))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://alioth.debian.org/projects/minicom/")
+    (synopsis "Serial terminal emulator")
+    (description "@code{minicom} is a serial terminal emulator.")
+    (license license:gpl2+)))

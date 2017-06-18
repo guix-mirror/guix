@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -56,6 +56,7 @@
   (package
     (name "expat")
     (version "2.2.0")
+    (replacement expat-2.2.1)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
@@ -73,6 +74,19 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define expat-2.2.1  ; Fixes CVE-2017-9233, CVE-2016-9063 and other issues.
+  (package
+    (inherit expat)
+    (version "2.2.1")
+    (replacement #f)
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/expat/expat/"
+                                 version "/expat-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "11c8jy1wvllvlk7xdc5cm8hdhg0hvs8j0aqy6s702an8wkdcls0q"))))))
 
 (define-public libxml2
   (package

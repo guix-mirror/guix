@@ -74,7 +74,7 @@ rather than \\n."
 ;;;
 
 (define importers '("gnu" "nix" "pypi" "cpan" "hackage" "stackage" "elpa" "gem"
-                    "cran" "crate"))
+                    "cran" "crate" "texlive"))
 
 (define (resolve-importer name)
   (let ((module (resolve-interface
