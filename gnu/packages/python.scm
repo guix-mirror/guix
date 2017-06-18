@@ -10201,13 +10201,13 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.2")
+    (version "0.9.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "1qfnwlx8qwkgr6nf5wvl6ff1r3kll53dh3z6nyp173nmlhhhqccb"))))
+                "0741h2cf743sbk89dpfm1yca26l4s159nzvy6vv8xg72nd7pvsps"))))
     (build-system python-build-system)
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
