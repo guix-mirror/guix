@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -46,6 +48,34 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages slang))
+
+(define-public dos2unix
+  (package
+    (name "dos2unix")
+    (version "7.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://waterlan.home.xs4all.nl/" name "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i9hbxn0br7xa18z4bjpkdv7mrzmbfxhm44mzpd07yd2qnxsgkcc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure script
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("perl" ,perl)))
+    (home-page "https://waterlan.home.xs4all.nl/dos2unix.html")
+    (synopsis "DOS/Mac to Unix and vice versa text file format converter")
+    (description
+     "dos2unix is a tool to convert line breaks in a text file from Unix format
+to DOS format and vice versa.")
+    (license license:bsd-2)))
 
 (define-public recode
   (package
