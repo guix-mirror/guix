@@ -2359,7 +2359,25 @@ OpenGFX provides you with...
 (define-public openttd
   (package
     (inherit openttd-engine)
-    (name "openttd")))
+    (name "openttd")
+    (arguments
+     (substitute-keyword-arguments (package-arguments openttd-engine)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-data
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let*
+                   ((opengfx (assoc-ref inputs "opengfx"))
+                    (out (assoc-ref outputs "out"))
+                    (gfx-dir
+                     (string-append out
+                                    "/share/games/openttd/baseset/opengfx")))
+                 (mkdir-p gfx-dir)
+                 (copy-recursively opengfx gfx-dir))
+               #t))))))
+    (native-inputs
+     `(("opengfx" ,openttd-opengfx)
+       ,@(package-native-inputs openttd-engine)))))
 
 (define-public pinball
   (package
