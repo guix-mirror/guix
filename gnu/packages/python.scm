@@ -15383,3 +15383,26 @@ many of the popular cloud service providers using a unified API.")
 
 (define-public python2-apache-libcloud
   (package-with-python2 python-apache-libcloud))
+
+(define-public python-smmap2
+  (package
+    (name "python-smmap2")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "smmap2" version))
+       (sha256
+        (base32
+         "1hvn28p3zvxa98sbi9lrqvv2ps4q284j4jq9a619zw0m7yv0sly7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nosexcover" ,python-nosexcover)))
+    (home-page "https://github.com/Byron/smmap")
+    (synopsis "Python sliding window memory map manager")
+    (description "@code{smmap2} is a pure Python implementation of a sliding
+window memory map manager.")
+    (license license:bsd-3)))
+
+(define-public python2-smmap2
+  (package-with-python2 python-smmap2))
