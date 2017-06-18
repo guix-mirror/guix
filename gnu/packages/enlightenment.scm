@@ -58,7 +58,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.5")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -66,7 +66,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0wxz00cijynamm0sx4ss4hp89zyz5y6zliv5zd905jn4nak2mw2n"))))
+                "0fndwraca9rg0bz3al4isdprvyw56szr88qiyvglb4j8ygsylscc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -109,7 +109,7 @@
        ("xproto" ,xproto)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
-     ;; Require.private.
+     ;; Requires.private.
      `(("bullet" ,bullet) ; ephysics.pc
        ("dbus" ,dbus) ; eldbus.pc, elementary.pc, elocation.pc, ethumb_client.pc
        ("eudev" ,eudev) ; eeze.pc
@@ -123,17 +123,23 @@
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
-       ("util-linux" ,util-linux) ; eeze.pc
+       ("util-linux" ,util-linux) ; mount: eeze.pc
        ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
+                           "--disable-systemd"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
                            "--enable-multisense"
                            "--with-opengl=es"
                            "--enable-egl"
-                           "--enable-harfbuzz")))
+                           "--enable-harfbuzz")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (home-page "https://www.enlightenment.org/about-efl")
     (synopsis "Enlightenment Foundation Libraries")
     (description
@@ -157,6 +163,12 @@ removable devices or support for multimedia.")
                (base32
                 "1x4j2q4qqj10ckbka0zaq2r2zm66ff1x791kp8slv1ff7fw45vdz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -184,6 +196,12 @@ contents and more.")
                (base32
                 "06kbgcnbhl9clhdl7k983m4d0n6ggsl4qvizzi1nrp8c7np87fix"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
