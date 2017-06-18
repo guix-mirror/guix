@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages groff)
@@ -42,12 +44,16 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public dnsmasq
@@ -274,6 +280,164 @@ asynchronous fashion.")
                    license:bsd-3
                    (license:non-copyleft "file://LICENSE") ; includes.h
                    license:openssl))))
+
+(define-public unbound
+  (package
+    (name "unbound")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.unbound.net/downloads/unbound-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0pw4m4z5qspsagxzbjb61xq5bhd57amw26xqvqzi6b8d3mf6azjc"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "python"))
+    (native-inputs
+     `(("flex" ,flex)
+       ("swig" ,swig)))
+    (inputs
+     `(("expat" ,expat)
+       ("libevent" ,libevent)
+       ("protobuf" ,protobuf)
+       ("python" ,python-3)
+       ("python-wrapper" ,python-wrapper)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append
+              "--with-ssl=" (assoc-ref %build-inputs "openssl"))
+             (string-append
+              "--with-libevent=" (assoc-ref %build-inputs "libevent"))
+             (string-append
+              "--with-libexpat=" (assoc-ref %build-inputs "expat"))
+             "--with-pythonmodule" "--with-pyunbound")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'fix-python-site-package-path
+           ;; Move python modules into their own output.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((pyout (assoc-ref outputs "python"))
+                   (ver ,(version-major+minor (package-version python))))
+               (substitute* "Makefile"
+                 (("^PYTHON_SITE_PKG=.*$")
+                  (string-append
+                   "PYTHON_SITE_PKG="
+                   pyout "/lib/python-" ver "/site-packages\n"))))
+             #t))
+         (add-before 'check 'fix-missing-nss-for-tests
+           ;; Unfortunately, the package's unittests involve some checks
+           ;; looking up protocols and services which are not provided
+           ;; by the minimalistic build environment, in particular,
+           ;; /etc/protocols and /etc/services are missing.
+           ;; Also, after plain substitution of protocol and service names
+           ;; in the test data, the tests still fail because the
+           ;; corresponding Resource Records have been signed by
+           ;; RRSIG records.
+           ;; The following LD_PRELOAD library overwrites the glibc
+           ;; functions ‘get{proto,serv}byname’, ‘getprotobynumber’ and
+           ;; ‘getservbyport’ providing the few records required for the
+           ;; unit tests to pass.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((source (assoc-ref %build-inputs "source"))
+                    (gcc (assoc-ref %build-inputs "gcc")))
+               (call-with-output-file "/tmp/nss_preload.c"
+                 (lambda (port)
+                   (display "#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+
+#include <netdb.h>
+
+struct protoent *getprotobyname(const char *name) {
+  struct protoent *p = malloc(sizeof(struct protoent));
+  p->p_aliases = malloc(sizeof(char*));
+  if (strcasecmp(name, \"tcp\") == 0) {
+    p->p_name = \"tcp\";
+    p->p_proto = 6;
+    p->p_aliases[0] = \"TCP\";
+  } else if (strcasecmp(name, \"udp\") == 0) {
+    p->p_name = \"udp\";
+    p->p_proto = 17;
+    p->p_aliases[0] = \"UDP\";
+  } else 
+    p = NULL;
+  return p;
+}
+
+struct protoent *getprotobynumber(int proto) {
+  struct protoent *p = malloc(sizeof(struct protoent));
+  p->p_aliases = malloc(sizeof(char*));
+  switch(proto) {
+  case 6:
+    p->p_name = \"tcp\";
+    p->p_proto = 6;
+    p->p_aliases[0] = \"TCP\";
+    break;
+  case 17:
+    p->p_name = \"udp\";
+    p->p_proto = 17;
+    p->p_aliases[0] = \"UDP\";
+    break;
+  default:
+    p = NULL;
+    break;
+  }
+  return p;
+}
+
+struct servent *getservbyname(const char *name, const char *proto) {
+  struct servent *s = malloc(sizeof(struct servent));
+  char* buf = malloc((strlen(proto)+1)*sizeof(char));
+  strcpy(buf, proto);
+  s->s_aliases = malloc(sizeof(char*));
+  s->s_aliases[0] = NULL;
+  if (strcasecmp(name, \"domain\") == 0) {
+    s->s_name = \"domain\";
+    s->s_port = htons(53);
+    s->s_proto = buf;
+  } else 
+    s = NULL;
+  return s;
+}
+
+struct servent *getservbyport(int port, const char *proto) {
+  char buf[32];
+  struct servent *s = malloc(sizeof(struct servent));
+  strcpy(buf, proto);
+  s->s_aliases = malloc(sizeof(char*));
+  s->s_aliases[0] = NULL;
+  switch(port) {
+  case 53:
+    s->s_name = \"domain\";
+    s->s_port = 53;
+    s->s_proto = \"udp\";
+    break;
+  default:
+    s = NULL;
+    break;
+  }
+  return s;
+}" port)))
+               (system* (string-append gcc "/bin/gcc")
+                        "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
+                        "/tmp/nss_preload.c")
+               ;; The preload library only affects the unittests.
+               (substitute* "Makefile"
+                 (("./unittest")
+                  "LD_PRELOAD=/tmp/nss_preload.so ./unittest")))
+             #t)))))
+    (home-page "https://www.unbound.net")
+    (synopsis "Validating, recursive, and caching DNS resolver")
+    (description
+     "Unbound is a recursive-only caching DNS server which can perform DNSSEC
+validation of results.  It implements only a minimal amount of authoritative
+service to prevent leakage to the root nameservers: forward lookups for
+localhost, reverse for @code{127.0.0.1} and @code{::1}, and NXDOMAIN for zones
+served by AS112.  Stub and forward zones are supported.")
+    (license license:bsd-4)))
 
 (define-public yadifa
   (package
