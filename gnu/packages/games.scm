@@ -73,6 +73,7 @@
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -2297,6 +2298,63 @@ engine.  When you start it you will be prompted to download a graphics set.")
 ;; TODO Add 'openttd-opengfx' and 'openttd-openmsx' packages and make
 ;; 'openttd' a wrapper around them.  The engine is playable by itself,
 ;; but it asks a user to download graphics if it's not found.
+
+(define openttd-opengfx
+  (package
+    (name "openttd-opengfx")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://binaries.openttd.org/extra/opengfx/"
+                           version "/opengfx-" version "-source.tar.xz"))
+       (sha256
+        (base32
+         "0iz66q7p1mf00njfjbc4vibh3jaybki7armkl18iz7p6x4chp9zv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "INSTALL_DIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/openttd/baseset"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             ;; Make sure HOME is writable for GIMP.
+             (setenv "HOME" (getcwd))
+
+             ;; Redirect stdout, not stderr, to /dev/null. This prevents
+             ;; dos2unix from receiving its version information as a flag.
+             (substitute* "Makefile"
+               (("\\$\\(UNIX2DOS\\) -q --version 2>/dev/null")
+                "$(UNIX2DOS) -q --version 1>/dev/null")))))
+       ;; The check phase for this package only checks the md5sums of the built
+       ;; GRF files against the md5sums of the release versions. Because we use
+       ;; different software versions than upstream does, some of the md5sums
+       ;; are different. However, the package is still reproducible, it's safe
+       ;; to disable this test.
+       #:tests? #f))
+    (native-inputs `(("dos2unix" ,dos2unix)
+                     ("gimp" ,gimp)
+                     ("grfcodec" ,grfcodec)
+                     ("nml" ,nml)
+                     ("python" ,python-2)))
+    (home-page "http://dev.openttdcoop.org/projects/opengfx")
+    (synopsis "Base graphics set for OpenTTD")
+    (description
+     "The OpenGFX projects is an implementation of the OpenTTD base grahics
+set that aims to ensure the best possible out-of-the-box experience.
+
+OpenGFX provides you with...
+@enumerate
+@item All graphics you need to enjoy OpenTTD.
+@item Uniquely drawn rail vehicles for every climate.
+@item Completely snow-aware rivers.
+@item Different river and sea water.
+@item Snow-aware buoys.
+@end enumerate")
+    (license license:gpl2)))
 
 (define-public openttd
   (package
