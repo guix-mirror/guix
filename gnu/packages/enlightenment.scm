@@ -315,7 +315,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -323,9 +323,15 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
                             "download/v" version "/edi-" version ".tar.bz2"))
         (sha256
          (base32
-          "0qczz5psryxasphg5km95845h510237rf0k1dy8f0dad52ii90j1"))))
+          "1l90x1bw82a0df6r11wd55qizhi99gg0qcljwxga606ahy6ycnkn"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--with-tests=coverage")))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))
+       #:configure-flags '("--with-tests=coverage")))
     (native-inputs
      `(("check" ,check)
        ("lcov" ,lcov)
