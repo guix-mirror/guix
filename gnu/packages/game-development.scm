@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -145,6 +146,65 @@ Conversely, when it reads files for inclusion in pwads, it does the necessary
 conversions (for example, from PPM to Doom picture format).  In addition,
 DeuTex has functions such as merging wads, etc.")
    (license license:gpl2+)))
+
+(define-public grfcodec
+  (package
+    (name "grfcodec")
+    (version "6.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://binaries.openttd.org/extra/"
+                                  name "/" version "/" name "-" version
+                                  "-source.tar.xz"))
+              (sha256
+               (base32
+                "08admgnpqcsifpicbm56apgv360fxapqpbbsp10qyk8i22w1ivsk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:phases
+      (modify-phases %standard-phases
+        (delete 'configure) ; no configure script
+        (replace 'install   ; no install target
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin"))
+                   (doc (string-append out "/share/doc"))
+                   (man (string-append out "/share/man/man1")))
+              (for-each (lambda (file)
+                          (install-file file bin))
+                        '("grfcodec" "grfid" "grfstrip" "nforenum"))
+              (install-file "COPYING" doc)
+              (with-directory-excursion "docs"
+                (for-each (lambda (file)
+                            (install-file (string-append file ".txt") doc))
+                          '("auto_correct" "commands" "grf" "grfcodec" "grftut"
+                            "readme" "readme.rpn"))
+                (for-each (lambda (file)
+                            (install-file file man))
+                          (find-files "." "\\.1"))))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (synopsis "GRF development tools")
+    (description
+     "The @dfn{GRF} (Graphics Resource File) development tools are a set of
+tools for developing (New)GRFs. It includes a number of smaller programs, each
+with a specific task:
+@enumerate
+@item @code{grfcodec} decodes and encodes GRF files for OpenTTD.
+@item @code{grfid} extracts the so-called \"GRF ID\" from a GRF.
+@item @code{grfstrip} strips all sprites from a GRF.
+@item @code{nforenum} checks NFO code for errors, making corrections when
+necessary.
+@end enumerate")
+    (home-page "http://dev.openttdcoop.org/projects/grfcodec")
+    ;; GRFCodec, GRFID, and GRFStrip are exclusively under the GPL2.
+    ;; NFORenum is under the GPL2+.
+    ;; The MD5 implementation contained in GRFID is under the zlib license.
+    (license (list license:gpl2 license:gpl2+ license:zlib))))
 
 (define-public gzochi
   (package
