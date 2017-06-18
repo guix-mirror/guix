@@ -55,17 +55,14 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.0")
-    (replacement expat-2.2.1)
+    (version "2.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
-             (patches
-               (search-patches "expat-CVE-2016-0718-fix-regression.patch"))
              (sha256
               (base32
-               "1zq4lnwjlw8s9mmachwfvfjf2x3lk24jm41746ykhdcvs7r0zrfr"))))
+               "11c8jy1wvllvlk7xdc5cm8hdhg0hvs8j0aqy6s702an8wkdcls0q"))))
     (build-system gnu-build-system)
     (home-page "http://www.libexpat.org/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -74,19 +71,6 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
-
-(define expat-2.2.1  ; Fixes CVE-2017-9233, CVE-2016-9063 and other issues.
-  (package
-    (inherit expat)
-    (version "2.2.1")
-    (replacement #f)
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/expat/expat/"
-                                 version "/expat-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "11c8jy1wvllvlk7xdc5cm8hdhg0hvs8j0aqy6s702an8wkdcls0q"))))))
 
 (define-public libxml2
   (package
