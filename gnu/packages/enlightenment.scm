@@ -230,19 +230,28 @@ Libraries with some extra bells and whistles.")
      `(#:configure-flags '("--enable-mount-eeze")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-keyboard
-           (lambda _
-             (let ((xkeyboard (assoc-ref %build-inputs "xkeyboard-config")))
+         (add-before 'configure 'set-system-actions
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
+                   (utils     (assoc-ref inputs "util-linux")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
                (substitute* "src/modules/xkbswitch/e_mod_parse.c"
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "configure"
+                 (("/bin/mount") (string-append utils "/bin/mount"))
+                 (("/bin/umount") (string-append utils "/bin/umount"))
+                 (("/usr/bin/eject") (string-append utils "/bin/eject"))
+                 ; TODO: Replace suspend and hibernate also.
+                 (("/sbin/shutdown -h now") "/run/current-system/profile/sbin/halt")
+                 (("/sbin/shutdown -r now") "/run/current-system/profile/sbin/reboot"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
