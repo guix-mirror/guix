@@ -996,7 +996,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.87.1")
+    (version "4.89")
     (source
      (origin
        (method url-fetch)
@@ -1007,7 +1007,7 @@ delivery.")
        (patches (search-patches "exim-CVE-2017-1000369.patch"))
        (sha256
         (base32
-         "050m2gjzpc6vyik458h1j0vi8bxplkzjsyndkyd2y394i569kdyl"))))
+         "1c0syp7yxngmq7y8vqsrvijinzin5m941vn0ljihdfld7kh2wbwi"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
