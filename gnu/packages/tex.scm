@@ -835,7 +835,7 @@ overwrite existing files and letting you use @code{filecontents} /
 (define-public texlive-generic-ifxetex
   (package
     (name "texlive-generic-ifxetex")
-    (version "0.6")
+    (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "generic" "ifxetex"))
