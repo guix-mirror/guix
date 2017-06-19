@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,8 +187,9 @@ and vice versa.")
     (home-page "https://github.com/cracklib/cracklib")
     (description
      "CrackLib is a library containing a C function which may be used in a
-passwd like program.  The idea is simple: try to prevent users from choosing
-passwords that could be guessed by crack by filtering them out, at source.")
+@command{passwd}-like program.  The idea is simple: try to prevent users from
+choosing passwords that could easily be guessed (or \"cracked\") by filtering
+them out, at the source.")
     (license license:lgpl2.1)))
 
 (define-public libpwquality
