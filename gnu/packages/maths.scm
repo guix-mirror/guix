@@ -258,19 +258,18 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yxdzqjwmi2aid650fa9zyr8llw069x7lm489wx9nnfdi6vh09an"))
+                "16yfs5n444s03np1naj6yp1fsysd42kdscxzkg0k2yvfjixx0ijd"))
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       ;; Currently there are numerous tests that fail on "exotic"
+     `(;; Currently there are numerous tests that fail on "exotic"
        ;; architectures such as aarch64 and ppc64le.
        ,@(if (string-prefix? "aarch64-linux"
                              (or (%current-target-system) (%current-system)))
