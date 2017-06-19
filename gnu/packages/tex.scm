@@ -892,7 +892,7 @@ verbatim source).")
               (uri (texlive-ref "latex" "graphics"))
               (sha256
                (base32
-                "17ka701xr9nqsjlhz30hphr8d9j4zzwgv5zl5r2f118yzqh9c34v"))))
+                "07azyn0b1s49vbdlr6dmygrminxp72ndl24j1091hiiccvrjq3xc"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/graphics"
