@@ -3770,8 +3770,8 @@ These are for Unix-domain sockets.
 
 @item guix
 These URIs denote connections over TCP/IP, without encryption nor
-authentication of the remote host.  The URI must always specify both the
-host name and port number:
+authentication of the remote host.  The URI must specify the host name
+and optionally a port number (by default port 44146 is used):
 
 @example
 guix://master.guix.example.org:1234
