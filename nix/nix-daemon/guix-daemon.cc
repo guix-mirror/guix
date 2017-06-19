@@ -1,5 +1,6 @@
 /* GNU Guix --- Functional package management for GNU
    Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2006, 2010, 2012, 2014 Eelco Dolstra <e.dolstra@tudelft.nl>
 
    This file is part of GNU Guix.
 
@@ -30,8 +31,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <netdb.h>
 #include <strings.h>
 #include <exception>
+#include <iostream>
 
 #include <libintl.h>
 #include <locale.h>
@@ -43,7 +48,7 @@ char **argvSaved;
 using namespace nix;
 
 /* Entry point in `nix-daemon.cc'.  */
-extern void run (Strings args);
+extern void run (const std::vector<int> &);
 
 
 /* Command-line options.  */
@@ -149,6 +154,12 @@ to live outputs") },
   };
 
 
+/* Default port for '--listen' on TCP/IP.  */
+#define DEFAULT_GUIX_PORT "44146"
+
+/* List of '--listen' options.  */
+static std::list<std::string> listen_options;
+
 /* Convert ARG to a Boolean value, or throw an error if it does not denote a
    Boolean.  */
 static bool
@@ -217,15 +228,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
       settings.keepLog = false;
       break;
     case GUIX_OPT_LISTEN:
-      try
-	{
-	  settings.nixDaemonSocketFile = canonPath (arg);
-	}
-      catch (std::exception &e)
-	{
-	  fprintf (stderr, _("error: %s\n"), e.what ());
-	  exit (EXIT_FAILURE);
-	}
+      listen_options.push_back (arg);
       break;
     case GUIX_OPT_SUBSTITUTE_URLS:
       settings.set ("substitute-urls", arg);
@@ -276,13 +279,134 @@ static const struct argp argp =
     guix_textdomain
   };
 
+
+static int
+open_unix_domain_socket (const char *file)
+{
+  /* Create and bind to a Unix domain socket. */
+  AutoCloseFD fdSocket = socket (PF_UNIX, SOCK_STREAM, 0);
+  if (fdSocket == -1)
+    throw SysError (_("cannot create Unix domain socket"));
+
+  createDirs (dirOf (file));
+
+  /* Urgh, sockaddr_un allows path names of only 108 characters.
+     So chdir to the socket directory so that we can pass a
+     relative path name. */
+  if (chdir (dirOf (file).c_str ()) == -1)
+    throw SysError (_("cannot change current directory"));
+  Path fileRel = "./" + baseNameOf (file);
+
+  struct sockaddr_un addr;
+  addr.sun_family = AF_UNIX;
+  if (fileRel.size () >= sizeof (addr.sun_path))
+    throw Error (format (_("socket file name '%1%' is too long")) % fileRel);
+  strcpy (addr.sun_path, fileRel.c_str ());
+
+  unlink (file);
+
+  /* Make sure that the socket is created with 0666 permission
+     (everybody can connect --- provided they have access to the
+     directory containing the socket). */
+  mode_t oldMode = umask (0111);
+  int res = bind (fdSocket, (struct sockaddr *) &addr, sizeof addr);
+  umask (oldMode);
+  if (res == -1)
+    throw SysError (format (_("cannot bind to socket '%1%'")) % file);
+
+  if (chdir ("/") == -1) /* back to the root */
+    throw SysError (_("cannot change current directory"));
+
+  if (listen (fdSocket, 5) == -1)
+    throw SysError (format (_("cannot listen on socket '%1%'")) % file);
+
+  return fdSocket.borrow ();
+}
+
+/* Return a listening socket for ADDRESS, which has the given LENGTH.  */
+static int
+open_inet_socket (const struct sockaddr *address, socklen_t length)
+{
+  AutoCloseFD fd = socket (address->sa_family, SOCK_STREAM, 0);
+  if (fd == -1)
+    throw SysError (_("cannot create TCP socket"));
+
+  int res = bind (fd, address, length);
+  if (res == -1)
+    throw SysError (_("cannot bind TCP socket"));
+
+  if (listen (fd, 5) == -1)
+    throw SysError (format (_("cannot listen on TCP socket")));
+
+  return fd.borrow ();
+}
+
+/* Return a list of file descriptors of listening sockets.  */
+static std::vector<int>
+listening_sockets (const std::list<std::string> &options)
+{
+  std::vector<int> result;
+
+  if (options.empty ())
+    {
+      /* Open the default Unix-domain socket.  */
+      auto fd = open_unix_domain_socket (settings.nixDaemonSocketFile.c_str ());
+      result.push_back (fd);
+      return result;
+    }
+
+  /* Open the user-specified sockets.  */
+  for (const std::string& option: options)
+    {
+      if (option[0] == '/')
+	{
+	  /* Assume OPTION is the file name of a Unix-domain socket.  */
+	  settings.nixDaemonSocketFile = canonPath (option);
+	  int fd =
+	    open_unix_domain_socket (settings.nixDaemonSocketFile.c_str ());
+	  result.push_back (fd);
+	}
+      else
+	{
+	  /* Assume OPTIONS has the form "HOST" or "HOST:PORT".  */
+	  auto colon = option.find_last_of (":");
+	  auto host = colon == std::string::npos
+	    ? option : option.substr (0, colon);
+	  auto port = colon == std::string::npos
+	    ? DEFAULT_GUIX_PORT
+	    : option.substr (colon + 1, option.size () - colon - 1);
+
+	  struct addrinfo *res, hints;
+
+	  memset (&hints, '\0', sizeof hints);
+	  hints.ai_socktype = SOCK_STREAM;
+	  hints.ai_flags = AI_NUMERICSERV | AI_ADDRCONFIG;
+
+	  int err = getaddrinfo (host.c_str(), port.c_str (),
+				 &hints, &res);
+
+	  if (err != 0)
+	    throw Error(format ("failed to look up '%1%': %2%")
+			% option % gai_strerror (err));
+
+	  printMsg (lvlDebug, format ("listening on '%1%', port '%2%'")
+		    % host % port);
+
+	  /* XXX: Pick the first result, RES.  */
+	  result.push_back (open_inet_socket (res->ai_addr,
+					      res->ai_addrlen));
+
+	  freeaddrinfo (res);
+	}
+    }
+
+  return result;
+}
 
 
 int
 main (int argc, char *argv[])
 {
-  static const Strings nothing;
-
   setlocale (LC_ALL, "");
   bindtextdomain (guix_textdomain, LOCALEDIR);
   textdomain (guix_textdomain);
@@ -359,6 +483,8 @@ main (int argc, char *argv[])
 
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
+      auto sockets = listening_sockets (listen_options);
+
       /* Effect all the changes made via 'settings.set'.  */
       settings.update ();
 
@@ -402,7 +528,7 @@ using `--build-users-group' is highly recommended\n"));
       printMsg (lvlDebug,
 		format ("listening on `%1%'") % settings.nixDaemonSocketFile);
 
-      run (nothing);
+      run (sockets);
     }
   catch (std::exception &e)
     {

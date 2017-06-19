@@ -1258,12 +1258,47 @@ Assume @var{system} as the current system type.  By default it is the
 architecture/kernel pair found at configure time, such as
 @code{x86_64-linux}.
 
-@item --listen=@var{socket}
-Listen for connections on @var{socket}, the file name of a Unix-domain
-socket.  The default socket is
-@file{@var{localstatedir}/daemon-socket/socket}.  This option is only
-useful in exceptional circumstances, such as if you need to run several
-daemons on the same machine.
+@item --listen=@var{endpoint}
+Listen for connections on @var{endpoint}.  @var{endpoint} is interpreted
+as the file name of a Unix-domain socket if it starts with
+@code{/} (slash sign).  Otherwise, @var{endpoint} is interpreted as a
+host name or host name and port to listen to.  Here are a few examples:
+
+@table @code
+@item --listen=/gnu/var/daemon
+Listen for connections on the @file{/gnu/var/daemon} Unix-domain socket,
+creating it if needed.
+
+@item --listen=localhost
+@cindex daemon, remote access
+@cindex remote access to the daemon
+@cindex daemon, cluster setup
+@cindex clusters, daemon setup
+Listen for TCP connections on the network interface corresponding to
+@code{localhost}, on port 44146.
+
+@item --listen=128.0.0.42:1234
+Listen for TCP connections on the network interface corresponding to
+@code{128.0.0.42}, on port 1234.
+@end table
+
+This option can be repeated multiple times, in which case
+@command{guix-daemon} accepts connections on all the specified
+endpoints.  Users can tell client commands what endpoint to connect to
+by setting the @code{GUIX_DAEMON_SOCKET} environment variable
+(@pxref{The Store, @code{GUIX_DAEMON_SOCKET}}).
+
+@quotation Note
+The daemon protocol is @emph{unauthenticated and unencrypted}.  Using
+@code{--listen=@var{host}} is suitable on local networks, such as
+clusters, where only trusted nodes may connect to the build daemon.  In
+other cases where remote access to the daemon is needed, we recommend
+using Unix-domain sockets along with SSH.
+@end quotation
+
+When @code{--listen} is omitted, @command{guix-daemon} listens for
+connections on the Unix-domain socket located at
+@file{@var{localstatedir}/daemon-socket/socket}.
 @end table
 
 
@@ -3769,6 +3804,10 @@ These are for Unix-domain sockets.
 @file{/var/guix/daemon-socket/socket}.
 
 @item guix
+@cindex daemon, remote access
+@cindex remote access to the daemon
+@cindex daemon, cluster setup
+@cindex clusters, daemon setup
 These URIs denote connections over TCP/IP, without encryption nor
 authentication of the remote host.  The URI must specify the host name
 and optionally a port number (by default port 44146 is used):
@@ -3780,6 +3819,10 @@ guix://master.guix.example.org:1234
 This setup is suitable on local networks, such as clusters, where only
 trusted nodes may connect to the build daemon at
 @code{master.guix.example.org}.
+
+The @code{--listen} option of @command{guix-daemon} can be used to
+instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
+@code{--listen}}).
 
 @item ssh
 @cindex SSH access to build daemons

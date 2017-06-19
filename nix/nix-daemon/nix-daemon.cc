@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <pwd.h>
@@ -809,151 +810,87 @@ static void setSigChldAction(bool autoReap)
 }
 
 
-bool matchUser(const string & user, const string & group, const Strings & users)
+/* Accept a connection on FDSOCKET and fork a server process to process the
+   new connection.  */
+static void acceptConnection(int fdSocket)
 {
-    if (find(users.begin(), users.end(), "*") != users.end())
-        return true;
+    uid_t clientUid = (uid_t) -1;
+    gid_t clientGid = (gid_t) -1;
 
-    if (find(users.begin(), users.end(), user) != users.end())
-        return true;
+    try {
+	/* Important: the server process *cannot* open the SQLite
+	   database, because it doesn't like forks very much. */
+	assert(!store);
 
-    for (auto & i : users)
-        if (string(i, 0, 1) == "@") {
-            if (group == string(i, 1)) return true;
-            struct group * gr = getgrnam(i.c_str() + 1);
-            if (!gr) continue;
-            for (char * * mem = gr->gr_mem; *mem; mem++)
-                if (user == string(*mem)) return true;
-        }
+	/* Accept a connection. */
+	struct sockaddr_storage remoteAddr;
+	socklen_t remoteAddrLen = sizeof(remoteAddr);
 
-    return false;
-}
+    try_again:
+	AutoCloseFD remote = accept(fdSocket,
+				    (struct sockaddr *) &remoteAddr, &remoteAddrLen);
+	checkInterrupt();
+	if (remote == -1) {
+	    if (errno == EINTR)
+		goto try_again;
+	    else
+		throw SysError("accepting connection");
+	}
 
+	closeOnExec(remote);
 
-#define SD_LISTEN_FDS_START 3
+	pid_t clientPid = -1;
+	bool trusted = false;
 
-
-static void daemonLoop()
-{
-    if (chdir("/") == -1)
-        throw SysError("cannot change current directory");
-
-    /* Get rid of children automatically; don't let them become
-       zombies. */
-    setSigChldAction(true);
-
-    AutoCloseFD fdSocket;
-
-    /* Handle socket-based activation by systemd. */
-    if (getEnv("LISTEN_FDS") != "") {
-        if (getEnv("LISTEN_PID") != std::to_string(getpid()) || getEnv("LISTEN_FDS") != "1")
-            throw Error("unexpected systemd environment variables");
-        fdSocket = SD_LISTEN_FDS_START;
-    }
-
-    /* Otherwise, create and bind to a Unix domain socket. */
-    else {
-
-        /* Create and bind to a Unix domain socket. */
-        fdSocket = socket(PF_UNIX, SOCK_STREAM, 0);
-        if (fdSocket == -1)
-            throw SysError("cannot create Unix domain socket");
-
-        string socketPath = settings.nixDaemonSocketFile;
-
-        createDirs(dirOf(socketPath));
-
-        /* Urgh, sockaddr_un allows path names of only 108 characters.
-           So chdir to the socket directory so that we can pass a
-           relative path name. */
-        if (chdir(dirOf(socketPath).c_str()) == -1)
-            throw SysError("cannot change current directory");
-        Path socketPathRel = "./" + baseNameOf(socketPath);
-
-        struct sockaddr_un addr;
-        addr.sun_family = AF_UNIX;
-        if (socketPathRel.size() >= sizeof(addr.sun_path))
-            throw Error(format("socket path `%1%' is too long") % socketPathRel);
-        strcpy(addr.sun_path, socketPathRel.c_str());
-
-        unlink(socketPath.c_str());
-
-        /* Make sure that the socket is created with 0666 permission
-           (everybody can connect --- provided they have access to the
-           directory containing the socket). */
-        mode_t oldMode = umask(0111);
-        int res = bind(fdSocket, (struct sockaddr *) &addr, sizeof(addr));
-        umask(oldMode);
-        if (res == -1)
-            throw SysError(format("cannot bind to socket `%1%'") % socketPath);
-
-        if (chdir("/") == -1) /* back to the root */
-            throw SysError("cannot change current directory");
-
-        if (listen(fdSocket, 5) == -1)
-            throw SysError(format("cannot listen on socket `%1%'") % socketPath);
-    }
-
-    closeOnExec(fdSocket);
-
-    /* Loop accepting connections. */
-    while (1) {
-
-        try {
-            /* Important: the server process *cannot* open the SQLite
-               database, because it doesn't like forks very much. */
-            assert(!store);
-
-            /* Accept a connection. */
-            struct sockaddr_un remoteAddr;
-            socklen_t remoteAddrLen = sizeof(remoteAddr);
-
-            AutoCloseFD remote = accept(fdSocket,
-                (struct sockaddr *) &remoteAddr, &remoteAddrLen);
-            checkInterrupt();
-            if (remote == -1) {
-                if (errno == EINTR)
-                    continue;
-                else
-                    throw SysError("accepting connection");
-            }
-
-            closeOnExec(remote);
-
-            bool trusted = false;
-            pid_t clientPid = -1;
-
+	/* Get the identity of the caller, if possible. */
+	if (remoteAddr.ss_family == AF_UNIX) {
 #if defined(SO_PEERCRED)
-            /* Get the identity of the caller, if possible. */
-            ucred cred;
-            socklen_t credLen = sizeof(cred);
-            if (getsockopt(remote, SOL_SOCKET, SO_PEERCRED, &cred, &credLen) == -1)
-                throw SysError("getting peer credentials");
+	    ucred cred;
+	    socklen_t credLen = sizeof(cred);
+	    if (getsockopt(remote, SOL_SOCKET, SO_PEERCRED,
+			   &cred, &credLen) == -1)
+		throw SysError("getting peer credentials");
 
-            clientPid = cred.pid;
+	    clientPid = cred.pid;
+	    clientUid = cred.uid;
+	    clientGid = cred.gid;
+	    trusted = clientUid == 0;
 
             struct passwd * pw = getpwuid(cred.uid);
             string user = pw ? pw->pw_name : std::to_string(cred.uid);
 
-            struct group * gr = getgrgid(cred.gid);
-            string group = gr ? gr->gr_name : std::to_string(cred.gid);
-
-            Strings trustedUsers = settings.get("trusted-users", Strings({"root"}));
-            Strings allowedUsers = settings.get("allowed-users", Strings({"*"}));
-
-            if (matchUser(user, group, trustedUsers))
-                trusted = true;
-
-            if (!trusted && !matchUser(user, group, allowedUsers))
-                throw Error(format("user `%1%' is not allowed to connect to the Nix daemon") % user);
-
-            printMsg(lvlInfo, format((string) "accepted connection from pid %1%, user %2%"
-                    + (trusted ? " (trusted)" : "")) % clientPid % user);
+	    printMsg(lvlInfo,
+		     format((string) "accepted connection from pid %1%, user %2%")
+		     % clientPid % user);
 #endif
+	} else {
+	    char address_str[128];
+	    const char *result;
 
-            /* Fork a child to handle the connection. */
-            startProcess([&]() {
-                fdSocket.close();
+	    if (remoteAddr.ss_family == AF_INET) {
+		struct sockaddr_in *addr = (struct sockaddr_in *) &remoteAddr;
+		struct in_addr inaddr = { addr->sin_addr };
+		result = inet_ntop(AF_INET, &inaddr,
+				   address_str, sizeof address_str);
+	    } else if (remoteAddr.ss_family == AF_INET6) {
+		struct sockaddr_in6 *addr = (struct sockaddr_in6 *) &remoteAddr;
+		struct in6_addr inaddr = { addr->sin6_addr };
+		result = inet_ntop(AF_INET6, &inaddr,
+				   address_str, sizeof address_str);
+	    } else {
+		result = NULL;
+	    }
+
+	    if (result != NULL) {
+		printMsg(lvlInfo,
+			 format("accepted connection from %1%")
+			 % address_str);
+	    }
+	}
+
+	/* Fork a child to handle the connection. */
+	startProcess([&]() {
+                close(fdSocket);
 
                 /* Background the daemon. */
                 if (setsid() == -1)
@@ -968,17 +905,11 @@ static void daemonLoop()
                     strncpy(argvSaved[1], processName.c_str(), strlen(argvSaved[1]));
                 }
 
-#if defined(SO_PEERCRED)
                 /* Store the client's user and group for this connection. This
                    has to be done in the forked process since it is per
-                   connection. */
-                settings.clientUid = cred.uid;
-                settings.clientGid = cred.gid;
-#else
-                /* Setting these to -1 means: do not change */
-                settings.clientUid = (uid_t) -1;
-                settings.clientGid = (gid_t) -1;
-#endif
+                   connection.  Setting these to -1 means: do not change.  */
+                settings.clientUid = clientUid;
+		settings.clientGid = clientGid;
 
                 /* Handle the connection. */
                 from.fd = remote;
@@ -988,23 +919,63 @@ static void daemonLoop()
                 exit(0);
             }, false, "unexpected Nix daemon error: ", true);
 
-        } catch (Interrupted & e) {
-            throw;
-        } catch (Error & e) {
-            printMsg(lvlError, format("error processing connection: %1%") % e.msg());
-        }
+    } catch (Interrupted & e) {
+	throw;
+    } catch (Error & e) {
+	printMsg(lvlError, format("error processing connection: %1%") % e.msg());
+    }
+}
+
+static void daemonLoop(const std::vector<int>& sockets)
+{
+    if (chdir("/") == -1)
+        throw SysError("cannot change current directory");
+
+    /* Get rid of children automatically; don't let them become
+       zombies. */
+    setSigChldAction(true);
+
+    /* Mark sockets as close-on-exec.  */
+    for(int fd: sockets) {
+	closeOnExec(fd);
+    }
+
+    /* Prepare the FD set corresponding to SOCKETS.  */
+    auto initializeFDSet = [&](fd_set *set) {
+	FD_ZERO(set);
+	for (int fd: sockets) {
+	    FD_SET(fd, set);
+	}
+    };
+
+    /* Loop accepting connections. */
+    while (1) {
+	fd_set readfds;
+
+	initializeFDSet(&readfds);
+	int count =
+	    select(*std::max_element(sockets.begin(), sockets.end()) + 1,
+		   &readfds, NULL, NULL,
+		   NULL);
+	if (count < 0) {
+	    int err = errno;
+	    if (err == EINTR)
+		continue;
+	    throw SysError(format("select error: %1%") % strerror(err));
+	}
+
+	for (unsigned int i = 0; i < sockets.size(); i++) {
+	    if (FD_ISSET(sockets[i], &readfds)) {
+		acceptConnection(sockets[i]);
+	    }
+	}
     }
 }
 
 
-void run(Strings args)
+void run(const std::vector<int>& sockets)
 {
-    for (Strings::iterator i = args.begin(); i != args.end(); ) {
-        string arg = *i++;
-        if (arg == "--daemon") /* ignored for backwards compatibility */;
-    }
-
-    daemonLoop();
+    daemonLoop(sockets);
 }
 
 
