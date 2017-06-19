@@ -1047,6 +1047,9 @@ etc.).  The package is structured to make adding new modules easy.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)))
+    (arguments
+     ;; TODO: Requires unpackaged 'enum-compat'.
+     '(#:tests? #f))
     (home-page "http://eventlet.net")
     (synopsis "Concurrent networking library for Python")
     (description
