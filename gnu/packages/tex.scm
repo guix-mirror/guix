@@ -650,7 +650,7 @@ symbol fonts.")
                     (revision %texlive-revision)))
               (sha256
                (base32
-                "1ifmbyl3ir8k0v1g25xjb5rcyy5vhj8a3fa2088nczga09hna5vn"))))
+                "0mjgl3gscn3ps29yjambz1j9fg81ynnncb96vpprwx4xsijhsns0"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
