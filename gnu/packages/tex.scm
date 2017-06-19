@@ -1124,7 +1124,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
               (uri (texlive-ref "latex" "l3packages"))
               (sha256
                (base32
-                "1p1y9my6ccmp2ab91fzqqgih8ifrk4y3wyh397kagiq9f6a6v91f"))))
+                "16jplkvzdysfssijq9l051nsks65c2nrarsl17k8gjhc28yznj8y"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
