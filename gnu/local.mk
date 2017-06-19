@@ -575,6 +575,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-conflicting-declaration.patch	\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/expat-CVE-2016-0718-fix-regression.patch	\
+  %D%/packages/patches/exim-CVE-2017-1000369.patch		\
   %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\

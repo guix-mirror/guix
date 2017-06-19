@@ -1004,6 +1004,7 @@ delivery.")
                                  version ".tar.bz2")
                   (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
+       (patches (search-patches "exim-CVE-2017-1000369.patch"))
        (sha256
         (base32
          "050m2gjzpc6vyik458h1j0vi8bxplkzjsyndkyd2y394i569kdyl"))))
