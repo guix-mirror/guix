@@ -1101,7 +1101,7 @@ of file names.")
               (uri (texlive-ref "latex" "l3kernel"))
               (sha256
                (base32
-                "0ndqw0flhl20f4ny5lssp8rqpnj5kglyg59whbdrxbh2zc7w7j0b"))))
+                "0r0wfk594j8wkdqhh21haimwsfq8x5jch4ldm21hkzk5dnmvpbg6"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"))
