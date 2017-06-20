@@ -4357,14 +4357,14 @@ simple and Pythonic domain language.")
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
-    (version "2.0.0")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pycodestyle" version))
         (sha256
           (base32
-            "1rz2v8506mdjdyxcnv9ygiw6v0d4dqx8z5sjyjm0w2v32h5l5w1p"))))
+            "0rk78b66p57ala26mdldl9lafr48blv5s659sah9q50qnfjmc8k8"))))
     (build-system python-build-system)
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
