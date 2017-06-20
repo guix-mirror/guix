@@ -365,19 +365,49 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
+                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
+                            (sha256
+                             (base32
+                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
 
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.33"
                     "1dam6vqymhlx1vsl0lzxphamiifgyf97snxg18b2czqq402nz094"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=37c40b6777f0bc8a63f616479c469b371097f333")
+                            (file-name "linux-libre-4.9-CVE-2017-1000364.patch")
+                            (sha256
+                             (base32
+                              "0zhnh8ysiqldxlnd50bjrxagzx29kc8nlajdrikii2x2ibkbfb4i"))))))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.73"
                     "144ssqw1dr86z4cgl797pq5rggfibsxqk7wmfbl6j92l1cj6yjrz"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=87422f5b9b4f43efef4eaf37d7d040aed96500cb")
+                            (file-name "linux-libre-4.4-CVE-2017-1000364.patch")
+                            (sha256
+                             (base32
+                              "137p1cpiwlbvw4x12w1l23iy593xmdry60kd7j9kk690r9arfagw"))))))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.41"

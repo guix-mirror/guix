@@ -6291,7 +6291,11 @@ text views, and buttons to choose the language.")
      ;; Disable the Python bindings because the Planner program functions
      ;; without them, and (as of 2017-06-13) we have not packaged all of
      ;; packages that are necessary for building the Python bindings.
-     `(#:configure-flags (list "--disable-python")))
+     `(#:configure-flags
+       (list "--disable-python"
+             ,@(if (string=? "aarch64-linux" (%current-system))
+                   '("--build=aarch64-unknown-linux-gnu")
+                   '()))))
     (inputs
      `(("libgnomecanvas" ,libgnomecanvas)
        ("libgnomeui" ,libgnomeui)

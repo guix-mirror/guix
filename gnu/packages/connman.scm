@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -114,6 +114,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (add-after 'install 'wrap-binary
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

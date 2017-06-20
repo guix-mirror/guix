@@ -49,7 +49,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.14.1")
+    (version "0.14.2")
     (source (origin
              (method url-fetch)
              (uri
@@ -57,7 +57,7 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "18zrsinlwkj4q5bj2hzswbhswkvd0sdfi6skfwqwwk85gzh064pj"))))
+               "1jp8vdc25gs46gj1d9mraqa1xnampffpa7mdy0fw80xca77fbi0s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

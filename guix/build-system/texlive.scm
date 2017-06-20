@@ -40,8 +40,8 @@
 ;; Code:
 
 ;; These variables specify the SVN tag and the matching SVN revision.
-(define %texlive-tag "texlive-2017.0")
-(define %texlive-revision 44445)
+(define %texlive-tag "texlive-2017.1")
+(define %texlive-revision 44591)
 
 (define (texlive-ref component id)
   "Return a <svn-reference> object for the package ID, which is part of the

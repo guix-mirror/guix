@@ -571,6 +571,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
+  %D%/packages/patches/exim-CVE-2017-1000369.patch		\
   %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
@@ -805,7 +806,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
-  %D%/packages/patches/miniupnpc-CVE-2017-8798.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\

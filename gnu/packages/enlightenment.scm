@@ -58,7 +58,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.18.5")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -66,7 +66,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0wxz00cijynamm0sx4ss4hp89zyz5y6zliv5zd905jn4nak2mw2n"))))
+                "0fndwraca9rg0bz3al4isdprvyw56szr88qiyvglb4j8ygsylscc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -109,7 +109,7 @@
        ("xproto" ,xproto)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
-     ;; Require.private.
+     ;; Requires.private.
      `(("bullet" ,bullet) ; ephysics.pc
        ("dbus" ,dbus) ; eldbus.pc, elementary.pc, elocation.pc, ethumb_client.pc
        ("eudev" ,eudev) ; eeze.pc
@@ -123,17 +123,23 @@
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
-       ("util-linux" ,util-linux) ; eeze.pc
+       ("util-linux" ,util-linux) ; mount: eeze.pc
        ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
+                           "--disable-systemd"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
                            "--enable-multisense"
                            "--with-opengl=es"
                            "--enable-egl"
-                           "--enable-harfbuzz")))
+                           "--enable-harfbuzz")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (home-page "https://www.enlightenment.org/about-efl")
     (synopsis "Enlightenment Foundation Libraries")
     (description
@@ -157,6 +163,12 @@ removable devices or support for multimedia.")
                (base32
                 "1x4j2q4qqj10ckbka0zaq2r2zm66ff1x791kp8slv1ff7fw45vdz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -184,6 +196,12 @@ contents and more.")
                (base32
                 "06kbgcnbhl9clhdl7k983m4d0n6ggsl4qvizzi1nrp8c7np87fix"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -198,7 +216,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.21.7")
+    (version "0.21.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -206,25 +224,34 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xvngjdsa0p901vfhrh2qpa50k32hwwhc8bgi16a9b5d9byzfhvn"))))
+                "0cjjiip12hd8bfjl9ccl3vzl81pxh1wpymxk2yvrzf6ap5girhps"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-keyboard
-           (lambda _
-             (let ((xkeyboard (assoc-ref %build-inputs "xkeyboard-config")))
+         (add-before 'configure 'set-system-actions
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
+                   (utils     (assoc-ref inputs "util-linux")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
                (substitute* "src/modules/xkbswitch/e_mod_parse.c"
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "configure"
+                 (("/bin/mount") (string-append utils "/bin/mount"))
+                 (("/bin/umount") (string-append utils "/bin/umount"))
+                 (("/usr/bin/eject") (string-append utils "/bin/eject"))
+                 ; TODO: Replace suspend and hibernate also.
+                 (("/sbin/shutdown -h now") "/run/current-system/profile/sbin/halt")
+                 (("/sbin/shutdown -r now") "/run/current-system/profile/sbin/reboot"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
@@ -247,14 +274,14 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.18.0")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "python-efl" version))
         (sha256
          (base32
-          "0x49rb7mx7ysjp23m919r2rx8qnl4xackhl9s9x2697m7cs77n1r"))))
+          "0l0f9bv1134qh5376p5asycncidrhp8hdb6qwd8ybr1a61q9zq67"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -297,7 +324,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -305,9 +332,15 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
                             "download/v" version "/edi-" version ".tar.bz2"))
         (sha256
          (base32
-          "0qczz5psryxasphg5km95845h510237rf0k1dy8f0dad52ii90j1"))))
+          "1l90x1bw82a0df6r11wd55qizhi99gg0qcljwxga606ahy6ycnkn"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--with-tests=coverage")))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))
+       #:configure-flags '("--with-tests=coverage")))
     (native-inputs
      `(("check" ,check)
        ("lcov" ,lcov)

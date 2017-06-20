@@ -322,11 +322,15 @@
 
 (define-record-type <nix-server>
   (%make-nix-server socket major minor
+                    buffer flush
                     ats-cache atts-cache)
   nix-server?
   (socket nix-server-socket)
   (major  nix-server-major-version)
   (minor  nix-server-minor-version)
+
+  (buffer nix-server-output-port)                 ;output port
+  (flush  nix-server-flush-output)                ;thunk
 
   ;; Caches.  We keep them per-connection, because store paths build
   ;; during the session are temporary GC roots kept for the duration of
@@ -481,7 +485,11 @@ for this connection will be pinned.  Return a server object."
                      (&nix-connection-error (file (or port uri))
                                             (errno EPROTO))
                      (&message (message "build daemon handshake failed"))))))
-    (let ((port (or port (connect-to-daemon uri))))
+    (let*-values (((port)
+                   (or port (connect-to-daemon uri)))
+                  ((output flush)
+                   (buffering-output-port port
+                                          (make-bytevector 8192))))
       (write-int %worker-magic-1 port)
       (let ((r (read-int port)))
         (and (eqv? r %worker-magic-2)
@@ -499,11 +507,17 @@ for this connection will be pinned.  Return a server object."
                       (let ((conn (%make-nix-server port
                                                     (protocol-major v)
                                                     (protocol-minor v)
+                                                    output flush
                                                     (make-hash-table 100)
                                                     (make-hash-table 100))))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
+
+(define (write-buffered-output server)
+  "Flush SERVER's output port."
+  (force-output (nix-server-output-port server))
+  ((nix-server-flush-output server)))
 
 (define (close-connection server)
   "Close the connection to SERVER."
@@ -718,6 +732,44 @@ encoding conversion errors."
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
+(define (buffering-output-port port buffer)
+  "Return two value: an output port wrapped around PORT that uses BUFFER (a
+bytevector) as its internal buffer, and a thunk to flush this output port."
+  ;; Note: In Guile 2.2.2, custom binary output ports already have their own
+  ;; 4K internal buffer.
+  (define size
+    (bytevector-length buffer))
+
+  (define total 0)
+
+  (define (flush)
+    (put-bytevector port buffer 0 total)
+    (set! total 0))
+
+  (define (write bv offset count)
+    (if (zero? count)                             ;end of file
+        (flush)
+        (let loop ((offset offset)
+                   (count count)
+                   (written 0))
+          (cond ((= total size)
+                 (flush)
+                 (loop offset count written))
+                ((zero? count)
+                 written)
+                (else
+                 (let ((to-copy (min count (- size total))))
+                   (bytevector-copy! bv offset buffer total to-copy)
+                   (set! total (+ total to-copy))
+                   (loop (+ offset to-copy) (- count to-copy)
+                         (+ written to-copy))))))))
+
+  ;; Note: We need to return FLUSH because the custom binary port has no way
+  ;; to be notified of a 'force-output' call on itself.
+  (values (make-custom-binary-output-port "buffering-output-port"
+                                          write #f #f flush)
+          flush))
+
 (define %rpc-calls
   ;; Mapping from RPC names (symbols) to invocation counts.
   (make-hash-table))
@@ -755,11 +807,14 @@ encoding conversion errors."
     ((_ (name (type arg) ...) docstring return ...)
      (lambda (server arg ...)
        docstring
-       (let ((s (nix-server-socket server)))
+       (let* ((s (nix-server-socket server))
+              (buffered (nix-server-output-port server)))
          (record-operation 'name)
-         (write-int (operation-id name) s)
-         (write-arg type arg s)
+         (write-int (operation-id name) buffered)
+         (write-arg type arg buffered)
          ...
+         (write-buffered-output server)
+
          ;; Loop until the server is done sending error output.
          (let loop ((done? (process-stderr server)))
            (or done? (loop (process-stderr server))))

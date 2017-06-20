@@ -1144,7 +1144,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1152,10 +1152,10 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1k3lag4lxi2jjd3zh4wcb5l3hadzm54j5kagh92yzfy76p9svqzp"))))
+                "0fl5cxfj870rwqmmz3s04wh7wnabb7rnynfj1v3sz37ln8frm7qg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-bdjava")
+     `(#:configure-flags '("--disable-bdjava-jar")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-dlopen-paths

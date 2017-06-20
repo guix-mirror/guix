@@ -195,7 +195,7 @@ This package contains the binaries.")
                     (revision %texlive-revision)))
               (sha256
                (base32
-                "1k11yvz4q95bxyxczwvd4r177h6a2gg03xmf51kmgjgz8an2gq2w"))))
+                "0fcy2hpapbj01ncpjj3v39yhr0jjxb6rm13qaxjjw66s3vydxls1"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -650,7 +650,7 @@ symbol fonts.")
                     (revision %texlive-revision)))
               (sha256
                (base32
-                "1ifmbyl3ir8k0v1g25xjb5rcyy5vhj8a3fa2088nczga09hna5vn"))))
+                "0mjgl3gscn3ps29yjambz1j9fg81ynnncb96vpprwx4xsijhsns0"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -835,7 +835,7 @@ overwrite existing files and letting you use @code{filecontents} /
 (define-public texlive-generic-ifxetex
   (package
     (name "texlive-generic-ifxetex")
-    (version "0.6")
+    (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "generic" "ifxetex"))
@@ -892,7 +892,7 @@ verbatim source).")
               (uri (texlive-ref "latex" "graphics"))
               (sha256
                (base32
-                "17ka701xr9nqsjlhz30hphr8d9j4zzwgv5zl5r2f118yzqh9c34v"))))
+                "07azyn0b1s49vbdlr6dmygrminxp72ndl24j1091hiiccvrjq3xc"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/graphics"
@@ -1101,7 +1101,7 @@ of file names.")
               (uri (texlive-ref "latex" "l3kernel"))
               (sha256
                (base32
-                "0ndqw0flhl20f4ny5lssp8rqpnj5kglyg59whbdrxbh2zc7w7j0b"))))
+                "0r0wfk594j8wkdqhh21haimwsfq8x5jch4ldm21hkzk5dnmvpbg6"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"))
@@ -1124,7 +1124,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
               (uri (texlive-ref "latex" "l3packages"))
               (sha256
                (base32
-                "1p1y9my6ccmp2ab91fzqqgih8ifrk4y3wyh397kagiq9f6a6v91f"))))
+                "16jplkvzdysfssijq9l051nsks65c2nrarsl17k8gjhc28yznj8y"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"

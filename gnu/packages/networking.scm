@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -474,7 +474,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.6")
+    (version "2.2.7")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -483,7 +483,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0jd89i9si43lyv3hsl6p1lkjmz4zagvc37wcbigsxxc5v8gda9zn"))))
+         "1dfvhra5v6xhzbp097qsxi0zvirw0srbasl4v1wjf58v49idz7b8"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)
@@ -521,6 +521,31 @@ sniffer}, that lets you capture and interactively browse the contents of
 network frames.")
     (license license:gpl2+)
     (home-page "https://www.wireshark.org/")))
+
+(define-public fping
+  (package
+    (name "fping")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://fping.org/dist/fping-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kp81wchi79l8z8rrj602fpjrd8bi84y3i7fsaclzlwap5943sv7"))))
+    (build-system gnu-build-system)
+    (home-page "http://fping.org/")
+    (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
+    (description
+     "fping is a ping like program which uses the Internet Control Message
+Protocol (ICMP) echo request to determine if a target host is responding.
+fping differs from ping in that you can specify any number of targets on the
+command line, or specify a file containing the lists of targets to ping.
+Instead of sending to one target until it times out or replies, fping will
+send out a ping packet and move on to the next target in a round-robin
+fashion.")
+    (license license:expat)))
 
 (define-public httping
   (package

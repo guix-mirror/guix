@@ -317,7 +317,7 @@ the OCaml language.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.61")
+    (version "4.62")
     (source
      (origin
       (method url-fetch)
@@ -325,7 +325,7 @@ the OCaml language.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1adbvwiaqrv9pql9ry3lhn2vfsxnff2vh4fs477d90kpfx0xwrlq"))))
+        "0w7s3869ybwyq9a4490dikpib1qp3jnn5nqz1vvwqy1qz3ilnvh9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
