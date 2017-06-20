@@ -255,7 +255,10 @@ without requiring the source code to be rewritten.")
   ;; in the `base' module, and thus changing it entails a full rebuild.
   (package
     (inherit guile-2.2)
-    (properties '((hidden? . #t)))          ;people should install 'guile-2.2'
+    (properties '((hidden? . #t)            ;people should install 'guile-2.2'
+                  (timeout . 72000)            ;20 hours
+                  (max-silent-time . 36000)))  ;10 hours (needed on ARM
+                                               ;  when heavily loaded)
     (replacement #f)))
 
 (define-public guile-next
