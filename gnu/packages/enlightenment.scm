@@ -53,6 +53,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public efl
@@ -101,11 +102,11 @@
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxtst" ,libxtst)
        ("lz4" ,lz4)
-       ("mesa" ,mesa)
        ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
+       ("wayland-protocols" ,wayland-protocols)
        ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
@@ -122,11 +123,15 @@
        ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
+       ("libinput" ,libinput) ; elput.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
+       ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc
+       ("mesa" ,mesa) ; ecore-drm2.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; mount: eeze.pc
+       ("wayland" ,wayland) ; ecore-wl2.pc, elementary.pc
        ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
@@ -137,7 +142,11 @@
                            "--enable-multisense"
                            "--with-opengl=es"
                            "--enable-egl"
-                           "--enable-harfbuzz")
+                           "--enable-harfbuzz"
+                           ;; for wayland
+                           "--enable-wayland"
+                           "--enable-elput"
+                           "--enable-drm")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
