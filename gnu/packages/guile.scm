@@ -240,7 +240,7 @@ without requiring the source code to be rewritten.")
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
     (properties '((timeout . 72000)               ;20 hours
-                  (max-silent-time . 21600)))     ;6 hours (needed on ARM
+                  (max-silent-time . 36000)))     ;10 hours (needed on ARM
                                                   ;  when heavily loaded)
     (native-search-paths
      (list (search-path-specification
