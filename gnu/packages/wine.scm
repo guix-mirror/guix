@@ -159,11 +159,4 @@ integrate Windows applications into your desktop.")
        ,@(strip-keyword-arguments '(#:configure-flags #:system)
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (64-bit version)")
-    (description
-     "Wine (originally an acronym for \"Wine Is Not an Emulator\") is a
-compatibility layer capable of running Windows applications.  Instead of
-simulating internal Windows logic like a virtual machine or emulator, Wine
-translates Windows API calls into POSIX calls on-the-fly, eliminating the
-performance and memory penalties of other methods and allowing you to cleanly
-integrate Windows applications into your desktop.  This is the 64-bit version.")
     (supported-systems '("x86_64-linux"))))
