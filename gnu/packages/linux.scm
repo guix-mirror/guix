@@ -420,7 +420,17 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
                     %linux-libre-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
+                    #:extra-version "arm-generic"
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
+                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
+                            (sha256
+                             (base32
+                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
 
 
 ;;;
