@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,17 +44,22 @@
   (package
     (name "a2ps")
     (version "4.14")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/a2ps/a2ps-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))
-      (patches (search-patches
-                 "a2ps-CVE-2001-1593.patch"
-                 "a2ps-CVE-2014-0466.patch"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/a2ps/a2ps-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove timestamp from the installed 'README' file.
+               '(substitute* "etc/README.in"
+                  (("@date@")
+                   "1st of some month, sometime after 1970")))
+              (patches (search-patches
+                        "a2ps-CVE-2001-1593.patch"
+                        "a2ps-CVE-2014-0466.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)
