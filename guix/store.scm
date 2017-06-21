@@ -399,7 +399,9 @@
                    (if (number? port) (number->string port) port)
                    (if (number? port)
                        (logior AI_ADDRCONFIG AI_NUMERICSERV)
-                       AI_ADDRCONFIG)))
+                       AI_ADDRCONFIG)
+                   0                              ;any address family
+                   SOCK_STREAM))                  ;TCP only
 
     (let loop ((addresses addresses))
       (match addresses
