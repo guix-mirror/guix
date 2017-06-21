@@ -37,6 +37,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
@@ -904,17 +905,29 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.33")
+    (version "1.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c3s4nacbwlaaccx1fr7hf72kxxrzy49y2rdz5hhqbk8r29vm8w1"))))
+                "17xp5q4cxmd6z0ii1fdr4j1djb9mz1qv7hzr6fawdapjzahi65m3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'remove-optimizations
+           (lambda _
+             ;; Don't optimize for a specific processor architecture.
+             (substitute* "Makefile"
+               (("CFLAGS \\+= -march=native") ""))
+             ;; This code runs with Python2 or Python3
+             (substitute* "cvsreduce"
+               (("python3") "python"))
+             #t)))
+       #:parallel-build? #f ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
     (inputs `(("git" ,git)))
