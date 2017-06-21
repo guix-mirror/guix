@@ -3253,3 +3253,45 @@ intended to be used directly, it can also act as a backend prover for the Why3
 software verification plateform or as an automatic tactic for the Coq proof
 assistant.")
     (license (list license:gpl2+ license:cecill))));either gpl2+ or cecill
+
+(define-public coq-mathcomp
+  (package
+    (name "coq-mathcomp")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1j9ylggjzrxz1i2hdl2yhsvmvy5z6l4rprwx7604401080p5sgjw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (arguments
+     `(#:tests? #f; No need to test formally-verified programs :)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "mathcomp")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (zero? (system* "make" "-f" "Makefile.coq"
+                             (string-append "COQLIB=" (assoc-ref outputs "out")
+                                            "/lib/coq/")
+                             "install")))))))
+    (home-page "https://math-comp.github.io/math-comp/")
+    (synopsis "Mathematical Components for Coq")
+    (description "Mathematical Components for Coq has its origins in the formal
+proof of the Four Colour Theorem.  Since then it has grown to cover many areas
+of mathematics and has been used for large scale projects like the formal proof
+of the Odd Order Theorem.
+
+The library is written using the Ssreflect proof language that is an integral
+part of the distribution.")
+    (license license:cecill-b)))
