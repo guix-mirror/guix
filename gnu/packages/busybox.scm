@@ -41,41 +41,41 @@
                 "05mg6rh5smkzfwqfcazkpwy6h6555llsazikqnvwkaf17y8l8gns"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _ (zero? (system* "make" "defconfig"))))
          (replace 'check
            (lambda _
-           (substitute* '("testsuite/du/du-s-works"
-                           "testsuite/du/du-works")
+             (substitute* '("testsuite/du/du-s-works"
+                            "testsuite/du/du-works")
                (("/bin") "/etc"))  ; there is no /bin but there is a /etc
 
-           ;; There is no /usr/bin or /bin - replace it with /gnu/store
-           (substitute* "testsuite/cpio.tests"
+             ;; There is no /usr/bin or /bin - replace it with /gnu/store
+             (substitute* "testsuite/cpio.tests"
                (("/usr/bin") (%store-directory))
                (("usr") (car (filter (negate string-null?)
-                                       (string-split (%store-directory) #\/)))))
+                                     (string-split (%store-directory) #\/)))))
 
-           (substitute* "testsuite/date/date-works-1"
+             (substitute* "testsuite/date/date-works-1"
                (("/bin/date") (which "date")))
 
-           ;; The pidof tests assume that pid 1 is called "init" but that is not
-           ;; true in guix build environment
-           (substitute* "testsuite/pidof.tests"
+             ;; The pidof tests assume that pid 1 is called "init" but that is not
+             ;; true in guix build environment
+             (substitute* "testsuite/pidof.tests"
                (("-s init") "-s $(cat /proc/1/comm)"))
+  
+             ;; This test cannot possibly pass.
+             ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
+             ;; However, this relies on /bin/ls existing.  Which it does not in guix.
+             (delete-file "testsuite/which/which-uses-default-path")
+             (rmdir "testsuite/which")
 
-           ;; This test cannot possibly pass.
-           ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
-           ;; However, this relies on /bin/ls existing.  Which it does not in guix.
-           (delete-file "testsuite/which/which-uses-default-path")
-           (rmdir "testsuite/which")
-
-           (zero? (system* "make"
-                           ;; "V=1"
-                           "SKIP_KNOWN_BUGS=1"
-                           "SKIP_INTERNET_TESTS=1"
-                           "check"))))
+             (zero? (system* "make"
+                             ;; "V=1"
+                             "SKIP_KNOWN_BUGS=1"
+                             "SKIP_INTERNET_TESTS=1"
+                             "check"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
