@@ -345,7 +345,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
 (define opus-tools
   (package
     (name "opus-tools")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -353,7 +353,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fk4nknvl111k89j5yckmyrh6b2wvgyhrqfncp7rig3zikbkv1xi"))))
+                "135jfb9ny3xvd27idsxj7j5ns90lslbyrq70cq3bfwcls4r7add2"))))
     (build-system gnu-build-system)
     (arguments
      ;; The package developers misuse pkg-config such that it doesn't work
@@ -373,7 +373,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
 Opus-tools provide command line utilities for creating, inspecting and
 decoding .opus files.")
     (license license:bsd-3)
-    (home-page "http://www.opus-codec.org")))
+    (home-page "https://www.opus-codec.org")))
 
 (define opusfile
   (package
