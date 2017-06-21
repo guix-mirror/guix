@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -1054,10 +1054,9 @@ differences in file encoding, image quality, and other small variations.")
     (home-page "http://steghide.sourceforge.net")
     (synopsis "Image and audio steganography")
     (description
-     "Steghide is a steganography program that is able to hide data in various
-kinds of image- and audio-files.  The color- respectivly sample-frequencies
-are not changed thus making the embedding resistant against first-order
-statistical tests.")
+     "Steghide is a program to hide data in various kinds of image and audio
+files (known as @dfn{steganography}).  Neither color nor sample frequencies are
+changed, making the embedding resistant against first-order statistical tests.")
     (license license:gpl2+)))
 
 (define-public stb-image-for-extempore
