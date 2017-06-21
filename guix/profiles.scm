@@ -1199,10 +1199,14 @@ the entries in MANIFEST."
                              #:key
                              (hooks %default-profile-hooks)
                              (locales? #t)
+                             (allow-collisions? #f)
                              system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
 the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc.
+Unless ALLOW-COLLISIONS? is true, a '&profile-collision-error' is raised if
+entries in MANIFEST collide (for instance if there are two same-name packages
+with a different version number.)
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
 a dependency on the 'glibc-utf8-locales' package.
@@ -1212,8 +1216,10 @@ are cross-built for TARGET."
   (mlet* %store-monad ((system (if system
                                    (return system)
                                    (current-system)))
-                       (ok?    (check-for-collisions manifest system
-                                                     #:target target))
+                       (ok?    (if allow-collisions?
+                                   (return #t)
+                                   (check-for-collisions manifest system
+                                                         #:target target)))
                        (extras (if (null? (manifest-entries manifest))
                                    (return '())
                                    (sequence %store-monad

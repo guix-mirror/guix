@@ -105,6 +105,10 @@ else
     test $? = 42
 fi
 
+# Make sure we can build the environment of 'guix'.  There may be collisions
+# in its profile (e.g., for 'gzip'), but we have to accept them.
+guix environment guix --bootstrap -n
+
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     # Compute the build environment for the initial GNU Make.
