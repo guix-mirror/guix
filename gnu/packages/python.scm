@@ -40,6 +40,7 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15423,3 +15424,24 @@ window memory map manager.")
 
 (define-public python2-smmap2
   (package-with-python2 python-smmap2))
+
+(define-public python-regex
+  (package
+    (name "python-regex")
+    (version "2017.06.07")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "regex" version))
+              (sha256
+               (base32
+                "06r6b7yigikbj3a72whl85r2b64pj1r0ypmw9yalmkm0wnxq8mz4"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
+    (synopsis "Alternative regular expression module")
+    (description "This regular expression implementation is backwards-
+compatible with the standard @code{re} module, but offers additional
+functionality like full case-folding for case-insensitive matches in Unicode.")
+    (license license:psfl)))
+
+(define-public python2-regex
+  (package-with-python2 python-regex))
