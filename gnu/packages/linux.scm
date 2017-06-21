@@ -131,7 +131,7 @@
 
 (define-public (system->defconfig system)
   "Some systems (notably powerpc-linux) require a special target for kernel
-defconfig.  Return the appropiate make target if applicable, otherwise return
+defconfig.  Return the appropriate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
         ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
