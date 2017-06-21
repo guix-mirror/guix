@@ -28,10 +28,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
@@ -3198,3 +3201,55 @@ the Coq system.  It provides a comprehensive library of theorems on a multi-radi
 multi-precision arithmetic.  It also supports efficient numerical computations
 inside Coq.")
     (license license:lgpl3+)))
+
+(define-public coq-gappa
+  (package
+    (name "coq-gappa")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36351/gappa-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0924jr6f15fx22qfsvim5vc0qxqg30ivg9zxj34lf6slbgdl3j39"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("boost" ,boost)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Gappa"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://gappa.gforge.inria.fr/")
+    (synopsis "Verify and formally prove properties on numerical programs")
+    (description "Gappa is a tool intended to help verifying and formally proving
+properties on numerical programs dealing with floating-point or fixed-point
+arithmetic.  It has been used to write robust floating-point filters for CGAL
+and it is used to certify elementary functions in CRlibm.  While Gappa is
+intended to be used directly, it can also act as a backend prover for the Why3
+software verification plateform or as an automatic tactic for the Coq proof
+assistant.")
+    (license (list license:gpl2+ license:cecill))));either gpl2+ or cecill
