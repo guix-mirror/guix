@@ -307,7 +307,8 @@ asynchronous fashion.")
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
-       (list (string-append
+       (list "--disable-static" ;save space and non-determinism in libunbound.a
+             (string-append
               "--with-ssl=" (assoc-ref %build-inputs "openssl"))
              (string-append
               "--with-libevent=" (assoc-ref %build-inputs "libevent"))
