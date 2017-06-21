@@ -3295,3 +3295,53 @@ of the Odd Order Theorem.
 The library is written using the Ssreflect proof language that is an integral
 part of the distribution.")
     (license license:cecill-b)))
+
+(define-public coq-coquelicot
+  (package
+    (name "coq-coquelicot")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "file/36537/coquelicot-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fx99bvsbdizj00gx2im8939y4wwl05f4qhw184j90kcx5vjxxv9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (propagated-inputs
+     `(("mathcomp" ,coq-mathcomp)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Coquelicot"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://coquelicot.saclay.inria.fr/index.html")
+    (synopsis "Coq library for Reals")
+    (description "Coquelicot is an easier way of writing formulas and theorem
+statements, achieved by relying on total functions in place of dependent types
+for limits, derivatives, integrals, power series, and so on.  To help with the
+proof process, the library comes with a comprehensive set of theorems that cover
+not only these notions, but also some extensions such as parametric integrals,
+two-dimensional differentiability, asymptotic behaviors.  It also offers some
+automations for performing differentiability proofs.  Moreover, Coquelicot is a
+conservative extension of Coq's standard library and provides correspondence
+theorems between the two libraries.")
+    (license license:lgpl3+)))
