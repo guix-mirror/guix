@@ -3345,3 +3345,49 @@ automations for performing differentiability proofs.  Moreover, Coquelicot is a
 conservative extension of Coq's standard library and provides correspondence
 theorems between the two libraries.")
     (license license:lgpl3+)))
+
+(define-public coq-interval
+  (package
+    (name "coq-interval")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "file/36538/interval-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16ir7mizl18kwa1ls8fwjih6r87894bvc1r6lh85cd43la7nriq3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (propagated-inputs
+     `(("flocq" ,coq-flocq)
+       ("coquelicot" ,coq-coquelicot)
+       ("mathcomp" ,coq-mathcomp)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Gappa"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://coq-interval.gforge.inria.fr/")
+    (synopsis "Coq tactics to simplify inequality proofs")
+    (description "Interval provides vernacular files containing tactics for
+simplifying the proofs of inequalities on expressions of real numbers for the
+Coq proof assistant.")
+    (license license:cecill-c)))
