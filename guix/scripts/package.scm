@@ -789,7 +789,8 @@ processed, #f otherwise."
 
       (('search-paths kind)
        (let* ((manifests (map profile-manifest profiles))
-              (entries   (append-map manifest-entries manifests))
+              (entries   (append-map manifest-transitive-entries
+                                     manifests))
               (profiles  (map user-friendly-profile profiles))
               (settings  (search-path-environment-variables entries profiles
                                                             (const #f)
