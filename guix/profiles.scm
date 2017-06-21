@@ -159,23 +159,6 @@
 ;; Convenient alias, to avoid name clashes.
 (define make-manifest manifest)
 
-(define (manifest-transitive-entries manifest)
-  "Return the entries of MANIFEST along with their propagated inputs,
-recursively."
-  (let loop ((entries (manifest-entries manifest))
-             (result  '())
-             (visited (set)))                     ;compare with 'equal?'
-    (match entries
-      (()
-       (reverse result))
-      ((head . tail)
-       (if (set-contains? visited head)
-           (loop tail result visited)
-           (loop (append (manifest-entry-dependencies head)
-                         tail)
-                 (cons head result)
-                 (set-insert head visited)))))))
-
 (define-record-type* <manifest-entry> manifest-entry
   make-manifest-entry
   manifest-entry?
@@ -199,6 +182,23 @@ recursively."
                 (default #f))
   (output       manifest-pattern-output           ; string | #f
                 (default "out")))
+
+(define (manifest-transitive-entries manifest)
+  "Return the entries of MANIFEST along with their propagated inputs,
+recursively."
+  (let loop ((entries (manifest-entries manifest))
+             (result  '())
+             (visited (set)))                     ;compare with 'equal?'
+    (match entries
+      (()
+       (reverse result))
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (loop (append (manifest-entry-dependencies head)
+                         tail)
+                 (cons head result)
+                 (set-insert head visited)))))))
 
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
