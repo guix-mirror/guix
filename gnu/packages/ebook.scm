@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.85.1")
+    (version "3.0.0")
     (source
       (origin
         (method url-fetch)
@@ -74,7 +75,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1g8s0kp1gj05yysfgqpp2lgrxvzc0fsny1hwzx5jh9hvqn0b53cc"))
+          "1zhk7bvgr973dd18x4wp48kzai29qqqi5qcy72sxc4wcbk2sbnkw"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -84,13 +85,11 @@
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")
             (delete-file-recursively "resources/fonts/liberation")
-            (delete-file-recursively "src/chardet")
             (substitute* (find-files "." "\\.py")
               (("calibre\\.ebooks\\.markdown") "markdown"))
             #t))
         (patches (search-patches "calibre-drop-unrar.patch"
                                  "calibre-use-packaged-feedparser.patch"
-                                 "calibre-dont-load-remote-icons.patch"
                                  "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
@@ -132,6 +131,7 @@
        ("python2-pygments" ,python2-pygments)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
+       ("python2-regex" ,python2-regex)
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2
@@ -147,6 +147,12 @@
              (substitute* "src/calibre/linux.py"
                ;; We can't use the uninstaller in Guix. Don't build it.
                (("self\\.create_uninstaller()") ""))
+             #t))
+         (add-after 'unpack 'dont-load-remote-icons
+           (lambda _
+             (substitute* "setup/plugins_mirror.py"
+               (("href=\"//calibre-ebook.com/favicon.ico\"")
+                "href=\"favicon.ico\""))
              #t))
          (add-before 'build 'configure
           (lambda* (#:key inputs #:allow-other-keys)

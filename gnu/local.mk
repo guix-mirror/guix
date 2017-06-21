@@ -522,7 +522,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-drop-unrar.patch			\
-  %D%/packages/patches/calibre-dont-load-remote-icons.patch	\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
   %D%/packages/patches/cdparanoia-fpic.patch			\
