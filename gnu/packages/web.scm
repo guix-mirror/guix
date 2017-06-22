@@ -73,6 +73,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libidn)
@@ -305,6 +306,42 @@ servers that may need it).")
 such as high performance, preforking, signal support, superdaemon awareness,
 and UNIX socket support.")
     (license l:perl-license)))
+
+(define-public icedtea-web
+  (package
+    (name "icedtea-web")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://icedtea.wildebeest.org/download/source/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "004kwrngyxxlrlzby4vzxjr0xcyngcdc9dfgnvi61ffnjr006ryf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list  "--disable-plugin"         ;NPAPI plugins are obsolete nowadays.
+             (string-append "BIN_BASH=" (assoc-ref %build-inputs "bash")
+                            "/bin/bash")
+             (string-append "--with-jdk-home=" (assoc-ref %build-inputs "jdk")))))
+    (outputs '("out" "doc"))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("zip" ,zip)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("jdk" ,icedtea "jdk")))
+    (home-page "http://icedtea.classpath.org/wiki/IcedTea-Web")
+    (synopsis "Java Web Start")
+    (description
+     "IcedTea-Web is an implementation of the @dfn{Java Network Launching
+Protocol}, also known as Java Web Start.  This package provides tools and
+libraries for working with JNLP applets.")
+    ;; The program is mainly GPL2+, with some individual files under LGPL2.1+
+    ;; or dual licenses.
+    (license l:gpl2+)))
 
 (define-public jansson
   (package
