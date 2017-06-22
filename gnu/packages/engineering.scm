@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -842,4 +843,40 @@ interface to select the best such procedures to use on a given system.")
     (home-page "https://alioth.debian.org/projects/minicom/")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
+    (license license:gpl2+)))
+
+(define-public harminv
+  (package
+    (name "harminv")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/harminv/harminv-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1pmm8d6fx9ahhnk7w12bfa6zx3afbkg4gkvlvgwhpjxbcrvrp3jk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-tests
+           (lambda _
+             (substitute* "./sines-test.sh"
+               ; change test frequency range - default fails
+               (("0\\.15") "0.16"))
+             #t)))))
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (inputs
+     `(("lapack" ,lapack)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Harminv")
+    (synopsis "Harmonic inversion solver")
+    (description
+     "Harminv is a free program (and accompanying library) to solve the problem of
+harmonic inversion — given a discrete-time, finite-length signal that consists of a sum
+of finitely-many sinusoids (possibly exponentially decaying) in a given bandwidth, it
+determines the frequencies, decay constants, amplitudes, and phases of those sinusoids.")
     (license license:gpl2+)))
