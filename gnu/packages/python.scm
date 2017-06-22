@@ -41,6 +41,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -986,6 +987,42 @@ Python 3 support.")
 
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
+
+(define-public python-uniseg
+  (package
+    (name "python-uniseg")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/emptypage/uniseg-python/"
+                           "get/rel-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1df4gddnj2a0v8z35wb2ra5vvh1f1qyxs8fgd25c8g64031mna6x"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite requires network access.
+    (home-page
+     "https://bitbucket.org/emptypage/uniseg-python")
+    (synopsis
+     "Python library to determine Unicode text segmentations")
+    (description
+     "Uniseg is a Python package used to determine Unicode text segmentations.
+Supported segmentations include:
+@enumerate
+@item @dfn{Code point} (any value in the Unicode codespace)
+@item @dfn{Grapheme cluster} (user-perceived character made of a single or
+multiple Unicode code points, e.g. \"G\" + acute-accent)
+@item Word break
+@item Sentence break
+@item Line break
+@end enumerate")
+    (license license:expat)))
+
+(define-public python2-uniseg
+  (package-with-python2 python-uniseg))
 
 ;;; Pycrypto is abandoned upstream:
 ;;;
