@@ -947,3 +947,43 @@ structures")
 of Maxwell's equations in periodic dielectric structures for arbitrary wavevectors, using
 fully-vectorial and three-dimensional methods.")
     (license license:gpl2+)))
+
+(define-public meep
+  (package
+    (name "meep")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/meep/meep-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "0f6lbw2hrksg7xscwdqs78jc9nmzx9fs8j0hz1y4i8qknkqiyk2n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-libctl="
+                            (assoc-ref %build-inputs "libctl")
+                            "/share/libctl"))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("guile" ,guile-2.0) ; doesn't build with guile-2.2
+       ("harminv" ,harminv)
+       ("hdf5" ,hdf5)
+       ("lapack" ,lapack)
+       ("libctl" ,guile-libctl)
+       ("mpb" ,mpb)
+       ("zlib" ,zlib)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Meep")
+    (synopsis "Finite-difference time-domain (FDTD) simulation software")
+    (description
+     "Meep is a finite-difference time-domain (FDTD) simulation software package
+developed at MIT to model electromagnetic systems.")
+    (license license:gpl2+)))
