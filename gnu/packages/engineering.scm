@@ -64,6 +64,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -904,4 +905,45 @@ determines the frequencies, decay constants, amplitudes, and phases of those sin
     (description
      "Libctl is a Guile-based library implementing flexible control files
 for scientific simulations.")
+    (license license:gpl2+)))
+
+(define-public mpb
+  (package
+    (name "mpb")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/mpb/mpb-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1mqb2d8jq957nksayjygq58iy8i42vjryzg9iy5fpfay31wzxsix"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-libctl="
+                            (assoc-ref %build-inputs "libctl")
+                            "/share/libctl"))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("guile" ,guile-2.2)
+       ("hdf5" ,hdf5)
+       ("lapack" ,lapack)
+       ("libctl" ,guile-libctl)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/MIT_Photonic_Bands")
+    (synopsis "Computes band structures and electromagnetic modes of dielectric
+structures")
+    (description
+     "MIT Photonic-Bands (MPB) computes definite-frequency eigenstates (harmonic modes)
+of Maxwell's equations in periodic dielectric structures for arbitrary wavevectors, using
+fully-vectorial and three-dimensional methods.")
     (license license:gpl2+)))
