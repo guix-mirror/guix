@@ -1366,7 +1366,8 @@ of supported upstream metrics systems simultaneously.")
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1xdr82fy8gahxh3586wm5k1bxksys7yl1f2n24shrk8gf99qyjyd"))))
+         "1xdr82fy8gahxh3586wm5k1bxksys7yl1f2n24shrk8gf99qyjyd"))
+       (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-pycrypto" ,python2-pycrypto)
