@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,3 +84,53 @@ and AsciiMath notation that works in all modern browsers.  It requires no
 plugins or software to be installed on the browser.  So the page author can
 write web documents that include mathematics and be confident that readers will
 be able to view it naturally and easily.")))
+
+(define-public js-respond
+  (package
+    (name "js-respond")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/scottjehl/Respond/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ds1ya2a185jp93mdn07159c2x8zczwi960ykrawpp62bwk2n93d"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (ice-9 popen)
+                      (srfi srfi-26))
+         (set-path-environment-variable
+          "PATH" '("bin") (map (match-lambda
+                                 ((_ . input)
+                                  input))
+                               %build-inputs))
+         (let ((install-directory (string-append %output
+                                                 "/share/javascript/respond/")))
+           (system* "tar" "xvf"
+                    (assoc-ref %build-inputs "source")
+                    "--strip" "1")
+           (mkdir-p install-directory)
+           (let* ((file "src/respond.js")
+                  (installed (string-append install-directory "respond.min.js")))
+             (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
+               (call-with-output-file installed
+                 (cut dump-port minified <>)))))
+         #t)))
+    (home-page "https://github.com/scottjehl/Respond")
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("source" ,source)
+       ("gzip" ,gzip)
+       ("tar" ,tar)))
+    (synopsis "Polyfill for min/max-width CSS3 Media Queries")
+    (description "The goal of this script is to provide a fast and lightweight
+script to enable responsive web designs in browsers that don't support CSS3
+Media Queries.")
+    (license license:expat)))
