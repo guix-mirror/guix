@@ -275,18 +275,19 @@ files) into @file{.grf} and/or @file{.nfo} files.")
 (define-public python-sge-pygame
   (package
     (name "python-sge-pygame")
-    (version "1.4.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sge-pygame" version))
        (sha256
         (base32
-         "1qhrcja1igqkjjn1w425ni5f41mijdq5dpq0ymkhl29xxrf8hnx8"))))
+         "0g0n722md6nfayiqzadwf0dh821hzqv0alp4by0vjfwr1xzv49mc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygame" ,python-pygame)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-uniseg" ,python-uniseg)))
     (home-page "http://stellarengine.nongnu.org")
     (synopsis "2D game engine for Python")
     (description
