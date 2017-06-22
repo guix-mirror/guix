@@ -190,7 +190,7 @@ DeuTex has functions such as merging wads, etc.")
        ("zlib" ,zlib)))
     (synopsis "GRF development tools")
     (description
-     "The @dfn{GRF} (Graphics Resource File) development tools are a set of
+     "The @dfn{Graphics Resource File} (GRF) development tools are a set of
 tools for developing (New)GRFs. It includes a number of smaller programs, each
 with a specific task:
 @enumerate
