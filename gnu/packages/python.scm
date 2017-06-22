@@ -15472,3 +15472,31 @@ functionality like full case-folding for case-insensitive matches in Unicode.")
 related APIs.  The binding is created using the standard @code{ctypes}
 library.")
    (license license:bsd-3)))
+
+(define-public python-rencode
+  (package
+   (name "python-rencode")
+   (version "1.0.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "rencode" version))
+     (sha256
+      (base32
+       "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
+   (build-system python-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)
+                    ("python-cython", python-cython)))
+   (home-page "https://github.com/aresch/rencode")
+   (synopsis "Serialization of heterogeneous data structures")
+   (description
+    "The @code{rencode} module is a data structure serialization library,
+similar to @code{bencode} from the BitTorrent project.  For complex,
+heterogeneous data structures with many small elements, r-encoding stake up
+significantly less space than b-encodings.  This version of rencode is a
+complete rewrite in Cython to attempt to increase the performance over the
+pure Python module.")
+   (license license:bsd-3)))
+
+(define-public python2-rencode
+  (package-with-python2 python-rencode))
