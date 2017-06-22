@@ -1383,15 +1383,13 @@ well as many of the command line options.")
 (define-public python2-bx-python
   (package
     (name "python2-bx-python")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/b/bx-python/bx-python-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "bx-python" version))
               (sha256
                (base32
-                "0ld49idhc5zjdvbhvjq1a2qmpjj7h5v58rqr25dzmfq7g34b50xh"))
+                "15z2w3bvnc0n4qmb9bd6d8ylc2h2nj883x2w9iixf4x3vki9b22i"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "setup.py"
