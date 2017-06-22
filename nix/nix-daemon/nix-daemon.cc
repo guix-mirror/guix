@@ -19,6 +19,9 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
 #include <fcntl.h>
 #include <errno.h>
 #include <pwd.h>
@@ -838,6 +841,21 @@ static void acceptConnection(int fdSocket)
 	}
 
 	closeOnExec(remote);
+
+	{
+	  int enabled = 1;
+
+	  /* If we're on a TCP connection, disable Nagle's algorithm so that
+	     data is sent as soon as possible.  */
+	  (void) setsockopt(remote, SOL_TCP, TCP_NODELAY,
+			    &enabled, sizeof enabled);
+
+#if defined(TCP_QUICKACK)
+	  /* Enable TCP quick-ack if applicable; this might help a little.  */
+	  (void) setsockopt(remote, SOL_TCP, TCP_QUICKACK,
+			    &enabled, sizeof enabled);
+#endif
+	}
 
 	pid_t clientPid = -1;
 	bool trusted = false;
