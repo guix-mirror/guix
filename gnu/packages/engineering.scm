@@ -880,3 +880,28 @@ harmonic inversion — given a discrete-time, finite-length signal that consists
 of finitely-many sinusoids (possibly exponentially decaying) in a given bandwidth, it
 determines the frequencies, decay constants, amplitudes, and phases of those sinusoids.")
     (license license:gpl2+)))
+
+(define-public guile-libctl
+  (package
+    (name "guile-libctl")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/libctl/libctl-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1g7gqybq20jhdnw5vg18bgbj9jz0408gfmjvs8b4xs30pic8pgca"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Libctl")
+    (synopsis "Flexible control files implementation for scientific simulations")
+    (description
+     "Libctl is a Guile-based library implementing flexible control files
+for scientific simulations.")
+    (license license:gpl2+)))
