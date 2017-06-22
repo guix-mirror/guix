@@ -339,14 +339,14 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2017.04.10")
+    (version "2017.06.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04il5yx0py6kchxxw6ydbbx0wpiyjf9dgkwsdynirpkczlnid3am"))))
+                "1vy7c2y7ihvmggs93zgfv2h3049s384wid8a5snzrrba8bhbb89p"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
