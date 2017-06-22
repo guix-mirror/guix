@@ -2335,5 +2335,5 @@ tools and applications:
     (description "Balsa is a highly configurable and robust mail client for
 the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
 mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
-the use of a local MTA such as Sendemail.")
+the use of a local MTA such as Sendmail.")
     (license gpl3+)))
