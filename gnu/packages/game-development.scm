@@ -267,7 +267,7 @@ provide connectivity for client applications written in any language.")
     (home-page "http://dev.openttdcoop.org/projects/nml")
     (synopsis "NML compiler")
     (description
-     "@dfn{NML} (NewGRF Meta Language) is a a python-based compiler, capable of
+     "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of
 compiling NML files (along with their associated language, sound and graphic
 files) into @file{.grf} and/or @file{.nfo} files.")
     (license license:gpl2+)))
