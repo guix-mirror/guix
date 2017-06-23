@@ -126,6 +126,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
+  %D%/packages/electronics.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
