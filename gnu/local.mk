@@ -966,6 +966,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-8309.patch			\
   %D%/packages/patches/qemu-CVE-2017-8379.patch			\
   %D%/packages/patches/qemu-CVE-2017-8380.patch			\
+  %D%/packages/patches/qemu-CVE-2017-9524.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
