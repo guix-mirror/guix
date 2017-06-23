@@ -194,3 +194,27 @@ analyzers")
 access drivers for logic analyzers and other supported devices, as well as input/output file
 format support.")
     (license license:gpl3+)))
+
+(define-public sigrok-cli
+  (package
+    (name "sigrok-cli")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://sigrok.org/download/source/sigrok-cli/sigrok-cli-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "072ylscp0ppgii1k5j07hhv7dfmni4vyhxnsvxmgqgfyq9ldjsan"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libsigrok" ,libsigrok)
+       ("libsigrokdecode" ,libsigrokdecode)))
+    (build-system gnu-build-system)
+    (home-page "http://sigrok.org/wiki/Sigrok-cli")
+    (synopsis "Command-line frontend for sigrok")
+    (description "Sigrok-cli is a command-line frontend for sigrok.")
+    (license license:gpl3+)))
