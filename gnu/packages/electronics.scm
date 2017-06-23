@@ -28,8 +28,8 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
-
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sdcc))
 
 (define-public libserialport
   (package
@@ -90,3 +90,24 @@ to take care of the OS-specific details when writing software that uses serial p
     (description "Libsigrokdecode is a shared library written in C, which provides
 (streaming) protocol decoding functionality.")
     (license license:gpl3+)))
+
+(define-public sigrok-firmware-fx2lafw
+  (package
+    (name "sigrok-firmware-fx2lafw")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://sigrok.org/download/source/sigrok-firmware-fx2lafw/"
+                    "sigrok-firmware-fx2lafw-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bbdgy4rpc00jl0l0744m2ibjlqi26bhrkjr7vplivdsjdmhjx6a"))))
+    (native-inputs
+     `(("sdcc" ,sdcc)))
+    (build-system gnu-build-system)
+    (home-page "http://www.sigrok.org/wiki/Fx2lafw")
+    (synopsis "Firmware for Cypress FX2 chips")
+    (description "Fx2lafw is free firmware for Cypress FX2 chips which makes them usable
+as simple logic analyzer and/or oscilloscope hardware.")
+    (license license:gpl2+)))
