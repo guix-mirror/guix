@@ -63,6 +63,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -4152,3 +4153,30 @@ from the CPUID instruction, and also determines the exact model of CPU(s).  It
 supports Intel, AMD, and VIA CPUs, as well as older Transmeta, Cyrix, UMC,
 NexGen, Rise, and SiS CPUs.")
     (license license:gpl2+)))
+
+(define-public jmtpfs
+  (package
+    (name "jmtpfs")
+    (version "0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/JasonFerrara/jmtpfs/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10v8d7mmx8b8123x5f9y9zaaa428ms6wkngwn2ra71n5a53wrjn0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("file" ,file)
+       ("fuse" ,fuse)
+       ("libmtp" ,libmtp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/JasonFerrara/jmtpfs")
+    (synopsis "Use a FUSE filesystem to access data over MTP")
+    (description "jmtpfs uses FUSE (filesystem in userspace) to provide access
+to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
+the MTP device as a filesystem.")
+    (license license:gpl3)))
