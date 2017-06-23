@@ -3696,7 +3696,7 @@ trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
 (define-public orfm
   (package
     (name "orfm")
-    (version "0.6.1")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3704,7 +3704,7 @@ trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
                     version "/orfm-" version ".tar.gz"))
               (sha256
                (base32
-                "19hwp13n82isdvk16710l9m35cmzf0q3fsrcn3r8c5r67biiz39s"))))
+                "1przyfszdmys1s5igssa840hv55lsrxd40i2d0msfp5fgjw3k3n4"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
