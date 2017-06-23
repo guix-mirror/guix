@@ -22,7 +22,9 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
@@ -32,6 +34,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sdcc))
 
 (define-public libserialport
@@ -217,4 +220,34 @@ format support.")
     (home-page "http://sigrok.org/wiki/Sigrok-cli")
     (synopsis "Command-line frontend for sigrok")
     (description "Sigrok-cli is a command-line frontend for sigrok.")
+    (license license:gpl3+)))
+
+(define-public pulseview
+  (package
+    (name "pulseview")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://sigrok.org/download/source/pulseview/pulseview-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1f8f2342d5yam98mmcb8f9g2vslcwv486bmi4x45pxn68l82ky3q"))))
+    (arguments
+     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fext-numeric-literals")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)
+       ("qt" ,qt)
+       ("libsigrok" ,libsigrok)
+       ("libsigrokdecode" ,libsigrokdecode)))
+    (build-system cmake-build-system)
+    (home-page "http://www.sigrok.org/wiki/PulseView")
+    (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
+    (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
+for sigrok.")
     (license license:gpl3+)))
