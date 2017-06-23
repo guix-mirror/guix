@@ -397,52 +397,6 @@ collection of tools for doing simple manipulations of TIFF images.")
         (base32
          "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))))
 
-(define-public libwmf
-  (package
-    (name "libwmf")
-    (version "0.2.8.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://sourceforge/wvware/"
-                            name "/" version
-                            "/" name "-" version ".tar.gz"))
-        (sha256
-         (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))
-        (patches
-         (search-patches "libwmf-CAN-2004-0941.patch"
-                         "libwmf-CVE-2006-3376.patch"
-                         "libwmf-CVE-2007-0455.patch"
-                         "libwmf-CVE-2007-2756.patch"
-                         "libwmf-CVE-2007-3472.patch"
-                         "libwmf-CVE-2007-3473.patch"
-                         "libwmf-CVE-2007-3477.patch"
-                         "libwmf-CVE-2009-1364.patch"
-                         "libwmf-CVE-2009-3546.patch"
-                         "libwmf-CVE-2015-0848+CVE-2015-4588.patch"
-                         "libwmf-CVE-2015-4695.patch"
-                         "libwmf-CVE-2015-4696.patch"))))
-
-    (build-system gnu-build-system)
-    (inputs
-      `(("freetype" ,freetype)
-        ("libjpeg" ,libjpeg)
-        ("libpng",libpng)
-        ("libxml2" ,libxml2)
-        ("zlib" ,zlib)))
-    (native-inputs
-      `(("pkg-config" ,pkg-config)))
-    (synopsis "Library for reading images in the Microsoft WMF format")
-    (description
-      "libwmf is a library for reading vector images in Microsoft's native
-Windows Metafile Format (WMF) and for either (a) displaying them in, e.g., an X
-window; or (b) converting them to more standard/free file formats such as, e.g.,
-the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
-    (home-page "http://wvware.sourceforge.net/libwmf.html")
-
-    ;; 'COPYING' is the GPLv2, but file headers say LGPLv2.0+.
-    (license license:lgpl2.0+)))
-
 (define-public leptonica
   (package
     (name "leptonica")

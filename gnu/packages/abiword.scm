@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,8 +56,7 @@
         (sha256
          (base32 "08imry821g81apdwym3gcs4nss0l9j5blqk31j5rv602zmcd9gxg"))
         (patches
-         (search-patches "abiword-wmf-version-lookup-fix.patch"
-                         "abiword-explictly-cast-bools.patch"
+         (search-patches "abiword-explictly-cast-bools.patch"
                          "abiword-black-drawing-with-gtk322.patch"))))
 
     (build-system glib-or-gtk-build-system)
@@ -97,7 +97,6 @@
         ("libjpeg" ,libjpeg)
         ("libpng" ,libpng)
         ("librsvg" ,librsvg)
-        ("libwmf" ,libwmf)
         ("libxml2" ,libxml2)
         ("libxslt" ,libxslt)
         ("ots" ,ots)

@@ -493,7 +493,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
-  %D%/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/acl-hurd-path-max.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
@@ -779,18 +778,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
-  %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-0455.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-2756.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3472.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3473.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3477.patch		\
-  %D%/packages/patches/libwmf-CVE-2009-1364.patch		\
-  %D%/packages/patches/libwmf-CVE-2009-3546.patch		\
-  %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
-  %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
-  %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
   %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
