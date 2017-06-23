@@ -50,6 +50,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -84,6 +85,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
@@ -9537,3 +9539,116 @@ correct interaction matrices, identify and compare the so-called
 interaction matrices, and finally, extract structural properties from the
 models.  TADbit is complemented by TADkit for visualizing 3D models.")
     (license license:gpl3+)))
+
+(define-public kentutils
+  (package
+    (name "kentutils")
+    ;; 302.1.0 is out, but the only difference is the inclusion of
+    ;; pre-built binaries.
+    (version "302.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ENCODE-DCC/kentUtils/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "134aja3k1cj32kbk1nnw0q9gxjb2krr15q6sga8qldzvc0585rmm"))
+       (modules '((guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw)))
+       (snippet
+        '(begin
+           ;; Only the contents of the specified directories are free
+           ;; for all uses, so we remove the rest.  "hg/autoSql" and
+           ;; "hg/autoXml" are nominally free, but they depend on a
+           ;; library that is built from the sources in "hg/lib",
+           ;; which is nonfree.
+           (let ((free (list "." ".."
+                             "utils" "lib" "inc" "tagStorm"
+                             "parasol" "htslib"))
+                 (directory? (lambda (file)
+                               (eq? 'directory (stat:type (stat file))))))
+             (for-each (lambda (file)
+                         (and (directory? file)
+                              (delete-file-recursively file)))
+                       (map (cut string-append "src/" <>)
+                            (scandir "src"
+                                     (lambda (file)
+                                       (not (member file free)))))))
+           ;; Only make the utils target, not the userApps target,
+           ;; because that requires libraries we won't build.
+           (substitute* "Makefile"
+             ((" userApps") " utils"))
+           ;; Only build libraries that are free.
+           (substitute* "src/makefile"
+             (("DIRS =.*") "DIRS =\n")
+             (("cd jkOwnLib.*") "")
+             ((" hgLib") "")
+             (("cd hg.*") ""))
+           (substitute* "src/utils/makefile"
+             ;; These tools depend on "jkhgap.a", which is part of the
+             ;; nonfree "src/hg/lib" directory.
+             (("raSqlQuery") "")
+             (("pslLiftSubrangeBlat") "")
+
+             ;; Do not build UCSC tools, which may require nonfree
+             ;; components.
+             (("ALL_APPS =.*") "ALL_APPS = $(UTILS_APPLIST)\n"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `( ;; There is no global test target and the test target for
+       ;; individual tools depends on input files that are not
+       ;; included.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/echo") (which "echo")))
+             #t))
+         (add-after 'unpack 'prepare-samtabix
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "samtabix")
+                               "samtabix")
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (copy-recursively "bin" bin))
+             #t)))))
+    (native-inputs
+     `(("samtabix"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "http://genome-source.cse.ucsc.edu/samtabix.git")
+                 (commit "10fd107909c1ac4d679299908be4262a012965ba")))
+           (sha256
+            (base32
+             "0c1nj64l42v395sa84n7az43xiap4i6f9n9dfz4058aqiwkhkmma"))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("tcsh" ,tcsh)
+       ("perl" ,perl)
+       ("libpng" ,libpng)
+       ("mysql" ,mysql)
+       ("openssl" ,openssl)))
+    (home-page "http://genome.cse.ucsc.edu/index.html")
+    (synopsis "Assorted bioinformatics utilities")
+    (description "This package provides the kentUtils, a selection of
+bioinformatics utilities used in combination with the UCSC genome
+browser.")
+    ;; Only a subset of the sources are released under a non-copyleft
+    ;; free software license.  All other sources are removed in a
+    ;; snippet.  See this bug report for an explanation of how the
+    ;; license statements apply:
+    ;; https://github.com/ENCODE-DCC/kentUtils/issues/12
+    (license (license:non-copyleft
+              "http://genome.ucsc.edu/license/"
+              "The contents of this package are free for all uses."))))
