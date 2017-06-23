@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
@@ -58,6 +61,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages spice)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg))
 
@@ -5790,3 +5795,96 @@ basic eye-candy effects.")
     (home-page "https://cgit.freedesktop.org/xorg/app/xcompmgr/")
     (license (license:x11-style
               "https://cgit.freedesktop.org/xorg/app/xcompmgr/tree/COPYING"))))
+
+(define-public xpra
+  (package
+    (name "xpra")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.xpra.org/src/xpra-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "09hzgbsj9v5qyh41rbz968ipi7016jk66b60vm6piryna9kbnha3"))))
+    (build-system python-build-system)
+    (inputs `(("ffmpeg", ffmpeg)
+              ("flac", flac)
+              ("gtk+-2" ,gtk+-2) ;; no full GTK3 support yet
+              ("libjpeg", libjpeg)
+              ("libpng", libpng)
+              ("libvpx", libvpx)
+              ("libx264", libx264)
+              ("libxcomposite", libxcomposite)
+              ("libxdamage", libxdamage)
+              ("libxkbfile", libxkbfile)
+              ("libxrandr", libxrandr)
+              ("libxtst", libxtst)
+              ("lzo", lzo)
+              ("python2-cryptography", python2-cryptography)
+              ("python2-dbus", python2-dbus)
+              ("python2-lz4", python2-lz4)
+              ("python2-lzo", python2-lzo)
+              ("python2-numpy", python2-numpy)
+              ("python2-pillow" ,python2-pillow)
+              ("python2-pycairo", python2-pycairo)
+              ("python2-pycrypto", python2-pycrypto)
+              ("python2-pygobject", python2-pygobject)
+              ("python2-pyopengl", python2-pyopengl)
+              ("python2-pygtk", python2-pygtk)
+              ("python2-rencode", python2-rencode)
+              ("xorg-server", xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("python2-cython", python2-cython)))
+    (arguments
+     `(#:python ,python-2 ;; no full Python 3 support yet
+       #:configure-flags '("--with-tests"
+                           "--with-bundle_tests"
+                           "--without-strict")
+       #:modules ((guix build python-build-system)
+                  (guix build utils))
+
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (delete 'check) ;; There's no test suite at the moment.
+
+         ;; Remove BUILD_CPU, BUILD_DATE, BUILD_TIME from build info to
+         ;; prevent deterministic issues.  Also correct some directories and
+         ;; use the xvfb binary instead of xorg-server (which doesn't seem to
+         ;; work).
+         (add-before 'install 'remove-timestamps&set-file-names
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "add_build_info.py"
+               ((".*\"BUILD_CPU\", get_cpuinfo.*") ""))
+             (substitute* "add_build_info.py"
+               ((".*\"BUILD_DATE\", datetime.*") ""))
+             (substitute* "add_build_info.py"
+               ((".*\"BUILD_TIME\", datetime.*") ""))
+             (substitute* "setup.py"
+               (("/etc/init.d/")
+                (string-append (assoc-ref outputs "out")
+                               "/etc/init.d/")))
+             (substitute* "setup.py"
+               (("/usr/lib/")
+                (string-append (assoc-ref outputs "out") "/lib/")))
+             (substitute* "./etc/xpra/conf.d/55_server_x11.conf.in"
+               (("xvfb = %.*")
+                (string-append "xvfb = "
+                               (assoc-ref inputs "xorg-server")
+                               "/bin/Xvfb +extension Composite -nolisten tcp"
+                               " -noreset -auth $XAUTHORITY"
+                               " -screen 0 5760x2560x24+32")))
+             #t)))))
+    (home-page "https://www.xpra.org/")
+    (synopsis "Remote access to individual applications or full desktops")
+    (description "Xpra is a persistent remote display server and client for
+forwarding applications and desktop screens.  It gives you remote access to
+individual applications or full desktops.  On X11, it is also known as
+``@command{screen} for X11'': it allows you to run programs, usually on a
+remote host, direct their display to your local machine, and then to
+disconnect from these programs and reconnect from the same or another machine,
+without losing any state.  It can also be used to forward full desktops from
+X11 servers, Windows, or macOS.")
+    (license license:gpl2+)))
