@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1491,3 +1492,34 @@ recreates the stored directory structure by default.")
 manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
     (license license:perl-license)))
+
+(define-public libzip
+  (package
+    (name "libzip")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://nih.at/libzip/libzip-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17vxj2ffsxwh8lkc6801ppmwj15jp8q58rin76znxfbx88789ybc"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-perl
+           (lambda _
+             (substitute* "regress/runtest.in"
+               (("/usr/bin/env perl") (which "perl"))))))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (home-page "https://nih.at/libzip/index.html")
+    (synopsis "C library for reading, creating, and modifying zip archives")
+    (description "Libzip is a C library for reading, creating, and modifying
+zip archives.  Files can be added from data buffers, files, or compressed data
+copied directly from other zip archives.  Changes made without closing the
+archive can be reverted.")
+    (license license:bsd-3)))
