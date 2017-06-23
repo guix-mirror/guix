@@ -2759,7 +2759,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "102")
+    (version "103")
     (source
      (origin
        (method url-fetch)
@@ -2768,7 +2768,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0zw3r50ay1mk7ni7cn06v9bbgry4mcyrwbg49c3nk1sks49hxyx5"))
+        (base32 "013r0lcm0qw8zwavz977mqk2clg80gngkjijr3n0q8snpc1727r7"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
