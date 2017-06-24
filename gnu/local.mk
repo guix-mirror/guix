@@ -478,6 +478,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
+  %D%/tests/admin.scm				\
   %D%/tests/base.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/nfs.scm				\

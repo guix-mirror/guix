@@ -219,6 +219,7 @@ Services
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * DNS Services::                DNS daemons.
@@ -9011,6 +9012,7 @@ declaration.
 * Database Services::           SQL databases.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * DNS Services::                DNS daemons.
@@ -13598,6 +13600,94 @@ string, you could instantiate a prosody service like this:
          (opaque-prosody-configuration
           (prosody.cfg.lua "")))
 @end example
+
+@node Monitoring Services
+@subsubsection Monitoring Services
+
+@subsubheading Tailon Service
+
+@uref{https://tailon.readthedocs.io/, Tailon} is a web application for
+viewing and searching log files.
+
+The following example will configure the service with default values.
+By default, Tailon can be accessed on port 8080 (@code{http://localhost:8080}).
+
+@example
+(service tailon-service-type)
+@end example
+
+The following example customises more of the Tailon configuration,
+adding @command{sed} to the list of allowed commands.
+
+@example
+(service tailon-service-type
+         (tailon-configuration
+           (config-file
+             (tailon-configuration-file
+               (allowed-commands '("tail" "grep" "awk" "sed"))))))
+@end example
+
+
+@deftp {Data Type} tailon-configuration
+Data type representing the configuration of Tailon.
+This type has the following parameters:
+
+@table @asis
+@item @code{config-file} (default: @code{(tailon-configuration-file)})
+The configuration file to use for Tailon. This can be set to a
+@dfn{tailon-configuration-file} record value, or any gexp
+(@pxref{G-Expressions}).
+
+For example, to instead use a local file, the @code{local-file} function
+can be used:
+
+@example
+(service tailon-service-type
+         (tailon-configuration
+           (config-file (local-file "./my-tailon.conf"))))
+@end example
+
+@item @code{package} (default: @code{tailon})
+The tailon package to use.
+
+@end table
+@end deftp
+
+@deftp {Data Type} tailon-configuration-file
+Data type representing the configuration options for Tailon.
+This type has the following parameters:
+
+@table @asis
+@item @code{files} (default: @code{(list "/var/log")})
+List of files to display. The list can include strings for a single file
+or directory, or a list, where the first item is the name of a
+subsection, and the remaining items are the files or directories in that
+subsection.
+
+@item @code{bind} (default: @code{"localhost:8080"})
+Address and port to which Tailon should bind on.
+
+@item @code{relative-root} (default: @code{#f})
+URL path to use for Tailon, set to @code{#f} to not use a path.
+
+@item @code{allow-transfers?} (default: @code{#t})
+Allow downloading the log files in the web interface.
+
+@item @code{follow-names?} (default: @code{#t})
+Allow tailing of not-yet existent files.
+
+@item @code{tail-lines} (default: @code{200})
+Number of lines to read initially from each file.
+
+@item @code{allowed-commands} (default: @code{(list "tail" "grep" "awk")})
+Commands to allow running. By default, @code{sed} is disabled.
+
+@item @code{debug?} (default: @code{#f})
+Set @code{debug?} to @code{#t} to show debug messages.
+
+@end table
+@end deftp
+
 
 @node Kerberos Services
 @subsubsection Kerberos Services
