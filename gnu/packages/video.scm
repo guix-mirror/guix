@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,14 +58,18 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -93,7 +98,10 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -271,6 +279,90 @@ H.264 (MPEG-4 AVC) video streams.")
                    (license:non-copyleft ;extras/cl*.h
                     "file://extras/cl.h"
                     "See extras/cl.h in the distribution.")))))
+
+(define-public mkvtoolnix
+  (package
+    (name "mkvtoolnix")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mkvtoolnix.download/sources/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.
+           (for-each delete-file-recursively
+                     '("lib/libebml"
+                       "lib/libmatroska"
+                       "lib/nlohmann-json"
+                       "lib/pugixml"
+                       "lib/utf8-cpp"))))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("bzip2" ,bzip2)
+       ("libebml" ,libebml)
+       ("flac" ,flac)
+       ("file" ,file)
+       ("libmatroska" ,libmatroska)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("lzo" ,lzo)
+       ("pugixml" ,pugixml)
+       ("qt" ,qt)
+       ("utfcpp" ,utfcpp)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("gettext" ,gettext-minimal)
+       ("googletest" ,googletest)
+       ("libxslt" ,libxslt)
+       ("nlohmann-json-cpp" ,nlohmann-json-cpp)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("po4a" ,po4a)
+       ("ruby" ,ruby)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost="
+                            (assoc-ref %build-inputs "boost"))
+             (string-append "--with-docbook-xsl-root="
+                            (assoc-ref %build-inputs "docbook-xsl")
+                            "/xml/xsl/docbook-xsl-"
+                            ,(package-version docbook-xsl))
+             (string-append "--with-extra-includes="
+                            (assoc-ref %build-inputs "nlohmann-json-cpp")
+                            "/include/nlohmann"))
+        #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-googletest
+           (lambda _
+             (symlink
+              (string-append (assoc-ref %build-inputs "googletest")
+                             "/include/gtest") "lib/gtest")
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((-j (list "-j" (number->string (parallel-job-count)))))
+               (zero? (apply system* "rake" -j)))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "rake" "tests/unit"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "rake" "install")))))))
+    (home-page "https://mkvtoolnix.download")
+    (synopsis "Tools to create, alter and inspect Matroska files")
+    (description
+     "MKVToolNix provides tools for getting information about Matroska files
+(@code{mkvinfo}), extracting tracks/data from Matroska files (@code{mkvextract})
+and creating Matroska files from other media files (@code{mkvmerge}).")
+    (license license:gpl2)))
 
 (define-public x265
   (package
