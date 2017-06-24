@@ -1097,9 +1097,12 @@ users to select LV2 plugins and run them with jalv.")
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
        ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
        ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://synthv1.sourceforge.net")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
