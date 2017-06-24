@@ -1129,6 +1129,7 @@ oscillators and stereo effects.")
        ("lv2" ,lv2)
        ("libsndfile" ,libsndfile)
        ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
        ("qtbase" ,qtbase)))
     (native-inputs
