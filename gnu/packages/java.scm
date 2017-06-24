@@ -1839,8 +1839,8 @@ IcedTea build harness.")
                       "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))
          ("tools-reader-src"
           ,(submodule "tools.reader/archive/tools.reader-"
-                      "0.10.0"
-                      "09i3lzbhr608h76mhdjm3932gg9xi8sflscla3c5f0v1nkc28cnr"))))
+                      "1.0.0"
+                      "1lafblmmj4hkg0aqrf19qkdw9wdcsh3qxmn6cbkmnzbhffpyv2lv"))))
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
       (description "Clojure is a dynamic, general-purpose programming language,
