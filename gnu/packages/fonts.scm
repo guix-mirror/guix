@@ -1044,51 +1044,28 @@ monospace, slab-serif fonts.")
 
 (define-public font-google-material-design-icons
   (package
-   (name "font-google-material-design-icons")
-   (version "3.0.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                   "https://github.com/google/material-design-icons/archive/"
+    (name "font-google-material-design-icons")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/google/material-design-icons/archive/"
                     version ".tar.gz"))
-            (sha256
-             (base32
-              "183n0qv3q8w6n27libarq1fhc4mqv2d3sasbfmbn7x9r5pw9c6ga"))
-            (file-name (string-append name "-" version ".tar.gz"))))
-   (build-system trivial-build-system)
-   (native-inputs
-    `(("tar" ,tar)
-      ("gzip" ,gzip)))
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder (begin
-                  (use-modules (guix build utils))
-                  (let* ((font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (source (assoc-ref %build-inputs "source"))
-                         (font-filename "MaterialIcons-Regular.ttf")
-                         (src-ttf-file (string-append "material-design-icons-"
-                                                      ,version
-                                                      "/iconfont/"
-                                                      font-filename))
-                         (dest-ttf-file (string-append font-dir font-filename))
-                         (gzip (assoc-ref %build-inputs "gzip"))
-                         (tar (assoc-ref %build-inputs "tar")))
-                    (setenv "PATH" (string-append gzip "/bin:"
-                                                  tar "/bin:"))
-                    (system* "tar" "xf" source)
-                    (mkdir-p font-dir)
-                    (copy-file src-ttf-file dest-ttf-file)))))
-   (home-page "http://google.github.io/material-design-icons")
-   (synopsis "Icon font of Google Material Design icons")
-   (description
-    "Material design system icons are simple, modern, friendly, and sometimes
+              (sha256
+               (base32
+                "183n0qv3q8w6n27libarq1fhc4mqv2d3sasbfmbn7x9r5pw9c6ga"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system font-build-system)
+    (home-page "http://google.github.io/material-design-icons")
+    (synopsis "Icon font of Google Material Design icons")
+    (description
+     "Material design system icons are simple, modern, friendly, and sometimes
 quirky.  Each icon is created using our design guidelines to depict in simple
 and minimal forms the universal concepts used commonly throughout a UI.
 Ensuring readability and clarity at both large and small sizes, these icons
 have been optimized for beautiful display on all common platforms and display
 resolutions.")
-   (license license:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public font-mathjax
   (package
