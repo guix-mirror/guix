@@ -657,7 +657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
-  gnu/packages/patches/guile-ssh-channel-finalization.patch	\
+  %D%/packages/patches/guile-ssh-channel-finalization.patch	\
   %D%/packages/patches/guile-ssh-double-free.patch		\
   %D%/packages/patches/guile-ssh-rexec-bug.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
