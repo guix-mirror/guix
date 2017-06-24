@@ -4939,3 +4939,36 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
 @item dired-tagsistant
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-which-key
+  (package
+    (name "emacs-which-key")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/justbur/emacs-which-key/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0zc9yivdkbxmcllhlbbcvsbj8g8nzzgs0xib488s08p4s0l7xs8m"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "which-key-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/justbur/emacs-which-key")
+    (synopsis "Display available key bindings in popup")
+    (description "@code{emacs-which-key} is a minor mode for Emacs that
+displays the key bindings following your currently entered incomplete command
+(a prefix) in a popup.  For example, after enabling the minor mode if you
+enter C-x and wait for the default of 1 second, the minibuffer will expand
+with all of the available key bindings that follow C-x (or as many as space
+allows given your settings).")
+    (license license:gpl3+)))
