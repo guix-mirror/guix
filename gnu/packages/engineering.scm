@@ -974,7 +974,7 @@ fully-vectorial and three-dimensional methods.")
     (inputs
      `(("fftw" ,fftw)
        ("gsl" ,gsl)
-       ("guile" ,guile-2.0) ; doesn't build with guile-2.2
+       ("guile" ,guile-2.0)             ; doesn't build with guile-2.2
        ("harminv" ,harminv)
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
@@ -987,3 +987,29 @@ fully-vectorial and three-dimensional methods.")
      "Meep is a finite-difference time-domain (FDTD) simulation software package
 developed at MIT to model electromagnetic systems.")
     (license license:gpl2+)))
+
+(define-public adms
+  (package
+    (name "adms")
+    (version "2.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "mirror://sourceforge/mot-adms/adms-source/"
+                (version-major+minor version) "/adms-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rn98l6jxcjhi6ai5f7p588khra9z80m0m0lql4n4sb7773fh1vk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (home-page "https://sourceforge.net/projects/mot-adms")
+    (synopsis "Automatic device model synthesizer")
+    (description
+     "ADMS is a code generator that converts electrical compact device models
+specified in high-level description language into ready-to-compile C code for
+the API of spice simulators.  Based on transformations specified in XML
+language, ADMS transforms Verilog-AMS code into other target languages.")
+    (license license:gpl3)))
