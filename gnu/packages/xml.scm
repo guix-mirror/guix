@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
+;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,27 @@ things the parser might find in the XML document (like start tags).")
              (sha256
               (base32
                "11c8jy1wvllvlk7xdc5cm8hdhg0hvs8j0aqy6s702an8wkdcls0q"))))))
+
+(define-public libebml
+  (package
+    (name "libebml")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.matroska.org/downloads/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "11zka6z9ncywyjr1gfm5cnii33ln7y3w6s86kiacchip2g7kw3f5"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.matroska.org")
+    (synopsis "C++ libary to parse EBML files")
+    (description "libebml is a C++ library to read and write EBML (Extensible
+Binary Meta Language) files.  EBML was designed to be a simplified binary
+extension of XML for the purpose of storing and manipulating data in a
+hierarchical form with variable field lengths.")
+    (license license:lgpl2.1)))
 
 (define-public libxml2
   (package
