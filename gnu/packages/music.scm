@@ -1079,7 +1079,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -1087,7 +1087,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0lmblhk0728bxi7cixc2j9p6gisicy6alybga9vwmg453snrsybr"))))
+                "1yqh7jx431q01f15b3h4dh038yvmc4jcsr3vn2175kqgwfj9jqcg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
