@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -467,7 +467,7 @@ the bootstrap environment."
   ;; built just below; the only difference is that this one uses the
   ;; bootstrap Bash.
   (package-with-bootstrap-guile
-   (package (inherit glibc)
+   (package/inherit glibc
      (name "glibc-intermediate")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -640,7 +640,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
-  (package (inherit glibc-final-with-bootstrap-bash)
+  (package/inherit glibc-final-with-bootstrap-bash
     (name "glibc")
     (inputs `(("static-bash" ,static-bash-for-glibc)
               ,@(alist-delete
