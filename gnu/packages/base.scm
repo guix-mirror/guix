@@ -948,7 +948,8 @@ GLIBC/HURD for a Hurd host"
               (lambda _
                 ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
                 (substitute* "configure"
-                  (("/bin/pwd") "pwd"))))))))))
+                  (("/bin/pwd") "pwd"))
+                #t))))))))
 
 (define-public glibc-2.21
   (package
