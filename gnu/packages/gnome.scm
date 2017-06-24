@@ -3858,6 +3858,7 @@ work and the interface is well tested.")
     (inputs
      `(("avahi" ,avahi)
        ("gcr" ,gcr)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
        ("glib-networking" ,glib-networking)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
