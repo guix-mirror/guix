@@ -1263,7 +1263,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -1271,7 +1271,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "01h9mswlfjk3zpdxwk1ciy5qkq6xq925gvk6wrh8k066b2wx8f8k"))))
+        (base32 "121h9j57gvjr155vvm4f7ybphfvqrdz2ib059kfi444xcxz19sl0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1307,7 +1307,7 @@ either by Infocom or created using the Inform compiler.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
-    (home-page "http://www.libretro.com/")
+    (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
     (description
      "Libretro is a simple but powerful development interface that allows for
