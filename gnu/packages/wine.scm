@@ -55,14 +55,14 @@
 (define-public wine
   (package
     (name "wine")
-    (version "2.10")
+    (version "2.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/2.x"
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0ygiaayi2mv6jl450d03i4x2gd2bg3mwk3s2pxas87g8sbzzg3a8"))))
+                "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -105,8 +105,7 @@
        ("unixodbc" ,unixodbc)
        ("zlib" ,zlib)))
     (arguments
-     `(;; The 64-bit build of Wine is reportedly less useful or even usable,
-       ;; so force a 32-bit build (under the assumption that this package is
+     `(;; Force a 32-bit build (under the assumption that this package is
        ;; being used on an IA32-compatible architecture.)
        #:system "i686-linux"
 
