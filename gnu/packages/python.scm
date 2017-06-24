@@ -16057,6 +16057,51 @@ pure Python module.")
 (define-public python2-rencode
   (package-with-python2 python-rencode))
 
+(define-public python-xenon
+  (package
+    (name "python-xenon")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xenon" version))
+       (sha256
+        (base32
+         "14kby2y48vp3sgwxqlm5d5789yibqwb1qli5fwcmdqg3iayrbklc"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-radon" ,python-radon)
+       ("python-requests" ,python-requests)
+       ("python-flake8" ,python-flake8)
+       ("python-tox" ,python-tox)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-test-requirements
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Update requirements from dependency==version to
+             ;; dependency>=version.
+             (substitute* "requirements.txt"
+               (("==") ">=")
+               ((",<1.5.0") ""))
+             ;; Remove httpretty dependency for tests.
+             (substitute* "setup.py"
+               (("httpretty") ""))
+             #t)))))
+    (home-page "https://xenon.readthedocs.org/")
+    (synopsis "Monitor code metrics for Python on your CI server")
+    (description
+     "Xenon is a monitoring tool based on Radon.  It monitors code complexity.
+Ideally, @code{xenon} is run every time code is committed.  Through command
+line options, various thresholds can be set for the complexity of code.  It
+will fail (i.e.  it will exit with a non-zero exit code) when any of these
+requirements is not met.")
+    (license license:expat)))
+
+(define-public python2-xenon
+  (package-with-python2 python-xenon))
+
 (define-public python-flask-principal
   (package
     (name "python-flask-principal")
