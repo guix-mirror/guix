@@ -96,6 +96,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -6371,3 +6372,63 @@ duration, cost, and current progress.  It can also show a report of resource
 utilization that highlights under-utilized and over-utilized resources.  These
 views can be printed as PDF or PostScript files, or exported to HTML.")
     (license license:gpl2+)))
+
+(define-public lollypop
+  (package
+    (name "lollypop")
+    (version "0.9.240")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnumdk/lollypop/"
+                           "releases/download/" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0n1ycmg6dgz1pajs80fwlcbxw3rx1hff1xw6ja67zngm85ydbjvq"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%glib-or-gtk-build-system-modules)
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                        (wrap-program (string-append out "/bin/lollypop")
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                      #t))
+                  (add-after 'install 'wrap
+                    (@@ (guix build python-build-system) wrap)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("python" ,python)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-gst" ,python-gst)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pylast" ,python-pylast)
+       ("totem-pl-parser" ,totem-pl-parser)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(;; gst-plugins-base is required to start Lollypop,
+       ;; the others are required to play streaming.
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)))
+    (home-page "https://gnumdk.github.io/lollypop-web")
+    (synopsis "GNOME music playing application")
+    (description
+     "Lollypop is a music player designed to play well with GNOME desktop.
+Lollypop plays audio formats such as mp3, mp4, ogg and flac and gets information
+from artists and tracks from the web.  It also fetches cover artworks
+automatically and it can stream songs from online music services and charts.")
+    (license license:gpl3+)))
