@@ -407,6 +407,34 @@ developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
     (license license:lgpl2.1+)))
 
+(define-public libmatroska
+  (package
+    (name "libmatroska")
+    (version "1.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.matroska.org/downloads/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1yi5cnv13nhl27xyqayd5l3sf0j3swfj3apzibv71yg9pariwi26"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libebml" ,libebml)))
+    (home-page "https://www.matroska.org")
+    (synopsis "C++ libary to parse Matroska files (.mkv and .mka)")
+    (description
+     "Matroska aims to become the standard of multimedia container formats.
+It is based on EBML (Extensible Binary Meta Language), a binary derivative
+of XML.  EBML enables the Matroska Development Team to gain significant
+advantages in terms of future format extensibility, without breaking file
+support in old parsers.
+libebml is a C++ library to read and write EBML files.")
+    (license license:lgpl2.1)))
+
 (define-public libva
   (package
     (name "libva")
