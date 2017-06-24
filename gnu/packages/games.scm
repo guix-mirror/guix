@@ -31,6 +31,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,6 +136,35 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
+
+(define-public armagetronad
+  (package
+    (name "armagetronad")
+    (version "0.2.8.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/stable/"
+                                  version "/" name "-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "1pgy0r80z702qdv94aw3ywdn4ynnr4cdi86ml558pljfc5ygasj4"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("freeglut" ,freeglut)
+       ("libpng" ,libpng)
+       ("libjpeg-turbo" ,libjpeg-turbo)))
+    (home-page "http://www.armagetronad.org")
+    (synopsis "Tron clone in 3D")
+    (description "Armagetron is a multiplayer game in 3d that attempts to
+emulate and expand on the lightcycle sequence from the movie Tron.  It's
+an old school arcade game slung into the 21st century.  Highlights include
+a customizable playing arena, HUD, unique graphics, and AI bots.  For the
+more advanced player there are new game modes and a wide variety of physics
+settings to tweak as well.")
+    (license license:gpl2+)))
 
 (define-public cataclysm-dda
   (package
