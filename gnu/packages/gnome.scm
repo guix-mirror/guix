@@ -919,6 +919,9 @@ some form of information without getting in the user's way.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; The .pc file "Requires" gobject-introspection.
+     `(("gobject-introspection" ,gobject-introspection)))
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
