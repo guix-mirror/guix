@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
+;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -328,3 +329,25 @@ RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faste
 convert JSON documents to BSON and the opposite.  BSON stands for Binary JSON,
 it is comparable to protobuf.")
     (license license:asl2.0)))
+
+(define-public nlohmann-json-cpp
+  (package
+    (name "nlohmann-json-cpp")
+    (version "2.1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/nlohmann/json/"
+                          "archive/v" version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0lrh6cjd643c7kmvmwafbgq7dqj3b778483gjhjbvp6rc6z5xf2r"))))
+    (build-system cmake-build-system)
+    (home-page "https://nlohmann.github.io/json/")
+    (synopsis "JSON library for C++")
+    (description
+     "JSON library for C++ trying to accomplish “Intuitive syntax”,
+“Trivial integration”, and “Serious testing”.
+However, “Memory efficiency” and “Speed” have not been primary goals.")
+    (license license:expat)))
