@@ -374,8 +374,8 @@ requisite store items i.e. the union closure of all the inputs."
        ((? direct-store-path? path)
         (list path)))))
 
-  (mlet %store-monad ((reqs (sequence %store-monad
-                                      (map input->requisites inputs))))
+  (mlet %store-monad ((reqs (mapm %store-monad
+                                  input->requisites inputs)))
     (return (delete-duplicates (concatenate reqs)))))
 
 (define (status->exit-code status)

@@ -566,15 +566,15 @@ list."
 corresponding input list as a monadic value.  When TARGET is true, use it as
 the cross-compilation target triplet."
   (with-monad %store-monad
-    (sequence %store-monad
-              (map (match-lambda
-                     (((? struct? thing) sub-drv ...)
-                      (mlet %store-monad ((drv (lower-object
-                                                thing system #:target target)))
-                        (return `(,drv ,@sub-drv))))
-                     (input
-                      (return input)))
-                   inputs))))
+    (mapm %store-monad
+          (match-lambda
+            (((? struct? thing) sub-drv ...)
+             (mlet %store-monad ((drv (lower-object
+                                       thing system #:target target)))
+               (return `(,drv ,@sub-drv))))
+            (input
+             (return input)))
+          inputs)))
 
 (define* (lower-reference-graphs graphs #:key system target)
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
@@ -606,7 +606,7 @@ names and file names suitable for the #:allowed-references argument to
                                                #:target target)))
           (return (derivation->output-path drv))))))
 
-    (sequence %store-monad (map lower lst))))
+    (mapm %store-monad lower lst)))
 
 (define default-guile-derivation
   ;; Here we break the abstraction by talking to the higher-level layer.
@@ -880,15 +880,15 @@ and in the current monad setting (system type, etc.)"
                      #:system system
                      #:target (if (or n? native?) #f target)))
         (($ <gexp-input> (refs ...) output n?)
-         (sequence %store-monad
-                   (map (lambda (ref)
-                          ;; XXX: Automatically convert REF to an gexp-input.
-                          (reference->sexp
-                           (if (gexp-input? ref)
-                               ref
-                               (%gexp-input ref "out" n?))
-                           (or n? native?)))
-                        refs)))
+         (mapm %store-monad
+               (lambda (ref)
+                 ;; XXX: Automatically convert REF to an gexp-input.
+                 (reference->sexp
+                  (if (gexp-input? ref)
+                      ref
+                      (%gexp-input ref "out" n?))
+                  (or n? native?)))
+               refs))
         (($ <gexp-input> (? struct? thing) output n?)
          (let ((target (if (or n? native?) #f target))
                (expand (lookup-expander thing)))
@@ -902,8 +902,8 @@ and in the current monad setting (system type, etc.)"
          (return x)))))
 
   (mlet %store-monad
-      ((args (sequence %store-monad
-                       (map reference->sexp (gexp-references exp)))))
+      ((args (mapm %store-monad
+                   reference->sexp (gexp-references exp))))
     (return (apply (gexp-proc exp) args))))
 
 (define (syntax-location-string s)
@@ -1117,8 +1117,7 @@ to the source files instead of copying them."
       (mlet %store-monad ((file (lower-object file-like system)))
         (return (list final-path file))))))
 
-  (mlet %store-monad ((files (sequence %store-monad
-                                       (map file-pair files))))
+  (mlet %store-monad ((files (mapm %store-monad file-pair files)))
     (define build
       (gexp
        (begin
