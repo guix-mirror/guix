@@ -392,13 +392,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "3.2.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "0g80vhjss1a48w60zw0pd5fhpwfjw2dqhh0fbs730brkxj6xv1dc"))))
+                "04dma3979171p9yf0cg7m03shk038hc9vyfm9lb8z60qyn0pg9xg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
