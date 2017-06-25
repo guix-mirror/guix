@@ -29,6 +29,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -268,14 +269,14 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.2.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "17i08v3836c9w4dwcklvbgzin3aw1gbksm9ry8kpk837nn1s10cl"))))
+                "13945hrijybfh634c4x9cbkfazvpzajgv55ll2nx412r4bv6l622"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -324,7 +325,12 @@ all common programming languages.  Vala bindings are also provided.")
        ("perl" ,perl)
        ("python" ,python-2)
        ("libyajl" ,libyajl)
-       ("audit" ,audit)))
+       ("audit" ,audit)
+       ("dmidecode" ,dmidecode)
+       ("dnsmasq" ,dnsmasq)
+       ("ebtables" ,ebtables)
+       ("iproute" ,iproute)
+       ("iptables" ,iptables)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://libvirt.org")
