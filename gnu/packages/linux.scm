@@ -1093,6 +1093,61 @@ package also includes ip6tables.  ip6tables is used for configuring the IPv6
 packet filter.")
     (license license:gpl2+)))
 
+(define-public ebtables
+  (package
+    (name "ebtables")
+    (version "2.0.10-4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://netfilter.org/ebtables/ebtables-v"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0pa5ljlk970yfyhpf3iqwfpbc30j8mgn90fapw9cfz909x47nvyw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no test suite
+       #:make-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (bin (string-append out "/sbin"))
+              (lib (string-append out "/lib"))
+              (man (string-append out "/share/man"))
+              (iptables   (assoc-ref %build-inputs "iptables"))
+              (ethertypes (string-append iptables "/etc/ethertypes")))
+         (list (string-append "LIBDIR=" lib)
+               (string-append "MANDIR=" man)
+               (string-append "BINDIR=" bin)
+               (string-append "ETHERTYPESFILE=" ethertypes)
+               ;; With the default CFLAGS, it falis with:
+               ;;   communication.c:259:58: error: variable ‘ret’ set but not
+               ;;   used [-Werror=unused-but-set-variable]
+               "CFLAGS=-Wall"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; no configure script
+           (lambda _
+             (substitute* "Makefile"
+               ;; Remove user and group options from install commands,
+               ;; otherwise it fails with: invalid user 'root'.
+               (("-o root -g root") "")
+               ;; Remove 'ethertypes' from the install target.
+               (("install: .*")
+                "install: $(MANDIR)/man8/ebtables.8 exec scripts\n"))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("iptables" ,iptables)))
+    (synopsis "Ethernet bridge frame table administration")
+    (home-page "http://ebtables.netfilter.org/")
+    (description
+     "ebtables is an application program used to set up and maintain the
+tables of rules (inside the Linux kernel) that inspect Ethernet frames.  It is
+analogous to the iptables application, but less complicated, due to the fact
+that the Ethernet protocol is much simpler than the IP protocol.")
+    (license license:gpl2+)))
+
 (define-public iproute
   (package
     (name "iproute2")
