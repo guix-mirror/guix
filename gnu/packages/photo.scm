@@ -177,7 +177,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "10.40")
+    (version "10.55")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -185,20 +185,20 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1p05d9k94win8a24cr7lsllb6wjl3dagsmdbcxzv6f68z7i1jdly"))))
+                "0z8zwjjfvyllnhsafhddbybywpgqv0pl1dbn1g034cs27yj836q2"))))
     (build-system perl-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Make sure the 'exiftool' commands finds the library.
-                   ;; XXX: Shouldn't it be handled by PERL-BUILD-SYSTEM?
-                   (let* ((out (assoc-ref outputs "out"))
-                          (pm  (find-files out "^ExifTool\\.pm$"))
-                          (lib (dirname (dirname (car pm)))))
-                     (wrap-program (string-append out "/bin/exiftool")
-                                   `("PERL5LIB" prefix (,lib)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure the 'exiftool' commands finds the library.
+             ;; XXX: Shouldn't it be handled by PERL-BUILD-SYSTEM?
+             (let* ((out (assoc-ref outputs "out"))
+                    (pm  (find-files out "^ExifTool\\.pm$"))
+                    (lib (dirname (dirname (car pm)))))
+               (wrap-program (string-append out "/bin/exiftool")
+                             `("PERL5LIB" prefix (,lib)))))))))
     (home-page "http://search.cpan.org/dist/Image-ExifTool")
     (synopsis "Program and Perl library to manipulate EXIF and other metadata")
     (description "This package provides the @code{exiftool} command and the
