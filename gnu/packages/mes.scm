@@ -100,3 +100,32 @@ consists of a mutual self-hosting [close to Guile-] Scheme interpreter
 prototype in C and a Nyacc-based C compiler in [Guile] Scheme.")
       (home-page "https://gitlab.com/janneke/mes")
       (license gpl3+))))
+
+(define-public mescc-tools
+  (package
+    (name "mescc-tools")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/oriansj/MESCC_Tools/archive/Release_"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lzi9sqv41269isn7in70q2hhh087n4v97zr5i2qzz69j2lkr3xb"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Tools for the full source bootstrapping process")
+    (description
+     "Mescc-tools is a collection of tools for use in a full source
+bootstrapping process.  Currently consists of the M0 macro assembler and the
+hex2 linker.")
+    (home-page "https://github.com/oriansj/MESCC_Tools")
+    (license gpl3+)))
