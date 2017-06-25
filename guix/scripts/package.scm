@@ -321,6 +321,7 @@ of relevance scores."
                      (package->manifest-entry pkg output)
                      transaction))))))))
        (#f
+        (warning (G_ "package '~a' no longer exists~%") name)
         transaction)))))
 
 
