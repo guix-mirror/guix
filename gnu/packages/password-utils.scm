@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
@@ -410,3 +412,37 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
 
 (define-public python2-bcrypt
   (package-with-python2 python-bcrypt))
+
+(define-public pass-git-helper
+  (package
+    (name "pass-git-helper")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/languitar/pass-git-helper/archive/release-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0lz5ncy44pz7z1j2nnyildx8sq33zi3xvg5nkwg25n11nasqh2xn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-pass-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((password-store (assoc-ref inputs "password-store"))
+                    (pass (string-append password-store "/bin/pass")))
+               (substitute* "pass-git-helper"
+                 (("'pass'") (string-append "'" pass "'")))
+               #t))))))
+    (inputs
+     `(("python-pyxdg" ,python-pyxdg)
+       ("password-store" ,password-store)))
+    (home-page "https://github.com/languitar/pass-git-helper")
+    (synopsis "Git credential helper interfacing with pass")
+    (description "pass-git-helper is a git credential helper which allows to
+use pass, the standard unix password manager, as the credential backend for
+your git repositories.  This is achieved by explicitly defining mappings
+between hosts and entries in the password store.")
+    (license license:lgpl3+)))
