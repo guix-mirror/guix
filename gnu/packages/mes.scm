@@ -54,25 +54,24 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((commit "7fdca75d2188b28df806b34ec92627d57aafa9ae")
-        (revision "0")
-        (triplet "i686-unknown-linux-gnu")
-        (version "0.7"))
+  (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version (string-append version "-" revision "." (string-take commit 7)))
+      (version "0.8")
       (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/janneke/mes")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/janneke/mes"
+                                    "/repository/archive.tar.gz?ref=v"
+                                    version))
+                (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
-                 (base32 "0fvzr1ai2rmi46zdi5b2bdjb6s8ip78mkmsk02yxl46rajmp2pb1"))))
+                 (base32
+                  "1igmrks20ci6l5c0jx2bn4swf0w8jy5inhg61cwld9d7hwanmdnj"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
-       `(("nyacc" ,nyacc)))
+       `(("mescc-tools" ,mescc-tools)
+         ("nyacc" ,nyacc)))
       (native-inputs
        `(("guile" ,guile-2.2)
          ,@(if (string-prefix? "x86_64-linux" (or (%current-target-system)
