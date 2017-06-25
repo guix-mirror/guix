@@ -289,6 +289,7 @@ all common programming languages.  Vala bindings are also provided.")
        #:tests? #f
        #:configure-flags
        (list "--with-polkit"
+             "--sysconfdir=/etc"
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -299,16 +300,14 @@ all common programming languages.  Vala bindings are also provided.")
                             "gnulib/tests/test-posix_spawn2.c")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-after 'unpack 'do-not-mkdir-in-/var
-           ;; Since the localstatedir should be /var at runtime, we must
-           ;; prevent writing to /var at installation time.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out           (assoc-ref outputs "out"))
-                    (localstatedir (string-append out "/var")))
-               (substitute* '("src/Makefile.in"
-                              "daemon/Makefile.in")
-                 (("\\$\\(DESTDIR\\)\\$\\(localstatedir)") localstatedir)))
-             #t)))))
+         (replace 'install
+           ;; Since the sysconfdir and localstatedir should be /etc and /var
+           ;; at runtime, we must prevent writing to them at installation
+           ;; time.
+           (lambda _
+             (zero? (system* "make" "install"
+                             "sysconfdir=/tmp/etc"
+                             "localstatedir=/tmp/var")))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("gnutls" ,gnutls)
