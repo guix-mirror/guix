@@ -642,21 +642,19 @@ specifies modules in scope when evaluating SNIPPET."
   (define instantiate-patch
     (match-lambda
       ((? string? patch)                          ;deprecated
-       (interned-file patch #:recursive? #t))
+       (local-file patch #:recursive? #t))
       ((? struct? patch)                          ;origin, local-file, etc.
-       (lower-object patch system))))
+       patch)))
 
-  (mlet %store-monad ((tar ->     (lookup-input "tar"))
-                      (gzip ->    (lookup-input "gzip"))
-                      (bzip2 ->   (lookup-input "bzip2"))
-                      (lzip ->    (lookup-input "lzip"))
-                      (xz ->      (lookup-input "xz"))
-                      (patch ->   (lookup-input "patch"))
-                      (locales -> (lookup-input "locales"))
-                      (comp ->    (and=> (compressor source-file-name)
-                                         lookup-input))
-                      (patches    (sequence %store-monad
-                                            (map instantiate-patch patches))))
+  (let ((tar     (lookup-input "tar"))
+        (gzip    (lookup-input "gzip"))
+        (bzip2   (lookup-input "bzip2"))
+        (lzip    (lookup-input "lzip"))
+        (xz      (lookup-input "xz"))
+        (patch   (lookup-input "patch"))
+        (locales (lookup-input "locales"))
+        (comp    (and=> (compressor source-file-name) lookup-input))
+        (patches (map instantiate-patch patches)))
     (define build
       (with-imported-modules '((guix build utils))
         #~(begin
