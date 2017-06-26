@@ -1875,6 +1875,7 @@ YACC = bison -pscotchyy -y -b y
                         '("COMMON_FILE_COMPRESS_GZ"
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
+                          "INTSIZE64"             ;use 'long' instead of 'int'
                           ;; Prevents symbolc clashes with libesmumps
                           "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests
