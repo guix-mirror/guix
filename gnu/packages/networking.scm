@@ -1342,3 +1342,48 @@ clients which typically implement a routing protocol and communicate routing
 updates to the zebra daemon.")
     (home-page "http://www.nongnu.org/quagga/")
     (license license:gpl2+)))
+
+(define-public thc-ipv6
+  (package
+    (name "thc-ipv6")
+    (version "3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/vanhauser-thc/thc-ipv6/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yh2lpsazmm0pgbmh0dx023w6fss1kdfyr4cq7yw0fac8vkw32d3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No ./configure script.
+         (add-before 'build 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/echo") "echo"))
+             #t))
+         (add-after 'install 'install-more-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/thc-ipv6/doc")))
+               (install-file "README" doc)
+               (install-file "HOWTO-INJECT" doc)
+               #t))))))
+    ;; TODO Add libnetfilter-queue once packaged.
+    (inputs
+     `(("libpcap" ,libpcap)
+       ("openssl" ,openssl)
+       ("perl" ,perl)))
+    (home-page "https://github.com/vanhauser-thc/thc-ipv6")
+    (synopsis "IPv6 security research toolkit")
+    (description "The THC IPv6 Toolkit provides command-line tools and a library
+for researching IPv6 implementations and deployments.  It requires Linux 2.6 or
+newer and only works on Ethernet network interfaces.")
+    ;; AGPL 3 with exception for linking with OpenSSL. See the 'LICENSE' file in
+    ;; the source distribution for more information.
+    (license license:agpl3)))
