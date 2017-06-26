@@ -428,7 +428,7 @@ large scale eigenvalue problems.")
 (define-public lapack
   (package
     (name "lapack")
-    (version "3.5.0")
+    (version "3.7.1")
     (source
      (origin
       (method url-fetch)
@@ -436,7 +436,7 @@ large scale eigenvalue problems.")
                           version ".tgz"))
       (sha256
        (base32
-        "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
+        "0yavf6m9l78pwlnk5g61cg8x28mr30j0g8gkai0jrdqfjjmf3whs"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran)
