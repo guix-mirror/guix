@@ -902,9 +902,6 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
-;; Below are old libc versions, which we use mostly to build locale data in
-;; the old format (which the new libc cannot cope with.)
-
 (define glibc-2.25-patched
   (package
     (inherit glibc)
@@ -914,9 +911,13 @@ GLIBC/HURD for a Hurd host"
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))
+
+;; Below are old libc versions, which we use mostly to build locale data in
+;; the old format (which the new libc cannot cope with.)
 
 (define-public glibc-2.24
   (package
@@ -933,6 +934,7 @@ GLIBC/HURD for a Hurd host"
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))
@@ -952,6 +954,7 @@ GLIBC/HURD for a Hurd host"
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))
@@ -969,6 +972,7 @@ GLIBC/HURD for a Hurd host"
                (base32
                 "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))
