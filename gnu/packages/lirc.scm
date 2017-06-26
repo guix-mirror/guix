@@ -48,6 +48,13 @@
      '(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-kernel-sniffing
+           (lambda _
+             ;; Correct the faulty assumption that systemd support should be
+             ;; hard-wired when a build host's /proc/version contains "Ubuntu".
+             (substitute* "configure"
+               (("kernelversion=.*") "kernelversion=irrelevant\n"))
+             #t))
          (add-after 'unpack 'patch-lirc-make-devinput
            (lambda* (#:key inputs #:allow-other-keys)
              ;; 'lirc-make-devinput' script assumes that linux headers
