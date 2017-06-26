@@ -360,24 +360,14 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.6")
-(define %linux-libre-hash "0xay0m2a4la8aqc8ai8zqfh1c1i6sjgh0dywm7nis0g1gqirwrds")
+(define %linux-libre-version "4.11.7")
+(define %linux-libre-hash "0kliwdz4qqjz13pywhavxg19cy1mf6d1f52f6kgapc331309vad9")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
-                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.34"
@@ -412,17 +402,7 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
                     %linux-libre-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
-                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
+                    #:extra-version "arm-generic"))
 
 
 ;;;
