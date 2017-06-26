@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,6 +99,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages selinux)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -4140,3 +4143,28 @@ NexGen, Rise, and SiS CPUs.")
 to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
 the MTP device as a filesystem.")
     (license license:gpl3)))
+
+(define-public procenv
+  (package
+   (name "procenv")
+   (version "0.49")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/jamesodhunt/procenv/archive/"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "0brzf6185hb76imw107cl21c8lzwiywkxi3jknihrk86bvvicd0d"))))
+   (build-system gnu-build-system)
+   (arguments `(#:configure-flags '("--disable-silent-rules")))
+   (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)
+             ("groff" ,groff)           ; for tests
+             ("libselinux" ,libselinux)))
+   (synopsis "Utility to show process environment")
+   (description "Procenv is a command-line tool that displays as much detail about
+itself and its environment as possible.  It can be used as a test
+tool, to understand the type of environment a process runs in, and for
+comparing system environments.")
+   (home-page "http://github.com/jamesodhunt/procenv/")
+   (license license:gpl3+)))
