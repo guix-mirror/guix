@@ -443,7 +443,10 @@ large scale eigenvalue problems.")
               ("python" ,python-2)))
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
-                           "-DLAPACKE=ON")
+                           "-DLAPACKE=ON"
+
+                           ;; Build the 'LAPACKE_clatms' functions.
+                           "-DLAPACKE_WITH_TMG=ON")
        #:phases (alist-cons-before
                  'check 'patch-python
                  (lambda* (#:key inputs #:allow-other-keys)
