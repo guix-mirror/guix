@@ -27,6 +27,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1137,6 +1138,30 @@ as a library for other Emacs packages.")
      "AUCTeX is a comprehensive customizable integrated environment for
 writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-autothemer
+  (package
+    (name "emacs-autothemer")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sebastiansturm/autothemer/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rd28r9wfrbll212am4ih9hrvypx785aff76va2cbfxdwm9kixsa"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/sebastiansturm/autothemer")
+    (synopsis "Conveniently create Emacs themes")
+    (description
+     "Autothemer provides a thin layer on top of @code{deftheme} and
+@code{custom-theme-set-faces} that creates a new custom color theme, based on
+a set of simplified face specifications and a user-supplied color palette")
     (license license:gpl3+)))
 
 (define-public emacs-calfw
