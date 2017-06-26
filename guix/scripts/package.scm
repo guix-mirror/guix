@@ -496,7 +496,7 @@ Install, remove, or upgrade packages in a single transaction.\n"))
                                  (alist-cons 'do-not-upgrade arg result)
                                  result)
                              arg-handler))))
-         (option '("roll-back") #f #f
+         (option '("roll-back" "rollback") #f #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'roll-back? #t result)
                            #f)))
