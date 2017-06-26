@@ -294,7 +294,11 @@ of relevance scores."
         (output (manifest-entry-output old)))
       transaction)))
 
-  (match entry
+  (match (if (manifest-transaction-removal-candidate? entry transaction)
+             'dismiss
+             entry)
+    ('dismiss
+     transaction)
     (($ <manifest-entry> name version output (? string? path))
      (match (vhash-assoc name (find-newest-available-packages))
        ((_ candidate-version pkg . rest)
@@ -875,11 +879,11 @@ processed, #f otherwise."
                               #:dry-run? dry-run?)))))
             opts)
 
-  ;; Then, process normal package installation/removal/upgrade.
+  ;; Then, process normal package removal/installation/upgrade.
   (let* ((manifest (profile-manifest profile))
-         (step1    (options->installable opts manifest
-                                         (manifest-transaction)))
-         (step2    (options->removable opts manifest step1))
+         (step1    (options->removable opts manifest
+                                       (manifest-transaction)))
+         (step2    (options->installable opts manifest step1))
          (step3    (manifest-transaction
                     (inherit step2)
                     (install (map transform-entry
