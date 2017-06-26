@@ -58,7 +58,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip)
   #:autoload   (gnu packages texinfo) (texinfo)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)

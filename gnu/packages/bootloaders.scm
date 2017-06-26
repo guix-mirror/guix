@@ -91,11 +91,15 @@
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
-                     #t)))
-
-       ;; We suspect there are race conditions when running tests in parallel:
-       ;; <https://bugs.gnu.org/26936>.
-       #:parallel-tests? #f))
+                     #t))
+                  (add-before 'check 'disable-flaky-test
+                    (lambda _
+                      ;; This test is unreliable. For more information, see:
+                      ;; <https://bugs.gnu.org/26936>.
+                      (substitute* "Makefile.in"
+                        (("grub_cmd_date grub_cmd_set_date grub_cmd_sleep")
+                          "grub_cmd_date grub_cmd_sleep"))
+                      #t)))))
     (inputs
      `(("gettext" ,gettext-minimal)
 

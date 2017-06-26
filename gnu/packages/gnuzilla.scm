@@ -58,7 +58,6 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages readline))
 
 (define-public mozjs

@@ -118,14 +118,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.13.1")
+   (version "2.13.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1zl88rlga9nhgaqc9d04vp1l1g4x6qj1d02698asnxrzk36vxh9v"))))
+              "1rfx2gj7dw9rw0w22ihi940zv3wdrj1xmjv25djq2vs6a4vsq40d"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -138,7 +138,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0w7z6mis1x1skhg08qj95yczdsh1qipqnimfj60nsky40ryhkpg3"))))))
+            "0vlbjsnksv5law813av03aa06dx3b0vhira8wgq83sq060qy3q9h"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -904,17 +904,29 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.33")
+    (version "1.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c3s4nacbwlaaccx1fr7hf72kxxrzy49y2rdz5hhqbk8r29vm8w1"))))
+                "17xp5q4cxmd6z0ii1fdr4j1djb9mz1qv7hzr6fawdapjzahi65m3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'remove-optimizations
+           (lambda _
+             ;; Don't optimize for a specific processor architecture.
+             (substitute* "Makefile"
+               (("CFLAGS \\+= -march=native") ""))
+             ;; This code runs with Python2 or Python3
+             (substitute* "cvsreduce"
+               (("python3") "python"))
+             #t)))
+       #:parallel-build? #f ; parallel a2x commands fail spectacularly
        #:make-flags
        (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
     (inputs `(("git" ,git)))

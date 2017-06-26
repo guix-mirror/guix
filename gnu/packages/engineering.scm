@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -843,3 +845,171 @@ interface to select the best such procedures to use on a given system.")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
     (license license:gpl2+)))
+
+(define-public harminv
+  (package
+    (name "harminv")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/harminv/harminv-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1pmm8d6fx9ahhnk7w12bfa6zx3afbkg4gkvlvgwhpjxbcrvrp3jk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-tests
+           (lambda _
+             (substitute* "./sines-test.sh"
+               ; change test frequency range - default fails
+               (("0\\.15") "0.16"))
+             #t)))))
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (inputs
+     `(("lapack" ,lapack)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Harminv")
+    (synopsis "Harmonic inversion solver")
+    (description
+     "Harminv is a free program (and accompanying library) to solve the problem of
+harmonic inversion — given a discrete-time, finite-length signal that consists of a sum
+of finitely-many sinusoids (possibly exponentially decaying) in a given bandwidth, it
+determines the frequencies, decay constants, amplitudes, and phases of those sinusoids.")
+    (license license:gpl2+)))
+
+(define-public guile-libctl
+  (package
+    (name "guile-libctl")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/libctl/libctl-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1g7gqybq20jhdnw5vg18bgbj9jz0408gfmjvs8b4xs30pic8pgca"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Libctl")
+    (synopsis "Flexible control files implementation for scientific simulations")
+    (description
+     "Libctl is a Guile-based library implementing flexible control files
+for scientific simulations.")
+    (license license:gpl2+)))
+
+(define-public mpb
+  (package
+    (name "mpb")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/mpb/mpb-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1mqb2d8jq957nksayjygq58iy8i42vjryzg9iy5fpfay31wzxsix"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-libctl="
+                            (assoc-ref %build-inputs "libctl")
+                            "/share/libctl"))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("guile" ,guile-2.2)
+       ("hdf5" ,hdf5)
+       ("lapack" ,lapack)
+       ("libctl" ,guile-libctl)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/MIT_Photonic_Bands")
+    (synopsis "Computes band structures and electromagnetic modes of dielectric
+structures")
+    (description
+     "MIT Photonic-Bands (MPB) computes definite-frequency eigenstates (harmonic modes)
+of Maxwell's equations in periodic dielectric structures for arbitrary wavevectors, using
+fully-vectorial and three-dimensional methods.")
+    (license license:gpl2+)))
+
+(define-public meep
+  (package
+    (name "meep")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://ab-initio.mit.edu/meep/meep-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "0f6lbw2hrksg7xscwdqs78jc9nmzx9fs8j0hz1y4i8qknkqiyk2n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-libctl="
+                            (assoc-ref %build-inputs "libctl")
+                            "/share/libctl"))))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("guile" ,guile-2.0)             ; doesn't build with guile-2.2
+       ("harminv" ,harminv)
+       ("hdf5" ,hdf5)
+       ("lapack" ,lapack)
+       ("libctl" ,guile-libctl)
+       ("mpb" ,mpb)
+       ("zlib" ,zlib)))
+    (home-page "http://ab-initio.mit.edu/wiki/index.php/Meep")
+    (synopsis "Finite-difference time-domain (FDTD) simulation software")
+    (description
+     "Meep is a finite-difference time-domain (FDTD) simulation software package
+developed at MIT to model electromagnetic systems.")
+    (license license:gpl2+)))
+
+(define-public adms
+  (package
+    (name "adms")
+    (version "2.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "mirror://sourceforge/mot-adms/adms-source/"
+                (version-major+minor version) "/adms-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rn98l6jxcjhi6ai5f7p588khra9z80m0m0lql4n4sb7773fh1vk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (home-page "https://sourceforge.net/projects/mot-adms")
+    (synopsis "Automatic device model synthesizer")
+    (description
+     "ADMS is a code generator that converts electrical compact device models
+specified in high-level description language into ready-to-compile C code for
+the API of spice simulators.  Based on transformations specified in XML
+language, ADMS transforms Verilog-AMS code into other target languages.")
+    (license license:gpl3)))

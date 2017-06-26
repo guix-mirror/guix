@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -51,7 +52,6 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)
@@ -147,6 +147,65 @@ conversions (for example, from PPM to Doom picture format).  In addition,
 DeuTex has functions such as merging wads, etc.")
    (license license:gpl2+)))
 
+(define-public grfcodec
+  (package
+    (name "grfcodec")
+    (version "6.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://binaries.openttd.org/extra/"
+                                  name "/" version "/" name "-" version
+                                  "-source.tar.xz"))
+              (sha256
+               (base32
+                "08admgnpqcsifpicbm56apgv360fxapqpbbsp10qyk8i22w1ivsk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:phases
+      (modify-phases %standard-phases
+        (delete 'configure) ; no configure script
+        (replace 'install   ; no install target
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin"))
+                   (doc (string-append out "/share/doc"))
+                   (man (string-append out "/share/man/man1")))
+              (for-each (lambda (file)
+                          (install-file file bin))
+                        '("grfcodec" "grfid" "grfstrip" "nforenum"))
+              (install-file "COPYING" doc)
+              (with-directory-excursion "docs"
+                (for-each (lambda (file)
+                            (install-file (string-append file ".txt") doc))
+                          '("auto_correct" "commands" "grf" "grfcodec" "grftut"
+                            "readme" "readme.rpn"))
+                (for-each (lambda (file)
+                            (install-file file man))
+                          (find-files "." "\\.1"))))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (synopsis "GRF development tools")
+    (description
+     "The @dfn{Graphics Resource File} (GRF) development tools are a set of
+tools for developing (New)GRFs. It includes a number of smaller programs, each
+with a specific task:
+@enumerate
+@item @code{grfcodec} decodes and encodes GRF files for OpenTTD.
+@item @code{grfid} extracts the so-called \"GRF ID\" from a GRF.
+@item @code{grfstrip} strips all sprites from a GRF.
+@item @code{nforenum} checks NFO code for errors, making corrections when
+necessary.
+@end enumerate")
+    (home-page "http://dev.openttdcoop.org/projects/grfcodec")
+    ;; GRFCodec, GRFID, and GRFStrip are exclusively under the GPL2.
+    ;; NFORenum is under the GPL2+.
+    ;; The MD5 implementation contained in GRFID is under the zlib license.
+    (license (list license:gpl2 license:gpl2+ license:zlib))))
+
 (define-public gzochi
   (package
     (name "gzochi")
@@ -189,21 +248,46 @@ and network communications.  A very thin client library can be embedded to
 provide connectivity for client applications written in any language.")
     (license license:gpl3+)))
 
+(define-public nml
+  (package
+    (name "nml")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://bundles.openttdcoop.org/nml/releases/"
+                           version "/nml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wk9ls5qyjwkra54rkj1gg94xbwzi7b84a5fh1ma1q7pbimi8rmg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pillow" ,python-pillow)
+       ("python-ply" ,python-ply)))
+    (home-page "http://dev.openttdcoop.org/projects/nml")
+    (synopsis "NML compiler")
+    (description
+     "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of
+compiling NML files (along with their associated language, sound and graphic
+files) into @file{.grf} and/or @file{.nfo} files.")
+    (license license:gpl2+)))
+
 (define-public python-sge-pygame
   (package
     (name "python-sge-pygame")
-    (version "1.4.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sge-pygame" version))
        (sha256
         (base32
-         "1qhrcja1igqkjjn1w425ni5f41mijdq5dpq0ymkhl29xxrf8hnx8"))))
+         "0g0n722md6nfayiqzadwf0dh821hzqv0alp4by0vjfwr1xzv49mc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygame" ,python-pygame)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-uniseg" ,python-uniseg)))
     (home-page "http://stellarengine.nongnu.org")
     (synopsis "2D game engine for Python")
     (description
@@ -255,14 +339,14 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2017.04.10")
+    (version "2017.06.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04il5yx0py6kchxxw6ydbbx0wpiyjf9dgkwsdynirpkczlnid3am"))))
+                "1vy7c2y7ihvmggs93zgfv2h3049s384wid8a5snzrrba8bhbb89p"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

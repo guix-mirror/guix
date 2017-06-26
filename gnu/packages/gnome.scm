@@ -132,7 +132,6 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages qemu)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages speech)
   #:use-module (srfi srfi-1))
 
@@ -920,6 +919,9 @@ some form of information without getting in the user's way.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; The .pc file "Requires" gobject-introspection.
+     `(("gobject-introspection" ,gobject-introspection)))
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
@@ -3648,6 +3650,51 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 supports image conversion, rotation, and slideshows.")
    (license license:gpl2+)))
 
+(define-public eog-plugins
+  ;; Note: EOG looks for its plugins (via libpeas) in ~/.local as well as
+  ;; $DATA/lib/eog/plugins, where DATA is one of the entries in
+  ;; $XDG_DATA_DIRS.  Thus, for EOG to find these, you have to have
+  ;; 'XDG_DATA_DIRS' appropriately set.
+  (package
+    (name "eog-plugins")
+    (version "3.25.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0an04z8v83qa6j950rbwdzf1s86y7zd8h1r4p2x36fwbkk1m617q"))))
+    (build-system gnu-build-system)
+    (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
+    (synopsis "Extensions for the Eye of GNOME image viewer")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)))
+    (inputs
+     `(("eog" ,eog)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libpeas" ,libpeas)
+       ("libexif" ,libexif)
+       ("libchamplain" ,libchamplain)))
+    (description
+     "This package provides plugins for the Eye of GNOME (EOG) image viewer,
+notably:
+
+@itemize
+@item @dfn{EXIF Display}, which displays camera (EXIF) information;
+@item @dfn{Map}, which displays a map of where the picture was taken on the
+side panel;
+@item @dfn{Slideshow Shuffle}, to shuffle images in slideshow mode.
+@end itemize\n")
+
+    ;; XXX: eog-postasa-plugin-resources.c (which we don't build) contains a
+    ;; long suspicious byte stream that goes to a
+    ;; ".gresource.eog_postasa_plugin" ELF section.
+    (license license:gpl2+)))
+
 (define-public libgudev
   (package
     (name "libgudev")
@@ -3859,6 +3906,7 @@ work and the interface is well tested.")
     (inputs
      `(("avahi" ,avahi)
        ("gcr" ,gcr)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
        ("glib-networking" ,glib-networking)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)

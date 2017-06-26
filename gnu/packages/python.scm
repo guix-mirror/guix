@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -40,6 +40,9 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +113,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
   #:use-module (guix packages)
@@ -990,6 +992,42 @@ Python 3 support.")
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
 
+(define-public python-uniseg
+  (package
+    (name "python-uniseg")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/emptypage/uniseg-python/"
+                           "get/rel-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1df4gddnj2a0v8z35wb2ra5vvh1f1qyxs8fgd25c8g64031mna6x"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite requires network access.
+    (home-page
+     "https://bitbucket.org/emptypage/uniseg-python")
+    (synopsis
+     "Python library to determine Unicode text segmentations")
+    (description
+     "Uniseg is a Python package used to determine Unicode text segmentations.
+Supported segmentations include:
+@enumerate
+@item @dfn{Code point} (any value in the Unicode codespace)
+@item @dfn{Grapheme cluster} (user-perceived character made of a single or
+multiple Unicode code points, e.g. \"G\" + acute-accent)
+@item Word break
+@item Sentence break
+@item Line break
+@end enumerate")
+    (license license:expat)))
+
+(define-public python2-uniseg
+  (package-with-python2 python-uniseg))
+
 ;;; Pycrypto is abandoned upstream:
 ;;;
 ;;; https://github.com/dlitz/pycrypto/issues/173
@@ -1050,6 +1088,9 @@ etc.).  The package is structured to make adding new modules easy.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)))
+    (arguments
+     ;; TODO: Requires unpackaged 'enum-compat'.
+     '(#:tests? #f))
     (home-page "http://eventlet.net")
     (synopsis "Concurrent networking library for Python")
     (description
@@ -4357,14 +4398,14 @@ simple and Pythonic domain language.")
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
-    (version "2.0.0")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pycodestyle" version))
         (sha256
           (base32
-            "1rz2v8506mdjdyxcnv9ygiw6v0d4dqx8z5sjyjm0w2v32h5l5w1p"))))
+            "0rk78b66p57ala26mdldl9lafr48blv5s659sah9q50qnfjmc8k8"))))
     (build-system python-build-system)
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
@@ -4901,9 +4942,7 @@ etc.  The core of this module is a decorator factory.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
-             version ".tar.gz"))
+       (uri (pypi-uri "drmaa" version))
        (sha256
         (base32 "0xzqriqyvk5b8hszbavsyxd29wm3sxirm8zvvdm73rs2iq7w4hkx"))))
     (build-system python-build-system)
@@ -6520,40 +6559,6 @@ complexity of Python source code.")
 
 (define-public python2-flake8
   (package-with-python2 python-flake8))
-
-;; This will only be needed by the python-hacking package and will not be
-;; necessary once python-hacking > 0.10.2 is released.
-(define-public python-flake8-2.2.4
-  (package (inherit python-flake8)
-    (propagated-inputs
-      `(("python-pep8" ,python-pep8-1.5.7)
-        ("python-pyflakes" ,python-pyflakes-0.8.1)
-        ("python-mccabe" ,python-mccabe-0.2.1)))
-    (native-inputs
-      `(("python-mock" ,python-mock)
-        ("python-nose" ,python-nose)))
-    (version "2.2.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "flake8" version))
-        (sha256
-          (base32
-            "1r9wsry4va45h1rck5hxd3vzsg2q3y6lnl6pym1bxvz8ry19jwx8"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin
-            ;; Remove pre-compiled .pyc files from source.
-            (for-each delete-file-recursively
-                      (find-files "." "__pycache__" #:directories? #t))
-            (for-each delete-file (find-files "." "\\.pyc$"))
-            #t))))
-    (arguments
-     ;; XXX Fails with Python 3.5.
-     '(#:tests? #f))))
-
-(define-public python2-flake8-2.2.4
-  (package-with-python2 python-flake8-2.2.4))
 
 (define-public python-flake8-polyfill
   (package
@@ -10200,13 +10205,13 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.2")
+    (version "0.9.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "1qfnwlx8qwkgr6nf5wvl6ff1r3kll53dh3z6nyp173nmlhhhqccb"))))
+                "0741h2cf743sbk89dpfm1yca26l4s159nzvy6vv8xg72nd7pvsps"))))
     (build-system python-build-system)
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
@@ -15423,3 +15428,74 @@ window memory map manager.")
 
 (define-public python2-smmap2
   (package-with-python2 python-smmap2))
+
+(define-public python-regex
+  (package
+    (name "python-regex")
+    (version "2017.06.07")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "regex" version))
+              (sha256
+               (base32
+                "06r6b7yigikbj3a72whl85r2b64pj1r0ypmw9yalmkm0wnxq8mz4"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
+    (synopsis "Alternative regular expression module")
+    (description "This regular expression implementation is backwards-
+compatible with the standard @code{re} module, but offers additional
+functionality like full case-folding for case-insensitive matches in Unicode.")
+    (license license:psfl)))
+
+(define-public python2-regex
+  (package-with-python2 python-regex))
+
+(define-public python2-pyopengl
+  (package
+   (name "python2-pyopengl")
+   (version "3.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "PyOpenGL" version))
+     (sha256
+      (base32
+       "1byxjj6a8rwzhxhjqlc588zdad2qwxdd7vlam2653ylll31waiwv"))))
+   (arguments
+     `(#:python ,python-2))
+   (build-system python-build-system)
+   (home-page "http://pyopengl.sourceforge.net")
+   (synopsis "Standard OpenGL bindings for Python")
+   (description
+    "PyOpenGL is the most common cross platform Python binding to OpenGL and
+related APIs.  The binding is created using the standard @code{ctypes}
+library.")
+   (license license:bsd-3)))
+
+(define-public python-rencode
+  (package
+   (name "python-rencode")
+   (version "1.0.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "rencode" version))
+     (sha256
+      (base32
+       "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
+   (build-system python-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)
+                    ("python-cython", python-cython)))
+   (home-page "https://github.com/aresch/rencode")
+   (synopsis "Serialization of heterogeneous data structures")
+   (description
+    "The @code{rencode} module is a data structure serialization library,
+similar to @code{bencode} from the BitTorrent project.  For complex,
+heterogeneous data structures with many small elements, r-encoding stake up
+significantly less space than b-encodings.  This version of rencode is a
+complete rewrite in Cython to attempt to increase the performance over the
+pure Python module.")
+   (license license:bsd-3)))
+
+(define-public python2-rencode
+  (package-with-python2 python-rencode))

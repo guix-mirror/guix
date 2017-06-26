@@ -58,7 +58,7 @@
 (define (default-zip)
   "Return the default ZIP package."
   ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((zip-mod (resolve-interface '(gnu packages zip))))
+  (let ((zip-mod (resolve-interface '(gnu packages compression))))
     (module-ref zip-mod 'zip)))
 
 (define* (lower name

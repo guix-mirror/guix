@@ -105,7 +105,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
-  #:use-module (gnu packages zip)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public aria-maestosa
@@ -1080,7 +1079,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -1088,7 +1087,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0lmblhk0728bxi7cixc2j9p6gisicy6alybga9vwmg453snrsybr"))))
+                "1yqh7jx431q01f15b3h4dh038yvmc4jcsr3vn2175kqgwfj9jqcg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1098,9 +1097,12 @@ users to select LV2 plugins and run them with jalv.")
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
        ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
        ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://synthv1.sourceforge.net")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
@@ -1111,7 +1113,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -1119,7 +1121,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0lf9x99gmmk64xq73lcwpwqznh8s79qy2fjjjzzw6sbw99w8qyz4"))))
+                "0rvdvc81j4b4n64i7jmk58khry28al8p73g71srdv1kw7j65f2zv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1130,6 +1132,7 @@ oscillators and stereo effects.")
        ("lv2" ,lv2)
        ("libsndfile" ,libsndfile)
        ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
        ("qtbase" ,qtbase)))
     (native-inputs
@@ -1145,7 +1148,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -1153,7 +1156,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "11mxn3ff9g0x1rl4jl5rngmwlb8dmkbzsjhxb8gqhmlpfj24wl7l"))))
+                "1lbxrn24fg1z659zbaakzq6z8gbax6z16di9v9bhhslk8w2mndik"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1164,6 +1167,7 @@ effects.")
        ("lv2" ,lv2)
        ("libsndfile" ,libsndfile)
        ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
        ("qtbase" ,qtbase)))
     (native-inputs

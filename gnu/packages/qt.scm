@@ -736,6 +736,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "0jdaw0i6rirs66x4cjh8l24fsyp020x1mv1psyf3ffbkdq1pngjx"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'lengthen-test-timeout
+             (lambda _
+               (substitute* "tests/auto/qsensorgestures_gestures/tst_sensorgestures_gestures.cpp"
+                 (("2000") "5000"))
+               #t))))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))

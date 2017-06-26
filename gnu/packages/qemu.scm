@@ -29,6 +29,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -78,7 +79,8 @@
                                       "qemu-CVE-2017-8112.patch"
                                       "qemu-CVE-2017-8309.patch"
                                       "qemu-CVE-2017-8379.patch"
-                                      "qemu-CVE-2017-8380.patch"))
+                                      "qemu-CVE-2017-8380.patch"
+                                      "qemu-CVE-2017-9524.patch"))
              (sha256
               (base32
                "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))
@@ -267,14 +269,14 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.2.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "17i08v3836c9w4dwcklvbgzin3aw1gbksm9ry8kpk837nn1s10cl"))))
+                "13945hrijybfh634c4x9cbkfazvpzajgv55ll2nx412r4bv6l622"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -288,6 +290,7 @@ all common programming languages.  Vala bindings are also provided.")
        #:tests? #f
        #:configure-flags
        (list "--with-polkit"
+             "--sysconfdir=/etc"
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -298,16 +301,14 @@ all common programming languages.  Vala bindings are also provided.")
                             "gnulib/tests/test-posix_spawn2.c")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-after 'unpack 'do-not-mkdir-in-/var
-           ;; Since the localstatedir should be /var at runtime, we must
-           ;; prevent writing to /var at installation time.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out           (assoc-ref outputs "out"))
-                    (localstatedir (string-append out "/var")))
-               (substitute* '("src/Makefile.in"
-                              "daemon/Makefile.in")
-                 (("\\$\\(DESTDIR\\)\\$\\(localstatedir)") localstatedir)))
-             #t)))))
+         (replace 'install
+           ;; Since the sysconfdir and localstatedir should be /etc and /var
+           ;; at runtime, we must prevent writing to them at installation
+           ;; time.
+           (lambda _
+             (zero? (system* "make" "install"
+                             "sysconfdir=/tmp/etc"
+                             "localstatedir=/tmp/var")))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("gnutls" ,gnutls)
@@ -324,7 +325,12 @@ all common programming languages.  Vala bindings are also provided.")
        ("perl" ,perl)
        ("python" ,python-2)
        ("libyajl" ,libyajl)
-       ("audit" ,audit)))
+       ("audit" ,audit)
+       ("dmidecode" ,dmidecode)
+       ("dnsmasq" ,dnsmasq)
+       ("ebtables" ,ebtables)
+       ("iproute" ,iproute)
+       ("iptables" ,iptables)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://libvirt.org")
@@ -386,13 +392,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "3.2.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "0g80vhjss1a48w60zw0pd5fhpwfjw2dqhh0fbs730brkxj6xv1dc"))))
+                "04dma3979171p9yf0cg7m03shk038hc9vyfm9lb8z60qyn0pg9xg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -472,9 +478,11 @@ virtualization library.")
              #t)))))
     (inputs
      `(("gtk+" ,gtk+)
+       ("gtk-vnc" ,gtk-vnc)
        ("libvirt" ,libvirt)
        ("libvirt-glib" ,libvirt-glib)
        ("libosinfo" ,libosinfo)
+       ("vte" ,vte)
        ("gobject-introspection" ,gobject-introspection)
        ("python2-libvirt" ,python2-libvirt)
        ("python2-requests" ,python2-requests)

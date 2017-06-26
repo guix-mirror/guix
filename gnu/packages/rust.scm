@@ -21,13 +21,16 @@
 
 (define-module (gnu packages rust)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -205,22 +208,27 @@ rustc-bootstrap and cargo-bootstrap packages.")
                     "rustc-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1d78jq7mc34n265by68amr9r4nzbiqrilfbwh7gx56ydn4gb6rpr"))))
+                "1d78jq7mc34n265by68amr9r4nzbiqrilfbwh7gx56ydn4gb6rpr"))
+            (modules '((guix build utils)))
+            (snippet
+             `(begin
+                (delete-file-recursively "src/llvm")
+                #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("bison" ,bison) ; For the tests
+       ("cmake" ,cmake)
+       ("flex" ,flex) ; For the tests
        ("git" ,git)
+       ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rust-bootstrap" ,rust-bootstrap)
        ("which" ,which)))
     (inputs
      `(("jemalloc" ,jemalloc)
-       ("llvm" ,llvm)))
+       ("llvm" ,llvm-3.9.1)))
     (arguments
-     ;; FIXME: Test failure with llvm 3.8; Update llvm.
-     ;; https://github.com/rust-lang/rust/issues/36835
-     `(#:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-configure
            (lambda _
@@ -254,7 +262,18 @@ rustc-bootstrap and cargo-bootstrap packages.")
                (substitute* "src/tools/tidy/src/main.rs"
                  (("^.*cargo.*::check.*$") ""))
                (substitute* "src/libstd/process.rs"
-                 (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                 ;; The newline is intentional.
+                 ;; There's a line length "tidy" check in Rust which would
+                 ;; fail otherwise.
+                 (("\"/bin/sh\"") (string-append "
+\"" bash "/bin/sh\"")))
+               ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>.
+               (substitute* "src/libstd/sys/unix/process/process_common.rs"
+                 (("fn test_process_mask") "#[cfg_attr(target_os = \"linux\", ignore)]
+fn test_process_mask"))
+               ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+               ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>.
+               (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
                #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)

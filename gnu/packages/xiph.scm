@@ -322,7 +322,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.1.4")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -330,7 +330,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                     ".tar.gz"))
               (sha256
                (base32
-                "14l6kpapmcnvl7p9hrmbqcnzj13zfzyppyc9a5kd4788h2rvc8li"))))
+                "1ad9q2g9vivx409jdsslv1hrh5r616qz2pjm96y8ymsigfl4bnvp"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
@@ -340,12 +340,12 @@ but is also intended for storage and streaming applications.  It is
 standardized by the Internet Engineering Task Force (IETF) as RFC 6716 which
 incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (license license:bsd-3)
-    (home-page "http://www.opus-codec.org")))
+    (home-page "https://www.opus-codec.org")))
 
 (define opus-tools
   (package
     (name "opus-tools")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -353,7 +353,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fk4nknvl111k89j5yckmyrh6b2wvgyhrqfncp7rig3zikbkv1xi"))))
+                "135jfb9ny3xvd27idsxj7j5ns90lslbyrq70cq3bfwcls4r7add2"))))
     (build-system gnu-build-system)
     (arguments
      ;; The package developers misuse pkg-config such that it doesn't work
@@ -373,7 +373,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
 Opus-tools provide command line utilities for creating, inspecting and
 decoding .opus files.")
     (license license:bsd-3)
-    (home-page "http://www.opus-codec.org")))
+    (home-page "https://www.opus-codec.org")))
 
 (define opusfile
   (package

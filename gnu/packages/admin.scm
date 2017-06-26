@@ -481,9 +481,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "9")
-         (bind-patch-version "9")
+         (bind-patch-version "10")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "8")      ; for patch release, e.g. "6"
+         (bind-release-version "1")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -599,7 +599,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1f5i64f6y4rmy61y63r5if1lifw8dw8r8dh6ns3x4002hanzrpgz"))))
+                      "1ibbparr9k52rbs0qf0ar8jwvhhx6lja7ylxzpf32swklmhz629c"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -2126,7 +2126,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2134,7 +2134,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rgznkl7a5q7lnc6zxlwvinq20b7k46n949l1hiwifarv0jgwynv"))))
+                "07a32rzmch51znxspzyc7zyaldmr383v70b49wmnjdjs2qfdbv3a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; there are no tests

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,16 +40,12 @@
               (sha256
                (base32
                 "1mn2ax6qjy3pvixlnvbkn6ymy6y4l2wxrr4brjaczm121s8hjcb7"))))
-
     (build-system gnu-build-system)
-    (arguments
-      `(#:configure-flags '("--with-libwmf")))
     (inputs
       `(("glib" ,glib)
         ("libgsf" ,libgsf)
         ("libjpeg" ,libjpeg)
         ("libpng" ,libpng)
-        ("libwmf" ,libwmf)
         ("zlib" ,zlib)))
     (native-inputs
       `(("glib" ,glib "bin")

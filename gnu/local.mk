@@ -126,6 +126,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
+  %D%/packages/electronics.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
@@ -416,7 +417,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
   %D%/packages/zile.scm				\
-  %D%/packages/zip.scm				\
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\
@@ -493,7 +493,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
-  %D%/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/acl-hurd-path-max.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
@@ -522,7 +521,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-drop-unrar.patch			\
-  %D%/packages/patches/calibre-dont-load-remote-icons.patch	\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
   %D%/packages/patches/cdparanoia-fpic.patch			\
@@ -622,11 +620,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
+  %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
+  %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
+  %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-memchr-overflow-i686.patch		\
   %D%/packages/patches/glibc-o-largefile.patch			\
+  %D%/packages/patches/glibc-vectorized-strcspn-guards.patch	\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
@@ -649,7 +651,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
-  gnu/packages/patches/guile-ssh-channel-finalization.patch	\
+  %D%/packages/patches/guile-ssh-channel-finalization.patch	\
   %D%/packages/patches/guile-ssh-double-free.patch		\
   %D%/packages/patches/guile-ssh-rexec-bug.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
@@ -753,18 +755,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
-  %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-0455.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-2756.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3472.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3473.patch		\
-  %D%/packages/patches/libwmf-CVE-2007-3477.patch		\
-  %D%/packages/patches/libwmf-CVE-2009-1364.patch		\
-  %D%/packages/patches/libwmf-CVE-2009-3546.patch		\
-  %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
-  %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
-  %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
   %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
@@ -941,6 +931,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-8309.patch			\
   %D%/packages/patches/qemu-CVE-2017-8379.patch			\
   %D%/packages/patches/qemu-CVE-2017-8380.patch			\
+  %D%/packages/patches/qemu-CVE-2017-9524.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\

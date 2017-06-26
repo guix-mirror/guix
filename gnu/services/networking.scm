@@ -927,7 +927,8 @@ dns=" dns "
             (service-extension activation-service-type
                                (const %network-manager-activation))
             ;; Add network-manager to the system profile.
-            (service-extension profile-service-type config->package))))))
+            (service-extension profile-service-type config->package)))
+     (default-value (network-manager-configuration)))))
 
 
 ;;;

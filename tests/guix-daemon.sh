@@ -81,6 +81,18 @@ guile -c "
 
 kill "$daemon_pid"
 
+# Pass several '--listen' options, and make sure they are all honored.
+guix-daemon --disable-chroot --listen="$socket" --listen="$socket-second" \
+	    --listen="localhost" --listen="localhost:9876" &
+daemon_pid=$!
+
+for uri in "$socket" "$socket-second" \
+		     "guix://localhost" "guix://localhost:9876"
+do
+    GUIX_DAEMON_SOCKET="$uri" guix build guile-bootstrap
+done
+
+kill "$daemon_pid"
 
 # Check the failed build cache.
 

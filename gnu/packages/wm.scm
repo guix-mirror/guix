@@ -335,7 +335,7 @@ prompt.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.12")
+    (version "0.13")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -343,7 +343,7 @@ prompt.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mzx3p17ppgmi30q3phaj58x6kxn73pbbkn9v9gzgmd8skdlkxp8"))))
+                "1jh3lcs20qpna36fa5a0r174xqrsxhj10x1rm5vwf64zariipy7r"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
@@ -351,6 +351,7 @@ prompt.")
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
+       ("ghc-directory"             ,ghc-directory)
        ("ghc-x11"                   ,ghc-x11)))
     (arguments
      `(#:phases
@@ -384,7 +385,7 @@ tiled on several screens.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -392,7 +393,7 @@ tiled on several screens.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "04gk449dxwmimmb6y2d2hvvmv91r91xlj879qzlyq0mcf723278k"))))
+         "0vj72jhfng6y7hv5frx2v99jvl3jn9rbpk2j7xw9vydiwmzq4q57"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)

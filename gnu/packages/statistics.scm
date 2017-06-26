@@ -58,7 +58,6 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 

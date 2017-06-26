@@ -35,6 +35,8 @@
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix store)
+  #:use-module (guix sets)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -51,6 +53,10 @@
             profile-error-profile
             &profile-not-found-error
             profile-not-found-error?
+            &profile-collistion-error
+            profile-collision-error?
+            profile-collision-error-entry
+            profile-collision-error-conflict
             &missing-generation-error
             missing-generation-error?
             missing-generation-error-generation
@@ -58,6 +64,7 @@
             manifest make-manifest
             manifest?
             manifest-entries
+            manifest-transitive-entries
 
             <manifest-entry>              ; FIXME: eventually make it internal
             manifest-entry
@@ -68,6 +75,7 @@
             manifest-entry-item
             manifest-entry-dependencies
             manifest-entry-search-paths
+            manifest-entry-parent
 
             manifest-pattern
             manifest-pattern?
@@ -129,6 +137,11 @@
 (define-condition-type &profile-not-found-error &profile-error
   profile-not-found-error?)
 
+(define-condition-type &profile-collision-error &error
+  profile-collision-error?
+  (entry    profile-collision-error-entry)        ;<manifest-entry>
+  (conflict profile-collision-error-conflict))    ;<manifest-entry>
+
 (define-condition-type &missing-generation-error &profile-error
   missing-generation-error?
   (generation missing-generation-error-generation))
@@ -154,10 +167,12 @@
   (output       manifest-entry-output             ; string
                 (default "out"))
   (item         manifest-entry-item)              ; package | store path
-  (dependencies manifest-entry-dependencies       ; (store path | package)*
+  (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
-                (default '())))
+                (default '()))
+  (parent       manifest-entry-parent        ; promise (#f | <manifest-entry>)
+                (default (delay #f))))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -168,6 +183,23 @@
   (output       manifest-pattern-output           ; string | #f
                 (default "out")))
 
+(define (manifest-transitive-entries manifest)
+  "Return the entries of MANIFEST along with their propagated inputs,
+recursively."
+  (let loop ((entries (manifest-entries manifest))
+             (result  '())
+             (visited (set)))                     ;compare with 'equal?'
+    (match entries
+      (()
+       (reverse result))
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (loop (append (manifest-entry-dependencies head)
+                         tail)
+                 (cons head result)
+                 (set-insert head visited)))))))
+
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
   (let ((file (string-append profile "/manifest")))
@@ -175,21 +207,92 @@
         (call-with-input-file file read-manifest)
         (manifest '()))))
 
-(define* (package->manifest-entry package #:optional (output "out"))
+(define (manifest-entry-lookup manifest)
+  "Return a lookup procedure for the entries of MANIFEST.  The lookup
+procedure takes two arguments: the entry name and output."
+  (define mapping
+    (let loop ((entries (manifest-entries manifest))
+               (mapping vlist-null))
+      (fold (lambda (entry result)
+              (vhash-cons (cons (manifest-entry-name entry)
+                                (manifest-entry-output entry))
+                          entry
+                          (loop (manifest-entry-dependencies entry)
+                                result)))
+            mapping
+            entries)))
+
+  (lambda (name output)
+    (match (vhash-assoc (cons name output) mapping)
+      ((_ . entry) entry)
+      (#f          #f))))
+
+(define* (lower-manifest-entry entry system #:key target)
+  "Lower ENTRY for SYSTEM and TARGET such that its 'item' field is a store
+file name."
+  (let ((item (manifest-entry-item entry)))
+    (if (string? item)
+        (with-monad %store-monad
+          (return entry))
+        (mlet %store-monad ((drv (lower-object item system
+                                               #:target target))
+                            (output -> (manifest-entry-output entry)))
+          (return (manifest-entry
+                    (inherit entry)
+                    (item (derivation->output-path drv output))))))))
+
+(define* (check-for-collisions manifest system #:key target)
+  "Check whether the entries of MANIFEST conflict with one another; raise a
+'&profile-collision-error' when a conflict is encountered."
+  (define lookup
+    (manifest-entry-lookup manifest))
+
+  (with-monad %store-monad
+    (foldm %store-monad
+           (lambda (entry result)
+             (match (lookup (manifest-entry-name entry)
+                            (manifest-entry-output entry))
+               ((? manifest-entry? second)        ;potential conflict
+                (mlet %store-monad ((first (lower-manifest-entry entry system
+                                                                 #:target
+                                                                 target))
+                                    (second (lower-manifest-entry second system
+                                                                  #:target
+                                                                  target)))
+                  (if (string=? (manifest-entry-item first)
+                                (manifest-entry-item second))
+                      (return result)
+                      (raise (condition
+                              (&profile-collision-error
+                               (entry first)
+                               (conflict second)))))))
+               (#f                                ;no conflict
+                (return result))))
+           #t
+           (manifest-transitive-entries manifest))))
+
+(define* (package->manifest-entry package #:optional (output "out")
+                                  #:key (parent (delay #f)))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
-  (let ((deps (map (match-lambda
-                    ((label package)
-                     (gexp-input package))
-                    ((label package output)
-                     (gexp-input package output)))
-                   (package-transitive-propagated-inputs package))))
-    (manifest-entry
-     (name (package-name package))
-     (version (package-version package))
-     (output output)
-     (item package)
-     (dependencies (delete-duplicates deps))
-     (search-paths (package-transitive-native-search-paths package)))))
+  ;; For each dependency, keep a promise pointing to its "parent" entry.
+  (letrec* ((deps  (map (match-lambda
+                          ((label package)
+                           (package->manifest-entry package
+                                                    #:parent (delay entry)))
+                          ((label package output)
+                           (package->manifest-entry package output
+                                                    #:parent (delay entry))))
+                        (package-propagated-inputs package)))
+            (entry (manifest-entry
+                     (name (package-name package))
+                     (version (package-version package))
+                     (output output)
+                     (item package)
+                     (dependencies (delete-duplicates deps))
+                     (search-paths
+                      (package-transitive-native-search-paths package))
+                     (parent parent))))
+    entry))
 
 (define (packages->manifest packages)
   "Return a list of manifest entries, one for each item listed in PACKAGES.
@@ -210,20 +313,20 @@ denoting a specific output of a package."
       (($ <manifest-entry> name version output (? string? path)
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output #$path
-                 (propagated-inputs #$deps)
+                 (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))
       (($ <manifest-entry> name version output (? package? package)
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
-                 (propagated-inputs #$deps)
+                 (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))))
 
   (match manifest
     (($ <manifest> (entries ...))
-     #~(manifest (version 2)
+     #~(manifest (version 3)
                  (packages #$(map entry->gexp entries))))))
 
 (define (find-package name version)
@@ -254,17 +357,48 @@ procedure is here for backward-compatibility and will eventually vanish."
           (package-native-search-paths package)
           '())))
 
+  (define (infer-dependency item parent)
+    ;; Return a <manifest-entry> for ITEM.
+    (let-values (((name version)
+                  (package-name->name+version
+                   (store-path-package-name item))))
+      (manifest-entry
+        (name name)
+        (version version)
+        (item item)
+        (parent parent))))
+
+  (define* (sexp->manifest-entry sexp #:optional (parent (delay #f)))
+    (match sexp
+      ((name version output path
+             ('propagated-inputs deps)
+             ('search-paths search-paths)
+             extra-stuff ...)
+       ;; For each of DEPS, keep a promise pointing to ENTRY.
+       (letrec* ((deps* (map (cut sexp->manifest-entry <> (delay entry))
+                             deps))
+                 (entry (manifest-entry
+                          (name name)
+                          (version version)
+                          (output output)
+                          (item path)
+                          (dependencies deps*)
+                          (search-paths (map sexp->search-path-specification
+                                             search-paths))
+                          (parent parent))))
+         entry))))
+
   (match sexp
     (('manifest ('version 0)
                 ('packages ((name version output path) ...)))
      (manifest
       (map (lambda (name version output path)
              (manifest-entry
-              (name name)
-              (version version)
-              (output output)
-              (item path)
-              (search-paths (infer-search-paths name version))))
+               (name name)
+               (version version)
+               (output output)
+               (item path)
+               (search-paths (infer-search-paths name version))))
            name version output path)))
 
     ;; Version 1 adds a list of propagated inputs to the
@@ -281,13 +415,17 @@ procedure is here for backward-compatibility and will eventually vanish."
                             directories)
                            ((directories ...)
                             directories))))
-               (manifest-entry
-                 (name name)
-                 (version version)
-                 (output output)
-                 (item path)
-                 (dependencies deps)
-                 (search-paths (infer-search-paths name version)))))
+               (letrec* ((deps* (map (cute infer-dependency <> (delay entry))
+                                     deps))
+                         (entry (manifest-entry
+                                  (name name)
+                                  (version version)
+                                  (output output)
+                                  (item path)
+                                  (dependencies deps*)
+                                  (search-paths
+                                   (infer-search-paths name version)))))
+                 entry)))
            name version output path deps)))
 
     ;; Version 2 adds search paths and is slightly more verbose.
@@ -299,15 +437,24 @@ procedure is here for backward-compatibility and will eventually vanish."
                             ...)))
      (manifest
       (map (lambda (name version output path deps search-paths)
-             (manifest-entry
-               (name name)
-               (version version)
-               (output output)
-               (item path)
-               (dependencies deps)
-               (search-paths (map sexp->search-path-specification
-                                  search-paths))))
+             (letrec* ((deps* (map (cute infer-dependency <> (delay entry))
+                                   deps))
+                       (entry (manifest-entry
+                                (name name)
+                                (version version)
+                                (output output)
+                                (item path)
+                                (dependencies deps*)
+                                (search-paths
+                                 (map sexp->search-path-specification
+                                      search-paths)))))
+               entry))
            name version output path deps search-paths)))
+
+    ;; Version 3 represents DEPS as full-blown manifest entries.
+    (('manifest ('version 3 minor-version ...)
+                ('packages (entries ...)))
+     (manifest (map sexp->manifest-entry entries)))
     (_
      (raise (condition
              (&message (message "unsupported manifest format")))))))
@@ -471,12 +618,15 @@ replace it."
 
 (define (manifest-inputs manifest)
   "Return a list of <gexp-input> objects for MANIFEST."
-  (append-map (match-lambda
-               (($ <manifest-entry> name version output thing deps)
-                ;; THING may be a package or a file name.  In the latter case,
-                ;; assume it's already valid.  Ditto for DEPS.
-                (cons (gexp-input thing output) deps)))
-              (manifest-entries manifest)))
+  (define entry->input
+    (match-lambda
+      (($ <manifest-entry> name version output thing deps)
+       ;; THING may be a package or a file name.  In the latter case, assume
+       ;; it's already valid.
+       (cons (gexp-input thing output)
+             (append-map entry->input deps)))))
+
+  (append-map entry->input (manifest-entries manifest)))
 
 (define* (manifest-lookup-package manifest name #:optional version)
   "Return as a monadic value the first package or store path referenced by
@@ -1049,25 +1199,33 @@ the entries in MANIFEST."
                              #:key
                              (hooks %default-profile-hooks)
                              (locales? #t)
+                             (allow-collisions? #f)
                              system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
 the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc.
+Unless ALLOW-COLLISIONS? is true, a '&profile-collision-error' is raised if
+entries in MANIFEST collide (for instance if there are two same-name packages
+with a different version number.)
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
 a dependency on the 'glibc-utf8-locales' package.
 
 When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
 are cross-built for TARGET."
-  (mlet %store-monad ((system (if system
-                                  (return system)
-                                  (current-system)))
-                      (extras (if (null? (manifest-entries manifest))
-                                  (return '())
-                                  (sequence %store-monad
-                                            (map (lambda (hook)
-                                                   (hook manifest))
-                                                 hooks)))))
+  (mlet* %store-monad ((system (if system
+                                   (return system)
+                                   (current-system)))
+                       (ok?    (if allow-collisions?
+                                   (return #t)
+                                   (check-for-collisions manifest system
+                                                         #:target target)))
+                       (extras (if (null? (manifest-entries manifest))
+                                   (return '())
+                                   (sequence %store-monad
+                                             (map (lambda (hook)
+                                                    (hook manifest))
+                                                  hooks)))))
     (define inputs
       (append (filter-map (lambda (drv)
                             (and (derivation? drv)

@@ -96,7 +96,6 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 (define-public aris
@@ -259,19 +258,18 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yxdzqjwmi2aid650fa9zyr8llw069x7lm489wx9nnfdi6vh09an"))
+                "16yfs5n444s03np1naj6yp1fsysd42kdscxzkg0k2yvfjixx0ijd"))
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       ;; Currently there are numerous tests that fail on "exotic"
+     `(;; Currently there are numerous tests that fail on "exotic"
        ;; architectures such as aarch64 and ppc64le.
        ,@(if (string-prefix? "aarch64-linux"
                              (or (%current-target-system) (%current-system)))
@@ -610,12 +608,13 @@ incompatible with HDF5.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.18")
+    (version "1.8.19")
     (source
      (origin
       (method url-fetch)
-      (uri (list (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/"
-                                "hdf5-" version "/src/hdf5-"
+      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" (version-major+minor version)
+                                "/hdf5-" version "/src/hdf5-"
                                 version ".tar.bz2")
                  (string-append "https://support.hdfgroup.org/ftp/HDF5/"
                                 "current"
@@ -623,7 +622,7 @@ incompatible with HDF5.")
                                        (take (string-split version #\.) 2))
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "13542vrnl1p35n8vbq0wzk40vddmm33q5nh04j98c7r1yjnxxih1"))
+       (base32 "0f3jfbqpaaq21ighi40qzs52nb52kc2d2yjk541rjmsx20b3ih2r"))
       (patches (list (search-patch "hdf5-config-date.patch")))))
     (build-system gnu-build-system)
     (inputs

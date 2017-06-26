@@ -312,12 +312,16 @@ of relevance scores."
              ((=)
               (let ((candidate-path (derivation->output-path
                                      (package-derivation (%store) pkg))))
-                (if (string=? path candidate-path)
+                ;; XXX: When there are propagated inputs, assume we need to
+                ;; upgrade the whole entry.
+                (if (and (string=? path candidate-path)
+                         (null? (package-propagated-inputs pkg)))
                     transaction
                     (manifest-transaction-install-entry
                      (package->manifest-entry pkg output)
                      transaction))))))))
        (#f
+        (warning (G_ "package '~a' no longer exists~%") name)
         transaction)))))
 
 
@@ -786,7 +790,8 @@ processed, #f otherwise."
 
       (('search-paths kind)
        (let* ((manifests (map profile-manifest profiles))
-              (entries   (append-map manifest-entries manifests))
+              (entries   (append-map manifest-transitive-entries
+                                     manifests))
               (profiles  (map user-friendly-profile profiles))
               (settings  (search-path-environment-variables entries profiles
                                                             (const #f)

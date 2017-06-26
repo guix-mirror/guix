@@ -104,14 +104,18 @@ actions.")
                "0gzc82sy66pbsmq7lnmq4y37zqad1zfwfls3ik3dmfm8s5nmcvsb"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; Enable support for a "map" pane using GPS data.
+       #:configure-flags '("--enable-map")
+
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
              (setenv "NOCONFIGURE" "true")
              (zero? (system* "sh" "autogen.sh")))))))
     (inputs
-     `(;; ("libchamplain" ,libchamplain)
+     `(("clutter" ,clutter)
+       ("libchamplain" ,libchamplain)
        ("lcms" ,lcms)
        ("exiv2" ,exiv2)
        ("libpng" ,libpng)

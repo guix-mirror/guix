@@ -113,32 +113,33 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "0.10.2")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "1a310k3dv04jg7zvmk37h2ql7y9kf4hvdxb74bjlwdxgmy6h4wap"))))
+         "1s1wq2sds6fjp8rwz31vkp33kjl9nyk5y2g2pri8shic75dr00h4"))))
     (build-system python-build-system)
-    (arguments
-     ;; TODO: Requires unpackaged 'eventlet'.
-     '(#:tests? #f))
     (propagated-inputs
-      `(("python-flake8-2.2.4" ,python-flake8-2.2.4)
-        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
-        ("python-pbr" ,python-pbr)
-        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
-        ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
-        ("python-six" ,python-six)))
+     `(("python-flake8" ,python-flake8)
+       ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
+       ("python-pbr" ,python-pbr)
+       ("python-pep8-1.5.7" ,python-pep8-1.5.7)
+       ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
+       ("python-six" ,python-six)))
     (native-inputs
-      `(;; Tests
-        ("python-testscenarios" ,python-testscenarios)))
+     `( ;; Tests
+       ("python-eventlet" ,python-eventlet)
+       ("python-mock" ,python-mock)
+       ("python-reno" ,python-reno)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testscenarios" ,python-testscenarios)))
     (home-page "https://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
     (description
-      "Python-hacking is a set of flake8 plugins that test and enforce the
+     "Python-hacking is a set of flake8 plugins that test and enforce the
 @uref{http://docs.openstack.org/developer/hacking/, OpenStack style
 guidelines}.")
     (license asl2.0)))

@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
 (define-public macchanger
@@ -1093,6 +1095,44 @@ NetHogs does not rely on a special kernel module to be loaded.  If there's
 suddenly a lot of network traffic, you can fire up NetHogs and immediately see
 which PID is causing this.  This makes it easy to identify programs that have
 gone wild and are suddenly taking up your bandwidth.")
+    (license license:gpl2+)))
+
+(define-public nzbget
+  (package
+    (name "nzbget")
+    (version "18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nzbget/nzbget/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a8wmbhc1si1n8axzrr8ysmrd3gr643lbh6pvzmr0hnd65fixmx5"))))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-libcurses-includes=" (assoc-ref
+%build-inputs "ncurses") "/include")
+        (string-append "--with-libcurses-libraries=" (assoc-ref
+%build-inputs "ncurses") "/lib")
+        (string-append "--with-tlslib=GnuTLS"))))
+    (build-system gnu-build-system)
+    (inputs `(("gnutls", gnutls)
+              ("libxml2", libxml2)
+              ("ncurses", ncurses)
+              ("zlib", zlib)))
+    (native-inputs `(("pkg-config", pkg-config)))
+    (home-page "https://github.com/nzbget/nzbget")
+    (synopsis "Usenet binary file downloader")
+    (description
+     "NZBGet is a binary newsgrabber, which downloads files from Usenet based
+on information given in @code{nzb} files.  NZBGet can be used in standalone
+and in server/client modes.  In standalone mode, you pass NZBGet @command{nzb}
+files as command-line parameters and it downloads them and exits.  NZBGet also
+contains a Web interface.  Its server can be controlled through remote
+procedure calls (RPCs).")
     (license license:gpl2+)))
 
 (define-public openvswitch

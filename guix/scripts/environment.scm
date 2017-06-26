@@ -323,6 +323,13 @@ BOOTSTRAP?  specifies whether to use the bootstrap Guile to build the
 profile."
   (profile-derivation (packages->manifest inputs)
                       #:system system
+
+                      ;; Packages can have conflicting inputs, or explicit
+                      ;; inputs that conflict with implicit inputs (e.g., gcc,
+                      ;; gzip, etc.).  Thus, do not error out when we
+                      ;; encounter collision.
+                      #:allow-collisions? #t
+
                       #:hooks (if bootstrap?
                                   '()
                                   %default-profile-hooks)

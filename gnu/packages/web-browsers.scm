@@ -39,7 +39,6 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))

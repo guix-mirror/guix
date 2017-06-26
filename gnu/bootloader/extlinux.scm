@@ -25,7 +25,8 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix utils)
-  #:export (extlinux-bootloader))
+  #:export (extlinux-bootloader
+            extlinux-bootloader-gpt))
 
 (define* (extlinux-configuration-file config entries
                                       #:key
@@ -93,7 +94,7 @@ TIMEOUT ~a~%"
                       (string-append "if=" if)
                       (string-append "of=" of)))))
 
-(define install-extlinux
+(define (install-extlinux mbr)
   #~(lambda (bootloader device mount-point)
       (let ((extlinux (string-append bootloader "/sbin/extlinux"))
             (install-dir (string-append mount-point "/boot/extlinux"))
@@ -103,8 +104,14 @@ TIMEOUT ~a~%"
                   (find-files syslinux-dir "\\.c32$"))
 
         (unless (and (zero? (system* extlinux "--install" install-dir))
-                     (#$dd 440 1 (string-append syslinux-dir "/mbr.bin") device))
+                     (#$dd 440 1 (string-append syslinux-dir "/" #$mbr) device))
           (error "failed to install SYSLINUX")))))
+
+(define install-extlinux-mbr
+  (install-extlinux "mbr.bin"))
+
+(define install-extlinux-gpt
+  (install-extlinux "gptmbr.bin"))
 
 
 
@@ -116,6 +123,11 @@ TIMEOUT ~a~%"
   (bootloader
    (name 'extlinux)
    (package syslinux)
-   (installer install-extlinux)
+   (installer install-extlinux-mbr)
    (configuration-file "/boot/extlinux/extlinux.conf")
    (configuration-file-generator extlinux-configuration-file)))
+
+(define extlinux-bootloader-gpt
+  (bootloader
+   (inherit extlinux-bootloader)
+   (installer install-extlinux-gpt)))

@@ -60,7 +60,6 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages texinfo)
   #:use-module ((srfi srfi-1) #:select (fold alist-delete))
   #:use-module (srfi srfi-11)

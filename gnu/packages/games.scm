@@ -31,6 +31,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,6 +74,7 @@
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -110,7 +112,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages zip)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages lua)
@@ -135,6 +136,35 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
+
+(define-public armagetronad
+  (package
+    (name "armagetronad")
+    (version "0.2.8.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/stable/"
+                                  version "/" name "-" version ".src.tar.gz"))
+              (sha256
+               (base32
+                "1pgy0r80z702qdv94aw3ywdn4ynnr4cdi86ml558pljfc5ygasj4"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("freeglut" ,freeglut)
+       ("libpng" ,libpng)
+       ("libjpeg-turbo" ,libjpeg-turbo)))
+    (home-page "http://www.armagetronad.org")
+    (synopsis "Tron clone in 3D")
+    (description "Armagetron is a multiplayer game in 3d that attempts to
+emulate and expand on the lightcycle sequence from the movie Tron.  It's
+an old school arcade game slung into the 21st century.  Highlights include
+a customizable playing arena, HUD, unique graphics, and AI bots.  For the
+more advanced player there are new game modes and a wide variety of physics
+settings to tweak as well.")
+    (license license:gpl2+)))
 
 (define-public cataclysm-dda
   (package
@@ -408,6 +438,64 @@ Chess).  It is similar to standard chess but this variant is far more complicate
    (description
     "PrBoom+ is a Doom source port developed from the original PrBoom project.")
    (license license:gpl2+)))
+
+(define-public retux
+  (package
+    (name "retux")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/retux/"
+                                  (version-major+minor version) "/retux-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1wgvh3q96kfgymb2jpd58xsms9hmckhhc4fq7v2k61gh2l11cvdj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no setup.py script
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin"))
+                    (data   (string-append out "/share/retux"))
+                    (doc    (string-append out "/share/doc/retux")))
+               (mkdir-p bin)
+
+               (substitute* "retux.py"
+                 ;; Use the correct data directory.
+                 (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
+                  (string-append "\"" data "\","))
+                 ;; Use Python 3 so the patch-shebangs phase works properly.
+                 ((".*python2.*") "#!/usr/bin/python3"))
+
+               (copy-file "retux.py" (string-append bin "/retux"))
+
+               (copy-recursively "data" data)
+
+               (install-file "COPYING" doc)))))))
+    (inputs
+     `(("python-sge-pygame" ,python-sge-pygame)
+       ("python-six" ,python-six)
+       ("python-xsge" ,python-xsge)))
+    (home-page "http://retux.nongnu.org")
+    (synopsis "Action platformer game")
+    (description
+     "ReTux is an action platformer loosely inspired by the Mario games,
+utilizing the art assets from the @code{SuperTux} project.")
+    ;; GPL version 3 or later is the license for the code and some art.
+    ;; The rest of the licenses are for the art exclusively, as listed in
+    ;; data/LICENSES.
+    (license (list license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0
+                   license:gpl2+
+                   license:gpl3+))))
 
 (define-public xshogi
   (package
@@ -1175,7 +1263,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -1183,7 +1271,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "01h9mswlfjk3zpdxwk1ciy5qkq6xq925gvk6wrh8k066b2wx8f8k"))))
+        (base32 "121h9j57gvjr155vvm4f7ybphfvqrdz2ib059kfi444xcxz19sl0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1219,7 +1307,7 @@ either by Infocom or created using the Inform compiler.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
-    (home-page "http://www.libretro.com/")
+    (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
     (description
      "Libretro is a simple but powerful development interface that allows for
@@ -2299,10 +2387,85 @@ engine.  When you start it you will be prompted to download a graphics set.")
 ;; 'openttd' a wrapper around them.  The engine is playable by itself,
 ;; but it asks a user to download graphics if it's not found.
 
+(define openttd-opengfx
+  (package
+    (name "openttd-opengfx")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://binaries.openttd.org/extra/opengfx/"
+                           version "/opengfx-" version "-source.tar.xz"))
+       (sha256
+        (base32
+         "0iz66q7p1mf00njfjbc4vibh3jaybki7armkl18iz7p6x4chp9zv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "INSTALL_DIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/openttd/baseset"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             ;; Make sure HOME is writable for GIMP.
+             (setenv "HOME" (getcwd))
+
+             ;; Redirect stdout, not stderr, to /dev/null. This prevents
+             ;; dos2unix from receiving its version information as a flag.
+             (substitute* "Makefile"
+               (("\\$\\(UNIX2DOS\\) -q --version 2>/dev/null")
+                "$(UNIX2DOS) -q --version 1>/dev/null")))))
+       ;; The check phase for this package only checks the md5sums of the built
+       ;; GRF files against the md5sums of the release versions. Because we use
+       ;; different software versions than upstream does, some of the md5sums
+       ;; are different. However, the package is still reproducible, it's safe
+       ;; to disable this test.
+       #:tests? #f))
+    (native-inputs `(("dos2unix" ,dos2unix)
+                     ("gimp" ,gimp)
+                     ("grfcodec" ,grfcodec)
+                     ("nml" ,nml)
+                     ("python" ,python-2)))
+    (home-page "http://dev.openttdcoop.org/projects/opengfx")
+    (synopsis "Base graphics set for OpenTTD")
+    (description
+     "The OpenGFX projects is an implementation of the OpenTTD base grahics
+set that aims to ensure the best possible out-of-the-box experience.
+
+OpenGFX provides you with...
+@enumerate
+@item All graphics you need to enjoy OpenTTD.
+@item Uniquely drawn rail vehicles for every climate.
+@item Completely snow-aware rivers.
+@item Different river and sea water.
+@item Snow-aware buoys.
+@end enumerate")
+    (license license:gpl2)))
+
 (define-public openttd
   (package
     (inherit openttd-engine)
-    (name "openttd")))
+    (name "openttd")
+    (arguments
+     (substitute-keyword-arguments (package-arguments openttd-engine)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-data
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let*
+                   ((opengfx (assoc-ref inputs "opengfx"))
+                    (out (assoc-ref outputs "out"))
+                    (gfx-dir
+                     (string-append out
+                                    "/share/games/openttd/baseset/opengfx")))
+                 (mkdir-p gfx-dir)
+                 (copy-recursively opengfx gfx-dir))
+               #t))))))
+    (native-inputs
+     `(("opengfx" ,openttd-opengfx)
+       ,@(package-native-inputs openttd-engine)))))
 
 (define-public pinball
   (package
@@ -2626,7 +2789,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "101")
+    (version "103")
     (source
      (origin
        (method url-fetch)
@@ -2635,7 +2798,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0qavwkmzc63p6qplmxii4gc541z5mcs8gjwh3m4y7i576r7rcbk9"))
+        (base32 "013r0lcm0qw8zwavz977mqk2clg80gngkjijr3n0q8snpc1727r7"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs

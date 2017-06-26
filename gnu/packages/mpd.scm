@@ -117,8 +117,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    (native-inputs `(("gcc" ,gcc-5) ; Fails to build with GCC@4.
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     ;; Missing optional inputs:
     ;;   libyajl
     ;;   libcdio_paranoia

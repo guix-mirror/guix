@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1050,9 +1051,9 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                (("~") "")
                (("g_get_home_dir \\(\\)") "\"/\"")))))))
     (home-page "https://davedavenport.github.io/rofi/")
-    (synopsis "Application Launcher")
-    (description "Rofi is a minimalist Application Launcher.  It memorizes which
-applications you regularily use and also allows you to search for an application
+    (synopsis "Application launcher")
+    (description "Rofi is a minimalist application launcher.  It memorizes which
+applications you regularly use and also allows you to search for an application
 by name.")
     (license license:expat)))
 

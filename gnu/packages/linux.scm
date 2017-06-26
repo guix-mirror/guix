@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -420,7 +422,17 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
                     %linux-libre-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
+                    #:extra-version "arm-generic"
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
+                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
+                            (sha256
+                             (base32
+                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
 
 
 ;;;
@@ -594,6 +606,27 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+(define-public ddate
+  (package
+    (name "ddate")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bo0ts/ddate/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1bbqqq8mswj4bp9083gxjaky5ysfznax4cynsqwmy125z053yg6m"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/bo0ts/ddate")
+    (synopsis "PERPETUAL DATE CONVERTER FROM GREGORIAN TO POEE CALENDAR")
+    (description
+     "ddate displays the Discordian date and holidays of a given date.
+The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
+by Robert Shea and Robert Anton Wilson.")
+    (license license:public-domain)))
 
 (define-public procps
   (package
@@ -1059,6 +1092,61 @@ system administrators.  Since Network Address Translation is also configured
 from the packet filter ruleset, iptables is used for this, too.  The iptables
 package also includes ip6tables.  ip6tables is used for configuring the IPv6
 packet filter.")
+    (license license:gpl2+)))
+
+(define-public ebtables
+  (package
+    (name "ebtables")
+    (version "2.0.10-4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://netfilter.org/ebtables/ebtables-v"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0pa5ljlk970yfyhpf3iqwfpbc30j8mgn90fapw9cfz909x47nvyw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no test suite
+       #:make-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (bin (string-append out "/sbin"))
+              (lib (string-append out "/lib"))
+              (man (string-append out "/share/man"))
+              (iptables   (assoc-ref %build-inputs "iptables"))
+              (ethertypes (string-append iptables "/etc/ethertypes")))
+         (list (string-append "LIBDIR=" lib)
+               (string-append "MANDIR=" man)
+               (string-append "BINDIR=" bin)
+               (string-append "ETHERTYPESFILE=" ethertypes)
+               ;; With the default CFLAGS, it falis with:
+               ;;   communication.c:259:58: error: variable ‘ret’ set but not
+               ;;   used [-Werror=unused-but-set-variable]
+               "CFLAGS=-Wall"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; no configure script
+           (lambda _
+             (substitute* "Makefile"
+               ;; Remove user and group options from install commands,
+               ;; otherwise it fails with: invalid user 'root'.
+               (("-o root -g root") "")
+               ;; Remove 'ethertypes' from the install target.
+               (("install: .*")
+                "install: $(MANDIR)/man8/ebtables.8 exec scripts\n"))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("iptables" ,iptables)))
+    (synopsis "Ethernet bridge frame table administration")
+    (home-page "http://ebtables.netfilter.org/")
+    (description
+     "ebtables is an application program used to set up and maintain the
+tables of rules (inside the Linux kernel) that inspect Ethernet frames.  It is
+analogous to the iptables application, but less complicated, due to the fact
+that the Ethernet protocol is much simpler than the IP protocol.")
     (license license:gpl2+)))
 
 (define-public iproute
@@ -4061,3 +4149,30 @@ from the CPUID instruction, and also determines the exact model of CPU(s).  It
 supports Intel, AMD, and VIA CPUs, as well as older Transmeta, Cyrix, UMC,
 NexGen, Rise, and SiS CPUs.")
     (license license:gpl2+)))
+
+(define-public jmtpfs
+  (package
+    (name "jmtpfs")
+    (version "0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/JasonFerrara/jmtpfs/archive/v"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10v8d7mmx8b8123x5f9y9zaaa428ms6wkngwn2ra71n5a53wrjn0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("file" ,file)
+       ("fuse" ,fuse)
+       ("libmtp" ,libmtp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/JasonFerrara/jmtpfs")
+    (synopsis "Use a FUSE filesystem to access data over MTP")
+    (description "jmtpfs uses FUSE (filesystem in userspace) to provide access
+to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
+the MTP device as a filesystem.")
+    (license license:gpl3)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,8 @@
     (inputs
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
-       ("libevent" ,libevent)))
+       ("libevent" ,libevent)
+       ("libseccomp", libseccomp)))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description

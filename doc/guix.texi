@@ -1258,12 +1258,47 @@ Assume @var{system} as the current system type.  By default it is the
 architecture/kernel pair found at configure time, such as
 @code{x86_64-linux}.
 
-@item --listen=@var{socket}
-Listen for connections on @var{socket}, the file name of a Unix-domain
-socket.  The default socket is
-@file{@var{localstatedir}/daemon-socket/socket}.  This option is only
-useful in exceptional circumstances, such as if you need to run several
-daemons on the same machine.
+@item --listen=@var{endpoint}
+Listen for connections on @var{endpoint}.  @var{endpoint} is interpreted
+as the file name of a Unix-domain socket if it starts with
+@code{/} (slash sign).  Otherwise, @var{endpoint} is interpreted as a
+host name or host name and port to listen to.  Here are a few examples:
+
+@table @code
+@item --listen=/gnu/var/daemon
+Listen for connections on the @file{/gnu/var/daemon} Unix-domain socket,
+creating it if needed.
+
+@item --listen=localhost
+@cindex daemon, remote access
+@cindex remote access to the daemon
+@cindex daemon, cluster setup
+@cindex clusters, daemon setup
+Listen for TCP connections on the network interface corresponding to
+@code{localhost}, on port 44146.
+
+@item --listen=128.0.0.42:1234
+Listen for TCP connections on the network interface corresponding to
+@code{128.0.0.42}, on port 1234.
+@end table
+
+This option can be repeated multiple times, in which case
+@command{guix-daemon} accepts connections on all the specified
+endpoints.  Users can tell client commands what endpoint to connect to
+by setting the @code{GUIX_DAEMON_SOCKET} environment variable
+(@pxref{The Store, @code{GUIX_DAEMON_SOCKET}}).
+
+@quotation Note
+The daemon protocol is @emph{unauthenticated and unencrypted}.  Using
+@code{--listen=@var{host}} is suitable on local networks, such as
+clusters, where only trusted nodes may connect to the build daemon.  In
+other cases where remote access to the daemon is needed, we recommend
+using Unix-domain sockets along with SSH.
+@end quotation
+
+When @code{--listen} is omitted, @command{guix-daemon} listens for
+connections on the Unix-domain socket located at
+@file{@var{localstatedir}/daemon-socket/socket}.
 @end table
 
 
@@ -3769,9 +3804,13 @@ These are for Unix-domain sockets.
 @file{/var/guix/daemon-socket/socket}.
 
 @item guix
+@cindex daemon, remote access
+@cindex remote access to the daemon
+@cindex daemon, cluster setup
+@cindex clusters, daemon setup
 These URIs denote connections over TCP/IP, without encryption nor
-authentication of the remote host.  The URI must always specify both the
-host name and port number:
+authentication of the remote host.  The URI must specify the host name
+and optionally a port number (by default port 44146 is used):
 
 @example
 guix://master.guix.example.org:1234
@@ -3780,6 +3819,10 @@ guix://master.guix.example.org:1234
 This setup is suitable on local networks, such as clusters, where only
 trusted nodes may connect to the build daemon at
 @code{master.guix.example.org}.
+
+The @code{--listen} option of @command{guix-daemon} can be used to
+instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
+@code{--listen}}).
 
 @item ssh
 @cindex SSH access to build daemons
@@ -13907,26 +13950,21 @@ The serial number of the zone.  As this is used to keep track of changes by
 both slaves and resolvers, it is mandatory that it @emph{never} decreases.
 Always increment it when you make a change in your zone.
 
-@item @code{refresh} (default: @code{"2d"})
-The frequency at which slaves will do a zone transfer.  This value can be
-a number of seconds or a number of some unit between:
-@itemize
-@item m: minute
-@item h: hour
-@item d: day
-@item w: week
-@end itemize
+@item @code{refresh} (default: @code{(* 2 24 3600)})
+The frequency at which slaves will do a zone transfer.  This value is a number
+of seconds.  It can be computed by multiplications or with
+@code{(string->duration)}.
 
-@item @code{retry} (default: @code{"15m"})
+@item @code{retry} (default: @code{(* 15 60)})
 The period after which a slave will retry to contact its master when it fails
 to do so a first time.
 
-@item @code{expiry} (default: @code{"2w"})
+@item @code{expiry} (default: @code{(* 14 24 3600)})
 Default TTL of records.  Existing records are considered correct for at most
 this amount of time.  After this period, resolvers will invalidate their cache
 and check again that it still exists.
 
-@item @code{nx} (default: @code{"1h"})
+@item @code{nx} (default: @code{3600})
 Default TTL of inexistant records.  This delay is usually short because you want
 your new domains to reach everyone quickly.
 
@@ -14029,17 +14067,17 @@ algorithm, but would be unsecure for other algorithms.
 The TTL value for DNSKEY records added into zone apex.  The special
 @code{'default} value means same as the zone SOA TTL.
 
-@item @code{zsk-lifetime} (default: @code{"30d"})
+@item @code{zsk-lifetime} (default: @code{(* 30 24 3600)})
 The period between ZSK publication and the next rollover initiation.
 
-@item @code{propagation-delay} (default: @code{"1d"})
+@item @code{propagation-delay} (default: @code{(* 24 3600)})
 An extra delay added for each key rollover step.  This value should be high
 enough to cover propagation of data from the master server to all slaves.
 
-@item @code{rrsig-lifetime} (default: @code{"14d"})
+@item @code{rrsig-lifetime} (default: @code{(* 14 24 3600)})
 A validity period of newly issued signatures.
 
-@item @code{rrsig-refresh} (default: @code{"7d"})
+@item @code{rrsig-refresh} (default: @code{(* 7 24 3600)})
 A period how long before a signature expiration the signature will be refreshed.
 
 @item @code{nsec3?} (default: @code{#f})
@@ -14052,7 +14090,7 @@ The number of additional times the hashing is performed.
 The length of a salt field in octets, which is appended to the original owner
 name before hashing.
 
-@item @code{nsec3-salt-lifetime} (default: @code{"30d"})
+@item @code{nsec3-salt-lifetime} (default: @code{(* 30 24 3600)})
 The validity period of newly issued salt field.
 
 @end table

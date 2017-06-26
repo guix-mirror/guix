@@ -20,27 +20,22 @@
 
 (define-module (gnu packages libffcall)
   #:use-module ((guix licenses) #:prefix l:)
-  #:use-module (guix utils) ; string-replace-substring
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public libffcall
    (package
     (name "libffcall")
-    (version "1.12")
+    (version "1.13")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.savannah.gnu.org/r/libffcall.git")
-             (commit (string-append
-                       "ffcall-" (string-replace-substring version "." "-")))))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (string-append
+             "mirror://gnu/libffcall/libffcall-" version ".tar.gz"))
        (sha256
         (base32
-         "0p7gg5k4ifcqpmrmdfmr2r4x909cn35g87iff539p6i8891fdfxf"))))
+         "1rxwkfr0p7vdv6q6x8nmn13611nsq0lnk9cspqdpzxdvgmqcw1qp"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-build? #f))
     (synopsis "Foreign function calls from interpreters")
@@ -48,5 +43,4 @@
      "GNU Libffcall is a collection of libraries that can be used to build
 foreign function call interfaces in embedded interpreters.")
     (home-page "https://www.gnu.org/software/libffcall/")
-    (supported-systems (delete "aarch64-linux" %supported-systems))
     (license l:gpl2+)))

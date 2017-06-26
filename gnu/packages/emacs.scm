@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3641,14 +3642,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170606")
+    (version "20170622")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0m2gln3wz9v3aflyxxy2317808yy05rrzrjx35spw2d90d10hmkz"))))
+                "0922lcbr2r7bkswljqzbm5y3ny1n67qfrmf7h7z9hsw2wy0505dp"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4896,3 +4897,78 @@ running a customisable handler command (@code{ignore} by default). ")
 from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
+
+(define-public emacs-dired-hacks
+  (let ((commit "eda68006ce73bbf6b9b995bfd70d08bec8cade36")
+        (revision "1"))
+    (package
+      (name "emacs-dired-hacks")
+      (version (string-append "0.0.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Fuco1/dired-hacks.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1w7ssl9zssn5rcha6apf4h8drkd02k4xgvs203bdbqyqp9wz9brx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/Fuco1/dired-hacks")
+      (synopsis
+       "Collection of useful dired additions")
+      (description
+       "Collection of Emacs dired mode additions:
+@itemize
+@item dired-avfs
+@item dired-columns
+@item dired-filter
+@item dired-hacks-utils
+@item dired-images
+@item dired-list
+@item dired-narrow
+@item dired-open
+@item dired-rainbow
+@item dired-ranger
+@item dired-subtree
+@item dired-tagsistant
+@end itemize\n")
+      (license license:gpl3+))))
+
+(define-public emacs-which-key
+  (package
+    (name "emacs-which-key")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/justbur/emacs-which-key/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0zc9yivdkbxmcllhlbbcvsbj8g8nzzgs0xib488s08p4s0l7xs8m"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "which-key-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/justbur/emacs-which-key")
+    (synopsis "Display available key bindings in popup")
+    (description "@code{emacs-which-key} is a minor mode for Emacs that
+displays the key bindings following your currently entered incomplete command
+(a prefix) in a popup.  For example, after enabling the minor mode if you
+enter C-x and wait for the default of 1 second, the minibuffer will expand
+with all of the available key bindings that follow C-x (or as many as space
+allows given your settings).")
+    (license license:gpl3+)))

@@ -383,6 +383,10 @@
       (connect s a)
       s)))
 
+(define %default-guix-port
+  ;; Default port when connecting to a daemon over TCP/IP.
+  44146)
+
 (define (open-inet-socket host port)
   "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
 '&nix-connection-error' upon error."
@@ -399,7 +403,9 @@
                    (if (number? port) (number->string port) port)
                    (if (number? port)
                        (logior AI_ADDRCONFIG AI_NUMERICSERV)
-                       AI_ADDRCONFIG)))
+                       AI_ADDRCONFIG)
+                   0                              ;any address family
+                   SOCK_STREAM))                  ;TCP only
 
     (let loop ((addresses addresses))
       (match addresses
@@ -444,12 +450,8 @@ name."
             (open-unix-domain-socket (uri-path uri))))
          ('guix
           (lambda (_)
-            (unless (uri-port uri)
-              (raise (condition (&nix-connection-error
-                                 (file (uri->string uri))
-                                 (errno EBADR))))) ;bah!
-
-            (open-inet-socket (uri-host uri) (uri-port uri))))
+            (open-inet-socket (uri-host uri)
+                              (or (uri-port uri) %default-guix-port))))
          ((? symbol? scheme)
           ;; Try to dynamically load a module for SCHEME.
           ;; XXX: Errors are swallowed.

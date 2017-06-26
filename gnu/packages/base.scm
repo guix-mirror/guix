@@ -514,6 +514,7 @@ store.")
   (package
    (name "glibc")
    (version "2.25")
+   (replacement glibc-2.25-patched)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -768,6 +769,20 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
+(define glibc-2.25-patched
+  (package
+    (inherit glibc)
+    (replacement #f)
+    (source (origin
+              (inherit (package-source glibc))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2017-1000366-pt1.patch"
+                                       "glibc-CVE-2017-1000366-pt2.patch"
+                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
+
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
@@ -775,30 +790,47 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc)
     (version "2.24")
+    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))))))
+                "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2017-1000366-pt1.patch"
+                                       "glibc-CVE-2017-1000366-pt2.patch"
+                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
 
 (define-public glibc-2.23
   (package
     (inherit glibc)
     (version "2.23")
+    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))))))
+                "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2017-1000366-pt1.patch"
+                                       "glibc-CVE-2017-1000366-pt2.patch"
+                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
 
 (define-public glibc-2.22
   (package
     (inherit glibc)
     (version "2.22")
+    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -806,7 +838,11 @@ GLIBC/HURD for a Hurd host"
               (sha256
                (base32
                 "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"))))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2017-1000366-pt1.patch"
+                                       "glibc-CVE-2017-1000366-pt2.patch"
+                                       "glibc-CVE-2017-1000366-pt3.patch"))))
     (arguments
       (substitute-keyword-arguments (package-arguments glibc)
         ((#:phases phases)
@@ -815,25 +851,27 @@ GLIBC/HURD for a Hurd host"
               (lambda _
                 ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
                 (substitute* "configure"
-                  (("/bin/pwd") "pwd"))))))))))
+                  (("/bin/pwd") "pwd"))
+                #t))))))))
 
 (define-public glibc-2.21
   (package
     (inherit glibc-2.22)
     (version "2.21")
+    (replacement #f)
     (source (origin
-              (inherit (package-source glibc))
+              (inherit (package-source glibc-2.22))
               (uri (string-append "mirror://gnu/glibc/glibc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"))))))
+                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))))))
 
 (define-public glibc-locales
   (package
     (inherit glibc)
     (name "glibc-locales")
+    (replacement #f)
     (source (origin (inherit (package-source glibc))
                     (patches (cons (search-patch "glibc-locales.patch")
                                    (origin-patches (package-source glibc))))))

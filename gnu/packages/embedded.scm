@@ -452,7 +452,7 @@ with a layered architecture of JTAG interface and TAP support.")
          ("dejagnu" ,dejagnu)
          ,@(package-native-inputs xbinutils))))))
 
-(define-public propeller-gcc
+(define-public propeller-gcc-6
   (let ((xgcc (cross-gcc "propeller-elf"
                          #:xbinutils propeller-binutils))
         (commit "b4f45a4725e0b6d0af59e594c4e3e35ca4105867")
@@ -489,7 +489,7 @@ with a layered architecture of JTAG interface and TAP support.")
       (synopsis "GCC for the Parallax Propeller"))))
 
 (define-public propeller-gcc-4
-  (let ((xgcc propeller-gcc)
+  (let ((xgcc propeller-gcc-6)
         (commit "f1b01001b760d691a91ff1db4830d41bb712557f")
         (revision "1"))
     (package (inherit xgcc)
@@ -510,6 +510,11 @@ with a layered architecture of JTAG interface and TAP support.")
                   (search-patches "gcc-4.6-gnu-inline.patch"
                                   "gcc-cross-environment-variables.patch")))))
       (home-page "https://github.com/dbetz/propgcc-gcc"))))
+
+;; Version 6 is experimental and may not work correctly.  This is why we
+;; default to version 4, which is also used in the binary toolchain bundle
+;; provided by Parallax Inc.
+(define-public propeller-gcc propeller-gcc-4)
 
 ;; There is no release, so we take the latest version as referenced from here:
 ;; https://github.com/dbetz/propeller-gcc

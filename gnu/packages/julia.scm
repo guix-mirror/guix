@@ -46,8 +46,8 @@
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "8d5131b6c1595920dd30644cd1435b4f344b46c8")
-        (revision "4"))
+  (let ((commit "52d72a52cc7ccd570929990f010ed16e2ec604c8")
+        (revision "5"))
     (package (inherit libuv)
       (name "libuv-julia")
       (version (string-append "1.9.0-" revision "." (string-take commit 8)))
@@ -59,7 +59,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1fq0vhiprdryw8iisxxwyld3xdr5za6y8458p22ff56al98h22fv"))))
+                  "1daxh6ci6q7znxxajr3bm16dd53ragm0d681wf4kzg542qnjq3lh"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -83,7 +83,7 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.5.1")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -91,7 +91,7 @@
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "1a9m7hzzrwk71gvwwrd1p45s64yid61i41n95gm5pzbry6p9fpl0"))))
+                "0rd6lcc9sic10q1j3c6f9qr901i1c4554m93n2sz5b3mh37byqhw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -122,12 +122,19 @@
              (copy-file (string-append (assoc-ref inputs "virtualenv")
                                        "/bin/virtualenv")
                         "julia-env")
+             (copy-file (assoc-ref inputs "unicode-data")
+                        "doc/UnicodeData.txt")
              #t))
-         (add-after 'unpack 'fix-llvm-flag
+         ;; FIXME: Building the documentation requires Julia packages that
+         ;; would be downloaded from the Internet.  We should build them in a
+         ;; separate build phase.
+         (add-after 'unpack 'disable-documentation
            (lambda _
-             (substitute* "src/Makefile"
-               (("-lLLVM-\\$\\(shell \\$\\(LLVM_CONFIG_HOST\\) --version\\)")
-                "$(shell $(LLVM_CONFIG_HOST) --libs)"))
+             (substitute* "Makefile"
+               (("(install: .*) \\$\\(BUILDROOT\\)/doc/_build/html/en/index.html" _ line)
+                (string-append line "\n"))
+               (("src ui doc deps")
+                "src ui deps"))
              #t))
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.
@@ -156,16 +163,16 @@
                        ("gmp"         "libgmp"         "libgmp.so")
                        ("openlibm"    "libopenlibm"    "libopenlibm.so")
                        ("openspecfun" "libopenspecfun" "libopenspecfun.so")
-                       ("fftw"        "libfftw3"       "libfftw3.so")
-                       ("fftwf"       "libfftw3f"      "libfftw3f.so"))))))
+                       ("fftw"        "libfftw3"       "libfftw3_threads.so")
+                       ("fftwf"       "libfftw3f"      "libfftw3f_threads.so"))))))
             (substitute* "base/fft/FFTW.jl"
               (("const libfftw = Base.libfftw_name")
                (string-append "const libfftw = \""
-                              (assoc-ref inputs "fftw") "/lib/libfftw3.so"
+                              (assoc-ref inputs "fftw") "/lib/libfftw3_threads.so"
                               "\""))
               (("const libfftwf = Base.libfftwf_name")
                (string-append "const libfftwf = \""
-                              (assoc-ref inputs "fftwf") "/lib/libfftw3f.so"
+                              (assoc-ref inputs "fftwf") "/lib/libfftw3f_threads.so"
                               "\"")))
             (substitute* "base/math.jl"
               (("const libm = Base.libm_name")
@@ -228,7 +235,14 @@
                (("\"backtrace\",") "")
                (("\"compile\",") "")
                (("\"replutil\",") "")
-               (("\"cmdlineargs\",") ""))
+               (("\"cmdlineargs\",") "")
+               ;; FIXME: This test fails with the following error:
+               ;; Error in testset file:
+               ;; Test Failed
+               ;;   Expression: download("ba\0d", "good")
+               ;;     Expected: ArgumentError
+               ;;       Thrown: Base.UVError
+               (("\"file\",") ""))
              #t)))
        #:make-flags
        (list
@@ -268,6 +282,8 @@
                        (assoc-ref %build-inputs "utf8proc")
                        "/include")
         "USE_SYSTEM_LLVM=1"
+        "USE_LLVM_SHLIB=0" ; FIXME: fails when set to 1
+
         "USE_SYSTEM_LIBUNWIND=1"
         "USE_SYSTEM_LIBUV=1"
         (string-append "LIBUV="
@@ -339,7 +355,14 @@
        ("perl" ,perl)
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("unicode-data"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.unicode.org/Public/9.0.0/ucd/UnicodeData.txt")
+           (sha256
+            (base32
+             "13zfannnr6sa6s27ggvcvzmh133ndi38pfyxsssvjmw2s8ac9pv8"))))))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux"))

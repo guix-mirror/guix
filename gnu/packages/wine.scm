@@ -146,3 +146,16 @@ integrate Windows applications into your desktop.")
     ;; It really only supports IA32, but building on x86_64 will have the same
     ;; effect as building on i686 anyway.
     (supported-systems '("i686-linux" "x86_64-linux"))))
+
+(define-public wine64
+  (package
+    (inherit wine)
+    (name "wine64")
+    (arguments
+     `(#:configure-flags
+       (list "--enable-win64"
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib64"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:system)
+                                  (package-arguments wine))))
+    (synopsis "Implementation of the Windows API (64-bit version)")
+    (supported-systems '("x86_64-linux"))))

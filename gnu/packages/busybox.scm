@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,13 +24,13 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl))
 
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.26.0")
+    (version "1.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -38,44 +38,44 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0k0g3hk58m99c2sfq97ngnixb2rv2wzyhv3z00lxaw78bqvjglis"))))
+                "05mg6rh5smkzfwqfcazkpwy6h6555llsazikqnvwkaf17y8l8gns"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _ (zero? (system* "make" "defconfig"))))
          (replace 'check
            (lambda _
-           (substitute* '("testsuite/du/du-s-works"
-                           "testsuite/du/du-works")
+             (substitute* '("testsuite/du/du-s-works"
+                            "testsuite/du/du-works")
                (("/bin") "/etc"))  ; there is no /bin but there is a /etc
 
-           ;; There is no /usr/bin or /bin - replace it with /gnu/store
-           (substitute* "testsuite/cpio.tests"
+             ;; There is no /usr/bin or /bin - replace it with /gnu/store
+             (substitute* "testsuite/cpio.tests"
                (("/usr/bin") (%store-directory))
                (("usr") (car (filter (negate string-null?)
-                                       (string-split (%store-directory) #\/)))))
+                                     (string-split (%store-directory) #\/)))))
 
-           (substitute* "testsuite/date/date-works-1"
+             (substitute* "testsuite/date/date-works-1"
                (("/bin/date") (which "date")))
 
-           ;; The pidof tests assume that pid 1 is called "init" but that is not
-           ;; true in guix build environment
-           (substitute* "testsuite/pidof.tests"
+             ;; The pidof tests assume that pid 1 is called "init" but that is not
+             ;; true in guix build environment
+             (substitute* "testsuite/pidof.tests"
                (("-s init") "-s $(cat /proc/1/comm)"))
+  
+             ;; This test cannot possibly pass.
+             ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
+             ;; However, this relies on /bin/ls existing.  Which it does not in guix.
+             (delete-file "testsuite/which/which-uses-default-path")
+             (rmdir "testsuite/which")
 
-           ;; This test cannot possibly pass.
-           ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
-           ;; However, this relies on /bin/ls existing.  Which it does not in guix.
-           (delete-file "testsuite/which/which-uses-default-path")
-           (rmdir "testsuite/which")
-
-           (zero? (system* "make"
-                           ;; "V=1"
-                           "SKIP_KNOWN_BUGS=1"
-                           "SKIP_INTERNET_TESTS=1"
-                           "check"))))
+             (zero? (system* "make"
+                             ;; "V=1"
+                             "SKIP_KNOWN_BUGS=1"
+                             "SKIP_INTERNET_TESTS=1"
+                             "check"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
