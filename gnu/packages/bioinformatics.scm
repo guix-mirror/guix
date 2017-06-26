@@ -248,7 +248,7 @@ structure of the predicted RNA.")
        ("python-nose" ,python2-nose)
        ("python-pysam" ,python2-pysam)))
     (inputs
-     `(("htslib" ,htslib)
+     `(("htslib" ,htslib-1.3) ; At least one test fails on htslib-1.4+.
        ("samtools" ,samtools)
        ("bwa" ,bwa)
        ("grep" ,grep)
@@ -3078,6 +3078,20 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
     ;; Files under cram/ are released under the modified BSD license;
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
+
+;; This package should be removed once no packages rely upon it.
+(define htslib-1.3
+  (package
+    (inherit htslib)
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))))
 
 (define-public idr
   (package
