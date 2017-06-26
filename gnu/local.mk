@@ -14,6 +14,7 @@
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+# Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -961,6 +962,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-9524.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
+  %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\

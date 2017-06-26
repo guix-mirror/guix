@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
@@ -64,6 +66,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -1308,3 +1311,34 @@ transparently have a connection established to another address (e.g., a UNIX
 socket on a different system).  This is similar to 'ssh -L' functionality, but
 does not use SSH and requires a pre-shared symmetric key.")
     (license license:bsd-2)))
+
+(define-public quagga
+  (package
+    (name "quagga")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/quagga/quagga-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1kgvcr9cfgys5asvb5lh5h95silkr624apqm5x68xva19xfvmpda"))
+              (patches
+               (search-patches "quagga-reproducible-build.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config",pkg-config)
+                     ("perl",perl)
+                     ("dejagnu",dejagnu)))
+    (inputs `(("readline",readline)
+              ("c-ares",c-ares)))
+    (synopsis "Routing Software Suite")
+    (description "Quagga is a routing software suite, providing implementations
+of OSPFv2, OSPFv3, RIP v1 and v2, RIPng and BGP-4 for Unix platforms.
+
+The Quagga architecture consists of a core daemon, @command{zebra}, which
+acts as an abstraction layer to the underlying Unix kernel and presents the
+Zserv API over a Unix or TCP stream to Quagga clients.  It is these Zserv
+clients which typically implement a routing protocol and communicate routing
+updates to the zebra daemon.")
+    (home-page "http://www.nongnu.org/quagga/")
+    (license license:gpl2+)))
