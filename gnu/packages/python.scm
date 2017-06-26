@@ -1877,7 +1877,9 @@ code introspection, and logging.")
     (propagated-inputs
      `(("python-py" ,python-py)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
+       ("bash" ,bash)
+       ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (home-page "http://pytest.org")
     (synopsis "Python testing library")
@@ -1914,9 +1916,8 @@ and many external plugins.")
                                line)))
              #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-hypothesis" ,python-hypothesis)))
+     `(("python-hypothesis" ,python-hypothesis)
+       ,@(package-native-inputs python-pytest)))
     (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
 
 (define-public python2-pytest-3.0
