@@ -159,13 +159,15 @@ storage system.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
-     `(("gtk+-2" ,gtk+-2)  ; required by libxfce4ui-1.pc
-       ("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
+     `(("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
        ;; libxfce4kbd-private-2.pc refers to all these.
        ("libxfce4util" ,libxfce4util)
        ("xfconf" ,xfconf)))
     (inputs `(("libsm" ,libsm)
               ("libice" ,libice)
+              ;; FIXME: required by libxfce4ui-1.pc, so should be propagated,
+              ;; but will lead to a conflict with gtk+.
+              ("gtk+-2" ,gtk+-2)
               ("startup-notification" ,startup-notification)))
     (home-page "http://www.xfce.org/")
     (synopsis "Widgets library for Xfce")
@@ -221,6 +223,8 @@ development.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
     (propagated-inputs
      `(("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk2-1.pc
     (home-page "http://www.xfce.org/")
@@ -452,6 +456,7 @@ per window.")
        ("intltool" ,intltool)))
     (inputs
      `(("garcon" ,garcon)
+       ("gtk+" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)))
     (home-page "http://www.xfce.org/")
     (synopsis "Xfce application finder")
@@ -759,6 +764,7 @@ system resources, while still being visually appealing and user friendly.")
        ("intltool" ,intltool)))
     (inputs
      `(("lbxrandr" ,libxrandr)
+       ("gtk+" ,gtk+-2)
        ("upower" ,upower)
        ("libnotify" ,libnotify)
        ("libxfce4ui" ,libxfce4ui)))
@@ -792,6 +798,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("desktop-file-utils" ,desktop-file-utils)
+       ("gtk+" ,gtk+-2)
        ("libexif" ,libexif)
        ("libxfce4ui" ,libxfce4ui)
        ("librsvg" ,librsvg)
