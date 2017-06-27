@@ -1469,6 +1469,33 @@ that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
 designed from the start to be compatible with @code{natbib}.")
     (license license:lppl)))
 
+(define-public texlive-latex-seminar
+  (package
+    (name "texlive-latex-seminar")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/seminar"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/seminar"))
+    (home-page "http://www.ctan.org/pkg/seminar")
+    (synopsis "Make overhead slides")
+    ;; TODO: This package may need fancybox and xcomment at runtime.
+    (description
+     "This package provides a class that produces overhead
+slides (transparencies), with many facilities.  Seminar is not nowadays
+reckoned a good basis for a presentation — users are advised to use more
+recent classes such as powerdot or beamer, both of which are tuned to
+21st-century presentation styles.")
+    (license license:lppl1.2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
