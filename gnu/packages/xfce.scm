@@ -698,8 +698,17 @@ on your desktop.")
     (version (package-version xfce4-session))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
-    (propagated-inputs
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . directories) ...)
+            (union-build (assoc-ref %outputs "out")
+                         directories))))))
+    (inputs
      `(("exo"                  ,exo)
        ("garcon"               ,garcon)
        ("gnome-icon-theme"     ,gnome-icon-theme)
