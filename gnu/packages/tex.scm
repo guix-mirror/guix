@@ -1446,6 +1446,29 @@ distribution.")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
 
+(define-public texlive-latex-natbib
+  (package
+    (name "texlive-latex-natbib")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "natbib"))
+              (sha256
+               (base32
+                "0aqliq0nwblxyrzhwhv77pnmk7qh2y3prgq7z7qhwcbgz5kisld7"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/natbib"))
+    (home-page "http://www.ctan.org/pkg/natbib")
+    (synopsis "Flexible bibliography support")
+    (description
+     "This bundle provides a package that implements both author-year and
+numbered references, as well as much detailed of support for other
+bibliography use.  Also provided are versions of the standard BibTeX styles
+that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
+@code{abbrnat}.  The bibliography styles produced by @code{custom-bib} are
+designed from the start to be compatible with @code{natbib}.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
