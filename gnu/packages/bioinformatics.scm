@@ -1527,13 +1527,13 @@ UCSC genome browser.")
 (define-public python-plastid
   (package
     (name "python-plastid")
-    (version "0.4.6")
+    (version "0.4.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "plastid" version))
               (sha256
                (base32
-                "1sqkz5d3b9kf688mp7k771c87ins42j7j0whmkb49cb3fsg8s8lj"))))
+                "0l24dd3q66if8yj042m4s0g95n6acn7im1imqd3p6h8ns43kxhj8"))))
     (build-system python-build-system)
     (arguments
      ;; Some test files are not included.
