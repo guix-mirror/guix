@@ -1511,3 +1511,34 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 Git version control system, providing repository access routines, support for
 network protocols, and core version control algorithms.")
     (license license:edl1.0)))
+
+;; For axoloti.  This package can still be built with icedtea-7, which is
+;; currently used as the default JDK.
+(define-public java-jgit-4.2
+  (package (inherit java-jgit)
+    (version "4.2.0.201601211800-r")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jgit/org.eclipse.jgit/"
+                                  version "/org.eclipse.jgit-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "15gm537iivhnzlkjym4x3wn5jqdjdragsw9pdpzqqg21nrc817mm"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-latest-javaewah-API
+           (lambda _
+             (substitute* "src/org/eclipse/jgit/internal/storage/file/BitmapIndexImpl.java"
+               (("wordinbits") "WORD_IN_BITS"))
+             #t)))
+       ;; Build for default JDK.
+       ,@(substitute-keyword-arguments (package-arguments java-jgit)
+           ((#:jdk _) icedtea-7))))
+    (inputs
+     `(("java-javaewah" ,java-javaewah)
+       ("java-jsch" ,java-jsch)
+       ("java-slf4j-api" ,java-slf4j-api)))))
