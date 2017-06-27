@@ -3086,7 +3086,7 @@ better integration of Qt applications when running on a KDE Plasma
 workspace.")
     ;; This package is distributed under either LGPL2 or LGPL3, but some
     ;; files are explicitly LGPL2+.
-    (license '(lgpl2.0 lgpl3.0 lgpl2.0+))
+    (license (list license:lgpl2.0 license:lgpl3 license:lgpl2.0+))
     (properties `((upstream-name . "frameworkintegration")))))
 
 
@@ -3202,10 +3202,10 @@ documentation of the classes in this framework and the notes at
 http://community.kde.org/Frameworks/Porting_Notes should help with this.")
     ;; Most files are distributed under LGPL2+, but the package includes code
     ;; under a variety of licenses.
-    (license '(license:lgpl2.1+ license:lgpl2.0 license:lgpl2.0+
-               license:gpl2 license:gpl2+
-               license:expat license:bsd-2 license:bsd-3
-               license:public-domain))))
+    (license (list license:lgpl2.1+ license:lgpl2.0 license:lgpl2.0+
+                   license:gpl2 license:gpl2+
+                   license:expat license:bsd-2 license:bsd-3
+                   license:public-domain))))
 
 (define-public khtml
   (package
@@ -3261,9 +3261,9 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
 technology and using KJS for JavaScript support.")
     ;; Most files are distributed under LGPL2+, but the package includes code
     ;; under a variety of licenses.
-    (license '(license:lgpl2.0+ license:lgpl2.1+
-               license:gpl2  license:gpl3+
-               license:expat license:bsd-2 license:bsd-3))))
+    (license (list license:lgpl2.0+ license:lgpl2.1+
+                   license:gpl2  license:gpl3+
+                   license:expat license:bsd-2 license:bsd-3))))
 
 (define-public kjs
   (package
@@ -3294,9 +3294,9 @@ applications")
 support.")
     ;; Most files are distributed under LGPL2+, but the package also includes
     ;; code under a variety of licenses.
-    (license '(license:lgpl2.1+
-               license:bsd-2 license:bsd-3
-               (license:non-copyleft "file://src/kjs/dtoa.cpp")))))
+    (license (list license:lgpl2.1+
+                   license:bsd-2 license:bsd-3
+                   (license:non-copyleft "file://src/kjs/dtoa.cpp")))))
 
 (define-public kjsembed
   (package
@@ -3414,5 +3414,5 @@ provides the framework to deal transparently with interpreter-backends and
 offers abstract functionality to deal with scripts.")
     ;; Most files are distributed under LGPL2+, but the package includes code
     ;; under a variety of licenses.
-    (license '(license:lgpl2.0+ license:lgpl2.1+
-               license:lgpl2.0 license:gpl3+))))
+    (license (list license:lgpl2.0+ license:lgpl2.1+
+                   license:lgpl2.0 license:gpl3+))))
