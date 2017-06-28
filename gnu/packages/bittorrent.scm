@@ -264,7 +264,7 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.31.0")
+    (version "1.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -272,7 +272,7 @@ maintained upstream.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "131zh75fqw9a1j0igl8gx3lwmhhbicdmp2p387r0cd5j928631bv"))))
+                "0l6whbbcw1qijlczlfqi3mhba3zki0ybjb2prrgncp8km6a92vjl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
