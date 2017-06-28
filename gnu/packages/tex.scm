@@ -1504,6 +1504,46 @@ recent classes such as powerdot or beamer, both of which are tuned to
 21st-century presentation styles.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-hyperref
+  (package
+    (name "texlive-latex-hyperref")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "hyperref"))
+              (sha256
+               (base32
+                "03arf3xvz1jsbvlpgc5qxbxbl9wmk8k09cn6b8gv9pzgpjy4vx4j"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/hyperref"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-hluatex.def
+           (lambda _
+             ;; This depends on hluatex.dtx, which does not exist and is
+             ;; nowhere to be found in the sources of the TeX Live
+             ;; distribution.
+             (substitute* "hyperref.ins"
+               (("\\\\file\\{hluatex.def\\}.*") ""))
+             #t)))))
+    ;; The package depends on the kvoptions, ltxcmds, and refcount packages,
+    ;; which are part of the oberdiek bundle.
+    (inputs
+     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek)))
+    (home-page "http://www.ctan.org/pkg/hyperref")
+    (synopsis "Extensive support for hypertext in LaTeX")
+    (description
+     "The @code{hyperref} package is used to handle cross-referencing commands
+in LaTeX to produce hypertext links in the document.  The package provides
+backends for the @code{\\special} set defined for HyperTeX DVI processors; for
+embedded @code{pdfmark} commands for processing by Acrobat
+Distiller (@code{dvips} and Y&Y's @code{dvipsone}); for Y&Y's @code{dviwindo};
+for PDF control within pdfTeX and @code{dvipdfm}; for TeX4ht; and for VTeX's
+pdf and HTML backends.  The package is distributed with the @code{backref} and
+@code{nameref} packages, which make use of the facilities of @code{hyperref}.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
