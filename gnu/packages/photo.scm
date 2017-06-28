@@ -386,6 +386,8 @@ photographic equipment.")
 developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
+    ;; see src/is_supported_platform.h for supported platforms
+    (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
     (license license:gpl3+)))
 
 (define-public hugin
