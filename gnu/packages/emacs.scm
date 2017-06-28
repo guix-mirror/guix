@@ -5005,3 +5005,30 @@ for the default of 1 second, the minibuffer will expand with all of the
 available key bindings that follow C-x (or as many as space allows given your
 settings).")
     (license license:gpl3+)))
+
+(define-public emacs-org-edit-latex
+  (package
+    (name "emacs-org-edit-latex")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/et2010/org-edit-latex/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y4h6wrs8286h9pbsv4d8fr67a885vz8b2k80qgv5qddipi2i78p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-auctex" ,emacs-auctex)
+       ;; The version of org in Emacs 25.2 is not sufficient, because the
+       ;; `org-latex-make-preamble' function is required.
+       ("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/et2010/org-edit-latex")
+    (synopsis "Edit a latex fragment just like editing a src block")
+    (description "@code{emacs-org-edit-latex} is an extension for org-mode.
+It lets you edit a latex fragment in a dedicated buffer just like editing a
+src block.")
+    (license license:gpl3+)))
