@@ -735,11 +735,14 @@ book).")
                (and (zero? (system* "luatex" "-ini" "-interaction=batchmode"
                                     "-output-directory=build"
                                     "unpack.ins"))
-                    ;; LaTeX and XeTeX require e-TeX, which is enabled only in
-                    ;; extended mode (activated with a leading asterisk).  We
-                    ;; should not use luatex here, because that would make the
-                    ;; generated format files incompatible with any other TeX
-                    ;; engine.
+                    (zero? (system* "tex" "-ini" "-interaction=batchmode"
+                                    "-output-directory=web2c"
+                                    "tex.ini"))
+                    ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
+                    ;; is enabled only in extended mode (activated with a
+                    ;; leading asterisk).  We should not use luatex here,
+                    ;; because that would make the generated format files
+                    ;; incompatible with any other TeX engine.
 
                     ;; FIXME: XeTeX fails to build because neither
                     ;; \XeTeXuseglyphmetrics nor \XeTeXdashbreakstate are
@@ -751,7 +754,8 @@ book).")
                                        "-translate-file=cp227.tcx"
                                        (string-append "*" format ".ini"))))
                      '("latex" ;"xetex"
-                       ))
+                       "pdflatex"
+                       "pdfetex"))
                     (every
                      (lambda (format)
                        (zero? (system* "luatex" "-ini" "-interaction=batchmode"
@@ -772,6 +776,10 @@ book).")
                            (find-files "build" ".*"))
                  (for-each (cut install-file <> web2c)
                            (find-files "web2c" ".*"))
+                 ;; pdftex is really just the same as pdfetex, but since it
+                 ;; doesn't have its own format file, we need to copy it.
+                 (copy-file "web2c/pdfetex.fmt"
+                            (string-append web2c "/pdftex.fmt"))
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
