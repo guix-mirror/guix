@@ -3084,14 +3084,21 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makeconf"
                (("SHELL = /bin/sh")
-                (string-append "SHELL = " (which "sh")))))))))
+                (string-append "SHELL = " (which "sh"))))))
+         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+         ;; them in HOME, so it needs to be writeable.
+         (add-before 'build 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
        ("texinfo" ,texinfo)
-       ("texlive" ,texlive)))
+       ("texlive" ,(texlive-union (list texlive-latex-natbib
+                                        texlive-latex-seminar
+                                        texlive-latex-hyperref
+                                        texlive-tex-texinfo)))))
     (home-page "http://ess.r-project.org/")
     (synopsis "Emacs mode for statistical analysis programs")
     (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
