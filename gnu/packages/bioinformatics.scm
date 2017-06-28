@@ -2102,7 +2102,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2111,7 +2111,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04f501vj3i95i2b4n60831k00ljalifrq33419bbz0y3sjlmcnj3"))))
+                "04i03046g3l2vk9722z47r1p7j415g97vvz6d76ywmbawyiihcb1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
