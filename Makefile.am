@@ -102,6 +102,7 @@ MODULES =					\
   guix/http-client.scm				\
   guix/gnupg.scm				\
   guix/elf.scm					\
+  guix/profiling.scm				\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\

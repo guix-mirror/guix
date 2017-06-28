@@ -25,6 +25,7 @@
   #:use-module (guix base16)
   #:use-module (guix base32)
   #:use-module (guix hash)
+  #:use-module (guix profiling)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
@@ -794,16 +795,14 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
 
 (define record-operation
   ;; Optionally, increment the number of calls of the given RPC.
-  (let ((profiled (or (and=> (getenv "GUIX_PROFILING") string-tokenize)
-                      '())))
-    (if (member "rpc" profiled)
-        (begin
-          (add-hook! exit-hook show-rpc-profile)
-          (lambda (name)
-            (let ((count (or (hashq-ref %rpc-calls name) 0)))
-              (hashq-set! %rpc-calls name (+ count 1)))))
-        (lambda (_)
-          #t))))
+  (if (profiled? "rpc")
+      (begin
+        (register-profiling-hook! "rpc" show-rpc-profile)
+        (lambda (name)
+          (let ((count (or (hashq-ref %rpc-calls name) 0)))
+            (hashq-set! %rpc-calls name (+ count 1)))))
+      (lambda (_)
+        #t)))
 
 (define-syntax operation
   (syntax-rules ()
