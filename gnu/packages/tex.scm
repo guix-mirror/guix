@@ -934,7 +934,7 @@ verbatim source).")
                  (revision %texlive-revision)))
            (sha256
             (base32
-             "1q5l0x3jsy74v0zq4c9g0x0rb9jfzf7cbhdzkbchyydv49iav802"))))))
+             "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
     (home-page "http://www.ctan.org/pkg/latex-graphics")
     (synopsis "LaTeX standard graphics bundle")
     (description
