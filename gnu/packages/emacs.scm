@@ -1182,8 +1182,8 @@ a set of simplified face specifications and a user-supplied color palette")
     (home-page "https://github.com/kiwanami/emacs-calfw/")
     (synopsis "Calendar framework for Emacs")
     (description
-     "This package displays a calendar view with various shedule data in
-the Emacs buffer.")
+     "This package displays a calendar view with various schedule data in the
+Emacs buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-direnv
