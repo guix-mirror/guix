@@ -209,7 +209,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.3")
+    (version "0.9.6.4")
     (source
       (origin
         (method url-fetch)
@@ -217,7 +217,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "13rjq9v3ykk5c0i5daybpnqnyg09cbcgjzykx49h2h5hvspixvi5"))
+          "1fg6nf1plvgimc57fsdr9rcjbf7jvmk5jrlj5ya509vpdcdgvj2s"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
