@@ -1199,9 +1199,7 @@ Return the cached result when available."
             (#f (cache! cache package key thunk))
             (value value)))
          (#f
-          (cache! cache package key thunk)))))
-    ((_ package system body ...)
-     (cached (=> %derivation-cache) package system body ...))))
+          (cache! cache package key thunk)))))))
 
 (define* (expand-input package input #:key native?)
   "Expand INPUT, an input tuple, to a name/<gexp-input> tuple.  PACKAGE is
@@ -1277,45 +1275,51 @@ and return it."
                                  (&package-error
                                   (package package))))))))))))
 
-(define %graft-cache
-  ;; 'eq?' cache mapping package objects to a graft corresponding to their
-  ;; replacement package.
-  (make-weak-key-hash-table 200))
+(define (input-graft system)
+  "Return a monadic procedure that, given a package with a graft, returns a
+graft, and #f otherwise."
+  (with-monad %store-monad
+    (match-lambda*
+      (((? package? package) output)
+       (let ((replacement (package-replacement package)))
+         (if replacement
+             ;; XXX: We should use a separate cache instead of abusing the
+             ;; object cache.
+             (mcached (mlet %store-monad ((orig (package->derivation package system
+                                                                     #:graft? #f))
+                                          (new  (package->derivation replacement system
+                                                                     #:graft? #t)))
+                        (return (graft
+                                  (origin orig)
+                                  (origin-output output)
+                                  (replacement new)
+                                  (replacement-output output))))
+                      package 'graft output system)
+             (return #f))))
+      (_
+       (return #f)))))
 
-(define (input-graft store system)
-  "Return a procedure that, given a package with a replacement and an output name,
-returns a graft, and #f otherwise."
-  (match-lambda*
-    (((? package? package) output)
-     (let ((replacement (package-replacement package)))
-       (and replacement
-            (cached (=> %graft-cache) package (cons output system)
-                    (let ((orig (package-derivation store package system
-                                                    #:graft? #f))
-                          (new  (package-derivation store replacement system
-                                                    #:graft? #t)))
-                      (graft
-                        (origin orig)
-                        (origin-output output)
-                        (replacement new)
-                        (replacement-output output)))))))))
-
-(define (input-cross-graft store target system)
+(define (input-cross-graft target system)
   "Same as 'input-graft', but for cross-compilation inputs."
-  (match-lambda*
-    (((? package? package) output)
-     (let ((replacement (package-replacement package)))
-       (and replacement
-            (let ((orig (package-cross-derivation store package target system
-                                                  #:graft? #f))
-                  (new  (package-cross-derivation store replacement
-                                                  target system
-                                                  #:graft? #t)))
-              (graft
-                (origin orig)
-                (origin-output output)
-                (replacement new)
-                (replacement-output output))))))))
+  (with-monad %store-monad
+    (match-lambda*
+      (((? package? package) output)
+       (let ((replacement (package-replacement package)))
+         (if replacement
+             (mlet %store-monad ((orig (package->cross-derivation package
+                                                                  target system
+                                                                  #:graft? #f))
+                                 (new  (package->cross-derivation replacement
+                                                                  target system
+                                                                  #:graft? #t)))
+               (return (graft
+                         (origin orig)
+                         (origin-output output)
+                         (replacement new)
+                         (replacement-output output))))
+             (return #f))))
+      (_
+       (return #f)))))
 
 (define* (fold-bag-dependencies proc seed bag
                                 #:key (native? #t))
@@ -1350,7 +1354,7 @@ dependencies; otherwise, restrict to target dependencies."
       ((head . tail)
        (loop tail result visited)))))
 
-(define* (bag-grafts store bag)
+(define* (bag-grafts bag)
   "Return the list of grafts potentially applicable to BAG.  Potentially
 applicable grafts are collected by looking at direct or indirect dependencies
 of BAG that have a 'replacement'.  Whether a graft is actually applicable
@@ -1359,46 +1363,55 @@ to (see 'graft-derivation'.)"
   (define system (bag-system bag))
   (define target (bag-target bag))
 
-  (define native-grafts
-    (let ((->graft (input-graft store system)))
-      (parameterize ((%current-system system)
-                     (%current-target-system #f))
-        (fold-bag-dependencies (lambda (package output grafts)
-                                 (match (->graft package output)
-                                   (#f    grafts)
-                                   (graft (cons graft grafts))))
-                               '()
-                               bag))))
-
-  (define target-grafts
-    (if target
-        (let ((->graft (input-cross-graft store target system)))
+  (mlet %store-monad
+      ((native-grafts
+        (let ((->graft (input-graft system)))
           (parameterize ((%current-system system)
-                         (%current-target-system target))
+                         (%current-target-system #f))
             (fold-bag-dependencies (lambda (package output grafts)
-                                     (match (->graft package output)
-                                       (#f    grafts)
-                                       (graft (cons graft grafts))))
-                                   '()
-                                   bag
-                                   #:native? #f)))
-        '()))
+                                     (mlet %store-monad ((grafts grafts))
+                                       (>>= (->graft package output)
+                                            (match-lambda
+                                              (#f    (return grafts))
+                                              (graft (return (cons graft grafts)))))))
+                                   (return '())
+                                   bag))))
 
-  ;; We can end up with several identical grafts if we stumble upon packages
-  ;; that are not 'eq?' but map to the same derivation (this can happen when
-  ;; using things like 'package-with-explicit-inputs'.)  Hence the
-  ;; 'delete-duplicates' call.
-  (delete-duplicates
-   (append native-grafts target-grafts)))
+       (target-grafts
+        (if target
+            (let ((->graft (input-cross-graft target system)))
+              (parameterize ((%current-system system)
+                             (%current-target-system target))
+                (fold-bag-dependencies
+                 (lambda (package output grafts)
+                   (mlet %store-monad ((grafts grafts))
+                     (>>= (->graft package output)
+                          (match-lambda
+                            (#f    (return grafts))
+                            (graft (return (cons graft grafts)))))))
+                 (return '())
+                 bag
+                 #:native? #f)))
+            (return '()))))
 
-(define* (package-grafts store package
-                         #:optional (system (%current-system))
-                         #:key target)
+    ;; We can end up with several identical grafts if we stumble upon packages
+    ;; that are not 'eq?' but map to the same derivation (this can happen when
+    ;; using things like 'package-with-explicit-inputs'.)  Hence the
+    ;; 'delete-duplicates' call.
+    (return (delete-duplicates
+             (append native-grafts target-grafts)))))
+
+(define* (package-grafts* package
+                          #:optional (system (%current-system))
+                          #:key target)
   "Return the list of grafts applicable to PACKAGE as built for SYSTEM and
 TARGET."
   (let* ((package (or (package-replacement package) package))
          (bag     (package->bag package system target)))
-    (bag-grafts store bag)))
+    (bag-grafts bag)))
+
+(define package-grafts
+  (store-lower package-grafts*))
 
 (define-inlinable (derivation=? drv1 drv2)
   "Return true if DRV1 and DRV2 are equal."
@@ -1438,7 +1451,6 @@ error reporting."
         ;; It's possible that INPUTS contains packages that are not 'eq?' but
         ;; that lead to the same derivation.  Delete those duplicates to avoid
         ;; issues down the road, such as duplicate entries in '%build-inputs'.
-        ;; TODO: Change to monadic style.
         (apply (bag-build bag) (bag-name bag)
                (delete-duplicates input-drvs input=?)
                #:search-paths paths
@@ -1488,51 +1500,57 @@ This is an internal procedure."
 (define bag->derivation*
   (store-lower bag->derivation))
 
-(define* (package-derivation store package
-                             #:optional (system (%current-system))
-                             #:key (graft? (%graft?)))
+(define graft-derivation*
+  (store-lift graft-derivation))
+
+(define* (package->derivation package
+                              #:optional (system (%current-system))
+                              #:key (graft? (%graft?)))
   "Return the <derivation> object of PACKAGE for SYSTEM."
 
   ;; Compute the derivation and cache the result.  Caching is important
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
-  (cached package (cons system graft?)
-          (let* ((bag (package->bag package system #f #:graft? graft?))
-                 (drv (bag->derivation* store bag package)))
-            (if graft?
-                (match (bag-grafts store bag)
-                  (()
-                   drv)
-                  (grafts
-                   (let ((guile (package-derivation store (guile-for-grafts)
-                                                    system #:graft? #f)))
-                     ;; TODO: As an optimization, we can simply graft the tip
-                     ;; of the derivation graph since 'graft-derivation'
-                     ;; recurses anyway.
-                     (graft-derivation store drv grafts
-                                       #:system system
-                                       #:guile guile))))
-                drv))))
+  (mcached (mlet* %store-monad ((bag -> (package->bag package system #f
+                                                      #:graft? graft?))
+                                (drv (bag->derivation bag package)))
+             (if graft?
+                 (>>= (bag-grafts bag)
+                      (match-lambda
+                        (()
+                         (return drv))
+                        (grafts
+                         (mlet %store-monad ((guile (package->derivation
+                                                     (default-guile)
+                                                     system #:graft? #f)))
+                           (graft-derivation* drv grafts
+                                              #:system system
+                                              #:guile guile)))))
+                 (return drv)))
+           package system #f graft?))
 
-(define* (package-cross-derivation store package target
-                                   #:optional (system (%current-system))
-                                   #:key (graft? (%graft?)))
+(define* (package->cross-derivation package target
+                                    #:optional (system (%current-system))
+                                    #:key (graft? (%graft?)))
   "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
 system identifying string)."
-  (cached package (list system target graft?)
-          (let* ((bag (package->bag package system target #:graft? graft?))
-                 (drv (bag->derivation* store bag package)))
-            (if graft?
-                (match (bag-grafts store bag)
-                  (()
-                   drv)
-                  (grafts
-                   (graft-derivation store drv grafts
-                                     #:system system
-                                     #:guile
-                                     (package-derivation store (guile-for-grafts)
-                                                         system #:graft? #f))))
-                drv))))
+  (mcached (mlet* %store-monad ((bag -> (package->bag package system target
+                                                      #:graft? graft?))
+                                (drv (bag->derivation bag package)))
+             (if graft?
+                 (>>= (bag-grafts bag)
+                      (match-lambda
+                        (()
+                         (return drv))
+                        (grafts
+                         (mlet %store-monad ((guile (package->derivation
+                                                     (default-guile)
+                                                     system #:graft? #f)))
+                           (graft-derivation* drv grafts
+                                              #:system system
+                                              #:guile guile)))))
+                 (return drv)))
+           package system target graft?))
 
 (define* (package-output store package
                          #:optional (output "out") (system (%current-system)))
@@ -1580,11 +1598,11 @@ unless you know what you are doing."
                   out)
               store))))
 
-(define package->derivation
-  (store-lift package-derivation))
+(define package-derivation
+  (store-lower package->derivation))
 
-(define package->cross-derivation
-  (store-lift package-cross-derivation))
+(define package-cross-derivation
+  (store-lower package->cross-derivation))
 
 (define-gexp-compiler (package-compiler (package <package>) system target)
   ;; Compile PACKAGE to a derivation for SYSTEM, optionally cross-compiled for
