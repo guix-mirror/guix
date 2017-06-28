@@ -1544,6 +1544,41 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
+(define-public texlive-tex-texinfo
+  (package
+    (name "texlive-tex-texinfo")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/texinfo"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "09zj2w3lx0y6i2syfjjgizahf86z301dw8p37ln6syfhqhzqdz46"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/texinfo")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/texinfo")
+    (synopsis "TeX macros to handle Texinfo files")
+    (description
+     "Texinfo is the preferred format for documentation in the GNU project;
+the format may be used to produce online or printed output from a single
+source.  The Texinfo macros may be used to produce printable output using TeX;
+other programs in the distribution offer online interactive use (with
+hypertext linkages in some cases).")
+    (license license:gpl3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
