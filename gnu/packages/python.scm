@@ -6032,7 +6032,19 @@ of the structure, dynamics, and functions of complex networks.")
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; For cluster execution Snakemake will call Python.  Since there is
+         ;; no suitable PYTHONPATH set, cluster execution will fail.  We fix
+         ;; this by calling the snakemake wrapper instead.
+         (add-after 'unpack 'call-wrapper-not-wrapped-snakemake
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "snakemake/executors.py"
+               (("\\{sys.executable\\} -m snakemake")
+                (string-append (assoc-ref outputs "out")
+                               "/bin/snakemake")))
+             #t)))))
     (propagated-inputs
      `(("python-wrapt" ,python-wrapt)
        ("python-requests" ,python-requests)))
