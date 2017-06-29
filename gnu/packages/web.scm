@@ -4674,3 +4674,24 @@ message stream (in a web server that is per connection).")
     (description "@code{httpretty} is a helper for faking web requests,
 inspired by Ruby's @code{fakeweb}.")
     (license l:expat)))
+
+(define-public jo
+  (package
+    (name "jo")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jpmens/jo/releases/download/v"
+                           version "/jo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pysickpxrbl53c122h6swvz8sck68q3j0ql38wvbz70q9k4gvb3"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/jpmens/jo")
+    (synopsis "Output JSON from a shell")
+    (description "jo is a command-line utility to create JSON objects or
+arrays.  It creates a JSON string on stdout from words provided as
+command-line arguments or read from stdin.")
+    (license (list l:gpl2+
+                   l:expat)))) ; json.c, json.h
