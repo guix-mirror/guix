@@ -85,6 +85,9 @@ access it via /dev/hda.
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
   (when make-disk-image?
+    (format #t "creating ~a image of ~,2f MiB...~%"
+            disk-image-format (/ disk-image-size (expt 2 20)))
+    (force-output)
     (unless (zero? (system* "qemu-img" "create" "-f" disk-image-format
                             output
                             (number->string disk-image-size)))
@@ -193,8 +196,15 @@ actual /dev name based on DEVICE."
                (cons (partition-options head offset index)
                      result))))))
 
-  (format #t "creating partition table with ~a partitions...\n"
-          (length partitions))
+  (format #t "creating partition table with ~a partitions (~a)...\n"
+          (length partitions)
+          (string-join (map (compose (cut string-append <> " MiB")
+                                     number->string
+                                     (lambda (size)
+                                       (round (/ size (expt 2. 20))))
+                                     partition-size)
+                            partitions)
+                       ", "))
   (unless (zero? (apply system* "parted" "--script"
                         device "mklabel" label-type
                         (options partitions offset)))
