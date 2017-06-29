@@ -27,6 +27,7 @@
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (guix records)
+  #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -156,18 +157,6 @@ the #:references-graphs parameter of 'derivation'."
 given by GRAPHS, a list of file names produced by #:references-graphs."
   ;; Simply add a 20% overhead.
   (round (* 1.2 (closure-size graphs))))
-
-(define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
-  "Like `fold', but with a single list and two seeds."
-  (let loop ((result1 seed1)
-             (result2 seed2)
-             (lst     lst))
-    (if (null? lst)
-        (values result1 result2)
-        (call-with-values
-            (lambda () (proc (car lst) result1 result2))
-          (lambda (result1 result2)
-            (loop result1 result2 (cdr lst)))))))
 
 (define* (initialize-partition-table device partitions
                                      #:key
