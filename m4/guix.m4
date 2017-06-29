@@ -136,25 +136,6 @@ AC_DEFUN([GUIX_ASSERT_GUILE_FEATURES], [
   done
 ])
 
-dnl GUIX_CHECK_SRFI_37
-dnl
-dnl Check whether SRFI-37 suffers from <http://bugs.gnu.org/13176>.
-dnl This bug was fixed in Guile 2.0.9.
-AC_DEFUN([GUIX_CHECK_SRFI_37], [
-  AC_CACHE_CHECK([whether (srfi srfi-37) is affected by http://bugs.gnu.org/13176],
-    [ac_cv_guix_srfi_37_broken],
-    [if "$GUILE" -c "(use-modules (srfi srfi-37))			\
-       (sigaction SIGALRM (lambda _ (primitive-exit 1)))		\
-       (alarm 1)							\
-       (define opts (list (option '(#\I) #f #t (lambda _ #t))))		\
-       (args-fold '(\"-I\") opts (lambda _ (error)) (lambda _ #f) '())"
-     then
-       ac_cv_guix_srfi_37_broken=no
-     else
-       ac_cv_guix_srfi_37_broken=yes
-     fi])
-])
-
 dnl GUIX_CHECK_UNBUFFERED_CBIP
 dnl
 dnl Check whether 'setbvuf' works on custom binary input ports (CBIPs), as is

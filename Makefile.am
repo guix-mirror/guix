@@ -250,18 +250,6 @@ nobase_dist_guilemodule_DATA =					\
 nobase_nodist_guilemodule_DATA = guix/config.scm
 nobase_nodist_guileobject_DATA = $(GOBJECTS)
 
-# Do we need to provide our own non-broken (srfi srfi-37) module?
-if INSTALL_SRFI_37
-
-nobase_nodist_guilemodule_DATA += srfi/srfi-37.scm
-GOBJECTS += srfi/srfi-37.go
-
-srfi/srfi-37.scm: srfi/srfi-37.scm.in
-	$(MKDIR_P) srfi
-	cp "$<" "$@"
-
-endif INSTALL_SRFI_37
-
 # Handy way to remove the .go files without removing all the rest.
 clean-go:
 	-$(RM) -f $(GOBJECTS)
@@ -441,7 +429,6 @@ EXTRA_DIST =						\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
-  srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
   tests/test.drv					\
