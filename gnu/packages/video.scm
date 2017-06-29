@@ -3140,3 +3140,49 @@ create smoother and stable videos.")
 editing library with a multi-threaded and feature rich video editing
 API.  It includes bindings for Python, Ruby, and other languages.")
     (license license:lgpl3+)))
+
+(define-public openshot
+  (package
+    (name "openshot")
+    (version "2.4.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenShot/openshot-qt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qdw1mli4y9qhrnllnkaf6ydgw5vfvdb90chs4i679k0x0jyb9a2"))))
+    (build-system python-build-system)
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libopenshot" ,libopenshot)
+       ("python" ,python)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests" ,python-requests)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'build)       ;install phase does all the work
+                  (add-before 'install 'set-tmp-home
+                    (lambda _
+                      ;; src/classes/info.py "needs" to create several
+                      ;; directories in $HOME when loaded during build
+                      (setenv "HOME" "/tmp")
+                      #t))
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (wrap-program (string-append (assoc-ref outputs "out")
+                                                   "/bin/openshot-qt")
+                        `("QT_PLUGIN_PATH" prefix
+                          ,(list (string-append (assoc-ref inputs "qtsvg")
+                                                "/lib/qt5/plugins/")))))))))
+    (home-page "https://openshot.org")
+    (synopsis "Video editor")
+    (description "OpenShot takes your videos, photos, and music files and
+helps you create the film you have always dreamed of.  Easily add sub-titles,
+transitions, and effects and then export your film to many common formats.")
+    (license license:gpl3+)))
