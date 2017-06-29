@@ -2263,4 +2263,6 @@ make it a perfect utility on modern distros.")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
 on systems running the Linux kernel.")
+    ;; arm and aarch64 don't have cpuid.h
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
