@@ -2224,6 +2224,7 @@ make it a perfect utility on modern distros.")
       (method url-fetch)
       (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256 (base32
                "14klz9fnvi9jdlaqwrp61xa5nh051n8ykrs1fh1wxd7j66qf2fn6"))))
     (build-system gnu-build-system)
