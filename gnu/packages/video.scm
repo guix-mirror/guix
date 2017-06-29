@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -112,6 +112,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -128,6 +129,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -3077,3 +3079,64 @@ as surfing, skiing, riding and walking while shooting videos are especially
 prone to erratic camera shakes.  Vidstab targets these video contents to help
 create smoother and stable videos.")
     (license license:gpl2+)))
+
+(define-public libopenshot
+  (package
+    (name "libopenshot")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenShot/libopenshot")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1x4kv05pdq1pglb6y056aa7llc6iyibyhzg93k7zwj0q08cp5ixd"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Allow overriding of the python installation dir
+                          (substitute* "src/bindings/python/CMakeLists.txt"
+                            (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
+                             (string-append set " CACHE PATH "
+                                            "\"Python bindings directory\")")))
+                          #t))
+              (patches (search-patches "libopenshot-tests-with-system-libs.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("swig" ,swig)
+       ("unittest++" ,unittest-cpp)))
+    (propagated-inputs                  ;all referenced in installed headers
+     `(("cppzmq" ,cppzmq)
+       ("ffmpeg" ,ffmpeg)
+       ("imagemagick" ,imagemagick)
+       ("jsoncpp" ,jsoncpp)
+       ("libopenshot-audio" ,libopenshot-audio)
+       ("qt" ,qt)       ;widgets, core, gui, multimedia, and multimediawidgets
+       ("zeromq" ,zeromq)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DPYTHON_MODULE_PATH:PATH=" %output "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages")
+             "-DUSE_SYSTEM_JSONCPP:BOOL=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "LIBOPENSHOT_AUDIO_DIR"
+                     (assoc-ref inputs "libopenshot-audio"))
+             (setenv "ZMQDIR"
+                     (assoc-ref inputs "zeromq"))
+             (setenv "UNITTEST_DIR"
+                     (string-append (assoc-ref inputs "unittest++")
+                                    "/include/UnitTest++"))
+             #t)))))
+    (home-page "https://openshot.org")
+    (synopsis "Video-editing, animation, and playback library")
+    (description "OpenShot Library (libopenshot) is a powerful C++ video
+editing library with a multi-threaded and feature rich video editing
+API.  It includes bindings for Python, Ruby, and other languages.")
+    (license license:lgpl3+)))
