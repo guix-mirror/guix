@@ -285,6 +285,9 @@ loaded at boot time in the order in which they appear."
       ,@(if (find (file-system-type-predicate "btrfs") file-systems)
             '("btrfs")
             '())
+      ,@(if (find (file-system-type-predicate "iso9660") file-systems)
+            '("isofs")
+            '())
       ,@(if volatile-root?
             '("fuse")
             '())
