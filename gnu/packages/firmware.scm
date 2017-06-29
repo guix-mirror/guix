@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -275,13 +276,15 @@ use of coreboot.")
                (("^ACTIVE_PLATFORM[ ]*=.*$")
                 "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
              (zero? (system* "build"))))
-         (add-after 'build 'build-x64
-           (lambda _
-             (substitute* "Conf/target.txt"
-               (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
-               (("^ACTIVE_PLATFORM[ ]*=.*$")
-                "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-             (zero? (system* "build"))))
+         ,@(if (string=? "x86_64-linux" (%current-system))
+             '(add-after 'build 'build-x64
+               (lambda _
+                 (substitute* "Conf/target.txt"
+                   (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
+                   (("^ACTIVE_PLATFORM[ ]*=.*$")
+                    "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
+                 (zero? (system* "build"))))
+             '())
          (delete 'build)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -290,8 +293,10 @@ use of coreboot.")
                (mkdir-p fmw)
                (copy-file "Build/OvmfIa32/RELEASE_GCC49/FV/OVMF.fd"
                           (string-append fmw "/ovmf_ia32.bin"))
-               (copy-file "Build/OvmfX64/RELEASE_GCC49/FV/OVMF.fd"
-                          (string-append fmw "/ovmf_x64.bin")))
+               ,@(if (string=? "x86_64-linux" (%current-system))
+                   '((copy-file "Build/OvmfX64/RELEASE_GCC49/FV/OVMF.fd"
+                                (string-append fmw "/ovmf_x64.bin")))
+                   '()))
              #t)))))
     (supported-systems '("x86_64-linux" "i686-linux"))
     (home-page "http://www.tianocore.org")
