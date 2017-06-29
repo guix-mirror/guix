@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -174,7 +174,7 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
        ("perl-module-build" ,perl-module-build)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml) ;for tests
-       ("texlive" ,texlive-minimal) ;for tests
+       ("texlive" ,texlive-tiny) ;for tests
        ("libxml2" ,libxml2)
        ("xsltproc" ,libxslt)))
     (home-page "http://po4a.alioth.debian.org/")
