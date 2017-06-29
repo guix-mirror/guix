@@ -514,7 +514,6 @@ store.")
   (package
    (name "glibc")
    (version "2.25")
-   (replacement glibc-2.25-patched)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -533,7 +532,10 @@ store.")
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-o-largefile.patch"
-                                     "glibc-memchr-overflow-i686.patch"))))
+                                     "glibc-memchr-overflow-i686.patch"
+                                     "glibc-CVE-2017-1000366-pt1.patch"
+                                     "glibc-CVE-2017-1000366-pt2.patch"
+                                     "glibc-CVE-2017-1000366-pt3.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -769,20 +771,6 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
-(define glibc-2.25-patched
-  (package
-    (inherit glibc)
-    (replacement #f)
-    (source (origin
-              (inherit (package-source glibc))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
-                                       "glibc-versioned-locpath.patch"
-                                       "glibc-o-largefile.patch"
-                                       "glibc-vectorized-strcspn-guards.patch"
-                                       "glibc-CVE-2017-1000366-pt1.patch"
-                                       "glibc-CVE-2017-1000366-pt2.patch"
-                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
-
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
@@ -790,7 +778,6 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc)
     (version "2.24")
-    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -810,7 +797,6 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc)
     (version "2.23")
-    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -830,7 +816,6 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc)
     (version "2.22")
-    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -858,7 +843,6 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc-2.22)
     (version "2.21")
-    (replacement #f)
     (source (origin
               (inherit (package-source glibc-2.22))
               (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -871,7 +855,6 @@ GLIBC/HURD for a Hurd host"
   (package
     (inherit glibc)
     (name "glibc-locales")
-    (replacement #f)
     (source (origin (inherit (package-source glibc))
                     (patches (cons (search-patch "glibc-locales.patch")
                                    (origin-patches (package-source glibc))))))
