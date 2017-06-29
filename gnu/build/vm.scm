@@ -46,6 +46,7 @@
             partition-flags
             partition-initializer
 
+            estimated-partition-size
             root-partition-initializer
             initialize-partition-table
             initialize-hard-disk))
@@ -149,6 +150,12 @@ the #:references-graphs parameter of 'derivation'."
   (label       partition-label (default #f))
   (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
+
+(define (estimated-partition-size graphs)
+  "Return the estimated size of a partition that can store the store items
+given by GRAPHS, a list of file names produced by #:references-graphs."
+  ;; Simply add a 20% overhead.
+  (round (* 1.2 (closure-size graphs))))
 
 (define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
   "Like `fold', but with a single list and two seeds."

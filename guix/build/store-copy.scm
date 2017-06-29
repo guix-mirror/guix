@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +20,9 @@
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 ftw)
   #:export (read-reference-graph
+            closure-size
             populate-store))
 
 ;;; Commentary:
@@ -45,6 +47,37 @@ The data at PORT is the format produced by #:references-graphs."
           (else
            (loop (read-line port)
                  result)))))
+
+(define (file-size file)
+  "Return the size of bytes of FILE, entering it if FILE is a directory."
+  (file-system-fold (const #t)
+                    (lambda (file stat result)    ;leaf
+                      (+ (stat:size stat) result))
+                    (lambda (directory stat result) ;down
+                      (+ (stat:size stat) result))
+                    (lambda (directory stat result) ;up
+                      result)
+                    (lambda (file stat result)    ;skip
+                      result)
+                    (lambda (file stat errno result)
+                      (format (current-error-port)
+                              "file-size: ~a: ~a~%" file
+                              (strerror errno))
+                      result)
+                    0
+                    file
+                    lstat))
+
+(define (closure-size reference-graphs)
+  "Return an estimate of the size of the closure described by
+REFERENCE-GRAPHS, a list of reference-graph files."
+  (define (graph-from-file file)
+    (call-with-input-file file read-reference-graph))
+
+  (define items
+    (delete-duplicates (append-map graph-from-file reference-graphs)))
+
+  (reduce + 0 (map file-size items)))
 
 (define* (populate-store reference-graphs target)
   "Populate the store under directory TARGET with the items specified in
