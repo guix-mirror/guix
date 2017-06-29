@@ -442,11 +442,18 @@ large scale eigenvalue problems.")
     (inputs `(("fortran" ,gfortran)
               ("python" ,python-2)))
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
-                           "-DLAPACKE=ON"
+     `(#:configure-flags (list
+                          ;; Install to PREFIX/lib (the default is
+                          ;; PREFIX/lib64).
+                          (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/lib")
 
-                           ;; Build the 'LAPACKE_clatms' functions.
-                           "-DLAPACKE_WITH_TMG=ON")
+                          "-DBUILD_SHARED_LIBS:BOOL=YES"
+                          "-DLAPACKE=ON"
+
+                          ;; Build the 'LAPACKE_clatms' functions.
+                          "-DLAPACKE_WITH_TMG=ON")
        #:phases (alist-cons-before
                  'check 'patch-python
                  (lambda* (#:key inputs #:allow-other-keys)
