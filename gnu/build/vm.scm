@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -71,15 +71,16 @@
                            output
                            (qemu (qemu-command)) (memory-size 512)
                            linux initrd
-                           make-disk-image? (disk-image-size 100)
+                           make-disk-image?
+                           (disk-image-size (* 100 (expt 2 20)))
                            (disk-image-format "qcow2")
                            (references-graphs '()))
   "Run BUILDER, a Scheme file, into a VM running LINUX with INITRD, and copy
 the result to OUTPUT.
 
 When MAKE-DISK-IMAGE? is true, OUTPUT will contain a VM image of
-DISK-IMAGE-SIZE MiB resulting from the execution of BUILDER, which may access
-it via /dev/hda.
+DISK-IMAGE-SIZE bytes resulting from the execution of BUILDER, which may
+access it via /dev/hda.
 
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
