@@ -30,6 +30,7 @@
             menu-entry-linux
             menu-entry-linux-arguments
             menu-entry-initrd
+            menu-entry-device-mount-point
 
             bootloader
             bootloader?
@@ -66,6 +67,8 @@
   menu-entry?
   (label           menu-entry-label)
   (device          menu-entry-device       ; file system uuid, label, or #f
+                   (default #f))
+  (device-mount-point menu-entry-device-mount-point
                    (default #f))
   (linux           menu-entry-linux)
   (linux-arguments menu-entry-linux-arguments

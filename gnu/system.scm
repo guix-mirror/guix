@@ -112,7 +112,7 @@
             boot-parameters-initrd
             read-boot-parameters
             read-boot-parameters-file
-            menu-entry->boot-parameters
+            boot-parameters->menu-entry
 
             local-host-aliases
             %setuid-programs
@@ -301,17 +301,15 @@ The object has its kernel-arguments extended in order to make it bootable."
                                                      root-device)))
       #f)))
 
-(define (menu-entry->boot-parameters menu-entry)
-  "Convert a <menu-entry> instance to a corresponding <boot-parameters>."
-  (boot-parameters
-   (label (menu-entry-label menu-entry))
-   (root-device #f)
-   (bootloader-name 'custom)
-   (store-device #f)
-   (store-mount-point #f)
-   (kernel (menu-entry-linux menu-entry))
-   (kernel-arguments (menu-entry-linux-arguments menu-entry))
-   (initrd (menu-entry-initrd menu-entry))))
+(define (boot-parameters->menu-entry conf)
+  (menu-entry
+   (label (boot-parameters-label conf))
+   (device (boot-parameters-store-device conf))
+   (device-mount-point (boot-parameters-store-mount-point conf))
+   (linux (boot-parameters-kernel conf))
+   (linux-arguments (boot-parameters-kernel-arguments conf))
+   (initrd (boot-parameters-initrd conf))))
+
 
 
 ;;;
@@ -866,15 +864,16 @@ listed in OS.  The C library expects to find it under
   (store-file-system (operating-system-file-systems os)))
 
 (define* (operating-system-bootcfg os #:optional (old-entries '()))
-  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES to
-populate the \"old entries\" menu."
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES
+(which is a list of <menu-entry>) to populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entry (operating-system-boot-parameters os system root-device))
+       (params (operating-system-boot-parameters os system root-device))
+       (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
     ((bootloader-configuration-file-generator
       (bootloader-configuration-bootloader bootloader-conf))
