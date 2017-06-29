@@ -279,7 +279,26 @@ guix package --bootstrap --install-from-file="$module_dir/package.scm"
 test "`guix package -A super-non-portable-emacs`" = ""
 test "`guix package -s super-non-portable-emacs | grep ^systems:`" = "systems: "
 
+# Don't upgrade packages marked for removal: <http://bugs.gnu.org/27262>.
+guix package --bootstrap -p "$profile" -i guile-bootstrap
+
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix)
+  #:use-module (gnu packages bootstrap))
+
+(define-public x
+  (package (inherit %bootstrap-guile) (version "42")))
+EOF
+
+guix package --bootstrap -p "$profile" -r guile-bootstrap -u guile
+test ! -f "$profile/bin/guile"
+guix package --bootstrap -p "$profile" --roll-back
+test -f "$profile/bin/guile"
+rm "$profile-2-link"
+
 unset GUIX_PACKAGE_PATH
+
 
 # Using 'GUIX_BUILD_OPTIONS'.
 available="`guix package -A | sort`"

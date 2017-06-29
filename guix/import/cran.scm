@@ -69,7 +69,7 @@
    ("BSD_2_clause + file LICENSE" 'bsd-2)
    ("BSD_3_clause" 'bsd-3)
    ("BSD_3_clause + file LICENSE" 'bsd-3)
-   ("GPL" (list 'gpl2+ 'gpl3+))
+   ("GPL" '(list gpl2+ gpl3+))
    ("GPL (>= 2)" 'gpl2+)
    ("GPL (>= 3)" 'gpl3+)
    ("GPL-2" 'gpl2)

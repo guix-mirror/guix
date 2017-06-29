@@ -197,6 +197,13 @@
 (test-assert "manifest-transaction-null?"
   (manifest-transaction-null? (manifest-transaction)))
 
+(test-assert "manifest-transaction-removal-candidate?"
+  (let ((m (manifest (list guile-2.0.9)))
+        (t (manifest-transaction
+            (remove (list (manifest-pattern (name "guile")))))))
+    (and (manifest-transaction-removal-candidate? guile-2.0.9 t)
+         (not (manifest-transaction-removal-candidate? glibc t)))))
+
 (test-assertm "profile-derivation"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry %bootstrap-guile))

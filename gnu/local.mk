@@ -14,6 +14,7 @@
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+# Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -501,6 +502,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
@@ -935,6 +937,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-9524.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
+  %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
@@ -956,7 +959,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
-  %D%/packages/patches/screen-fix-info-syntax-error.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/slim-session.patch			\

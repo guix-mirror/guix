@@ -34,14 +34,14 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.79.4")
+    (version "0.80.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14rhr9nv1022r7m94agb3299y0k093aq1ps22zgii3aa7cf9h1w4"))))
+                "0sdvkahnz6k9i4kf1i1ljl20220n3wk3gy6zmz0ggbbdgg4mfka0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -54,25 +54,24 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((commit "7fdca75d2188b28df806b34ec92627d57aafa9ae")
-        (revision "0")
-        (triplet "i686-unknown-linux-gnu")
-        (version "0.7"))
+  (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version (string-append version "-" revision "." (string-take commit 7)))
+      (version "0.8")
       (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/janneke/mes")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/janneke/mes"
+                                    "/repository/archive.tar.gz?ref=v"
+                                    version))
+                (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
-                 (base32 "0fvzr1ai2rmi46zdi5b2bdjb6s8ip78mkmsk02yxl46rajmp2pb1"))))
+                 (base32
+                  "1igmrks20ci6l5c0jx2bn4swf0w8jy5inhg61cwld9d7hwanmdnj"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
-       `(("nyacc" ,nyacc)))
+       `(("mescc-tools" ,mescc-tools)
+         ("nyacc" ,nyacc)))
       (native-inputs
        `(("guile" ,guile-2.2)
          ,@(if (string-prefix? "x86_64-linux" (or (%current-target-system)
@@ -100,3 +99,32 @@ consists of a mutual self-hosting [close to Guile-] Scheme interpreter
 prototype in C and a Nyacc-based C compiler in [Guile] Scheme.")
       (home-page "https://gitlab.com/janneke/mes")
       (license gpl3+))))
+
+(define-public mescc-tools
+  (package
+    (name "mescc-tools")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/oriansj/MESCC_Tools/archive/Release_"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lzi9sqv41269isn7in70q2hhh087n4v97zr5i2qzz69j2lkr3xb"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (synopsis "Tools for the full source bootstrapping process")
+    (description
+     "Mescc-tools is a collection of tools for use in a full source
+bootstrapping process.  Currently consists of the M0 macro assembler and the
+hex2 linker.")
+    (home-page "https://github.com/oriansj/MESCC_Tools")
+    (license gpl3+)))

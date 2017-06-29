@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -37,14 +37,13 @@
 (define-public screen
   (package
     (name "screen")
-    (version "4.5.1")
+    (version "4.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
-             (patches (search-patches "screen-fix-info-syntax-error.patch"))
              (sha256
-              (base32 "0bbv16gpxrh64sn4bvjy3qjy7jsxjlqlilyysin02fwnvla23nwp"))))
+              (base32 "1m7yd2bs1i623kk27nfy3qa2mgjp5qjqxwj5qz21r51ycmmp0cwl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("makeinfo" ,texinfo)))

@@ -428,7 +428,7 @@ large scale eigenvalue problems.")
 (define-public lapack
   (package
     (name "lapack")
-    (version "3.5.0")
+    (version "3.7.1")
     (source
      (origin
       (method url-fetch)
@@ -436,14 +436,24 @@ large scale eigenvalue problems.")
                           version ".tgz"))
       (sha256
        (base32
-        "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
+        "0yavf6m9l78pwlnk5g61cg8x28mr30j0g8gkai0jrdqfjjmf3whs"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran)
               ("python" ,python-2)))
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
-                           "-DLAPACKE=ON")
+     `(#:configure-flags (list
+                          ;; Install to PREFIX/lib (the default is
+                          ;; PREFIX/lib64).
+                          (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/lib")
+
+                          "-DBUILD_SHARED_LIBS:BOOL=YES"
+                          "-DLAPACKE=ON"
+
+                          ;; Build the 'LAPACKE_clatms' functions.
+                          "-DLAPACKE_WITH_TMG=ON")
        #:phases (alist-cons-before
                  'check 'patch-python
                  (lambda* (#:key inputs #:allow-other-keys)
@@ -1872,6 +1882,7 @@ YACC = bison -pscotchyy -y -b y
                         '("COMMON_FILE_COMPRESS_GZ"
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
+                          "INTSIZE64"             ;use 'long' instead of 'int'
                           ;; Prevents symbolc clashes with libesmumps
                           "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests

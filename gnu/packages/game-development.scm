@@ -342,7 +342,7 @@ levels.")
     (version "2017.06.09")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/xsge/xsge-"
+              (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32

@@ -1,0 +1,22 @@
+Make sure, that vtysh_cmd.c is deterministically generated.
+
+--- a/vtysh/extract.pl.in	2017-03-10 13:55:06.000000000 +0100
++++ b/vtysh/extract.pl.in	2017-06-24 00:51:56.460000000 +0200
+@@ -214,7 +214,7 @@
+ }
+ 
+ # Output DEFSH
+-foreach (keys %live) {
++foreach (sort keys %live) {
+     my ($proto);
+     my ($key);
+     $key = $live{$_};
+@@ -229,7 +229,7 @@
+ {
+ EOF
+ 
+-foreach (keys %odefun) {
++foreach (sort keys %odefun) {
+     my ($node, $str) = (split (/,/));
+     $cmd = $ocmd{$_};
+     $cmd =~ s/_cmd/_cmd_vtysh/;

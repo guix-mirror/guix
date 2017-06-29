@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -44,3 +46,28 @@ file can be a device as the file is read a piece at a time.  You can modify
 the file and search through it.")
     (home-page "http://rigaux.org/hexedit.html")
     (license license:gpl2+)))
+
+(define-public ht
+  (package
+    (name "ht")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://sourceforge.net/projects/hte/files/ht-source/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0w2xnw3z9ws9qrdpb80q55h6ynhh3aziixcfn45x91bzrbifix9i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lzo" ,lzo)
+       ("ncurses" ,ncurses)))
+    (synopsis "Viewer, editor, and analyzer for executable binaries")
+    (description
+     "ht is a terminal-based program to view, edit, and analyze any file, but
+with a special focus on executable binaries.  Its goal is to combine the
+low-level functionality of a debugger with the usability of an @dfn{Integrated
+Development Environment} (IDE).")
+    (home-page "http://hte.sourceforge.net/")
+    (license license:gpl2)))

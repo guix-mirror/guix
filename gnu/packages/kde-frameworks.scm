@@ -30,6 +30,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -51,12 +52,14 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -3027,3 +3030,389 @@ script engines.")
 
 (define kinit-bootstrap
   ((package-input-rewriting `((,kdbusaddons . ,kdbusaddons-bootstrap))) kinit))
+
+
+;; Tier 4
+;;
+;; Tier 4 frameworks can be mostly ignored by application programmers; this
+;; tier consists of plugins acting behind the scenes to provide additional
+;; functionality or platform integration to existing frameworks (including
+;; Qt).
+
+(define-public kde-frameworkintegration
+  (package
+    (name "kde-frameworkintegration")
+    (version "5.34.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "frameworkintegration-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hq1r2znjzy0wzm3nsclqmih1aia5300bsf87a2l4919q0ildb20"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    ;; TODO: Optional packages not yet in Guix: packagekitqt5, AppStreamQt
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("knewstuff" ,knewstuff)
+       ("knotificantions" ,knotifications)
+       ("kpackage" ,kpackage)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 workspace and cross-framework integration plugins")
+    (description "Framework Integration is a set of plugins responsible for
+better integration of Qt applications when running on a KDE Plasma
+workspace.")
+    ;; This package is distributed under either LGPL2 or LGPL3, but some
+    ;; files are explicitly LGPL2+.
+    (license (list license:lgpl2.0 license:lgpl3 license:lgpl2.0+))
+    (properties `((upstream-name . "frameworkintegration")))))
+
+
+;; Porting Aids
+;;
+;; Porting Aids frameworks provide code and utilities to ease the transition
+;; from kdelibs 4 to KDE Frameworks 5. Code should aim to port away from this
+;; framework, new projects should avoid using these libraries.
+
+(define-public kdelibs4support
+  (package
+    (name "kdelibs4support")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0q9jjsjcvc43va4yvfay2xi40vb95lnqhgzavpqcndzjihixwmi0"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("docbook-xml" ,docbook-xml-4.4) ; optional
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl", perl)
+       ("perl-uri" ,perl-uri)
+       ("pkg-config" ,pkg-config)
+       ("shared-mime-info" ,shared-mime-info)
+       ("kjobwidgets" ,kjobwidgets) ;; required for running the tests
+       ("strace" ,strace)
+       ("tzdata" ,tzdata)))
+    (propagated-inputs
+     ;; These are required to be installed along with this package, see
+     ;; lib64/cmake/KF5KDELibs4Support/KF5KDELibs4SupportConfig.cmake
+     `(("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("kdoctools" ,kdoctools)
+       ("kemoticons" ,kemoticons)
+       ("kguiaddons" ,kguiaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kinit" ,kinit)
+       ("kitemmodels" ,kitemmodels)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kunitconversion", kunitconversion)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kded" ,kded)
+       ("kdesignerplugin" ,kdesignerplugin)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libsm", libsm)
+       ("networkmanager-qt", networkmanager-qt)
+       ("openssl", openssl)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
+    ;; FIXME: Use GuixSD ca-bundle.crt in etc/xdg/ksslcalist and
+    ;; share/kf5/kssl/ca-bundle.crt
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-cmake-to-find-docbook
+           (lambda _
+             (substitute* "cmake/FindDocBookXML4.cmake"
+               (("^.*xml/docbook/schema/dtd.*$")
+                "xml/dtd/docbook\n"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check-post-install
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             (setenv "TZDIR"    ; KDateTimeTestsome needs TZDIR
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             ;; enable debug output
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; TODO: Make this tests pass (also see
+             ;; https://bugs.kde.org/381098)
+             (zero? (system* "dbus-launch" "ctest" "."
+                             "-E" "kmimetypetest|kstandarddirstest")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 porting aid from KDELibs4")
+    (description "This framework provides code and utilities to ease the
+transition from kdelibs 4 to KDE Frameworks 5.  This includes CMake macros and
+C++ classes whose functionality has been replaced by code in CMake, Qt and
+other frameworks.
+
+Code should aim to port away from this framework eventually.  The API
+documentation of the classes in this framework and the notes at
+http://community.kde.org/Frameworks/Porting_Notes should help with this.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license (list license:lgpl2.1+ license:lgpl2.0 license:lgpl2.0+
+                   license:gpl2 license:gpl2+
+                   license:expat license:bsd-2 license:bsd-3
+                   license:public-domain))))
+
+(define-public khtml
+  (package
+    (name "khtml")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0j490jfnz8pbfl1i11wj514nw0skpnxr2fvi9pqpfql9lfhsanxv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("perl", perl)))
+    (inputs
+     `(("giflib" ,giflib)
+       ("karchive" ,karchive)
+       ("kcodecs" ,kcodecs)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kjs" ,kjs)
+       ("knotifications" ,knotifications)
+       ("kparts" ,kparts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet", kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libjpeg", libjpeg)
+       ("libpng", libpng)
+       ("openssl", openssl)
+       ("phonon", phonon)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 HTML widget and component")
+    (description "KHTML is a web rendering engine, based on the KParts
+technology and using KJS for JavaScript support.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license (list license:lgpl2.0+ license:lgpl2.1+
+                   license:gpl2  license:gpl3+
+                   license:expat license:bsd-2 license:bsd-3))))
+
+(define-public kjs
+  (package
+    (name "kjs")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "18b7k1hi73iqn06c1ryy9lcmvscr9d08q7n1wwkrn0l2xmy05xsq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pcre" ,pcre)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 support for Javascript scripting in Qt
+applications")
+    (description "Add-on library to Qt which adds JavaScript scripting
+support.")
+    ;; Most files are distributed under LGPL2+, but the package also includes
+    ;; code under a variety of licenses.
+    (license (list license:lgpl2.1+
+                   license:bsd-2 license:bsd-3
+                   (license:non-copyleft "file://src/kjs/dtoa.cpp")))))
+
+(define-public kjsembed
+  (package
+    (name "kjsembed")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "17w8i370pqks1fj3pcziz7j014chnc6yi7md7w2p4xprw54pbmbk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("kjs" ,kjs)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 embedded Javascript engine for Qt")
+    (description "KJSEmbed provides a method of binding Javascript objects to
+QObjects, so you can script your applications.")
+    (license license:lgpl2.1+)))
+
+(define-public kmediaplayer
+  (package
+    (name "kmediaplayer")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1mq87qf86sdvwhas4w7rspd221qp4x9kds4nd0lpldiay4483k86"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kparts" ,kparts)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; Make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 plugin interface for media player features")
+    (description "KMediaPlayer builds on the KParts framework to provide a
+common interface for KParts that can play media files.
+
+This framework is a porting aid.  It is not recommended for new projects, and
+existing projects that use it are advised to port away from it, and use plain
+KParts instead.")
+    (license license:expat)))
+
+(define-public kross
+  (package
+    (name "kross")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/frameworks/"
+             (version-major+minor version) "/portingAids/"
+             name "-" version ".tar.xz"))
+       (sha256
+        (base32 "092qz8vyiialv9fvk4wvn8mrfhz5i5hnbq0xnz6nvi1pk3db6bxq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kparts" ,kparts)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 5 solution for application scripting")
+    (description "Kross is a scripting bridge for the KDE Development Platform
+used to embed scripting functionality into an application.  It supports
+QtScript as a scripting interpreter backend.
+
+Kross provides an abstract API to provide scripting functionality in a
+interpreter-independent way.  The application that uses Kross should not need
+to know anything about the scripting language being used.  The core of Kross
+provides the framework to deal transparently with interpreter-backends and
+offers abstract functionality to deal with scripts.")
+    ;; Most files are distributed under LGPL2+, but the package includes code
+    ;; under a variety of licenses.
+    (license (list license:lgpl2.0+ license:lgpl2.1+
+                   license:lgpl2.0 license:gpl3+))))

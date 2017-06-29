@@ -27,6 +27,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1139,6 +1140,30 @@ writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
     (license license:gpl3+)))
 
+(define-public emacs-autothemer
+  (package
+    (name "emacs-autothemer")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sebastiansturm/autothemer/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rd28r9wfrbll212am4ih9hrvypx785aff76va2cbfxdwm9kixsa"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/sebastiansturm/autothemer")
+    (synopsis "Conveniently create Emacs themes")
+    (description
+     "Autothemer provides a thin layer on top of @code{deftheme} and
+@code{custom-theme-set-faces} that creates a new custom color theme, based on
+a set of simplified face specifications and a user-supplied color palette")
+    (license license:gpl3+)))
+
 (define-public emacs-calfw
   (package
     (name "emacs-calfw")
@@ -1157,8 +1182,8 @@ or XEmacs.")
     (home-page "https://github.com/kiwanami/emacs-calfw/")
     (synopsis "Calendar framework for Emacs")
     (description
-     "This package displays a calendar view with various shedule data in
-the Emacs buffer.")
+     "This package displays a calendar view with various schedule data in the
+Emacs buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-direnv
@@ -3059,14 +3084,21 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makeconf"
                (("SHELL = /bin/sh")
-                (string-append "SHELL = " (which "sh")))))))))
+                (string-append "SHELL = " (which "sh"))))))
+         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+         ;; them in HOME, so it needs to be writeable.
+         (add-before 'build 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
        ("texinfo" ,texinfo)
-       ("texlive" ,texlive)))
+       ("texlive" ,(texlive-union (list texlive-latex-natbib
+                                        texlive-latex-seminar
+                                        texlive-latex-hyperref
+                                        texlive-tex-texinfo)))))
     (home-page "http://ess.r-project.org/")
     (synopsis "Emacs mode for statistical analysis programs")
     (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
@@ -4965,10 +4997,11 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
                              "-f" "ert-run-tests-batch-and-exit")))))))
     (home-page "https://github.com/justbur/emacs-which-key")
     (synopsis "Display available key bindings in popup")
-    (description "@code{emacs-which-key} is a minor mode for Emacs that
-displays the key bindings following your currently entered incomplete command
-(a prefix) in a popup.  For example, after enabling the minor mode if you
-enter C-x and wait for the default of 1 second, the minibuffer will expand
-with all of the available key bindings that follow C-x (or as many as space
-allows given your settings).")
+    (description
+     "@code{emacs-which-key} is a minor mode for Emacs that displays the key
+bindings following your currently entered incomplete command (a prefix) in a
+popup.  For example, after enabling the minor mode if you enter C-x and wait
+for the default of 1 second, the minibuffer will expand with all of the
+available key bindings that follow C-x (or as many as space allows given your
+settings).")
     (license license:gpl3+)))

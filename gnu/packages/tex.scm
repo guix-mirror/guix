@@ -735,11 +735,14 @@ book).")
                (and (zero? (system* "luatex" "-ini" "-interaction=batchmode"
                                     "-output-directory=build"
                                     "unpack.ins"))
-                    ;; LaTeX and XeTeX require e-TeX, which is enabled only in
-                    ;; extended mode (activated with a leading asterisk).  We
-                    ;; should not use luatex here, because that would make the
-                    ;; generated format files incompatible with any other TeX
-                    ;; engine.
+                    (zero? (system* "tex" "-ini" "-interaction=batchmode"
+                                    "-output-directory=web2c"
+                                    "tex.ini"))
+                    ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
+                    ;; is enabled only in extended mode (activated with a
+                    ;; leading asterisk).  We should not use luatex here,
+                    ;; because that would make the generated format files
+                    ;; incompatible with any other TeX engine.
 
                     ;; FIXME: XeTeX fails to build because neither
                     ;; \XeTeXuseglyphmetrics nor \XeTeXdashbreakstate are
@@ -751,7 +754,8 @@ book).")
                                        "-translate-file=cp227.tcx"
                                        (string-append "*" format ".ini"))))
                      '("latex" ;"xetex"
-                       ))
+                       "pdflatex"
+                       "pdfetex"))
                     (every
                      (lambda (format)
                        (zero? (system* "luatex" "-ini" "-interaction=batchmode"
@@ -772,6 +776,10 @@ book).")
                            (find-files "build" ".*"))
                  (for-each (cut install-file <> web2c)
                            (find-files "web2c" ".*"))
+                 ;; pdftex is really just the same as pdfetex, but since it
+                 ;; doesn't have its own format file, we need to copy it.
+                 (copy-file "web2c/pdfetex.fmt"
+                            (string-append web2c "/pdftex.fmt"))
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
@@ -934,7 +942,7 @@ verbatim source).")
                  (revision %texlive-revision)))
            (sha256
             (base32
-             "1q5l0x3jsy74v0zq4c9g0x0rb9jfzf7cbhdzkbchyydv49iav802"))))))
+             "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
     (home-page "http://www.ctan.org/pkg/latex-graphics")
     (synopsis "LaTeX standard graphics bundle")
     (description
@@ -1445,6 +1453,131 @@ distribution.")
     (name "texlive-tiny")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
+
+(define-public texlive-latex-natbib
+  (package
+    (name "texlive-latex-natbib")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "natbib"))
+              (sha256
+               (base32
+                "0aqliq0nwblxyrzhwhv77pnmk7qh2y3prgq7z7qhwcbgz5kisld7"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/natbib"))
+    (home-page "http://www.ctan.org/pkg/natbib")
+    (synopsis "Flexible bibliography support")
+    (description
+     "This bundle provides a package that implements both author-year and
+numbered references, as well as much detailed of support for other
+bibliography use.  Also provided are versions of the standard BibTeX styles
+that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
+@code{abbrnat}.  The bibliography styles produced by @code{custom-bib} are
+designed from the start to be compatible with @code{natbib}.")
+    (license license:lppl)))
+
+(define-public texlive-latex-seminar
+  (package
+    (name "texlive-latex-seminar")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/seminar"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/seminar"))
+    (home-page "http://www.ctan.org/pkg/seminar")
+    (synopsis "Make overhead slides")
+    ;; TODO: This package may need fancybox and xcomment at runtime.
+    (description
+     "This package provides a class that produces overhead
+slides (transparencies), with many facilities.  Seminar is not nowadays
+reckoned a good basis for a presentation — users are advised to use more
+recent classes such as powerdot or beamer, both of which are tuned to
+21st-century presentation styles.")
+    (license license:lppl1.2+)))
+
+(define-public texlive-latex-hyperref
+  (package
+    (name "texlive-latex-hyperref")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "hyperref"))
+              (sha256
+               (base32
+                "03arf3xvz1jsbvlpgc5qxbxbl9wmk8k09cn6b8gv9pzgpjy4vx4j"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/hyperref"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-hluatex.def
+           (lambda _
+             ;; This depends on hluatex.dtx, which does not exist and is
+             ;; nowhere to be found in the sources of the TeX Live
+             ;; distribution.
+             (substitute* "hyperref.ins"
+               (("\\\\file\\{hluatex.def\\}.*") ""))
+             #t)))))
+    ;; The package depends on the kvoptions, ltxcmds, and refcount packages,
+    ;; which are part of the oberdiek bundle.
+    (inputs
+     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek)))
+    (home-page "http://www.ctan.org/pkg/hyperref")
+    (synopsis "Extensive support for hypertext in LaTeX")
+    (description
+     "The @code{hyperref} package is used to handle cross-referencing commands
+in LaTeX to produce hypertext links in the document.  The package provides
+backends for the @code{\\special} set defined for HyperTeX DVI processors; for
+embedded @code{pdfmark} commands for processing by Acrobat
+Distiller (@code{dvips} and Y&Y's @code{dvipsone}); for Y&Y's @code{dviwindo};
+for PDF control within pdfTeX and @code{dvipdfm}; for TeX4ht; and for VTeX's
+pdf and HTML backends.  The package is distributed with the @code{backref} and
+@code{nameref} packages, which make use of the facilities of @code{hyperref}.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-tex-texinfo
+  (package
+    (name "texlive-tex-texinfo")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/texinfo"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "09zj2w3lx0y6i2syfjjgizahf86z301dw8p37ln6syfhqhzqdz46"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/texinfo")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/texinfo")
+    (synopsis "TeX macros to handle Texinfo files")
+    (description
+     "Texinfo is the preferred format for documentation in the GNU project;
+the format may be used to produce online or printed output from a single
+source.  The Texinfo macros may be used to produce printable output using TeX;
+other programs in the distribution offer online interactive use (with
+hypertext linkages in some cases).")
+    (license license:gpl3+)))
 
 (define texlive-texmf
   (package

@@ -1366,7 +1366,8 @@ of supported upstream metrics systems simultaneously.")
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1xdr82fy8gahxh3586wm5k1bxksys7yl1f2n24shrk8gf99qyjyd"))))
+         "1xdr82fy8gahxh3586wm5k1bxksys7yl1f2n24shrk8gf99qyjyd"))
+       (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-pycrypto" ,python2-pycrypto)
@@ -2223,6 +2224,7 @@ make it a perfect utility on modern distros.")
       (method url-fetch)
       (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256 (base32
                "14klz9fnvi9jdlaqwrp61xa5nh051n8ykrs1fh1wxd7j66qf2fn6"))))
     (build-system gnu-build-system)
@@ -2262,4 +2264,6 @@ make it a perfect utility on modern distros.")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
 on systems running the Linux kernel.")
+    ;; arm and aarch64 don't have cpuid.h
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))

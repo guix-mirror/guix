@@ -96,6 +96,7 @@
             manifest-transaction-install-entry
             manifest-transaction-remove-pattern
             manifest-transaction-null?
+            manifest-transaction-removal-candidate?
             manifest-perform-transaction
             manifest-transaction-effects
 
@@ -563,6 +564,12 @@ remove software."
   (match transaction
     (($ <manifest-transaction> () ()) #t)
     (($ <manifest-transaction> _ _)   #f)))
+
+(define (manifest-transaction-removal-candidate? entry transaction)
+  "Return true if ENTRY is a candidate for removal in TRANSACTION."
+  (any (lambda (pattern)
+         ((entry-predicate pattern) entry))
+       (manifest-transaction-remove transaction)))
 
 (define (manifest-transaction-effects manifest transaction)
   "Compute the effect of applying TRANSACTION to MANIFEST.  Return 4 values:

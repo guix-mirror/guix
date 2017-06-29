@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -181,7 +181,7 @@
                "0w5ib5vsidihb4hb6fma3sp596ykr8izagm57axvgd6lqzwicsjg"))))))))
 
     ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
     (home-page "https://www.gnu.org/software/mit-scheme/")
     (synopsis "A Scheme implementation with integrated editor and debugger")

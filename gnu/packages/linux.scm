@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,6 +99,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages selinux)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -360,56 +363,26 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.6")
-(define %linux-libre-hash "0xay0m2a4la8aqc8ai8zqfh1c1i6sjgh0dywm7nis0g1gqirwrds")
+(define %linux-libre-version "4.11.7")
+(define %linux-libre-hash "0kliwdz4qqjz13pywhavxg19cy1mf6d1f52f6kgapc331309vad9")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
-                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.33"
-                    "1dam6vqymhlx1vsl0lzxphamiifgyf97snxg18b2czqq402nz094"
+  (make-linux-libre "4.9.34"
+                    "00jm3338kvhfj850lg3mvk680fmfw34mvwaq41lvxgb1z2xqqlz1"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=37c40b6777f0bc8a63f616479c469b371097f333")
-                            (file-name "linux-libre-4.9-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "0zhnh8ysiqldxlnd50bjrxagzx29kc8nlajdrikii2x2ibkbfb4i"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.73"
-                    "144ssqw1dr86z4cgl797pq5rggfibsxqk7wmfbl6j92l1cj6yjrz"
+  (make-linux-libre "4.4.74"
+                    "04x2ki3s2jsjkkk6bld0rd9rsk8qqvrfsxawxzfa26mkq6pv87r2"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=87422f5b9b4f43efef4eaf37d7d040aed96500cb")
-                            (file-name "linux-libre-4.4-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "137p1cpiwlbvw4x12w1l23iy593xmdry60kd7j9kk690r9arfagw"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.41"
@@ -422,17 +395,7 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
                     %linux-libre-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=167ec8235f978d7af78c73e9490dae1af3fee67f")
-                            (file-name "linux-libre-4.11-CVE-2017-1000364.patch")
-                            (sha256
-                             (base32
-                              "0hv3lxjgpssvsldkydg5q7znnzxv5ncpzrk6g11q01k3gkl0q689"))))))
+                    #:extra-version "arm-generic"))
 
 
 ;;;
@@ -4176,3 +4139,28 @@ NexGen, Rise, and SiS CPUs.")
 to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
 the MTP device as a filesystem.")
     (license license:gpl3)))
+
+(define-public procenv
+  (package
+   (name "procenv")
+   (version "0.49")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/jamesodhunt/procenv/archive/"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "0brzf6185hb76imw107cl21c8lzwiywkxi3jknihrk86bvvicd0d"))))
+   (build-system gnu-build-system)
+   (arguments `(#:configure-flags '("--disable-silent-rules")))
+   (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)
+             ("groff" ,groff)           ; for tests
+             ("libselinux" ,libselinux)))
+   (synopsis "Utility to show process environment")
+   (description "Procenv is a command-line tool that displays as much detail about
+itself and its environment as possible.  It can be used as a test
+tool, to understand the type of environment a process runs in, and for
+comparing system environments.")
+   (home-page "http://github.com/jamesodhunt/procenv/")
+   (license license:gpl3+)))

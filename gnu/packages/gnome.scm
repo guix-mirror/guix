@@ -4589,7 +4589,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4597,7 +4597,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ywqy939n27v3kchlnyxs6ikhjxmlasv6f08ap4bldgr121vkfx9"))))
+                "1jj1q81bl3r0c8rnsfqi83igqlprzdcjim1fvygbyfy7b8gigqqk"))))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
@@ -5708,7 +5708,7 @@ existing databases over the internet.")
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
@@ -5718,7 +5718,7 @@ existing databases over the internet.")
                         (search-patch "gnome-tweak-tool-search-paths.patch")))
               (sha256
                (base32
-                "000ygz9wgnv8pimb6rwbjfm12vbx4138pwkq36ci0k6v827282wk"))))
+                "0rgmm7n6jwc5hz64sprm4jxnky62hw839a7r18rn1mj884vnn8hr"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"

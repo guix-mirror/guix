@@ -2001,7 +2001,8 @@ of modern, widely supported codecs.")
      `(("nasm" ,nasm)
        ("python" ,python)))
     (arguments
-     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
        #:test-target "test"
        #:phases (modify-phases %standard-phases
                   ;; no configure script

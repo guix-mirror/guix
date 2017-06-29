@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,7 +28,7 @@
 (define-public moe
   (package
     (name "moe")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "0mv4pg38p0dq88xmxxv08rykn7vv4x7gskmdk7nfp3vx37r4xzvy"))))
+        "1wsfzy0iia0c89wnx1ilzw54wqcmlp2nz8mkpvc393z0zagrx48q"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (inputs `(("ncurses" ,ncurses)))
