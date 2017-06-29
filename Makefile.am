@@ -585,9 +585,6 @@ GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
 # Prefix of the GuixSD VM image file name.
 GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
 
-# Size of the installation image (for x86_64 typically).
-GUIXSD_INSTALLATION_IMAGE_SIZE ?= 950MiB
-
 # Size of the VM image (for x86_64 typically).
 GUIXSD_VM_IMAGE_SIZE ?= 2GiB
 
@@ -635,7 +632,6 @@ release: dist
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
             --system=$$system								\
-	    --image-size=$(GUIXSD_INSTALLATION_IMAGE_SIZE)				\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
