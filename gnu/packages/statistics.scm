@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -3768,37 +3768,26 @@ from within R.")
 (define-public r-spams
   (package
     (name "r-spams")
-    (version "2.5-svn2014-07-04")
+    (version "2.6-2017-03-22")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gforge.inria.fr/frs/download.php/33815/"
+       (uri (string-append "https://gforge.inria.fr/frs/download.php/36615/"
                            "spams-R-v" version ".tar.gz"))
        (sha256
         (base32
-         "1k459jg9a334slkw31w63l4d39xszjzsng7dv5j1mp78zifz7hvx"))))
+         "13z2293jixf1r9g8dyy856xrhvpjr2ln2n9smn6644126r9hmhkx"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "spams") #t))
-         ;; Since R 3.3.0 including R headers inside of an extern "C" block
-         ;; causes C headers to be included, which results in a lot of
-         ;; duplicate definitions.  This can be avoided by defining
-         ;; NO_C_HEADERS before including the R headers.
-         (add-after 'chdir 'patch-use-of-R-headers
+         ;; Don't tune for the building machine
+         (add-after 'chdir 'no-mtune
            (lambda _
-             (substitute* "src/spams.cpp"
-               (("#include <R.h>" line)
-                (string-append "#define NO_C_HEADERS\n" line)))
-             #t))
-         ;; This looks like a syntax error.
-         (add-after 'chdir 'patch-isnan
-           (lambda _
-             (substitute* '"src/spams/linalg/linalg.h"
-               (("if isnan\\(lambda\\) \\{")
-                "if (isnan(lambda)) {"))
+             (substitute* "src/Makevars"
+               (("-mtune=native") ""))
              #t)))))
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
