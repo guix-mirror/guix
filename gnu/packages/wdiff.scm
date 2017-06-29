@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,18 +40,16 @@
         "0sxgg0ms5lhi4aqqvz1rj4s77yi9wymfm3l3gbjfd1qchy66kzrl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'check 'fix-sh
-                 (lambda _
-                   (substitute* "tests/testsuite"
-                     (("#! /bin/sh")
-                      (string-append "#!" (which "sh")))))
-                 %standard-phases)))
-    (inputs `(("screen" ,screen)
-              ("which" ,which)
-
-              ;; For some reason wdiff.info gets rebuilt.
-              ("texinfo" ,texinfo)))
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'fix-sh
+                    (lambda _
+                      (substitute* "tests/testsuite"
+                        (("#! /bin/sh")
+                         (string-append "#!" (which "sh")))))))))
+    (native-inputs
+     `(("which" ,which)
+       ;; For some reason wdiff.info gets rebuilt.
+       ("texinfo" ,texinfo)))
     (home-page "https://www.gnu.org/software/wdiff/")
     (synopsis "Word difference finder")
     (description
