@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -99,6 +99,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -4564,8 +4565,8 @@ at their peak of economic growth and military prowess.
 
 ;; There have been no official releases.
 (define-public open-adventure
-  (let* ((commit "2483a23690d205f01ecb66165cf4522b541cd991")
-         (revision "1"))
+  (let* ((commit "d43854f0f6bb8e9eea7fbce80348150e7e7fc34d")
+         (revision "2"))
     (package
       (name "open-adventure")
       (version (string-append "2.5-" revision "." (string-take commit 7)))
@@ -4577,14 +4578,23 @@ at their peak of economic growth and military prowess.
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1gkvkwbq5cl3llfc7nl41van8awn4myx782pg33bxpbx5l9scwb4"))))
+                  "08bwrvf4axb1rsfd6ia1fddsky9pc1p350vjskhaakg2czc6dsk0"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list "CC=gcc")
          #:parallel-build? #f ; not supported
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; At this point linenoise is meant to be included,
+               ;; so we have to really copy it into the working directory
+               ;; of s.
+               (let* ((linenoise (assoc-ref inputs "linenoise"))
+                      (noisepath (string-append linenoise "/include/linenoise"))
+                      (out (assoc-ref outputs "out")))
+                 (copy-recursively noisepath "linenoise"))
+               #t))
            (add-before 'build 'use-echo
              (lambda _
                (substitute* "tests/Makefile"
@@ -4594,9 +4604,9 @@ at their peak of economic growth and military prowess.
              (lambda _
                ;; This target is missing a dependency
                (substitute* "Makefile"
-                 ((".asc.6:" line)
-                  (string-append line " advent.txt")))
-               (zero? (system* "make" ".asc.6"))))
+                 ((".adoc.6:" line)
+                  (string-append line " advent.adoc")))
+               (zero? (system* "make" ".adoc.6"))))
            ;; There is no install target
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
@@ -4607,7 +4617,10 @@ at their peak of economic growth and military prowess.
                  (install-file "advent.6" man))
                #t)))))
       (native-inputs
-       `(("asciidoc" ,asciidoc)))
+       `(("asciidoc" ,asciidoc)
+         ("linenoise" ,linenoise)
+         ("python" ,python)
+         ("python-pyyaml" ,python-pyyaml)))
       (home-page "https://gitlab.com/esr/open-adventure")
       (synopsis "Colossal Cave Adventure")
       (description "The original Colossal Cave Adventure from 1976 was the
