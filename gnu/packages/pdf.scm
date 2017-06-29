@@ -76,6 +76,7 @@
 (define-public poppler
   (package
    (name "poppler")
+   (replacement poppler-0.56.0)
    (version "0.52.0")
    (source (origin
             (method url-fetch)
@@ -129,15 +130,27 @@
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
 
-(define-public poppler-qt4
+(define poppler-0.56.0
   (package (inherit poppler)
+  (version "0.56.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://poppler.freedesktop.org/poppler-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "0wviayidfv2ix2ql0d4nl9r1ia6qi5kc1nybd9vjx27dk7gvm7c6"))))))
+
+(define-public poppler-qt4
+  (package/inherit poppler
    (name "poppler-qt4")
    (inputs `(("qt-4" ,qt-4)
              ,@(package-inputs poppler)))
    (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
 
 (define-public poppler-qt5
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
