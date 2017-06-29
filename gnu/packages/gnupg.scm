@@ -115,18 +115,6 @@ generation.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
 
-(define-public libgcrypt-1.5
-  (package (inherit libgcrypt)
-    (version "1.5.6")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h"))))))
-
 (define-public libassuan
   (package
     (name "libassuan")

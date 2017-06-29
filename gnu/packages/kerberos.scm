@@ -24,8 +24,10 @@
 
 (define-module (gnu packages kerberos)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -33,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -98,25 +101,23 @@ cryptography.")
       (method url-fetch)
       (uri (string-append "mirror://gnu/shishi/shishi-"
                           version ".tar.gz"))
+      (patches (search-patches "shishi-fix-libgcrypt-detection.patch"))
       (sha256
        (base32
         "032qf72cpjdfffq1yq54gz3ahgqf2ijca4vl31sfabmjzq9q370d"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; This is required since we patch some of the build scripts.
+       ;; Remove for the next Shishi release after 1.0.2 or when
+       ;; removing 'shishi-fix-libgcrypt-detection.patch'.
+       #:configure-flags '("ac_cv_libgcrypt=yes")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)
        ("linux-pam" ,linux-pam-1.2)
        ("zlib" ,zlib)
-       ;; libgcrypt 1.6 fails because of the following test:
-       ;;  #include <gcrypt.h>
-       ;; /* GCRY_MODULE_ID_USER was added in 1.4.4 and gc-libgcrypt.c
-       ;;    will fail on startup if we don't have 1.4.4 or later, so
-       ;;    test for it early. */
-       ;; #if !defined GCRY_MODULE_ID_USER
-       ;; error too old libgcrypt
-       ;; #endif
-       ("libgcrypt" ,libgcrypt-1.5)
+       ("libgcrypt" ,libgcrypt)
        ("libtasn1" ,libtasn1)))
     (home-page "https://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
