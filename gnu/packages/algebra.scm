@@ -142,7 +142,7 @@ solve the shortest vector problem.")
               (base32
                 "0zi08qz9nk17wwdna4xb2vp3i3mh5sgv1y8wqbf0j2sfryxlr8ls"))))
    (build-system gnu-build-system)
-   (native-inputs `(("texlive" ,texlive-minimal)))
+   (native-inputs `(("texlive" ,texlive-tiny)))
    (inputs `(("gmp" ,gmp)
              ("libx11" ,libx11)
              ("perl" ,perl)
