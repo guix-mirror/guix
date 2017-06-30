@@ -813,43 +813,49 @@ exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
 (define-public guile-rsvg
-  (package
-    (name "guile-rsvg")
-    (version "2.18.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://wingolog.org/pub/guile-rsvg/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "136f236iw3yrrz6pkkp1ma9c5mrs5icqha6pnawinqpk892r3jh7"))
-              (patches (search-patches "guile-rsvg-pkgconfig.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* (find-files "." "Makefile\\.am")
-                  (("/share/guile/site")
-                   "/share/guile/site/2.0")))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
-                              (lambda _
-                                (zero? (system* "autoreconf" "-vfi")))))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-                     ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.0)
-              ("librsvg" ,librsvg)
-              ("guile-lib" ,guile2.0-lib)))          ;for (unit-test)
-    (propagated-inputs `(("guile-cairo" ,guile-cairo)))
-    (synopsis "Render SVG images using Cairo from Guile")
-    (description
-     "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
+  ;; Use a recent snapshot that supports Guile 2.2 and beyond.
+  (let ((commit "05c6a2fd67e4fea1a7c3ff776729dc931bae6678")
+        (revision "0"))
+    (package
+      (name "guile-rsvg")
+      (version (string-append "2.18.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/wingo/guile-rsvg/"
+                                    "repository/archive.tar.gz?ref="
+                                    commit))
+                (sha256
+                 (base32
+                  "0vdzjx8l5nc4y2xjqs0g1rqn1zrwfsm30brh5gz00r1x41a2pvv2"))
+                (patches (search-patches "guile-rsvg-pkgconfig.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* (find-files "." "Makefile\\.am")
+                    (("/share/guile/site")
+                     "/share/guile/site/@GUILE_EFFECTIVE_VERSION@")))
+                (file-name (string-append name "-" version ".tar.gz"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-before 'configure 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ("texinfo" ,texinfo)))
+      (inputs `(("guile" ,guile-2.0)
+                ("librsvg" ,librsvg)
+                ("guile-lib" ,guile2.0-lib)))        ;for (unit-test)
+      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+      (synopsis "Render SVG images using Cairo from Guile")
+      (description
+       "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
 images onto Cairo surfaces.")
-    (home-page "http://wingolog.org/projects/guile-rsvg/")
-    (license license:lgpl2.1+)))
+      (home-page "http://wingolog.org/projects/guile-rsvg/")
+      (license license:lgpl2.1+))))
 
 (define-public guile-present
   (package
