@@ -637,14 +637,14 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.5")
+    (version "0.2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qbk485djgxqrbfjvk4b7w7y4x9xygf2qb8dqnl7885kajasx8qg"))))
+                "19q420i3is3d4jmkdqs5y7ir7ipp4s795saflqgwf6617cx2zpj4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
