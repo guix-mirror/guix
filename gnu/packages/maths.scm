@@ -798,8 +798,12 @@ HDF5 file is encoded according to the HDF File Format Specification.")
     (arguments `(#:tests? #f)) ; Tests require googletest *sources*
     (inputs `(("lapack" ,lapack)
               ("fftw" ,fftw)))
-    (native-inputs `(("texlive-minimal" ,texlive-minimal)
-                     ("doxygen" ,doxygen)))
+    ;; FIXME: Even though the fonts are available dvips complains:
+    ;; "Font cmmi10 not found; characters will be left blank."
+    (native-inputs
+     `(("texlive" ,texlive-tiny)
+       ("ghostscript" ,ghostscript)
+       ("doxygen" ,doxygen)))
     (home-page "http://itpp.sourceforge.net")
     (synopsis "C++ library of maths, signal processing and communication classes")
     (description "IT++ is a C++ library of mathematical, signal processing and
