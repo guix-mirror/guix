@@ -624,7 +624,7 @@ format is also supported.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0) ("which" ,which)))
-    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (propagated-inputs `(("guile-lib" ,guile2.0-lib)))
     (home-page "https://github.com/artyom-poptsov/guile-ics")
     (synopsis "Guile parser library for the iCalendar format")
     (description
@@ -661,7 +661,7 @@ The library is shipped with documentation in Info format and usage examples.")
 $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (home-page "http://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
@@ -675,8 +675,11 @@ for Guile\".")
     ;; details.
     (license license:gpl3+)))
 
+(define-public guile2.0-lib
+  (package-for-guile-2.0 guile-lib))
+
 (define-public guile2.2-lib
-  (package-for-guile-2.2 guile-lib))
+  (deprecated-package "guile2.2-lib" guile-lib))
 
 (define-public guile-json
   (package
