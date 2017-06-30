@@ -67,7 +67,8 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--localstatedir=/var")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'refine-libnuma
