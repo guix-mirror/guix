@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -27,6 +27,7 @@
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (guix records)
+  #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -46,6 +47,7 @@
             partition-flags
             partition-initializer
 
+            estimated-partition-size
             root-partition-initializer
             initialize-partition-table
             initialize-hard-disk))
@@ -71,19 +73,23 @@
                            output
                            (qemu (qemu-command)) (memory-size 512)
                            linux initrd
-                           make-disk-image? (disk-image-size 100)
+                           make-disk-image?
+                           (disk-image-size (* 100 (expt 2 20)))
                            (disk-image-format "qcow2")
                            (references-graphs '()))
   "Run BUILDER, a Scheme file, into a VM running LINUX with INITRD, and copy
 the result to OUTPUT.
 
 When MAKE-DISK-IMAGE? is true, OUTPUT will contain a VM image of
-DISK-IMAGE-SIZE MiB resulting from the execution of BUILDER, which may access
-it via /dev/hda.
+DISK-IMAGE-SIZE bytes resulting from the execution of BUILDER, which may
+access it via /dev/hda.
 
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
   (when make-disk-image?
+    (format #t "creating ~a image of ~,2f MiB...~%"
+            disk-image-format (/ disk-image-size (expt 2 20)))
+    (force-output)
     (unless (zero? (system* "qemu-img" "create" "-f" disk-image-format
                             output
                             (number->string disk-image-size)))
@@ -146,17 +152,11 @@ the #:references-graphs parameter of 'derivation'."
   (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
 
-(define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
-  "Like `fold', but with a single list and two seeds."
-  (let loop ((result1 seed1)
-             (result2 seed2)
-             (lst     lst))
-    (if (null? lst)
-        (values result1 result2)
-        (call-with-values
-            (lambda () (proc (car lst) result1 result2))
-          (lambda (result1 result2)
-            (loop result1 result2 (cdr lst)))))))
+(define (estimated-partition-size graphs)
+  "Return the estimated size of a partition that can store the store items
+given by GRAPHS, a list of file names produced by #:references-graphs."
+  ;; Simply add a 20% overhead.
+  (round (* 1.2 (closure-size graphs))))
 
 (define* (initialize-partition-table device partitions
                                      #:key
@@ -192,8 +192,15 @@ actual /dev name based on DEVICE."
                (cons (partition-options head offset index)
                      result))))))
 
-  (format #t "creating partition table with ~a partitions...\n"
-          (length partitions))
+  (format #t "creating partition table with ~a partitions (~a)...\n"
+          (length partitions)
+          (string-join (map (compose (cut string-append <> " MiB")
+                                     number->string
+                                     (lambda (size)
+                                       (round (/ size (expt 2. 20))))
+                                     partition-size)
+                            partitions)
+                       ", "))
   (unless (zero? (apply system* "parted" "--script"
                         device "mklabel" label-type
                         (options partitions offset)))

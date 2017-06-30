@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -108,8 +108,7 @@
                                              (references-graphs #f)
                                              (memory-size 256)
                                              (disk-image-format "qcow2")
-                                             (disk-image-size
-                                              (* 100 (expt 2 20))))
+                                             (disk-image-size 'guess))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
 derivation).  In the virtual machine, EXP has access to all its inputs from the
 store; it should put its output files in the `/xchg' directory, which is
@@ -118,7 +117,8 @@ runs with MEMORY-SIZE MiB of memory.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of type
 DISK-IMAGE-FORMAT (e.g., 'qcow2' or 'raw'), of DISK-IMAGE-SIZE bytes and
-return it.
+return it.  When DISK-IMAGE-SIZE is 'guess, estimate the image size based
+based on the size of the closure of REFERENCES-GRAPHS.
 
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
@@ -143,14 +143,18 @@ made available under the /xchg CIFS share."
             (use-modules (guix build utils)
                          (gnu build vm))
 
-            (let ((inputs  '#$(list qemu coreutils))
-                  (linux   (string-append #$linux "/"
-                                          #$(system-linux-image-file-name)))
-                  (initrd  (string-append #$initrd "/initrd"))
-                  (loader  #$loader)
-                  (graphs  '#$(match references-graphs
-                                (((graph-files . _) ...) graph-files)
-                                (_ #f))))
+            (let* ((inputs  '#$(list qemu coreutils))
+                   (linux   (string-append #$linux "/"
+                                           #$(system-linux-image-file-name)))
+                   (initrd  (string-append #$initrd "/initrd"))
+                   (loader  #$loader)
+                   (graphs  '#$(match references-graphs
+                                 (((graph-files . _) ...) graph-files)
+                                 (_ #f)))
+                   (size    #$(if (eq? 'guess disk-image-size)
+                                  #~(+ (* 70 (expt 2 20)) ;ESP
+                                       (estimated-partition-size graphs))
+                                  disk-image-size)))
 
               (set-path-environment-variable "PATH" '("bin") inputs)
 
@@ -160,7 +164,7 @@ made available under the /xchg CIFS share."
                                 #:memory-size #$memory-size
                                 #:make-disk-image? #$make-disk-image?
                                 #:disk-image-format #$disk-image-format
-                                #:disk-image-size #$disk-image-size
+                                #:disk-image-size size
                                 #:references-graphs graphs)))))
 
     (gexp->derivation name builder
@@ -174,7 +178,7 @@ made available under the /xchg CIFS share."
                      (name "qemu-image")
                      (system (%current-system))
                      (qemu qemu-minimal)
-                     (disk-image-size (* 100 (expt 2 20)))
+                     (disk-image-size 'guess)
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      file-system-label
@@ -201,7 +205,8 @@ the image."
                                                    (guix build utils)))
      #~(begin
          (use-modules (gnu build vm)
-                      (guix build utils))
+                      (guix build utils)
+                      (srfi srfi-26))
 
          (let ((inputs
                 '#$(append (list qemu parted e2fsprogs dosfstools)
@@ -227,9 +232,14 @@ the image."
                                #:copy-closures? #$copy-inputs?
                                #:register-closures? #$register-closures?
                                #:system-directory #$os-drv))
+                  (root-size  #$(if (eq? 'guess disk-image-size)
+                                    #~(estimated-partition-size
+                                       (map (cut string-append "/xchg/" <>)
+                                            graphs))
+                                    (- disk-image-size
+                                       (* 50 (expt 2 20)))))
                   (partitions (list (partition
-                                     (size #$(- disk-image-size
-                                                (* 50 (expt 2 20))))
+                                     (size root-size)
                                      (label #$file-system-label)
                                      (file-system #$file-system-type)
                                      (flags '(boot))

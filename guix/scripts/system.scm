@@ -854,7 +854,7 @@ Some ACTIONS support additional ARGS.\n"))
     (build-hook? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
-    (image-size . ,(* 900 (expt 2 20)))
+    (image-size . guess)
     (install-bootloader? . #t)))
 
 
