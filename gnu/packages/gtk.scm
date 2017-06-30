@@ -908,7 +908,7 @@ documents.")
 (define-public guile-gnome
    (package
     (name "guile-gnome")
-    (version "2.16.4")
+    (version "2.16.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -917,7 +917,7 @@ documents.")
                               version ".tar.gz"))
              (sha256
               (base32
-               "1hqnqbb2lmr3hgbcv9kds1himn3av6h0lkk0zll8agcrsn7d9axd"))))
+               "1gnf3j96nip5kl99a268i0dy1hj7s1cfs66sps3zwysnkd7qr399"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -949,7 +949,7 @@ documents.")
                        (let ((out (assoc-ref outputs "out")))
                          (substitute* (find-files "." "^Makefile.in$")
                            (("guilesite :=.*guile/site" all)
-                            (string-append all "/2.0")))
+                            (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
                          #t))))))
     (outputs '("out" "debug"))
     (synopsis "Guile interface for GTK+ programming for GNOME")
@@ -957,7 +957,9 @@ documents.")
      "Includes guile-clutter, guile-gnome-gstreamer,
 guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
     (home-page "https://www.gnu.org/software/guile-gnome/")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties '((upstream-name . "guile-gnome-platform")
+                  (ftp-directory . "/gnu/guile-gnome/guile-gnome-platform")))))
 
 ;;;
 ;;; C++ bindings.
