@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -515,8 +515,9 @@ singular value problems.")
               ("pango" ,pango)
               ("gd" ,gd)
               ("lua" ,lua)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texlive" ,texlive-minimal)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive-tiny)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
