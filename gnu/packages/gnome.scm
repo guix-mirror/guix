@@ -470,12 +470,13 @@ and keep up to date translations of documentation.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0ydk9dzxx6snxza7j5ps8x932hbr3x1b8hhcaqjq4w4admi2qmwh"))))
+               "0ydk9dzxx6snxza7j5ps8x932hbr3x1b8hhcaqjq4w4admi2qmwh"))
+             (patches
+              (search-patches "gcr-disable-failing-tests.patch"
+                              "gcr-fix-collection-tests-to-work-with-gpg-21.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
-                   ;not exist
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
                   (add-before
                    'check 'pre-check
                    (lambda* (#:key inputs #:allow-other-keys)
