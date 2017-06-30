@@ -793,9 +793,9 @@ application suites.")
                                                      effective "/cairo"))
                         #t))))))
     (inputs
-     `(("guile-lib" ,guile2.0-lib)
+     `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (propagated-inputs
      ;; The .pc file refers to 'cairo'.
      `(("cairo" ,cairo)))
@@ -846,9 +846,9 @@ exceptions, macros, and a dynamic programming environment.")
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ("texinfo" ,texinfo)))
-      (inputs `(("guile" ,guile-2.0)
+      (inputs `(("guile" ,guile-2.2)
                 ("librsvg" ,librsvg)
-                ("guile-lib" ,guile2.0-lib)))        ;for (unit-test)
+                ("guile-lib" ,guile-lib)))        ;for (unit-test)
       (propagated-inputs `(("guile-cairo" ,guile-cairo)))
       (synopsis "Render SVG images using Cairo from Guile")
       (description
@@ -889,10 +889,10 @@ images onto Cairo surfaces.")
                                        out "/share/guile/site/2.0 ")))))
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
      ;; These are used by the (present …) modules.
-     `(("guile-lib" ,guile2.0-lib)
+     `(("guile-lib" ,guile-lib)
        ("guile-cairo" ,guile-cairo)
        ("guile-rsvg" ,guile-rsvg)))
     (home-page "http://wingolog.org/software/guile-present/")
@@ -936,11 +936,11 @@ documents.")
        ("pango" ,pango)
        ("libffi" ,libffi)
        ("glib" ,glib)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-cairo" ,guile-cairo)
        ("g-wrap" ,g-wrap)
-       ("guile-lib" ,guile2.0-lib)))
+       ("guile-lib" ,guile-lib)))
     (arguments
       `(#:tests? #f                               ;FIXME
         #:phases (modify-phases %standard-phases
