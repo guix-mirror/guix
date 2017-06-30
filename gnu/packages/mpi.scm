@@ -51,6 +51,9 @@
                (base32
                 "0acph1mf7588hfx8ds26ncr6nw5fd9x92adm11fwin7f93i10sdb"))))
     (build-system gnu-build-system)
+    (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
+               "lib"           ;small closure
+               "debug"))
     (inputs
      `(("libx11" ,libx11)
        ("cairo" ,cairo)
@@ -70,16 +73,24 @@
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'refine-libnuma
-          ;; Give -L arguments for libraries to avoid propagation
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out"))
-                  (numa (assoc-ref inputs "numactl")))
-              (substitute* (map (lambda (f) (string-append out "/" f))
-                                '("lib/pkgconfig/hwloc.pc" "lib/libhwloc.la"))
-                (("-lnuma" lib)
-                 (string-append "-L" numa "/lib " lib)))))))))
+         (add-after 'install 'refine-libnuma
+           ;; Give -L arguments for libraries to avoid propagation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out  (assoc-ref outputs "lib"))
+                   (numa (assoc-ref inputs "numactl")))
+               (substitute* (map (lambda (f) (string-append out "/" f))
+                                 '("lib/pkgconfig/hwloc.pc" "lib/libhwloc.la"))
+                 (("-lnuma" lib)
+                  (string-append "-L" numa "/lib " lib))))))
+         (add-after 'install 'avoid-circular-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (assoc-ref outputs "lib")))
+               ;; Suppress the 'prefix=' and 'exec_prefix=' lines so that the
+               ;; "lib" output doesn't refer to "out".
+               (substitute* (string-append lib "/lib/pkgconfig/hwloc.pc")
+                 (("^.*prefix=.*$")
+                  ""))
+               #t))))))
     (home-page "https://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
@@ -111,7 +122,7 @@ bind processes, and much more.")
         "0k95ri9f8kzx5vhzrdbzn59rn2324fs4a96w5v8jy20j8dkbp13l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("hwloc" ,hwloc)
+     `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
        ("valgrind" ,valgrind)))
     (native-inputs
