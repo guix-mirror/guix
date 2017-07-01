@@ -4666,7 +4666,7 @@ built on top of XELB.")
 (define-public emacs-switch-window
   (package
     (name "emacs-switch-window")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4675,7 +4675,7 @@ built on top of XELB.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xyxqrw71krdnj3sdm4x05zw7n40h075s262jih75vmrix95sjlj"))))
+                "07f99apxscwvsp2bjxsbi462c433kcglrjh6xl0gyafs1nvvvnd8"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dimitri/switch-window")
     (synopsis "Emacs window switch tool")
