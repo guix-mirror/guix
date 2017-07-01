@@ -1787,7 +1787,7 @@ is not available for Guile 2.0.")
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
-      (home-page "https://gitlab.com/amirouche/guile-git")
+      (home-page "https://gitlab.com/guile-git/guile-git.git")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference (url home-page) (commit commit)))
