@@ -653,14 +653,14 @@ utilities to ease adding new glyphs to the font.")
 (define-public font-google-noto
   (package
     (name "font-google-noto")
-    (version "20150929")
+    (version "20170403")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://noto-website-2.storage.googleapis.com/"
+              (uri (string-append "https://noto-website.storage.googleapis.com/"
                                   "pkgs/Noto-hinted.zip"))
               (sha256
                (base32
-                "13jhpqzhsqhyby8n0ksqg155a3jyaif3nzj9anzbq8s2gn1xjyd9"))))
+                "1p92a6dvs7wqwjfpp1ahr9z1wz35am0l8r78521383spd77bmrfm"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
