@@ -2206,13 +2206,13 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.3")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "0r743a2pv1iyw50jsdl01v2ml3pdkhdp920a5d1wsacak48vwgxr"))))
+                "1z02j871gc8l9mnd344qy9z8akigikgmc22r15ns6driqb2qishv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
