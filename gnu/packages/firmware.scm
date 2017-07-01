@@ -277,13 +277,13 @@ use of coreboot.")
                 "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
              (zero? (system* "build"))))
          ,@(if (string=? "x86_64-linux" (%current-system))
-             '(add-after 'build 'build-x64
-               (lambda _
-                 (substitute* "Conf/target.txt"
-                   (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
-                   (("^ACTIVE_PLATFORM[ ]*=.*$")
-                    "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-                 (zero? (system* "build"))))
+             '((add-after 'build 'build-x64
+                (lambda _
+                  (substitute* "Conf/target.txt"
+                    (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
+                    (("^ACTIVE_PLATFORM[ ]*=.*$")
+                     "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
+                  (zero? (system* "build")))))
              '())
          (delete 'build)
          (replace 'install
