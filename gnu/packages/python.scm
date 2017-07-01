@@ -7459,16 +7459,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.0.0")
+    (version "17.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "1pdg1gpmkzj8yasg6cmkhcivxcdp4c12nif88y4qvsxq5ffzxas8"))
-       (patches
-        (search-patches "python-pyopenssl-skip-network-test.patch"))))
+         "0qwmqhfsq84ydir9dz273ypmlcvs7v71m1jns0sd4k0h6lfsa82s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -7477,14 +7475,23 @@ message digests and key derivation functions.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v")))))))
+             (zero? (system* "py.test" "-v" "-k"
+                             (string-append
+                              ;; This test tries to look up certificates from
+                              ;; the compiled-in default path in OpenSSL, which
+                              ;; does not exist in the build environment.
+                              "not test_fallback_default_verify_paths "
+                              ;; This test attempts to make a connection to
+                              ;; an external web service.
+                              "and not test_set_default_verify_paths"))))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)))
+     `(("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
