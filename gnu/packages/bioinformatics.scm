@@ -1562,15 +1562,16 @@ high-throughput sequencing data – with an emphasis on simplicity.")
 (define-public cd-hit
   (package
     (name "cd-hit")
-    (version "4.6.6")
+    (version "4.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/weizhongli/cdhit"
                                   "/releases/download/V" version
-                                  "/cd-hit-v" version "-2016-0711.tar.gz"))
+                                  "/cd-hit-v" version
+                                  "-2017-0621-source.tar.gz"))
               (sha256
                (base32
-                "1w8hd4fszgg29nqiz569fldwy012la77nljcmlhglgicws56z54p"))))
+                "1386dg2npx8p62wmv08mjzsd2z3waknb9j1gg3gkvblcy57hymnn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1590,7 +1591,7 @@ high-throughput sequencing data – with an emphasis on simplicity.")
                (("__DATE__") "\"0\"")
                (("\", %s, \" __TIME__ \"\\\\n\", date") ""))
              #t))
-         ;; The "install" target does not create the target directory
+         ;; The "install" target does not create the target directory.
          (add-before 'install 'create-target-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
