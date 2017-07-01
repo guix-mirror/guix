@@ -1023,7 +1023,9 @@ information for one of ITEMS is missing."
 
          ;; Query all the substitutes at once to minimize the cost of
          ;; launching 'guix substitute' and making HTTP requests.
-         (substs     (substitutable-path-info store missing)))
+         (substs     (if (null? missing)
+                         '()
+                         (substitutable-path-info store missing))))
     (when (< (length substs) (length missing))
       (raise (condition (&nix-protocol-error
                          (message "cannot determine \
