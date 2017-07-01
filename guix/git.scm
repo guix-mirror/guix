@@ -34,13 +34,12 @@
   (make-parameter "/var/cache/guix/checkouts"))
 
 (define-syntax-rule (with-libgit2 thunk ...)
-  (dynamic-wind
-    (lambda ()
-      (libgit2-init!))
-    (lambda ()
-      thunk ...)
-    (lambda ()
-      (libgit2-shutdown))))
+  (begin
+    ;; XXX: The right thing to do would be to call (libgit2-shutdown) here,
+    ;; but pointer finalizers used in guile-git may be called after shutdown,
+    ;; resulting in a segfault. Hence, let's skip shutdown call for now.
+    (libgit2-init!)
+    thunk ...))
 
 (define* (url-cache-directory url
                               #:optional (cache-directory
