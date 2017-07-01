@@ -533,6 +533,7 @@ store.")
                                      "glibc-versioned-locpath.patch"
                                      "glibc-o-largefile.patch"
                                      "glibc-memchr-overflow-i686.patch"
+                                     "glibc-vectorized-strcspn-guards.patch"
                                      "glibc-CVE-2017-1000366-pt1.patch"
                                      "glibc-CVE-2017-1000366-pt2.patch"
                                      "glibc-CVE-2017-1000366-pt3.patch"))))
