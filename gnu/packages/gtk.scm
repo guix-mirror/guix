@@ -793,7 +793,7 @@ application suites.")
                                                      effective "/cairo"))
                         #t))))))
     (inputs
-     `(("guile-lib" ,guile2.0-lib)
+     `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
        ("guile" ,guile-2.0)))
     (propagated-inputs
@@ -842,7 +842,7 @@ exceptions, macros, and a dynamic programming environment.")
                      ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.0)
               ("librsvg" ,librsvg)
-              ("guile-lib" ,guile2.0-lib)))          ;for (unit-test)
+              ("guile-lib" ,guile-lib)))          ;for (unit-test)
     (propagated-inputs `(("guile-cairo" ,guile-cairo)))
     (synopsis "Render SVG images using Cairo from Guile")
     (description
@@ -886,7 +886,7 @@ images onto Cairo surfaces.")
     (inputs `(("guile" ,guile-2.0)))
     (propagated-inputs
      ;; These are used by the (present …) modules.
-     `(("guile-lib" ,guile2.0-lib)
+     `(("guile-lib" ,guile-lib)
        ("guile-cairo" ,guile-cairo)
        ("guile-rsvg" ,guile-rsvg)))
     (home-page "http://wingolog.org/software/guile-present/")
@@ -934,7 +934,7 @@ documents.")
     (propagated-inputs
      `(("guile-cairo" ,guile-cairo)
        ("g-wrap" ,g-wrap)
-       ("guile-lib" ,guile2.0-lib)))
+       ("guile-lib" ,guile-lib)))
     (arguments
       `(#:tests? #f                               ;FIXME
         #:phases (modify-phases %standard-phases
