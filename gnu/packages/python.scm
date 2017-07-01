@@ -7388,14 +7388,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.8.2")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0hzvq0bfy21bc35p8z7zdxpv3hbvi7adg4axc1b5yd3hk16a1nh0"))))
+         "1wvq1p1viam1diz9x6d61x1bsy6cninv7cjgd35x9ffig9r6gxxv"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7410,14 +7410,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.8.2")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1nmy4fw3zy7rlvarkhn33g9905rwpy9z7k5kv8j80f0s6ynfp24f"))))
+         "10j8r1s29f4h59kp3mla14g588rm7qpn90nrczijk03i49q3662m"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -7426,12 +7426,6 @@ responses, rather than doing any computation.")
        ("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
        ("python-idna" ,python-idna)
-       ;; Packaging is used to check the version of python-cffi in
-       ;; 'src/cryptography/hazmat/primitives/ciphers/base.py'. We should be
-       ;; able to remove this dependency in the next release of cryptography:
-       ;; python-cryptography:
-       ;; https://github.com/pyca/cryptography/commit/0417d00d9ff1e19bc3ab67d39bdd18e1674768c1
-       ("python-packaging" ,python-packaging)
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
      `(("python-cryptography-vectors" ,python-cryptography-vectors)
