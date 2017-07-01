@@ -1009,7 +1009,8 @@ error if there is no such root."
 length as ITEMS.  Query substitute information for any item missing from the
 store at once.  Raise a '&nix-protocol-error' exception if reference
 information for one of ITEMS is missing."
-  (let* ((local-refs (map (lambda (item)
+  (let* ((requested  items)
+         (local-refs (map (lambda (item)
                             (or (hash-ref %reference-cache item)
                                 (guard (c ((nix-protocol-error? c) #f))
                                   (references store item))))
@@ -1040,7 +1041,7 @@ the list of references")
         (()
          (let ((result (reverse result)))
            (for-each (cut hash-set! %reference-cache <> <>)
-                     items result)
+                     requested result)
            result))
         ((item items ...)
          (match local-refs
