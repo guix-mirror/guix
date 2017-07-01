@@ -4781,19 +4781,31 @@ a front-end for C compilers or analysis tools.")
        ("python-sphinx" ,python-sphinx)
        ("python-pytest" ,python-pytest)))
     (arguments
-     `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                 (doc (string-append data "/doc/" ,name "-" ,version))
-                 (html (string-append doc "/html")))
-            (with-directory-excursion "doc"
-              (system* "make" "html")
-              (mkdir-p html)
-              (copy-recursively "build/html" html))
-            (copy-file "LICENSE" (string-append doc "/LICENSE"))))
-        %standard-phases)))
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getenv "PYTHONPATH")
+                      ":" (getcwd) "/build/"
+                      (car (scandir "build" (cut string-prefix? "lib." <>)))))
+             (zero? (system* "py.test" "-v"))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (with-directory-excursion "doc"
+                 (system* "make" "html")
+                 (mkdir-p html)
+                 (copy-recursively "build/html" html))
+               (copy-file "LICENSE" (string-append doc "/LICENSE"))
+               #t))))))
     (home-page "http://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
     (description
