@@ -4763,13 +4763,13 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.4.2")
+    (version "1.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "161rj52rzi3880lij17d6i9kvgkiwjilrqjs8405k8sf6ryif7cg"))))
+       (base32 "1mffyilq4qycm8gs4wkgb18rnqil8a9blqq77chdlshzxc8jkc5k"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -4794,7 +4794,18 @@ a front-end for C compilers or analysis tools.")
                       (getenv "PYTHONPATH")
                       ":" (getcwd) "/build/"
                       (car (scandir "build" (cut string-prefix? "lib." <>)))))
-             (zero? (system* "py.test" "-v"))))
+
+             ;; XXX The "normal" approach of setting CC and friends does
+             ;; not work here.  Is this the correct way of doing things?
+             (substitute* "testing/embedding/test_basic.py"
+               (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+                (string-append "c = distutils.ccompiler.new_compiler();"
+                               "c.set_executables(compiler='gcc',"
+                               "compiler_so='gcc',linker_exe='gcc',"
+                               "linker_so='gcc -shared')")))
+             (substitute* "testing/cffi0/test_ownlib.py"
+               (("'cc testownlib") "'gcc testownlib"))
+             (zero? (system* "py.test" "-v" "c/" "testing/"))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
