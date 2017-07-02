@@ -1821,6 +1821,39 @@ using box macros and flexible verbatim macros.  You can box mathematics,
 floats, center, flushleft, and flushright, lists, and pages.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-fancyhdr
+  (package
+    (name "texlive-latex-fancyhdr")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fancyhdr"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "04h430agf8aj7ziwyb46xpk95c605rjk1wzhr63m6ylipihidlgw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fancyhdr")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fancyhdr")
+    (synopsis "Extensive control of page headers and footers in LaTeX2e")
+    (description
+     "The package provides extensive facilities, both for constructing headers
+and footers, and for controlling their use (for example, at times when LaTeX
+would automatically change the heading style in use).")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
