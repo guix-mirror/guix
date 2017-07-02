@@ -1902,6 +1902,29 @@ the obsolete @code{here} package.  You can select this as automatic default
 with @code{\\floatplacement{figure}{H}}.")
     (license license:lppl)))
 
+(define-public texlive-latex-footmisc
+  (package
+    (name "texlive-latex-footmisc")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "footmisc"))
+              (sha256
+               (base32
+                "03x61wwql8nh6zrqiiiq3rb0x7m3pn48c606zapy19y21fybwdxs"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/footmisc"))
+    (home-page "http://www.ctan.org/pkg/footmisc")
+    (synopsis "Range of footnote options")
+    (description
+     "This is a collection of ways to change the typesetting of footnotes.
+The package provides means of changing the layout of the footnotes themselves,
+a way to number footnotes per page, to make footnotes disappear in a
+\"moving\" argument, and to deal with multiple references to footnotes from
+the same place.  The package also has a range of techniques for labelling
+footnotes with symbols rather than numbers.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
