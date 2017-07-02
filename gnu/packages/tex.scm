@@ -2096,6 +2096,32 @@ use under LaTeX; the package supports the @code{only} option (provided by the
 the whole font.")
     (license license:lppl)))
 
+(define-public texlive-latex-subfigure
+  (package
+    (name "texlive-latex-subfigure")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "subfigure"))
+              (sha256
+               (base32
+                "15spcl5wb7w269qd6y596vp4yi8sa5ppcx8w4z2i9kyp02r3a0yb"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/subfigure"))
+    (home-page "http://www.ctan.org/pkg/subfigure")
+    (synopsis "Figures divided into subfigures")
+    (description
+     "This (deprecated) package provides support for the manipulation and
+reference of small or \"sub\" figures and tables within a single figure or
+table environment.  It is convenient to use this package when your subfigures
+are to be separately captioned, referenced, or are to be included in the
+List-of-Figures.  A new @code{\\subfigure} command is introduced which can be
+used inside a figure environment for each subfigure.  An optional first
+argument is used as the caption for that subfigure.  The package is now
+considered obsolete: it was superseded by @code{subfig}, but users may find
+the more recent @code{subcaption} package more satisfactory.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
