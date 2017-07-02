@@ -2041,6 +2041,29 @@ the included graphic.  LaTeX commands can be placed on the graphic at defined
 positions; a grid for orientation is available.")
     (license license:lppl1.0+)))
 
+(define-public texlive-latex-pdfpages
+  (package
+    (name "texlive-latex-pdfpages")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "pdfpages"))
+              (sha256
+               (base32
+                "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/pdfpages"))
+    (home-page "http://www.ctan.org/pkg/pdfpages")
+    (synopsis "Include PDF documents in LaTeX")
+    (description
+     "This package simplifies the inclusion of external multi-page PDF
+documents in LaTeX documents.  Pages may be freely selected and it is possible
+to put several logical pages onto each sheet of paper.  Furthermore a lot of
+hypertext features like hyperlinks and article threads are provided.  The
+package supports pdfTeX (pdfLaTeX) and VTeX.  With VTeX it is even possible to
+use this package to insert PostScript files, in addition to PDF files.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
