@@ -1787,6 +1787,40 @@ drivers, and VTeX and pdfTeX.")
 tables to be coloured.")
     (license license:lppl)))
 
+(define-public texlive-latex-fancybox
+  (package
+    (name "texlive-latex-fancybox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fancybox"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0smmnaad2q8qwicay1frri990lv65l0k8cwzsvdsyp3jk8kp042w"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fancybox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fancybox")
+    (synopsis "Variants of \\fbox and other games with boxes")
+    (description
+     "This package provides variants of @code{\\fbox}: @code{\\shadowbox},
+@code{\\doublebox}, @code{\\ovalbox}, @code{\\Ovalbox}, with helpful tools for
+using box macros and flexible verbatim macros.  You can box mathematics,
+floats, center, flushleft, and flushright, lists, and pages.")
+    (license license:lppl1.2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
