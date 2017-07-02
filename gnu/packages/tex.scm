@@ -1879,6 +1879,29 @@ verbatim mode; build \"example\" environments (showing both result and
 verbatim source).")
     (license license:lppl1.0+)))
 
+(define-public texlive-latex-float
+  (package
+    (name "texlive-latex-float")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "float"))
+              (sha256
+               (base32
+                "0nbl7wylkv22fcdv4p8byhhj575fli6jnqjpkhrkbv8dzwah84nq"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/float"))
+    (home-page "http://www.ctan.org/pkg/float")
+    (synopsis "Improved interface for floating objects")
+    (description
+     "This package improves the interface for defining floating objects such
+as figures and tables.  It introduces the boxed float, the ruled float and the
+plaintop float.  You can define your own floats and improve the behaviour of
+the old ones.  The package also provides the @code{H} float modifier option of
+the obsolete @code{here} package.  You can select this as automatic default
+with @code{\\floatplacement{figure}{H}}.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
