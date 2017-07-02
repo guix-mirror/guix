@@ -19,6 +19,7 @@
 (define-module (guix build texlive-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (guix build union)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
@@ -39,28 +40,31 @@
                   (string-append "&" format)
                   file)))
 
-(define* (build #:key inputs build-targets tex-format #:allow-other-keys)
-  ;; Find additional tex and sty files
-  (setenv "TEXINPUTS"
-          (string-append
-           (getcwd) ":" (getcwd) "/build:"
-           (string-join
-            (append-map (match-lambda
-                          ((_ . dir)
-                           (find-files dir
-                                       (lambda (_ stat)
-                                         (eq? 'directory (stat:type stat)))
-                                       #:directories? #t
-                                       #:stat stat)))
-                        inputs)
-            ":")))
-  (setenv "TEXFORMATS"
-          (string-append (assoc-ref inputs "texlive-latex-base")
-                         "/share/texmf-dist/web2c/"))
-  (setenv "LUAINPUTS"
-          (string-append (assoc-ref inputs "texlive-latex-base")
-                         "/share/texmf-dist/tex/latex/base/"))
+(define* (configure #:key inputs #:allow-other-keys)
+  (let* ((out       (string-append (getcwd) "/.texlive-union"))
+         (texmf.cnf (string-append out "/share/texmf-dist/web2c/texmf.cnf")))
+    ;; Build a modifiable union of all inputs (but exclude bash)
+    (match inputs
+      (((names . directories) ...)
+       (union-build out directories
+                    #:create-all-directories? #t
+                    #:log-port (%make-void-port "w"))))
+
+    ;; The configuration file "texmf.cnf" is provided by the
+    ;; "texlive-bin" package.  We take it and override only the
+    ;; setting for TEXMFROOT and TEXMF.  This file won't be consulted
+    ;; by default, though, so we still need to set TEXMFCNF.
+    (substitute* texmf.cnf
+      (("^TEXMFROOT = .*")
+       (string-append "TEXMFROOT = " out "/share\n"))
+      (("^TEXMF = .*")
+       "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
+    (setenv "TEXMFCNF" (dirname texmf.cnf))
+    (setenv "TEXMF" (string-append out "/share/texmf-dist")))
   (mkdir "build")
+  #t)
+
+(define* (build #:key inputs build-targets tex-format #:allow-other-keys)
   (every (cut compile-with-latex tex-format <>)
          (if build-targets build-targets
              (scandir "." (cut string-suffix? ".ins" <>)))))
@@ -77,7 +81,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (delete 'configure)
+    (replace 'configure configure)
     (replace 'build build)
     (delete 'check)
     (replace 'install install)))
