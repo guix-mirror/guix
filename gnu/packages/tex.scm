@@ -2157,6 +2157,27 @@ styles.  It also includes a package to change the page styles when there are
 floats in a page.  You may assign headers/footers to individual floats, too.")
     (license license:lppl)))
 
+(define-public texlive-latex-wasysym
+  (package
+    (name "texlive-latex-wasysym")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "wasysym"))
+              (sha256
+               (base32
+                "1sgwbfwjjf70g54hh93gsd9jp9nm67w6n74x9d72a56n07jbk5hv"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/wasysym"))
+    (home-page "http://www.ctan.org/pkg/wasysym")
+    (synopsis "LaTeX support file to use the WASY2 fonts")
+    (description
+     "The wasy2WASY2 (Waldi Symbol) font by Roland Waldi provides many glyphs
+like male and female symbols and astronomical symbols, as well as the complete
+lasy font set and other odds and ends.  The wasysym package implements an easy
+to use interface for these symbols.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
