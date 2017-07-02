@@ -1925,6 +1925,29 @@ the same place.  The package also has a range of techniques for labelling
 footnotes with symbols rather than numbers.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-listings
+  (package
+    (name "texlive-latex-listings")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "listings"))
+              (sha256
+               (base32
+                "1nsn9wp3wl12b36c0sqrim33lf33cr5wky0h4ncnw8lvqgm7h8wf"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/listings"
+       #:build-targets '("listings.ins")))
+    (home-page "http://www.ctan.org/pkg/listings")
+    (synopsis "Typeset source code listings using LaTeX")
+    (description
+     "The package enables the user to typeset programs (programming code)
+within LaTeX; the source code is read directly by TeX---no front-end processor
+is needed.  Keywords, comments and strings can be typeset using different
+styles.  Support for @code{hyperref} is provided.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
