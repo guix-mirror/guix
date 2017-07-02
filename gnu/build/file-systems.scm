@@ -319,7 +319,7 @@ SBLOCK as a bytevector.  If that's not set, returns the creation time."
          (second (sub-bytevector uuid 12 2))
          (hundredths (sub-bytevector uuid 14 2))
          (parts (list year month day hour minute second hundredths)))
-    (string-append (string-join (map digits->string parts)))))
+    (string-append (string-join (map digits->string parts) "-"))))
 
 (define (iso9660-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string.  The volume name is an ASCII
