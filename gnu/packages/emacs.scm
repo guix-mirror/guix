@@ -1393,7 +1393,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1401,7 +1401,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0s7s90rfba8ccbilbvmbcwn4qp4m0jv9y58xq8avm39cygmjgyxz"))))
+                "0bffxlaq4w9yijl9prnfm26fisr2rd1whjg1yzvri1zl6zh9s0lk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1419,6 +1419,13 @@ type, for example: packages, buffers, files, etc.")
                                                   "2."
                                                   (basename file)))
                                                #:directories? #t)))
+               (string-append "--with-guix-site-ccache-dir="
+                              (car (find-files (string-append guix "/lib/guile")
+                                               (lambda (file stat)
+                                                 (string-prefix?
+                                                  "2." (basename file)))
+                                               #:directories? #t))
+                              "/site-ccache")
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
                               dash site-lisp "/guix.d/dash-"
