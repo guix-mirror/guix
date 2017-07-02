@@ -2080,7 +2080,7 @@ with Python.")
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "2.1.1")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/fidelram/deepTools/"
@@ -2088,22 +2088,20 @@ with Python.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1nmfin0zjdby3vay3r4flvz94dr6qjhj41ax4yz3vx13j6wz8izd"))))
+                "1q8i12l2gvk4n2s8lhyzwhh9g4qbc8lrk5l7maz00yvd5g6z5540"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2))
     (inputs
-     `(("python-scipy" ,python2-scipy)
-       ("python-numpy" ,python2-numpy)
-       ("python-numpydoc" ,python2-numpydoc)
-       ("python-matplotlib" ,python2-matplotlib)
-       ("python-bx-python" ,python2-bx-python)
-       ("python-pysam" ,python2-pysam)
-       ("python-pybigwig" ,python2-pybigwig)))
+     `(("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pysam" ,python-pysam)
+       ("python-py2bit" ,python-py2bit)
+       ("python-pybigwig" ,python-pybigwig)))
     (native-inputs
-     `(("python-mock" ,python2-mock)   ;for tests
-       ("python-nose" ,python2-nose)   ;for tests
-       ("python-pytz" ,python2-pytz))) ;for tests
+     `(("python-mock" ,python-mock)   ;for tests
+       ("python-nose" ,python-nose)   ;for tests
+       ("python-pytz" ,python-pytz))) ;for tests
     (home-page "https://github.com/fidelram/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
     (description
