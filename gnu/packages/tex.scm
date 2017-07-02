@@ -1022,13 +1022,14 @@ nameref packages, which make use of the facilities of hyperref.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/oberdiek"
+       #:build-targets '("oberdiek.ins")
        #:phases
        (modify-phases %standard-phases
-         ;; "ifpdf.ins" is not generated, so we cannot process it.
+         ;; "ifpdf.ins" is not generated, so we need to process the dtx file.
          (add-after 'unpack 'do-not-process-ifpdf.ins
            (lambda _
              (substitute* "oberdiek.ins"
-               (("\\\\batchinput\\{ifpdf.ins\\}") ""))
+               (("ifpdf.ins") "ifpdf.dtx"))
              #t)))))
     (home-page "http://www.ctan.org/pkg/oberdiek")
     (synopsis "Bundle of packages submitted by Heiko Oberdiek")
