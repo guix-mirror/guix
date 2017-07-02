@@ -35,10 +35,14 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages ghostscript)
@@ -195,47 +199,35 @@ features an integrated Emacs-like editor and a large runtime library.")
 (define-public bigloo
   (package
     (name "bigloo")
-    (version "4.1a")
+    (version "4.3a")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "170q7nh08n4v20xl81fxb0xcdxphqqacfa643hsa8i2ar6pki04c"))
-             (patches (search-patches "bigloo-gc-shebangs.patch"))))
+               "03rcqs6kvy2j5lqk4fidqay5qfyp474qqspbh6wk4qdbds6w599w"))
+             ;; Remove bundled libraries.
+             (modules '((guix build utils)))
+             (snippet
+              '(for-each delete-file-recursively
+                         '("gc" "gmp" "libuv")))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
 
              (substitute* "configure"
                (("^shell=.*$")
-                (string-append "shell=" (which "bash") "\n")))
-
-             ;; Since libgc's pthread redirects are used, we end up
-             ;; using libgc symbols, so we must link against it.
-             ;; Reported on 2013-06-25.
-             (substitute* "api/pthread/src/Makefile"
-               (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
-                (string-append "EXTRALIBS = "
-                               (string-trim-right value)
-                               " -l$(GCLIB)_fth-$(RELEASE)"
-                               " -Wl,-rpath=" (assoc-ref outputs "out")
-                               "/lib/bigloo/" ,version)))
-
-             ;; Those variables are used by libgc's `configure'.
-             (setenv "SHELL" (which "sh"))
-             (setenv "CONFIG_SHELL" (which "sh"))
-
-             ;; ... but they turned out to be overridden later, so work
-             ;; around that.
-             (substitute* (find-files "gc" "^configure-gc")
-               (("sh=/bin/sh")
-                (string-append "sh=" (which "sh"))))
+                (string-append "shell=" (which "bash") "\n"))
+               (("`date`") "0"))
+             (substitute* "autoconf/runtest.in"
+               ((", @DATE@") ""))
+             (substitute* "autoconf/osversion"
+               (("^version.*$") "version=\"\"\n"))
 
              ;; The `configure' script doesn't understand options
              ;; of those of Autoconf.
@@ -243,28 +235,39 @@ features an integrated Emacs-like editor and a large runtime library.")
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)
-                         ;; FIXME: Currently fails, see
-                         ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
-                         ;; "--customgc=no" ; use our libgc
+                         ; use system libraries
+                         "--customgc=no"
+                         "--customunistring=no"
+                         "--customlibuv=no"
                          (string-append"--mv=" (which "mv"))
                          (string-append "--rm=" (which "rm"))
                          "--cflags=-fPIC"
                          (string-append "--ldflags=-Wl,-rpath="
                                         (assoc-ref outputs "out")
-                                        "/lib/bigloo/" ,version))))))
+                                        "/lib/bigloo/" ,version)
+                         (string-append "--lispdir=" out
+                                        "/share/emacs/site-lisp")
+                         "--sharedbde=yes"
+                         "--sharedcompiler=yes")))))
          (add-after 'install 'install-emacs-modes
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (dir (string-append out "/share/emacs/site-lisp")))
                (zero? (system* "make" "-C" "bmacs" "all" "install"
-                               (string-append "EMACSBRAND=emacs24")
+                               (string-append "EMACSBRAND=emacs25")
                                (string-append "EMACSDIR=" dir)))))))))
     (inputs
      `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
+       ("libgc" ,libgc)
+       ("libunistring" ,libunistring)
+       ("libuv" ,libuv)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)
 
        ;; Optional APIs for which Bigloo has bindings.
        ("avahi" ,avahi)
-       ("libphidget" ,libphidget)))
+       ("libphidget" ,libphidget)
+       ("pcre" ,pcre)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
