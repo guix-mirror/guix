@@ -20,6 +20,7 @@
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -62,7 +63,7 @@
   (mkdir "build")
   (every (cut compile-with-latex tex-format <>)
          (if build-targets build-targets
-             (find-files "." "\\.ins$"))))
+             (scandir "." (cut string-suffix? ".ins" <>)))))
 
 (define* (install #:key outputs tex-directory #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
