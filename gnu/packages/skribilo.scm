@@ -74,7 +74,7 @@
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
     ;; library, these inputs are needed as well.
     (propagated-inputs `(("guile-reader" ,guile2.0-reader)
-                         ("guile-lib" ,guile-lib)))
+                         ("guile-lib" ,guile2.0-lib)))
 
     (home-page "http://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")

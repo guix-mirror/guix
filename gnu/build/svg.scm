@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -50,7 +50,7 @@ dimensions of IN-SVG."
   (define svg
     (rsvg-handle-new-from-file in-svg))
 
-  (let-values (((origin-width origin-height)
+  (let-values (((origin-width origin-height em ex)
                 (rsvg-handle-get-dimensions svg)))
     (let* ((surf (cairo-image-surface-create 'argb32
                                              origin-width origin-height))

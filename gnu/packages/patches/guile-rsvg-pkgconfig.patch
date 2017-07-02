@@ -9,7 +9,7 @@ and LDFLAGS for Guile would not be captured.
  
 +dnl The above macro fails to set the 'GUILE_CFLAGS' and 'GUILE_LIBS'
 +dnl substitution variables, hence this line.
-+PKG_CHECK_MODULES(GUILE, guile-2.0)
++PKG_CHECK_MODULES(GUILE, guile-$GUILE_EFFECTIVE_VERSION)
 +
  PKG_CHECK_MODULES(GUILE_CAIRO, guile-cairo >= 1.4.0)
  AC_SUBST(GUILE_CAIRO_LIBS)

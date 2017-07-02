@@ -34,6 +34,7 @@
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
+  #:autoload   (gnu packages guile) (guile-2.2)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -118,21 +119,25 @@ otherwise."
 
 (define* (svg->png svg #:key width height)
   "Build a PNG of HEIGHT x WIDTH from SVG."
-  (gexp->derivation "grub-image.png"
-                    (with-imported-modules '((gnu build svg))
-                      #~(begin
-                          ;; We need these two libraries.
-                          (add-to-load-path (string-append #+guile-rsvg
-                                                           "/share/guile/site/"
-                                                           (effective-version)))
-                          (add-to-load-path (string-append #+guile-cairo
-                                                           "/share/guile/site/"
-                                                           (effective-version)))
+  ;; Note: Guile-RSVG & co. are now built for Guile 2.2, so we use 2.2 here.
+  ;; TODO: Remove #:guile-for-build when 2.2 has become the default.
+  (mlet %store-monad ((guile (package->derivation guile-2.2 #:graft? #f)))
+    (gexp->derivation "grub-image.png"
+                      (with-imported-modules '((gnu build svg))
+                        #~(begin
+                            ;; We need these two libraries.
+                            (add-to-load-path (string-append #+guile-rsvg
+                                                             "/share/guile/site/"
+                                                             (effective-version)))
+                            (add-to-load-path (string-append #+guile-cairo
+                                                             "/share/guile/site/"
+                                                             (effective-version)))
 
-                          (use-modules (gnu build svg))
-                          (svg->png #+svg #$output
-                                    #:width #$width
-                                    #:height #$height)))))
+                            (use-modules (gnu build svg))
+                            (svg->png #+svg #$output
+                                      #:width #$width
+                                      #:height #$height)))
+                      #:guile-for-build guile)))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
