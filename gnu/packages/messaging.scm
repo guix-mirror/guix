@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages libcanberra)
@@ -74,6 +76,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages qt)
@@ -1393,5 +1396,55 @@ protocol.  It is designed to be small, fast, portable and compatible with the
 RFC standards as well as non-standard but popular features.  It can be used for
 building the IRC clients and bots.")
     (license license:lgpl3+)))
+
+(define-public toxic
+  (package
+    (name "toxic")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/JFreegman/toxic/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0166lqb47f4kj34mhi57aqmnk9mh4hsicmbdsj6ag54sy1zicy20"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list
+        "CC=gcc"
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'enable-python-scripting
+           (lambda _
+             (setenv "ENABLE_PYTHON" "1")
+             #t)))))
+    (inputs
+     `(("c-toxcore" ,c-toxcore)
+       ("curl" ,curl)
+       ("freealut" ,freealut)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for libnotify.pc
+       ("libconfig" ,libconfig)
+       ("libnotify" ,libnotify)
+       ("libpng" ,libpng)
+       ("libvpx" ,libvpx)
+       ("libx11" ,libx11)
+       ("ncurses" ,ncurses)
+       ("openal" ,openal)
+       ("python" ,python)
+       ("qrencode" ,qrencode)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/JFreegman/toxic")
+    (synopsis "Tox chat client using ncurses")
+    (description "Toxic is a console-based instant messaging client, using
+c-toxcore and ncurses.  It provides audio calls, sound and desktop
+notifications, and Python scripting support.")
+    (license license:gpl3+)))
 
 ;;; messaging.scm ends here
