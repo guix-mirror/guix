@@ -1768,6 +1768,25 @@ package uses 'drivers' to place the bars; the available drivers can work with
 drivers, and VTeX and pdfTeX.")
     (license license:lppl)))
 
+(define-public texlive-latex-colortbl
+  (package
+    (name "texlive-latex-colortbl")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "colortbl"))
+              (sha256
+               (base32
+                "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/colortbl"))
+    (home-page "http://www.ctan.org/pkg/colortbl")
+    (synopsis "Add colour to LaTeX tables")
+    (description
+     "This package allows rows, columns, and even individual cells in LaTeX
+tables to be coloured.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
