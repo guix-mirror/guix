@@ -2058,6 +2058,24 @@ trees (phylogenies) and characters.")
       (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
+(define-public python-py2bit
+  (package
+    (name "python-py2bit")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py2bit" version))
+       (sha256
+        (base32
+         "1cdf4qlmgwsh1f4k0wdv2sr8x9qn4366p0k3614vbd0fpqiarxrl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/dpryan79/py2bit")
+    (synopsis "Access 2bit files using lib2bit")
+    (description
+     "This package provides Python bindings for lib2bit to access 2bit files
+with Python.")
+    (license license:expat)))
 
 (define-public deeptools
   (package
