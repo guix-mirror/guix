@@ -2006,6 +2006,41 @@ rows.  It has a lot of flexibility, including an option for specifying an
 entry at the \"natural\" width of its text.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-overpic
+  (package
+    (name "texlive-latex-overpic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/overpic"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0m29q9qdb00558b7g2i7iw6w62n5s46yx81j8m99qkv77magk4fm"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/overpic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/overpic")
+    (synopsis "Combine LaTeX commands over included graphics")
+    (description
+     "The @code{overpic} environment is a cross between the LaTeX
+@code{picture} environment and the @code{\\includegraphics} command of
+@code{graphicx}.  The resulting picture environment has the same dimensions as
+the included graphic.  LaTeX commands can be placed on the graphic at defined
+positions; a grid for orientation is available.")
+    (license license:lppl1.0+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
