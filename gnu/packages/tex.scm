@@ -1746,6 +1746,28 @@ environment is provided which can be used instead of the @code{\\appendix}
 command.")
     (license license:lppl)))
 
+(define-public texlive-latex-changebar
+  (package
+    (name "texlive-latex-changebar")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "changebar"))
+              (sha256
+               (base32
+                "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/changebar"))
+    (home-page "http://www.ctan.org/pkg/changebar")
+    (synopsis "Generate changebars in LaTeX documents")
+    (description
+     "Identify areas of text to be marked with changebars with the
+@code{\\cbstart} and @code{\\cbend} commands; the bars may be coloured.  The
+package uses 'drivers' to place the bars; the available drivers can work with
+@code{dvitoln03}, @code{dvitops}, @code{dvips}, the emTeX and TeXtures DVI
+drivers, and VTeX and pdfTeX.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
