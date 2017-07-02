@@ -634,6 +634,91 @@ class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
 
+(define-public texlive-fonts-amsfonts
+  (package
+    (name "texlive-fonts-amsfonts")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/amsfonts"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "07h20rvpbdb4k72hzmjkyb29426zr9wxsfp6yd4ajbbpd3vx8grb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base"))
+                   (cwd (getcwd)))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append cwd ":"
+                                      cwd "/cmextra:"
+                                      cwd "/cyrillic:"
+                                      cwd "/dummy:"
+                                      cwd "/symbols:"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" (basename font ".mf"))
+                      (with-directory-excursion (dirname font)
+                        (zero? (system* "mf" "-progname=mf"
+                                        "-output-directory=../build"
+                                        (string-append "\\"
+                                                       "mode:=ljfour; "
+                                                       "mag:=1; "
+                                                       "nonstopmode; "
+                                                       "input "
+                                                       (getcwd) "/"
+                                                       (basename font ".mf"))))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/amsfonts"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/amsfonts")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-bin" ,texlive-bin)))
+    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (synopsis "TeX fonts from the American Mathematical Society")
+    (description
+     "This package provides an extended set of fonts for use in mathematics,
+including: extra mathematical symbols; blackboard bold letters (uppercase
+only); fraktur letters; subscript sizes of bold math italic and bold Greek
+letters; subscript sizes of large symbols such as sum and product; added sizes
+of the Computer Modern small caps font; cyrillic fonts (from the University of
+Washington); Euler mathematical fonts.  All fonts are provided as Adobe Type 1
+files, and all except the Euler fonts are provided as Metafont source.  The
+distribution also includes the canonical Type 1 versions of the Computer
+Modern family of fonts.  The Euler fonts are supported by separate packages;
+details can be found in the documentation.")
+    (license license:silofl1.1)))
+
 ;; This provides etex.src which is needed to build various formats, including
 ;; luatex.fmt and pdflatex.fmt
 (define-public texlive-tex-plain
