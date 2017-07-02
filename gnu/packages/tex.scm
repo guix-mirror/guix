@@ -2122,6 +2122,41 @@ considered obsolete: it was superseded by @code{subfig}, but users may find
 the more recent @code{subcaption} package more satisfactory.")
     (license license:lppl)))
 
+(define-public texlive-latex-titlesec
+  (package
+    (name "texlive-latex-titlesec")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/titlesec"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "04nmkhqx6jxcxx9a30zbcd5smxi5fd0cbp132bki7fnvhspnhg21"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/titlesec")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/titlesec")
+    (synopsis "Select alternative section titles")
+    (description
+     "This package provides an interface to sectioning commands for selection
+from various title styles, e.g. for marginal titles and to change the font of
+all headings with a single command, also providing simple one-step page
+styles.  It also includes a package to change the page styles when there are
+floats in a page.  You may assign headers/footers to individual floats, too.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
