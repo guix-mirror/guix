@@ -983,8 +983,9 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
     (if (> width 2) (- width 2) width))
 
   (define (dependencies->recutils packages)
-    (let ((list (string-join (map package-full-name
-                                  (sort packages package<?)) " ")))
+    (let ((list (string-join (delete-duplicates
+                              (map package-full-name
+                                   (sort packages package<?))) " ")))
       (string->recutils
        (fill-paragraph list width*
                        (string-length "dependencies: ")))))
