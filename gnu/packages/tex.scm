@@ -1691,6 +1691,39 @@ other programs in the distribution offer online interactive use (with
 hypertext linkages in some cases).")
     (license license:gpl3+)))
 
+(define-public texlive-latex-anysize
+  (package
+    (name "texlive-latex-anysize")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/anysize"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "19khwqjlvznc955sijhww3c4zbb0053rvzwv9nz738qknq7y18vb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/anysize")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/anysize")
+    (synopsis "Simple package to set up document margins")
+    (description
+     "This is a simple package to set up document margins.  This package is
+considered obsolete; alternatives are the @code{typearea} package from the
+@code{koma-script} bundle, or the @code{geometry} package.")
+    (license license:public-domain)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
