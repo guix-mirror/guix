@@ -1986,6 +1986,26 @@ transliterate semitic languages; patches to make (La)TeX formulae embeddable
 in SGML; use maths minus in text as appropriate; simple Young tableaux.")
     (license license:gpl2)))
 
+(define-public texlive-latex-multirow
+  (package
+    (name "texlive-latex-multirow")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "multirow"))
+              (sha256
+               (base32
+                "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/multirow"))
+    (home-page "http://www.ctan.org/pkg/multirow")
+    (synopsis "Create tabular cells spanning multiple rows")
+    (description
+     "The package provides tools for creating tabular cells spanning multiple
+rows.  It has a lot of flexibility, including an option for specifying an
+entry at the \"natural\" width of its text.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
