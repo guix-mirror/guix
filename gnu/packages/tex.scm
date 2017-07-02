@@ -2064,6 +2064,38 @@ package supports pdfTeX (pdfLaTeX) and VTeX.  With VTeX it is even possible to
 use this package to insert PostScript files, in addition to PDF files.")
     (license license:lppl1.3+)))
 
+(define-public texlive-fonts-stmaryrd
+  (package
+    (name "texlive-fonts-stmaryrd")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "fonts" "stmaryrd"))
+              (sha256
+               (base32
+                "08pn4ca3vl6qm9l3wm5h5iyjsrg411kkm1yana329xwg2j14s9n6"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/stmaryrd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-ins
+           (lambda _
+             (substitute* "stmaryrd.ins"
+               (("^%% LaTeX2e.*") "\\input docstrip\n")
+               (("fontdef\\}\\}" line)
+                (string-append line "\n\\endbatchfile")))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/stmaryrd")
+    (synopsis "St Mary Road symbols for theoretical computer science")
+    (description
+     "The fonts were originally distributed as Metafont sources only, but
+Adobe Type 1 versions are also now available.  Macro support is provided for
+use under LaTeX; the package supports the @code{only} option (provided by the
+@code{somedefs} package) to restrict what is loaded, for those who don't need
+the whole font.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
