@@ -1724,6 +1724,28 @@ considered obsolete; alternatives are the @code{typearea} package from the
 @code{koma-script} bundle, or the @code{geometry} package.")
     (license license:public-domain)))
 
+(define-public texlive-latex-appendix
+  (package
+    (name "texlive-latex-appendix")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "appendix"))
+              (sha256
+               (base32
+                "0rxfpr8vq3brwx5rc7qn91ixlp9zva4zrms8a579fqa1g5yva7vg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/appendix"))
+    (home-page "http://www.ctan.org/pkg/appendix")
+    (synopsis "Extra control of appendices")
+    (description
+     "The appendix package provides various ways of formatting the titles of
+appendices.  Also (sub)appendices environments are provided that can be used,
+for example, for per chapter/section appendices.  An @code{appendices}
+environment is provided which can be used instead of the @code{\\appendix}
+command.")
+    (license license:lppl)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
