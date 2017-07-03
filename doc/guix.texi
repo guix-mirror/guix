@@ -16190,6 +16190,9 @@ in @var{file} that stands alone.  By default, @command{guix system}
 estimates the size of the image needed to store the system, but you can
 use the @option{--image-size} option to specify a value.
 
+You can specify the root file system type by using the
+@option{--file-system-type} option.  It defaults to "ext4".
+
 When using @code{vm-image}, the returned image is in qcow2 format, which
 the QEMU emulator can efficiently use. @xref{Running GuixSD in a VM},
 for more information on how to run the image in a virtual machine.
@@ -16244,6 +16247,19 @@ This works as per @command{guix build} (@pxref{Invoking guix build}).
 @itemx -d
 Return the derivation file name of the given operating system without
 building anything.
+
+@item --file-system-type=@var{type}
+@itemx -t @var{type}
+For the @code{disk-image} action, create a file system of the given
+@var{type} on the image.
+
+When this option is omitted, @command{guix system} uses @code{ext4}.
+
+@cindex ISO-9660 format
+@cindex CD image format
+@cindex DVD image format
+@code{--file-system-type=iso9660} produces an ISO-9660 image, suitable
+for burning on CDs and DVDs.
 
 @item --image-size=@var{size}
 For the @code{vm-image} and @code{disk-image} actions, create an image

@@ -560,7 +560,8 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
 ;;;
 
 (define* (system-derivation-for-action os action
-                                       #:key image-size full-boot? mappings)
+                                       #:key image-size file-system-type
+                                       full-boot? mappings)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
@@ -578,7 +579,8 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                                                 (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
-     (system-disk-image os #:disk-image-size image-size))))
+     (system-disk-image os #:disk-image-size image-size
+                           #:file-system-type file-system-type))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -610,13 +612,15 @@ and TARGET arguments."
                          #:key install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? device target
-                         image-size full-boot?
+                         image-size file-system-type full-boot?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; DEVICE is the target devices for bootloader; TARGET is the target
 root directory; IMAGE-SIZE is the size of the image to be built, for the
-'vm-image' and 'disk-image' actions.  FULL-BOOT? is used for the 'vm' action;
+'vm-image' and 'disk-image' actions.
+The root filesystem is created as a FILE-SYSTEM-TYPE filesystem.
+FULL-BOOT? is used for the 'vm' action;
 it determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
@@ -632,6 +636,7 @@ output when building a system derivation, such as a disk image."
 
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
+                                                #:file-system-type file-system-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
@@ -775,6 +780,10 @@ Some ACTIONS support additional ARGS.\n"))
       --on-error=STRATEGY
                          apply STRATEGY when an error occurs while reading FILE"))
   (display (G_ "
+      --file-system-type=TYPE
+                         for 'disk-image', produce a root file system of TYPE
+                         (one of 'ext4', 'iso9660')"))
+  (display (G_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
@@ -811,6 +820,10 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("on-error") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'on-error (string->symbol arg)
+                               result)))
+         (option '(#\t "file-system-type") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'file-system-type arg
                                result)))
          (option '("image-size") #t #f
                  (lambda (opt name arg result)
@@ -854,6 +867,7 @@ Some ACTIONS support additional ARGS.\n"))
     (build-hook? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
+    (file-system-type . "ext4")
     (image-size . guess)
     (install-bootloader? . #t)))
 
@@ -906,6 +920,7 @@ resulting from command-line parsing."
                              #:derivations-only? (assoc-ref opts
                                                             'derivations-only?)
                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:file-system-type (assoc-ref opts 'file-system-type)
                              #:image-size (assoc-ref opts 'image-size)
                              #:full-boot? (assoc-ref opts 'full-boot?)
                              #:mappings (filter-map (match-lambda
