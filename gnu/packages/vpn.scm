@@ -209,7 +209,7 @@ the entire VPN in a network namespace accessible only through SSH.")
    (inputs
     `(("libxml2" ,libxml2)
       ("gnutls" ,gnutls)
-      ("vpnc" ,vpnc)
+      ("vpnc-scripts" ,vpnc-scripts)
       ("zlib" ,zlib)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
@@ -217,7 +217,7 @@ the entire VPN in a network namespace accessible only through SSH.")
    (arguments
     `(#:configure-flags
       `(,(string-append "--with-vpnc-script="
-                        (assoc-ref %build-inputs "vpnc")
+                        (assoc-ref %build-inputs "vpnc-scripts")
                         "/etc/vpnc/vpnc-script"))))
    (synopsis "Client for Cisco VPN")
    (description
