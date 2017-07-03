@@ -374,7 +374,7 @@ Grub configuration and OS-DRV as the stuff in it."
                                                     (iso9660-uuid->string
                                                      volume-uuid)))
                                   `()))))
-      (error "failed to create ISO image"))))
+      (error "failed to create ISO9660 image"))))
 
 (define* (initialize-hard-disk device
                                #:key
