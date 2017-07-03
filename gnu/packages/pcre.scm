@@ -75,7 +75,6 @@ POSIX regular expression API.")
 (define pcre/fixed
   (package
     (inherit pcre)
-    (replacement #f)
     (source (origin
               (inherit (package-source pcre))
               (patches (search-patches "pcre-CVE-2017-7186.patch"))))))

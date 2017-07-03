@@ -79,7 +79,6 @@ things the parser might find in the XML document (like start tags).")
   (package
     (inherit expat)
     (version "2.2.1")
-    (replacement #f)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"

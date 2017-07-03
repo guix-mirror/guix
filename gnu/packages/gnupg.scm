@@ -119,7 +119,6 @@ generation.")
 (define libgcrypt-1.7.8
   (package
     (inherit libgcrypt)
-    (replacement #f)
     (version "1.7.8")
     (source (origin
              (method url-fetch)
@@ -131,7 +130,6 @@ generation.")
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
-    (replacement #f)
     (version "1.5.6")
     (source
      (origin

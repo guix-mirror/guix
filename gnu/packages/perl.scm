@@ -151,7 +151,6 @@
 (define perl/fixed
   (package
     (inherit perl)
-    (replacement #f)
     (source
       (origin
         (inherit (package-source perl))

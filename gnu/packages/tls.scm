@@ -222,7 +222,6 @@ required structures.")
     ;; We use 'D' instead of '13' here to keep the store file name at
     ;; the same length. See <https://bugs.gnu.org/27308>.
     (version "3.5.D")
-    (replacement #f)
     (source (origin
               (method url-fetch)
               (uri
@@ -240,7 +239,6 @@ required structures.")
   ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
   (package
     (inherit gnutls)
-    (replacement #f)
     (source (package-source gnutls-3.5.13))
     (name "guile2.2-gnutls")
     (arguments

@@ -415,7 +415,6 @@ and returns a sequence of positioned glyphids from the font.")
   (package
     (inherit graphite2)
     (name "graphite2")
-    (replacement #f)
     (source
      (origin
        (method url-fetch)

@@ -106,7 +106,6 @@ a focus on simplicity and productivity.")
   (package
     (inherit ruby)
     (version "2.3.4")
-    (replacement #f)
     (source
      (origin
        (method url-fetch)
@@ -124,7 +123,6 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
-    (replacement #f)
     (version "2.2.7")
     (source
      (origin
@@ -138,7 +136,6 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.1
   (package (inherit ruby)
-    (replacement #f)
     (version "2.1.10")
     (source
      (origin
@@ -172,7 +169,6 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-1.8
   (package (inherit ruby)
-    (replacement #f)
     (version "1.8.7-p374")
     (source
      (origin

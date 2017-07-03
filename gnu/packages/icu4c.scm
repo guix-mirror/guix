@@ -71,7 +71,6 @@ C/C++ part.")
 (define icu4c/fixed
   (package
     (inherit icu4c)
-    (replacement #f)
     (source (origin
               (inherit (package-source icu4c))
               (patches

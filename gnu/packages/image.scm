@@ -94,7 +94,6 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libpng-apng
   (package
     (inherit libpng)
-    (replacement #f) ;libpng's replacement doesn't apply here
     (name "libpng-apng")
     (version (package-version libpng))
     (arguments

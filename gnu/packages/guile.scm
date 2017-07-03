@@ -217,14 +217,12 @@ without requiring the source code to be rewritten.")
   ;; in the `base' module, and thus changing it entails a full rebuild.
   (package
     (inherit guile-2.0)
-    (properties '((hidden? . #t)))          ;people should install 'guile-2.0'
-    (replacement #f)))
+    (properties '((hidden? . #t)))))        ;people should install 'guile-2.0'
 
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
     (version "2.2.2")
-    (replacement #f)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/guile/guile-" version

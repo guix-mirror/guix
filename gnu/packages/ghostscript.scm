@@ -219,7 +219,6 @@ output file formats and printers.")
 (define ghostscript/fixed
   (package
     (inherit ghostscript)
-    (replacement #f)
     (source
       (origin
         (inherit (package-source ghostscript))
