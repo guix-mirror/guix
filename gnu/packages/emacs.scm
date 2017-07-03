@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -3023,6 +3023,27 @@ ongoing operations.")
      "This Emacs library provides sequence-manipulation functions that
 complement basic functions provided by @code{subr.el}.  All provided functions
 work on lists, strings and vectors.")
+    (license license:gpl3+)))
+
+(define-public emacs-sparql-mode
+  (package
+    (name "emacs-sparql-mode")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ljos/sparql-mode/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s93mkllxnhy7fw616cnnc2danacdlarys0g3cn89drh0llh53cv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ljos/sparql-mode")
+    (synopsis "SPARQL mode for Emacs")
+    (description "This package provides a major mode for Emacs that provides
+syntax highlighting for SPARQL.  It also provides a way to execute queries
+against a SPARQL HTTP endpoint, such as is provided by Fuseki.  It is also
+possible to query other endpoints like DBPedia.")
     (license license:gpl3+)))
 
 (define-public emacs-better-defaults
