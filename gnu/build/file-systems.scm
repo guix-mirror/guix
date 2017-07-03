@@ -48,6 +48,7 @@
             string->ext3-uuid
             string->ext4-uuid
             string->btrfs-uuid
+            iso9660-uuid->string
 
             bind-mount
 

@@ -353,18 +353,27 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (error "failed to create GRUB EFI image"))))
 
 (define* (make-iso9660-image grub config-file os-drv target
-                             #:key (volume-id "GuixSD"))
+                             #:key (volume-id "GuixSD") (volume-uuid #f))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 Grub configuration and OS-DRV as the stuff in it."
   (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
     (mkdir-p "/tmp/root/var/run")
     (mkdir-p "/tmp/root/run")
-    (unless (zero? (system* grub-mkrescue "-o" target
-                            (string-append "boot/grub/grub.cfg=" config-file)
-                            (string-append "gnu/store=" os-drv "/..")
+    (unless (zero? (apply system*
+                          `(,grub-mkrescue "-o" ,target
+                            ,(string-append "boot/grub/grub.cfg=" config-file)
+                            ,(string-append "gnu/store=" os-drv "/..")
                             "var=/tmp/root/var"
                             "run=/tmp/root/run"
-                            "--" "-volid" (string-upcase volume-id)))
+                            "--"
+                            "-volid" ,(string-upcase volume-id)
+                            ,@(if volume-uuid
+                                  `("-volume_date" "uuid"
+                                    ,(string-filter (lambda (value)
+                                                      (not (char=? #\- value)))
+                                                    (iso9660-uuid->string
+                                                     volume-uuid)))
+                                  `()))))
       (error "failed to create ISO image"))))
 
 (define* (initialize-hard-disk device
