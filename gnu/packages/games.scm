@@ -3849,7 +3849,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.4")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cxong/cdogs-sdl/"
@@ -3857,7 +3857,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08c3y8ijimx6mp0gm90abz4lsnbflqka519q2v0id0096vsc2pxn"))))
+                "17llrpdrrwi8h37vjpkxk2asj7h8qdfp2zy28wiwb7cjzribmz3k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3865,10 +3865,11 @@ emerges from a sewer hole and pulls her below ground.")
                             (assoc-ref %outputs "out")
                             "/share/cdogs-sdl/"))))
     (inputs
-     `(("sdl2" ,sdl2)
+     `(("mesa" ,mesa)
+       ("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
        ("sdl2-mixer" ,sdl2-mixer)))
-    (home-page "http://cxong.github.io/cdogs-sdl/")
+    (home-page "https://cxong.github.io/cdogs-sdl/")
     (synopsis "Classic overhead run-and-gun game")
     (description "C-Dogs SDL is a classic overhead run-and-gun game,
 supporting up to 4 players in co-op and deathmatch modes.  Customize your
