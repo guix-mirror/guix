@@ -75,7 +75,8 @@ package names, build the underlying packages before sending them."
 
       (and (or (assoc-ref opts 'dry-run?)
                (build-derivations local drv))
-           (let* ((session (open-ssh-session host #:user user #:port port))
+           (let* ((session (open-ssh-session host #:user user
+                                             #:port (or port 22)))
                   (sent    (send-files local items
                                        (connect-to-remote-daemon session)
                                        #:recursive? #t)))
@@ -88,7 +89,7 @@ package names, build the underlying packages before sending them."
     (let*-values (((user host port)
                    (ssh-spec->user+host+port source))
                   ((session)
-                   (open-ssh-session host #:user user #:port port))
+                   (open-ssh-session host #:user user #:port (or port 22)))
                   ((remote)
                    (connect-to-remote-daemon session)))
       (set-build-options-from-command-line local opts)
