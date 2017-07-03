@@ -55,14 +55,14 @@
 (define-public wine
   (package
     (name "wine")
-    (version "2.11")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/2.x"
+              (uri (string-append "https://dl.winehq.org/wine/source/2.0"
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))
+                "10qm0xxqzvl4y3mhvaxcaacrcs8d5kdz5wf0gbxpmp36wnm4xyvc"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -159,3 +159,18 @@ integrate Windows applications into your desktop.")
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (64-bit version)")
     (supported-systems '("x86_64-linux"))))
+
+;; TODO: This is wine development version, provided for historical reasons.
+;; We can remove it as soon as a new stable release is out.
+(define-public wine-next
+  (package (inherit wine)
+    (name "wine-next")
+    (version "2.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dl.winehq.org/wine/source/2.x"
+                                  "/wine-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))))
+
