@@ -26,6 +26,7 @@
   #:use-module (guix build syscalls)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
+  #:use-module (gnu build file-systems)
   #:use-module (guix records)
   #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
