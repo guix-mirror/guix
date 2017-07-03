@@ -288,21 +288,23 @@ Scheme and C programs and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "2.5.1")
+    (version "3.1.0-pre2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1bvp7pc71bln5yvfj87s8750c6l53wjl6f8m12v62q9926adhwys"))
-             (patches (search-patches "hop-linker-flags.patch"))))
+               "09m7pahjsp7wxzd20cdph9j3mgf2nq5dyckcjljcd40m25v85kks"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:test-target "test"
+       #:make-flags '("BIGLOO=bigloo")
+       #:parallel-build? #f
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (zero?
                 (system* "./configure"
@@ -310,11 +312,16 @@ Scheme and C programs and between Scheme and Java programs.")
                          (string-append "--blflags="
                                         ;; user flags completely override useful
                                         ;; default flags, so repeat them here.
-                                        "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
-                                        "-ldopt -Wl,-rpath," out "/lib")))))))
-       #:tests? #f))                                ; no test suite
+                                        "-copt \\$(CPICFLAGS) "
+                                        "-L \\$(BUILDLIBDIR) "
+                                        "-ldopt -Wl,-rpath," out "/lib")))))))))
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
+              ("libgc" ,libgc)
+              ("libunistring" ,libunistring)
+              ("libuv" ,libuv)
+              ("pcre" ,pcre)
+              ("sqlite" ,sqlite)
               ("which" ,which)))
     (home-page "http://hop.inria.fr/")
     (synopsis "Multi-tier programming language for the Web 2.0")
