@@ -487,17 +487,15 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.7")
+    (version "0.16.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
                                   (version-major+minor version)
                                   "/gajim-" version ".tar.bz2"))
-              (patches
-               (search-patches "gajim-CVE-2016-10376.patch"))
               (sha256
                (base32
-                "13sxz0hpvyj2yvcbsfqq9yn0hp1d1zsxsj40r0v16jlibha5da9n"))))
+                "0ckakdjg30fsyjsgyy2573x9nmjivdg76y049l86wns5axw8im26"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

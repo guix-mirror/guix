@@ -601,7 +601,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/freetype-CVE-2017-8105.patch		\
   %D%/packages/patches/freetype-CVE-2017-8287.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
-  %D%/packages/patches/gajim-CVE-2016-10376.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
