@@ -177,6 +177,8 @@ made available under the /xchg CIFS share."
 
 (define* (iso9660-image #:key
                         (name "iso9660-image")
+                        file-system-label
+                        file-system-uuid
                         (system (%current-system))
                         (qemu qemu-minimal)
                         os-drv
@@ -211,7 +213,9 @@ INPUTS is a list of inputs (as for packages)."
            (make-iso9660-image #$(bootloader-package bootloader)
                                #$bootcfg-drv
                                #$os-drv
-                               "/xchg/guixsd.iso")
+                               "/xchg/guixsd.iso"
+                               #:volume-id #$file-system-label
+                               #:volume-uuid #$file-system-uuid)
            (reboot))))
    #:system system
    #:make-disk-image? #f
@@ -363,6 +367,8 @@ to USB sticks meant to be read-only."
                          (bootcfg  (operating-system-bootcfg os)))
       (if (string=? "iso9660" file-system-type)
           (iso9660-image #:name name
+                         #:file-system-label root-label
+                         #:file-system-uuid #f
                          #:os-drv os-drv
                          #:bootcfg-drv bootcfg
                          #:bootloader (bootloader-configuration-bootloader
