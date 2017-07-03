@@ -16191,7 +16191,7 @@ estimates the size of the image needed to store the system, but you can
 use the @option{--image-size} option to specify a value.
 
 You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to "ext4".
+@option{--file-system-type} option.  It defaults to @code{ext4}.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
 the QEMU emulator can efficiently use. @xref{Running GuixSD in a VM},
