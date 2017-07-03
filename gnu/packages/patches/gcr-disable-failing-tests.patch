@@ -1,13 +1,12 @@
 This patch removes a group of tests that fail because /var/lib/dbus/machine-id
 is not present in the build environment.
 
-diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
---- gcr-3.20.0.old/Makefile.in	2017-06-29 14:26:33.794837648 -0400
-+++ gcr-3.20.0/Makefile.in	2017-06-29 14:26:54.023532689 -0400
+--- gcr-3.20.0.old/Makefile.in	2017-07-03 18:05:10.742595317 -0400
++++ gcr-3.20.0/Makefile.in	2017-07-03 18:08:26.379565428 -0400
 @@ -482,8 +482,7 @@
-	test-openssh$(EXEEXT) test-secure-memory$(EXEEXT) \
-	test-trust$(EXEEXT) test-parser$(EXEEXT) test-record$(EXEEXT) \
-	test-memory-icon$(EXEEXT) test-gnupg-key$(EXEEXT) \
+ 	test-openssh$(EXEEXT) test-secure-memory$(EXEEXT) \
+ 	test-trust$(EXEEXT) test-parser$(EXEEXT) test-record$(EXEEXT) \
+ 	test-memory-icon$(EXEEXT) test-gnupg-key$(EXEEXT) \
 -	test-gnupg-collection$(EXEEXT) test-gnupg-process$(EXEEXT) \
 -	test-system-prompt$(EXEEXT)
 +	test-gnupg-collection$(EXEEXT) test-gnupg-process$(EXEEXT)
@@ -30,33 +29,33 @@ diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
  test_trust_OBJECTS = $(am_test_trust_OBJECTS)
  test_trust_DEPENDENCIES = $(am__DEPENDENCIES_3)
 @@ -974,8 +965,7 @@
-	$(test_secret_exchange_SOURCES) $(test_secure_memory_SOURCES) \
-	$(test_simple_certificate_SOURCES) \
-	$(test_subject_public_key_SOURCES) $(test_symkey_SOURCES) \
+ 	$(test_secret_exchange_SOURCES) $(test_secure_memory_SOURCES) \
+ 	$(test_simple_certificate_SOURCES) \
+ 	$(test_subject_public_key_SOURCES) $(test_symkey_SOURCES) \
 -	$(test_system_prompt_SOURCES) $(test_trust_SOURCES) \
 -	$(test_util_SOURCES)
 +	$(test_trust_SOURCES) $(test_util_SOURCES)
  DIST_SOURCES = $(libegg_asn1x_la_SOURCES) $(libegg_hex_la_SOURCES) \
-	$(libegg_secmem_la_SOURCES) $(libegg_test_la_SOURCES) \
-	$(libegg_la_SOURCES) $(libgck_@GCK_MAJOR@_la_SOURCES) \
+ 	$(libegg_secmem_la_SOURCES) $(libegg_test_la_SOURCES) \
+ 	$(libegg_la_SOURCES) $(libgck_@GCK_MAJOR@_la_SOURCES) \
 @@ -1016,8 +1006,7 @@
-	$(test_secret_exchange_SOURCES) $(test_secure_memory_SOURCES) \
-	$(test_simple_certificate_SOURCES) \
-	$(test_subject_public_key_SOURCES) $(test_symkey_SOURCES) \
+ 	$(test_secret_exchange_SOURCES) $(test_secure_memory_SOURCES) \
+ 	$(test_simple_certificate_SOURCES) \
+ 	$(test_subject_public_key_SOURCES) $(test_symkey_SOURCES) \
 -	$(test_system_prompt_SOURCES) $(test_trust_SOURCES) \
 -	$(test_util_SOURCES)
 +	$(test_trust_SOURCES) $(test_util_SOURCES)
  RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
-	ctags-recursive dvi-recursive html-recursive info-recursive \
-	install-data-recursive install-dvi-recursive \
+ 	ctags-recursive dvi-recursive html-recursive info-recursive \
+ 	install-data-recursive install-dvi-recursive \
 @@ -2117,8 +2106,7 @@
-	test-memory-icon \
-	test-gnupg-key \
-	test-gnupg-collection \
+ 	test-memory-icon \
+ 	test-gnupg-key \
+ 	test-gnupg-collection \
 -	test-gnupg-process \
 -	test-system-prompt
 +	test-gnupg-process
-
+ 
  test_certificate_SOURCES = gcr/test-certificate.c
  test_certificate_CFLAGS = $(gcr_CFLAGS)
 @@ -2171,9 +2159,6 @@
@@ -69,20 +68,20 @@ diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
  test_trust_SOURCES = gcr/test-trust.c
  test_trust_CFLAGS = $(gcr_CFLAGS)
  test_trust_LDADD = $(gcr_LIBS)
-@@ -3283,12 +3268,7 @@
- test-symkey$(EXEEXT): $(test_symkey_OBJECTS) $(test_symkey_DEPENDENCIES) $(EXTRA_test_symkey_DEPENDENCIES)
-	@rm -f test-symkey$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(test_symkey_OBJECTS) $(test_symkey_LDADD) $(LIBS)
+@@ -3283,12 +3268,6 @@
+ test-symkey$(EXEEXT): $(test_symkey_OBJECTS) $(test_symkey_DEPENDENCIES) $(EXTRA_test_symkey_DEPENDENCIES) 
+ 	@rm -f test-symkey$(EXEEXT)
+ 	$(AM_V_CCLD)$(LINK) $(test_symkey_OBJECTS) $(test_symkey_LDADD) $(LIBS)
 -gcr/test_system_prompt-test-system-prompt.$(OBJEXT):  \
 -	gcr/$(am__dirstamp) gcr/$(DEPDIR)/$(am__dirstamp)
-
--test-system-prompt$(EXEEXT): $(test_system_prompt_OBJECTS) $(test_system_prompt_DEPENDENCIES) $(EXTRA_test_system_prompt_DEPENDENCIES)
+-
+-test-system-prompt$(EXEEXT): $(test_system_prompt_OBJECTS) $(test_system_prompt_DEPENDENCIES) $(EXTRA_test_system_prompt_DEPENDENCIES) 
 -	@rm -f test-system-prompt$(EXEEXT)
 -	$(AM_V_CCLD)$(test_system_prompt_LINK) $(test_system_prompt_OBJECTS) $(test_system_prompt_LDADD) $(LIBS)
  gcr/test_trust-test-trust.$(OBJEXT): gcr/$(am__dirstamp) \
-	gcr/$(DEPDIR)/$(am__dirstamp)
-
-@@ -3446,7 +3426,6 @@
+ 	gcr/$(DEPDIR)/$(am__dirstamp)
+ 
+@@ -3446,7 +3425,6 @@
  @AMDEP_TRUE@@am__include@ @am__quote@gcr/$(DEPDIR)/test_secure_memory-test-secure-memory.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@gcr/$(DEPDIR)/test_simple_certificate-test-simple-certificate.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@gcr/$(DEPDIR)/test_subject_public_key-test-subject-public-key.Po@am__quote@
@@ -90,10 +89,10 @@ diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
  @AMDEP_TRUE@@am__include@ @am__quote@gcr/$(DEPDIR)/test_trust-test-trust.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@gcr/$(DEPDIR)/test_util-test-util.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@ui/$(DEPDIR)/frob_certificate-frob-certificate.Po@am__quote@
-@@ -4968,20 +4947,6 @@
+@@ -4968,20 +4946,6 @@
  @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
  @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_subject_public_key_CFLAGS) $(CFLAGS) -c -o gcr/test_subject_public_key-test-subject-public-key.obj `if test -f 'gcr/test-subject-public-key.c'; then $(CYGPATH_W) 'gcr/test-subject-public-key.c'; else $(CYGPATH_W) '$(srcdir)/gcr/test-subject-public-key.c'; fi`
-
+ 
 -gcr/test_system_prompt-test-system-prompt.o: gcr/test-system-prompt.c
 -@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_system_prompt_CFLAGS) $(CFLAGS) -MT gcr/test_system_prompt-test-system-prompt.o -MD -MP -MF gcr/$(DEPDIR)/test_system_prompt-test-system-prompt.Tpo -c -o gcr/test_system_prompt-test-system-prompt.o `test -f 'gcr/test-system-prompt.c' || echo '$(srcdir)/'`gcr/test-system-prompt.c
 -@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) gcr/$(DEPDIR)/test_system_prompt-test-system-prompt.Tpo gcr/$(DEPDIR)/test_system_prompt-test-system-prompt.Po
@@ -111,10 +110,10 @@ diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
  gcr/test_trust-test-trust.o: gcr/test-trust.c
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_trust_CFLAGS) $(CFLAGS) -MT gcr/test_trust-test-trust.o -MD -MP -MF gcr/$(DEPDIR)/test_trust-test-trust.Tpo -c -o gcr/test_trust-test-trust.o `test -f 'gcr/test-trust.c' || echo '$(srcdir)/'`gcr/test-trust.c
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) gcr/$(DEPDIR)/test_trust-test-trust.Tpo gcr/$(DEPDIR)/test_trust-test-trust.Po
-@@ -5808,13 +5773,6 @@
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+@@ -5808,13 +5772,6 @@
+ 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+ 	--log-file $$b.log --trs-file $$b.trs \
+ 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 -	"$$tst" $(AM_TESTS_FD_REDIRECT)
 -test-system-prompt.log: test-system-prompt$(EXEEXT)
 -	@p='test-system-prompt$(EXEEXT)'; \
@@ -122,6 +121,6 @@ diff -ur gcr-3.20.0.old/Makefile.in gcr-3.20.0/Makefile.in
 -	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 -	--log-file $$b.log --trs-file $$b.trs \
 -	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ 	"$$tst" $(AM_TESTS_FD_REDIRECT)
  .test.log:
-	@p='$<'; \
+ 	@p='$<'; \
