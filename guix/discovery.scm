@@ -60,11 +60,21 @@ DIRECTORY is not accessible."
                      (case (entry-type absolute properties)
                        ((directory)
                         (append (scheme-files absolute) result))
-                       ((regular symlink)
-                        ;; XXX: We don't recurse if we find a symlink.
+                       ((regular)
                         (if (string-suffix? ".scm" name)
                             (cons absolute result)
                             result))
+                       ((symlink)
+                        (cond ((string-suffix? ".scm" name)
+                               (cons absolute result))
+                              ((stat absolute #f)
+                               =>
+                               (match-lambda
+                                 (#f result)
+                                 ((= stat:type 'directory)
+                                  (append (scheme-files absolute)
+                                          result))
+                                 (_ result)))))
                        (else
                         result))))))
               '()

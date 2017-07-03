@@ -19,6 +19,7 @@
 (define-module (test-discovery)
   #:use-module (guix discovery)
   #:use-module (guix build-system)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -31,6 +32,19 @@
   (match (map module-name (scheme-modules %top-srcdir "guix/import"))
     ((('guix 'import _ ...) ..1)
      #t)))
+
+(test-assert "scheme-modules recurses in symlinks to directories"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (mkdir (string-append directory "/guix"))
+     (symlink (string-append %top-srcdir "/guix/import")
+              (string-append directory "/guix/import"))
+
+     ;; DIRECTORY/guix/import is a symlink but we want to make sure
+     ;; 'scheme-modules' recurses into it.
+     (match (map module-name (scheme-modules directory))
+       ((('guix 'import _ ...) ..1)
+        #t)))))
 
 (test-equal "scheme-modules, non-existent directory"
   '()
