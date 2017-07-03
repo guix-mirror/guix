@@ -2168,7 +2168,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2176,7 +2176,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hww4385f81lyy30fx2rb4wchfi79dpgl7yylnfxvf27a4h2mkhm"))))
+                "08l0wcwwsl5kix9kg3h51s2afzg97y1rjjfi0ijs294kz57g1cfq"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))
