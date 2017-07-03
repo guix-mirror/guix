@@ -162,7 +162,14 @@ system.")
                        (set-guile-for-build (default-guile))
                        (system-disk-image installation-os
                                           #:disk-image-size
-                                          (* 1024 MiB))))))
+                                          (* 1024 MiB)))))
+            (->job 'iso9660-image
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-disk-image installation-os
+                                          #:file-system-type
+                                          "iso9660")))))
       '()))
 
 (define (system-test-jobs store system)

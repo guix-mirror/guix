@@ -34,6 +34,7 @@
                 #:select (qemu-command))
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
@@ -173,6 +174,48 @@ made available under the /xchg CIFS share."
                       #:env-vars env-vars
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs)))
+
+(define* (iso9660-image #:key
+                        (name "iso9660-image")
+                        (system (%current-system))
+                        (qemu qemu-minimal)
+                        os-drv
+                        bootcfg-drv
+                        bootloader
+                        (inputs '()))
+  "Return a bootable, stand-alone iso9660 image.
+
+INPUTS is a list of inputs (as for packages)."
+  (expression->derivation-in-linux-vm
+   name
+   (with-imported-modules (source-module-closure '((gnu build vm)
+                                                   (guix build utils)))
+     #~(begin
+         (use-modules (gnu build vm)
+                      (guix build utils))
+
+         (let ((inputs
+                '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
+                           (map canonical-package
+                                (list sed grep coreutils findutils gawk))))
+
+               ;; This variable is unused but allows us to add INPUTS-TO-COPY
+               ;; as inputs.
+               (to-register
+                '#$(map (match-lambda
+                          ((name thing) thing)
+                          ((name thing output) `(,thing ,output)))
+                        inputs)))
+
+           (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+           (make-iso9660-image #$(bootloader-package bootloader)
+                               #$bootcfg-drv
+                               #$os-drv
+                               "/xchg/guixsd.iso")
+           (reboot))))
+   #:system system
+   #:make-disk-image? #f
+   #:references-graphs inputs))
 
 (define* (qemu-image #:key
                      (name "qemu-image")
@@ -318,19 +361,30 @@ to USB sticks meant to be read-only."
 
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                          (bootcfg  (operating-system-bootcfg os)))
-      (qemu-image #:name name
-                  #:os-drv os-drv
-                  #:bootcfg-drv bootcfg
-                  #:bootloader (bootloader-configuration-bootloader
-                                (operating-system-bootloader os))
-                  #:disk-image-size disk-image-size
-                  #:disk-image-format "raw"
-                  #:file-system-type file-system-type
-                  #:file-system-label root-label
-                  #:copy-inputs? #t
-                  #:register-closures? #t
-                  #:inputs `(("system" ,os-drv)
-                             ("bootcfg" ,bootcfg))))))
+      (if (string=? "iso9660" file-system-type)
+          (iso9660-image #:name name
+                         #:os-drv os-drv
+                         #:bootcfg-drv bootcfg
+                         #:bootloader (bootloader-configuration-bootloader
+                                        (operating-system-bootloader os))
+                         #:inputs `(("system" ,os-drv)
+                                    ("bootcfg" ,bootcfg)))
+          (qemu-image #:name name
+                      #:os-drv os-drv
+                      #:bootcfg-drv bootcfg
+                      #:bootloader (bootloader-configuration-bootloader
+                                    (operating-system-bootloader os))
+                      #:disk-image-size disk-image-size
+                      #:disk-image-format "raw"
+                      #:file-system-type (if (string=? "iso9660"
+                                                       file-system-type)
+                                             "ext4"
+                                             file-system-type)
+                      #:file-system-label root-label
+                      #:copy-inputs? #t
+                      #:register-closures? #t
+                      #:inputs `(("system" ,os-drv)
+                                 ("bootcfg" ,bootcfg)))))))
 
 (define* (system-qemu-image os
                             #:key

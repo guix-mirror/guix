@@ -50,7 +50,8 @@
             estimated-partition-size
             root-partition-initializer
             initialize-partition-table
-            initialize-hard-disk))
+            initialize-hard-disk
+            make-iso9660-image))
 
 ;;; Commentary:
 ;;;
@@ -350,6 +351,21 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
                             ;; Graft the configuration file onto the image.
                             (string-append "boot/grub/grub.cfg=" config-file)))
       (error "failed to create GRUB EFI image"))))
+
+(define* (make-iso9660-image grub config-file os-drv target
+                             #:key (volume-id "GuixSD"))
+  "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
+Grub configuration and OS-DRV as the stuff in it."
+  (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
+    (mkdir-p "/tmp/root/var/run")
+    (mkdir-p "/tmp/root/run")
+    (unless (zero? (system* grub-mkrescue "-o" target
+                            (string-append "boot/grub/grub.cfg=" config-file)
+                            (string-append "gnu/store=" os-drv "/..")
+                            "var=/tmp/root/var"
+                            "run=/tmp/root/run"
+                            "--" "-volid" (string-upcase volume-id)))
+      (error "failed to create ISO image"))))
 
 (define* (initialize-hard-disk device
                                #:key
