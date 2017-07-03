@@ -87,6 +87,9 @@
                 (drop "ppmtopjxl" in "converter/ppm")
 
                 ;; Remove timestamps from the generated code.
+                (substitute* "buildtools/makepointerman"
+                  (("gmctime[(][)]")
+                   "\"Thu Jan 1 00:00:00 1970\""))
                 (substitute* "buildtools/stamp-date"
                   (("^DATE=.*")
                    "DATE=\"Thu Jan 01 00:00:00+0000 1970\"\n")
