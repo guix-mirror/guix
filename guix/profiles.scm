@@ -967,9 +967,13 @@ for both major versions of GTK+."
   "Return a derivation that builds the @file{mimeinfo.cache} database from
 desktop files.  It's used to query what applications can handle a given
 MIME type."
-  (mlet %store-monad ((desktop-file-utils
+  (define desktop-file-utils            ; lazy reference
+    (module-ref (resolve-interface '(gnu packages freedesktop))
+                'desktop-file-utils))
+
+  (mlet %store-monad ((glib
                        (manifest-lookup-package
-                        manifest "desktop-file-utils")))
+                        manifest "glib")))
     (define build
       (with-imported-modules '((guix build utils)
                                (guix build union))
@@ -990,8 +994,8 @@ MIME type."
                            #:log-port (%make-void-port "w"))
               (exit (zero? (system* update-desktop-database destdir)))))))
 
-    ;; Don't run the hook when 'desktop-file-utils' is not referenced.
-    (if desktop-file-utils
+    ;; Don't run the hook when 'glib' is not referenced.
+    (if glib
         (gexp->derivation "xdg-desktop-database" build
                           #:local-build? #t
                           #:substitutable? #f)
