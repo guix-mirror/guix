@@ -92,6 +92,7 @@
             all-network-interface-names
             network-interface-names
             network-interface-netmask
+            network-interface-running?
             loopback-network-interface?
             network-interface-address
             set-network-interface-netmask
@@ -1156,6 +1157,7 @@ bytes."
 (define-as-needed IFF_UP #x1)                     ;Interface is up
 (define-as-needed IFF_BROADCAST #x2)              ;Broadcast address valid.
 (define-as-needed IFF_LOOPBACK #x8)               ;Is a loopback net.
+(define-as-needed IFF_RUNNING #x40)               ;interface RFC2863 OPER_UP
 
 (define IF_NAMESIZE 16)                           ;maximum interface name size
 
@@ -1329,6 +1331,13 @@ interface NAME."
          (flags (network-interface-flags sock name)))
     (close-port sock)
     (not (zero? (logand flags IFF_LOOPBACK)))))
+
+(define (network-interface-running? name)
+  "Return true if NAME designates a running network interface."
+  (let* ((sock  (socket SOCK_STREAM AF_INET 0))
+         (flags (network-interface-flags sock name)))
+    (close-port sock)
+    (not (zero? (logand flags IFF_RUNNING)))))
 
 (define-as-needed (set-network-interface-flags socket name flags)
   "Set the flag of network interface NAME to FLAGS."
