@@ -554,7 +554,12 @@ providing the system administrator with some help in common tasks.")
                                    (find-files "lib" "\\.a$")))
                        #t))))))
     (inputs `(("zlib" ,zlib)
-              ("ncurses" ,ncurses)))
+              ("ncurses" ,ncurses)
+
+              ;; XXX: This is so that the 'pre-check' phase can find it.
+              ,@(if (%current-target-system)
+                    `(("net-base" ,net-base))
+                    '())))
     (native-inputs
      `(("perl" ,perl)
        ("net-base" ,net-base)))                   ;for tests
