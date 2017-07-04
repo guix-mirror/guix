@@ -68,24 +68,25 @@ the derivations referenced by EXP are automatically copied to the initrd."
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
-  (mlet %store-monad ((init (gexp->script "init" exp
-                                          #:guile guile)))
-    (define builder
-      (with-imported-modules (source-module-closure
-                              '((gnu build linux-initrd)))
-        #~(begin
-            (use-modules (gnu build linux-initrd))
+  (define init
+    (program-file "init" exp #:guile guile))
 
-            (mkdir #$output)
-            (build-initrd (string-append #$output "/initrd")
-                          #:guile #$guile
-                          #:init #$init
-                          ;; Copy everything INIT refers to into the initrd.
-                          #:references-graphs '("closure")
-                          #:gzip (string-append #$gzip "/bin/gzip")))))
+  (define builder
+    (with-imported-modules (source-module-closure
+                            '((gnu build linux-initrd)))
+      #~(begin
+          (use-modules (gnu build linux-initrd))
 
-    (gexp->derivation name builder
-                      #:references-graphs `(("closure" ,init)))))
+          (mkdir #$output)
+          (build-initrd (string-append #$output "/initrd")
+                        #:guile #$guile
+                        #:init #$init
+                        ;; Copy everything INIT refers to into the initrd.
+                        #:references-graphs '("closure")
+                        #:gzip (string-append #$gzip "/bin/gzip")))))
+
+  (gexp->derivation name builder
+                    #:references-graphs `(("closure" ,init))))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
@@ -132,7 +133,7 @@ MODULES and taken from LINUX."
                                                 (basename module))))
                     (delete-duplicates modules)))))
 
-  (gexp->derivation "linux-modules" build-exp))
+  (computed-file "linux-modules" build-exp))
 
 (define* (raw-initrd file-systems
                       #:key
@@ -165,40 +166,41 @@ to it are lost."
              (open source target)))
          mapped-devices))
 
-  (mlet %store-monad ((kodir (flat-linux-module-directory linux
-                                                          linux-modules)))
-    (expression->initrd
-     (with-imported-modules (source-module-closure
-                             '((gnu build linux-boot)
-                               (guix build utils)
-                               (guix build bournish)
-                               (gnu build file-systems)))
-       #~(begin
-           (use-modules (gnu build linux-boot)
-                        (guix build utils)
-                        (guix build bournish) ;add the 'bournish' meta-command
-                        (srfi srfi-26)
+  (define kodir
+    (flat-linux-module-directory linux linux-modules))
 
-                        ;; FIXME: The following modules are for
-                        ;; LUKS-DEVICE-MAPPING.  We should instead propagate
-                        ;; this info via gexps.
-                        ((gnu build file-systems)
-                         #:select (find-partition-by-luks-uuid))
-                        (rnrs bytevectors))
+  (expression->initrd
+   (with-imported-modules (source-module-closure
+                           '((gnu build linux-boot)
+                             (guix build utils)
+                             (guix build bournish)
+                             (gnu build file-systems)))
+     #~(begin
+         (use-modules (gnu build linux-boot)
+                      (guix build utils)
+                      (guix build bournish)   ;add the 'bournish' meta-command
+                      (srfi srfi-26)
 
-           (with-output-to-port (%make-void-port "w")
-             (lambda ()
-               (set-path-environment-variable "PATH" '("bin" "sbin")
-                                              '#$helper-packages)))
+                      ;; FIXME: The following modules are for
+                      ;; LUKS-DEVICE-MAPPING.  We should instead propagate
+                      ;; this info via gexps.
+                      ((gnu build file-systems)
+                       #:select (find-partition-by-luks-uuid))
+                      (rnrs bytevectors))
 
-           (boot-system #:mounts '#$(map file-system->spec file-systems)
-                        #:pre-mount (lambda ()
-                                      (and #$@device-mapping-commands))
-                        #:linux-modules '#$linux-modules
-                        #:linux-module-directory '#$kodir
-                        #:qemu-guest-networking? #$qemu-networking?
-                        #:volatile-root? '#$volatile-root?)))
-     #:name "raw-initrd")))
+         (with-output-to-port (%make-void-port "w")
+           (lambda ()
+             (set-path-environment-variable "PATH" '("bin" "sbin")
+                                            '#$helper-packages)))
+
+         (boot-system #:mounts '#$(map file-system->spec file-systems)
+                      #:pre-mount (lambda ()
+                                    (and #$@device-mapping-commands))
+                      #:linux-modules '#$linux-modules
+                      #:linux-module-directory '#$kodir
+                      #:qemu-guest-networking? #$qemu-networking?
+                      #:volatile-root? '#$volatile-root?)))
+   #:name "raw-initrd"))
 
 (define* (file-system-packages file-systems #:key (volatile-root? #f))
   "Return the list of statically-linked, stripped packages to check
