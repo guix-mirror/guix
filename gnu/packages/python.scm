@@ -13864,7 +13864,7 @@ users' sessions over extended periods of time.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "1.4.9")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
@@ -13873,7 +13873,7 @@ users' sessions over extended periods of time.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0j0wgy54d13a470vm4b9rdjk99n1hmdxpf34x9k3pbmi9w9b566z"))))
+         "0isn5p7f9n48hmksgbrj7dkm9dyglnayzn5jngk37qywg8a74ngn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
@@ -13898,10 +13898,19 @@ down the AST and building an extended ast.  The new node classes have
 additional methods and attributes for different usages.  They include some
 support for static inference and local name scopes.  Furthermore, astroid
 builds partial trees by inspecting living objects.")
-   (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-astroid))))))
 
 (define-public python2-astroid
-  (package-with-python2 python-astroid))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-astroid))))
+    (package (inherit base)
+             (propagated-inputs
+              `(("python2-backports-functools-lru-cache"
+                 ,python2-backports-functools-lru-cache)
+                ("python2-enum34" ,python2-enum34)
+                ("python2-singledispatch" ,python2-singledispatch)
+                ,@(package-propagated-inputs base))))))
 
 (define-public python-isort
   (package
