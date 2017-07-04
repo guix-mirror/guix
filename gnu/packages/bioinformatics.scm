@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
@@ -99,7 +99,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (ice-9 match))
 
 (define-public r-ape
   (package
@@ -2719,7 +2719,8 @@ comment or quality sections.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))))
+                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))
+              (patches (search-patches "gemma-intel-compat.patch"))))
     (inputs
      `(("gsl" ,gsl)
        ("lapack" ,lapack)
@@ -2727,11 +2728,13 @@ comment or quality sections.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       '(,@(if (any (cute string-prefix? <> (or (%current-system)
-                                                (%current-target-system)))
-                    '("x86_64" "mips64el" "aarch64"))
-             '("FORCE_DYNAMIC=1") ; use shared libs
-             '("FORCE_DYNAMIC=1" "FORCE_32BIT=1")))
+       '(,@(match (%current-system)
+         ("x86_64-linux"
+          '("FORCE_DYNAMIC=1"))
+         ("i686-linux"
+          '("FORCE_DYNAMIC=1" "FORCE_32BIT=1"))
+         (_
+          '("FORCE_DYNAMIC=1" "NO_INTEL_COMPAT=1"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
