@@ -163,8 +163,14 @@ and provides a \"top-like\" mode (monitoring).")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; This is the Guile we use as a cross-compiler...
+       ("guile" ,guile-2.0)))
+    (inputs
+     ;; ... and this is the one that appears in shebangs when cross-compiling.
+     `(("guile" ,guile-2.0)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
