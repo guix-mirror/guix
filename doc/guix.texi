@@ -15276,6 +15276,35 @@ Package object of thermald.
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
 
+@cindex sysctl
+@subsubheading System Control Service
+
+The @code{(gnu services sysctl)} provides a service to configure kernel
+parameters at boot.
+
+@defvr {Scheme Variable} sysctl-service-type
+The service type for @command{sysctl}, which modifies kernel parameters
+under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
+instantiated as:
+
+@example
+(service sysctl-service-type
+         (sysctl-configuration
+           (settings '(("net.ipv4.ip_forward" . "1")))))
+@end example
+@end defvr
+
+@deftp {Data Type} sysctl-configuration
+The data type representing the configuration of @command{sysctl}.
+
+@table @asis
+@item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
+The @command{sysctl} executable to use.
+
+@item @code{settings} (default: @code{'()})
+An association list specifies kernel parameters and their values.
+@end table
+@end deftp
 
 @cindex lirc
 @subsubheading Lirc Service
