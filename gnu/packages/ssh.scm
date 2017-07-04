@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,12 +30,14 @@
   #:use-module (gnu packages base)
   #:autoload   (gnu packages boost) (boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -42,6 +45,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:autoload   (gnu packages protobuf) (protobuf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
@@ -380,6 +384,35 @@ connectivity, and provides intelligent local echo and line editing of user
 keystrokes.  Mosh is a replacement for SSH.  It's more robust and responsive,
 especially over Wi-Fi, cellular, and long-distance links.")
     (license license:gpl3+)))
+
+(define-public et
+  (package
+    (name "et")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/MisterTea/EternalTCP/archive/et-v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1n2w2kqbshdmbb0gz4yizyw9gqfls6qm2dnwx1d9c2hz7hmi7521"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs `(("glog" ,glog)
+              ("gflags" ,gflags)
+              ("libsodium" ,libsodium)
+              ("protobuf" ,protobuf)))
+    (synopsis "Remote shell that automatically reconnects")
+    (description
+     "Eternal Terminal (ET) is a remote shell that automatically reconnects
+without interrupting the session.  Unlike SSH sessions, ET sessions will
+survive even after the network outages or IP changes.  ET uses a custom
+protocol over TCP, not the SSH protocol.")
+    (home-page "https://mistertea.github.io/EternalTCP/")
+    (license license:asl2.0)))
 
 (define-public dropbear
   (package
