@@ -14023,7 +14023,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "1.6.5")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -14032,10 +14032,12 @@ statements in the module it tests.")
              version ".tar.gz"))
        (sha256
         (base32
-         "08pmgflmq2zrzrn9nkfadzwa5vybz46wvwxhrsd2mjlcgsh4rzbm"))))
+         "0mzn1czhf1mgr2wiqfihb274sja02h899b85kywdpivppa9nwrmp"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-tox" ,python-tox)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-tox" ,python-tox)))
     (propagated-inputs
      `(("python-astroid" ,python-astroid)
        ("python-isort" ,python-isort)
