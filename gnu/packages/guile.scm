@@ -519,6 +519,13 @@ many readers as needed).")
 library.")
     (license license:lgpl3+)))
 
+(define-public guile-ncurses/gpm
+  (package
+    (inherit guile-ncurses)
+    (name "guile-ncurses-with-gpm")
+    (inputs `(("ncurses" ,ncurses/gpm)
+              ("guile" ,guile-2.2)))))
+
 (define-public mcron
   (package
     (name "mcron")
