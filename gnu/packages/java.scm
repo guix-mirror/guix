@@ -4672,3 +4672,28 @@ generate classes, directly in binary form.  The provided common
 transformations and analysis algorithms allow to easily assemble custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
+
+(define-public java-commons-cli-1.2
+  ;; This is a bootstrap dependency for Maven2.
+  (package
+    (inherit java-commons-cli)
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/cli/source/"
+                                  "commons-cli-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0rvfgzgv2pc1m091dfj3ih9ddsjjppr1f1wf0qmc3bk6b1kwv2dm"))))
+    (arguments
+     `(#:jar-name "commons-cli.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-build-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("dir=\"\\$\\{test.home\\}/java\"")
+                "dir=\"${test.home}\""))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))))
