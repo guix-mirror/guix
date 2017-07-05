@@ -48,14 +48,14 @@
 (define-public gcompris
   (package
     (name "gcompris")
-    (version "15.10")
+    (version "17.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://gcompris.net/download/gtk/src/gcompris-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0f7wa27vvpn9ansp2aald1pajqlx5d51mvj07ba503yvl7i77fka"))))
+                "18y483alb4r4vfmh80nnl0pah5gv0b8frcm6l1drb9njn5xlcpgc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
