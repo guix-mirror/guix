@@ -1257,7 +1257,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1265,7 +1265,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1yyb8z03z9rw74k1d9dygcqxhx76717xq29agz57d0k3lf9lazja"))
+                "0j5kf0phx4w4b5x7aqwc10lxi9ix7rxhxk0df37cpdrqni1sdnqg"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove non-free source files.
