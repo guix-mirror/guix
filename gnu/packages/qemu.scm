@@ -269,14 +269,14 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "13945hrijybfh634c4x9cbkfazvpzajgv55ll2nx412r4bv6l622"))))
+                "05mm4xdw6g960rwvc9189nhxpm1vrilnmpl4h4m1lha11pivlqr9"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
