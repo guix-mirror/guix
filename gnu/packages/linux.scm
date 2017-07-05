@@ -849,14 +849,14 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.17")
+    (version "4.18")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "06bl4dld5fk4a3iiq4pyrkm6sh63599ah8dmds0glg5vbw45pww1"))))
+               "026agy9nq238nx3ynhmi8h3vx96yra4xacfsm2ybs9k23ry8ibc9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
