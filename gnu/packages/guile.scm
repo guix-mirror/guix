@@ -388,7 +388,7 @@ program can be installed in one go.")
     (version "0.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
+              (uri (string-append "mirror://gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
