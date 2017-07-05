@@ -152,7 +152,10 @@ printing, and psresize, for adjusting page sizes.")
          '(begin
             (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
                                                 "lcms2" "libpng"
-                                                "tiff" "zlib"))))))
+                                                "tiff" "zlib"))
+            ;; Get rid of timestamps.
+            (substitute* "base/mkromfs.c"
+             (("time\\(NULL\\)") "0U"))))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
