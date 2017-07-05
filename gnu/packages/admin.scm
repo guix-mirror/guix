@@ -282,7 +282,8 @@ re-executing them as necessary.")
     (synopsis "Basic networking utilities")
     (description
      "Inetutils is a collection of common network programs, such as an ftp
-client and server, a telnet client and server, and an rsh client and server.")
+client and server, a telnet client and server, an rsh client and server, and
+hostname.")
     (license license:gpl3+)))
 
 (define-public shadow
