@@ -1275,10 +1275,10 @@ messages and are accompanied by a set of manpages.")
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description
      "This package includes the important tools for controlling the network
-subsystem of the Linux kernel.  This includes arp, hostname, ifconfig,
-netstat, rarp and route.  Additionally, this package contains utilities
-relating to particular network hardware types (plipconfig, slattach) and
-advanced aspects of IP configuration (iptunnel, ipmaddr).")
+subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and
+route.  Additionally, this package contains utilities relating to particular
+network hardware types (plipconfig, slattach) and advanced aspects of IP
+configuration (iptunnel, ipmaddr).")
     (license license:gpl2+)))
 
 (define-public libcap
