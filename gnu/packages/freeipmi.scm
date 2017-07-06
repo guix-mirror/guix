@@ -22,7 +22,6 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages readline)
   #:use-module (gnu packages gnupg))
 
 (define-public freeipmi
@@ -38,8 +37,7 @@
                "0p3cl32wwxhyc5vkd9spmmckb78797snkmplgh0ybc7zap2bs6ib"))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline)
-       ("libgcrypt" ,libgcrypt)))
+     `(("libgcrypt" ,libgcrypt)))
     (home-page "https://www.gnu.org/software/freeipmi/")
     (synopsis "Platform management, including sensor and power monitoring")
     (description
