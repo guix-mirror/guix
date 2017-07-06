@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +28,14 @@
 (define-public freeipmi
   (package
     (name "freeipmi")
-    (version "1.5.5")
+    (version "1.5.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/freeipmi/freeipmi-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0lzzvhzbdl1cxin4xz3lirqxsjwmjr5ac0qr4g21cqsv2j6vj85f"))))
+               "0p3cl32wwxhyc5vkd9spmmckb78797snkmplgh0ybc7zap2bs6ib"))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)
