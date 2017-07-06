@@ -3211,7 +3211,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "13")
+    (version "14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -3219,7 +3219,7 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15qdfqkia22vab1dh41s88vgi70yifi40ar5s4x7a456rpbhy8z5"))))
+                "0w03zd49k96bmly44qc8l0s9l671sd26k4wrilsp13xaspy048kd"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
