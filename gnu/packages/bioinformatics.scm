@@ -956,7 +956,7 @@ package provides command line tools using the Bio++ library.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.6.0")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -964,15 +964,13 @@ package provides command line tools using the Bio++ library.")
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "15n937pw5aqmyfjb6l387d18grqbb96l63d5xj4l7yyh0zbf2405"))
-              (patches (search-patches "blast+-fix-makefile.patch"))
+                "14n9jik6vhiwjd3m7bach4xj1pzfn0szbsbyfxybd9l9cc43b6mb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Remove bundled bzip2, zlib and pcre.
+                  ;; Remove bundled bzip2 and zlib
                   (delete-file-recursively "c++/src/util/compress/bzip2")
                   (delete-file-recursively "c++/src/util/compress/zlib")
-                  (delete-file-recursively "c++/src/util/regexp")
                   (substitute* "c++/src/util/compress/Makefile.in"
                     (("bzip2 zlib api") "api"))
                   ;; Remove useless msbuild directory
@@ -981,8 +979,9 @@ package provides command line tools using the Bio++ library.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(;; There are two(!) tests for this massive library, and both fail with
+     `(;; There are three(!) tests for this massive library, and all fail with
        ;; "unparsable timing stats".
+       ;; ERR [127] --  [util/regexp] test_pcre.sh     (unparsable timing stats)
        ;; ERR [127] --  [serial/datatool] datatool.sh     (unparsable timing stats)
        ;; ERR [127] --  [serial/datatool] datatool_xml.sh     (unparsable timing stats)
        #:tests? #f
@@ -1015,7 +1014,6 @@ package provides command line tools using the Bio++ library.")
             ;; Rewrite hardcoded paths to various tools
             (substitute* (append '("src/build-system/configure.ac"
                                    "src/build-system/configure"
-                                   "src/build-system/helpers/run_with_lock.c"
                                    "scripts/common/impl/if_diff.sh"
                                    "scripts/common/impl/run_with_lock.sh"
                                    "src/build-system/Makefile.configurables.real"
@@ -1064,22 +1062,17 @@ package provides command line tools using the Bio++ library.")
                                              (assoc-ref inputs "bzip2"))
                               (string-append "--with-z="
                                              (assoc-ref inputs "zlib"))
-                              (string-append "--with-pcre="
-                                             (assoc-ref inputs "pcre"))
                               ;; Each library is built twice by default, once
                               ;; with "-static" in its name, and again
                               ;; without.
                               "--without-static"
                               "--with-dll"))))))))
-    (outputs '("out"       ;  21 MB
-               "lib"       ; 226 MB
-               "include")) ;  33 MB
+    (outputs '("out"       ;  19 MB
+               "lib"       ; 203 MB
+               "include")) ;  32 MB
     (inputs
      `(("bzip2" ,bzip2)
-       ("zlib" ,zlib)
-       ("pcre" ,pcre)
-       ("perl" ,perl)
-       ("python" ,python-wrapper)))
+       ("zlib" ,zlib)))
     (native-inputs
      `(("cpio" ,cpio)))
     (home-page "http://blast.ncbi.nlm.nih.gov")
