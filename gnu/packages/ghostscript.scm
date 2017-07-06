@@ -153,9 +153,9 @@ printing, and psresize, for adjusting page sizes.")
             (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
                                                 "lcms2" "libpng"
                                                 "tiff" "zlib"))
-            ;; Get rid of timestamps.
-            (substitute* "base/mkromfs.c"
-             (("time\\(NULL\\)") "0U"))))))
+            ;; Get rid of timestamps (remove /CreationDate and /ModDate).
+            (substitute* "devices/vector/gdevpdf.c"
+             ((", but we do the same") "*/ if (0) /*"))))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
