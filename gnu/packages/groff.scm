@@ -40,7 +40,8 @@
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))))
+                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))
+            (patches (search-patches "groff-source-date-epoch.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                    ;12MiB of PS, PDF, HTML, and examples
