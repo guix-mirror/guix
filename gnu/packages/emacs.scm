@@ -4688,7 +4688,7 @@ other operations.")
 (define-public emacs-exwm-x
   (package
     (name "emacs-exwm-x")
-    (version "1.6.2")
+    (version "1.7.2")
     (synopsis "Derivative window manager based on EXWM")
     (source (origin
               (method url-fetch)
@@ -4698,12 +4698,13 @@ other operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rki0vh01m0ywnz25r92f444x038l5cy9vwmpdqw9j92yl29hays"))))
+                "1ny13i82fb72917jgl0ndwjg1x6l9f8gfhcx7cwlwhh5saq23mvy"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-exwm" ,emacs-exwm)
        ("emacs-switch-window" ,emacs-switch-window)
-       ("emacs-ivy" ,emacs-ivy)))
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-use-package" ,emacs-use-package)))
     (inputs
      `(("xhost" ,xhost)
        ("dbus" ,dbus)))
