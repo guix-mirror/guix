@@ -324,11 +324,11 @@ hostname.")
                (for-each delete-file (find-files man "^groups\\."))
                #t))))))
 
-    (inputs (if (string-suffix? "-linux"
-                                (or (%current-target-system)
-                                    (%current-system)))
-                `(("linux-pam" ,linux-pam))
-                '()))
+    (inputs  (if (string-contains (or (%current-target-system)
+                                      (%current-system))
+                                  "-linux")
+                 `(("linux-pam" ,linux-pam))
+                 '()))
     (home-page "http://pkg-shadow.alioth.debian.org/")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
