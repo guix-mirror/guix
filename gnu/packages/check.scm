@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
 
 (define-public check
@@ -153,6 +155,51 @@ supervised tests.")
      "Catch stands for C++ Automated Test Cases in Headers and is a
 multi-paradigm automated test framework for C++ and Objective-C.")
     (license boost1.0)))
+
+(define-public cmdtest
+  (package
+    (name "cmdtest")
+    (version "0.29")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://git.liw.fi/cmdtest/snapshot/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i6gi4yp4qqx1liax098c7nwdb24pghh11xqlrcs7lnhh079rqhb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not, the
+         ;; coverage test runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             (substitute* "yarn"
+               (("/bin/sh") (which "sh")))
+             ;; yarn uses python2-ttystatus to print messages.
+             ;; python2-ttystatus requires /dev/tty which is not present in
+             ;; the build environment. Hence assuming-failure test fails.
+             (delete-file "yarn.tests/assuming-failure.script")
+             (delete-file "yarn.tests/assuming-failure.stdout")
+             (zero? (system* "python" "setup.py" "check")))))))
+    (native-inputs
+     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)))
+    (propagated-inputs
+     `(("python2-cliapp" ,python2-cliapp)
+       ("python2-markdown" ,python2-markdown)
+       ("python2-ttystatus" ,python2-ttystatus)))
+    (home-page "https://liw.fi/cmdtest/")
+    (synopsis "Black box Unix program tester")
+    (description
+     "@code{cmdtest} black box tests Unix command line tools.  Roughly, it is
+given a command line and input files, and the expected output, and it verifies
+that the command line produces the expected output.  If not, it reports a
+problem, and shows the differences.")
+    (license gpl3+)))
 
 (define-public cmocka
   (package
