@@ -33,6 +33,7 @@
   #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix ui)
+  #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix memoization)
   #:use-module (guix scripts)
@@ -73,6 +74,7 @@
             check-mirror-url
             check-license
             check-vulnerabilities
+            check-for-updates
             check-formatting
             run-checkers
 
@@ -826,6 +828,17 @@ from ~s: ~a (~s)~%")
                                  (string-join (map vulnerability-id unpatched)
                                               ", ")))))))))
 
+(define (check-for-updates package)
+  "Check if there is an update available for PACKAGE."
+  (match (package-latest-release* package (force %updaters))
+    ((? upstream-source? source)
+     (when (version>? (upstream-source-version source)
+                      (package-version package))
+       (emit-warning package
+                     (format #f (G_ "can be upgraded to ~a~%")
+                             (upstream-source-version source)))))
+    (#f #f))) ; cannot find newer upstream release
+
 
 ;;;
 ;;; Source code formatting.
@@ -991,6 +1004,10 @@ or a list thereof")
      (description "Check the Common Vulnerabilities and Exposures\
  (CVE) database")
      (check       check-vulnerabilities))
+   (lint-checker
+     (name        'refresh)
+     (description "Check the package for new upstream releases")
+     (check       check-for-updates))
    (lint-checker
      (name        'formatting)
      (description "Look for formatting issues in the source")
