@@ -1,0 +1,36 @@
+Resolves a test failure on 32-bit platforms.
+
+https://github.com/pyca/pyopenssl/issues/657
+
+Patch copied from upstream source repository:
+
+https://github.com/pyca/pyopenssl/commit/ecc0325479c0d5c5f2ca88b4550e87cdb59d6c95
+
+From ecc0325479c0d5c5f2ca88b4550e87cdb59d6c95 Mon Sep 17 00:00:00 2001
+From: Alex Gaynor <alex.gaynor@gmail.com>
+Date: Thu, 6 Jul 2017 22:14:44 -0400
+Subject: [PATCH] Fixed #657 -- handle OverflowErrors on large allocation
+ requests
+
+---
+ tests/test_rand.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/test_rand.py b/tests/test_rand.py
+index bdd3af08..6adf72a1 100644
+--- a/tests/test_rand.py
++++ b/tests/test_rand.py
+@@ -32,10 +32,10 @@ def test_bytes_wrong_args(self, args):
+ 
+     def test_insufficient_memory(self):
+         """
+-        `OpenSSL.rand.bytes` raises `MemoryError` if more bytes are requested
+-        than will fit in memory.
++        `OpenSSL.rand.bytes` raises `MemoryError` or `OverflowError` if more
++        bytes are requested than will fit in memory.
+         """
+-        with pytest.raises(MemoryError):
++        with pytest.raises((MemoryError, OverflowError)):
+             rand.bytes(sys.maxsize)
+ 
+     def test_bytes(self):

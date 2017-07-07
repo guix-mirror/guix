@@ -7464,6 +7464,8 @@ message digests and key derivation functions.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
+       (patches
+        (search-patches "python-pyopenssl-17.1.0-test-overflow.patch"))
        (sha256
         (base32
          "0qwmqhfsq84ydir9dz273ypmlcvs7v71m1jns0sd4k0h6lfsa82s"))))
