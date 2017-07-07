@@ -44,8 +44,13 @@
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                    ;12MiB of PS, PDF, HTML, and examples
-   (inputs `(("ghostscript" ,ghostscript)
-             ("netpbm" ,netpbm)))
+
+   ;; Note: groff's HTML backend uses executables from netpbm when they are in
+   ;; $PATH.  In practice, not having them doesn't prevent it from install its
+   ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
+   ;; from 'inputs'.
+
+   (inputs `(("ghostscript" ,ghostscript)))
    (native-inputs `(("bison" ,bison)
                     ("perl" ,perl)
                     ("psutils" ,psutils)
