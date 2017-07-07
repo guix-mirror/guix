@@ -783,6 +783,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-null-dereference.patch		\
   %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
+  %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
+  %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\

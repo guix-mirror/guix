@@ -393,7 +393,9 @@ collection of tools for doing simple manipulations of TIFF images.")
                            version ".tar.gz"))
        (patches (search-patches "libtiff-tiffgetfield-bugs.patch"
                                 "libtiff-CVE-2016-10688.patch"
-                                "libtiff-CVE-2017-9936.patch"))
+                                "libtiff-CVE-2017-9936.patch"
+                                "libtiff-tiffycbcrtorgb-integer-overflow.patch"
+                                "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
        (sha256
         (base32
          "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))))
