@@ -123,6 +123,7 @@
           ((string-prefix? "arm" arch) "arm")
           ((string-prefix? "aarch64" arch) "arm64")
           ((string-prefix? "alpha" arch) "alpha")
+          ((string-prefix? "powerpc" arch) "powerpc") ;including "powerpc64le"
           (else arch))))
 
 (define-public (system->defconfig system)
@@ -130,6 +131,7 @@
 defconfig.  Return the appropiate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
+        ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
         (else "defconfig")))
 
 (define (linux-libre-urls version)
