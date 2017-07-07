@@ -943,9 +943,12 @@ A number of optional fields may be specified:
 @item @code{port} (default: @code{22})
 Port number of SSH server on the machine.
 
-@item @code{private-key} (default: @file{~/.ssh/id_rsa})
+@item @code{private-key} (default: @file{~root/.ssh/id_rsa})
 The SSH private key file to use when connecting to the machine, in
 OpenSSH format.
+
+Note that the default value is the private key @emph{of the root
+account}.  Make sure it exists if you use the default.
 
 @item @code{compression} (default: @code{"zlib@@openssh.com,zlib"})
 @itemx @code{compression-level} (default: @code{3})
