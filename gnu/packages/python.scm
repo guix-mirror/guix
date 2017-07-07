@@ -1193,14 +1193,14 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parsedatetime" version))
       (sha256
        (base32
-        "1vkrmd398s11h1zn3zaqqsiqhj9lwy1ikcg6irx2lrgjzjg3rjll"))))
+        "0jxqkjks7z9dn222cqgvskp4wr6d92aglinxq7pd2w4mzdc7r09x"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
