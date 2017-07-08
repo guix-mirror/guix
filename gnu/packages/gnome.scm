@@ -2324,34 +2324,34 @@ libxml to ease remote use of the RESTful API.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
-                     ;; This test fails due to missing /etc/nsswitch.conf
-                     ;; in the build environment.
-                     (lambda _
-                       (substitute* "tests/socket-test.c"
-                         ((".*/sockets/unconnected.*") ""))
-                       #t))
+           ;; This test fails due to missing /etc/nsswitch.conf
+           ;; in the build environment.
+           (lambda _
+             (substitute* "tests/socket-test.c"
+               ((".*/sockets/unconnected.*") ""))
+             #t))
          (add-before 'check 'pre-check
-                     (lambda _
-                       ;; The 'check-local' target runs 'env LANG=C sort -u',
-                       ;; unset 'LC_ALL' to make 'LANG' working.
-                       (unsetenv "LC_ALL")
-                       ;; The ca-certificates.crt is not available in the build
-                       ;; environment.
-                       (setenv "SSL_CERT_FILE" "/dev/null")
-                       ;; HTTPD in Guix uses mod_event and does not build prefork.
-                       (substitute* "tests/httpd.conf"
-                         (("^LoadModule mpm_prefork_module.*$") "\n"))
-                       #t))
+           (lambda _
+             ;; The 'check-local' target runs 'env LANG=C sort -u',
+             ;; unset 'LC_ALL' to make 'LANG' working.
+             (unsetenv "LC_ALL")
+             ;; The ca-certificates.crt is not available in the build
+             ;; environment.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             ;; HTTPD in Guix uses mod_event and does not build prefork.
+             (substitute* "tests/httpd.conf"
+               (("^LoadModule mpm_prefork_module.*$") "\n"))
+             #t))
          (replace 'install
-                  (lambda _
-                    (zero?
-                     (system* "make"
-                              ;; Install vala bindings into $out.
-                              (string-append "vapidir=" %output
-                                             "/share/vala/vapi")
-                              "install")))))))
+           (lambda _
+             (zero?
+              (system* "make"
+                       ;; Install vala bindings into $out.
+                       (string-append "vapidir=" %output
+                                      "/share/vala/vapi")
+                       "install")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+     `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
