@@ -594,7 +594,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.03")
+    (version "10.0.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -602,7 +602,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "09f0nnxivv489mz7bnialhmayg53pylhgaiy3rxsvqvrr834hr92"))))
+                "150p79rq4rzb4pbg2dwcz93k1chzzvm0l0nwh60spw19nfyrxj0p"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
