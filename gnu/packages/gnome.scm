@@ -2314,7 +2314,11 @@ libxml to ease remote use of the RESTful API.")
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:configure-flags
+     `(#:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (ice-9 popen))
+
+       #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
@@ -2341,6 +2345,49 @@ libxml to ease remote use of the RESTful API.")
              ;; HTTPD in Guix uses mod_event and does not build prefork.
              (substitute* "tests/httpd.conf"
                (("^LoadModule mpm_prefork_module.*$") "\n"))
+
+             ;; Generate a self-signed certificate that has "localhost" as its
+             ;; 'dnsName'.  Failing to do that, and starting with GnuTLS
+             ;; 3.5.12, tests such as "ssl-tests" fail:
+             ;;
+             ;; ERROR:ssl-test.c:406:do_tls_interaction_test: Unexpected status 6 Unacceptable TLS certificate (expected 200 OK)
+             ;;
+             ;; 'certtool' is interactive so we have to pipe it the answers.
+             ;; Reported at <https://bugzilla.gnome.org/show_bug.cgi?id=784696>.
+             (let ((pipe (open-output-pipe "certtool --generate-self-signed \
+ --load-privkey tests/test-key.pem --outfile tests/test-cert.pem")))
+               (for-each (lambda (line)
+                           (display line pipe)
+                           (newline pipe))
+                         '(""               ;Common name
+                           ""               ;UID
+                           "Guix"           ;Organizational unit name
+                           "GNU"            ;Organization name
+                           ""               ;Locality name
+                           ""               ;State or province
+                           ""               ;Country
+                           ""               ;subject's domain component (DC)
+                           ""               ;E-mail
+                           ""               ;serial number
+                           "-1"             ;expiration time
+                           "N"              ;belong to authority?
+                           "N"              ;web client certificate?
+                           "N"              ;IPsec IKE?
+                           "Y"              ;web server certificate?
+                           "localhost"      ;dnsName of subject
+                           ""               ;dnsName of subject (end)
+                           ""               ;URI of subject
+                           "127.0.0.1"      ;IP address of subject
+                           ""               ;signing?
+                           ""               ;encryption?
+                           ""               ;sign OCSP requests?
+                           ""               ;sign code?
+                           ""               ;time stamping?
+                           ""               ;email protection?
+                           ""               ;URI of the CRL distribution point
+                           "y"              ;above info OK?
+                           ))
+               (close-pipe pipe))
              #t))
          (replace 'install
            (lambda _
@@ -2360,6 +2407,7 @@ libxml to ease remote use of the RESTful API.")
        ;; These are needed for the tests.
        ;; FIXME: Add PHP once available.
        ("curl" ,curl)
+       ("gnutls" ,gnutls)                         ;for 'certtool'
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all these.
