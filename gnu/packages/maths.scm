@@ -48,6 +48,7 @@
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -2151,18 +2152,21 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    ;; Versions 16.12.0 to 16.12.2 have a bug which causes output lines to
-    ;; overlap. See <https://debbugs.gnu.org/25793>
-    (version "16.04.2")
+    (version "17.05.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/wxmaxima/wxMaxima/"
-                           version "/" name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/andrejv/" name "/archive"
+                           "/Version-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
+         "1bsyd7r12xm2crpizb9iyyki3j0mbazzzwbsh871m06dv2wk97gq"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
@@ -2172,6 +2176,10 @@ point numbers.")
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autoconf
+                   (lambda _
+                     (zero? (system* "./bootstrap"))))
                   (add-after
                    'install 'wrap-program
                    (lambda* (#:key inputs outputs #:allow-other-keys)
