@@ -2074,7 +2074,8 @@ to BMP, JPEG or PNG image formats.")
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gcl" ,gcl)
+     `(("gcc" ,gcc)
+       ("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
@@ -2096,36 +2097,44 @@ to BMP, JPEG or PNG image formats.")
        ;; '/tmp/nix-build-maxima-*', which won't exist at run time.
        ;; Work around that.
        #:make-flags (list "TMPDIR=/tmp")
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _
-                   (chmod "src/maxima" #o555))
-                 ;; Make sure the doc and emacs files are found in the
-                 ;; standard location.  Also configure maxima to find gnuplot
-                 ;; without having it on the PATH.
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs inputs #:allow-other-keys)
-                    (let* ((gnuplot (assoc-ref inputs "gnuplot"))
-                          (out (assoc-ref outputs "out"))
-                          (datadir (string-append out "/share/maxima/" ,version)))
-                      (with-directory-excursion out
-                        (mkdir-p "share/emacs")
-                        (mkdir-p "share/doc")
-                        (symlink
-                         (string-append datadir "/emacs/")
-                         (string-append out "/share/emacs/site-lisp"))
-                        (symlink
-                         (string-append datadir "/doc/")
-                         (string-append out "/share/doc/maxima"))
-                        (with-atomic-file-replacement
-                         (string-append datadir "/share/maxima-init.lisp")
-                         (lambda (in out)
-                           (format out "~a ~s~a~%"
-                                   "(setf $gnuplot_command "
-                                   (string-append gnuplot "/bin/gnuplot") ")")
-                           (dump-port in out))))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-gcc-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lisp-utils/defsystem.lisp"
+               (("\\(defparameter \\*c-compiler\\* \"gcc\"\\)")
+                (string-append "(defparameter *c-compiler* \""
+                               (assoc-ref inputs "gcc") "/bin/gcc\")")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (chmod "src/maxima" #o555)
+             #t))
+         ;; Make sure the doc and emacs files are found in the
+         ;; standard location.  Also configure maxima to find gnuplot
+         ;; without having it on the PATH.
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((gnuplot (assoc-ref inputs "gnuplot"))
+                    (out (assoc-ref outputs "out"))
+                    (datadir (string-append out "/share/maxima/" ,version)))
+               (with-directory-excursion out
+                 (mkdir-p "share/emacs")
+                 (mkdir-p "share/doc")
+                 (symlink
+                  (string-append datadir "/emacs/")
+                  (string-append out "/share/emacs/site-lisp"))
+                 (symlink
+                  (string-append datadir "/doc/")
+                  (string-append out "/share/doc/maxima"))
+                 (with-atomic-file-replacement
+                  (string-append datadir "/share/maxima-init.lisp")
+                  (lambda (in out)
+                    (format out "~a ~s~a~%"
+                            "(setf $gnuplot_command "
+                            (string-append gnuplot "/bin/gnuplot") ")")
+                    (dump-port in out)))))
+             #t)))))
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
