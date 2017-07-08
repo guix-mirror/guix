@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -37,6 +37,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
+    (replacement ncurses/fixed)
     (version "6.0")
     (source (origin
               (method url-fetch)
@@ -187,6 +188,17 @@ implement user interfaces for command-line applications.  The accompanying
 ncursesw library provides wide character support.")
     (license x11)
     (home-page "https://www.gnu.org/software/ncurses/")))
+
+(define ncurses/fixed
+  (package
+    (inherit ncurses)
+    (source
+      (origin
+        (inherit (package-source ncurses))
+        (patches
+          (append
+            (origin-patches (package-source ncurses))
+            (search-patches "ncurses-CVE-2017-10684-10685.patch")))))))
 
 (define-public dialog
   (package
