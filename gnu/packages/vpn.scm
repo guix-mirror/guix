@@ -209,14 +209,14 @@ private network between hosts on the internet.")
 (define-public sshuttle
   (package
     (name "sshuttle")
-    (version "0.78.1")
+    (version "0.78.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0g1dpqigz02vafzh84z5990lnj9d95raknav0xmf0va7rr41d9q3"))))
+         "12xyq5h77b57cnkljdk8qyjxzys512b73019s20x6ck5brj1m8wa"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest-runner" ,python-pytest-runner)
