@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -209,26 +209,15 @@ necessary.
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.10.1")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "166rawdal45kvanhvi0bkzy1d2pwf1p0lzslb287lcnm9vdw97yy"))))
+                "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'remove-Werror
-                              (lambda _
-                                ;; We can't build with '-Werror', notably
-                                ;; because deprecated functions of
-                                ;; libmicrohttpd are being used.
-                                (substitute* (find-files "." "^Makefile\\.in$")
-                                  (("-Werror")
-                                   ""))
-                                #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
