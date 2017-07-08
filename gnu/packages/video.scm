@@ -1238,15 +1238,16 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.715")
+    (version "0.4.775")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/soimort/you-get/releases/download/v"
-                    version "/you-get-" version ".tar.gz"))
+                    "https://github.com/soimort/you-get/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "043122hfh56fbbszp1kwd1f65asgyn60j1ijday93hf2dkhvbrnh"))))
+                "1pjjv42c9bysnj8s3c6v0g6b00lr7b21y8ypibnzd6z0jxlsq7sz"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
