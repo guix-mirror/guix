@@ -1448,6 +1448,14 @@ xset +fp ~/.guix-profile/share/fonts/truetype
 After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
 to make sure your TrueType fonts are listed there.
 
+@cindex @code{fc-cache}
+@cindex font cache
+After installing fonts you may have to refresh the font cache to use
+them in applications.  The same applies when applications installed via
+Guix do not seem to find fonts.  To force rebuilding of the font cache
+run @code{fc-cache -f}.  The @code{fc-cache} command is provided by the
+@code{fontconfig} package.
+
 @subsection X.509 Certificates
 
 @cindex @code{nss-certs}
