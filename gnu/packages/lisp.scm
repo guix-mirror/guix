@@ -88,6 +88,10 @@
      `(#:parallel-build? #f  ; The build system seems not to be thread safe.
        #:tests? #f  ; There does not seem to be make check or anything similar.
        #:configure-flags '("--enable-ansi") ; required for use by the maxima package
+       #:make-flags (list
+                     "CFLAGS=-fgnu89-inline" ; removes inline function warnings
+                     (string-append "GCC=" (assoc-ref %build-inputs "gcc")
+                                    "/bin/gcc"))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-conf
                     (lambda _
@@ -104,6 +108,27 @@
                          (string-append "SHELL=" (which "bash")))
                         (("SHELL=/bin/sh")
                          (string-append "SHELL=" (which "sh"))))
+                      (substitute* "h/linux.defs"
+                        (("#CC") "CC")
+                        (("-fwritable-strings") "")
+                        (("-Werror") ""))
+                      #t))
+                  (add-after 'install 'wrap
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((gcl (assoc-ref outputs "out"))
+                             (input-path (lambda (lib path)
+                                           (string-append
+                                            (assoc-ref inputs lib) path)))
+                             (binaries '("binutils")))
+                        ;; GCC and the GNU binutils are necessary for GCL to be
+                        ;; able to compile Lisp functions and programs (this is
+                        ;; a standard feature in Common Lisp). While the
+                        ;; the location of GCC is specified in the make-flags,
+                        ;; the GNU binutils must be available in GCL's $PATH.
+                        (wrap-program (string-append gcl "/bin/gcl")
+                          `("PATH" prefix ,(map (lambda (binary)
+                                                  (input-path binary "/bin"))
+                                                binaries))))
                       #t))
                   ;; drop strip phase to make maxima build, see
                   ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
