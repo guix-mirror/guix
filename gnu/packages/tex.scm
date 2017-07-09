@@ -2103,6 +2103,26 @@ differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
 texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
+(define-public texlive-latex-eso-pic
+  (package
+    (name "texlive-latex-eso-pic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "eso-pic"))
+              (sha256
+               (base32
+                "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/eso-pic"))
+    (home-page "http://www.ctan.org/pkg/eso-pic")
+    (synopsis "Add picture commands (or backgrounds) to every page")
+    (description
+     "The package adds one or more user commands to LaTeX's @code{shipout}
+routine, which may be used to place the output at fixed positions.  The
+@code{grid} option may be used to find the correct places.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")
