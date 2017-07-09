@@ -1747,6 +1747,31 @@ look-up efficiency afforded by numeric citations.  The package makes use of
 BibLaTeX, and is considered experimental.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-geometry
+  (package
+    (name "texlive-latex-geometry")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "geometry"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1r2kfcwclg33yk5z8mvlagwxj7nr1mc3w4bdpmhrwv6dn8mrbvw8"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/geometry"))
+    (home-page "http://www.ctan.org/pkg/geometry")
+    (synopsis "Flexible and complete interface to document dimensions")
+    (description
+     "This package provides an easy and flexible user interface to customize
+page layout, implementing auto-centering and auto-balancing mechanisms so that
+the users have only to give the least description for the page layout.  The
+package knows about all the standard paper sizes, so that the user need not
+know what the nominal \"real\" dimensions of the paper are, just its standard
+name (such as a4, letter, etc.).  An important feature is the package's
+ability to communicate the paper size it's set up to the output.")
+    (license license:lppl)))
+
 (define-public texlive-latex-hyperref
   (package
     (name "texlive-latex-hyperref")
