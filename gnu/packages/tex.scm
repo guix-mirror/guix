@@ -2123,6 +2123,42 @@ routine, which may be used to place the output at fixed positions.  The
 @code{grid} option may be used to find the correct places.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-eepic
+  (package
+    (name "texlive-latex-eepic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/eepic"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1c68gvh021pvybg07apsd2xhq2ljbg80kq94wh71drdga3c2zqjw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/eepic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/eepic")
+    (synopsis "Extensions to epic and the LaTeX drawing tools")
+    (description
+     "Extensions to @code{epic} and the LaTeX picture drawing environment,
+include the drawing of lines at any slope, the drawing of circles in any
+radii, and the drawing of dotted and dashed lines much faster with much less
+TeX memory, and providing several new commands for drawing ellipses, arcs,
+splines, and filled circles and ellipses.  The package uses @code{tpic}
+@code{\\special} commands.")
+    (license license:public-domain)))
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")
