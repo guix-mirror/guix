@@ -2523,6 +2523,38 @@ previously had an alias “unicode”; that alias has now been withdrawn, and no
 package of that name now exists.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-preview
+  (package
+    (name "texlive-latex-preview")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "preview"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0j6fff6q0ca96nwfdgay2jm55792z4q9aa0rczmiw2qccyg5n2dv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/preview"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "preview.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/preview")
+    (synopsis "Extract bits of a LaTeX source for output")
+    (description
+     "The main purpose of the preview package is the extraction of selected
+elements from a LaTeX source, like formulas or graphics, into separate
+pages of a DVI file.  A flexible and convenient interface allows it to
+specify what commands and constructs should be extracted.  This works
+with DVI files postprocessed by either Dvips and Ghostscript or
+dvipng, but it also works when you are using PDFTeX for generating PDF
+files.")
+    (license license:gpl3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
