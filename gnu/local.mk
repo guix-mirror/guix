@@ -915,6 +915,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/polkit-drop-test.patch			\
   %D%/packages/patches/policycoreutils-make-sepolicy-use-python3.patch	\
   %D%/packages/patches/poppler-CVE-2017-9776.patch		\
+  %D%/packages/patches/poppler-fix-crash-with-broken-documents.patch	\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \

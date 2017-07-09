@@ -135,7 +135,8 @@
   (source
     (origin
       (inherit (package-source poppler))
-      (patches (search-patches "poppler-CVE-2017-9776.patch"))))))
+      (patches (search-patches "poppler-fix-crash-with-broken-documents.patch"
+                               "poppler-CVE-2017-9776.patch"))))))
 
 (define-public poppler-qt4
   (package/inherit poppler
