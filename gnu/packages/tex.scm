@@ -2555,6 +2555,29 @@ dvipng, but it also works when you are using PDFTeX for generating PDF
 files.")
     (license license:gpl3+)))
 
+(define-public texlive-latex-acronym
+  (package
+    (name "texlive-latex-acronym")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "acronym"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0jmasg40bk53zdd2jc8nc18jvdai3p2wmamy7hwli8gls4nf25qp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/acronym"))
+    (home-page "http://www.ctan.org/pkg/acronym")
+    (synopsis "Expand acronyms at least once")
+    (description
+     "This package ensures that all acronyms used in the text are spelled out
+in full at least once.  It also provides an environment to build a list of
+acronyms used.  The package is compatible with PDF bookmarks.  The package
+requires the suffix package, which in turn requires that it runs under
+e-TeX.")
+    (license license:lppl1.3+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
