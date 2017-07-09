@@ -1723,6 +1723,30 @@ are LaTeX 2.09 @code{documentstyle} and LaTeX 2e class files for both an
 in colour.")
     (license license:lppl)))
 
+(define-public texlive-latex-gcite
+  (package
+    (name "texlive-latex-gcite")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "gcite"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "03g9by54yrypn599y98r1xh7qw0bbbmpzq0bfwpj6j5q5rkl1mfa"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/gcite"))
+    (home-page "http://www.ctan.org/pkg/gcite")
+    (synopsis "Citations in a reader-friendly style")
+    (description
+     "The package allows citations in the German style, which is considered by
+many to be particularly reader-friendly.  The citation provides a small amount
+of bibliographic information in a footnote on the page where each citation is
+made.  It combines a desire to eliminate unnecessary page-turning with the
+look-up efficiency afforded by numeric citations.  The package makes use of
+BibLaTeX, and is considered experimental.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-hyperref
   (package
     (name "texlive-latex-hyperref")
