@@ -559,6 +559,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
+  %D%/packages/patches/dblatex-remove-multirow.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
