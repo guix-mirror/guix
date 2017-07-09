@@ -1602,6 +1602,28 @@ distribution.")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
 
+(define-public texlive-latex-amsrefs
+  (package
+    (name "texlive-latex-amsrefs")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "amsrefs"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "15i4k479dwrpr0kspmm70g1yn4p3dkh0whyzmr93hph9bggnh1i1"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/amsrefs"))
+    (home-page "http://www.ctan.org/pkg/amsrefs")
+    (synopsis "LaTeX-based replacement for BibTeX")
+    (description
+     "Amsrefs is a LaTeX package for bibliographies that provides an archival
+data format similar to the format of BibTeX database files, but adapted to
+make direct processing by LaTeX easier.  The package can be used either in
+conjunction with BibTeX or as a replacement for BibTeX.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
