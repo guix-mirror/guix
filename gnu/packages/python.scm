@@ -3720,7 +3720,39 @@ association studies (GWAS) on extremely large data sets.")
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,texlive)
+       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-generic-ifxetex
+                                        texlive-generic-pdftex
+                                        texlive-latex-amsfonts
+                                        texlive-latex-capt-of
+                                        texlive-latex-cmap
+                                        texlive-latex-environ
+                                        texlive-latex-eqparbox
+                                        texlive-latex-etoolbox
+                                        texlive-latex-expdlist
+                                        texlive-latex-fancyhdr
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-fncychap
+                                        texlive-latex-float
+                                        texlive-latex-framed
+                                        texlive-latex-geometry
+                                        texlive-latex-graphics
+                                        texlive-latex-hyperref
+                                        texlive-latex-mdwtools
+                                        texlive-latex-multirow
+                                        texlive-latex-oberdiek
+                                        texlive-latex-parskip
+                                        texlive-latex-preview
+                                        texlive-latex-tabulary
+                                        texlive-latex-threeparttable
+                                        texlive-latex-titlesec
+                                        texlive-latex-trimspaces
+                                        texlive-latex-ucs
+                                        texlive-latex-upquote
+                                        texlive-latex-url
+                                        texlive-latex-varwidth
+                                        texlive-latex-wrapfig)))
        ("texinfo" ,texinfo)
        ("perl" ,perl)
        ("scipy-sphinx-theme"
@@ -3749,6 +3781,11 @@ association studies (GWAS) on extremely large data sets.")
                     (scipy-sphinx-theme "scipy-sphinx-theme")
                     (sphinx-theme-checkout (assoc-ref inputs scipy-sphinx-theme))
                     (pyver ,(string-append "PYVER=")))
+
+               ;; FIXME: this is needed to for texlive-union to generate
+               ;; fonts, which are not found.
+               (setenv "HOME" "/tmp")
+
                (with-directory-excursion "doc"
                  (copy-recursively sphinx-theme-checkout scipy-sphinx-theme)
                  (mkdir-p html)
