@@ -719,6 +719,29 @@ Modern family of fonts.  The Euler fonts are supported by separate packages;
 details can be found in the documentation.")
     (license license:silofl1.1)))
 
+(define-public texlive-latex-amsfonts
+  (package
+    (name "texlive-latex-amsfonts")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "amsfonts"))
+              (sha256
+               (base32
+                "0slzfv5h2m03b2xvm2sasznz4azh6rgi069z161dja3l8rln79hm"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/amsfonts"))
+    (native-inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-metafont-base" ,texlive-metafont-base)))
+    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (synopsis "TeX fonts from the American Mathematical Society")
+    (description
+     "This package provides basic LaTeX support for the symbol fonts provides
+by the amsfonts package.  It provides @code{amsfonts.sty}, with names of
+individual symbols defined in @code{amssymb.sty}.")
+    (license license:silofl1.1)))
+
 ;; This provides etex.src which is needed to build various formats, including
 ;; luatex.fmt and pdflatex.fmt
 (define-public texlive-tex-plain
