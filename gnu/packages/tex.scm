@@ -2330,6 +2330,32 @@ styles.  It also includes a package to change the page styles when there are
 floats in a page.  You may assign headers/footers to individual floats, too.")
     (license license:lppl)))
 
+(define-public texlive-latex-lh
+  (package
+    (name "texlive-latex-lh")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "lh"))
+              (sha256
+               (base32
+                "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/lh"))
+    (home-page "http://www.ctan.org/pkg/lh")
+    (synopsis "Cyrillic fonts that support LaTeX standard encodings")
+    (description
+     "The LH fonts address the problem of the wide variety of alphabets that
+are written with Cyrillic-style characters.  The fonts are the original basis
+of the set of T2* and X2 encodings that are now used when LaTeX users need to
+write in Cyrillic languages.  Macro support in standard LaTeX encodings is
+offered through the latex-cyrillic and t2 bundles, and the package itself
+offers support for other (more traditional) encodings.  The fonts, in the
+standard T2* and X2 encodings are available in Adobe Type 1 format, in the
+CM-Super family of fonts.  The package also offers its own LaTeX support for
+OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
+    (license license:lppl)))
+
 (define-public texlive-latex-wasysym
   (package
     (name "texlive-latex-wasysym")
