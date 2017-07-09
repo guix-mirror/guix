@@ -630,7 +630,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.58")
+    (version "2.19.63")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -639,7 +639,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0wjapb3if6qqdmr57z20hidx7czhl023cjimr01i8yf7k41fakh7"))))
+                "0hwv7m1lzyhjiyxqhqfdrrrpx475jhiwckrnxbjbv3ynhyzkngw0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
