@@ -1812,6 +1812,28 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-supertabular
+  (package
+    (name "texlive-latex-supertabular")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "supertabular"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14b2bc7cqz4ckxxycim9sw6jkrr1pahivm1rdbpz5k6hl967w1s3"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/supertabular"))
+    (home-page "http://www.ctan.org/pkg/supertabular")
+    (synopsis "Multi-page tables package")
+    (description
+     "This package was a predecessor of @code{longtable}; the newer
+package (designed on quite different principles) is easier to use and more
+flexible, in many cases, but supertabular retains its usefulness in a few
+situations where longtable has problems.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-tex-texinfo
   (package
     (name "texlive-tex-texinfo")
