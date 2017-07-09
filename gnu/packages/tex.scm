@@ -1674,6 +1674,35 @@ recent classes such as powerdot or beamer, both of which are tuned to
 21st-century presentation styles.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-g-brief
+  (package
+    (name "texlive-latex-g-brief")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "g-brief"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0sikazkg0dpkcpzlbqw8qzxr81paf2f443vsrh14jnw7s4gswvc5"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/g-brief"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "g-brief.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/g-brief")
+    (synopsis "Letter document class")
+    (description
+     "This package is designed for formatting formless letters in German; it
+can also be used for English (by those who can read the documentation).  There
+are LaTeX 2.09 @code{documentstyle} and LaTeX 2e class files for both an
+\"old\" and a \"new\" version of g-brief.")
+    (license license:lppl)))
+
 (define-public texlive-latex-hyperref
   (package
     (name "texlive-latex-hyperref")
