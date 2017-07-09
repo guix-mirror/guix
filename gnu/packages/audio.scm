@@ -1196,9 +1196,7 @@ auto-wah.")
     (arguments
      (substitute-keyword-arguments (package-arguments guitarix)
        ((#:configure-flags flags)
-        `(cons "--lv2-only" ,flags))))
-    (inputs
-     (alist-delete "webkitgtk/gtk+-2" (package-inputs guitarix)))))
+        `(cons "--lv2-only" ,flags))))))
 
 (define-public rakarrack
   (package
