@@ -2103,6 +2103,79 @@ differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
 texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
+(define-public texlive-fonts-rsfs
+  (package
+    (name "texlive-fonts-rsfs")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/rsfs/"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0r12pn02r4a955prcvq0048nifh86ihlcgvw3pppqqvfngv34l5h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input " (basename font ".mf")))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/rsfs"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/rsfs")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+    (home-page "http://www.ctan.org/pkg/rsfs")
+    (synopsis "Ralph Smith's Formal Script font")
+    (description
+     "The fonts provide uppercase formal script letters for use as symbols in
+scientific and mathematical typesetting (in contrast to the informal script
+fonts such as that used for the calligraphic symbols in the TeX maths symbol
+font).  The fonts are provided as Metafont source, and as derived Adobe Type 1
+format.  LaTeX support, for using these fonts in mathematics, is available via
+one of the packages @code{calrsfs} and @code{mathrsfs}.")
+    (license (license:fsf-free "http://mirrors.ctan.org/fonts/rsfs/README"))))
+
 (define-public texlive-latex-eso-pic
   (package
     (name "texlive-latex-eso-pic")
