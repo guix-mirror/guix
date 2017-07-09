@@ -143,7 +143,8 @@ printing, and psresize, for adjusting page sizes.")
          (base32
           "0lyhjcrkmd5fcmh8h56bs4xr9k4jasmikv5vsix1hd4ai0ad1q9b"))
         (patches (search-patches "ghostscript-runpath.patch"
-                                 "ghostscript-CVE-2017-8291.patch"))
+                                 "ghostscript-CVE-2017-8291.patch"
+                                 "ghostscript-no-header-id.patch"))
         (modules '((guix build utils)))
         (snippet
           ;; Remove bundled libraries. The bundled OpenJPEG is a patched fork so
@@ -155,7 +156,11 @@ printing, and psresize, for adjusting page sizes.")
                                                 "tiff" "zlib"))
             ;; Get rid of timestamps (remove /CreationDate and /ModDate).
             (substitute* "devices/vector/gdevpdf.c"
-             ((", but we do the same") "*/ if (0) /*"))))))
+             ((", but we do the same")
+              (string-append "*/ "
+                             "if (!getenv(\"GS_GENERATE_UUIDS\") || "
+                             "(strcmp(getenv(\"GS_GENERATE_UUIDS\"), \"0\") != 0 && "
+                             "strcmp(getenv(\"GS_GENERATE_UUIDS\"), \"no\") != 0)) /*")))))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
