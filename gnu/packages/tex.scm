@@ -2022,6 +2022,87 @@ transliterate semitic languages; patches to make (La)TeX formulae embeddable
 in SGML; use maths minus in text as appropriate; simple Young tableaux.")
     (license license:gpl2)))
 
+(define-public texlive-fonts-ec
+  (package
+    (name "texlive-fonts-ec")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/jknappen/ec/"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "12av65fbz9xiashm09c9m1fj1mijxls5xspd7652ry1n5s0nixy4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input " (basename font ".mf")))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/jknappen/ec"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/jknappen/ec")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+    (home-page "http://www.ctan.org/pkg/ec")
+    (synopsis "Computer modern fonts in T1 and TS1 encodings")
+    (description
+     "The EC fonts are European Computer Modern Fonts, supporting the complete
+LaTeX T1 encoding defined at the 1990 TUG conference hold at Cork/Ireland.
+These fonts are intended to be stable with no changes being made to the tfm
+files.  The set also contains a Text Companion Symbol font, called @code{tc},
+featuring many useful characters needed in text typesetting, for example
+oldstyle digits, currency symbols (including the newly created Euro symbol),
+the permille sign, copyright, trade mark and servicemark as well as a copyleft
+sign, and many others.  Recent releases of LaTeX2e support the EC fonts.  The
+EC fonts supersede the preliminary version released as the DC fonts.  The
+fonts are available in (traced) Adobe Type 1 format, as part of the
+@code{cm-super} bundle.  The other Computer Modern-style T1-encoded Type 1
+set, Latin Modern, is not actually a direct development of the EC set, and
+differs from the EC in a number of particulars.")
+    (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
+texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")
