@@ -21,6 +21,7 @@
 
 (define-module (guix build syscalls)
   #:use-module (system foreign)
+  #:use-module (system base target)             ;for cross-compilation support
   #:use-module (rnrs bytevectors)
   #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
@@ -824,27 +825,74 @@ system to PUT-OLD."
 ;;; Opendir & co.
 ;;;
 
-(define-c-struct %struct-dirent-header
-  sizeof-dirent-header
+(define (file-type->symbol type)
+  ;; Convert TYPE to symbols like 'stat:type' does.
+  (cond ((= type DT_REG)  'regular)
+        ((= type DT_LNK)  'symlink)
+        ((= type DT_DIR)  'directory)
+        ((= type DT_FIFO) 'fifo)
+        ((= type DT_CHR)  'char-special)
+        ((= type DT_BLK)  'block-special)
+        ((= type DT_SOCK) 'socket)
+        (else             'unknown)))
+
+;; 'struct dirent64' for GNU/Linux.
+(define-c-struct %struct-dirent-header/linux
+  sizeof-dirent-header/linux
   (lambda (inode offset length type name)
-    ;; Convert TYPE to symbols like 'stat:type' does.
-    (let ((type (cond ((= type DT_REG)  'regular)
-                      ((= type DT_LNK)  'symlink)
-                      ((= type DT_DIR)  'directory)
-                      ((= type DT_FIFO) 'fifo)
-                      ((= type DT_CHR)  'char-special)
-                      ((= type DT_BLK)  'block-special)
-                      ((= type DT_SOCK) 'socket)
-                      (else             'unknown))))
-      `((type . ,type)
-        (inode . ,inode))))
-  read-dirent-header
-  write-dirent-header!
+    `((type . ,(file-type->symbol type))
+      (inode . ,inode)))
+  read-dirent-header/linux
+  write-dirent-header!/linux
   (inode  int64)
   (offset int64)
   (length unsigned-short)
   (type   uint8)
   (name   uint8))                                 ;first byte of 'd_name'
+
+;; 'struct dirent64' for GNU/Hurd.
+(define-c-struct %struct-dirent-header/hurd
+  sizeof-dirent-header/hurd
+  (lambda (inode length type name-length name)
+    `((type . ,(file-type->symbol type))
+      (inode . ,inode)))
+  read-dirent-header/hurd
+  write-dirent-header!/hurd
+  (inode   int64)
+  (length  unsigned-short)
+  (type    uint8)
+  (namelen uint8)
+  (name    uint8))
+
+(define-syntax define-generic-identifier
+  (syntax-rules (gnu/linux gnu/hurd =>)
+    "Define a generic identifier that adjust to the current GNU variant."
+    ((_ id (gnu/linux => linux) (gnu/hurd => hurd))
+     (define-syntax id
+       (lambda (s)
+         (syntax-case s ()
+           ((_ args (... ...))
+            (if (string-contains (or (target-type) %host-type)
+                                 "linux")
+                #'(linux args (... ...))
+                #'(hurd args (... ...))))
+           (_
+            (if (string-contains (or (target-type) %host-type)
+                                 "linux")
+                #'linux
+                #'hurd))))))))
+
+(define-generic-identifier read-dirent-header
+  (gnu/linux => read-dirent-header/linux)
+  (gnu/hurd  => read-dirent-header/hurd))
+
+(define-generic-identifier %struct-dirent-header
+  (gnu/linux => %struct-dirent-header/linux)
+  (gnu/hurd  => %struct-dirent-header/hurd))
+
+(define-generic-identifier sizeof-dirent-header
+  (gnu/linux => sizeof-dirent-header/linux)
+  (gnu/hurd  => sizeof-dirent-header/hurd))
 
 ;; Constants for the 'type' field, from <dirent.h>.
 (define DT_UNKNOWN 0)
