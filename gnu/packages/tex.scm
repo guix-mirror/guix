@@ -1682,6 +1682,30 @@ addition there are example files showing how letters may be created with the
 package.")
     (license license:lppl)))
 
+(define-public texlive-latex-draftwatermark
+  (package
+    (name "texlive-latex-draftwatermark")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "draftwatermark"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1zyl2pcz2x529gzj5m93a1s4ipymdabf7qdjl3l1673pizd4hfyv"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/draftwatermark"))
+    (home-page "http://www.ctan.org/pkg/draftwatermark")
+    (synopsis "Put a grey textual watermark on document pages")
+    (description
+     "This package provides a means to add a textual, light grey watermark on
+every page or on the first page of a document.  Typical usage may consist in
+writing words such as DRAFT or CONFIDENTIAL across document pages.  The
+package performs a similar function to that of @code{draftcopy}, but its
+implementation is output device independent, and made very simple by relying
+on everypage.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
