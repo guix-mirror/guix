@@ -1812,6 +1812,26 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-polyglossia
+  (package
+    (name "texlive-latex-polyglossia")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "polyglossia"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "09mvszd5qgqg4cfglpj5qxyzjz190ppb9p8gnsnjydwp1akvhayf"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/polyglossia"))
+    (home-page "http://www.ctan.org/pkg/polyglossia")
+    (synopsis "Alternative to babel for XeLaTeX and LuaLaTeX")
+    (description
+     "This package provides a complete Babel replacement for users of LuaLaTeX
+and XeLaTeX; it relies on the @code{fontspec} package, version 2.0 at least.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-supertabular
   (package
     (name "texlive-latex-supertabular")
