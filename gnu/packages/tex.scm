@@ -2356,6 +2356,39 @@ CM-Super family of fonts.  The package also offers its own LaTeX support for
 OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
     (license license:lppl)))
 
+(define-public texlive-metapost
+  (package
+    (name "texlive-metapost")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/metapost"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "03nvjddffiz796wll6axzmgfvynyciy2mqamv20qx252w71vwkwd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/metapost")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/metapost")
+    (synopsis "Create scalable illustrations")
+    (description
+     "MetaPost uses a language based on that of Metafont to produce precise
+technical illustrations.  Its output is scalable PostScript or SVG, rather
+than the bitmaps Metafont creates.")
+    (license license:lppl)))
+
 (define-public texlive-latex-wasysym
   (package
     (name "texlive-latex-wasysym")
