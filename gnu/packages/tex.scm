@@ -1624,6 +1624,31 @@ make direct processing by LaTeX easier.  The package can be used either in
 conjunction with BibTeX or as a replacement for BibTeX.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-blindtext
+  (package
+    (name "texlive-latex-blindtext")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "blindtext"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1jrja9b1pzdh9zgv1jh807w4xijqja58n2mqny6dkwicv8qfgbfg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/blindtext"))
+    (home-page "http://www.ctan.org/pkg/blindtext")
+    (synopsis "Producing 'blind' text for testing")
+    (description
+     "The package provides the commands @code{\\blindtext} and
+@code{\\Blindtext} for creating \"blind\" text useful in testing new classes
+and packages, and @code{\\blinddocument}, @code{\\Blinddocument} for creating
+an entire random document with sections, lists, mathematics, etc.  The package
+supports three languages, @code{english}, @code{(n)german} and @code{latin};
+the @code{latin} option provides a short \"lorem ipsum\" (for a fuller \"lorem
+ipsum\" text, see the @code{lipsum} package).")
+    (license license:lppl)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
