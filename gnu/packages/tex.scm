@@ -1703,6 +1703,26 @@ are LaTeX 2.09 @code{documentstyle} and LaTeX 2e class files for both an
 \"old\" and a \"new\" version of g-brief.")
     (license license:lppl)))
 
+(define-public texlive-latex-galois
+  (package
+    (name "texlive-latex-galois")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "galois"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0d4l0msk8j5pi95xnmm9wygv1vbpkwkv5amx9l0km86cs79jpp1h"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/galois"))
+    (home-page "http://www.ctan.org/pkg/galois")
+    (synopsis "Typeset Galois connections")
+    (description
+     "The package deals with connections in two-dimensional style, optionally
+in colour.")
+    (license license:lppl)))
+
 (define-public texlive-latex-hyperref
   (package
     (name "texlive-latex-hyperref")
