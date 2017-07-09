@@ -863,7 +863,7 @@ overwrite existing files and letting you use @code{filecontents} /
     (description
      "This is a simple package which provides an @code{\\ifxetex} conditional,
 so that other code can determine that it is running under XeTeX.  The package
-requires the etexe-TeX extensions to the TeX primitive set.")
+requires the e-TeX extensions to the TeX primitive set.")
     (license license:lppl1.3c+)))
 
 (define-public texlive-latex-fancyvrb
