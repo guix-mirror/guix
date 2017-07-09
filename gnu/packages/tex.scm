@@ -1649,6 +1649,39 @@ the @code{latin} option provides a short \"lorem ipsum\" (for a fuller \"lorem
 ipsum\" text, see the @code{lipsum} package).")
     (license license:lppl)))
 
+(define-public texlive-latex-dinbrief
+  (package
+    (name "texlive-latex-dinbrief")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "dinbrief"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0lb0kiy8fxzl6cnhcw1sggy6jrjvcd6kj1kkw3k9lkimm388yjz6"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/dinbrief"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "dinbrief.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/dinbrief")
+    (synopsis "German letter DIN style")
+    (description
+     "This package implements a document layout for writing letters according
+to the rules of DIN (Deutsches Institut für Normung, German standardisation
+institute).  A style file for LaTeX 2.09 (with limited support of the
+features) is part of the package.  Since the letter layout is based on a
+German standard, the user guide is written in German, but most macros have
+English names from which the user can recognize what they are used for.  In
+addition there are example files showing how letters may be created with the
+package.")
+    (license license:lppl)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
