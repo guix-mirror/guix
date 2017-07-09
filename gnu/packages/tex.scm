@@ -743,25 +743,28 @@ book).")
                     ;; leading asterisk).  We should not use luatex here,
                     ;; because that would make the generated format files
                     ;; incompatible with any other TeX engine.
-
-                    ;; FIXME: XeTeX fails to build because neither
-                    ;; \XeTeXuseglyphmetrics nor \XeTeXdashbreakstate are
-                    ;; defined.
                     (every
                      (lambda (format)
                        (zero? (system* "latex" "-ini" "-interaction=batchmode"
                                        "-output-directory=web2c"
                                        "-translate-file=cp227.tcx"
                                        (string-append "*" format ".ini"))))
-                     '("latex" ;"xetex"
+                     '("latex"
                        "pdflatex"
                        "pdfetex"))
+                    (every
+                     (lambda (format)
+                       (zero? (system* format "-ini" "-interaction=batchmode"
+                                       "-output-directory=web2c"
+                                       (string-append "*" format ".ini"))))
+                     '("xetex"
+                       "xelatex"))
                     (every
                      (lambda (format)
                        (zero? (system* "luatex" "-ini" "-interaction=batchmode"
                                        "-output-directory=web2c"
                                        (string-append format ".ini"))))
-                     '("dviluatex" "dvilualatex" "luatex" "lualatex" "xelatex")))))
+                     '("dviluatex" "dvilualatex" "luatex" "lualatex")))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
