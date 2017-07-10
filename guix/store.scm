@@ -897,6 +897,7 @@ path."
                           #:key (select? true))
            ;; We don't use the 'operation' macro so we can pass SELECT? to
            ;; 'write-file'.
+           (record-operation 'add-to-store)
            (let ((port (nix-server-socket server)))
              (write-int (operation-id add-to-store) port)
              (write-string basename port)
