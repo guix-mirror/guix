@@ -1442,7 +1442,7 @@ distribution.")
                 "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
     (build-system texlive-build-system)
     (arguments
-     '(#:tex-directory "latex/babel"
+     '(#:tex-directory "generic/babel"
        #:phases
        (modify-phases %standard-phases
          ;; This package tries to produce babel.aux twice but refuses to
