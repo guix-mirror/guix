@@ -2223,6 +2223,34 @@ other programs in the distribution offer online interactive use (with
 hypertext linkages in some cases).")
     (license license:gpl3+)))
 
+(define-public texlive-latex-upquote
+  (package
+    (name "texlive-latex-upquote")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "upquote"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0d1050i973wnxigy0xpky5l7vn4ff7ldhkjpdqsw5s653gagwixp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/upquote"))
+    (home-page "http://www.ctan.org/pkg/upquote")
+    (synopsis "Show \"realistic\" quotes in verbatim")
+    (description
+     "Typewriter-style fonts are best for program listings, but Computer
+Modern Typewriter prints @code{`} and @code{'} as bent opening and closing
+single quotes.  Other fonts, and most programming languages, print @code{`} as
+a grave accent and @code{'} upright; @code{'} is used both to open and to
+close quoted strings.  The package switches the typewriter font to Computer
+Modern Typewriter in OT1 encoding, and modifies the behaviour of
+@code{verbatim}, @code{verbatim*}, @code{\\verb}, and @code{\\verb*} to print
+in the expected way.  It does this regardless of other fonts or encodings in
+use, so long as the package is loaded after the other fonts were.  The package
+does not affect @code{\\tt}, @code{\\texttt}, etc.")
+    (license license:lppl1.2+)))
+
 (define-public texlive-latex-anysize
   (package
     (name "texlive-latex-anysize")
