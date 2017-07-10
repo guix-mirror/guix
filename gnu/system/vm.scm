@@ -335,11 +335,17 @@ the image."
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful
 to USB sticks meant to be read-only."
+  (define normalize-label
+    ;; ISO labels are all-caps (case-insensitive), but since
+    ;; 'find-partition-by-label' is case-sensitive, make it all-caps here.
+    (if (string=? "iso9660" file-system-type)
+        string-upcase
+        identity))
   (define root-label
     ;; Volume name of the root file system.  Since we don't know which device
     ;; will hold it, we use the volume name to find it (using the UUID would
     ;; be even better, but somewhat less convenient.)
-    "gnu-disk-image")
+    (normalize-label "GuixSD"))
 
   (define file-systems-to-keep
     (remove (lambda (fs)

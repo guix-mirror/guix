@@ -431,7 +431,7 @@ passing it a directory name where it is mounted."
           (lambda (port)
             (format port
                     "insmod part_msdos~@
-                    search --set=root --label gnu-disk-image~@
+                    search --set=root --label GuixSD~@
                     configfile /boot/grub/grub.cfg~%")))
 
         (display "creating EFI firmware image...")
