@@ -1815,6 +1815,41 @@ recent classes such as powerdot or beamer, both of which are tuned to
 21st-century presentation styles.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-fncychap
+  (package
+    (name "texlive-latex-fncychap")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fncychap"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0fdk84dbicfjfprkz6vk15x36mvlhaw9isjmgkc56jp2khwjswwq"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fncychap")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fncychap")
+    (synopsis "Seven predefined chapter heading styles")
+    (description
+     "This package provides seven predefined chapter heading styles.  Each
+style can be modified using a set of simple commands.  Optionally one can
+modify the formatting routines in order to create additional chapter
+headings.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-g-brief
   (package
     (name "texlive-latex-g-brief")
