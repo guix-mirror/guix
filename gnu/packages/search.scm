@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -69,6 +71,32 @@ supports the Probabilistic Information Retrieval model and also supports a
 rich set of boolean query operators.")
     (home-page "https://xapian.org/")
     (license (list gpl2+ bsd-3 x11))))
+
+(define-public python-xapian-bindings
+  (package (inherit xapian)
+    (name "python-xapian-bindings")
+    (version (package-version xapian))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://oligarchy.co.uk/xapian/" version
+                                  "/xapian-bindings-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0fca9nsf7pj3fq991xcm5iainz3s8yqik4ycvavm09y486n3wciv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-python3")
+       #:make-flags
+       (list (string-append "pkgpylibdir="
+                            (assoc-ref %outputs "out")
+                            "/lib/python3.5/site-packages/xapian"))))
+    (inputs
+     `(("python" ,python)
+       ("python-sphinx" ,python-sphinx) ; for documentation
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)))
+    (synopsis "Python bindings for the Xapian search engine library")
+    (license gpl2+)))
 
 (define-public libtocc
   (package
