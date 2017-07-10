@@ -37,7 +37,7 @@
 (define-public libpipeline
   (package
     (name "libpipeline")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -45,7 +45,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1dlvp2mxlhg5zbj509kc60h7g39hpgwkzkpdf855cyzizgkmkivr"))))
+                "1gkrfqkphdc6gk8gic68asallj59i3cfq6nd31ppks0cljdgrwgy"))))
     (build-system gnu-build-system)
     (home-page "http://libpipeline.nongnu.org/")
     (synopsis "C library for manipulating pipelines of subprocesses")
