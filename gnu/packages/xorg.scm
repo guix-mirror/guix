@@ -57,6 +57,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1112,8 +1113,29 @@ themselves.")
           (base32
             "16dr80rdw5bzdyhahvilfjrflj7scs2yl2mmghsb84f3nglm8b3m"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; Make sure libpciaccess can read compressed 'pci.ids' files as
+       ;; provided by pciutils.
+       #:configure-flags
+       (list "--with-zlib"
+             (string-append "--with-pciids-path="
+                            (assoc-ref %build-inputs "pciutils")
+                            "/share/hwdata"))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'add-L-zlib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Provide '-LZLIB/lib' next to '-lz' in the .la file.
+             (let ((zlib (assoc-ref inputs "zlib"))
+                   (out  (assoc-ref outputs "out")))
+               (substitute* (string-append out "/lib/libpciaccess.la")
+                 (("-lz")
+                  (string-append "-L" zlib "/lib -lz")))
+               #t))))))
     (inputs
-      `(("zlib" ,zlib)))
+     `(("zlib" ,zlib)
+       ("pciutils" ,pciutils)))                   ;for 'pci.ids.gz'
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
