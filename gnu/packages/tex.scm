@@ -1464,6 +1464,28 @@ what has to be done for each language.  Users of XeTeX are advised to use the
 polyglossia package rather than Babel.")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-babel-english
+  (package
+    (name "texlive-generic-babel-english")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "generic" "babel-english"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1s404wbx91z5w65hm024kyl4h56zsa096irx18vsx8jvlmwsr5wc"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "generic/babel-english"))
+    (home-page "http://www.ctan.org/pkg/babel-english")
+    (synopsis "Babel support for English")
+    (description
+     "This package provides the language definition file for support of
+English in @code{babel}.  Care is taken to select British hyphenation patterns
+for British English and Australian text, and default (\"american\") patterns
+for Canadian and USA text.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-cyrillic
   (package
     (name "texlive-latex-cyrillic")
