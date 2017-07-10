@@ -1706,6 +1706,34 @@ implementation is output device independent, and made very simple by relying
 on everypage.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-eqparbox
+  (package
+    (name "texlive-latex-eqparbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "eqparbox"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0pvmhsd4xmpil0m3c7qcgwilbk266mlkzv03g0jr8r3zd8jxlyzq"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/eqparbox"))
+    (home-page "http://www.ctan.org/pkg/eqparbox")
+    (synopsis "Create equal-widthed parboxes")
+    (description
+     "LaTeX users sometimes need to ensure that two or more blocks of text
+occupy the same amount of horizontal space on the page.  To that end, the
+@code{eqparbox} package defines a new command, @code{\\eqparbox}, which works
+just like @code{\\parbox}, except that instead of specifying a width, one
+specifies a tag.  All @code{eqparbox}es with the same tag---regardless of
+where they are in the document---will stretch to fit the widest
+@code{eqparbox} with that tag.  This simple, equal-width mechanism can be used
+for a variety of alignment purposes, as is evidenced by the examples in
+@code{eqparbox}'s documentation.  Various derivatives of @code{\\eqparbox} are
+also provided.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
