@@ -1734,6 +1734,37 @@ for a variety of alignment purposes, as is evidenced by the examples in
 also provided.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-expdlist
+  (package
+    (name "texlive-latex-expdlist")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "expdlist"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1x7byk6x10njir3y9rm56glhdzrxwqag7gsnw2sqn1czlq525w7r"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/expdlist"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (for-each delete-file
+                       (find-files "." "\\.drv$"))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/expdlist")
+    (synopsis "Expanded description environments")
+    (description
+     "The package provides additional features for the LaTeX
+@code{description} environment, including adjustable left margin.  The package
+also allows the user to \"break\" a list (for example, to interpose a comment)
+without affecting the structure of the list (this works for @code{itemize} and
+@code{enumerate} lists, and numbered lists remain in sequence).")
+    (license license:lppl)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
