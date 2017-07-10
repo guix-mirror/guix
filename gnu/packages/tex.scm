@@ -1871,6 +1871,44 @@ recent classes such as powerdot or beamer, both of which are tuned to
 to something that's not a float.")
     (license license:lppl)))
 
+(define-public texlive-latex-etoolbox
+  (package
+    (name "texlive-latex-etoolbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/etoolbox"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0016bscnpima9krrg2569mva78xzwnygzlvg87dznsm6gf8g589v"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/etoolbox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/etoolbox")
+    (synopsis "e-TeX tools for LaTeX")
+    (description
+     "This package is a toolbox of programming facilities geared primarily
+towards LaTeX class and package authors.  It provides LaTeX frontends to some
+of the new primitives provided by e-TeX as well as some generic tools which
+are not strictly related to e-TeX but match the profile of this package.  The
+package provides functions that seem to offer alternative ways of implementing
+some LaTeX kernel commands; nevertheless, the package will not modify any part
+of the LaTeX kernel.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-fncychap
   (package
     (name "texlive-latex-fncychap")
