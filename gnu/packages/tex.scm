@@ -1944,6 +1944,46 @@ modify the formatting routines in order to create additional chapter
 headings.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-framed
+  (package
+    (name "texlive-latex-framed")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/framed"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14a4ydqsvp3vcfavl21jrv0ybiqypaaqzg2q2cs3rzkandg7w98x"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/framed")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/framed")
+    (synopsis "Framed or shaded regions that can break across pages")
+    (description
+     "The package creates three environments: @code{framed}, which puts an
+ordinary frame box around the region, @code{shaded}, which shades the region,
+and @code{leftbar}, which places a line at the left side.  The environments
+allow a break at their start (the @code{\\FrameCommand} enables creation of a
+title that is “attached” to the environment); breaks are also allowed in the
+course of the framed/shaded matter.  There is also a command
+@code{\\MakeFramed} to make your own framed-style environments.")
+    ;; The header states: "These macros may be freely transmitted, reproduced,
+    ;; or modified for any purpose provided that this notice is left intact."
+    (license (license:fsf-free "file://framed.sty"))))
+
 (define-public texlive-latex-g-brief
   (package
     (name "texlive-latex-g-brief")
