@@ -2122,6 +2122,30 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-mdwtools
+  (package
+    (name "texlive-latex-mdwtools")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "mdwtools"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0caxs74hla28hc67csf5i5ahadx97w8vxh3mdmsprxbpd1mr7ssg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/mdwtools"))
+    (home-page "http://www.ctan.org/pkg/mdwtools")
+    (synopsis "Miscellaneous tools by Mark Wooding")
+    (description
+     "This collection of tools includes: @code{atsupport} for short commands
+starting with @code{@}, macros to sanitize the OT1 encoding of the @code{cmtt}
+fonts; a @code{doafter} command; improved @code{footnote} support;
+@code{mathenv} for various alignment in maths; list handling; @code{mdwmath}
+which adds some minor changes to LaTeX maths; a rewrite of LaTeX's tabular and
+array environments; verbatim handling; and syntax diagrams.")
+    (license license:gpl3+)))
+
 (define-public texlive-latex-polyglossia
   (package
     (name "texlive-latex-polyglossia")
