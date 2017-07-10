@@ -634,6 +634,114 @@ class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
 
+(define-public texlive-fonts-amsfonts
+  (package
+    (name "texlive-fonts-amsfonts")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/amsfonts"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "07h20rvpbdb4k72hzmjkyb29426zr9wxsfp6yd4ajbbpd3vx8grb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base"))
+                   (cwd (getcwd)))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append cwd ":"
+                                      cwd "/cmextra:"
+                                      cwd "/cyrillic:"
+                                      cwd "/dummy:"
+                                      cwd "/symbols:"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" (basename font ".mf"))
+                      (with-directory-excursion (dirname font)
+                        (zero? (system* "mf" "-progname=mf"
+                                        "-output-directory=../build"
+                                        (string-append "\\"
+                                                       "mode:=ljfour; "
+                                                       "mag:=1; "
+                                                       "nonstopmode; "
+                                                       "input "
+                                                       (getcwd) "/"
+                                                       (basename font ".mf"))))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/amsfonts"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/amsfonts")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-bin" ,texlive-bin)))
+    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (synopsis "TeX fonts from the American Mathematical Society")
+    (description
+     "This package provides an extended set of fonts for use in mathematics,
+including: extra mathematical symbols; blackboard bold letters (uppercase
+only); fraktur letters; subscript sizes of bold math italic and bold Greek
+letters; subscript sizes of large symbols such as sum and product; added sizes
+of the Computer Modern small caps font; cyrillic fonts (from the University of
+Washington); Euler mathematical fonts.  All fonts are provided as Adobe Type 1
+files, and all except the Euler fonts are provided as Metafont source.  The
+distribution also includes the canonical Type 1 versions of the Computer
+Modern family of fonts.  The Euler fonts are supported by separate packages;
+details can be found in the documentation.")
+    (license license:silofl1.1)))
+
+(define-public texlive-latex-amsfonts
+  (package
+    (name "texlive-latex-amsfonts")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "amsfonts"))
+              (sha256
+               (base32
+                "0slzfv5h2m03b2xvm2sasznz4azh6rgi069z161dja3l8rln79hm"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/amsfonts"))
+    (native-inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-metafont-base" ,texlive-metafont-base)))
+    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (synopsis "TeX fonts from the American Mathematical Society")
+    (description
+     "This package provides basic LaTeX support for the symbol fonts provides
+by the amsfonts package.  It provides @code{amsfonts.sty}, with names of
+individual symbols defined in @code{amssymb.sty}.")
+    (license license:silofl1.1)))
+
 ;; This provides etex.src which is needed to build various formats, including
 ;; luatex.fmt and pdflatex.fmt
 (define-public texlive-tex-plain
@@ -743,25 +851,28 @@ book).")
                     ;; leading asterisk).  We should not use luatex here,
                     ;; because that would make the generated format files
                     ;; incompatible with any other TeX engine.
-
-                    ;; FIXME: XeTeX fails to build because neither
-                    ;; \XeTeXuseglyphmetrics nor \XeTeXdashbreakstate are
-                    ;; defined.
                     (every
                      (lambda (format)
                        (zero? (system* "latex" "-ini" "-interaction=batchmode"
                                        "-output-directory=web2c"
                                        "-translate-file=cp227.tcx"
                                        (string-append "*" format ".ini"))))
-                     '("latex" ;"xetex"
+                     '("latex"
                        "pdflatex"
                        "pdfetex"))
+                    (every
+                     (lambda (format)
+                       (zero? (system* format "-ini" "-interaction=batchmode"
+                                       "-output-directory=web2c"
+                                       (string-append "*" format ".ini"))))
+                     '("xetex"
+                       "xelatex"))
                     (every
                      (lambda (format)
                        (zero? (system* "luatex" "-ini" "-interaction=batchmode"
                                        "-output-directory=web2c"
                                        (string-append format ".ini"))))
-                     '("dviluatex" "dvilualatex" "luatex" "lualatex" "xelatex")))))
+                     '("dviluatex" "dvilualatex" "luatex" "lualatex")))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -860,8 +971,44 @@ overwrite existing files and letting you use @code{filecontents} /
     (description
      "This is a simple package which provides an @code{\\ifxetex} conditional,
 so that other code can determine that it is running under XeTeX.  The package
-requires the etexe-TeX extensions to the TeX primitive set.")
+requires the e-TeX extensions to the TeX primitive set.")
     (license license:lppl1.3c+)))
+
+(define-public texlive-generic-epsf
+  (package
+    (name "texlive-generic-epsf")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/epsf"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "14w3j81ympyvg8hkk9i1xgr8a0gfnfsb2ki8qqsk5pa051za1xcy"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/epfs")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/epsf")
+    (synopsis "Simple macros for EPS inclusion")
+    (description
+     "This package provides the original (and now obsolescent) graphics
+inclusion macros for use with dvips, still widely used by Plain TeX users (in
+particular).  For LaTeX users, the package is nowadays (rather strongly)
+deprecated in favour of the more sophisticated standard LaTeX latex-graphics
+bundle of packages.  (The latex-graphics bundle is also available to Plain TeX
+users, via its Plain TeX version.)")
+    (license license:public-domain)))
 
 (define-public texlive-latex-fancyvrb
   (package
@@ -1019,13 +1166,14 @@ nameref packages, which make use of the facilities of hyperref.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/oberdiek"
+       #:build-targets '("oberdiek.ins")
        #:phases
        (modify-phases %standard-phases
-         ;; "ifpdf.ins" is not generated, so we cannot process it.
+         ;; "ifpdf.ins" is not generated, so we need to process the dtx file.
          (add-after 'unpack 'do-not-process-ifpdf.ins
            (lambda _
              (substitute* "oberdiek.ins"
-               (("\\\\batchinput\\{ifpdf.ins\\}") ""))
+               (("ifpdf.ins") "ifpdf.dtx"))
              #t)))))
     (home-page "http://www.ctan.org/pkg/oberdiek")
     (synopsis "Bundle of packages submitted by Heiko Oberdiek")
@@ -1578,6 +1726,762 @@ source.  The Texinfo macros may be used to produce printable output using TeX;
 other programs in the distribution offer online interactive use (with
 hypertext linkages in some cases).")
     (license license:gpl3+)))
+
+(define-public texlive-latex-anysize
+  (package
+    (name "texlive-latex-anysize")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/anysize"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "19khwqjlvznc955sijhww3c4zbb0053rvzwv9nz738qknq7y18vb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/anysize")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/anysize")
+    (synopsis "Simple package to set up document margins")
+    (description
+     "This is a simple package to set up document margins.  This package is
+considered obsolete; alternatives are the @code{typearea} package from the
+@code{koma-script} bundle, or the @code{geometry} package.")
+    (license license:public-domain)))
+
+(define-public texlive-latex-appendix
+  (package
+    (name "texlive-latex-appendix")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "appendix"))
+              (sha256
+               (base32
+                "0rxfpr8vq3brwx5rc7qn91ixlp9zva4zrms8a579fqa1g5yva7vg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/appendix"))
+    (home-page "http://www.ctan.org/pkg/appendix")
+    (synopsis "Extra control of appendices")
+    (description
+     "The appendix package provides various ways of formatting the titles of
+appendices.  Also (sub)appendices environments are provided that can be used,
+for example, for per chapter/section appendices.  An @code{appendices}
+environment is provided which can be used instead of the @code{\\appendix}
+command.")
+    (license license:lppl)))
+
+(define-public texlive-latex-changebar
+  (package
+    (name "texlive-latex-changebar")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "changebar"))
+              (sha256
+               (base32
+                "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/changebar"))
+    (home-page "http://www.ctan.org/pkg/changebar")
+    (synopsis "Generate changebars in LaTeX documents")
+    (description
+     "Identify areas of text to be marked with changebars with the
+@code{\\cbstart} and @code{\\cbend} commands; the bars may be coloured.  The
+package uses 'drivers' to place the bars; the available drivers can work with
+@code{dvitoln03}, @code{dvitops}, @code{dvips}, the emTeX and TeXtures DVI
+drivers, and VTeX and pdfTeX.")
+    (license license:lppl)))
+
+(define-public texlive-latex-colortbl
+  (package
+    (name "texlive-latex-colortbl")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "colortbl"))
+              (sha256
+               (base32
+                "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/colortbl"))
+    (home-page "http://www.ctan.org/pkg/colortbl")
+    (synopsis "Add colour to LaTeX tables")
+    (description
+     "This package allows rows, columns, and even individual cells in LaTeX
+tables to be coloured.")
+    (license license:lppl)))
+
+(define-public texlive-latex-fancybox
+  (package
+    (name "texlive-latex-fancybox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fancybox"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0smmnaad2q8qwicay1frri990lv65l0k8cwzsvdsyp3jk8kp042w"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fancybox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fancybox")
+    (synopsis "Variants of \\fbox and other games with boxes")
+    (description
+     "This package provides variants of @code{\\fbox}: @code{\\shadowbox},
+@code{\\doublebox}, @code{\\ovalbox}, @code{\\Ovalbox}, with helpful tools for
+using box macros and flexible verbatim macros.  You can box mathematics,
+floats, center, flushleft, and flushright, lists, and pages.")
+    (license license:lppl1.2+)))
+
+(define-public texlive-latex-fancyhdr
+  (package
+    (name "texlive-latex-fancyhdr")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fancyhdr"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "04h430agf8aj7ziwyb46xpk95c605rjk1wzhr63m6ylipihidlgw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fancyhdr")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fancyhdr")
+    (synopsis "Extensive control of page headers and footers in LaTeX2e")
+    (description
+     "The package provides extensive facilities, both for constructing headers
+and footers, and for controlling their use (for example, at times when LaTeX
+would automatically change the heading style in use).")
+    (license license:lppl)))
+
+(define-public texlive-latex-fancyvrb
+  (package
+    (name "texlive-latex-fancyvrb")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "fancyvrb"))
+              (sha256
+               (base32
+                "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:build-targets '("fancyvrb.ins") ; fvrb-ex.ins cannot be built
+       #:tex-directory "latex/fancyvrb"))
+    (home-page "http://www.ctan.org/pkg/fancyvrb")
+    (synopsis "Sophisticated verbatim text")
+    (description
+     "This package provides tools for flexible handling of verbatim text
+including: verbatim commands in footnotes; a variety of verbatim environments
+with many parameters; ability to define new customized verbatim environments;
+save and restore verbatim text and environments; write and read files in
+verbatim mode; build \"example\" environments (showing both result and
+verbatim source).")
+    (license license:lppl1.0+)))
+
+(define-public texlive-latex-float
+  (package
+    (name "texlive-latex-float")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "float"))
+              (sha256
+               (base32
+                "0nbl7wylkv22fcdv4p8byhhj575fli6jnqjpkhrkbv8dzwah84nq"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/float"))
+    (home-page "http://www.ctan.org/pkg/float")
+    (synopsis "Improved interface for floating objects")
+    (description
+     "This package improves the interface for defining floating objects such
+as figures and tables.  It introduces the boxed float, the ruled float and the
+plaintop float.  You can define your own floats and improve the behaviour of
+the old ones.  The package also provides the @code{H} float modifier option of
+the obsolete @code{here} package.  You can select this as automatic default
+with @code{\\floatplacement{figure}{H}}.")
+    (license license:lppl)))
+
+(define-public texlive-latex-footmisc
+  (package
+    (name "texlive-latex-footmisc")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "footmisc"))
+              (sha256
+               (base32
+                "03x61wwql8nh6zrqiiiq3rb0x7m3pn48c606zapy19y21fybwdxs"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/footmisc"))
+    (home-page "http://www.ctan.org/pkg/footmisc")
+    (synopsis "Range of footnote options")
+    (description
+     "This is a collection of ways to change the typesetting of footnotes.
+The package provides means of changing the layout of the footnotes themselves,
+a way to number footnotes per page, to make footnotes disappear in a
+\"moving\" argument, and to deal with multiple references to footnotes from
+the same place.  The package also has a range of techniques for labelling
+footnotes with symbols rather than numbers.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-listings
+  (package
+    (name "texlive-latex-listings")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "listings"))
+              (sha256
+               (base32
+                "1nsn9wp3wl12b36c0sqrim33lf33cr5wky0h4ncnw8lvqgm7h8wf"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/listings"
+       #:build-targets '("listings.ins")))
+    (home-page "http://www.ctan.org/pkg/listings")
+    (synopsis "Typeset source code listings using LaTeX")
+    (description
+     "The package enables the user to typeset programs (programming code)
+within LaTeX; the source code is read directly by TeX---no front-end processor
+is needed.  Keywords, comments and strings can be typeset using different
+styles.  Support for @code{hyperref} is provided.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-jknapltx
+  (package
+    (name "texlive-latex-jknapltx")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/jknapltx"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0m034x72f2g07icr50gacyxfb9g1lz2rmqh4kqr1qjb421x2kds9"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/jknapltx")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/jknappen")
+    (synopsis "Miscellaneous packages by Joerg Knappen")
+    (description
+     "This package provides miscellaneous macros by Joerg Knappen, including:
+represent counters in greek; Maxwell's non-commutative division;
+@code{latin1jk}, @code{latin2jk} and @code{latin3jk}, which are
+@code{inputenc} definition files that allow verbatim input in the respective
+ISO Latin codes; blackboard bold fonts in maths; use of RSFS fonts in maths;
+extra alignments for @code{\\parboxes}; swap Roman and Sans fonts;
+transliterate semitic languages; patches to make (La)TeX formulae embeddable
+in SGML; use maths minus in text as appropriate; simple Young tableaux.")
+    (license license:gpl2)))
+
+(define-public texlive-fonts-ec
+  (package
+    (name "texlive-fonts-ec")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/jknappen/ec/"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "12av65fbz9xiashm09c9m1fj1mijxls5xspd7652ry1n5s0nixy4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input " (basename font ".mf")))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/jknappen/ec"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/jknappen/ec")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+    (home-page "http://www.ctan.org/pkg/ec")
+    (synopsis "Computer modern fonts in T1 and TS1 encodings")
+    (description
+     "The EC fonts are European Computer Modern Fonts, supporting the complete
+LaTeX T1 encoding defined at the 1990 TUG conference hold at Cork/Ireland.
+These fonts are intended to be stable with no changes being made to the tfm
+files.  The set also contains a Text Companion Symbol font, called @code{tc},
+featuring many useful characters needed in text typesetting, for example
+oldstyle digits, currency symbols (including the newly created Euro symbol),
+the permille sign, copyright, trade mark and servicemark as well as a copyleft
+sign, and many others.  Recent releases of LaTeX2e support the EC fonts.  The
+EC fonts supersede the preliminary version released as the DC fonts.  The
+fonts are available in (traced) Adobe Type 1 format, as part of the
+@code{cm-super} bundle.  The other Computer Modern-style T1-encoded Type 1
+set, Latin Modern, is not actually a direct development of the EC set, and
+differs from the EC in a number of particulars.")
+    (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
+texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
+
+(define-public texlive-fonts-rsfs
+  (package
+    (name "texlive-fonts-rsfs")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/rsfs/"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0r12pn02r4a955prcvq0048nifh86ihlcgvw3pppqqvfngv34l5h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+               ;; Tell mf where to find mf.base
+               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+               ;; Tell mf where to look for source files
+               (setenv "MFINPUTS"
+                       (string-append (getcwd) ":"
+                                      mf "/share/texmf-dist/metafont/base:"
+                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      "/share/texmf-dist/fonts/source/public/cm")))
+             (mkdir "build")
+             (every (lambda (font)
+                      (format #t "building font ~a\n" font)
+                      (zero? (system* "mf" "-progname=mf"
+                                      "-output-directory=build"
+                                      (string-append "\\"
+                                                     "mode:=ljfour; "
+                                                     "mag:=1; "
+                                                     "batchmode; "
+                                                     "input " (basename font ".mf")))))
+                    (find-files "." "[0-9]+\\.mf$"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (tfm (string-append
+                          out "/share/texmf-dist/fonts/tfm/public/rsfs"))
+                    (mf  (string-append
+                          out "/share/texmf-dist/fonts/source/public/rsfs")))
+               (for-each (cut install-file <> tfm)
+                         (find-files "build" "\\.*"))
+               (for-each (cut install-file <> mf)
+                         (find-files "." "\\.mf"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+    (home-page "http://www.ctan.org/pkg/rsfs")
+    (synopsis "Ralph Smith's Formal Script font")
+    (description
+     "The fonts provide uppercase formal script letters for use as symbols in
+scientific and mathematical typesetting (in contrast to the informal script
+fonts such as that used for the calligraphic symbols in the TeX maths symbol
+font).  The fonts are provided as Metafont source, and as derived Adobe Type 1
+format.  LaTeX support, for using these fonts in mathematics, is available via
+one of the packages @code{calrsfs} and @code{mathrsfs}.")
+    (license (license:fsf-free "http://mirrors.ctan.org/fonts/rsfs/README"))))
+
+(define-public texlive-latex-eso-pic
+  (package
+    (name "texlive-latex-eso-pic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "eso-pic"))
+              (sha256
+               (base32
+                "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/eso-pic"))
+    (home-page "http://www.ctan.org/pkg/eso-pic")
+    (synopsis "Add picture commands (or backgrounds) to every page")
+    (description
+     "The package adds one or more user commands to LaTeX's @code{shipout}
+routine, which may be used to place the output at fixed positions.  The
+@code{grid} option may be used to find the correct places.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-eepic
+  (package
+    (name "texlive-latex-eepic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/eepic"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "1c68gvh021pvybg07apsd2xhq2ljbg80kq94wh71drdga3c2zqjw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/eepic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/eepic")
+    (synopsis "Extensions to epic and the LaTeX drawing tools")
+    (description
+     "Extensions to @code{epic} and the LaTeX picture drawing environment,
+include the drawing of lines at any slope, the drawing of circles in any
+radii, and the drawing of dotted and dashed lines much faster with much less
+TeX memory, and providing several new commands for drawing ellipses, arcs,
+splines, and filled circles and ellipses.  The package uses @code{tpic}
+@code{\\special} commands.")
+    (license license:public-domain)))
+
+(define-public texlive-latex-multirow
+  (package
+    (name "texlive-latex-multirow")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "multirow"))
+              (sha256
+               (base32
+                "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/multirow"))
+    (home-page "http://www.ctan.org/pkg/multirow")
+    (synopsis "Create tabular cells spanning multiple rows")
+    (description
+     "The package provides tools for creating tabular cells spanning multiple
+rows.  It has a lot of flexibility, including an option for specifying an
+entry at the \"natural\" width of its text.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-overpic
+  (package
+    (name "texlive-latex-overpic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/overpic"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0m29q9qdb00558b7g2i7iw6w62n5s46yx81j8m99qkv77magk4fm"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/overpic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/overpic")
+    (synopsis "Combine LaTeX commands over included graphics")
+    (description
+     "The @code{overpic} environment is a cross between the LaTeX
+@code{picture} environment and the @code{\\includegraphics} command of
+@code{graphicx}.  The resulting picture environment has the same dimensions as
+the included graphic.  LaTeX commands can be placed on the graphic at defined
+positions; a grid for orientation is available.")
+    (license license:lppl1.0+)))
+
+(define-public texlive-latex-pdfpages
+  (package
+    (name "texlive-latex-pdfpages")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "pdfpages"))
+              (sha256
+               (base32
+                "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/pdfpages"))
+    (home-page "http://www.ctan.org/pkg/pdfpages")
+    (synopsis "Include PDF documents in LaTeX")
+    (description
+     "This package simplifies the inclusion of external multi-page PDF
+documents in LaTeX documents.  Pages may be freely selected and it is possible
+to put several logical pages onto each sheet of paper.  Furthermore a lot of
+hypertext features like hyperlinks and article threads are provided.  The
+package supports pdfTeX (pdfLaTeX) and VTeX.  With VTeX it is even possible to
+use this package to insert PostScript files, in addition to PDF files.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-fonts-stmaryrd
+  (package
+    (name "texlive-fonts-stmaryrd")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "fonts" "stmaryrd"))
+              (sha256
+               (base32
+                "08pn4ca3vl6qm9l3wm5h5iyjsrg411kkm1yana329xwg2j14s9n6"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/stmaryrd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-ins
+           (lambda _
+             (substitute* "stmaryrd.ins"
+               (("^%% LaTeX2e.*") "\\input docstrip\n")
+               (("fontdef\\}\\}" line)
+                (string-append line "\n\\endbatchfile")))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/stmaryrd")
+    (synopsis "St Mary Road symbols for theoretical computer science")
+    (description
+     "The fonts were originally distributed as Metafont sources only, but
+Adobe Type 1 versions are also now available.  Macro support is provided for
+use under LaTeX; the package supports the @code{only} option (provided by the
+@code{somedefs} package) to restrict what is loaded, for those who don't need
+the whole font.")
+    (license license:lppl)))
+
+(define-public texlive-latex-subfigure
+  (package
+    (name "texlive-latex-subfigure")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "subfigure"))
+              (sha256
+               (base32
+                "15spcl5wb7w269qd6y596vp4yi8sa5ppcx8w4z2i9kyp02r3a0yb"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/subfigure"))
+    (home-page "http://www.ctan.org/pkg/subfigure")
+    (synopsis "Figures divided into subfigures")
+    (description
+     "This (deprecated) package provides support for the manipulation and
+reference of small or \"sub\" figures and tables within a single figure or
+table environment.  It is convenient to use this package when your subfigures
+are to be separately captioned, referenced, or are to be included in the
+List-of-Figures.  A new @code{\\subfigure} command is introduced which can be
+used inside a figure environment for each subfigure.  An optional first
+argument is used as the caption for that subfigure.  The package is now
+considered obsolete: it was superseded by @code{subfig}, but users may find
+the more recent @code{subcaption} package more satisfactory.")
+    (license license:lppl)))
+
+(define-public texlive-latex-titlesec
+  (package
+    (name "texlive-latex-titlesec")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/titlesec"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "04nmkhqx6jxcxx9a30zbcd5smxi5fd0cbp132bki7fnvhspnhg21"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/titlesec")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/titlesec")
+    (synopsis "Select alternative section titles")
+    (description
+     "This package provides an interface to sectioning commands for selection
+from various title styles, e.g. for marginal titles and to change the font of
+all headings with a single command, also providing simple one-step page
+styles.  It also includes a package to change the page styles when there are
+floats in a page.  You may assign headers/footers to individual floats, too.")
+    (license license:lppl)))
+
+(define-public texlive-latex-lh
+  (package
+    (name "texlive-latex-lh")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "lh"))
+              (sha256
+               (base32
+                "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/lh"))
+    (home-page "http://www.ctan.org/pkg/lh")
+    (synopsis "Cyrillic fonts that support LaTeX standard encodings")
+    (description
+     "The LH fonts address the problem of the wide variety of alphabets that
+are written with Cyrillic-style characters.  The fonts are the original basis
+of the set of T2* and X2 encodings that are now used when LaTeX users need to
+write in Cyrillic languages.  Macro support in standard LaTeX encodings is
+offered through the latex-cyrillic and t2 bundles, and the package itself
+offers support for other (more traditional) encodings.  The fonts, in the
+standard T2* and X2 encodings are available in Adobe Type 1 format, in the
+CM-Super family of fonts.  The package also offers its own LaTeX support for
+OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
+    (license license:lppl)))
+
+(define-public texlive-metapost
+  (package
+    (name "texlive-metapost")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/metapost"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "03nvjddffiz796wll6axzmgfvynyciy2mqamv20qx252w71vwkwd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/metapost")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/metapost")
+    (synopsis "Create scalable illustrations")
+    (description
+     "MetaPost uses a language based on that of Metafont to produce precise
+technical illustrations.  Its output is scalable PostScript or SVG, rather
+than the bitmaps Metafont creates.")
+    (license license:lppl)))
+
+(define-public texlive-latex-wasysym
+  (package
+    (name "texlive-latex-wasysym")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "wasysym"))
+              (sha256
+               (base32
+                "1sgwbfwjjf70g54hh93gsd9jp9nm67w6n74x9d72a56n07jbk5hv"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/wasysym"))
+    (home-page "http://www.ctan.org/pkg/wasysym")
+    (synopsis "LaTeX support file to use the WASY2 fonts")
+    (description
+     "The wasy2WASY2 (Waldi Symbol) font by Roland Waldi provides many glyphs
+like male and female symbols and astronomical symbols, as well as the complete
+lasy font set and other odds and ends.  The wasysym package implements an easy
+to use interface for these symbols.")
+    (license license:lppl)))
 
 (define texlive-texmf
   (package

@@ -630,7 +630,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.58")
+    (version "2.19.63")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -639,7 +639,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0wjapb3if6qqdmr57z20hidx7czhl023cjimr01i8yf7k41fakh7"))))
+                "0hwv7m1lzyhjiyxqhqfdrrrpx475jhiwckrnxbjbv3ynhyzkngw0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
@@ -652,6 +652,15 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                             "/share/fonts/opentype/"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'use-texlive-union
+           (lambda _
+             ;; FIXME: fonts are not found and have to be generated in HOME.
+             (setenv "HOME" "/tmp")
+             ;; The test for the "lh" package fails, even though it is among
+             ;; the inputs.
+             (substitute* "configure"
+               (("TEX_FIKPARM=.*") "TEX_FIKPARM=found\n"))
+             #t))
          (add-after 'unpack 'fix-path-references
           (lambda _
             (substitute* "scm/backend-library.scm"
@@ -693,7 +702,10 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
        ("gettext" ,gettext-minimal)
        ("imagemagick" ,imagemagick)
        ("netpbm" ,netpbm) ;for pngtopnm
-       ("texlive" ,texlive) ;metafont and metapost
+       ("texlive" ,(texlive-union (list texlive-metapost
+                                        texlive-generic-epsf
+                                        texlive-latex-lh
+                                        texlive-latex-cyrillic)))
        ("texinfo" ,texinfo)
        ("texi2html" ,texi2html)
        ("rsync" ,rsync)
@@ -1887,14 +1899,14 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0sp7r9n926ggdn285l4xzvw558jz1440n7kn2f1qs6w6h6l0f1q3"))))
+                "0ggqp2pz6r0pvapbbil51fh5185rn0i9kgzm9ff8r8y1135zllk8"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
@@ -2206,13 +2218,13 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.3")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "0r743a2pv1iyw50jsdl01v2ml3pdkhdp920a5d1wsacak48vwgxr"))))
+                "1z02j871gc8l9mnd344qy9z8akigikgmc22r15ns6driqb2qishv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

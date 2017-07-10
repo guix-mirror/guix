@@ -55,6 +55,7 @@ given Texlive COMPONENT."
 (define %texlive-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build texlive-build-system)
+    (guix build union)
     ,@%gnu-build-system-modules))
 
 (define (default-texlive-bin)
@@ -114,6 +115,7 @@ given Texlive COMPONENT."
                         (substitutable? #t)
                         (imported-modules %texlive-build-system-modules)
                         (modules '((guix build texlive-build-system)
+                                   (guix build union)
                                    (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder

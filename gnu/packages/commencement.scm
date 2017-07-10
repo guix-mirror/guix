@@ -294,7 +294,6 @@
   (let ((perl (package
                 (inherit perl)
                 (name "perl-boot0")
-                (replacement #f)
                 (arguments
                  ;; At the very least, this must not depend on GCC & co.
                  (let ((args `(#:disallowed-references

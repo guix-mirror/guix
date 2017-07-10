@@ -180,11 +180,41 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0pdizc5rjywwzxa1qqhdmba5zr35pbmdwbysalsid7xw87w3kq06"))))
+                "0pdizc5rjywwzxa1qqhdmba5zr35pbmdwbysalsid7xw87w3kq06"))
+              (patches (search-patches "dblatex-remove-multirow.patch"))))
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
-     `(("texlive" ,texlive)
+     `(("texlive" ,(texlive-union (list texlive-latex-amsfonts
+                                        texlive-latex-anysize
+                                        texlive-latex-appendix
+                                        texlive-latex-changebar
+                                        texlive-latex-colortbl
+                                        texlive-latex-eepic
+                                        texlive-latex-eso-pic
+                                        texlive-latex-fancybox
+                                        texlive-latex-fancyhdr
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-float
+                                        texlive-latex-footmisc
+                                        texlive-latex-hyperref
+                                        texlive-latex-jknapltx
+                                        texlive-latex-listings
+                                        texlive-latex-multirow
+                                        texlive-latex-oberdiek
+                                        texlive-latex-overpic
+                                        texlive-latex-pdfpages
+                                        texlive-latex-subfigure
+                                        texlive-latex-titlesec
+                                        texlive-latex-url
+                                        texlive-latex-wasysym
+
+                                        texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-fonts-rsfs
+                                        texlive-fonts-stmaryrd
+
+                                        texlive-generic-ifxetex)))
        ("imagemagick" ,imagemagick)     ;for convert
        ("inkscape" ,inkscape)           ;for svg conversion
        ("docbook" ,docbook-xml)

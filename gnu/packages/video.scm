@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,14 +58,18 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -93,7 +98,10 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -272,6 +280,90 @@ H.264 (MPEG-4 AVC) video streams.")
                     "file://extras/cl.h"
                     "See extras/cl.h in the distribution.")))))
 
+(define-public mkvtoolnix
+  (package
+    (name "mkvtoolnix")
+    (version "13.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mkvtoolnix.download/sources/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.
+           (for-each delete-file-recursively
+                     '("lib/libebml"
+                       "lib/libmatroska"
+                       "lib/nlohmann-json"
+                       "lib/pugixml"
+                       "lib/utf8-cpp"))))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("bzip2" ,bzip2)
+       ("libebml" ,libebml)
+       ("flac" ,flac)
+       ("file" ,file)
+       ("libmatroska" ,libmatroska)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("lzo" ,lzo)
+       ("pugixml" ,pugixml)
+       ("qt" ,qt)
+       ("utfcpp" ,utfcpp)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("gettext" ,gettext-minimal)
+       ("googletest" ,googletest)
+       ("libxslt" ,libxslt)
+       ("nlohmann-json-cpp" ,nlohmann-json-cpp)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("po4a" ,po4a)
+       ("ruby" ,ruby)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost="
+                            (assoc-ref %build-inputs "boost"))
+             (string-append "--with-docbook-xsl-root="
+                            (assoc-ref %build-inputs "docbook-xsl")
+                            "/xml/xsl/docbook-xsl-"
+                            ,(package-version docbook-xsl))
+             (string-append "--with-extra-includes="
+                            (assoc-ref %build-inputs "nlohmann-json-cpp")
+                            "/include/nlohmann"))
+        #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-googletest
+           (lambda _
+             (symlink
+              (string-append (assoc-ref %build-inputs "googletest")
+                             "/include/gtest") "lib/gtest")
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((-j (list "-j" (number->string (parallel-job-count)))))
+               (zero? (apply system* "rake" -j)))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "rake" "tests/unit"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "rake" "install")))))))
+    (home-page "https://mkvtoolnix.download")
+    (synopsis "Tools to create, alter and inspect Matroska files")
+    (description
+     "MKVToolNix provides tools for getting information about Matroska files
+(@code{mkvinfo}), extracting tracks/data from Matroska files (@code{mkvextract})
+and creating Matroska files from other media files (@code{mkvmerge}).")
+    (license license:gpl2)))
+
 (define-public x265
   (package
     (name "x265")
@@ -406,6 +498,34 @@ that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
 developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
     (license license:lgpl2.1+)))
+
+(define-public libmatroska
+  (package
+    (name "libmatroska")
+    (version "1.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.matroska.org/downloads/"
+                           name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1yi5cnv13nhl27xyqayd5l3sf0j3swfj3apzibv71yg9pariwi26"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libebml" ,libebml)))
+    (home-page "https://www.matroska.org")
+    (synopsis "C++ libary to parse Matroska files (.mkv and .mka)")
+    (description
+     "Matroska aims to become the standard of multimedia container formats.
+It is based on EBML (Extensible Binary Meta Language), a binary derivative
+of XML.  EBML enables the Matroska Development Team to gain significant
+advantages in terms of future format extensibility, without breaking file
+support in old parsers.
+libebml is a C++ library to read and write EBML files.")
+    (license license:lgpl2.1)))
 
 (define-public libva
   (package
@@ -1001,7 +1121,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.06.23")
+    (version "2017.07.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1009,7 +1129,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09x11k69imfx6j2dj3p8bckk8f59q276hy65q5qr8qc41s80j8b3"))))
+                "0phrfby2nk5y5x5173bbg3jcr2ajk849al3zji5y39z39dj36ba2"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1118,15 +1238,16 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.715")
+    (version "0.4.775")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/soimort/you-get/releases/download/v"
-                    version "/you-get-" version ".tar.gz"))
+                    "https://github.com/soimort/you-get/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "043122hfh56fbbszp1kwd1f65asgyn60j1ijday93hf2dkhvbrnh"))))
+                "1pjjv42c9bysnj8s3c6v0g6b00lr7b21y8ypibnzd6z0jxlsq7sz"))))
     (build-system python-build-system)
     (arguments
      ;; no tests

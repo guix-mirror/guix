@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -48,6 +48,7 @@
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -515,8 +516,9 @@ singular value problems.")
               ("pango" ,pango)
               ("gd" ,gd)
               ("lua" ,lua)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texlive" ,texlive-minimal)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive-tiny)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
@@ -797,8 +799,12 @@ HDF5 file is encoded according to the HDF File Format Specification.")
     (arguments `(#:tests? #f)) ; Tests require googletest *sources*
     (inputs `(("lapack" ,lapack)
               ("fftw" ,fftw)))
-    (native-inputs `(("texlive-minimal" ,texlive-minimal)
-                     ("doxygen" ,doxygen)))
+    ;; FIXME: Even though the fonts are available dvips complains:
+    ;; "Font cmmi10 not found; characters will be left blank."
+    (native-inputs
+     `(("texlive" ,texlive-tiny)
+       ("ghostscript" ,ghostscript)
+       ("doxygen" ,doxygen)))
     (home-page "http://itpp.sourceforge.net")
     (synopsis "C++ library of maths, signal processing and communication classes")
     (description "IT++ is a C++ library of mathematical, signal processing and
@@ -2069,7 +2075,8 @@ to BMP, JPEG or PNG image formats.")
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gcl" ,gcl)
+     `(("gcc" ,gcc)
+       ("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
@@ -2091,36 +2098,44 @@ to BMP, JPEG or PNG image formats.")
        ;; '/tmp/nix-build-maxima-*', which won't exist at run time.
        ;; Work around that.
        #:make-flags (list "TMPDIR=/tmp")
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _
-                   (chmod "src/maxima" #o555))
-                 ;; Make sure the doc and emacs files are found in the
-                 ;; standard location.  Also configure maxima to find gnuplot
-                 ;; without having it on the PATH.
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs inputs #:allow-other-keys)
-                    (let* ((gnuplot (assoc-ref inputs "gnuplot"))
-                          (out (assoc-ref outputs "out"))
-                          (datadir (string-append out "/share/maxima/" ,version)))
-                      (with-directory-excursion out
-                        (mkdir-p "share/emacs")
-                        (mkdir-p "share/doc")
-                        (symlink
-                         (string-append datadir "/emacs/")
-                         (string-append out "/share/emacs/site-lisp"))
-                        (symlink
-                         (string-append datadir "/doc/")
-                         (string-append out "/share/doc/maxima"))
-                        (with-atomic-file-replacement
-                         (string-append datadir "/share/maxima-init.lisp")
-                         (lambda (in out)
-                           (format out "~a ~s~a~%"
-                                   "(setf $gnuplot_command "
-                                   (string-append gnuplot "/bin/gnuplot") ")")
-                           (dump-port in out))))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-gcc-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lisp-utils/defsystem.lisp"
+               (("\\(defparameter \\*c-compiler\\* \"gcc\"\\)")
+                (string-append "(defparameter *c-compiler* \""
+                               (assoc-ref inputs "gcc") "/bin/gcc\")")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (chmod "src/maxima" #o555)
+             #t))
+         ;; Make sure the doc and emacs files are found in the
+         ;; standard location.  Also configure maxima to find gnuplot
+         ;; without having it on the PATH.
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((gnuplot (assoc-ref inputs "gnuplot"))
+                    (out (assoc-ref outputs "out"))
+                    (datadir (string-append out "/share/maxima/" ,version)))
+               (with-directory-excursion out
+                 (mkdir-p "share/emacs")
+                 (mkdir-p "share/doc")
+                 (symlink
+                  (string-append datadir "/emacs/")
+                  (string-append out "/share/emacs/site-lisp"))
+                 (symlink
+                  (string-append datadir "/doc/")
+                  (string-append out "/share/doc/maxima"))
+                 (with-atomic-file-replacement
+                  (string-append datadir "/share/maxima-init.lisp")
+                  (lambda (in out)
+                    (format out "~a ~s~a~%"
+                            "(setf $gnuplot_command "
+                            (string-append gnuplot "/bin/gnuplot") ")")
+                    (dump-port in out)))))
+             #t)))))
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
@@ -2137,18 +2152,21 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    ;; Versions 16.12.0 to 16.12.2 have a bug which causes output lines to
-    ;; overlap. See <https://debbugs.gnu.org/25793>
-    (version "16.04.2")
+    (version "17.05.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/wxmaxima/wxMaxima/"
-                           version "/" name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/andrejv/" name "/archive"
+                           "/Version-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
+         "1bsyd7r12xm2crpizb9iyyki3j0mbazzzwbsh871m06dv2wk97gq"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
@@ -2158,6 +2176,10 @@ point numbers.")
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autoconf
+                   (lambda _
+                     (zero? (system* "./bootstrap"))))
                   (add-after
                    'install 'wrap-program
                    (lambda* (#:key inputs outputs #:allow-other-keys)

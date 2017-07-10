@@ -26,6 +26,7 @@
   #:use-module (guix build syscalls)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
+  #:use-module (gnu build file-systems)
   #:use-module (guix records)
   #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
@@ -50,7 +51,8 @@
             estimated-partition-size
             root-partition-initializer
             initialize-partition-table
-            initialize-hard-disk))
+            initialize-hard-disk
+            make-iso9660-image))
 
 ;;; Commentary:
 ;;;
@@ -351,6 +353,30 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
                             (string-append "boot/grub/grub.cfg=" config-file)))
       (error "failed to create GRUB EFI image"))))
 
+(define* (make-iso9660-image grub config-file os-drv target
+                             #:key (volume-id "GuixSD") (volume-uuid #f))
+  "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
+Grub configuration and OS-DRV as the stuff in it."
+  (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
+    (mkdir-p "/tmp/root/var/run")
+    (mkdir-p "/tmp/root/run")
+    (unless (zero? (apply system*
+                          `(,grub-mkrescue "-o" ,target
+                            ,(string-append "boot/grub/grub.cfg=" config-file)
+                            ,(string-append "gnu/store=" os-drv "/..")
+                            "var=/tmp/root/var"
+                            "run=/tmp/root/run"
+                            "--"
+                            "-volid" ,(string-upcase volume-id)
+                            ,@(if volume-uuid
+                                  `("-volume_date" "uuid"
+                                    ,(string-filter (lambda (value)
+                                                      (not (char=? #\- value)))
+                                                    (iso9660-uuid->string
+                                                     volume-uuid)))
+                                  `()))))
+      (error "failed to create ISO9660 image"))))
+
 (define* (initialize-hard-disk device
                                #:key
                                bootloader-package
@@ -405,7 +431,7 @@ passing it a directory name where it is mounted."
           (lambda (port)
             (format port
                     "insmod part_msdos~@
-                    search --set=root --label gnu-disk-image~@
+                    search --set=root --label GuixSD~@
                     configfile /boot/grub/grub.cfg~%")))
 
         (display "creating EFI firmware image...")

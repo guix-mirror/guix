@@ -1868,6 +1868,41 @@ designs.")
                      license:asl2.0
                      license:cpl1.0)))))
 
+(define-public java-classpathx-servletapi
+  (package
+    (name "java-classpathx-servletapi")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/classpathx/servletapi/"
+                                  "servletapi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y9489pk4as9q6x300sk3ycc0psqfxcd4b0xvbmf3rhgli8q1kx3"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:build-target "compile"
+       ;; NOTE: This package does not build with Java 8 because of a type
+       ;; mismatch in
+       ;; "source/javax/servlet/jsp/el/ImplicitObjectELResolver.java".  It
+       ;; defines the return value of ScopeMap's "remove" method to be of type
+       ;; "Object", whereas Map's "remove" method returns boolean.
+       #:make-flags
+       (list "-Dbuild.compiler=javac1.7"
+             (string-append "-Ddist=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("ant" "dist" ,@make-flags))))))))
+    (home-page "https://www.gnu.org/software/classpathx/")
+    (synopsis "Java servlet API implementation")
+    (description "This is the GNU servlet API distribution, part of the
+ClasspathX project.  It provides implementations of version 3.0 of the servlet
+API and version 2.1 of the Java ServerPages API.")
+    (license license:gpl3+)))
+
 (define-public java-swt
   (package
     (name "java-swt")
@@ -4085,6 +4120,73 @@ for your architecture which is provided by the jsvc package.
 
 This is a part of the Apache Commons Project.")
     (license license:asl2.0)))
+
+(define-public java-javaewah
+  (package
+    (name "java-javaewah")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lemire/javaewah/"
+                                  "archive/JavaEWAH-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7j1r1h24wlhwv9zdcj6yqjrhma2ixwyzm15l5vrv6yqjs6753b"))))
+    (build-system ant-build-system)
+    (arguments `(#:jar-name "javaewah.jar"))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/lemire/javaewah")
+    (synopsis "Compressed alternative to the Java @code{BitSet} class")
+    (description "This is a word-aligned compressed variant of the Java
+@code{Bitset} class.  It provides both a 64-bit and a 32-bit RLE-like
+compression scheme.  It can be used to implement bitmap indexes.
+
+The goal of word-aligned compression is not to achieve the best compression,
+but rather to improve query processing time. Hence, JavaEWAH tries to save CPU
+cycles, maybe at the expense of storage.  However, the EWAH scheme is always
+more efficient storage-wise than an uncompressed bitmap (as implemented in the
+@code{BitSet} class by Sun).")
+    ;; GPL2.0 derivates are explicitly allowed.
+    (license license:asl2.0)))
+
+(define-public java-slf4j-api
+  (package
+    (name "java-slf4j-api")
+    (version "1.7.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.slf4j.org/dist/slf4j-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13j51sgzmhhdrfa74gkal5zpip7r1440dh7zsi2c8bpb2zs1v8kb"))
+              (modules '((guix build utils)))
+              ;; Delete bundled jars.
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     ;; FIXME: org.slf4j.NoBindingTest fails with the ominous "This code
+     ;; should have never made it into slf4j-api.jar".
+     `(#:tests? #f
+       #:jar-name "slf4j-api.jar"
+       #:source-dir "slf4j-api/src/main"
+       #:test-dir "slf4j-api/src/test"))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://www.slf4j.org/")
+    (synopsis "Simple logging facade for Java")
+    (description "The Simple Logging Facade for Java (SLF4J) serves as a
+simple facade or abstraction for various logging
+frameworks (e.g. @code{java.util.logging}, @code{logback}, @code{log4j})
+allowing the end user to plug in the desired logging framework at deployment
+time.")
+    (license license:expat)))
 
 (define-public antlr2
   (package

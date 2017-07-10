@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Coypright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
@@ -795,7 +795,7 @@ application suites.")
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (propagated-inputs
      ;; The .pc file refers to 'cairo'.
      `(("cairo" ,cairo)))
@@ -813,43 +813,49 @@ exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
 (define-public guile-rsvg
-  (package
-    (name "guile-rsvg")
-    (version "2.18.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://wingolog.org/pub/guile-rsvg/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "136f236iw3yrrz6pkkp1ma9c5mrs5icqha6pnawinqpk892r3jh7"))
-              (patches (search-patches "guile-rsvg-pkgconfig.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* (find-files "." "Makefile\\.am")
-                  (("/share/guile/site")
-                   "/share/guile/site/2.0")))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
-                              (lambda _
-                                (zero? (system* "autoreconf" "-vfi")))))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-                     ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.0)
-              ("librsvg" ,librsvg)
-              ("guile-lib" ,guile-lib)))          ;for (unit-test)
-    (propagated-inputs `(("guile-cairo" ,guile-cairo)))
-    (synopsis "Render SVG images using Cairo from Guile")
-    (description
-     "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
+  ;; Use a recent snapshot that supports Guile 2.2 and beyond.
+  (let ((commit "05c6a2fd67e4fea1a7c3ff776729dc931bae6678")
+        (revision "0"))
+    (package
+      (name "guile-rsvg")
+      (version (string-append "2.18.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/wingo/guile-rsvg/"
+                                    "repository/archive.tar.gz?ref="
+                                    commit))
+                (sha256
+                 (base32
+                  "0vdzjx8l5nc4y2xjqs0g1rqn1zrwfsm30brh5gz00r1x41a2pvv2"))
+                (patches (search-patches "guile-rsvg-pkgconfig.patch"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* (find-files "." "Makefile\\.am")
+                    (("/share/guile/site")
+                     "/share/guile/site/@GUILE_EFFECTIVE_VERSION@")))
+                (file-name (string-append name "-" version ".tar.gz"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-before 'configure 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ("texinfo" ,texinfo)))
+      (inputs `(("guile" ,guile-2.2)
+                ("librsvg" ,librsvg)
+                ("guile-lib" ,guile-lib)))        ;for (unit-test)
+      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+      (synopsis "Render SVG images using Cairo from Guile")
+      (description
+       "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
 images onto Cairo surfaces.")
-    (home-page "http://wingolog.org/projects/guile-rsvg/")
-    (license license:lgpl2.1+)))
+      (home-page "http://wingolog.org/projects/guile-rsvg/")
+      (license license:lgpl2.1+))))
 
 (define-public guile-present
   (package
@@ -883,7 +889,7 @@ images onto Cairo surfaces.")
                                        out "/share/guile/site/2.0 ")))))
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
      ;; These are used by the (present …) modules.
      `(("guile-lib" ,guile-lib)
@@ -902,7 +908,7 @@ documents.")
 (define-public guile-gnome
    (package
     (name "guile-gnome")
-    (version "2.16.4")
+    (version "2.16.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -911,7 +917,7 @@ documents.")
                               version ".tar.gz"))
              (sha256
               (base32
-               "1hqnqbb2lmr3hgbcv9kds1himn3av6h0lkk0zll8agcrsn7d9axd"))))
+               "1gnf3j96nip5kl99a268i0dy1hj7s1cfs66sps3zwysnkd7qr399"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -930,7 +936,7 @@ documents.")
        ("pango" ,pango)
        ("libffi" ,libffi)
        ("glib" ,glib)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-cairo" ,guile-cairo)
        ("g-wrap" ,g-wrap)
@@ -943,7 +949,7 @@ documents.")
                        (let ((out (assoc-ref outputs "out")))
                          (substitute* (find-files "." "^Makefile.in$")
                            (("guilesite :=.*guile/site" all)
-                            (string-append all "/2.0")))
+                            (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
                          #t))))))
     (outputs '("out" "debug"))
     (synopsis "Guile interface for GTK+ programming for GNOME")
@@ -951,7 +957,9 @@ documents.")
      "Includes guile-clutter, guile-gnome-gstreamer,
 guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
     (home-page "https://www.gnu.org/software/guile-gnome/")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties '((upstream-name . "guile-gnome-platform")
+                  (ftp-directory . "/gnu/guile-gnome/guile-gnome-platform")))))
 
 ;;;
 ;;; C++ bindings.
@@ -1277,8 +1285,13 @@ information.")
      `(#:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before
-             'configure 'fix-docbook
+         (add-before 'build 'set-HOME
+           (lambda _
+             ;; FIXME: dblatex with texlive-union does not find the built
+             ;; metafonts, so it tries to generate them in HOME.
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "configure"
                ;; The configure check is overzealous about making sure that

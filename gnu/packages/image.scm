@@ -95,7 +95,6 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libpng-apng
   (package
     (inherit libpng)
-    (replacement #f) ;libpng's replacement doesn't apply here
     (name "libpng-apng")
     (version (package-version libpng))
     (arguments
@@ -336,14 +335,20 @@ extracting icontainer icon files.")
   (package
    (name "libtiff")
    (version "4.0.8")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                                version ".tar.gz"))
-            (patches (search-patches "libtiff-tiffgetfield-bugs.patch"))
-            (sha256
-             (base32
-              "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.gz"))
+       (patches
+         (search-patches "libtiff-tiffgetfield-bugs.patch"
+                         "libtiff-CVE-2016-10688.patch"
+                         "libtiff-CVE-2017-9936.patch"
+                         "libtiff-tiffycbcrtorgb-integer-overflow.patch"
+                         "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
+       (sha256
+        (base32
+         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -1053,29 +1058,19 @@ PNG, and performs PNG integrity checks and corrections.")
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0v365hm6z6lddcqagjj15wflk66rqyw75m73cqzl65rh4lyrshj1"))))
+                "0a5m0psfp5952y5vrcs0nbdz1y9wqzg2ms0xwrx752034wxr964h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-env-on-MIPS
-           ;; This is borrowed from Debian's patchset for libjpeg
-           ;; https://sources.debian.net/data/main/libj/libjpeg-turbo/1:1.5.1-2/debian/patches/0001-Declare-env-on-MIPS-on-first-use-Courtesy-of-Aurelie.patch
-           (lambda _
-             (substitute* "simd/jsimd_mips.c"
-               (("env = getenv\\(\"JSIMD_FORCEDSPR2")
-                "char *env = getenv(\"JSIMD_FORCEDSPR2"))
-             #t)))))
+     '(#:test-target "test"))
     (home-page "http://www.libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline

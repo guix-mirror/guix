@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
@@ -99,7 +99,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (ice-9 match))
 
 (define-public r-ape
   (package
@@ -956,7 +956,7 @@ package provides command line tools using the Bio++ library.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.4.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -964,13 +964,15 @@ package provides command line tools using the Bio++ library.")
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "14n9jik6vhiwjd3m7bach4xj1pzfn0szbsbyfxybd9l9cc43b6mb"))
+                "15n937pw5aqmyfjb6l387d18grqbb96l63d5xj4l7yyh0zbf2405"))
+              (patches (search-patches "blast+-fix-makefile.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Remove bundled bzip2 and zlib
+                  ;; Remove bundled bzip2, zlib and pcre.
                   (delete-file-recursively "c++/src/util/compress/bzip2")
                   (delete-file-recursively "c++/src/util/compress/zlib")
+                  (delete-file-recursively "c++/src/util/regexp")
                   (substitute* "c++/src/util/compress/Makefile.in"
                     (("bzip2 zlib api") "api"))
                   ;; Remove useless msbuild directory
@@ -979,9 +981,8 @@ package provides command line tools using the Bio++ library.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(;; There are three(!) tests for this massive library, and all fail with
+     `(;; There are two(!) tests for this massive library, and both fail with
        ;; "unparsable timing stats".
-       ;; ERR [127] --  [util/regexp] test_pcre.sh     (unparsable timing stats)
        ;; ERR [127] --  [serial/datatool] datatool.sh     (unparsable timing stats)
        ;; ERR [127] --  [serial/datatool] datatool_xml.sh     (unparsable timing stats)
        #:tests? #f
@@ -1014,6 +1015,7 @@ package provides command line tools using the Bio++ library.")
             ;; Rewrite hardcoded paths to various tools
             (substitute* (append '("src/build-system/configure.ac"
                                    "src/build-system/configure"
+                                   "src/build-system/helpers/run_with_lock.c"
                                    "scripts/common/impl/if_diff.sh"
                                    "scripts/common/impl/run_with_lock.sh"
                                    "src/build-system/Makefile.configurables.real"
@@ -1062,17 +1064,22 @@ package provides command line tools using the Bio++ library.")
                                              (assoc-ref inputs "bzip2"))
                               (string-append "--with-z="
                                              (assoc-ref inputs "zlib"))
+                              (string-append "--with-pcre="
+                                             (assoc-ref inputs "pcre"))
                               ;; Each library is built twice by default, once
                               ;; with "-static" in its name, and again
                               ;; without.
                               "--without-static"
                               "--with-dll"))))))))
-    (outputs '("out"       ;  19 MB
-               "lib"       ; 203 MB
-               "include")) ;  32 MB
+    (outputs '("out"       ;  21 MB
+               "lib"       ; 226 MB
+               "include")) ;  33 MB
     (inputs
      `(("bzip2" ,bzip2)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("pcre" ,pcre)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)))
     (native-inputs
      `(("cpio" ,cpio)))
     (home-page "http://blast.ncbi.nlm.nih.gov")
@@ -1309,14 +1316,14 @@ splice junctions between exons.")
 (define-public bwa
   (package
     (name "bwa")
-    (version "0.7.12")
+    (version "0.7.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/bio-bwa/bwa-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1330dpqncv0px3pbhjzz1gwgg39kkcv2r9qp2xs0sixf8z8wl7bh"))))
+                "0585ikg0gv0mpyw9iq0bq9n0hr95867bbv8jbzs9pk4slkpsymig"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
@@ -1562,15 +1569,16 @@ high-throughput sequencing data – with an emphasis on simplicity.")
 (define-public cd-hit
   (package
     (name "cd-hit")
-    (version "4.6.6")
+    (version "4.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/weizhongli/cdhit"
                                   "/releases/download/V" version
-                                  "/cd-hit-v" version "-2016-0711.tar.gz"))
+                                  "/cd-hit-v" version
+                                  "-2017-0621-source.tar.gz"))
               (sha256
                (base32
-                "1w8hd4fszgg29nqiz569fldwy012la77nljcmlhglgicws56z54p"))))
+                "1386dg2npx8p62wmv08mjzsd2z3waknb9j1gg3gkvblcy57hymnn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1590,7 +1598,7 @@ high-throughput sequencing data – with an emphasis on simplicity.")
                (("__DATE__") "\"0\"")
                (("\", %s, \" __TIME__ \"\\\\n\", date") ""))
              #t))
-         ;; The "install" target does not create the target directory
+         ;; The "install" target does not create the target directory.
          (add-before 'install 'create-target-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
@@ -2050,11 +2058,29 @@ trees (phylogenies) and characters.")
       (native-inputs `(("python2-nose" ,python2-nose)
                        ,@(package-native-inputs base))))))
 
+(define-public python-py2bit
+  (package
+    (name "python-py2bit")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py2bit" version))
+       (sha256
+        (base32
+         "1cdf4qlmgwsh1f4k0wdv2sr8x9qn4366p0k3614vbd0fpqiarxrl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/dpryan79/py2bit")
+    (synopsis "Access 2bit files using lib2bit")
+    (description
+     "This package provides Python bindings for lib2bit to access 2bit files
+with Python.")
+    (license license:expat)))
 
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "2.1.1")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/fidelram/deepTools/"
@@ -2062,22 +2088,20 @@ trees (phylogenies) and characters.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1nmfin0zjdby3vay3r4flvz94dr6qjhj41ax4yz3vx13j6wz8izd"))))
+                "1q8i12l2gvk4n2s8lhyzwhh9g4qbc8lrk5l7maz00yvd5g6z5540"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2))
     (inputs
-     `(("python-scipy" ,python2-scipy)
-       ("python-numpy" ,python2-numpy)
-       ("python-numpydoc" ,python2-numpydoc)
-       ("python-matplotlib" ,python2-matplotlib)
-       ("python-bx-python" ,python2-bx-python)
-       ("python-pysam" ,python2-pysam)
-       ("python-pybigwig" ,python2-pybigwig)))
+     `(("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pysam" ,python-pysam)
+       ("python-py2bit" ,python-py2bit)
+       ("python-pybigwig" ,python-pybigwig)))
     (native-inputs
-     `(("python-mock" ,python2-mock)   ;for tests
-       ("python-nose" ,python2-nose)   ;for tests
-       ("python-pytz" ,python2-pytz))) ;for tests
+     `(("python-mock" ,python-mock)   ;for tests
+       ("python-nose" ,python-nose)   ;for tests
+       ("python-pytz" ,python-pytz))) ;for tests
     (home-page "https://github.com/fidelram/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
     (description
@@ -2094,7 +2118,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2103,7 +2127,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04f501vj3i95i2b4n60831k00ljalifrq33419bbz0y3sjlmcnj3"))))
+                "04i03046g3l2vk9722z47r1p7j415g97vvz6d76ywmbawyiihcb1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2711,7 +2735,8 @@ comment or quality sections.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))))
+                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))
+              (patches (search-patches "gemma-intel-compat.patch"))))
     (inputs
      `(("gsl" ,gsl)
        ("lapack" ,lapack)
@@ -2719,11 +2744,13 @@ comment or quality sections.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       '(,@(if (any (cute string-prefix? <> (or (%current-system)
-                                                (%current-target-system)))
-                    '("x86_64" "mips64el" "aarch64"))
-             '("FORCE_DYNAMIC=1") ; use shared libs
-             '("FORCE_DYNAMIC=1" "FORCE_32BIT=1")))
+       '(,@(match (%current-system)
+         ("x86_64-linux"
+          '("FORCE_DYNAMIC=1"))
+         ("i686-linux"
+          '("FORCE_DYNAMIC=1" "FORCE_32BIT=1"))
+         (_
+          '("FORCE_DYNAMIC=1" "NO_INTEL_COMPAT=1"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

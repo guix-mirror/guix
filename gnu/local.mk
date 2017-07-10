@@ -444,6 +444,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
+  %D%/services/sysctl.scm			\
   %D%/services/version-control.scm              \
   %D%/services/vpn.scm				\
   %D%/services/web.scm				\
@@ -520,6 +521,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bigloo-gc-shebangs.patch			\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
+  %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-drop-unrar.patch			\
@@ -555,6 +557,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
+  %D%/packages/patches/dblatex-remove-multirow.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
@@ -593,7 +596,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
-  %D%/packages/patches/gajim-CVE-2016-10376.patch		\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -608,12 +610,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-5-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
+  %D%/packages/patches/gcr-disable-failing-tests.patch		\
+  %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gdk-pixbuf-list-dir.patch		\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gd-php-73968-Fix-109-XBM-reading.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
+  %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/gettext-multi-core.patch          	\
   %D%/packages/patches/gettext-gnulib-multi-core.patch          \
@@ -755,7 +760,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
+  %D%/packages/patches/libtiff-CVE-2016-10688.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-9936.patch		\
   %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
+  %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
+  %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
@@ -818,6 +827,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
+  %D%/packages/patches/ncurses-CVE-2017-10684-10685.patch	\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
@@ -928,10 +938,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pillow-freetype-2.7-test-failure.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
-  %D%/packages/patches/python-pyopenssl-skip-network-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python-pyopenssl-17.1.0-test-overflow.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2017-7493.patch			\
   %D%/packages/patches/qemu-CVE-2017-8112.patch			\
@@ -1059,6 +1069,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
+  %D%/packages/patches/xorg-server-CVE-2017-10971.patch		\
+  %D%/packages/patches/xorg-server-CVE-2017-10972.patch 	\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
   %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
   %D%/packages/patches/zziplib-CVE-2017-5974.patch		\

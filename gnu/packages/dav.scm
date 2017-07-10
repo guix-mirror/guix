@@ -55,13 +55,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.15.0")
+    (version "0.16.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "08aa5yxcj7ziz2r0hz4p554q8hgpfl2bh8r6r85f4g24mg6arxsj"))))
+               "0n59mhcrm24bncnphigqqnifivxgsg87pidz6gshijkkjdwzmnyg"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
@@ -104,4 +104,4 @@ synchronize a CalDAV or CardDAV server with a local folder or file.  The
 local data can then be accessed via a variety of programs, none of which
 have to know or worry about syncing to a server.")
     (home-page "https://github.com/untitaker/vdirsyncer")
-    (license expat)))
+    (license bsd-3)))

@@ -509,7 +509,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                     (patches patches)))
          (guile (package (inherit guile-2.0)
                   (name (string-append (package-name guile-2.0) "-static"))
-                  (replacement #f)
                   (source source)
                   (synopsis "Statically-linked and relocatable Guile")
 

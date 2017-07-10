@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -2228,8 +2228,8 @@ operators and scripters.")
        ;; There are two versions: the plain continuation of Alpine without extra
        ;; patches and the version which adds extra fixes. Every distro uses
        ;; the patched version, and so do we to not break expectations.
-       ;; http://patches.freeiz.com/alpine/readme/README.patches
-       (uri (string-append "http://patches.freeiz.com/alpine/patches/alpine-"
+       ;; http://alpine.freeiz.com/alpine/readme/README.patches
+       (uri (string-append "http://alpine.freeiz.com/alpine/patches/alpine-"
                            version "/alpine-" version ".tar.xz"))
        (sha256
         (base32
@@ -2271,7 +2271,7 @@ operators and scripters.")
        ("aspell" ,aspell)
        ("tcl" ,tcl)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://patches.freeiz.com/alpine/")
+    (home-page "http://alpine.freeiz.com/alpine/")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
     (description
      "Alpine is a text-based mail and news client.  Alpine includes several

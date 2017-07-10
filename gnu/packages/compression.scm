@@ -1177,16 +1177,16 @@ or junctions, and always follows hard links.")
        ("unshield-avigomanager11b22.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/\"
-unshield-avigomanager11b22.zip?dl=1"))
+           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/"
+                               "unshield-avigomanager11b22.zip?dl=1"))
            (sha256
             (base32 "0fwq7lih04if68wpwpsk5wjqyvh32db76a41sq6gbx4dn1lc3ddn"))
            (file-name "unshield-avigomanager11b22.zip")))
        ("unshield-the-feeble-files-spanish.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/\"
-unshield-the-feeble-files-spanish.zip?dl=1"))
+           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/"
+                               "unshield-the-feeble-files-spanish.zip?dl=1"))
            (sha256
             (base32 "1k5cw6vnpja8yjlnhx5124xrw9i8s1l539hfdqqrqz3l5gn0bnyd"))
            (file-name "unshield-the-feeble-files-spanish.zip")))))
@@ -1251,7 +1251,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1259,7 +1259,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1yyb8z03z9rw74k1d9dygcqxhx76717xq29agz57d0k3lf9lazja"))
+                "0j5kf0phx4w4b5x7aqwc10lxi9ix7rxhxk0df37cpdrqni1sdnqg"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove non-free source files.

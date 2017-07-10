@@ -738,6 +738,9 @@ on your desktop.")
        ("xfce4-clipman-plugin"    ,xfce4-clipman-plugin)
        ("xfce4-pulseaudio-plugin" ,xfce4-pulseaudio-plugin)
        ("xfce4-xkb-plugin" ,xfce4-xkb-plugin)))
+    (native-search-paths
+     ;; For finding panel plugins.
+     (package-native-search-paths xfce4-panel))
     (home-page "http://www.xfce.org/")
     (synopsis "Desktop environment (meta-package)")
     (description

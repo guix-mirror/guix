@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -594,7 +594,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "9.0.06")
+    (version "10.0.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -602,7 +602,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ybyraxi8pngibazfq4zlsqmg8kn5xlhvaiwnxb11znhfi61vi87"))))
+                "150p79rq4rzb4pbg2dwcz93k1chzzvm0l0nwh60spw19nfyrxj0p"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
@@ -647,19 +647,20 @@ languages, plus Greek and Cyrillic.")
 Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
     (home-page "http://unifoundry.com/unifont.html")
+    (properties '((upstream-name . "unifont")))
     (license license:gpl2+)))
 
 (define-public font-google-noto
   (package
     (name "font-google-noto")
-    (version "20150929")
+    (version "20170403")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://noto-website-2.storage.googleapis.com/"
+              (uri (string-append "https://noto-website.storage.googleapis.com/"
                                   "pkgs/Noto-hinted.zip"))
               (sha256
                (base32
-                "13jhpqzhsqhyby8n0ksqg155a3jyaif3nzj9anzbq8s2gn1xjyd9"))))
+                "1p92a6dvs7wqwjfpp1ahr9z1wz35am0l8r78521383spd77bmrfm"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

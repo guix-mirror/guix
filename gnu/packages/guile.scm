@@ -220,7 +220,6 @@ without requiring the source code to be rewritten.")
   (package (inherit guile-2.0)
     (name "guile")
     (version "2.2.2")
-    (replacement #f)
     (source (origin
               (method url-fetch)
 
@@ -400,7 +399,7 @@ program can be installed in one go.")
     (version "0.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
+              (uri (string-append "mirror://gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -634,7 +633,7 @@ format is also supported.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0) ("which" ,which)))
-    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (propagated-inputs `(("guile-lib" ,guile2.0-lib)))
     (home-page "https://github.com/artyom-poptsov/guile-ics")
     (synopsis "Guile parser library for the iCalendar format")
     (description
@@ -647,14 +646,14 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.5")
+    (version "0.2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qbk485djgxqrbfjvk4b7w7y4x9xygf2qb8dqnl7885kajasx8qg"))))
+                "19q420i3is3d4jmkdqs5y7ir7ipp4s795saflqgwf6617cx2zpj4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -671,7 +670,7 @@ The library is shipped with documentation in Info format and usage examples.")
 $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (home-page "http://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
@@ -685,8 +684,11 @@ for Guile\".")
     ;; details.
     (license license:gpl3+)))
 
+(define-public guile2.0-lib
+  (package-for-guile-2.0 guile-lib))
+
 (define-public guile2.2-lib
-  (package-for-guile-2.2 guile-lib))
+  (deprecated-package "guile2.2-lib" guile-lib))
 
 (define-public guile-json
   (package
@@ -1794,7 +1796,7 @@ is not available for Guile 2.0.")
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
-      (home-page "https://gitlab.com/amirouche/guile-git")
+      (home-page "https://gitlab.com/guile-git/guile-git.git")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference (url home-page) (commit commit)))

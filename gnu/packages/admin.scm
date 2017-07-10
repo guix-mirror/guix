@@ -163,8 +163,14 @@ and provides a \"top-like\" mode (monitoring).")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; This is the Guile we use as a cross-compiler...
+       ("guile" ,guile-2.2)))
+    (inputs
+     ;; ... and this is the one that appears in shebangs when cross-compiling.
+     `(("guile" ,guile-2.2)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
@@ -276,7 +282,8 @@ re-executing them as necessary.")
     (synopsis "Basic networking utilities")
     (description
      "Inetutils is a collection of common network programs, such as an ftp
-client and server, a telnet client and server, and an rsh client and server.")
+client and server, a telnet client and server, an rsh client and server, and
+hostname.")
     (license license:gpl3+)))
 
 (define-public shadow
@@ -317,11 +324,11 @@ client and server, a telnet client and server, and an rsh client and server.")
                (for-each delete-file (find-files man "^groups\\."))
                #t))))))
 
-    (inputs (if (string-suffix? "-linux"
-                                (or (%current-target-system)
-                                    (%current-system)))
-                `(("linux-pam" ,linux-pam))
-                '()))
+    (inputs  (if (string-contains (or (%current-target-system)
+                                      (%current-system))
+                                  "-linux")
+                 `(("linux-pam" ,linux-pam))
+                 '()))
     (home-page "http://pkg-shadow.alioth.debian.org/")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
@@ -483,7 +490,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "10")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "1")      ; for patch release, e.g. "6"
+         (bind-release-version "2")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -599,7 +606,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1ibbparr9k52rbs0qf0ar8jwvhhx6lja7ylxzpf32swklmhz629c"))))
+                      "19yl7axphmpm4n2ggb7j5irw4c655yifa1bnlckg6qiyv8dr8n7b"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -2168,7 +2175,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2176,7 +2183,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hww4385f81lyy30fx2rb4wchfi79dpgl7yylnfxvf27a4h2mkhm"))))
+                "08l0wcwwsl5kix9kg3h51s2afzg97y1rjjfi0ijs294kz57g1cfq"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))

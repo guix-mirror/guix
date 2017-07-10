@@ -365,8 +365,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.11.8")
-(define %linux-libre-hash "1z35h6xr8gdzq31xv3dpdz6ddz4q3183fwvkmx8qd7h9bhy13aw6")
+(define %linux-libre-version "4.12")
+(define %linux-libre-hash "153ibjdgys7friij4hnkvmp9ycvx50zgpyl9mwbr4prr409q3ndf")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -375,14 +375,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.35"
-                    "0fs90jgb01jybkclngg5asvbs1y70f2abs395qcb3lxpx7zxhy1h"
+  (make-linux-libre "4.9.36"
+                    "1z58f15my3a8c3j8hfc6p9ydmwgq1399kp1zsbrfd89rxz3m4v6r"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.75"
-                    "1h687flrdzlcd1ms5n2khm0mxybr8bj2jfnnm7qvy6ha2vsngb5b"
+  (make-linux-libre "4.4.76"
+                    "1qzgjqj7zv8hk162viyjy4cn24snwy159j8vir6d5jsrkvwq5wrk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -556,7 +556,12 @@ providing the system administrator with some help in common tasks.")
                                    (find-files "lib" "\\.a$")))
                        #t))))))
     (inputs `(("zlib" ,zlib)
-              ("ncurses" ,ncurses)))
+              ("ncurses" ,ncurses)
+
+              ;; XXX: This is so that the 'pre-check' phase can find it.
+              ,@(if (%current-target-system)
+                    `(("net-base" ,net-base))
+                    '())))
     (native-inputs
      `(("perl" ,perl)
        ("net-base" ,net-base)))                   ;for tests
@@ -846,14 +851,14 @@ images more compressible.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.17")
+    (version "4.18")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "06bl4dld5fk4a3iiq4pyrkm6sh63599ah8dmds0glg5vbw45pww1"))))
+               "026agy9nq238nx3ynhmi8h3vx96yra4xacfsm2ybs9k23ry8ibc9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1117,7 +1122,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.11.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1125,7 +1130,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "09l0phf09mw17bn3xlzfr80sbhw14mq8xv28iz5x15m6pll10rvj"))))
+                "0zdxdsxyaazl85xhwskvsmpyzwf5qp21cvjsi1lw3xnrc914q2if"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1272,10 +1277,10 @@ messages and are accompanied by a set of manpages.")
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description
      "This package includes the important tools for controlling the network
-subsystem of the Linux kernel.  This includes arp, hostname, ifconfig,
-netstat, rarp and route.  Additionally, this package contains utilities
-relating to particular network hardware types (plipconfig, slattach) and
-advanced aspects of IP configuration (iptunnel, ipmaddr).")
+subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and
+route.  Additionally, this package contains utilities relating to particular
+network hardware types (plipconfig, slattach) and advanced aspects of IP
+configuration (iptunnel, ipmaddr).")
     (license license:gpl2+)))
 
 (define-public libcap
@@ -2999,7 +3004,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.11")
+    (version "4.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3007,7 +3012,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "03mzv89f08gdsqv4ima793g44kdavcfyjialf5dr0zd2ab66hyp1"))))
+                "0vcp9a0a35chhjhq291kvirqhd4i9w5f4zql4y5n81kbwcrxil6h"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -3204,7 +3209,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "13")
+    (version "14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -3212,7 +3217,7 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15qdfqkia22vab1dh41s88vgi70yifi40ar5s4x7a456rpbhy8z5"))))
+                "0w03zd49k96bmly44qc8l0s9l671sd26k4wrilsp13xaspy048kd"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests

@@ -254,6 +254,7 @@
                     (%current-system))
            ("x86_64-linux" "MARCH=x86-64")
            ("i686-linux" "MARCH=pentium4")
+           ("aarch64-linux" "MARCH=armv8-a")
            ;; Prevent errors when querying this package on unsupported
            ;; platforms, e.g. when running "guix package --search="
            (_ "MARCH=UNSUPPORTED"))
@@ -365,7 +366,7 @@
              "13zfannnr6sa6s27ggvcvzmh133ndi38pfyxsssvjmw2s8ac9pv8"))))))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
-    (supported-systems '("i686-linux" "x86_64-linux"))
+    (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
     (home-page "http://julialang.org/")
     (synopsis "High-performance dynamic language for technical computing")
     (description

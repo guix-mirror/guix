@@ -1196,14 +1196,14 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parsedatetime" version))
       (sha256
        (base32
-        "1vkrmd398s11h1zn3zaqqsiqhj9lwy1ikcg6irx2lrgjzjg3rjll"))))
+        "0jxqkjks7z9dn222cqgvskp4wr6d92aglinxq7pd2w4mzdc7r09x"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -4767,13 +4767,13 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.4.2")
+    (version "1.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "161rj52rzi3880lij17d6i9kvgkiwjilrqjs8405k8sf6ryif7cg"))))
+       (base32 "1mffyilq4qycm8gs4wkgb18rnqil8a9blqq77chdlshzxc8jkc5k"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -4785,19 +4785,42 @@ a front-end for C compilers or analysis tools.")
        ("python-sphinx" ,python-sphinx)
        ("python-pytest" ,python-pytest)))
     (arguments
-     `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                 (doc (string-append data "/doc/" ,name "-" ,version))
-                 (html (string-append doc "/html")))
-            (with-directory-excursion "doc"
-              (system* "make" "html")
-              (mkdir-p html)
-              (copy-recursively "build/html" html))
-            (copy-file "LICENSE" (string-append doc "/LICENSE"))))
-        %standard-phases)))
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getenv "PYTHONPATH")
+                      ":" (getcwd) "/build/"
+                      (car (scandir "build" (cut string-prefix? "lib." <>)))))
+
+             ;; XXX The "normal" approach of setting CC and friends does
+             ;; not work here.  Is this the correct way of doing things?
+             (substitute* "testing/embedding/test_basic.py"
+               (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+                (string-append "c = distutils.ccompiler.new_compiler();"
+                               "c.set_executables(compiler='gcc',"
+                               "compiler_so='gcc',linker_exe='gcc',"
+                               "linker_so='gcc -shared')")))
+             (substitute* "testing/cffi0/test_ownlib.py"
+               (("'cc testownlib") "'gcc testownlib"))
+             (zero? (system* "py.test" "-v" "c/" "testing/"))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (with-directory-excursion "doc"
+                 (system* "make" "html")
+                 (mkdir-p html)
+                 (copy-recursively "build/html" html))
+               (copy-file "LICENSE" (string-append doc "/LICENSE"))
+               #t))))))
     (home-page "http://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
     (description
@@ -7369,14 +7392,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.8.2")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0hzvq0bfy21bc35p8z7zdxpv3hbvi7adg4axc1b5yd3hk16a1nh0"))))
+         "1wvq1p1viam1diz9x6d61x1bsy6cninv7cjgd35x9ffig9r6gxxv"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7391,14 +7414,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.8.2")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1nmy4fw3zy7rlvarkhn33g9905rwpy9z7k5kv8j80f0s6ynfp24f"))))
+         "10j8r1s29f4h59kp3mla14g588rm7qpn90nrczijk03i49q3662m"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -7407,12 +7430,6 @@ responses, rather than doing any computation.")
        ("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
        ("python-idna" ,python-idna)
-       ;; Packaging is used to check the version of python-cffi in
-       ;; 'src/cryptography/hazmat/primitives/ciphers/base.py'. We should be
-       ;; able to remove this dependency in the next release of cryptography:
-       ;; python-cryptography:
-       ;; https://github.com/pyca/cryptography/commit/0417d00d9ff1e19bc3ab67d39bdd18e1674768c1
-       ("python-packaging" ,python-packaging)
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
      `(("python-cryptography-vectors" ,python-cryptography-vectors)
@@ -7446,16 +7463,16 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.0.0")
+    (version "17.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
+       (patches
+        (search-patches "python-pyopenssl-17.1.0-test-overflow.patch"))
        (sha256
         (base32
-         "1pdg1gpmkzj8yasg6cmkhcivxcdp4c12nif88y4qvsxq5ffzxas8"))
-       (patches
-        (search-patches "python-pyopenssl-skip-network-test.patch"))))
+         "0qwmqhfsq84ydir9dz273ypmlcvs7v71m1jns0sd4k0h6lfsa82s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -7464,14 +7481,23 @@ message digests and key derivation functions.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v")))))))
+             (zero? (system* "py.test" "-v" "-k"
+                             (string-append
+                              ;; This test tries to look up certificates from
+                              ;; the compiled-in default path in OpenSSL, which
+                              ;; does not exist in the build environment.
+                              "not test_fallback_default_verify_paths "
+                              ;; This test attempts to make a connection to
+                              ;; an external web service.
+                              "and not test_set_default_verify_paths"))))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)))
+     `(("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
@@ -8958,13 +8984,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.4")
+    (version "3.11.5")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "0ix3xxykz8hs8mx4f2063djawmd888y3vsl75fbvbfqvg67v35jn"))))
+               "0y6f2js983ag0d138xx4pzyc71gf44hyqmjsdvw6pq2xrkpj8jzk"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -10218,13 +10244,13 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.4.1")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "0741h2cf743sbk89dpfm1yca26l4s159nzvy6vv8xg72nd7pvsps"))))
+                "0hqjgf3ay1m5w1c0k00g5yfpdz1zni5qnr5rh9b8fg9hjvhwlmhg"))))
     (build-system python-build-system)
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
@@ -13840,7 +13866,7 @@ users' sessions over extended periods of time.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "1.4.9")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
@@ -13849,7 +13875,7 @@ users' sessions over extended periods of time.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0j0wgy54d13a470vm4b9rdjk99n1hmdxpf34x9k3pbmi9w9b566z"))))
+         "0isn5p7f9n48hmksgbrj7dkm9dyglnayzn5jngk37qywg8a74ngn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
@@ -13874,10 +13900,19 @@ down the AST and building an extended ast.  The new node classes have
 additional methods and attributes for different usages.  They include some
 support for static inference and local name scopes.  Furthermore, astroid
 builds partial trees by inspecting living objects.")
-   (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-astroid))))))
 
 (define-public python2-astroid
-  (package-with-python2 python-astroid))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-astroid))))
+    (package (inherit base)
+             (propagated-inputs
+              `(("python2-backports-functools-lru-cache"
+                 ,python2-backports-functools-lru-cache)
+                ("python2-enum34" ,python2-enum34)
+                ("python2-singledispatch" ,python2-singledispatch)
+                ,@(package-propagated-inputs base))))))
 
 (define-public python-isort
   (package
@@ -13990,7 +14025,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "1.6.5")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -13999,10 +14034,12 @@ statements in the module it tests.")
              version ".tar.gz"))
        (sha256
         (base32
-         "08pmgflmq2zrzrn9nkfadzwa5vybz46wvwxhrsd2mjlcgsh4rzbm"))))
+         "0mzn1czhf1mgr2wiqfihb274sja02h899b85kywdpivppa9nwrmp"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-tox" ,python-tox)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-tox" ,python-tox)))
     (propagated-inputs
      `(("python-astroid" ,python-astroid)
        ("python-isort" ,python-isort)

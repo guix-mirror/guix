@@ -373,7 +373,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.24")
+    (version "10.1.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -381,7 +381,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07jm9m7d5x4zdpasdjs98m36dkjl7ypc9jz4xmnczj0ybfp9kpxk"))))
+                "1mm0n8sl6grajk5rbrx55333laz5dg2abyl8mlsn7h8vdymfq1bj"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1007,7 +1007,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.041")
+    (version "4.043")
     (source
      (origin
        (method url-fetch)
@@ -1015,7 +1015,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "0h4h6zwzj8fwh9ljb8svnsa0a3ch4p10hp59kpdibdb4qh8xwxs7"))))
+         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))

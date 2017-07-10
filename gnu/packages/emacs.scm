@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -171,6 +171,7 @@
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("libjpeg" ,libjpeg-8)
+       ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 
        ;; When looking for libpng `configure' links with `-lpng -lz', so we
@@ -1393,7 +1394,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1401,7 +1402,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0s7s90rfba8ccbilbvmbcwn4qp4m0jv9y58xq8avm39cygmjgyxz"))))
+                "0bffxlaq4w9yijl9prnfm26fisr2rd1whjg1yzvri1zl6zh9s0lk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1419,6 +1420,13 @@ type, for example: packages, buffers, files, etc.")
                                                   "2."
                                                   (basename file)))
                                                #:directories? #t)))
+               (string-append "--with-guix-site-ccache-dir="
+                              (car (find-files (string-append guix "/lib/guile")
+                                               (lambda (file stat)
+                                                 (string-prefix?
+                                                  "2." (basename file)))
+                                               #:directories? #t))
+                              "/site-ccache")
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
                               dash site-lisp "/guix.d/dash-"
@@ -3016,6 +3024,27 @@ ongoing operations.")
      "This Emacs library provides sequence-manipulation functions that
 complement basic functions provided by @code{subr.el}.  All provided functions
 work on lists, strings and vectors.")
+    (license license:gpl3+)))
+
+(define-public emacs-sparql-mode
+  (package
+    (name "emacs-sparql-mode")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ljos/sparql-mode/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s93mkllxnhy7fw616cnnc2danacdlarys0g3cn89drh0llh53cv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ljos/sparql-mode")
+    (synopsis "SPARQL mode for Emacs")
+    (description "This package provides a major mode for Emacs that provides
+syntax highlighting for SPARQL.  It also provides a way to execute queries
+against a SPARQL HTTP endpoint, such as is provided by Fuseki.  It is also
+possible to query other endpoints like DBPedia.")
     (license license:gpl3+)))
 
 (define-public emacs-better-defaults
@@ -4635,6 +4664,95 @@ It should enable you to implement low-level X11 applications.")
 built on top of XELB.")
     (license license:gpl3+)))
 
+(define-public emacs-switch-window
+  (package
+    (name "emacs-switch-window")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dimitri/switch-window/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07f99apxscwvsp2bjxsbi462c433kcglrjh6xl0gyafs1nvvvnd8"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dimitri/switch-window")
+    (synopsis "Emacs window switch tool")
+    (description "Switch-window is an emacs window switch tool, which
+offer a visual way to choose a window to switch to, delete, split or
+other operations.")
+    (license license:wtfpl2)))
+
+(define-public emacs-exwm-x
+  (package
+    (name "emacs-exwm-x")
+    (version "1.7.2")
+    (synopsis "Derivative window manager based on EXWM")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/exwm-x/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ny13i82fb72917jgl0ndwjg1x6l9f8gfhcx7cwlwhh5saq23mvy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-exwm" ,emacs-exwm)
+       ("emacs-switch-window" ,emacs-switch-window)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-use-package" ,emacs-use-package)))
+    (inputs
+     `(("xhost" ,xhost)
+       ("dbus" ,dbus)))
+    ;; Need emacs instead of emacs-minimal,
+    ;; for emacs's bin path will be inserted into bin/exwm-x file.
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-xsession
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions"))
+                    (bin (string-append out "/bin"))
+                    (exwm-executable (string-append bin "/exwm-x")))
+               ;; Add a .desktop file to xsessions
+               (mkdir-p xsessions)
+               (mkdir-p bin)
+               (with-output-to-file
+                   (string-append xsessions "/exwm-x.desktop")
+                 (lambda _
+                   (format #t "[Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a~@
+                     TryExec=~@*~a~@
+                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               ;; Add a shell wrapper to bin
+               ;; Set DISPLAY variable to work around
+               ;; https://github.com/ch11ng/exwm/issues/213
+               (with-output-to-file exwm-executable
+                 (lambda _
+                   (format #t "#!~a ~@
+                     export DISPLAY=:0 ~@
+                     ~a +SI:localuser:$USER ~@
+                     exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
+                           (string-append (assoc-ref inputs "bash") "/bin/sh")
+                           (string-append (assoc-ref inputs "xhost") "/bin/xhost")
+                           (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch")
+                           (string-append (assoc-ref inputs "emacs") "/bin/emacs")
+                           '(require 'exwmx-loader))))
+               (chmod exwm-executable #o555)
+               #t))))))
+    (home-page "https://github.com/tumashu/exwm-x")
+    (description "EXWM-X is a derivative window manager based on EXWM, with focus
+on mouse-control.")
+    (license license:gpl3+)))
+
 (define-public emacs-gnuplot
   (package
     (name "emacs-gnuplot")
@@ -5004,4 +5122,52 @@ popup.  For example, after enabling the minor mode if you enter C-x and wait
 for the default of 1 second, the minibuffer will expand with all of the
 available key bindings that follow C-x (or as many as space allows given your
 settings).")
+    (license license:gpl3+)))
+
+(define-public emacs-org-edit-latex
+  (package
+    (name "emacs-org-edit-latex")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/et2010/org-edit-latex/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y4h6wrs8286h9pbsv4d8fr67a885vz8b2k80qgv5qddipi2i78p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-auctex" ,emacs-auctex)
+       ;; The version of org in Emacs 25.2 is not sufficient, because the
+       ;; `org-latex-make-preamble' function is required.
+       ("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/et2010/org-edit-latex")
+    (synopsis "Edit a latex fragment just like editing a src block")
+    (description "@code{emacs-org-edit-latex} is an extension for org-mode.
+It lets you edit a latex fragment in a dedicated buffer just like editing a
+src block.")
+    (license license:gpl3+)))
+
+(define-public emacs-emamux
+  (package
+    (name "emacs-emamux")
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/syohex/emacs-emamux/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wlqg4icy037bj70b0qmhvwvmiwhagpnx6pnxhq6gzy1hvwlilkx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-emamux")
+    (synopsis "Manipulate Tmux from Emacs")
+    (description
+     "@code{emacs-emamux} lets Emacs interact with the @code{tmux} terminal
+multiplexer.")
     (license license:gpl3+)))

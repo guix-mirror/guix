@@ -269,8 +269,11 @@ name of its URI."
                                                   ; inputs
   (native-search-paths package-native-search-paths (default '()))
   (search-paths package-search-paths (default '()))
+
+  ;; The 'replacement' field is marked as "innate" because it never makes
+  ;; sense to inherit a replacement as is.  See the 'package/inherit' macro.
   (replacement package-replacement                ; package | #f
-               (default #f) (thunked))
+               (default #f) (thunked) (innate))
 
   (synopsis package-synopsis)                    ; one-line description
   (description package-description)              ; one or two paragraphs

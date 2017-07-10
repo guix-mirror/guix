@@ -277,7 +277,13 @@ You have been warned.  Thanks for being so brave.
           ;; Since this is running on a USB stick with a unionfs as the root
           ;; file system, use an appropriate cache configuration.
           (nscd-service (nscd-configuration
-                         (caches %nscd-minimal-caches))))))
+                         (caches %nscd-minimal-caches)))
+
+          ;; Having /bin/sh is a good idea.  In particular it allows Tramp
+          ;; connections to this system to work.
+          (service special-files-service-type
+                   `(("/bin/sh" ,(file-append (canonical-package bash)
+                                              "/bin/sh")))))))
 
 (define %issue
   ;; Greeting.
@@ -300,7 +306,7 @@ Use Alt-F2 for documentation.
      ;; the appropriate one.
      (cons* (file-system
               (mount-point "/")
-              (device "gnu-disk-image")
+              (device "GuixSD")
               (title 'label)
               (type "ext4"))
 
@@ -341,7 +347,6 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
-                     shadow                    ;'passwd', for easy SSH access
                      parted gptfdisk ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
