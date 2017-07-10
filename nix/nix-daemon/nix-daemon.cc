@@ -887,13 +887,11 @@ static void acceptConnection(int fdSocket)
 
 	    if (remoteAddr.ss_family == AF_INET) {
 		struct sockaddr_in *addr = (struct sockaddr_in *) &remoteAddr;
-		struct in_addr inaddr = { addr->sin_addr };
-		result = inet_ntop(AF_INET, &inaddr,
+		result = inet_ntop(AF_INET, &addr->sin_addr,
 				   address_str, sizeof address_str);
 	    } else if (remoteAddr.ss_family == AF_INET6) {
 		struct sockaddr_in6 *addr = (struct sockaddr_in6 *) &remoteAddr;
-		struct in6_addr inaddr = { addr->sin6_addr };
-		result = inet_ntop(AF_INET6, &inaddr,
+		result = inet_ntop(AF_INET6, &addr->sin6_addr,
 				   address_str, sizeof address_str);
 	    } else {
 		result = NULL;
