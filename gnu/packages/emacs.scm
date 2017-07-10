@@ -171,6 +171,7 @@
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("libjpeg" ,libjpeg-8)
+       ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 
        ;; When looking for libpng `configure' links with `-lpng -lz', so we
