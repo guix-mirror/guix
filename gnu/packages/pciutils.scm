@@ -91,5 +91,6 @@
      "The PCI Utilities are a collection of programs for inspecting and
 manipulating configuration of PCI devices, all based on a common portable
 library libpci which offers access to the PCI configuration space on a variety
-of operating systems.  This includes the 'lspci' and 'setpci' commands.")
+of operating systems.  This includes the @command{lspci} and @command{setpci}
+commands.")
     (license license:gpl2+)))
