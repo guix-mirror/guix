@@ -416,7 +416,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.1")
+    (version "7.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -424,7 +424,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00xpxh0pxcvv3mjgb3vq3x51v498dhqcaixyb3a4srmfgskzh956"))))
+                "0rnw7gpx3cp4irja5143haszgv4xhndc8wivhg8r0gpp6ig460vj"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
