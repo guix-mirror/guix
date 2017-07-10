@@ -2845,6 +2845,40 @@ the included graphic.  LaTeX commands can be placed on the graphic at defined
 positions; a grid for orientation is available.")
     (license license:lppl1.0+)))
 
+(define-public texlive-latex-parskip
+  (package
+    (name "texlive-latex-parskip")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/parskip"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14r6h9hqb0qgccxj5l1208694fx8sb8avmgzps36lsbbpszl7i7m"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/parskip")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/parskip")
+    (synopsis "Layout with zero \\parindent, non-zero \\parskip")
+    (description
+     "Simply changing @code{\\parskip} and @code{\\parindent} leaves a layout
+that is untidy; this package (though it is no substitute for a properly
+designed class) helps alleviate this untidiness.")
+    (license license:lppl)))
+
 (define-public texlive-latex-pdfpages
   (package
     (name "texlive-latex-pdfpages")
