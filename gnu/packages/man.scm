@@ -57,14 +57,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.7.5")
+    (version "2.7.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "056a3il7agfazac12yggcg4gf412yq34k065im0cpfxbcw6xskaw"))))
+                "0gqgs4zc3r87apns0k5qp689p2ylxx2596s2mkmkxjjay99brv88"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -93,7 +93,12 @@ a flexible and convenient way.")
              (xz    (assoc-ref %build-inputs "xz"))
              (util  (assoc-ref %build-inputs "util-linux")))
          ;; Invoke groff, less, gzip, bzip2, and xz directly from the store.
-         (append (list "--disable-setuid" ;; Disable setuid man user.
+         (append (list ;; Disable setuid man user.
+                       "--disable-setuid"
+                       ;; Don't constrain ownership of system-wide cache files.
+                       ;; Otherwise creating the manpage database fails with
+                       ;; man-db > 2.7.5.
+                       "--disable-cache-owner"
                        (string-append "--with-pager=" less "/bin/less")
                        (string-append "--with-gzip=" gzip "/bin/gzip")
                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
