@@ -624,9 +624,10 @@ kernel."
                         (target-type target-type))
                        (&message
                         (message
-                         (format #f (G_ "no target of type '~a' for service ~s")
+                         (format #f (G_ "no target of type '~a' for service '~a'")
                                  (service-type-name target-type)
-                                 service))))))
+                                 (service-type-name
+                                  (service-kind service))))))))
           (x
            (raise
             (condition (&ambiguous-target-service-error
