@@ -2142,6 +2142,40 @@ package uses 'drivers' to place the bars; the available drivers can work with
 drivers, and VTeX and pdfTeX.")
     (license license:lppl)))
 
+(define-public texlive-latex-cmap
+  (package
+    (name "texlive-latex-cmap")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/cmap"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1s1rv6zgw105w2j6ffhnk914qrix87y1ndzri1q72g2kbr91zlbg"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/cmap")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.tug.org/svn/texlive/tags/texlive-2017.1/\
+Master/texmf-dist/tex/latex/cmap/")
+    (synopsis "CMap support for PDF files")
+    (description
+     "This package embeds CMap tables into PDF files to make search and
+copy-and-paste functions work properly.")
+    (license license:lppl)))
+
 (define-public texlive-latex-colortbl
   (package
     (name "texlive-latex-colortbl")
