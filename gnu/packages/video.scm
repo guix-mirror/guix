@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -1887,6 +1887,44 @@ implementation.")
 your graphical desktop and encodes it as a video.  This is a useful tool for
 making @dfn{screencasts}.")
     (license license:gpl2+)))
+
+(define-public simplescreenrecorder
+  (package
+    (name "simplescreenrecorder")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/MaartenBaert/ssr/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v8w35n8w772s08w7k0icynqdsdakbrcanbgx6j847bfqfsg21gg"))))
+    (build-system gnu-build-system)
+    ;; Although libx11, libxfixes, libxext are listed as build dependencies in
+    ;; README.md, the program builds and functions properly without them.
+    ;; As a result, they are omitted. Please add them back if problems appear.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("glu" ,glu)
+       ("jack" ,jack-1)
+       ("libxi" ,libxi)
+       ("pulseaudio" ,pulseaudio)
+       ("qt" ,qt-4))) ; README.md: using Qt 5 causes some stability issues
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    ;; Using HTTPS causes part of the page to be displayed improperly.
+    (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
+    (synopsis "Screen recorder")
+    (description "SimpleScreenRecorder is an easy to use screen recorder with
+a graphical user interface.  It supports recording the entire screen, or a
+part of it, and allows encoding in many different codecs and file formats.
+Other features include a live preview and live streaming.")
+    (license (list license:gpl3+ ; most files
+                   license:zlib ; glinject/elfhacks.*
+                   license:isc ; glinject/*
+                   license:x11)))) ; build-aux/install-sh
 
 (define-public libsmpeg
   (package
