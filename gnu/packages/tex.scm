@@ -1547,6 +1547,7 @@ standard LaTeX packages."
                   texlive-latex-amsmath
                   texlive-latex-amscls
                   texlive-latex-babel
+                  texlive-generic-babel-english
                   texlive-latex-cyrillic
                   texlive-latex-graphics
                   texlive-latex-psnfss
