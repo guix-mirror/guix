@@ -1764,6 +1764,28 @@ implementation is output device independent, and made very simple by relying
 on everypage.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-environ
+  (package
+    (name "texlive-latex-environ")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "environ"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "06h28b26dyjkj9shksphgqfv4130jfkwhbw737hxn7d3yvdfffyd"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/environ"))
+    (home-page "http://www.ctan.org/pkg/environ")
+    (synopsis "New interface for environments in LaTeX")
+    (description
+     "This package provides the @code{\\collect@body} command (as in
+@code{amsmath}), as well as a @code{\\long} version @code{\\Collect@Body}, for
+collecting the body text of an environment.  These commands are used to define
+a new author interface to creating new environments.")
+    (license license:lppl)))
+
 (define-public texlive-latex-eqparbox
   (package
     (name "texlive-latex-eqparbox")
