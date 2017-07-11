@@ -2960,6 +2960,31 @@ considered obsolete: it was superseded by @code{subfig}, but users may find
 the more recent @code{subcaption} package more satisfactory.")
     (license license:lppl)))
 
+(define-public texlive-latex-tabulary
+  (package
+    (name "texlive-latex-tabulary")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "tabulary"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1adkdx2zkk42g82nqf57lv1nc1z7kwl13jmy8vpcsizsa0xdnx9n"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/tabulary"))
+    (home-page "http://www.ctan.org/pkg/tabulary")
+    (synopsis "Tabular with variable width columns balanced")
+    (description
+     "The package defines a @code{tabular*}-like environment, @code{tabulary},
+taking a \"total width\" argument as well as the column specifications.  The
+environment uses column types @code{L}, @code{C}, @code{R} and @code{J} for
+variable width columns (@code{\\raggedright}, @code{\\centering},
+@code{\\raggedleft}, and normally justified).  In contrast to
+@code{tabularx}'s @code{X} columns, the width of each column is weighted
+according to the natural width of the widest cell in the column.")
+    (license license:lppl)))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")
