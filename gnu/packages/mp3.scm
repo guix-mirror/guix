@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -290,14 +290,17 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.25.0")
+    (version "1.25.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mpg123/mpg123/" version
-                                  "/mpg123-" version ".tar.bz2"))
+              (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
+                                        version "/mpg123-" version ".tar.bz2")
+                         (string-append
+                          "http://www.mpg123.org/download/mpg123-"
+                          version ".tar.bz2")))
               (sha256
                (base32
-                "0j2fyb984cwvhn8kicf87y39bhjsg43p14aj893hzq25n0fkwbjm"))))
+                "0f7fib7qyd9lah3fqcsjlqcni4bip4hw7iglkz3vz4fjibxv052k"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs `(("pkg-config" ,pkg-config)))
