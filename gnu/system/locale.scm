@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +97,7 @@ or #f on failure."
   #~(begin
       (format #t "building locale '~a'...~%"
               #$(locale-definition-name locale))
-      (zero? (system* (string-append #$libc "/bin/localedef")
+      (zero? (system* (string-append #+libc "/bin/localedef")
                       "--no-archive" "--prefix" #$output
                       "-i" #$(locale-definition-source locale)
                       "-f" #$(locale-definition-charset locale)
