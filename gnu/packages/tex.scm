@@ -1931,6 +1931,31 @@ that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
 designed from the start to be compatible with @code{natbib}.")
     (license license:lppl)))
 
+(define-public texlive-latex-psfrag
+  (package
+    (name "texlive-latex-psfrag")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "psfrag"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1dxbl5il7wbbsp0v45vk884xi1192wxw03849pb1g5q4x808n352"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/psfrag"))
+    (home-page "http://www.ctan.org/pkg/psfrag")
+    (synopsis "Replace strings in encapsulated PostScript figures")
+    (description
+     "This package allows LaTeX constructions (equations, picture
+environments, etc.) to be precisely superimposed over Encapsulated PostScript
+figures, using your own favorite drawing tool to create an EPS figure and
+placing simple text \"tags\" where each replacement is to be placed, with
+PSfrag automatically removing these tags from the figure and replacing them
+with a user specified LaTeX construction, properly aligned, scaled, and/or
+rotated.")
+    (license (license:fsf-free "file://psfrag.dtx"))))
+
 (define-public texlive-latex-seminar
   (package
     (name "texlive-latex-seminar")
