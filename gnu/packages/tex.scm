@@ -3169,6 +3169,40 @@ lasy font set and other odds and ends.  The wasysym package implements an easy
 to use interface for these symbols.")
     (license license:lppl)))
 
+(define-public texlive-latex-wrapfig
+  (package
+    (name "texlive-latex-wrapfig")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/wrapfig"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "16xpyl0csmmwndz1xhzqfg9l0zcsnqxslsixsqkwd4zsvfj30sv4"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/wrapfig")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/wrapfig")
+    (synopsis "Produces figures which text can flow around")
+    (description
+     "This package allows figures or tables to have text wrapped around them.
+It does not work in combination with list environments, but can be used in a
+@code{parbox} or @code{minipage}, and in two-column format.")
+    (license license:lppl)))
+
 (define-public texlive-latex-ucs
   (package
     (name "texlive-latex-ucs")
