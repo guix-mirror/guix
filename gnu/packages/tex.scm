@@ -3298,6 +3298,38 @@ requires the suffix package, which in turn requires that it runs under
 e-TeX.")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-pdftex
+  (package
+    (name "texlive-generic-pdftex")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/pdftex"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0k68zmqzs4qvrqxdwsrawbjb14hxqjfamq649azvai0jjxdpkljd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/pdftex")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/pdftex")
+    (synopsis "TeX extension for direct creation of PDF")
+    (description
+     "This package provides an extension of TeX which can be configured to
+directly generate PDF documents instead of DVI.")
+    (license license:gpl2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
