@@ -100,6 +100,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages statistics)
@@ -3160,6 +3161,36 @@ reStructuredText.")
 
 (define-public python2-pygments
   (package-with-python2 python-pygments))
+
+(define-public python-sphinxcontrib-websupport
+  (package
+    (name "python-sphinxcontrib-websupport")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-websupport" version))
+              (sha256
+               (base32
+                "1f9f0wjpi9nhikbyaz6d19s7qvzdf1nq2g5dsh640fma4q9rd1bs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-xapian-bindings" ,python-xapian-bindings)))
+    ;; Needed for running the test suite
+    (native-inputs
+     `(("python-six" ,python-six)
+       ("python-jinja2" ,python-jinja2)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-whoosh" ,python-whoosh)))
+    (home-page "http://sphinx-doc.org/")
+    (synopsis "Sphinx API for web applications")
+    (description "This package provides a Python API to easily integrate
+Sphinx documentation into your web application.  It provides tools to
+integrate Sphinx documents in web templates and to handle searches.")
+    (license license:bsd-3)))
 
 (define-public python-sphinx
   (package
