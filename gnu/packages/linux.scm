@@ -426,11 +426,18 @@ It has been modified to remove all non-free binary blobs.")
        ;; ("cracklib" ,cracklib)
        ))
     (arguments
-     '(;; Most users, such as `shadow', expect the headers to be under
+     `(;; Most users, such as `shadow', expect the headers to be under
        ;; `security'.
        #:configure-flags (list (string-append "--includedir="
                                               (assoc-ref %outputs "out")
-                                              "/include/security"))
+                                              "/include/security")
+
+                               ;; XXX: <rpc/rpc.h> is missing from glibc when
+                               ;; cross-compiling, so we have to disable NIS
+                               ;; support altogether.
+                               ,@(if (%current-target-system)
+                                     '("--disable-nis")
+                                     '()))
 
        ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
        ;; isn't available.
