@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -165,7 +165,18 @@ printing, and psresize, for adjusting page sizes.")
              "LIBS=-lz"
              (string-append "ZLIBDIR="
                             (assoc-ref %build-inputs "zlib") "/include")
-             "--enable-dynamic")
+             "--enable-dynamic"
+
+             ,@(if (%current-target-system)
+                   '(;; Specify the native compiler, which is used to build 'echogs'
+                     ;; and other intermediary tools when cross-compiling; see
+                     ;; <https://ghostscript.com/FAQ.html>.
+                     "CCAUX=gcc"
+
+                     ;; Save 'config.log' etc. of the native build under
+                     ;; auxtmp/, useful for debugging.
+                     "--enable-save_confaux")
+                   '()))
        #:phases
        (modify-phases %standard-phases
         (add-after 'unpack 'fix-doc-dir
@@ -189,6 +200,15 @@ printing, and psresize, for adjusting page sizes.")
              (substitute* "base/unixhead.mak"
                (("/bin/sh") (which "sh")))
              #t))
+         ,@(if (%current-target-system)
+               `((add-after 'configure 'add-native-lz
+                   (lambda _
+                     ;; Add missing '-lz' for native tools such as 'mkromfs'.
+                     (substitute* "Makefile"
+                       (("^AUXEXTRALIBS=(.*)$" _ value)
+                        (string-append "AUXEXTRALIBS = -lz " value "\n")))
+                     #t)))
+               '())
          (replace 'build
            (lambda _
              ;; Build 'libgs.so', but don't build the statically-linked 'gs'
@@ -207,7 +227,15 @@ printing, and psresize, for adjusting page sizes.")
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-wrapper)
-       ("tcl" ,tcl)))
+       ("tcl" ,tcl)
+
+       ;; When cross-compiling, some of the natively-built tools require all
+       ;; these libraries.
+       ,@(if (%current-target-system)
+             `(("zlib/native" ,zlib)
+               ("libjpeg/native" ,libjpeg)
+               ("lcms2/native" ,lcms))
+             '())))
     (inputs
      `(("freetype" ,freetype)
        ("jbig2dec" ,jbig2dec)
