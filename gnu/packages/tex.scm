@@ -2985,6 +2985,41 @@ variable width columns (@code{\\raggedright}, @code{\\centering},
 according to the natural width of the widest cell in the column.")
     (license license:lppl)))
 
+(define-public texlive-latex-threeparttable
+  (package
+    (name "texlive-latex-threeparttable")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/threeparttable"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "10vy9k150w2lviw8h22s2mcykff38xci653m5823s2vv44pwbmzq"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/threeparttable")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/threeparttable")
+    (synopsis "Tables with captions and notes all the same width")
+    (description
+     "This package facilitates tables with titles (captions) and notes.  The
+title and notes are given a width equal to the body of the table (a
+@code{tabular} environment).  By itself, a @code{threeparttable} does not
+float, but you can put it in a @code{table} or a @code{table*} or some other
+environment.")
+    (license (license:fsf-free "file://threeparttable.sty"))))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")
