@@ -3114,6 +3114,40 @@ technical illustrations.  Its output is scalable PostScript or SVG, rather
 than the bitmaps Metafont creates.")
     (license license:lppl)))
 
+(define-public texlive-latex-varwidth
+  (package
+    (name "texlive-latex-varwidth")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/varwidth"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bmz9ap0ffyg7qry2xi7lki06qx4809w028xvk88cl66h7p46g52"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/varwidth")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/varwidth")
+    (synopsis "Variable-width minipage")
+    (description
+     "The @code{varwidth} environment is superficially similar to
+@code{minipage}, but the specified width is just a maximum value — the box may
+get a narrower “natural” width.")
+    (license license:lppl)))
+
 (define-public texlive-latex-wasysym
   (package
     (name "texlive-latex-wasysym")
