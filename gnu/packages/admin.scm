@@ -271,7 +271,13 @@ re-executing them as necessary.")
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")
+     `(#:configure-flags '("--localstatedir=/var"
+
+                           ;; Make sure 'PATH_PROCNET_DEV' gets defined when
+                           ;; cross-compiling (by default it does not.)
+                           ,@(if (%current-target-system)
+                                 '("--with-path-procnet-dev=/proc/net/dev")
+                                 '()))
        ;; On some systems, 'libls.sh' may fail with an error such as:
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
