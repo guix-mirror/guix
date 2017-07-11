@@ -306,7 +306,7 @@ hostname.")
                 "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Assume System V `setpgrp (void)', which is the default on GNU
+     `(;; Assume System V `setpgrp (void)', which is the default on GNU
        ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
        #:configure-flags
        '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
@@ -316,7 +316,10 @@ hostname.")
          (add-before 'build 'set-nscd-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Use the right file name for nscd.
-             (let ((libc (assoc-ref inputs "libc")))
+             (let ((libc (assoc-ref inputs
+                                    ,(if (%current-target-system)
+                                         "cross-libc"
+                                         "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
                   (string-append libc "/sbin/nscd"))))))
