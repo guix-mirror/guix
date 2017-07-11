@@ -1883,6 +1883,31 @@ mode.  The functionality is provided by purely expandable macros or by faster
 but non-expandable ones.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-ifplatform
+  (package
+    (name "texlive-latex-ifplatform")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "ifplatform"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "11gvvjvmdfs9b7mm19yf80zwkx49jqcbq6g8qb9y5ns1r1qvnixp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/ifplatform"))
+    (home-page "http://www.ctan.org/pkg/ifplatform")
+    (synopsis "Conditionals to test which platform is being used")
+    (description
+     "This package uses the (La)TeX extension @code{-shell-escape} to
+establish whether the document is being processed on a Windows or on a
+Unix-like system, or on Cygwin (Unix environment over a Windows system).
+Booleans provided are: @code{\\ifwindows}, @code{\\iflinux}, @code{\\ifmacosx}
+and @code{\\ifcygwin}.  The package also preserves the output of @code{uname}
+on a Unix-like system, which may be used to distinguish between various
+classes of systems.")
+    (license license:lppl)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
