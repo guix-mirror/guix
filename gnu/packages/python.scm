@@ -3236,6 +3236,36 @@ sources.")
     (license license:bsd-3)
     (properties `((python2-variant . ,(delay python2-sphinx))))))
 
+(define-public python-sphinx-1.6
+  (package (inherit python-sphinx)
+    (name "python-sphinx")
+    (version "1.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Sphinx" version))
+              (sha256
+               (base32
+                "1rj6f3i8hmrx2qlkshi5kp5xcy98dlynwlyl05yvflj5f66dp2xg"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Requires Internet access.
+             (delete-file "tests/test_build_linkcheck.py")
+             (substitute* "tests/test_build_latex.py"
+               (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
+                "@pytest.mark.skip()"))
+             (zero? (system* "make" "test")))))))
+    (propagated-inputs
+     `(("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)
+       ,@(package-propagated-inputs python-sphinx)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest-3.0)
+       ("imagemagick" ,imagemagick) ; for "convert"
+       ,@(package-native-inputs python-sphinx)))
+    (properties '())))
+
 (define-public python-sphinx-1.5.3
   (package
     (inherit python-sphinx)
