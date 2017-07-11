@@ -132,14 +132,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.12.0")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c2vg6530qplwk8rhldww5r3cwcbw1avka53qg9sh85nzlk2w8ml"))))
+                "1yvnmj7vlykrqdi6amkvs63lva6qkxd98sqv0a8hz8w5ci1bz4w7"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
