@@ -1956,6 +1956,41 @@ with a user specified LaTeX construction, properly aligned, scaled, and/or
 rotated.")
     (license (license:fsf-free "file://psfrag.dtx"))))
 
+(define-public texlive-latex-pstool
+  (package
+    (name "texlive-latex-pstool")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "pstool"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1kwlk1x67lad4xb7gpkxqgdlxwpi6nvq1r9wika7m92abmyf18h3"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/pstool"
+       #:tex-format "latex"))
+    (inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (propagated-inputs
+     `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot)
+       ("texlive-latex-filemod" ,texlive-latex-filemod)
+       ("texlive-latex-graphics" ,texlive-latex-graphics)
+       ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
+       ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
+       ("texlive-latex-psfrag" ,texlive-latex-psfrag)
+       ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)))
+    (home-page "http://www.ctan.org/pkg/pstool")
+    (synopsis "Process PostScript graphisc within pdfLaTeX documents")
+    (description
+     "This is a package for processing PostScript graphics with @code{psfrag}
+labels within pdfLaTeX documents.  Every graphic is compiled individually,
+drastically speeding up compilation time when only a single figure needs
+re-processing.")
+    (license license:lppl)))
+
 (define-public texlive-latex-seminar
   (package
     (name "texlive-latex-seminar")
