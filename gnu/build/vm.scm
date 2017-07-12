@@ -367,6 +367,19 @@ Grub configuration and OS-DRV as the stuff in it."
                             "var=/tmp/root/var"
                             "run=/tmp/root/run"
                             "--"
+                            ;; Store two copies of the headers.
+                            ;; The resulting ISO-9660 image has a DOS MBR and
+                            ;; one protective partition (with type 0xCD).
+                            ;; Because GuixSD only uses actual partitions
+                            ;; rather than what /proc/partitions returns, work
+                            ;; around it by storing the primary volume
+                            ;; descriptor twice, once where it should be and
+                            ;; once in the partition.
+                            ;; Allegedly, otherwise, many other GNU tools
+                            ;; (automounters etc) would also be confused by
+                            ;; the extra partition so it makes sense to
+                            ;; store two copies in any case.
+                            "-boot_image" "any" "partition_offset=16"
                             "-volid" ,(string-upcase volume-id)
                             ,@(if volume-uuid
                                   `("-volume_date" "uuid"
