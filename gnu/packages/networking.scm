@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -70,6 +70,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
@@ -1395,3 +1396,35 @@ newer and only works on Ethernet network interfaces.")
     ;; AGPL 3 with exception for linking with OpenSSL. See the 'LICENSE' file in
     ;; the source distribution for more information.
     (license license:agpl3)))
+
+(define-public bmon
+  (package
+    (name "bmon")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tgraf/bmon/releases/download/v"
+                           version "/bmon-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ylzriv4pwh76344abzl1w219x188gshbycbna35gsyfp09c7z82"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libconfuse" ,libconfuse)
+       ("libnl" ,libnl)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Bandwidth monitor")
+    (description "bmon is a monitoring and debugging tool to capture
+networking-related statistics and prepare them visually in a human-friendly
+way.  It features various output methods including an interactive curses user
+interface and a programmable text output for scripting.")
+    (home-page "https://github.com/tgraf/bmon")
+    ;; README.md mentions both the 2-clause BSD and expat licenses, but all
+    ;; the source files only have expat license headers. Upstream has been
+    ;; contacted for clarification: https://github.com/tgraf/bmon/issues/59
+    ;; Update the license field when upstream responds.
+    (license (list license:bsd-2
+                   license:expat))))
