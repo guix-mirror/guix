@@ -1006,6 +1006,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/spice-CVE-2016-9577.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
+  %D%/packages/patches/spice-CVE-2017-7506.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\

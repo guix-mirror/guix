@@ -211,7 +211,8 @@ which allows users to view a desktop computing environment.")
                (base32
                 "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))
               (patches
-               (search-patches "spice-CVE-2016-9577.patch"
+               (search-patches "spice-CVE-2017-7506.patch"
+                               "spice-CVE-2016-9577.patch"
                                "spice-CVE-2016-9578-1.patch"
                                "spice-CVE-2016-9578-2.patch"))))
     (build-system gnu-build-system)
