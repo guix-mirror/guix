@@ -409,8 +409,8 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (description
      "Eternal Terminal (ET) is a remote shell that automatically reconnects
 without interrupting the session.  Unlike SSH sessions, ET sessions will
-survive even after the network outages or IP changes.  ET uses a custom
-protocol over TCP, not the SSH protocol.")
+survive even network outages and IP changes.  ET uses a custom protocol over
+TCP, not the SSH protocol.")
     (home-page "https://mistertea.github.io/EternalTCP/")
     (license license:asl2.0)))
 
