@@ -367,7 +367,17 @@ Python.")
                (base32
                 "0lgywr1m0d79vr4s8aimj8a307nss29hhy68gjpqj7m667055c39"))))
     (build-system gnu-build-system)
-    (arguments `(#:parallel-tests? #f))
+    (arguments
+     `(#:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove record shapes to workaround graphviz 2.40.1 problems
+         ;; http://www.graphviz.org/content/i-havent-been-able-render-these-files-graphviz-226
+         ;; This will likely be fixed upstream in the next release
+         (add-before 'build 'fix-graphviz
+           (lambda _
+             (substitute* "doc/doxygen/dot/x-architecture.gv"
+               (("Mrecord") "none")))))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
