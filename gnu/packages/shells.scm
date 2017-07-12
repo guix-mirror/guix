@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@no-reply.infotropique.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -587,3 +588,42 @@ interactive POSIX shell targeted at resource-constrained systems.")
     ;; The file 'LEGAL' says it is the public domain, and the 2
     ;; exceptions which are listed are not included in this port.
     (license public-domain)))
+
+(define-public mksh
+  (package
+    (name "mksh")
+    (version "55")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.mirbsd.org/MirOS/dist/mir/mksh/mksh-R"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "0mssqd2wp3cs9x01v6g66iy3ymdxagbyw2c0v597vnc1l6s2rm6f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; tests require access to /dev/tty
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (setenv "CC" "gcc")
+             (zero? (system* (which "sh") "Build.sh"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "mksh" bin)
+               (with-directory-excursion bin
+                 (symlink "mksh" "ksh"))
+               (install-file "mksh.1" man)))))))
+    (home-page "https://www.mirbsd.org/mksh.htm")
+    (synopsis "Korn Shell from MirBSD")
+    (description "mksh is an actively developed free implementation of the
+Korn Shell programming language and a successor to the Public Domain Korn
+Shell (pdksh).")
+    (license (list miros
+                   isc)))) ; strlcpy.c
