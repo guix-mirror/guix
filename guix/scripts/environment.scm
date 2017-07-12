@@ -313,9 +313,7 @@ in OPTS."
                            #:dry-run? dry-run?)
       (if dry-run?
           (return #f)
-          (mbegin %store-monad
-            (set-build-options-from-command-line* opts)
-            (built-derivations derivations))))))
+          (built-derivations derivations)))))
 
 (define (inputs->profile-derivation inputs system bootstrap?)
   "Return the derivation for a profile consisting of INPUTS for SYSTEM.
@@ -580,6 +578,8 @@ message if any test fails."
       (when container? (assert-container-features))
 
       (with-store store
+        (set-build-options-from-command-line store opts)
+
         ;; Use the bootstrap Guile when requested.
         (parameterize ((%graft? (assoc-ref opts 'graft?))
                        (%guile-for-build
@@ -588,7 +588,6 @@ message if any test fails."
                          (if bootstrap?
                              %bootstrap-guile
                              (canonical-package guile-2.0)))))
-          (set-build-options-from-command-line store opts)
           (run-with-store store
             ;; Containers need a Bourne shell at /bin/sh.
             (mlet* %store-monad ((bash       (environment-bash container?
