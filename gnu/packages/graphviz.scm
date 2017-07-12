@@ -44,7 +44,7 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "2.38.0")
+    (version "2.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -52,21 +52,13 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "17l5czpvv5ilmg17frg0w4qwf89jzh2aglm9fgx0l0aakn6j7al1"))))
+                "08d4ygkxz2f553bxj6087da56a23kx1khv0j8ycxa102vvx1hlna"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
      '(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'pre-build
-           (lambda _
-             ;; Work around bogus makefile when using an external
-             ;; libltdl.  Failing to do so, one hits this error:
-             ;; "No rule to make target `-lltdl', needed by `libgvc.la'."
-             (substitute* "lib/gvc/Makefile"
-               (("am__append_5 *=.*")
-                "am_append_5 =\n"))))
          (add-after 'install 'move-docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
