@@ -3493,7 +3493,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4g")
+    (version "9.4n")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3504,10 +3504,11 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "09j9gnx701x28zfkrv3rjqlr56p89hyxk78gkpmmdfjgcq076pc2"))))
+                "1kf9i9gqadnb0m143c860dcvdn91vp6vnfzma4bcgfgwmcn9sx0r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
+       #:make-flags '("CXXFLAGS=-std=c++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3578,7 +3579,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1r57db4hm7fjcd27p8b6cdsnq2cgkym2kp9lrw7ha2asdf8w6gkb"))))
+             "1vrk0k0ch3azpa72y7acmmpifvks6c0466fvmz804hici93pglvi"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
