@@ -19,7 +19,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages qemu)
+(define-module (gnu packages virtualization)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)

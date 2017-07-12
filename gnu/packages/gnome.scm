@@ -132,8 +132,8 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
-  #:use-module (gnu packages qemu)
   #:use-module (gnu packages speech)
+  #:use-module (gnu packages virtualization)
   #:use-module (srfi srfi-1))
 
 (define-public brasero

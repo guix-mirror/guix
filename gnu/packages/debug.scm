@@ -32,7 +32,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pretty-print)
-  #:use-module (gnu packages qemu)
+  #:use-module (gnu packages virtualization)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 

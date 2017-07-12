@@ -328,7 +328,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/tryton.scm			\
-  %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
   %D%/packages/rails.scm			\
@@ -398,6 +397,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
+  %D%/packages/virtualization.scm		\
   %D%/packages/vpn.scm				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
