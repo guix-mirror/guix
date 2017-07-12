@@ -2514,6 +2514,35 @@ number.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-pomodoro
+  (package
+    (name "emacs-org-pomodoro")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lolownia/org-pomodoro/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jalsggw3q5kvj353f84x4nl04a5vmq07h75ggppy1627lb31zm4"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-alert" ,emacs-alert)))
+    (home-page "https://github.com/lolownia/org-pomodoro")
+    (synopsis "Pomodoro technique for org-mode")
+    (description "@code{emacs-org-pomodoro} adds very basic support for
+Pomodoro technique in Emacs org-mode.
+
+Run @code{M-x org-pomodoro} for the task at point or select one of the
+last tasks that you clocked time for.  Each clocked-in pomodoro starts
+a timer of 25 minutes and after each pomodoro a break timer of 5
+minutes is started automatically.  Every 4 breaks a long break is
+started with 20 minutes.  All values are customizable.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
