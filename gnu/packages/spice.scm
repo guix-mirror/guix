@@ -90,7 +90,7 @@
   over a network connection.  It can be used to redirect traffic from a USB device
   to a different (virtual) machine than the one to which the USB device is
   attached.")
-      (home-page "http://www.spice-space.org")
+      (home-page "https://www.spice-space.org")
       (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+)))))
 
 (define-public virglrenderer
