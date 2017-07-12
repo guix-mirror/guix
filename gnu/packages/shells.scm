@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@no-reply.infotropique.org>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -552,6 +552,29 @@ There are no redirection operators > in the shell language, they are added as
 extra programs.  > is just another unix command, < is essentially cat(1).
 A @code{andglob} program is also provided along with s.")
       (license bsd-3))))
+
+(define-public oksh
+  (package
+    (name "oksh")
+    (version "0.5.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://connochaetos.org/oksh/oksh-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ln9yf6pxngsviqszv8klnnvn8vcpplvj1njdn8xr2y8frkbw8r3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(; The test files are not part of the distributed tarball.
+       #:tests? #f))
+    (home-page "https://connochaetos.org/oksh")
+    (synopsis "Port of OpenBSD Korn Shell")
+    (description
+     "Oksh is a port of the OpenBSD Korn Shell.
+The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
+    (license gpl3+)))
 
 (define-public loksh
   (package
