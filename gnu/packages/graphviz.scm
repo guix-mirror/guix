@@ -46,49 +46,47 @@
     (name "graphviz")
     (version "2.38.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "17l5czpvv5ilmg17frg0w4qwf89jzh2aglm9fgx0l0aakn6j7al1"))))
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "17l5czpvv5ilmg17frg0w4qwf89jzh2aglm9fgx0l0aakn6j7al1"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
      '(#:tests? #f
-
-       #:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda _
-                   ;; Work around bogus makefile when using an external
-                   ;; libltdl.  Failing to do so, one hits this error:
-                   ;; "No rule to make target `-lltdl', needed by `libgvc.la'."
-                   (substitute* "lib/gvc/Makefile"
-                     (("am__append_5 *=.*")
-                      "am_append_5 =\n")))
-                 (alist-cons-after
-                  'install 'move-docs
-                  (lambda* (#:key outputs #:allow-other-keys)
-                           (let ((out (assoc-ref outputs "out"))
-                                 (doc (assoc-ref outputs "doc")))
-                             (mkdir-p (string-append doc "/share/graphviz"))
-                             (rename-file (string-append out "/share/graphviz/doc")
-                                          (string-append doc "/share/graphviz/doc"))
-                             #t))
-                  (alist-cons-after
-                   'move-docs 'move-guile-bindings
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (lib (string-append out "/lib"))
-                            (extdir (string-append lib
-                                                   "/guile/2.0/extensions")))
-                       (mkdir-p extdir)
-                       (rename-file (string-append
-                                     lib "/graphviz/guile/libgv_guile.so")
-                                    (string-append extdir
-                                                   "/libgv_guile.so"))))
-                   %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Work around bogus makefile when using an external
+             ;; libltdl.  Failing to do so, one hits this error:
+             ;; "No rule to make target `-lltdl', needed by `libgvc.la'."
+             (substitute* "lib/gvc/Makefile"
+               (("am__append_5 *=.*")
+                "am_append_5 =\n"))))
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share/graphviz"))
+               (rename-file (string-append out "/share/graphviz/doc")
+                            (string-append doc "/share/graphviz/doc"))
+               #t)))
+         (add-after 'move-docs 'move-guile-bindings
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (extdir (string-append lib
+                                           "/guile/2.0/extensions")))
+               (mkdir-p extdir)
+               (rename-file (string-append
+                             lib "/graphviz/guile/libgv_guile.so")
+                            (string-append extdir
+                                           "/libgv_guile.so"))
+               #t))))))
     (inputs
      `(("libXrender" ,libxrender)
        ("libX11" ,libx11)
