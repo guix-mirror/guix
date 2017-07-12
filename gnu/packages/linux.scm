@@ -1837,7 +1837,10 @@ system.")
     (native-search-paths
      (list (search-path-specification
             (variable "LOADKEYS_KEYMAP_PATH")
-            (files (list "share/keymaps")))))
+            ;; Append ‘/**’ to recursively search all directories.  One can then
+            ;; run (for example) ‘loadkeys en-latin9’ instead of having to find
+            ;; and type ‘i386/colemak/en-latin9’ on a mislabelled keyboard.
+            (files (list "share/keymaps/**")))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
