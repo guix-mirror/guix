@@ -297,7 +297,7 @@ resolution scaling on graphical console window resize.")
 (define-public virt-viewer
   (package
     (name "virt-viewer")
-    (version "4.0")
+    (version "5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -305,7 +305,7 @@ resolution scaling on graphical console window resize.")
                 "virt-viewer-" version ".tar.gz"))
               (sha256
                (base32
-                "07zsi1fqg05mag1ayniaqj25fzb6dxg76d4ka5196lq4l477nhhw"))))
+                "0blbp1wkw8ahss9va0bmcz2yx18j0mvm6fzrzhh2ly3sja5ysb8b"))))
     (build-system gnu-build-system)
     (inputs
       `(("gtk+" ,gtk+)
