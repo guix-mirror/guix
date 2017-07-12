@@ -6338,6 +6338,16 @@ The available options are:
 Use substitute information from @var{urls}.
 @xref{client-substitute-urls, the same option for @code{guix build}}.
 
+@item --sort=@var{key}
+Sort lines according to @var{key}, one of the following options:
+
+@table @code
+@item closure
+the total size of the item's closure (the default);
+@item self
+the size of each item.
+@end table
+
 @item --map-file=@var{file}
 Write a graphical map of disk usage in PNG format to @var{file}.
 
