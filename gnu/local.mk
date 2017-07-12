@@ -196,6 +196,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gv.scm				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/haskell.scm			\
+  %D%/packages/ham-radio.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
