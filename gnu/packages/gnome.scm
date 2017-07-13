@@ -615,6 +615,7 @@ forgotten when the session ends.")
              (uri (string-append "mirror://gnome/sources/" name "/"
                                  (version-major+minor version) "/"
                                  name "-" version ".tar.xz"))
+             (patches (search-patches "evince-CVE-2017-1000083.patch"))
              (sha256
               (base32
                "13yw0i68dgqp9alyliy3zifszh7rikkpi1xbz5binvxxgfpraf04"))))
