@@ -1005,6 +1005,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
+  %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/spice-CVE-2016-9577.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
