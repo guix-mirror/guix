@@ -14773,6 +14773,10 @@ from source.
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
 
+@item @code{fallback?} (default: @code{#f})
+When substituting a pre-built binary fails, fall back to building
+packages locally.
+
 @item @code{load-path} (default: @code{'()})
 This allows users to define their own packages and make them visible to
 cuirass as in @command{guix build} command.
