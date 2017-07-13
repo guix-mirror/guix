@@ -1970,7 +1970,7 @@ and MPEG system streams.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://ftp.videolan.org/pub/videolan/libbdplus/"
+       (uri (string-append "https://ftp.videolan.org/pub/videolan/libbdplus/"
                            version "/" name "-" version ".tar.bz2"))
        (sha256
         (base32 "02n87lysqn4kg2qk7d1ffrp96c44zkdlxdj0n16hbgrlrpiwlcd6"))))
