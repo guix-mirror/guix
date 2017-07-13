@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,6 +95,21 @@ devices on various operating systems.")
      "Libusb-compat provides a shim allowing applications based on older
 version of libusb to run with newer libusb.")
     (license lgpl2.1+)))
+
+;; required by 0xffff, which compiles with libusb-compat, but executes only
+;; with libusb-0.1
+(define-public libusb-0.1
+  (package (inherit libusb)
+    (version "0.1.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libusb/libusb-0.1 (LEGACY)/"
+                          version "/libusb-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0i4bacxkyr7xyqxbmb00ypkrv4swkgm0mghbzjsnw6blvvczgxip"))
+      (patches (search-patches "libusb-0.1-disable-tests.patch"))))))
 
 (define-public libusb4java
   ;; There is no public release so we take the latest version from git.
