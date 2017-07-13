@@ -126,6 +126,7 @@ program.")
         (method url-fetch)
         (uri (string-append "https://github.com/astrand/xclip"
                             "/archive/" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
            "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
