@@ -199,11 +199,11 @@ garbage collection, various safety features and in the style of communicating
 sequential processes (CSP) concurrent programming features added.")
     (license license:bsd-3)))
 
-(define-public go-1.8
+(define-public go-1.9
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.8.3")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -211,7 +211,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "19lzv4lqixj3v2gjaff0fdbbmgsq5r8lrfd61z2zvp778wjflpaz"))))
+         "14z9azh8pk5cwyl2qdk893j68lk0cca7a9b8k2hpn5pd52825ax4"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -242,7 +242,7 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"
                    (("!rpath.set") "true"))
-                 (substitute* "cmd/go/build.go"
+                 (substitute* "cmd/go/internal/work/build.go"
                    (("cgoldflags := \\[\\]string\\{\\}")
                     (string-append "cgoldflags := []string{"
                                    "\"-rpath=" gcclib "\""
@@ -366,4 +366,4 @@ sequential processes (CSP) concurrent programming features added.")
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))))
 
-(define-public go go-1.8)
+(define-public go go-1.9)
