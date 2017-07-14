@@ -6598,7 +6598,7 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.36")
+    (version "3.39")
     (source
      (origin
        (method url-fetch)
@@ -6606,7 +6606,7 @@ contents of a file is equal to a particular string.")
                            "Test-Harness-" version ".tar.gz"))
        (sha256
         (base32
-         "0gmnjss0hjkyiwvgby50nl5nzv254pn7fjqqdysjil21n09nymp7"))))
+         "0chiqnzmna2mglm37nzxvn9qhq2j31iwz3i9isqjs7bf3k449gb9"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases (alist-cons-before
