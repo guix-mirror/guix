@@ -4119,17 +4119,16 @@ file names are added for you.")
 (define-public perl-modern-perl
   (package
     (name "perl-modern-perl")
-    (version "1.20150127")
+    (version "1.20170117")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
         (base32
-         "0iv2crfxl3xh6mq36g1gv9fr8iqq3kpbj8afxy5qi60hh7v3xhcl"))))
+         "0a1n9c04zhs1a1km1zi0d1hj78d10qv3bhxr4bdi4chnc4saiwjx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
