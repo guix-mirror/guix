@@ -1196,15 +1196,15 @@ as defined by two typical specimens of Perl coders.")
 (define-public perl-config-any
   (package
     (name "perl-config-any")
-    (version "0.24")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Config-Any-" version ".tar.gz"))
        (sha256
         (base32
-         "06n6jn3q3xhk57icwip0ihzqixxav6sgp6rrb35hahj1z748y3vi"))))
+         "0l31sg7dwh4dwwnql42hp7arkhcm15bhsgfg4i6xvbjzy9f2mnk8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-pluggable" ,perl-module-pluggable)))
