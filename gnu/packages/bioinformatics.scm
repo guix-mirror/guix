@@ -1195,7 +1195,7 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.2.9")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
@@ -1203,7 +1203,7 @@ errors at the end of reads.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vp5db8i7is57iwjybcdg18f5ivyzlj5g1ix1nlvxainzivhz55g"))
+                "0hwa5r9qbglppb7sz5z79rlmmddr3n51n468jb3wh8rwjgn3yr90"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1211,12 +1211,14 @@ errors at the end of reads.")
                   (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
                   (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)
-              ("perl-clone" ,perl-clone)
-              ("perl-test-deep" ,perl-test-deep)
-              ("perl-test-simple" ,perl-test-simple)
-              ("python" ,python-2)
-              ("tbb" ,tbb)))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-clone" ,perl-clone)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-simple" ,perl-test-simple)
+       ("python" ,python-2)
+       ("tbb" ,tbb)
+       ("zlib" ,zlib)))
     (arguments
      '(#:make-flags
        (list "allall"
