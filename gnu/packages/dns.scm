@@ -443,17 +443,17 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.4")
+    (version "2.2.5")
     (source
-     (let ((revision "6924"))
+     (let ((build "6937"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                         name "-" version "-" revision ".tar.gz"))
+                         name "-" version "-" build ".tar.gz"))
          (sha256
           (base32
-           "060ydcfn9876bs6p5xi3p1k20ca547f4jck25r5x1hnxjlv7ss03")))))
+           "146fs52izf6dfwsxal3srpwin2yyl41g31cy4pyvbi5mqy2craj7")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
