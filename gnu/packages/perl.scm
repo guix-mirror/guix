@@ -5075,15 +5075,15 @@ and libraries based on OpenSSL.")
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "MRO-Compat-" version ".tar.gz"))
        (sha256
         (base32
-         "1mhma2g83ih9f8nkmg2k9l0x6izhhbb6k5lli4rpllxad4wbk9dv"))))
+         "1y547lr6zccf7919vx01v22zsajy528psanhg5aqschrrin3nb4a"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/MRO-Compat")
     (synopsis "MRO interface compatibility for Perls < 5.9.5")
