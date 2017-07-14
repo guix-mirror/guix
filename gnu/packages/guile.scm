@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1346,20 +1347,21 @@ capabilities.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guile-lib" ,guile-lib)))
     (inputs
      `(("libffi" ,libffi)))
     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'pre-configure
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (substitute* (find-files "." "^Makefile.in$")
-                  (("guilemoduledir =.*guile/site" all)
-                   (string-append all "/2.0")))
-                #t))))))
+     `(#:configure-flags '("--disable-Werror")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (find-files "." "^Makefile.in$")
+                 (("guilemoduledir =.*guile/site" all)
+                  (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+               #t))))))
     (synopsis "Generate C bindings for Guile")
     (description "G-Wrap is a tool and Guile library for generating function
 wrappers for inter-language calls.  It currently only supports generating Guile
