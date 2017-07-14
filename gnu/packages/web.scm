@@ -2165,15 +2165,15 @@ in tables within an HTML document, either as text or encoded element trees.")
 (define-public perl-html-tree
   (package
     (name "perl-html-tree")
-    (version "5.03")
+    (version "5.06")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CJ/CJM/"
+       (uri (string-append "mirror://cpan/authors/id/K/KE/KENTNL/"
                            "HTML-Tree-" version ".tar.gz"))
        (sha256
         (base32
-         "13qlqbpixw470gnck0xgny8hyjj576m8y24bba2p9ai2lvy76vbx"))))
+         "0vjk4xrybjqs511qrh9cymhpbg9m3jjqr52qr035k6nzrccyndlw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
