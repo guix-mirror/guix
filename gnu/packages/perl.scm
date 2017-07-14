@@ -7960,17 +7960,17 @@ and memory overhead.")
 (define-public perl-parse-yapp
   (package
     (name "perl-parse-yapp")
-    (version "1.05")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/F/FD/FDESAR/Parse-Yapp-"
+             "mirror://cpan/authors/id/W/WB/WBRASWELL/Parse-Yapp-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "0azjqqf4m7nkfgmmj4q77vy9sdgg01wn8xxv40bq3pis93xnr2i2"))))
+         "16p4qgqg28cy76ylcf4wq1r693gqpx8xq0w32b3564i67h49zljb"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Parse-Yapp")
     (synopsis "Generate and use LALR parsers")
