@@ -421,7 +421,7 @@ libxslt library.")
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -429,7 +429,7 @@ libxslt library.")
                            "XML-NamespaceSupport-" version ".tar.gz"))
        (sha256
         (base32
-         "1sklgcldl3w6gn706vx1cgz6pm4y5lfgsjxnfqyk20pilgq530bd"))))
+         "1vz5pbi4lm5fhq2slrs2hlp6bnk29863abgjlcx43l4dky2rbsa7"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/XML-NamespaceSupport")
     (synopsis "XML namespace support class")
