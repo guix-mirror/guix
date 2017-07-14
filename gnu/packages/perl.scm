@@ -6629,15 +6629,15 @@ automatically aggregated and output to STDOUT.")
 (define-public perl-test-leaktrace
   (package
     (name "perl-test-leaktrace")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEEJO/"
                            "Test-LeakTrace-" version ".tar.gz"))
        (sha256
         (base32
-         "0pp6ip012c474ibw0mwd7jgig34gf98bb8xlqk4wdvw1d65vbf7g"))))
+         "00z4hcjra5nk700f3fgpy8fs036d7ry7glpn8g3wh7jzj7nrw22z"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-LeakTrace")
     (synopsis "Traces memory leaks in Perl")
