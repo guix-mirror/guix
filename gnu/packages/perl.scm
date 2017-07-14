@@ -2361,7 +2361,7 @@ providing a simple interface to this data.")
 (define-public perl-devel-stacktrace-ashtml
   (package
     (name "perl-devel-stacktrace-ashtml")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -2369,7 +2369,7 @@ providing a simple interface to this data.")
                            "Devel-StackTrace-AsHTML-" version ".tar.gz"))
        (sha256
         (base32
-         "0yl296y0qfwybwjgqjzd4j2w2bj5a2nz342qqgxchnf5bqynl1c9"))))
+         "0iri5nb2lb76qv5l9z0vjpfrq5j2fyclkd64kh020bvy37idp0v2"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
