@@ -4055,14 +4055,14 @@ the argument to the CACHESIZE parameter, will be cached.")
 (define-public perl-mime-charset
   (package
     (name "perl-mime-charset")
-    (version "1.012")
+    (version "1.012.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
                                   "MIME-Charset-" version ".tar.gz"))
               (sha256
                (base32
-                "1kfc5p4g1x9c0ffhg125wvhravcviny3alwrgnhnrm2a33ad3rff"))))
+                "04qxgcg9mvia121i3zcqxgp20y0d9kg0qv6hddk93ian0af7g347"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/MIME-Charset")
     (synopsis "Charset information for MIME messages")
