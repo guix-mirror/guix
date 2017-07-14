@@ -1225,16 +1225,14 @@ errors at the end of reads.")
              "WITH_TBB=1"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-delete
-        'configure
-        (alist-replace
-         'check
-         (lambda* (#:key outputs #:allow-other-keys)
-           (system* "perl"
-                    "scripts/test/simple_tests.pl"
-                    "--bowtie2=./bowtie2"
-                    "--bowtie2-build=./bowtie2-build"))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "perl"
+                             "scripts/test/simple_tests.pl"
+                             "--bowtie2=./bowtie2"
+                             "--bowtie2-build=./bowtie2-build")))))))
     (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
     (synopsis "Fast and sensitive nucleotide sequence read aligner")
     (description
