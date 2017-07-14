@@ -470,10 +470,7 @@ served by AS112.  Stub and forward zones are supported.")
                                "--enable-shared"        "--disable-static"
                                "--enable-messages"      "--enable-ctrl"
                                "--enable-nsec"          "--enable-nsec3"
-                               "--enable-tsig"          "--enable-caching"
-                               ;; NSID is a rarely-used debugging aid, that also
-                               ;; causes the build to fail. Just disable it.
-                               "--disable-nsid")))
+                               "--enable-tsig"          "--enable-caching")))
     (home-page "http://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
