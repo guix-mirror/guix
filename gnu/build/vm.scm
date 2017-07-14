@@ -354,7 +354,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (error "failed to create GRUB EFI image"))))
 
 (define* (make-iso9660-image grub config-file os-drv target
-                             #:key (volume-id "GuixSD") (volume-uuid #f))
+                             #:key (volume-id "GuixSD_image") (volume-uuid #f))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 Grub configuration and OS-DRV as the stuff in it."
   (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
@@ -440,11 +440,14 @@ passing it a directory name where it is mounted."
 
         ;; Create a tiny configuration file telling the embedded grub
         ;; where to load the real thing.
+        ;; XXX This is quite fragile, and can prevent the image from booting
+        ;; when there's more than one volume with this label present.
+        ;; Reproducible almost-UUIDs could reduce the risk (not eliminate it).
         (call-with-output-file grub-config
           (lambda (port)
             (format port
                     "insmod part_msdos~@
-                    search --set=root --label GuixSD~@
+                    search --set=root --label GuixSD_image~@
                     configfile /boot/grub/grub.cfg~%")))
 
         (display "creating EFI firmware image...")

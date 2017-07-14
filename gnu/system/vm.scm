@@ -345,7 +345,7 @@ to USB sticks meant to be read-only."
     ;; Volume name of the root file system.  Since we don't know which device
     ;; will hold it, we use the volume name to find it (using the UUID would
     ;; be even better, but somewhat less convenient.)
-    (normalize-label "GuixSD"))
+    (normalize-label "GuixSD_image"))
 
   (define file-systems-to-keep
     (remove (lambda (fs)
