@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
+;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,8 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (guix build-system python))
 
 (define-public cereal
   (package
@@ -351,3 +353,33 @@ it is comparable to protobuf.")
 “Trivial integration”, and “Serious testing”.
 However, “Memory efficiency” and “Speed” have not been primary goals.")
     (license license:expat)))
+
+(define-public python-ruamel.yaml
+  (package
+    (name "python-ruamel.yaml")
+    (version "0.15.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ruamel.yaml" version))
+       (sha256
+        (base32
+         "0qx779avw8d1vsjqyi7z21h1g5ykp8paqavgj0lzbp8h7bw9vpgv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (arguments
+     `(;; TODO: Tests require packaging "ruamel.std.pathlib".
+       #:tests? #f))
+    (home-page "https://bitbucket.org/ruamel/yaml")
+    (synopsis "YAML 1.2 parser/emitter")
+    (description
+     "This package provides YAML parser/emitter that supports roundtrip
+preservation of comments, seq/map flow style, and map key order.  It
+is a derivative of Kirill Simonov’s PyYAML 3.11.  It supports YAML 1.2
+and has round-trip loaders and dumpers.  It supports comments.  Block
+style and key ordering are kept, so you can diff the source.")
+    (license license:expat)))
+
+(define-public python2-ruamel.yaml
+  (package-with-python2 python-ruamel.yaml))
