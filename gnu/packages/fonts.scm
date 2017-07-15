@@ -472,24 +472,7 @@ variants.")
               (sha256
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi/")))
-           (setenv "PATH" PATH)
-           (mkdir-p font-dir)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (chdir "wqy-zenhei")
-           (install-file "wqy-zenhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
