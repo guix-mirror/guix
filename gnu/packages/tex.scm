@@ -1573,6 +1573,7 @@ standard LaTeX packages."
     (let ((default-packages
             (list texlive-bin
                   texlive-dvips
+                  texlive-fontname
                   texlive-fonts-cm
                   texlive-fonts-latex
                   texlive-metafont-base
