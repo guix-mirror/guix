@@ -363,6 +363,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
   %D%/packages/smalltalk.scm			\
+  %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
   %D%/packages/ssh.scm				\
