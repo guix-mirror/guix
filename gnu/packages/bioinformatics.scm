@@ -3467,23 +3467,20 @@ form of assemblies or reads.")
                    license:cpl1.0))))     ; Open Bloom Filter
 
 (define-public metabat
-  ;; We package from a git commit because compilation of the released version
-  ;; fails.
-  (let ((commit "cbdca756993e66ae57e50a27970595dda9cbde1b"))
-    (package
-      (name "metabat")
-      (version (string-append "0.32.4-1." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://bitbucket.org/berkeleylab/metabat.git")
-               (commit commit)))
-         (file-name (string-append name "-" version))
-         (sha256
-          (base32
-           "0byia8nsip6zvc4ha0qkxkxxyjf4x7jcvy48q2dvb0pzr989syzr"))
-         (patches (search-patches "metabat-remove-compilation-date.patch"))))
+  (package
+    (name "metabat")
+    (version "2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/berkeleylab/metabat/get/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ll00l81aflscgggs5nfhj12cbvdiz3gg7f7n5f537a3xhx60vn9"))
+       (patches (search-patches "metabat-remove-compilation-date.patch"
+                                "metabat-fix-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3500,35 +3497,35 @@ form of assemblies or reads.")
                 "#include \"htslib/kseq.h\""))
              #t))
          (add-after 'unpack 'fix-scons
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "SConstruct"
-                (("^htslib_dir = 'samtools'")
-                 (string-append "hitslib_dir = '"
-                                (assoc-ref inputs "htslib")
-                                "'"))
-                (("^samtools_dir = 'samtools'")
-                 (string-append "samtools_dir = '"
-                                (assoc-ref inputs "htslib")
-                                "'"))
-                (("^findStaticOrShared\\('bam', hts_lib")
-                 (string-append "findStaticOrShared('bam', '"
-                                (assoc-ref inputs "samtools")
-                                "/lib'"))
-                ;; Do not distribute README.
-                (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
-              #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "SConstruct"
+               (("^htslib_dir += 'samtools'")
+                (string-append "htslib_dir = '"
+                               (assoc-ref inputs "htslib")
+                               "'"))
+               (("^samtools_dir = 'samtools'")
+                (string-append "samtools_dir = '"
+                               (assoc-ref inputs "samtools")
+                               "'"))
+               (("^findStaticOrShared\\('bam', hts_lib")
+                (string-append "findStaticOrShared('bam', '"
+                               (assoc-ref inputs "samtools")
+                               "/lib'"))
+               ;; Do not distribute README.
+               (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
+             #t))
          (delete 'configure)
          (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (mkdir (assoc-ref outputs "out"))
-                    (zero? (system* "scons"
-                                    (string-append
-                                     "PREFIX="
-                                     (assoc-ref outputs "out"))
-                                    (string-append
-                                     "BOOST_ROOT="
-                                     (assoc-ref inputs "boost"))
-                                    "install"))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir (assoc-ref outputs "out"))
+             (zero? (system* "scons"
+                             (string-append
+                              "PREFIX="
+                              (assoc-ref outputs "out"))
+                             (string-append
+                              "BOOST_ROOT="
+                              (assoc-ref inputs "boost"))
+                             "install"))))
          ;; Check and install are carried out during build phase.
          (delete 'check)
          (delete 'install))))
@@ -3549,8 +3546,8 @@ sequences to deconvolute complex microbial communities, or metagenome binning,
 enables the study of individual organisms and their interactions.  MetaBAT is
 an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
-   (license (license:non-copyleft "file://license.txt"
-                                  "See license.txt in the distribution.")))))
+    (license (license:non-copyleft "file://license.txt"
+                                   "See license.txt in the distribution."))))
 
 (define-public minced
   (package
