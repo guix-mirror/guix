@@ -40,7 +40,6 @@ gnu/packages/pdf.scm
 gnu/packages/pem.scm
 gnu/packages/perl.scm
 gnu/packages/photo.scm
-gnu/packages/qemu.scm
 gnu/packages/ratpoison.scm
 gnu/packages/readline.scm
 gnu/packages/scanner.scm
@@ -53,6 +52,7 @@ gnu/packages/tex.scm
 gnu/packages/texinfo.scm
 gnu/packages/textutils.scm
 gnu/packages/version-control.scm
+gnu/packages/virtualization.scm
 gnu/packages/webkit.scm
 gnu/packages/web.scm
 gnu/packages/wordnet.scm
