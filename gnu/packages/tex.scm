@@ -201,11 +201,41 @@ This package contains the binaries.")
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/dvips")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
+         (let* ((root (string-append (assoc-ref %outputs "out")
+                                     "/share/texmf-dist"))
+                (dvips (string-append root "/dvips"))
+                (maps  (string-append root "/fonts/map/dvips/tetex"))
+                (encs  (string-append root "/fonts/enc/dvips/base")))
+           (mkdir-p dvips)
+           (copy-recursively (assoc-ref %build-inputs "source") dvips)
+           (mkdir-p maps)
+           (copy-recursively (assoc-ref %build-inputs "dvips-font-maps") maps)
+           (mkdir-p encs)
+           (copy-recursively (assoc-ref %build-inputs "dvips-base-enc") encs)
            #t))))
+    (native-inputs
+     `(("dvips-font-maps"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/tetex"))
+                 (revision %texlive-revision)))
+           (sha256
+            (base32
+             "100208pg7q6lj7swiq9p9287nn6b64bl62bnlaxpjni9y2kdrqy5"))))
+       ("dvips-base-enc"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/enc/dvips/base"))
+                 (revision %texlive-revision)))
+           (sha256
+            (base32
+             "1xnf6ms0h87r55kxik4vicwr1907scj789lhqflqns8svvsli5iy"))))))
     (home-page "http://www.ctan.org/pkg/dvips")
     (synopsis "DVI to PostScript drivers")
     (description "This package provides files needed for converting DVI files
