@@ -516,23 +516,7 @@ ko (Korean) locales for @code{fontconfig}.")
               (sha256
                (base32
                 "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi")))
-           (mkdir-p font-dir)
-           (setenv "PATH" PATH)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (install-file "wqy-microhei/wqy-microhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
