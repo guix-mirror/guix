@@ -14362,6 +14362,29 @@ pytest report.")
 (define-public python2-pytest-warnings
   (package-with-python2 python-pytest-warnings))
 
+(define-public python-pytest-capturelog
+  (package
+    (name "python-pytest-capturelog")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-capturelog" version ".tar.gz"))
+       (sha256
+        (base32
+         "038049nyjl7di59ycnxvc9nydivc5m8np3hqq84j2iirkccdbs5n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("pytest" ,python-pytest-3.0)))
+    (home-page "http://bitbucket.org/memedough/pytest-capturelog/overview")
+    (synopsis "Pytest plugin to catch log messages")
+    (description
+     "Python-pytest-catchlog is a pytest plugin to catch log messages.")
+    (license license:expat)))
+
+(define-public python2-pytest-capturelog
+  (package-with-python2 python-pytest-capturelog))
+
 (define-public python-pytest-catchlog
   (package
     (name "python-pytest-catchlog")
