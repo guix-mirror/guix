@@ -2711,6 +2711,46 @@ version numbers.")
              (propagated-inputs
               `(("python2-functools32" ,python2-functools32))))))
 
+(define-public python-schema
+  (package
+    (name "python-schema")
+    (version "0.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "schema" version))
+       (sha256
+        (base32
+         "1lw28j9w9vxyigg7vkfkvi6ic9lgjkdnfvnxdr7pklslqvzmk2vm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/keleshev/schema")
+    (synopsis "Simple data validation library")
+    (description
+     "@code{python-schema} is a library for validating Python data
+structures, such as those obtained from config-files, forms, external
+services or command-line parsing, converted from JSON/YAML (or
+something else) to Python data-types.")
+    (license license:psfl)))
+
+(define-public python2-schema
+  (package-with-python2 python-schema))
+
+(define-public python-schema-0.5
+  (package (inherit python-schema)
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "schema" version))
+       (sha256
+        (base32
+         "10zqvpaky51kgb8nd42bk7jwl8cn2zvayxjpdc1wwmpybj92x67s"))))))
+
+(define-public python2-schema-0.5
+  (package-with-python2 python-schema-0.5))
+
 (define-public python-kitchen
   (package
     (name "python-kitchen")
