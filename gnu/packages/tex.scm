@@ -3068,6 +3068,42 @@ splines, and filled circles and ellipses.  The package uses @code{tpic}
 @code{\\special} commands.")
     (license license:public-domain)))
 
+(define-public texlive-latex-enumitem
+  (package
+    (name "texlive-latex-enumitem")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/enumitem"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0q24b1bkdi9l6bw787bpggww83jh2vj8955aw2m5yccqbx4vgr5r"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/enumitem")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/enumitem")
+    (synopsis "Customize basic list environments")
+    (description
+     "This package is intended to ease customizing the three basic list
+environments: @code{enumerate}, @code{itemize} and @code{description}.  It
+extends their syntax to allow an optional argument where a set of parameters
+in the form @code{key=value} are available, for example:
+@code{\\begin{itemize}[itemsep=1ex,leftmargin=1cm]}.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")
