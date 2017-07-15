@@ -4695,3 +4695,53 @@ arrays.  It creates a JSON string on stdout from words provided as
 command-line arguments or read from stdin.")
     (license (list l:gpl2+
                    l:expat)))) ; json.c, json.h
+
+(define-public python-internetarchive
+  (package
+    (name "python-internetarchive")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jjjake/internetarchive/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00v1489rv1ydcihwbdl7sqpcpmm98b9kqqlfggr32k0ndmv7ivas"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; 11 tests of 105 fail to mock "requests".
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
+             (zero? (system* "py.test")))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-jsonpatch" ,python-jsonpatch-0.4)
+       ("python-docopt" ,python-docopt)
+       ("python-clint" ,python-clint)
+       ("python-six" ,python-six)
+       ("python-schema" ,python-schema-0.5)
+       ("python-backports-csv" ,python-backports-csv)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest-capturelog" ,python-pytest-capturelog)
+       ("python-responses" ,python-responses)))
+    (home-page "https://github.com/jjjake/internetarchive")
+    (synopsis "Command-line interface to archive.org")
+    (description "@code{ia} is a command-line tool for using
+@url{archive.org} from the command-line.  It also emplements the
+internetarchive python module for programatic access to archive.org.")
+    (properties
+     `((python2-variant . ,(delay python2-internetarchive))))
+    (license l:agpl3+)))
+
+(define-public python2-internetarchive
+  (package-with-python2
+   (strip-python2-variant python-internetarchive)))
