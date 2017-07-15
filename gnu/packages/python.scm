@@ -5465,7 +5465,40 @@ tools for mocking system commands and recording calls to those.")
        ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
        ("python-shpinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("texlive" ,texlive)
+       ;; FIXME: It's possible that a smaller union would work just as well.
+       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-generic-ifxetex
+                                        texlive-generic-pdftex
+                                        texlive-latex-amsfonts
+                                        texlive-latex-capt-of
+                                        texlive-latex-cmap
+                                        texlive-latex-environ
+                                        texlive-latex-eqparbox
+                                        texlive-latex-etoolbox
+                                        texlive-latex-expdlist
+                                        texlive-latex-fancyhdr
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-fncychap
+                                        texlive-latex-float
+                                        texlive-latex-framed
+                                        texlive-latex-geometry
+                                        texlive-latex-graphics
+                                        texlive-latex-hyperref
+                                        texlive-latex-mdwtools
+                                        texlive-latex-multirow
+                                        texlive-latex-oberdiek
+                                        texlive-latex-parskip
+                                        texlive-latex-preview
+                                        texlive-latex-tabulary
+                                        texlive-latex-threeparttable
+                                        texlive-latex-titlesec
+                                        texlive-latex-trimspaces
+                                        texlive-latex-ucs
+                                        texlive-latex-upquote
+                                        texlive-latex-url
+                                        texlive-latex-varwidth
+                                        texlive-latex-wrapfig)))
        ("texinfo" ,texinfo)))
     (arguments
      `(#:phases
