@@ -2101,13 +2101,13 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.36")
+    (version "1.38")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "1kabb9b81hgvpd3wcznww549vss12b1xlvpnxg1r6n4c7gikgvnp"))))
+                "0rl7sxn1rcjl48fwga3dqf9f6pzspsny4ngxyf6pp337mrq0z693"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
