@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -295,6 +296,13 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; note the target script is generated at build time.
                  (substitute* "../misc/cgo/testcarchive/carchive_test.go"
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 ;; Escape braces in test data to workaround test failure. For
+                 ;; more information:
+                 ;; https://github.com/golang/go/issues/20007
+                 ;; FIXME: remove this once we upgrade to 1.9
+                 (substitute* "cmd/vet/testdata/copylock_func.go"
+                   (("struct\\{lock sync.Mutex\\}") "struct\\{lock sync.Mutex\\}"))
 
                  (substitute* "net/lookup_unix.go"
                    (("/etc/protocols") (string-append net-base "/etc/protocols")))
