@@ -4716,11 +4716,16 @@ command-line arguments or read from stdin.")
        (modify-phases %standard-phases
          (delete 'check)
          (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
-                                           ":" (getenv "PATH")))
-             (zero? (system* "py.test")))))))
+           (lambda* (#:key inputs outputs target (tests? (not target)) #:allow-other-keys)
+             (if tests?
+               (begin
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                               ":" (getenv "PATH")))
+                 (zero? (system* "py.test")))
+               (begin
+                 (format #t "test suite not run~%")
+                 #t)))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
