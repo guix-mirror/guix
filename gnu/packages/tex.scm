@@ -3500,6 +3500,35 @@ styles.  It also includes a package to change the page styles when there are
 floats in a page.  You may assign headers/footers to individual floats, too.")
     (license license:lppl)))
 
+(define-public texlive-latex-type1cm
+  (package
+    (name "texlive-latex-type1cm")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "type1cm"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1lvxrqfwcwa4p31zyfm80gr05v8c28xybv5ri79zi2ngz6834z12"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/type1cm"))
+    (home-page "http://www.ctan.org/pkg/type1cm")
+    (synopsis "Arbitrary size font selection in LaTeX")
+    (description
+     "LaTeX, by default, restricts the sizes at which you can use its default
+computer modern fonts, to a fixed set of discrete sizes (effectively, a set
+specified by Knuth).  The @code{type1cm} package removes this restriction;
+this is particularly useful when using scalable versions of the CM
+fonts (Bakoma, or the versions from BSR/Y&Y, or True Type versions from Kinch,
+PCTeX, etc.).  In fact, since modern distributions will automatically generate
+any bitmap font you might need, @code{type1cm} has wider application than just
+those using scaleable versions of the fonts.  Note that the LaTeX distribution
+now contains a package @code{fix-cm},f which performs the task of
+@code{type1cm}, as well as doing the same job for T1- and TS1-encoded
+@code{ec} fonts.")
+    (license license:lppl)))
+
 (define-public texlive-latex-lh
   (package
     (name "texlive-latex-lh")
