@@ -429,6 +429,40 @@ converters, will completely supplant the older patterns.")
 build fonts using the Metafont system.")
     (license license:knuth)))
 
+(define-public texlive-fontname
+  (package
+    (name "texlive-fontname")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/map/fontname"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cssbzcx15221dynp5sii72qh4l18mwkr14n8w1xb19j8pbaqasz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/fonts/map/fontname")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/fontname")
+    (synopsis "Scheme for naming fonts in TeX")
+    (description "This is Fontname, a naming scheme for (the base part of)
+external TeX font filenames.  This makes at most eight-character names
+from (almost) arbitrarily complex font names, thus helping portability of TeX
+documents.")
+    (license license:public-domain)))
+
 (define-public texlive-fonts-cm
   (package
     (name "texlive-fonts-cm")
