@@ -15238,6 +15238,49 @@ by path in a JSON document (see RFC 6901).")
 (define-public python2-jsonpointer
   (package-with-python2 python-jsonpointer))
 
+(define-public python-jsonpatch
+  (package
+    (name "python-jsonpatch")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       ;; pypi version lacks tests.js
+       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "085ykisl8v7mv9h7hvhdy3l2fjzs4214gx32r5k6nx4f76hbv6y5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-jsonpointer" ,python-jsonpointer)))
+    (home-page "https://github.com/stefankoegl/python-json-patch")
+    (synopsis "Applying JSON Patches in Python 2.6+ and 3.x")
+    (description "@code{jsonpatch} is a library and program that allows
+applying JSON Patches according to RFC 6902.")
+    (license license:bsd-3)))
+
+(define-public python2-jsonpatch
+  (package-with-python2 python-jsonpatch))
+
+(define-public python-jsonpatch-0.4
+  (package (inherit python-jsonpatch)
+    (name "python-jsonpatch")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stefankoegl/python-json-patch/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j0cd9z9zyp8kppp464jxrfgrnbgkzl1yi10i5gsv8yz6d95929d"))))))
+
+(define-public python2-jsonpatch-0.4
+  (package-with-python2 python-jsonpatch-0.4))
+
 (define-public python-rfc3987
   (package
     (name "python-rfc3987")
