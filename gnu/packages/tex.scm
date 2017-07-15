@@ -1646,7 +1646,8 @@ standard LaTeX packages."
                  (((names . directories) ...)
                   (union-build (assoc-ref %outputs "out")
                                directories
-                               #:create-all-directories? #t)))
+                               #:create-all-directories? #t
+                               #:log-port (%make-void-port "w"))))
 
                ;; The configuration file "texmf.cnf" is provided by the
                ;; "texlive-bin" package.  We take it and override only the
