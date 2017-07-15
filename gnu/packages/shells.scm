@@ -54,17 +54,12 @@
     (version "0.5.9.1")
     (source
      (origin
-       ;; The canonical source is offline, so we fetch the source code
-       ;; from the Git repository. See:
-       ;; https://www.mail-archive.com/dash@vger.kernel.org/msg01323.html
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://git.kernel.org/pub/scm/utils/dash/dash.git/")
-              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
+                           "dash-" version ".tar.gz"))
        (sha256
         (base32
-         "0p01vx7rbyf5hyyaff7h8cbhq81bm5fmq1m933484lncl9rafcai"))
+         "0ng695mq5ngg43h7ljhxvbjm46ym3nayj6ssn47d2gm9fbm5pkay"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -75,17 +70,10 @@
               "a command interpreter based on the original Bourne shell"))
            #t))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
     (inputs
      `(("libedit" ,libedit)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))
-       #:configure-flags '("--with-libedit")))
+     '(#:configure-flags '("--with-libedit")))
     (home-page "http://gondor.apana.org.au/~herbert/dash")
     (synopsis "POSIX-compliant shell optimised for size")
     (description
