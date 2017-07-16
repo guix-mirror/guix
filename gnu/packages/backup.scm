@@ -118,7 +118,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -126,7 +126,7 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsrca7903g08zrifv4102gkxrhmzvgwd1sb6vw9pa00qhzsfkzs"))))
+                "0dqwarc2aw5clgpf24d9dxh43b0k0z3l6kksn30arx9bdlmrk5rx"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
