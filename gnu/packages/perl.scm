@@ -2962,19 +2962,18 @@ provide a quick dropin when such functionality is needed.")
 (define-public perl-file-homedir
   (package
     (name "perl-file-homedir")
-    (version "1.00")
+    (version "1.002")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "File-HomeDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0hvihydd0y4gdxafi8dpybk9ll8q35bz5ycibfic0gh92cslzfc5"))))
+         "0x62hn8rc7ninf9nlp69h61yh21g4cbq2g81sh64cf2ify2hqk7b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-which" ,perl-file-which)
-       ("perl-file-temp" ,perl-file-temp)))
+     `(("perl-file-which" ,perl-file-which)))
     (arguments `(#:tests? #f))          ;Not appropriate for chroot
     (home-page "http://search.cpan.org/dist/File-HomeDir")
     (synopsis "Find your home and other directories on any platform")
