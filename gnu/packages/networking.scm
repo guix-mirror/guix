@@ -1103,7 +1103,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "18.1")
+    (version "19.1")
     (source
      (origin
        (method url-fetch)
@@ -1112,14 +1112,22 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1a8wmbhc1si1n8axzrr8ysmrd3gr643lbh6pvzmr0hnd65fixmx5"))))
+         "0y713g7gd4n5chbhr8lv7k50rxkmzysrg13sscxam3s386mmlb1r"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
+        '(begin
+           (substitute* "daemon/connect/TlsSocket.cpp"
+             (("gnutls_certificate-verification_status_print")
+              "gnutls_certificate_verification_status_print"))
+           #t))))
     (arguments
      `(#:configure-flags
        (list
-        (string-append "--with-libcurses-includes=" (assoc-ref
-%build-inputs "ncurses") "/include")
-        (string-append "--with-libcurses-libraries=" (assoc-ref
-%build-inputs "ncurses") "/lib")
+        (string-append "--with-libcurses-includes="
+                       (assoc-ref %build-inputs "ncurses") "/include")
+        (string-append "--with-libcurses-libraries="
+                       (assoc-ref %build-inputs "ncurses") "/lib")
         (string-append "--with-tlslib=GnuTLS"))))
     (build-system gnu-build-system)
     (inputs `(("gnutls", gnutls)
