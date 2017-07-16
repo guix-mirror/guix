@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -6928,25 +6928,24 @@ If this fails, then rather than failing tests this skips all tests.")
 (define-public perl-test-script
   (package
     (name "perl-test-script")
-    (version "1.07")
+    (version "1.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+              (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                                   "Test-Script-" version ".tar.gz"))
               (sha256
                (base32
-                "15pb4zzsnm33msc1syhig2bk05xqc0pckmfyahdwbd177bj5w7p2"))))
+                "1msavbi6przkxq3npm90nv925v58iym9jrk677wn46x19whwzwzm"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("probe-perl" ,perl-probe-perl)
-       ("ipc-run3"   ,perl-ipc-run3)))
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-probe-perl" ,perl-probe-perl)))
     (synopsis "Basic cross-platform tests for scripts")
     (description
      "The intent of the Test::Script module is to provide a series of basic
 tests for 80% of the testing you will need to do for scripts in the script (or
 bin as is also commonly used) paths of your Perl distribution.")
-    (home-page (string-append "http://search.cpan.org/~adamk/"
-                              "Test-Script-" version))
+    (home-page "http://search.cpan.org/dist/Test-Script")
     (license (package-license perl))))
 
 (define-public perl-test-sharedfork
