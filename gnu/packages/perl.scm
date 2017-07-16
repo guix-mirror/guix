@@ -2158,14 +2158,14 @@ This module parses and emits such dates.")
 (define-public perl-datetime-format-w3cdtf
   (package
     (name "perl-datetime-format-w3cdtf")
-    (version "0.06")
+    (version "0.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/G/GW/GWILLIAMS/"
                                   "DateTime-Format-W3CDTF-" version ".tar.gz"))
               (sha256
                (base32
-                "0ymxizwd2zfx8b4bmrmv4k439qwfwf2522jrvn4hlay5v6z459dr"))))
+                "0s32lb1k80p3b3sb7w234zgxnrmadrwbcg41lhaal7dz3dk2p839"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-datetime" ,perl-datetime)))
