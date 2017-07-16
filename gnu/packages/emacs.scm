@@ -2615,14 +2615,14 @@ package provides a light and a dark variant.")
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
-               "1p2zaq0s4bbl5cx6wyab24wamw7m0mysb0v47dqjmnvfc25z84rq"))))
+               "1n8k12mfn01f20j0pyd7ycj77x0y3a008xc94frklaaqjc0v26s4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ahungry/color-theme-ahungry")
     (synopsis "Ahungry color theme for Emacs")
