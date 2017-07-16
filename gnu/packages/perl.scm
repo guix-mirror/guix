@@ -7776,14 +7776,14 @@ defined by Annex #11 is used to determine breaking positions.")
 (define-public perl-unicode-utf8
   (package
     (name "perl-unicode-utf8")
-    (version "0.60")
+    (version "0.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/C/CH/CHANSEN/"
                                   "Unicode-UTF8-" version ".tar.gz"))
               (sha256
                (base32
-                "1g3fp47slsk7wbz3189kpg342lfs7lpsy570jxnx7s9v59dg5k7n"))))
+                "1xnhazbdvpyfpnxd90krzhxkvabf8fa2ji6xzlrf75j6nz8251zs"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
