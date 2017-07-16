@@ -2766,7 +2766,8 @@ machine-readable ASCII format.")
     (description "shntool is a multi-purpose WAVE data processing and reporting
 utility.  File formats are abstracted from its core, so it can process any file
 that contains WAVE data, compressed or not---provided there exists a format
-module to handle that particular file type.")
+module to handle that particular file type.  It can also generate CUE files, and
+use them split WAVE data into multiple files.")
     (home-page "http://etree.org/shnutils/shntool/")
     ;; 'install-sh' bears the x11 license
     (license (list license:gpl2+ license:x11))))
