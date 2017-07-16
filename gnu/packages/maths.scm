@@ -437,7 +437,7 @@ large scale eigenvalue problems.")
                           version ".tgz"))
       (sha256
        (base32
-        "0yavf6m9l78pwlnk5g61cg8x28mr30j0g8gkai0jrdqfjjmf3whs"))))
+        "1j51r7n5w4k7r3lrvy7710xrpkg40wf4rqnmngfz6ck9ypckzign"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran)
