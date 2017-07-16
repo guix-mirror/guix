@@ -143,8 +143,8 @@ alongside the source files or stored together with back-ups to protect against
 transmission errors or @dfn{bit rot}, the degradation of storage media over
 time.
 Unlike a simple checksum, PAR2 doesn't merely detect errors: as long as the
-damage isn't to great (and smaller than the size of the recovery file), it can
-even repair them.")
+damage isn't too extensive (and smaller than the size of the recovery file), it
+can even repair them.")
     (home-page "https://github.com/Parchive/par2cmdline")
     (license license:gpl3+)))
 
