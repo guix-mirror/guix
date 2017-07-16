@@ -136,10 +136,15 @@ spying and/or modification by the server.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    (synopsis "File verification and repair tool")
-    (description "Par2cmdline is a tool for generating RAID-like PAR2 recovery
-files using Reed-Solomon coding.  PAR2 files can be stored along side backups
-or distributed files for recovering from bitrot.")
+    (synopsis "File verification and repair tools")
+    (description "Par2cmdline uses Reed-Solomon error-correcting codes to
+generate and verify PAR2 recovery files.  These files can be distributed
+alongside the source files or stored together with back-ups to protect against
+transmission errors or @dfn{bit rot}, the degradation of storage media over
+time.
+Unlike a simple checksum, PAR2 doesn't merely detect errors: as long as the
+damage isn't to great (and smaller than the size of the recovery file), it can
+even repair them.")
     (home-page "https://github.com/Parchive/par2cmdline")
     (license license:gpl3+)))
 
