@@ -403,17 +403,18 @@ OS."
 (define* (operating-system-directory-base-entries os #:key container?)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
-  (mlet %store-monad ((locale (operating-system-locale-directory os)))
-    (if container?
-        (return `(("locale" ,locale)))
-        (mlet %store-monad
-            ((kernel  ->  (operating-system-kernel os))
-             (initrd      (operating-system-initrd-file os))
-             (params      (operating-system-boot-parameters-file os)))
-          (return `(("kernel" ,kernel)
-                    ("parameters" ,params)
-                    ("initrd" ,initrd)
-                    ("locale" ,locale)))))))      ;used by libc
+  (let ((locale (operating-system-locale-directory os)))
+    (with-monad %store-monad
+      (if container?
+          (return `(("locale" ,locale)))
+          (mlet %store-monad
+              ((kernel  ->  (operating-system-kernel os))
+               (initrd      (operating-system-initrd-file os))
+               (params      (operating-system-boot-parameters-file os)))
+            (return `(("kernel" ,kernel)
+                      ("parameters" ,params)
+                      ("initrd" ,initrd)
+                      ("locale" ,locale))))))))   ;used by libc
 
 (define* (essential-services os #:key container?)
   "Return the list of essential services for OS.  These are special services

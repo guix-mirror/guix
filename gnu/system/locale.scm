@@ -19,7 +19,6 @@
 (define-module (gnu system locale)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (gnu packages base)
@@ -118,8 +117,7 @@ of LIBC."
          (and #$@(map (cut localedef-command <> #:libc libc)
                       locales)))))
 
-  (gexp->derivation (string-append "locale-" version) build
-                    #:local-build? #t))
+  (computed-file (string-append "locale-" version) build))
 
 (define* (locale-directory locales
                            #:key (libcs %default-locale-libcs))
@@ -133,18 +131,16 @@ data format changes between libc versions."
     ((libc)
      (single-locale-directory locales #:libc libc))
     ((libcs ..1)
-     (mlet %store-monad ((dirs (mapm %store-monad
-                                     (lambda (libc)
-                                       (single-locale-directory locales
-                                                                #:libc libc))
-                                     libcs)))
-       (gexp->derivation "locale-multiple-versions"
-                         (with-imported-modules '((guix build union))
-                           #~(begin
-                               (use-modules (guix build union))
-                               (union-build #$output (list #$@dirs))))
-                         #:local-build? #t
-                         #:substitutable? #f)))))
+     (let ((dirs (map (lambda (libc)
+                        (single-locale-directory locales #:libc libc))
+                      libcs)))
+       (computed-file "locale-multiple-versions"
+                      (with-imported-modules '((guix build union))
+                        #~(begin
+                            (use-modules (guix build union))
+                            (union-build #$output (list #$@dirs))))
+                      #:options '(#:local-build? #t
+                                  #:substitutable? #f))))))
 
 (define %default-locale-libcs
   ;; The libcs for which we build locales by default.
