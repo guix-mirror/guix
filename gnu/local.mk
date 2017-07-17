@@ -150,6 +150,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fonts.scm			\
   %D%/packages/fontutils.scm			\
   %D%/packages/fpga.scm				\
+  %D%/packages/forth.scm			\
   %D%/packages/freedesktop.scm			\
   %D%/packages/freeipmi.scm			\
   %D%/packages/ftp.scm				\
@@ -164,7 +165,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gdb.scm				\
   %D%/packages/geo.scm				\
   %D%/packages/gettext.scm			\
-  %D%/packages/gforth.scm			\
   %D%/packages/ghostscript.scm			\
   %D%/packages/gimp.scm				\
   %D%/packages/gkrellm.scm			\
