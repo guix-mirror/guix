@@ -2915,15 +2915,15 @@ directories.")
 (define-public perl-file-find-rule-perl
   (package
     (name "perl-file-find-rule-perl")
-    (version "1.13")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "File-Find-Rule-Perl-" version ".tar.gz"))
        (sha256
         (base32
-         "0xi4ppqr6r57l5xlkwxpvkvpb9p7dvz053d76v2m9pwdfxqb5v6j"))))
+         "19iy8spzrvh71x33b5yi16wjw5jjvs12jvjj0f7f3370hqzl6j4s"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-find-rule" ,perl-file-find-rule)
