@@ -930,6 +930,11 @@ compresses it.")
     (arguments
       '(#:configure-flags
         '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        #:make-flags
+        ;; Disable updating icon cache since it's done by the profile hook.
+        ;; Conflict with other packages in the profile would be inevitable
+        ;; otherwise.
+        '("gtk_update_icon_cache=true")
         #:phases (modify-phases %standard-phases
                    (add-before 'build 'patch-mime
                      (lambda* (#:key inputs #:allow-other-keys)
