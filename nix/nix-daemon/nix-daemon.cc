@@ -436,7 +436,15 @@ static void performOp(bool trusted, unsigned int clientVersion,
         bool sign = readInt(from) == 1;
         startWork();
         TunnelSink sink(to);
-        store->exportPath(path, sign, sink);
+	try {
+	    store->exportPath(path, sign, sink);
+	}
+	catch (Error &e) {
+	    /* Flush SINK beforehand or its destructor will rightfully trigger
+	       an assertion failure.  */
+	    sink.flush();
+	    throw e;
+	}
         sink.flush();
         stopWork();
         writeInt(1, to);
