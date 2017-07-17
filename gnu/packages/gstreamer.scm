@@ -64,14 +64,14 @@
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.26")
+    (version "0.4.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "0jd69ynvr3k70mlxxgbsk047l1rd63m1wkj3qdcq7644xy0gllkx"))))
+                "14vbwdydwarcvswzf744jdjb3ibhv6k4j6hzdacfan41zic3xrai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
