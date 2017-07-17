@@ -706,15 +706,17 @@ references; otherwise, return only non-native references."
            (cons `(,thing ,output) result)
            result))
       (($ <gexp-input> (lst ...) output n?)
-       (if (eqv? native? n?)
-           (fold-right add-reference-inputs result
-                       ;; XXX: For now, automatically convert LST to a list of
-                       ;; gexp-inputs.
-                       (map (match-lambda
-                              ((? gexp-input? x) x)
-                              (x (%gexp-input x "out" (or n? native?))))
-                            lst))
-           result))
+       (fold-right add-reference-inputs result
+                   ;; XXX: For now, automatically convert LST to a list of
+                   ;; gexp-inputs.  Inherit N?.
+                   (map (match-lambda
+                          ((? gexp-input? x)
+                           (%gexp-input (gexp-input-thing x)
+                                        (gexp-input-output x)
+                                        n?))
+                          (x
+                           (%gexp-input x "out" n?)))
+                        lst)))
       (_
        ;; Ignore references to other kinds of objects.
        result)))
