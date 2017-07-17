@@ -1386,6 +1386,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        (sha256
         (base32
          "10l2ljmd7mv8f9ylarqmxxryicdnph2qkm3g5maxnsm2k2q0n20b"))
+       (patches (search-patches "supertuxkart-angelscript-ftbfs.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
