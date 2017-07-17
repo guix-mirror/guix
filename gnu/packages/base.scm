@@ -978,22 +978,10 @@ GLIBC/HURD for a Hurd host"
          `(modify-phases ,phases
             (add-before 'configure 'fix-pwd
               (lambda _
-                ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
+                ;; Use `pwd' instead of `/bin/pwd' for glibc-2.22.
                 (substitute* "configure"
                   (("/bin/pwd") "pwd"))
                 #t))))))))
-
-(define-public glibc-2.21
-  (package
-    (inherit glibc-2.22)
-    (version "2.21")
-    (source (origin
-              (inherit (package-source glibc-2.22))
-              (uri (string-append "mirror://gnu/glibc/glibc-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))))))
 
 (define-public glibc-locales
   (package

@@ -22,7 +22,6 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix packages)
-  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (srfi srfi-26)
@@ -85,15 +84,6 @@ or #f on failure."
 (define* (localedef-command locale
                             #:key (libc (canonical-package glibc)))
   "Return a gexp that runs 'localedef' from LIBC to build LOCALE."
-  (define (maybe-version-directory)
-    ;; XXX: For libc prior to 2.22, GuixSD did not store locale data in a
-    ;; version-specific sub-directory.  Check whether this is the case.
-    ;; TODO: Remove this hack once libc 2.21 is buried.
-    (let ((version (package-version libc)))
-      (if (version>=? version "2.22")
-          (list version "/")
-          '())))
-
   #~(begin
       (format #t "building locale '~a'...~%"
               #$(locale-definition-name locale))
@@ -102,7 +92,7 @@ or #f on failure."
                       "-i" #$(locale-definition-source locale)
                       "-f" #$(locale-definition-charset locale)
                       (string-append #$output "/"
-                                     #$@(maybe-version-directory)
+                                     #$(package-version libc) "/"
                                      #$(locale-definition-name locale))))))
 
 (define* (single-locale-directory locales
@@ -119,12 +109,7 @@ of LIBC."
     #~(begin
         (mkdir #$output)
 
-        ;; XXX: For libcs < 2.22, locale data is stored in the top-level
-        ;; directory.
-        ;; TODO: Remove this hack once libc 2.21 is buried.
-        #$(if (version>=? version "2.22")
-              #~(mkdir (string-append #$output "/" #$version))
-              #~(symlink "." (string-append #$output "/" #$version)))
+        (mkdir (string-append #$output "/" #$version))
 
         ;; 'localedef' executes 'gzip' to access compressed locale sources.
         (setenv "PATH" (string-append #$gzip "/bin"))
