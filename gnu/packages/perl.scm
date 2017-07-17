@@ -3065,15 +3065,15 @@ matching a regular expression.")
 (define-public perl-file-remove
   (package
     (name "perl-file-remove")
-    (version "1.52")
+    (version "1.57")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                            "File-Remove-" version ".tar.gz"))
        (sha256
         (base32
-         "1p8bal9qhwkjbghivxn1d5m3qdj2qwm1agrjbmakm6la9dbxqm21"))))
+         "1b814lw181kkqh6c1n4p2zlzzsq6ic5pfpr831nphf2w2rhcvgmk"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/File-Remove")
     (synopsis "Remove files and directories in Perl")
