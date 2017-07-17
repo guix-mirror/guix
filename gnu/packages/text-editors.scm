@@ -26,6 +26,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
@@ -178,7 +179,7 @@ bindings and many of the powerful features of GNU Emacs.")
               (sha256
                (base32
                 "0b0az2wvqgvam7w0ns1j8xp2llslm1rx6h7zcsy06a7j0yp257cm"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
