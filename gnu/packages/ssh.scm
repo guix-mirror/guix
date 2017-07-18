@@ -130,16 +130,12 @@ a server that supports the SSH-2 protocol.")
    (name "openssh")
    (version "7.5p1")
    (source (origin
-            (method url-fetch)
-            (uri (let ((tail (string-append name "-" version ".tar.gz")))
-                   (list (string-append "http://openbsd.cs.fau.de/pub/OpenBSD/OpenSSH/portable/"
-                                        tail)
-                         (string-append "http://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
-                                        tail)
-                         (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
-                                        tail))))
-            (sha256 (base32
-                     "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
+             (method url-fetch)
+             (uri (string-append "mirror://openbsd/OpenSSH/portable/"
+                                 name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)

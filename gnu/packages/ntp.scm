@@ -101,10 +101,8 @@ computers over a network.")
     (version "6.1p1")
     (source (origin
               (method url-fetch)
-              ;; XXX Use mirror://openbsd
               (uri (string-append
-                    "http://ftp.openbsd.org/pub/OpenBSD/OpenNTPD/openntpd-"
-                    version ".tar.gz"))
+                    "mirror://openbsd/OpenNTPD/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1ykx9ga76k5m54h7k5x4ds2clxsyfniss5vmf88pxnrip5bx6if8"))))

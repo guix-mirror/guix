@@ -277,7 +277,56 @@
        "http://kde.mirrors.tds.net/pub/kde/"
        ;; Oceania
        "http://ftp.kddlabs.co.jp/pub/X11/kde/"
-       "http://kde.mirror.uber.com.au/"))))
+       "http://kde.mirror.uber.com.au/")
+      (openbsd
+       "https://ftp.openbsd.org/pub/OpenBSD/"
+       ;; Anycast CDN redirecting to your friendly local mirror.
+       "https://mirrors.evowise.com/pub/OpenBSD/"
+       ;; Other HTTPS mirrors from https://www.openbsd.org/ftp.html
+       "https://mirror.aarnet.edu.au/pub/OpenBSD/"
+       "https://ftp2.eu.openbsd.org/pub/OpenBSD/"
+       "https://openbsd.c3sl.ufpr.br/pub/OpenBSD/"
+       "https://openbsd.ipacct.com/pub/OpenBSD/"
+       "https://ftp.OpenBSD.org/pub/OpenBSD/"
+       "https://openbsd.cs.toronto.edu/pub/OpenBSD/"
+       "https://openbsd.delfic.org/pub/OpenBSD/"
+       "https://openbsd.mirror.netelligent.ca/pub/OpenBSD/"
+       "https://mirrors.ucr.ac.cr/pub/OpenBSD/"
+       "https://mirrors.dotsrc.org/pub/OpenBSD/"
+       "https://mirror.one.com/pub/OpenBSD/"
+       "https://ftp.fr.openbsd.org/pub/OpenBSD/"
+       "https://ftp2.fr.openbsd.org/pub/OpenBSD/"
+       "https://mirrors.ircam.fr/pub/OpenBSD/"
+       "https://ftp.spline.de/pub/OpenBSD/"
+       "https://mirror.hs-esslingen.de/pub/OpenBSD/"
+       "https://ftp.halifax.rwth-aachen.de/openbsd/"
+       "https://ftp.hostserver.de/pub/OpenBSD/"
+       "https://ftp.fau.de/pub/OpenBSD/"
+       "https://ftp.cc.uoc.gr/pub/OpenBSD/"
+       "https://openbsd.hk/pub/OpenBSD/"
+       "https://ftp.heanet.ie/pub/OpenBSD/"
+       "https://openbsd.mirror.garr.it/pub/OpenBSD/"
+       "https://mirror.litnet.lt/pub/OpenBSD/"
+       "https://mirror.meerval.net/pub/OpenBSD/"
+       "https://ftp.nluug.nl/pub/OpenBSD/"
+       "https://ftp.bit.nl/pub/OpenBSD/"
+       "https://mirrors.dalenys.com/pub/OpenBSD/"
+       "https://ftp.icm.edu.pl/pub/OpenBSD/"
+       "https://ftp.rnl.tecnico.ulisboa.pt/pub/OpenBSD/"
+       "https://mirrors.pidginhost.com/pub/OpenBSD/"
+       "https://mirror.yandex.ru/pub/OpenBSD/"
+       "https://ftp.eu.openbsd.org/pub/OpenBSD/"
+       "https://ftp.yzu.edu.tw/pub/OpenBSD/"
+       "https://www.mirrorservice.org/pub/OpenBSD/"
+       "https://anorien.csc.warwick.ac.uk/pub/OpenBSD/"
+       "https://mirror.bytemark.co.uk/pub/OpenBSD/"
+       "https://mirrors.sonic.net/pub/OpenBSD/"
+       "https://ftp3.usa.openbsd.org/pub/OpenBSD/"
+       "https://mirrors.syringanetworks.net/pub/OpenBSD/"
+       "https://openbsd.mirror.constant.com/pub/OpenBSD/"
+       "https://ftp4.usa.openbsd.org/pub/OpenBSD/"
+       "https://ftp5.usa.openbsd.org/pub/OpenBSD/"
+       "https://mirror.esc7.net/pub/OpenBSD/"))))
 
 (define %mirror-file
   ;; Copy of the list of mirrors to a file.  This allows us to keep a single
