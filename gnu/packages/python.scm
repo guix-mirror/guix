@@ -43,6 +43,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -653,26 +654,27 @@ on localhost.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2016.10")
+    (version "2017.2")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "pytz" version ".tar.bz2"))
+      (uri (pypi-uri "pytz" version ".zip"))
       (sha256
        (base32
-        "0az099cyp6p5xbsvfcdacj4hvxncbwm2ayn3h55mcp07zb2b45kh"))))
+        "12cmd3j46d2gcw08bspvp6s9icfcvx88zjz52n1bli9dyvl5dh7m"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no test target
+    (native-inputs
+     `(("unzip" ,unzip)))
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
-    (description
-     "This library allows accurate and cross platform timezone calculations
-using Python 2.4 or higher and provides access to the Olson timezone database.")
+    (description "This library brings the Olson tz database into Python.  It
+allows accurate and cross platform timezone calculations using Python 2.4 or
+higher.  It also solves the issue of ambiguous times at the end of daylight
+saving time.  Almost all of the Olson timezones are supported.")
     (license license:expat)))
 
 (define-public python2-pytz
   (package-with-python2 python-pytz))
-
 
 (define-public python-babel
   (package
