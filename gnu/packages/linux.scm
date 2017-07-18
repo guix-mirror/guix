@@ -3782,7 +3782,7 @@ Light is the successor of lightscript.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "0.9")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3792,7 +3792,7 @@ Light is the successor of lightscript.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xksm8ar6dbq0azbfz8qs9yyzqg1j333lyd5znc074rz8inj4yw8"))))
+                "1v3qpj9kp4rxwqapayd0i9419wwv4bikyrzjvqn0r9xkgnr1f9v4"))))
     (inputs `(("bash" ,bash)
               ("dbus" ,dbus)
               ("ethtool" ,ethtool)
