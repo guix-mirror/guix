@@ -157,8 +157,8 @@ the #:references-graphs parameter of 'derivation'."
 (define (estimated-partition-size graphs)
   "Return the estimated size of a partition that can store the store items
 given by GRAPHS, a list of file names produced by #:references-graphs."
-  ;; Simply add a 20% overhead.
-  (round (* 1.2 (closure-size graphs))))
+  ;; Simply add a 25% overhead.
+  (round (* 1.25 (closure-size graphs))))
 
 (define* (initialize-partition-table device partitions
                                      #:key
