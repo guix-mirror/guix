@@ -1415,6 +1415,46 @@ and debugging source code.  These include support for syntax styling, error
 indicators, code completion and call tips.")
     (license license:gpl3+)))
 
+(define-public python-qscintilla
+  (package (inherit qscintilla)
+    (name "python-qscintilla")
+    (arguments
+     `(#:configure-flags
+       (list "--pyqt=PyQt5"
+             (string-append "--pyqt-sipdir="
+                            (assoc-ref %build-inputs "python-pyqt")
+                            "/share/sip")
+             (string-append "--qsci-incdir="
+                            (assoc-ref %build-inputs "qscintilla")
+                            "/include")
+             (string-append "--qsci-libdir="
+                            (assoc-ref %build-inputs "qscintilla")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (chdir "Python")
+             (and (zero? (apply system* "python3" "configure.py"
+                                configure-flags))
+                  ;; Install to the right directory
+                  (begin
+                    (substitute* '("Makefile"
+                                   "Qsci/Makefile")
+                      (("\\$\\(INSTALL_ROOT\\)/gnu/store/[^/]+")
+                       (assoc-ref outputs "out")))
+                    #t)))))))
+    (inputs
+     `(("qscintilla" ,qscintilla)
+       ("python" ,python)
+       ("python-pyqt" ,python-pyqt)))
+    (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
+editor control.  QScintilla includes features especially useful when editing
+and debugging source code.  These include support for syntax styling, error
+indicators, code completion and call tips.
+
+This package provides the Python bindings.")))
+
 (define-public qtkeychain
   (package
     (name "qtkeychain")
