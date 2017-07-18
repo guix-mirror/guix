@@ -266,6 +266,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/maths.scm			\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
+  %D%/packages/medical.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
