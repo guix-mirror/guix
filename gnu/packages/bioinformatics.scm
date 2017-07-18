@@ -4320,6 +4320,8 @@ extremely diverse sets of genomes.")
     (description
      "RAxML is a tool for phylogenetic analysis and post-analysis of large
 phylogenies.")
+    ;; The source includes x86 specific code
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public rsem
