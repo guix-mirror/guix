@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0 bsd-3))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
@@ -516,3 +517,58 @@ different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
     (license gpl3+)))
+
+(define-public python-anaconda-client
+  (package
+    (name "python-anaconda-client")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Anaconda-Platform/"
+                           "anaconda-client/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv4wi6k5jz7rlwfgvgfdizv77x3cr1wa2aj0k1595g7fbhkjhz2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-clyent" ,python-clyent)))
+    (native-inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil)
+       ("python-mock" ,python-mock)
+       ("python-coverage" ,python-coverage)
+       ("python-pillow" ,python-pillow)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for some tests.
+         (add-before 'check 'set-up-home
+           (lambda* _ (setenv "HOME" "/tmp") #t))
+         (add-before 'check 'remove-network-tests
+           (lambda* _
+             ;; Remove tests requiring a network connection
+             (let ((network-tests '("tests/test_upload.py"
+                                    "tests/test_authorizations.py"
+                                    "tests/test_login.py"
+                                    "tests/test_whoami.py"
+                                    "utils/notebook/tests/test_data_uri.py"
+                                    "utils/notebook/tests/test_base.py"
+                                    "utils/notebook/tests/test_downloader.py"
+                                    "inspect_package/tests/test_conda.py")))
+               (with-directory-excursion "binstar_client"
+                 (for-each delete-file network-tests)))
+             #t)))))
+    (home-page "https://github.com/Anaconda-Platform/anaconda-client")
+    (synopsis "Anaconda Cloud command line client library")
+    (description
+     "Anaconda Cloud command line client library provides an interface to
+Anaconda Cloud.  Anaconda Cloud is useful for sharing packages, notebooks and
+environments.")
+    (license bsd-3)))
+
+(define-public python2-anaconda-client
+  (package-with-python2 python-anaconda-client))
