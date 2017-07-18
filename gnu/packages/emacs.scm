@@ -3134,7 +3134,9 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There is no test suite.
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "LISPDIR=" %output
+                                         "/share/emacs/site-lisp/guix.d/ess"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
