@@ -33,7 +33,7 @@
 ;;;
 
 (define-record-type* <sysctl-configuration>
-  sysctl-configuration make-sysctl-configuration?
+  sysctl-configuration make-sysctl-configuration
   sysctl-configuration?
   (sysctl   sysctl-configuration-sysctl    ; path of the 'sysctl' command
             (default (file-append procps "/sbin/sysctl")))
