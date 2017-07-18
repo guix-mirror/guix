@@ -68,7 +68,10 @@
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
-            system-disk-image))
+            system-disk-image
+
+            virtual-machine
+            virtual-machine?))
 
 
 ;;; Commentary:
@@ -581,7 +584,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 full-boot?
                                                 (disk-image-size
                                                  (* (if full-boot? 500 70)
-                                                    (expt 2 20))))
+                                                    (expt 2 20)))
+                                                (options '()))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host.  The virtual machine runs with
 MEMORY-SIZE MiB of memory.
@@ -614,7 +618,8 @@ it is mostly useful when FULL-BOOT?  is true."
               #$@(common-qemu-options image
                                       (map file-system-mapping-source
                                            (cons %store-mapping mappings)))
-              "-m " (number->string #$memory-size)))
+              "-m " (number->string #$memory-size)
+              #$@options))
 
     (define builder
       #~(call-with-output-file #$output
@@ -625,5 +630,64 @@ it is mostly useful when FULL-BOOT?  is true."
             (chmod port #o555))))
 
     (gexp->derivation "run-vm.sh" builder)))
+
+
+;;;
+;;; High-level abstraction.
+;;;
+
+(define-record-type* <virtual-machine> %virtual-machine
+  make-virtual-machine
+  virtual-machine?
+  (operating-system virtual-machine-operating-system) ;<operating-system>
+  (qemu             virtual-machine-qemu              ;<package>
+                    (default qemu))
+  (graphic?         virtual-machine-graphic?      ;Boolean
+                    (default #f))
+  (memory-size      virtual-machine-memory-size   ;integer (MiB)
+                    (default 256))
+  (port-forwardings virtual-machine-port-forwardings ;list of integer pairs
+                    (default '())))
+
+(define-syntax virtual-machine
+  (syntax-rules ()
+    "Declare a virtual machine running the specified OS, with the given
+options."
+    ((_ os)                                       ;shortcut
+     (%virtual-machine (operating-system os)))
+    ((_ fields ...)
+     (%virtual-machine fields ...))))
+
+(define (port-forwardings->qemu-options forwardings)
+  "Return the QEMU option for the given port FORWARDINGS as a string, where
+FORWARDINGS is a list of host-port/guest-port pairs."
+  (string-join
+   (map (match-lambda
+          ((host-port . guest-port)
+           (string-append "hostfwd=tcp::"
+                          (number->string host-port)
+                          "-:" (number->string guest-port))))
+        forwardings)
+   ","))
+
+(define-gexp-compiler (virtual-machine-compiler (vm <virtual-machine>)
+                                                system target)
+  ;; XXX: SYSTEM and TARGET are ignored.
+  (match vm
+    (($ <virtual-machine> os qemu graphic? memory-size ())
+     (system-qemu-image/shared-store-script os
+                                            #:qemu qemu
+                                            #:graphic? graphic?
+                                            #:memory-size memory-size))
+    (($ <virtual-machine> os qemu graphic? memory-size forwardings)
+     (let ((options
+            `("-net" ,(string-append
+                       "user,"
+                       (port-forwardings->qemu-options forwardings)))))
+       (system-qemu-image/shared-store-script os
+                                              #:qemu qemu
+                                              #:graphic? graphic?
+                                              #:memory-size memory-size
+                                              #:options options)))))
 
 ;;; vm.scm ends here
