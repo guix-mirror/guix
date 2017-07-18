@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,6 @@
   #:use-module (gnu services mail)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
-  #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (ice-9 ftw)
   #:export (%test-opensmtpd
@@ -44,105 +44,105 @@ accept from any for local deliver to mbox
 
 (define (run-opensmtpd-test)
   "Return a test of an OS running OpenSMTPD service."
-  (mlet* %store-monad ((command (system-qemu-image/shared-store-script
-                                 (marionette-operating-system
-                                  %opensmtpd-os
-                                  #:imported-modules '((gnu services herd)))
-                                 #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (rnrs base)
-                         (srfi srfi-64)
-                         (ice-9 rdelim)
-                         (ice-9 regex)
-                         (gnu build marionette))
+  (define vm
+    (virtual-machine
+     (operating-system (marionette-operating-system
+                        %opensmtpd-os
+                        #:imported-modules '((gnu services herd))))
+     (port-forwardings '((1025 . 25)))))
 
-            (define marionette
-              (make-marionette
-               ;; Enable TCP forwarding of the guest's port 25.
-               '(#$command "-net" "user,hostfwd=tcp::1025-:25")))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (rnrs base)
+                       (srfi srfi-64)
+                       (ice-9 rdelim)
+                       (ice-9 regex)
+                       (gnu build marionette))
 
-            (define (read-reply-code port)
-              "Read a SMTP reply from PORT and return its reply code."
-              (let* ((line      (read-line port))
-                     (mo        (string-match "([0-9]+)([ -]).*" line))
-                     (code      (string->number (match:substring mo 1)))
-                     (finished? (string= " " (match:substring mo 2))))
-                (if finished?
-                    code
-                    (read-reply-code port))))
+          (define marionette
+            (make-marionette '(#$vm)))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (define (read-reply-code port)
+            "Read a SMTP reply from PORT and return its reply code."
+            (let* ((line      (read-line port))
+                   (mo        (string-match "([0-9]+)([ -]).*" line))
+                   (code      (string->number (match:substring mo 1)))
+                   (finished? (string= " " (match:substring mo 2))))
+              (if finished?
+                  code
+                  (read-reply-code port))))
 
-            (test-begin "opensmptd")
+          (mkdir #$output)
+          (chdir #$output)
 
-            (test-assert "service is running"
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'smtpd)
-                  #t)
-               marionette))
+          (test-begin "opensmptd")
 
-            (test-assert "mbox is empty"
-              (marionette-eval
-               '(and (file-exists? "/var/mail")
-                     (not (file-exists? "/var/mail/root")))
-               marionette))
+          (test-assert "service is running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'smtpd)
+                #t)
+             marionette))
 
-            (test-eq "accept an email"
-              #t
-              (let* ((smtp (socket AF_INET SOCK_STREAM 0))
-                     (addr (make-socket-address AF_INET INADDR_LOOPBACK 1025)))
-                (connect smtp addr)
-                ;; Be greeted.
-                (read-reply-code smtp)             ;220
-                ;; Greet the server.
-                (write-line "EHLO somehost" smtp)
-                (read-reply-code smtp)             ;250
-                ;; Set sender email.
-                (write-line "MAIL FROM: <someone>" smtp)
-                (read-reply-code smtp)             ;250
-                ;; Set recipient email.
-                (write-line "RCPT TO: <root>" smtp)
-                (read-reply-code smtp)             ;250
-                ;; Send message.
-                (write-line "DATA" smtp)
-                (read-reply-code smtp)             ;354
-                (write-line "Subject: Hello" smtp)
-                (newline smtp)
-                (write-line "Nice to meet you!" smtp)
-                (write-line "." smtp)
-                (read-reply-code smtp)             ;250
-                ;; Say goodbye.
-                (write-line "QUIT" smtp)
-                (read-reply-code smtp)             ;221
-                (close smtp)
-                #t))
+          (test-assert "mbox is empty"
+            (marionette-eval
+             '(and (file-exists? "/var/mail")
+                   (not (file-exists? "/var/mail/root")))
+             marionette))
 
-            (test-assert "mail arrived"
-              (marionette-eval
-               '(begin
-                  (use-modules (ice-9 popen)
-                               (ice-9 rdelim))
+          (test-eq "accept an email"
+            #t
+            (let* ((smtp (socket AF_INET SOCK_STREAM 0))
+                   (addr (make-socket-address AF_INET INADDR_LOOPBACK 1025)))
+              (connect smtp addr)
+              ;; Be greeted.
+              (read-reply-code smtp)              ;220
+              ;; Greet the server.
+              (write-line "EHLO somehost" smtp)
+              (read-reply-code smtp)              ;250
+              ;; Set sender email.
+              (write-line "MAIL FROM: <someone>" smtp)
+              (read-reply-code smtp)              ;250
+              ;; Set recipient email.
+              (write-line "RCPT TO: <root>" smtp)
+              (read-reply-code smtp)              ;250
+              ;; Send message.
+              (write-line "DATA" smtp)
+              (read-reply-code smtp)              ;354
+              (write-line "Subject: Hello" smtp)
+              (newline smtp)
+              (write-line "Nice to meet you!" smtp)
+              (write-line "." smtp)
+              (read-reply-code smtp)              ;250
+              ;; Say goodbye.
+              (write-line "QUIT" smtp)
+              (read-reply-code smtp)              ;221
+              (close smtp)
+              #t))
 
-                  (define (queue-empty?)
-                    (eof-object?
-                     (read-line
-                      (open-input-pipe "smtpctl show queue"))))
+          (test-assert "mail arrived"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 popen)
+                             (ice-9 rdelim))
 
-                  (let wait ()
-                    (if (queue-empty?)
-                        (file-exists? "/var/mail/root")
-                        (begin (sleep 1) (wait)))))
-               marionette))
+                (define (queue-empty?)
+                  (eof-object?
+                   (read-line
+                    (open-input-pipe "smtpctl show queue"))))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+                (let wait ()
+                  (if (queue-empty?)
+                      (file-exists? "/var/mail/root")
+                      (begin (sleep 1) (wait)))))
+             marionette))
 
-    (gexp->derivation "opensmtpd-test" test)))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "opensmtpd-test" test))
 
 (define %test-opensmtpd
   (system-test
@@ -179,100 +179,100 @@ acl_check_data:
 
 (define (run-exim-test)
   "Return a test of an OS running an Exim service."
-  (mlet* %store-monad ((command (system-qemu-image/shared-store-script
-                                 (marionette-operating-system
-                                  %exim-os
-                                  #:imported-modules '((gnu services herd)))
-                                 #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette)
-                               (ice-9 ftw))
-        #~(begin
-            (use-modules (rnrs base)
-                         (srfi srfi-64)
-                         (ice-9 ftw)
-                         (ice-9 rdelim)
-                         (ice-9 regex)
-                         (gnu build marionette))
+  (define vm
+    (virtual-machine
+     (operating-system (marionette-operating-system
+                        %exim-os
+                        #:imported-modules '((gnu services herd))))
+     (port-forwardings '((1025 . 25)))))
 
-            (define marionette
-              (make-marionette
-               ;; Enable TCP forwarding of the guest's port 25.
-               '(#$command "-net" "user,hostfwd=tcp::1025-:25")))
+  (define test
+    (with-imported-modules '((gnu build marionette)
+                             (ice-9 ftw))
+      #~(begin
+          (use-modules (rnrs base)
+                       (srfi srfi-64)
+                       (ice-9 ftw)
+                       (ice-9 rdelim)
+                       (ice-9 regex)
+                       (gnu build marionette))
 
-            (define (read-reply-code port)
-              "Read a SMTP reply from PORT and return its reply code."
-              (let* ((line      (read-line port))
-                     (mo        (string-match "([0-9]+)([ -]).*" line))
-                     (code      (string->number (match:substring mo 1)))
-                     (finished? (string= " " (match:substring mo 2))))
-                (if finished?
-                    code
-                    (read-reply-code port))))
+          (define marionette
+            (make-marionette '(#$vm)))
 
-            (define smtp (socket AF_INET SOCK_STREAM 0))
-            (define addr (make-socket-address AF_INET INADDR_LOOPBACK 1025))
+          (define (read-reply-code port)
+            "Read a SMTP reply from PORT and return its reply code."
+            (let* ((line      (read-line port))
+                   (mo        (string-match "([0-9]+)([ -]).*" line))
+                   (code      (string->number (match:substring mo 1)))
+                   (finished? (string= " " (match:substring mo 2))))
+              (if finished?
+                  code
+                  (read-reply-code port))))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (define smtp (socket AF_INET SOCK_STREAM 0))
+          (define addr (make-socket-address AF_INET INADDR_LOOPBACK 1025))
 
-            (test-begin "exim")
+          (mkdir #$output)
+          (chdir #$output)
 
-            (test-assert "service is running"
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'exim)
-                  #t)
-               marionette))
+          (test-begin "exim")
 
-            (sleep 1) ;; give the service time to start talking
+          (test-assert "service is running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'exim)
+                #t)
+             marionette))
 
-            (connect smtp addr)
-            ;; Be greeted.
-            (test-eq "greeting received"
-              220 (read-reply-code smtp))
-            ;; Greet the server.
-            (write-line "EHLO somehost" smtp)
-            (test-eq "greeting successful"
-              250 (read-reply-code smtp))
-            ;; Set sender email.
-            (write-line "MAIL FROM: test@example.com" smtp)
-            (test-eq "sender set"
-              250 (read-reply-code smtp)) ;250
-            ;; Set recipient email.
-            (write-line "RCPT TO: root@komputilo" smtp)
-            (test-eq "recipient set"
-              250 (read-reply-code smtp)) ;250
-            ;; Send message.
-            (write-line "DATA" smtp)
-            (test-eq "data begun"
-              354 (read-reply-code smtp)) ;354
-            (write-line "Subject: Hello" smtp)
-            (newline smtp)
-            (write-line "Nice to meet you!" smtp)
-            (write-line "." smtp)
-            (test-eq "message sent"
-              250 (read-reply-code smtp)) ;250
-            ;; Say goodbye.
-            (write-line "QUIT" smtp)
-            (test-eq "quit successful"
-              221 (read-reply-code smtp)) ;221
-            (close smtp)
+          (sleep 1) ;; give the service time to start talking
 
-            (test-eq "the email is received"
-              1
-              (marionette-eval
-               '(begin
-                  (use-modules (ice-9 ftw))
-                  (length (scandir "/var/spool/exim/msglog"
-                                   (lambda (x) (not (string-prefix? "." x))))))
-               marionette))
+          (connect smtp addr)
+          ;; Be greeted.
+          (test-eq "greeting received"
+            220 (read-reply-code smtp))
+          ;; Greet the server.
+          (write-line "EHLO somehost" smtp)
+          (test-eq "greeting successful"
+            250 (read-reply-code smtp))
+          ;; Set sender email.
+          (write-line "MAIL FROM: test@example.com" smtp)
+          (test-eq "sender set"
+            250 (read-reply-code smtp))           ;250
+          ;; Set recipient email.
+          (write-line "RCPT TO: root@komputilo" smtp)
+          (test-eq "recipient set"
+            250 (read-reply-code smtp))           ;250
+          ;; Send message.
+          (write-line "DATA" smtp)
+          (test-eq "data begun"
+            354 (read-reply-code smtp))           ;354
+          (write-line "Subject: Hello" smtp)
+          (newline smtp)
+          (write-line "Nice to meet you!" smtp)
+          (write-line "." smtp)
+          (test-eq "message sent"
+            250 (read-reply-code smtp))           ;250
+          ;; Say goodbye.
+          (write-line "QUIT" smtp)
+          (test-eq "quit successful"
+            221 (read-reply-code smtp))           ;221
+          (close smtp)
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-eq "the email is received"
+            1
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 ftw))
+                (length (scandir "/var/spool/exim/msglog"
+                                 (lambda (x) (not (string-prefix? "." x))))))
+             marionette))
 
-    (gexp->derivation "exim-test" test)))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "exim-test" test))
 
 (define %test-exim
   (system-test

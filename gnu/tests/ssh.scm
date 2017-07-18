@@ -27,7 +27,6 @@
   #:use-module (gnu packages ssh)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:export (%test-openssh
             %test-dropbear))
 
@@ -37,142 +36,143 @@ SSH-SERVICE must be configured to listen on port 22 and to allow for root and
 empty-password logins.
 
 When SFTP? is true, run an SFTP server test."
-  (mlet* %store-monad ((os ->   (marionette-operating-system
-                                 (simple-operating-system
-                                  (dhcp-client-service)
-                                  ssh-service)
-                                 #:imported-modules '((gnu services herd)
-                                                      (guix combinators))))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (eval-when (expand load eval)
-              ;; Prepare to use Guile-SSH.
-              (set! %load-path
-                (cons (string-append #+guile2.0-ssh "/share/guile/site/"
-                                     (effective-version))
-                      %load-path)))
+  (define os
+    (marionette-operating-system
+     (simple-operating-system (dhcp-client-service) ssh-service)
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings '((2222 . 22)))))
 
-            (use-modules (gnu build marionette)
-                         (srfi srfi-26)
-                         (srfi srfi-64)
-                         (ice-9 match)
-                         (ssh session)
-                         (ssh auth)
-                         (ssh channel)
-                         (ssh sftp))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (eval-when (expand load eval)
+            ;; Prepare to use Guile-SSH.
+            (set! %load-path
+              (cons (string-append #+guile2.0-ssh "/share/guile/site/"
+                                   (effective-version))
+                    %load-path)))
 
-            (define marionette
-              ;; Enable TCP forwarding of the guest's port 22.
-              (make-marionette (list #$command "-net"
-                                     "user,hostfwd=tcp::2222-:22")))
+          (use-modules (gnu build marionette)
+                       (srfi srfi-26)
+                       (srfi srfi-64)
+                       (ice-9 match)
+                       (ssh session)
+                       (ssh auth)
+                       (ssh channel)
+                       (ssh sftp))
 
-            (define (make-session-for-test)
-              "Make a session with predefined parameters for a test."
-              (make-session #:user "root"
-                            #:port 2222
-                            #:host "localhost"
-                            #:log-verbosity 'protocol))
+          (define marionette
+            ;; Enable TCP forwarding of the guest's port 22.
+            (make-marionette (list #$vm)))
 
-            (define (call-with-connected-session proc)
-              "Call the one-argument procedure PROC with a freshly created and
+          (define (make-session-for-test)
+            "Make a session with predefined parameters for a test."
+            (make-session #:user "root"
+                          #:port 2222
+                          #:host "localhost"
+                          #:log-verbosity 'protocol))
+
+          (define (call-with-connected-session proc)
+            "Call the one-argument procedure PROC with a freshly created and
 connected SSH session object, return the result of the procedure call.  The
 session is disconnected when the PROC is finished."
-              (let ((session (make-session-for-test)))
-                (dynamic-wind
-                  (lambda ()
-                    (let ((result (connect! session)))
-                      (unless (equal? result 'ok)
-                        (error "Could not connect to a server"
-                               session result))))
-                  (lambda () (proc session))
-                  (lambda () (disconnect! session)))))
+            (let ((session (make-session-for-test)))
+              (dynamic-wind
+                (lambda ()
+                  (let ((result (connect! session)))
+                    (unless (equal? result 'ok)
+                      (error "Could not connect to a server"
+                             session result))))
+                (lambda () (proc session))
+                (lambda () (disconnect! session)))))
 
-            (define (call-with-connected-session/auth proc)
-              "Make an authenticated session.  We should be able to connect as
+          (define (call-with-connected-session/auth proc)
+            "Make an authenticated session.  We should be able to connect as
 root with an empty password."
-              (call-with-connected-session
-               (lambda (session)
-                 ;; Try the simple authentication methods.  Dropbear requires
-                 ;; 'none' when there are no passwords, whereas OpenSSH accepts
-                 ;; 'password' with an empty password.
-                 (let loop ((methods (list (cut userauth-password! <> "")
-                                           (cut userauth-none! <>))))
-                   (match methods
-                     (()
-                      (error "all the authentication methods failed"))
-                     ((auth rest ...)
-                      (match (pk 'auth (auth session))
-                        ('success
-                         (proc session))
-                        ('denied
-                         (loop rest)))))))))
+            (call-with-connected-session
+             (lambda (session)
+               ;; Try the simple authentication methods.  Dropbear requires
+               ;; 'none' when there are no passwords, whereas OpenSSH accepts
+               ;; 'password' with an empty password.
+               (let loop ((methods (list (cut userauth-password! <> "")
+                                         (cut userauth-none! <>))))
+                 (match methods
+                   (()
+                    (error "all the authentication methods failed"))
+                   ((auth rest ...)
+                    (match (pk 'auth (auth session))
+                      ('success
+                       (proc session))
+                      ('denied
+                       (loop rest)))))))))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (mkdir #$output)
+          (chdir #$output)
 
-            (test-begin "ssh-daemon")
+          (test-begin "ssh-daemon")
 
-            ;; Wait for sshd to be up and running.
-            (test-eq "service running"
-              'running!
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'ssh-daemon)
-                  'running!)
-               marionette))
+          ;; Wait for sshd to be up and running.
+          (test-eq "service running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'ssh-daemon)
+                'running!)
+             marionette))
 
-            ;; Check sshd's PID file.
-            (test-equal "sshd PID"
-              (wait-for-file #$pid-file marionette)
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd)
-                               (srfi srfi-1))
+          ;; Check sshd's PID file.
+          (test-equal "sshd PID"
+            (wait-for-file #$pid-file marionette)
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
 
-                  (live-service-running
-                   (find (lambda (live)
-                           (memq 'ssh-daemon
-                                 (live-service-provision live)))
-                         (current-services))))
-               marionette))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'ssh-daemon
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
 
-            ;; Connect to the guest over SSH.  Make sure we can run a shell
-            ;; command there.
-            (test-equal "shell command"
-              'hello
-              (call-with-connected-session/auth
-               (lambda (session)
-                 ;; FIXME: 'get-server-public-key' segfaults.
-                 ;; (get-server-public-key session)
-                 (let ((channel (make-channel session)))
-                   (channel-open-session channel)
-                   (channel-request-exec channel "echo hello > /root/witness")
-                   (and (zero? (channel-get-exit-status channel))
-                        (wait-for-file "/root/witness" marionette))))))
+          ;; Connect to the guest over SSH.  Make sure we can run a shell
+          ;; command there.
+          (test-equal "shell command"
+            'hello
+            (call-with-connected-session/auth
+             (lambda (session)
+               ;; FIXME: 'get-server-public-key' segfaults.
+               ;; (get-server-public-key session)
+               (let ((channel (make-channel session)))
+                 (channel-open-session channel)
+                 (channel-request-exec channel "echo hello > /root/witness")
+                 (and (zero? (channel-get-exit-status channel))
+                      (wait-for-file "/root/witness" marionette))))))
 
-            ;; Connect to the guest over SFTP.  Make sure we can write and
-            ;; read a file there.
-            (unless #$sftp?
-              (test-skip 1))
-            (test-equal "SFTP file writing and reading"
-              'hello
-              (call-with-connected-session/auth
-               (lambda (session)
-                 (let ((sftp-session (make-sftp-session session))
-                       (witness "/root/sftp-witness"))
-                   (call-with-remote-output-file sftp-session witness
-                                                 (cut display "hello" <>))
-                   (call-with-remote-input-file sftp-session witness
-                                                read)))))
+          ;; Connect to the guest over SFTP.  Make sure we can write and
+          ;; read a file there.
+          (unless #$sftp?
+            (test-skip 1))
+          (test-equal "SFTP file writing and reading"
+            'hello
+            (call-with-connected-session/auth
+             (lambda (session)
+               (let ((sftp-session (make-sftp-session session))
+                     (witness "/root/sftp-witness"))
+                 (call-with-remote-output-file sftp-session witness
+                                               (cut display "hello" <>))
+                 (call-with-remote-input-file sftp-session witness
+                                              read)))))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
-    (gexp->derivation name test)))
+  (gexp->derivation name test))
 
 (define %test-openssh
   (system-test

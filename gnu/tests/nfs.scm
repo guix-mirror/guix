@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -55,75 +55,75 @@
 
 (define (run-nfs-test name socket)
   "Run a test of an OS running RPC-SERVICE, which should create SOCKET."
-  (mlet* %store-monad ((os ->   (marionette-operating-system
-                                 %base-os
-                                 #:imported-modules '((gnu services herd)
-                                                      (guix combinators))))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (gnu build marionette)
-                         (srfi srfi-64))
+  (define os
+    (marionette-operating-system
+     %base-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
 
-            (define marionette
-              (make-marionette (list #$command)))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64))
 
-            (define (wait-for-socket file)
-              ;; Wait until SOCKET  exists in the guest
-              (marionette-eval
-               `(let loop ((i 10))
-                  (cond ((and (file-exists? ,file)
-                              (eq? 'socket (stat:type (stat ,file))))
-                         #t)
-                        ((> i 0)
-                         (sleep 1)
-                         (loop (- i 1)))
-                        (else
-                         (error "Socket didn't show up: " ,file))))
-               marionette))
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (define (wait-for-socket file)
+            ;; Wait until SOCKET  exists in the guest
+            (marionette-eval
+             `(let loop ((i 10))
+                (cond ((and (file-exists? ,file)
+                            (eq? 'socket (stat:type (stat ,file))))
+                       #t)
+                      ((> i 0)
+                       (sleep 1)
+                       (loop (- i 1)))
+                      (else
+                       (error "Socket didn't show up: " ,file))))
+             marionette))
 
-            (test-begin "rpc-daemon")
+          (mkdir #$output)
+          (chdir #$output)
 
-            ;; Wait for the rpcbind daemon to be up and running.
-            (test-eq "RPC service running"
-              'running!
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'rpcbind-daemon)
-                  'running!)
-               marionette))
+          (test-begin "rpc-daemon")
 
-            ;; Check the socket file and that the service is still running.
-            (test-assert "RPC socket exists"
-              (and
-                (wait-for-socket #$socket)
-                (marionette-eval
-                 '(begin
-                    (use-modules (gnu services herd)
-                                 (srfi srfi-1))
+          ;; Wait for the rpcbind daemon to be up and running.
+          (test-eq "RPC service running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'rpcbind-daemon)
+                'running!)
+             marionette))
 
-                    (live-service-running
-                     (find (lambda (live)
-                             (memq 'rpcbind-daemon
-                                   (live-service-provision live)))
-                           (current-services))))
-                 marionette)))
+          ;; Check the socket file and that the service is still running.
+          (test-assert "RPC socket exists"
+            (and
+             (wait-for-socket #$socket)
+             (marionette-eval
+              '(begin
+                 (use-modules (gnu services herd)
+                              (srfi srfi-1))
 
-            (test-assert "Probe RPC daemon"
-              (marionette-eval
-               '(zero? (system* "rpcinfo" "-p"))
-               marionette))
+                 (live-service-running
+                  (find (lambda (live)
+                          (memq 'rpcbind-daemon
+                                (live-service-provision live)))
+                        (current-services))))
+              marionette)))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-assert "Probe RPC daemon"
+            (marionette-eval
+             '(zero? (system* "rpcinfo" "-p"))
+             marionette))
 
-    (gexp->derivation name test)))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation name test))
 
 (define %test-nfs
   (system-test
