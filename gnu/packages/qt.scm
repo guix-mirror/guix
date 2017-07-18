@@ -5,6 +5,8 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1373,6 +1375,45 @@ contain over 620 classes.")
               ("qt" ,qt-4)))
            (inputs
             `(("python" ,python-2)))))
+
+(define-public qscintilla
+  (package
+    (name "qscintilla")
+    (version "2.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/pyqt/QScintilla2/"
+                                  "QScintilla-" version "/QScintilla_gpl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0r7s7ndblv3jc0xig1y4l64b6mfr879cdv3zwdndn27rj6fqmycp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chdir "Qt4Qt5")
+               (substitute* "qscintilla.pro"
+                 (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                  (string-append out "/lib"))
+                 (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
+                  (string-append out "/include"))
+                 (("\\$\\$\\[QT_INSTALL_TRANSLATIONS\\]")
+                  (string-append out "/translations"))
+                 (("\\$\\$\\[QT_INSTALL_DATA\\]") out)
+                 (("\\$\\$\\[QT_HOST_DATA\\]") out))
+               (zero? (system* "qmake"))))))))
+    (native-inputs `(("qtbase" ,qtbase)))
+    (home-page "http://www.riverbankcomputing.co.uk/software/qscintilla/intro")
+    (synopsis "Qt port of the Scintilla C++ editor control")
+    (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
+editor control.  QScintilla includes features especially useful when editing
+and debugging source code.  These include support for syntax styling, error
+indicators, code completion and call tips.")
+    (license license:gpl3+)))
 
 (define-public qtkeychain
   (package
