@@ -76,11 +76,14 @@
                            (qemu (qemu-command)) (memory-size 512)
                            linux initrd
                            make-disk-image?
+                           single-file-output?
                            (disk-image-size (* 100 (expt 2 20)))
                            (disk-image-format "qcow2")
                            (references-graphs '()))
   "Run BUILDER, a Scheme file, into a VM running LINUX with INITRD, and copy
-the result to OUTPUT.
+the result to OUTPUT.  If SINGLE-FILE-OUTPUT? is true, copy a single file from
+/xchg to OUTPUT.  Otherwise, copy the contents of /xchg to a new directory
+OUTPUT.
 
 When MAKE-DISK-IMAGE? is true, OUTPUT will contain a VM image of
 DISK-IMAGE-SIZE bytes resulting from the execution of BUILDER, which may
@@ -137,8 +140,17 @@ the #:references-graphs parameter of 'derivation'."
 
   ;; When MAKE-DISK-IMAGE? is true, the image is in OUTPUT already.
   (unless make-disk-image?
-    (mkdir output)
-    (copy-recursively "xchg" output)))
+    (if single-file-output?
+        (let ((graph? (lambda (name stat)
+                        (member (basename name) references-graphs))))
+          (match (find-files "xchg" (negate graph?))
+            ((result)
+             (copy-file result output))
+            (x
+             (error "did not find a single result file" x))))
+        (begin
+          (mkdir output)
+          (copy-recursively "xchg" output)))))
 
 
 ;;;
@@ -356,7 +368,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
 (define* (make-iso9660-image grub config-file os-drv target
                              #:key (volume-id "GuixSD_image") (volume-uuid #f))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
-Grub configuration and OS-DRV as the stuff in it."
+GRUB configuration and OS-DRV as the stuff in it."
   (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
     (mkdir-p "/tmp/root/var/run")
     (mkdir-p "/tmp/root/run")

@@ -105,16 +105,19 @@
                                              (guile-for-build
                                               (%guile-for-build))
 
+                                             (single-file-output? #f)
                                              (make-disk-image? #f)
                                              (references-graphs #f)
                                              (memory-size 256)
                                              (disk-image-format "qcow2")
                                              (disk-image-size 'guess))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
-derivation).  In the virtual machine, EXP has access to all its inputs from the
-store; it should put its output files in the `/xchg' directory, which is
-copied to the derivation's output when the VM terminates.  The virtual machine
-runs with MEMORY-SIZE MiB of memory.
+derivation).  The virtual machine runs with MEMORY-SIZE MiB of memory.  In the
+virtual machine, EXP has access to all its inputs from the store; it should
+put its output file(s) in the '/xchg' directory.
+
+If SINGLE-FILE-OUTPUT? is true, copy a single file from '/xchg' to OUTPUT.
+Otherwise, copy the contents of /xchg to a new directory OUTPUT.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of type
 DISK-IMAGE-FORMAT (e.g., 'qcow2' or 'raw'), of DISK-IMAGE-SIZE bytes and
@@ -164,6 +167,7 @@ made available under the /xchg CIFS share."
                                 #:linux linux #:initrd initrd
                                 #:memory-size #$memory-size
                                 #:make-disk-image? #$make-disk-image?
+                                #:single-file-output? #$single-file-output?
                                 #:disk-image-format #$disk-image-format
                                 #:disk-image-size size
                                 #:references-graphs graphs)))))
@@ -219,6 +223,7 @@ INPUTS is a list of inputs (as for packages)."
            (reboot))))
    #:system system
    #:make-disk-image? #f
+   #:single-file-output? #t
    #:references-graphs inputs))
 
 (define* (qemu-image #:key
