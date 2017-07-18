@@ -579,8 +579,12 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                                                 (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
-     (system-disk-image os #:disk-image-size image-size
-                           #:file-system-type file-system-type))))
+     (system-disk-image os
+                        #:name (match file-system-type
+                                 ("iso9660" "image.iso")
+                                 (_         "disk-image"))
+                        #:disk-image-size image-size
+                        #:file-system-type file-system-type))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
