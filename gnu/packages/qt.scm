@@ -30,6 +30,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -1454,6 +1455,30 @@ and debugging source code.  These include support for syntax styling, error
 indicators, code completion and call tips.
 
 This package provides the Python bindings.")))
+
+;; PyQt only looks for modules in its own directory.  It ignores environment
+;; variables such as PYTHONPATH, so we need to build a union package to make
+;; it work.
+(define-public python-pyqt+qscintilla
+  (package (inherit python-pyqt)
+    (name "python-pyqt+qscintilla")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs
+     `(("python-pyqt" ,python-pyqt)
+       ("python-qscintilla" ,python-qscintilla)))
+    (synopsis "Union of PyQt and the Qscintilla extension")
+    (description
+     "This package contains the union of PyQt and the Qscintilla extension.")))
 
 (define-public qtkeychain
   (package
