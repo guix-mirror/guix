@@ -676,6 +676,29 @@ saving time.  Almost all of the Olson timezones are supported.")
 (define-public python2-pytz
   (package-with-python2 python-pytz))
 
+(define-public python-clyent
+  (package
+    (name "python-clyent")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "clyent" version))
+       (sha256
+        (base32
+         "1r9987qmy1pz3hq54160bapqsywpq14waw4w9x3ly8hmq7kpgfbj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/binstar/clyent")
+    (synopsis "Command line client library")
+    (description "Clyent is a Python command line utiliy library.  It is used
+by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
+    (license license:bsd-3)))
+
+(define-public python2-clyent
+  (package-with-python2 python-clyent))
+
 (define-public python-babel
   (package
     (name "python-babel")
