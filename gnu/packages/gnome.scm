@@ -3493,7 +3493,11 @@ for application developers.")
        ("nettle" ,nettle)
        ("vala" ,vala)))
     (arguments
-     `(#:phases
+     `(;; Disable automatic GStreamer plugin installation via PackageKit and
+       ;; all that.
+       #:configure-flags '("--disable-easy-codec-installation")
+
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'wrap-totem
