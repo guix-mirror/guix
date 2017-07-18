@@ -649,3 +649,52 @@ This package provides Conda as a library.")
 
 (define-public python2-conda
   (package-with-python2 python-conda))
+
+(define-public conda
+  (package (inherit python-conda)
+    (name "conda")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-conda)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; This test fails when run before installation.
+               (delete-file "tests/test_activate.py")
+
+               ;; Fix broken defaults
+               (substitute* "conda/base/context.py"
+                 (("return sys.prefix")
+                  (string-append "return \"" (assoc-ref outputs "out") "\""))
+                 (("return (prefix_is_writable\\(self.root_prefix\\))" _ match)
+                  (string-append "return False if self.root_prefix == self.conda_prefix else "
+                                 match)))
+
+               ;; The util/setup-testing.py is used to build conda in
+               ;; application form, rather than the default, library form.
+               ;; With this, we are able to run commands like `conda --help`
+               ;; directly on the command line
+               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (target (string-append out "/lib/python"
+                                             ((@@ (guix build python-build-system)
+                                                  get-python-version)
+                                              (assoc-ref inputs "python"))
+                                             "/site-packages/")))
+                 ;; The installer aborts if the target directory is not on
+                 ;; PYTHONPATH.
+                 (setenv "PYTHONPATH"
+                         (string-append target ":" (getenv "PYTHONPATH")))
+
+                 ;; And it aborts if the directory doesn't exist.
+                 (mkdir-p target)
+                 (zero? (system* "python" "utils/setup-testing.py" "install"
+                                 (string-append "--prefix=" out))))))))))
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.")))
