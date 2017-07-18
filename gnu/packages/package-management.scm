@@ -53,6 +53,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages serialization)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -572,3 +573,79 @@ environments.")
 
 (define-public python2-anaconda-client
   (package-with-python2 python-anaconda-client))
+
+(define-public python-conda
+  (package
+    (name "python-conda")
+    (version "4.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/conda/conda/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jq8hyrc5npb5sf4vw6s6by4602yj8f79vzpbwdfgpkn02nfk1dv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'create-version-file
+           (lambda _
+             (with-output-to-file "conda/.version"
+               (lambda () (display ,version)))
+             #t))
+         (add-before 'check 'remove-failing-tests
+           (lambda _
+             ;; These tests require internet/network access
+             (let ((network-tests '("test_cli.py"
+                                    "test_create.py"
+                                    "test_export.py"
+                                    "test_fetch.py"
+                                    "test_history.py"
+                                    "test_info.py"
+                                    "test_install.py"
+                                    "test_priority.py"
+                                    "conda_env/test_cli.py"
+                                    "conda_env/test_create.py"
+                                    "conda_env/specs/test_notebook.py"
+                                    "conda_env/utils/test_notebooks.py"
+                                    "core/test_index.py"
+                                    "core/test_repodata.py")))
+               (with-directory-excursion "tests"
+                 (for-each delete-file network-tests)
+
+                 ;; FIXME: This test creates a file, then deletes it and tests
+                 ;; that the file was deleted.  For some reason it fails when
+                 ;; building with guix, but does not when you run it in the
+                 ;; directory left when you build with the --keep-failed
+                 ;; option
+                 (delete-file "gateways/disk/test_delete.py")
+                 #t))))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-pycosat" ,python-pycosat)
+       ("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-anaconda-client" ,python-anaconda-client)))
+    (home-page "https://github.com/conda/conda")
+    (synopsis "Cross-platform, OS-agnostic, system-level binary package manager")
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.
+
+This package provides Conda as a library.")
+    (license bsd-3)))
+
+(define-public python2-conda
+  (package-with-python2 python-conda))
