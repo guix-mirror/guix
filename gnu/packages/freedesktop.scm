@@ -371,13 +371,15 @@ Python.")
      `(#:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         ;; Remove record shapes to workaround graphviz 2.40.1 problems
+         ;; Remove record shapes to workaround graphviz 2.40.1 problems.
          ;; http://www.graphviz.org/content/i-havent-been-able-render-these-files-graphviz-226
-         ;; This will likely be fixed upstream in the next release
+         ;; This will likely be fixed upstream in the next release.
+         ;; https://lists.freedesktop.org/archives/wayland-devel/2017-June/034218.html
          (add-before 'build 'fix-graphviz
            (lambda _
              (substitute* "doc/doxygen/dot/x-architecture.gv"
-               (("Mrecord") "none")))))))
+               (("Mrecord") "none"))
+             #t)))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
