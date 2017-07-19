@@ -1698,7 +1698,11 @@ dictionary and suggesting spelling corrections.")
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
-                       ("gettext" ,gettext-minimal)))
+                       ("gettext" ,gettext-minimal)
+
+                       ;; Bash with loadable module support, for the test
+                       ;; suite.
+                       ("bash-full" ,bash)))
       (inputs `(("guile" ,guile-2.0)
                 ("bash:include" ,bash "include")))
       (synopsis "Extend Bash using Guile")
