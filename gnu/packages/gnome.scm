@@ -3886,6 +3886,67 @@ the same backend as XSANE uses. This means that all existing scanners will
 work and the interface is well tested.")
     (license license:gpl3+)))
 
+(define-public eolie
+  (package
+    (name "eolie")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/gnumdk/eolie/"
+                                  "releases/download/"
+                                  (version-major+minor version)
+                                  "/eolie-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lb3rd2as12vq24fcf9nmlhggf8vka3kli2i92i8iylwi7nq5n2a"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'wrap-more
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    ;; These libraries must be on LD_LIBRARY_PATH.
+                    (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
+                            "atk" "gtk+" "gsettings-desktop-schemas"
+                            "gobject-introspection"))
+                    (path (string-join
+                           (map (lambda (lib)
+                                  (string-append (assoc-ref inputs lib) "/lib"))
+                                libs)
+                           ":")))
+               (wrap-program (string-append out "/bin/eolie")
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("glib-networking" ,glib-networking)
+       ("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("libsecret" ,libsecret)
+       ("gtkspell3" ,gtkspell3)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://github.com/gnumdk/eolie/")
+    (synopsis "Web browser for GNOME")
+    (description
+     "Eolie is a new web browser for GNOME.  It features Firefox sync support,
+a secret password store, an adblocker, and a modern UI.")
+    (license license:gpl3+)))
+
 (define-public epiphany
   (package
     (name "epiphany")
