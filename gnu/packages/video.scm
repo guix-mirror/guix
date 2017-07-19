@@ -2146,7 +2146,7 @@ of modern, widely supported codecs.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cisco/"
@@ -2154,7 +2154,7 @@ of modern, widely supported codecs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ix2fhk62i4q4kbnkl0gfk4x53vxqavsn0pck1pashr566zhglv5"))))
+                "0gv571bqkxk7ic64dmavs1q8nr7p59mcf4ibqp4lc070gn6w61ww"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
