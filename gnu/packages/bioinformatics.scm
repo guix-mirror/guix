@@ -7563,7 +7563,7 @@ Stephens (1990).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
+                "0479qx4bapgcp5chj10a63chk0s28x9cx1gamz3f5m3yd7jzwcf2"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
     (build-system r-build-system)
