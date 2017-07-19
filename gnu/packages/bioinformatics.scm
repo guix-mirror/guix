@@ -5318,6 +5318,8 @@ and operational taxonomic unit (OTU) picking of next generation
 sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
 allows for fast and sensitive analyses of nucleotide sequences.  The main
 application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
+    ;; The source includes x86 specific code
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:lgpl3)))
 
 (define-public star
