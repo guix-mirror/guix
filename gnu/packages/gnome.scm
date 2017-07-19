@@ -3495,7 +3495,11 @@ for application developers.")
     (arguments
      `(;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
-       #:configure-flags '("--disable-easy-codec-installation")
+       #:configure-flags '("--disable-easy-codec-installation"
+
+                           ;; Do not build .a files for the plugins, it's
+                           ;; completely useless.  This saves 2 MiB.
+                           "--disable-static")
 
        #:phases
        (modify-phases %standard-phases
