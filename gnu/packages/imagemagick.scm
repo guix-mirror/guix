@@ -25,7 +25,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix download)
-  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
@@ -162,70 +161,54 @@ script.")
     (license (package-license imagemagick))))
 
 (define-public graphicsmagick
-  (let ((changeset "6156b4c2992d855ece6079653b3b93c3229fc4b8") ; fix CVE-2017-6335
-        (revision "3"))
-    (package
-      (name "graphicsmagick")
-      (version (string-append "1.3.25-" revision "."
-                              (string-take changeset 7)))
-      (source (origin
-                (method hg-fetch)
-                (uri (hg-reference
-                      (url "http://hg.code.sf.net/p/graphicsmagick/code")
-                      (changeset changeset)))
-                (file-name (string-append name "-" version "-checkout"))
-                ;;(method url-fetch)
-                ;;(uri (string-append "ftp://ftp.graphicsmagick.org/pub/"
-                ;;                    "GraphicsMagick/" (version-major+minor version)
-                ;;                    "/GraphicsMagick-" version ".tar.xz"))
-                (sha256
-                 (base32
-                  "08yfsn8mrqkwpax43vv1crfr55rcf004wwpzsinr5c6m0asqr08b"))
-                (modules '((guix build utils)))
-                (snippet
-                  ;; Remove bundled software. This reduces the size of the built
-                  ;; source checkout from 177 MiB to 49 MiB. This should not be
-                  ;; necessary when using the GraphicsMagick release tarball,
-                  ;; because these files are not distributed there.
-                  '(for-each delete-file-recursively '("bzlib" "dcraw" "hp2xx"
-                                                       "jbig" "jp2" "jpeg"
-                                                       "lcms" "libxml" "png"
-                                                       "ralcgm" "tiff" "ttf"
-                                                       "webp" "wmf" "xlib"
-                                                       "zlib")))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:configure-flags
-         (list "--with-frozenpaths"
-               "--enable-shared=yes"
-               "--with-x=yes"
-               "--with-quantum-depth=16" ; required by Octave
-               "--enable-quantum-library-names"
-               (string-append "--with-gs-font-dir="
-                              (assoc-ref %build-inputs "gs-fonts")
-                              "/share/fonts/type1/ghostscript"))))
-      (inputs
-       `(("graphviz" ,graphviz)
-         ("ghostscript" ,ghostscript)
-         ("gs-fonts" ,gs-fonts)
-         ("lcms" ,lcms)
-         ("libx11" ,libx11)
-         ("libxml2" ,libxml2)
-         ("libtiff" ,libtiff)
-         ("libpng" ,libpng)
-         ("libjpeg" ,libjpeg)
-         ("freetype" ,freetype)
-         ("bzip2" ,bzip2)
-         ("xz" ,xz)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (outputs '("out"                  ; 13 MiB
-                 "doc"))                ; ~7 MiB
-      (home-page "http://www.graphicsmagick.org")
-      (synopsis "Create, edit, compose, or convert bitmap images")
-      (description
-       "GraphicsMagick provides a comprehensive collection of utilities,
+  (package
+    (name "graphicsmagick")
+    (version "1.3.26")
+    (source (origin
+              (method url-fetch)
+              (uri
+                (list
+                  (string-append "mirror://sourceforge/" name "/" name
+                                 "/" version "/GraphicsMagick-" version ".tar.xz")
+                  (string-append "ftp://ftp.graphicsmagick.org/pub/"
+                                 "GraphicsMagick/" (version-major+minor version)
+                                 "/GraphicsMagick-" version ".tar.xz")))
+              (sha256
+               (base32
+                "122zgs96dqrys62mnh8x5yvfff6km4d3yrnvaxzg3mg5sprib87v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-frozenpaths"
+             "--enable-shared=yes"
+             "--with-x=yes"
+             "--with-quantum-depth=16" ; required by Octave
+             "--enable-quantum-library-names"
+             (string-append "--with-gs-font-dir="
+                            (assoc-ref %build-inputs "gs-fonts")
+                            "/share/fonts/type1/ghostscript"))))
+    (inputs
+     `(("graphviz" ,graphviz)
+       ("ghostscript" ,ghostscript)
+       ("gs-fonts" ,gs-fonts)
+       ("lcms" ,lcms)
+       ("libx11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libtiff" ,libtiff)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg)
+       ("freetype" ,freetype)
+       ("bzip2" ,bzip2)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (outputs '("out"                  ; 13 MiB
+               "doc"))                ; ~7 MiB
+    (home-page "http://www.graphicsmagick.org")
+    (synopsis "Create, edit, compose, or convert bitmap images")
+    (description
+     "GraphicsMagick provides a comprehensive collection of utilities,
 programming interfaces, and GUIs, to support file format conversion, image
 processing, and 2D vector rendering.")
-      (license license:expat))))
+    (license license:expat)))
