@@ -163,6 +163,7 @@ the #:references-graphs parameter of 'derivation'."
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
   (label       partition-label (default #f))
+  (uuid        partition-uuid (default #f))
   (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
 
@@ -236,22 +237,26 @@ actual /dev name based on DEVICE."
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
 (define* (create-ext-file-system partition type
-                                 #:key label)
+                                 #:key label uuid)
   "Create an ext-family filesystem of TYPE on PARTITION.  If LABEL is true,
-use that as the volume name."
+use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition...\n" type)
   (unless (zero? (apply system* (string-append "mkfs." type)
                         "-F" partition
-                        (if label
-                            `("-L" ,label)
-                            '())))
+                        `(,@(if label
+                                `("-L" ,label)
+                                '())
+                          ,@(if uuid
+                                `("-U" ,(uuid->string uuid))
+                                '()))))
     (error "failed to create partition")))
 
 (define* (create-fat-file-system partition
-                                 #:key label)
+                                 #:key label uuid)
   "Create a FAT filesystem on PARTITION.  The number of File Allocation Tables
 will be determined based on filesystem size.  If LABEL is true, use that as the
 volume name."
+  ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
   (unless (zero? (apply system* "mkfs.fat" partition
                         (if label
@@ -260,13 +265,13 @@ volume name."
     (error "failed to create FAT partition")))
 
 (define* (format-partition partition type
-                           #:key label)
+                           #:key label uuid)
   "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
 volume name."
   (cond ((string-prefix? "ext" type)
-         (create-ext-file-system partition type #:label label))
+         (create-ext-file-system partition type #:label label #:uuid uuid))
         ((or (string-prefix? "fat" type) (string= "vfat" type))
-         (create-fat-file-system partition #:label label))
+         (create-fat-file-system partition #:label label #:uuid uuid))
         (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
@@ -275,7 +280,8 @@ it, run its initializer, and unmount it."
   (let ((target "/fs"))
    (format-partition (partition-device partition)
                      (partition-file-system partition)
-                     #:label (partition-label partition))
+                     #:label (partition-label partition)
+                     #:uuid (partition-uuid partition))
    (mkdir-p target)
    (mount (partition-device partition) target
           (partition-file-system partition))
