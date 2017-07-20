@@ -2418,8 +2418,8 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
     (synopsis "Miscellaneous tools by Mark Wooding")
     (description
      "This collection of tools includes: @code{atsupport} for short commands
-starting with @code{@}, macros to sanitize the OT1 encoding of the @code{cmtt}
-fonts; a @code{doafter} command; improved @code{footnote} support;
+starting with @code{@@}, macros to sanitize the OT1 encoding of the
+@code{cmtt} fonts; a @code{doafter} command; improved @code{footnote} support;
 @code{mathenv} for various alignment in maths; list handling; @code{mdwmath}
 which adds some minor changes to LaTeX maths; a rewrite of LaTeX's tabular and
 array environments; verbatim handling; and syntax diagrams.")
