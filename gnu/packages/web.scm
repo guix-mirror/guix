@@ -2229,14 +2229,14 @@ kinds of HTML parsing operations.")
 (define-public perl-html-template
   (package
     (name "perl-html-template")
-    (version "2.95")
+    (version "2.97")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/W/WO/WONKO/"
+              (uri (string-append "mirror://cpan/authors/id/S/SA/SAMTREGAR/"
                                   "HTML-Template-" version ".tar.gz"))
               (sha256
                (base32
-                "07ahpfgidxsw2yb7y8i7bbr8s64aq6qgq832h9jswmksxbd0l43q"))))
+                "17qjw8swj2q4b1ic285pndgrkmvpsqw0j68nhqzpk1daydhsyiv5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
