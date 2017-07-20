@@ -691,6 +691,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
+  %D%/packages/patches/heimdal-CVE-2017-6594.patch		\
+  %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
   %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\

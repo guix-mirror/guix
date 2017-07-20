@@ -144,6 +144,8 @@ secure manner through client-server mutual authentication via tickets.")
               (sha256
                (base32
                 "19gypf9vzfrs2bw231qljfl4cqc1riyg0ai0xmm1nd1wngnpphma"))
+              (patches (search-patches "heimdal-CVE-2017-6594.patch"
+                                       "heimdal-CVE-2017-11103.patch"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "configure"
