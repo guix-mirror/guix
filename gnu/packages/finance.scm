@@ -70,7 +70,8 @@
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
-       ("qtbase" ,qtbase)))
+       ;; TODO Build with the modular Qt.
+       ("qt" ,qt)))
     (arguments
      `(#:configure-flags
         (list
