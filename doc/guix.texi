@@ -2315,6 +2315,22 @@ package builds referenced by those generations can be reclaimed.  This
 is achieved by running @code{guix package --delete-generations}
 (@pxref{Invoking guix package}).
 
+Our recommendation is to run a garbage collection periodically, or when
+you are short on disk space.  For instance, to guarantee that at least
+5@tie{}GB are available on your disk, simply run:
+
+@example
+guix gc -F 5G
+@end example
+
+It is perfectly safe to run as a non-interactive periodic job
+(@pxref{Scheduled Job Execution}, for how to set up such a job on
+GuixSD).  Running @command{guix gc} with no arguments will collect as
+much garbage as it can, but that is often inconvenient: you may find
+yourself having to rebuild or re-download software that is ``dead'' from
+the GC viewpoint but that is necessary to build other pieces of
+software---e.g., the compiler tool chain.
+
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
 files (the @code{--delete} option), to print garbage-collector
