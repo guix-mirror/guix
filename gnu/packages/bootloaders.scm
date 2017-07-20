@@ -183,6 +183,39 @@ menu to select one of the installed operating systems.")
                                        "/bin/mcopy\"")))
                      #t))))))))))
 
+;; Because grub searches hardcoded paths it's easiest to just build grub
+;; again to make it find both grub-pc and grub-efi.  There is a command
+;; line argument which allows you to specify ONE platform - but
+;; grub-mkrescue will use multiple platforms if they are available
+;; in the installation directory (without command line argument).
+(define-public grub-hybrid
+  (package
+    (inherit grub-efi)
+    (name "grub-hybrid")
+    (synopsis "GRand Unified Boot loader (hybrid version)")
+    (inputs
+     `(("grub" ,grub)
+       ,@(package-inputs grub-efi)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments grub-efi)
+       ((#:modules modules `((guix build utils) (guix build gnu-build-system)))
+        `((ice-9 ftw) ,@modules))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-non-efi
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((input-dir (string-append (assoc-ref inputs "grub")
+                                               "/lib/grub"))
+                     (output-dir (string-append (assoc-ref outputs "out")
+                                                "/lib/grub")))
+                 (for-each
+                  (lambda (basename)
+                    (if (not (string-prefix? "." basename))
+                        (symlink (string-append input-dir "/" basename)
+                                 (string-append output-dir "/" basename))))
+                  (scandir input-dir))
+                 #t)))))))))
+
 (define-public syslinux
   (let ((commit "bb41e935cc83c6242de24d2271e067d76af3585c"))
     (package
