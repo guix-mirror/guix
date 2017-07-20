@@ -55,6 +55,7 @@
 
             grub-bootloader
             grub-efi-bootloader
+            grub-mkrescue-bootloader
 
             grub-configuration))
 
@@ -409,6 +410,11 @@ submenu \"GNU system, old configurations...\" {~%")
    (inherit grub-bootloader)
    (name 'grub-efi)
    (package grub-efi)))
+
+(define* grub-mkrescue-bootloader
+  (bootloader
+   (inherit grub-efi-bootloader)
+   (package grub-hybrid)))
 
 
 ;;;

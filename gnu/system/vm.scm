@@ -49,6 +49,7 @@
   #:use-module (gnu packages admin)
 
   #:use-module (gnu bootloader)
+  #:use-module ((gnu bootloader grub) #:select (grub-mkrescue-bootloader))
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
@@ -368,6 +369,12 @@ to USB sticks meant to be read-only."
                         (apply base-initrd file-systems
                                #:volatile-root? #t
                                rest)))
+
+              (bootloader (if (string=? "iso9660" file-system-type)
+                              (bootloader-configuration
+                                (inherit (operating-system-bootloader os))
+                                (bootloader grub-mkrescue-bootloader))
+                              (operating-system-bootloader os)))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system
