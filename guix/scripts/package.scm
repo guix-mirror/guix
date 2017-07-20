@@ -713,9 +713,12 @@ processed, #f otherwise."
                (raise (condition (&profile-not-found-error
                                   (profile profile)))))
               ((string-null? pattern)
-               (list-generation display-profile-content
-                                (car (profile-generations profile)))
-               (diff-profiles profile (profile-generations profile)))
+               (match (profile-generations profile)
+                 (()
+                  #t)
+                 ((first rest ...)
+                  (list-generation display-profile-content first)
+                  (diff-profiles profile (cons first rest)))))
               ((matching-generations pattern profile)
                =>
                (lambda (numbers)
