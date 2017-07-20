@@ -269,8 +269,9 @@ vicinity of DIRECTORY."
           (string-append directory "/" file))
          (else file))))
 
-(define-syntax-rule (local-file file rest ...)
-  "Return an object representing local file FILE to add to the store; this
+(define-syntax local-file
+  (lambda (s)
+    "Return an object representing local file FILE to add to the store; this
 object can be used in a gexp.  If FILE is a relative file name, it is looked
 up relative to the source file where this form appears.  FILE will be added to
 the store under NAME--by default the base name of FILE.
@@ -283,10 +284,23 @@ When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
 where FILE is the entry's absolute file name and STAT is the result of
 'lstat'; exclude entries for which SELECT? does not return true.
 
-This is the declarative counterpart of the 'interned-file' monadic procedure."
-  (%local-file file
-               (delay (absolute-file-name file (current-source-directory)))
-               rest ...))
+This is the declarative counterpart of the 'interned-file' monadic procedure.
+It is implemented as a macro to capture the current source directory where it
+appears."
+    (syntax-case s ()
+      ((_ file rest ...)
+       #'(%local-file file
+                      (delay (absolute-file-name file (current-source-directory)))
+                      rest ...))
+      ((_)
+       #'(syntax-error "missing file name"))
+      (id
+       (identifier? #'id)
+       ;; XXX: We could return #'(lambda (file . rest) ...).  However,
+       ;; (syntax-source #'id) is #f so (current-source-directory) would not
+       ;; work.  Thus, simply forbid this form.
+       #'(syntax-error
+          "'local-file' is a macro and cannot be used like this")))))
 
 (define (local-file-absolute-file-name file)
   "Return the absolute file name for FILE, a <local-file> instance.  A
