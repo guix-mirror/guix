@@ -1846,10 +1846,10 @@ on everypage.")
     (home-page "http://www.ctan.org/pkg/environ")
     (synopsis "New interface for environments in LaTeX")
     (description
-     "This package provides the @code{\\collect@body} command (as in
-@code{amsmath}), as well as a @code{\\long} version @code{\\Collect@Body}, for
-collecting the body text of an environment.  These commands are used to define
-a new author interface to creating new environments.")
+     "This package provides the @code{\\collect@@body} command (as in
+@code{amsmath}), as well as a @code{\\long} version @code{\\Collect@@Body},
+for collecting the body text of an environment.  These commands are used to
+define a new author interface to creating new environments.")
     (license license:lppl)))
 
 (define-public texlive-latex-eqparbox
