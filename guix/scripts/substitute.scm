@@ -601,13 +601,14 @@ if file doesn't exist, and the narinfo otherwise."
 (define (fetch-narinfos url paths)
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
-    (let ((done 0))
+    (let ((done 0)
+          (total (length paths)))
       (lambda ()
         (display #\cr (current-error-port))
         (force-output (current-error-port))
         (format (current-error-port)
                 (G_ "updating list of substitutes from '~a'... ~5,1f%")
-                url (* 100. (/ done (length paths))))
+                url (* 100. (/ done total)))
         (set! done (+ 1 done)))))
 
   (define hash-part->path
