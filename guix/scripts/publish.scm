@@ -417,7 +417,8 @@ requested using POOL."
                      (display (call-with-input-file cached
                                 read-string)
                               port))))
-          ((valid-path? store item)
+          ((and (file-exists? item)        ;cheaper than the 'valid-path?' RPC
+                (valid-path? store item))
            ;; Nothing in cache: bake the narinfo and nar in the background and
            ;; return 404.
            (eventually pool
