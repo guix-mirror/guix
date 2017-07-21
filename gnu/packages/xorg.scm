@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -2703,6 +2703,53 @@ X server.")
      "xf86-video-fbdev is a video driver for the Xorg X server for
 framebuffer device.")
     (license license:x11)))
+
+
+(define-public xf86-video-freedreno
+  (let ((commit "ccba8f89995de7d5e1b216e580b789c4cda05035"))
+    (package
+      (name "xf86-video-freedreno")
+      (version (string-append "1.4.0-1-" (string-take commit 7)))
+      (source
+       (origin
+         ;; there's no current tarball
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append "https://anongit.freedesktop.org/git/xorg/"
+                                   "driver/xf86-video-freedreno.git"))
+               (commit commit)))
+         (sha256
+          (base32
+           "0bl9m1agi793lcddv94j8afzw1xc9w810q91mbq0n3dscbbcr9nh"))
+         (file-name (string-append name "-" version))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("libdrm" ,libdrm)
+         ("mesa" ,mesa)
+         ("udev" ,eudev)
+         ("xorg-server" ,xorg-server)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+       ;; This driver is only supported on ARM systems.
+      (supported-systems '("armhf-linux" "aarch64-linux"))
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--with-xorg-conf-dir="
+                              (assoc-ref %outputs "out")
+                              "/share/X11/xorg.conf.d"))
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "https://www.x.org/wiki/")
+      (synopsis "Adreno video driver for X server")
+      (description
+       "xf86-video-freedreno is a 2D graphics driver for the Xorg X server.
+It supports a variety of Adreno graphics chipsets.")
+      (license license:x11))))
 
 
 (define-public xf86-video-geode
