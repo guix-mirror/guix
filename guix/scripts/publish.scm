@@ -565,13 +565,13 @@ has the given HASH of type ALGO."
                                " speaking.  Welcome!")))
                          port)))))
 
-(define extract-narinfo-hash
-  (let ((regexp (make-regexp "^([a-df-np-sv-z0-9]{32}).narinfo$")))
-    (lambda (str)
-      "Return the hash within the narinfo resource string STR, or false if STR
+(define (extract-narinfo-hash str)
+  "Return the hash within the narinfo resource string STR, or false if STR
 is invalid."
-      (and=> (regexp-exec regexp str)
-             (cut match:substring <> 1)))))
+  (and (string-suffix? ".narinfo" str)
+       (let ((base (string-drop-right str 8)))
+         (and (string-every %nix-base32-charset base)
+              base))))
 
 (define (get-request? request)
   "Return #t if REQUEST uses the GET method."
