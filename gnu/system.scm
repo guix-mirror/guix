@@ -392,6 +392,7 @@ from the initrd."
   (cond
    ((string-prefix? "arm" (%current-system)) "zImage")
    ((string-prefix? "mips" (%current-system)) "vmlinuz")
+   ((string-prefix? "aarch64" (%current-system)) "Image")
    (else "bzImage")))
 
 (define (operating-system-kernel-file os)

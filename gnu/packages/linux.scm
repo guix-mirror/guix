@@ -340,7 +340,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
-                         (find-files "." "^(\\.config|bzImage|zImage|vmlinuz|System\\.map)$"))
+                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
                ;; Install device tree files
                (for-each (lambda (file) (install-file file dtbdir))
                          (find-files "." "\\.dtb$"))
