@@ -1543,7 +1543,7 @@ IcedTea build harness.")
       (license license:gpl2+))))
 
 (define-public icedtea-8
-  (let* ((version "3.4.0")
+  (let* ((version "3.5.0")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1552,7 +1552,7 @@ IcedTea build harness.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea-7)
-      (version "3.4.0")
+      (version "3.5.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -1560,7 +1560,7 @@ IcedTea build harness.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "16if055973y6yw7n5gczp8iksvc31cy4p5by9lkbniadqj4z665m"))
+                  "1dfa7ing61i73m6wfx2kx59q44npqdiy7cd66xmslyy0xh09xa4s"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -1632,34 +1632,34 @@ IcedTea build harness.")
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
           ,(drop "openjdk"
-                 "0va5i3zr8y8ncv914rz914jda9d88gq0viww3smdqnln8n78rszi"))
+                 "0di7gmyis1p6rpksmff1q21ck85i51sqcl9awqyvg7xiwggq0wsm"))
          ("aarch32-drop"
           ,(drop "aarch32"
                  "0cway5a5hcfyh4pzl9zz5xr7lil4gsliy6r5iqbaasd2d9alvqiq"))
          ("corba-drop"
           ,(drop "corba"
-                 "1l9zr97a3kq00bj4i8wcdsjlz3xlfldxd8zhkcxikinwd5n0n8a7"))
+                 "1xk64bsdxfc66g61d8k6xrhqj8rc56vzrlxx6s23gkr45604bl8x"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0lqxrsr3xlpwm2na6f2rpl7znrz34dkb9dg3zjmympyjy4kqljn7"))
+                 "1iw9xa4s5kxijdqpf0ih4x6g0lw142yy11vrzfmz6n1y4b0ic7iw"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "1b3chckk10dzrpa7cswmcf1jvryaiwkj8lihfqjr5j7l668jwr4h"))
+                 "14p2l4j985wh5cdd4hfmm18gb5wmry73yiysdx9pg3aqpkw9qms7"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "15lq0k2jv2x26x6vqkbljdcxk35i3b60pcsw3j1sdfmlk1xy6wgc"))
+                 "1qwmb80vicn7jd801f3j23lyil7327ks54d3s87czwv8h108m40r"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "17xkb8ahkg04ri0bp5wblcp1a2lp8j7c83ic5zdbggvgm339k5s8"))
+                 "175pi2privhcvn9sbam5mhhgcvicfqbgldiw25fi5g80fqkkrza9"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0xpx8ykaq0ki6r0dl3dzca2xgp1p82z8mvsxcs2931ib667ncgcp"))
+                 "1qdyn02p4ssl3p7z9aadhzl9qdam2q7pvwddz2jkyvajcrxb0mpi"))
          ("nashorn-drop"
           ,(drop "nashorn"
-                 "1bnn4731lhlvg8axy4mjxgvh646yl22hp52wipx8cfca4vkn2f1z"))
+                 "0kzmpf5b9kwhrvnwn7m20q3dzz8s82jjvbac84606x3ff97xk5gr"))
          ("shenandoah-drop"
           ,(drop "shenandoah"
-                 "0fpxl8zlii1hpm777r875ys2cr5ih3gb6p1nm9jfa6krjrccrxv1"))
+                 "0kjc5m5jj2bzyy1vj1s59khv5xjfnkxy18z0g4bdb1kb3g21c5wi"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
