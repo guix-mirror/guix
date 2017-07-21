@@ -385,6 +385,24 @@ at a time."
                     (string-suffix? ".narinfo" file)))
       '()))
 
+(define (nar-expiration-time ttl)
+  "Return the narinfo expiration time (in seconds since the Epoch).  The
+expiration time is +inf.0 when passed an item that is still in the store; in
+other cases, it is the last-access time of the item plus TTL.
+
+This policy allows us to keep cached nars that correspond to valid store
+items.  Failing that, we could eventually have to recompute them and return
+404 in the meantime."
+  (let ((expiration-time (file-expiration-time ttl)))
+    (lambda (file)
+      (let ((item (string-append (%store-prefix) "/"
+                                 (basename file ".narinfo"))))
+        ;; Note: We don't need to use 'valid-path?' here because FILE would
+        ;; not exist if ITEM were not valid in the first place.
+        (if (file-exists? item)
+            +inf.0
+            (expiration-time file))))))
+
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compression %no-compression)
                                 (nar-path "nar")
@@ -436,7 +454,7 @@ requested using POOL."
                  (maybe-remove-expired-cache-entries cache
                                                      narinfo-files
                                                      #:entry-expiration
-                                                     (file-expiration-time ttl)
+                                                     (nar-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
            (not-found request

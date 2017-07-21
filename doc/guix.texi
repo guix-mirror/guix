@@ -6960,7 +6960,8 @@ guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
 
 Additionally, when @option{--cache} is used, cached entries that have
-not been accessed for @var{ttl} may be deleted.
+not been accessed for @var{ttl} and that no longer have a corresponding
+item in the store, may be deleted.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files
