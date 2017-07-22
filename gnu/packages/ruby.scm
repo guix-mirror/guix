@@ -1913,13 +1913,13 @@ to reproduce user environments.")
 
 (define-public ruby-mini-portile-2
   (package (inherit ruby-mini-portile)
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mini_portile2" version))
               (sha256
                (base32
-                "1y25adxb1hgg1wb2rn20g3vl07qziq6fz364jc5694611zz863hb"))))))
+                "0g5bpgy08q0nc0anisg3yvwc1gc3inl854fcrg48wvg7glqd6dpm"))))))
 
 (define-public ruby-nokogiri
   (package
