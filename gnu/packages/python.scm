@@ -4639,6 +4639,35 @@ multivalue dictionary that retains the order of insertions and deletions.")
 (define-public python2-furl
   (package-with-python2 python-furl))
 
+(define-public python-flaky
+  (package
+    (name "python-flaky")
+    (version "3.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flaky" version))
+              (sha256
+               (base32
+                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
+     '(#:tests? #f))
+    (home-page "https://github.com/box/flaky")
+    (synopsis "Automatically rerun flaky tests")
+    (description
+     "Flaky is a plugin for @code{nose} or @code{py.test} that automatically
+reruns flaky tests.
+
+Ideally, tests reliably pass or fail, but sometimes test fixtures must rely
+on components that aren't 100% reliable.  With flaky, instead of removing
+those tests or marking them to @code{@skip}, they can be automatically
+retried.")
+    (license license:asl2.0)))
+
+(define-public python2-flaky
+  (package-with-python2 python-flaky))
+
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
