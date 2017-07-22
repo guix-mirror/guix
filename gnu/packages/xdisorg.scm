@@ -452,7 +452,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.45")
+    (version "6.3.47")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -461,12 +461,13 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lzyjcg6yff1vzlsda45i57khajp56yrmcjfa5faw3i60fnqqiy7"))))
+                "1kjivsq4c7dr7ggp44k09xm97i9chg8czvachqrfnv6fiqvwys0i"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("glm" ,glm)
+     `(("glew" ,glew)
+       ("glm" ,glm)
        ("icu4c" ,icu4c)
        ("libxext" ,libxext)
        ("libxrender" ,libxrender)
