@@ -4140,6 +4140,51 @@ mode-line.")
 abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
+(define-public emacs-yasnippet-snippets
+  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
+        (revision "1"))
+    (package
+      (name "emacs-yasnippet-snippets")
+      (version (string-append "1-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((ice-9 ftw)
+                    (ice-9 regex)
+                    (guix build utils))
+         #:builder
+         (begin
+           (use-modules (ice-9 ftw)
+                        (ice-9 regex)
+                        (guix build utils))
+           (with-directory-excursion (assoc-ref %build-inputs "source")
+             (for-each (lambda (dir)
+                         (copy-recursively
+                          dir
+                          (string-append %output
+                                         "/share/emacs/yasnippet-snippets/"
+                                         dir)))
+                       (scandir "." (lambda (fname)
+                                      (and (string-match "-mode$" fname)
+                                           (directory-exists? fname)))))))))
+      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+      (synopsis "Collection of YASnippet snippets for many languages")
+      (description
+       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
+To make YASnippet aware of these snippets, add the above directory to
+@code{yas-snippet-dirs}.")
+      (license license:expat))))
+
 (define-public emacs-memoize
   (package
    (name "emacs-memoize")
