@@ -1,0 +1,25 @@
+This allows quasselclient to connect to SSL-enabled quasselcore instances.
+
+The check in qglobal.h requires -fPIC (not -fPIE as it is now). When this check
+fails SSL / TLS is disabled.
+
+This patch comes from the upstream source repository [0] and can be
+removed when the next version is packaged.
+
+[0] https://github.com/quassel/quassel/commit/4768c9e99f99b581d4e32e797db91d0182391696
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -428,6 +428,11 @@ endif()
+ cmake_push_check_state(RESET)
+ set(CMAKE_REQUIRED_INCLUDES ${QT_INCLUDES} ${Qt5Core_INCLUDE_DIRS})
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
++
++if (USE_QT5 AND Qt5_POSITION_INDEPENDENT_CODE)
++    set(CMAKE_REQUIRED_FLAGS "-fPIC -DQT_NO_VERSION_TAGGING")
++endif()
++
+ check_cxx_source_compiles("
+     #include \"qglobal.h\"
+     #if defined QT_NO_SSL
+
