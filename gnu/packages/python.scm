@@ -7709,16 +7709,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.1.0")
+    (version "17.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
-       (patches
-        (search-patches "python-pyopenssl-17.1.0-test-overflow.patch"))
        (sha256
         (base32
-         "0qwmqhfsq84ydir9dz273ypmlcvs7v71m1jns0sd4k0h6lfsa82s"))))
+         "0d283g4zi0hr9papd24mjl70mi15gyzq6fx618rizi87dgipqqax"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -7742,7 +7740,8 @@ message digests and key derivation functions.")
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-pretend" ,python-pretend)
+     `(("python-flaky" ,python-flaky)
+       ("python-pretend" ,python-pretend)
        ("python-pytest" ,python-pytest-3.0)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
