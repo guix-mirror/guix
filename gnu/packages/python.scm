@@ -11890,53 +11890,6 @@ addresses, and phone numbers.")
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-propagated-inputs base))))))
 
-(define-public python-fake-factory
-  (package
-  (name "python-fake-factory")
-  (version "0.7.2")
-  (source (origin
-            (method url-fetch)
-            (uri (pypi-uri "fake-factory" version))
-            (sha256
-             (base32
-              "0vs0dkmg0dlaxf8w6q2i3k0i03gmp56ablldv7ci9x3nbadkn71g"))
-            (patches
-             (search-patches
-              "python-fake-factory-fix-build-32bit.patch"))))
-  (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-       (replace 'check
-         (lambda _
-           (zero? (system* "python" "-m" "unittest" "-v" "faker.tests")))))))
-  (native-inputs
-   `(;; For testing
-     ("python-email-validator" ,python-email-validator)
-     ("python-mock" ,python-mock)
-     ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
-  (propagated-inputs
-   `(("python-dateutil" ,python-dateutil)
-     ("python-six" ,python-six)))
-  (home-page "https://github.com/joke2k/faker")
-  (synopsis "Python package that generates fake data")
-  (description
-   "Faker is a Python package that generates fake data such as names,
-addresses, and phone numbers.")
-  (license license:expat)
-  (properties `((python2-variant . ,(delay python2-fake-factory))
-                (superseded . ,python-faker)))))
-
-(define-public python2-fake-factory
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-fake-factory))))
-    (package
-      (inherit base)
-      (properties `((superseded . ,python2-faker)))
-      (propagated-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-propagated-inputs base))))))
-
 (define-public python-pyaml
   (package
     (name "python-pyaml")
