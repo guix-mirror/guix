@@ -4358,16 +4358,14 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.18.1")
+    (version "0.19.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/scipy/scipy/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "17slsrfawjp7if6qrlx03zhgp05350ginxx8ddpw9zqx43x905sn"))))
+         "1rl411bvla6q7qfdb47fpdnyjhfgzl6smpha33n9ar1klykjr6m1"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
