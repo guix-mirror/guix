@@ -6237,6 +6237,16 @@ implementation of D-Bus.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (zero?
+              (system* "python" "setup.py" "build" "--enable-all-extensions"))))
+         (add-after 'build 'build-test-helper
+           (lambda _
+             (zero?
+              (system
+               (string-append "gcc -fPIC -shared -o ./testextension.sqlext "
+                              "-I. -Isqlite3 src/testextension.c") ))))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
