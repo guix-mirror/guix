@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pramatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -94,7 +94,7 @@ nested include statements).")
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9")
+    (version "0.9.3")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -104,7 +104,7 @@ nested include statements).")
              version ".tar.gz"))
        (sha256
         (base32
-         "1pig0h2jk8wipyz90j69c4bk37bfyq60asnn0v0bqld2p2vjvyqy"))))
+         "17dwj7w16cdj7g4s2y2f96lgj5msq1s4543dnfa3rijlazzy6mmk"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
