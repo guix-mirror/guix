@@ -4115,16 +4115,14 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "2.0.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/matplotlib/matplotlib/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "matplotlib" version))
        (sha256
         (base32
-         "0w3k5m5qb3wsd7yhvmg042xddvligklvcq2visk2c5wnph3hhsln"))))
+         "1w8z2a1l7s72p1byfz7g03wqhygqxi8w82619dqb3a1lm97w9yqg"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
