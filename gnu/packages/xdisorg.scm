@@ -1061,7 +1061,7 @@ by name.")
 (define-public tint2
   (package
     (name "tint2")
-    (version "0.12.11")
+    (version "0.14.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/o9000/" name
@@ -1069,7 +1069,7 @@ by name.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dv7zaj2ahnfclnwnwcz9arrvzxn65yy29z7fqdgifdh3jk1kl2h"))))
+                "1kwzwxy4myagybm3rc7dgynfgp75742n348qibn1p2an9ggyivda"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test target
