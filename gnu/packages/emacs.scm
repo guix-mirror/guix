@@ -4112,7 +4112,7 @@ mode-line.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/joaotavora/yasnippet/"
@@ -4120,7 +4120,18 @@ mode-line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
+                "1yqiprighgqz1hsslph50cy09xxqabc06jffrnjcsdf6nj70xlkc"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; YASnippet expects a "snippets" subdirectory in the same
+                  ;; directory as yasnippet.el, but we don't install it
+                  ;; because it's a git submodule pointing to an external
+                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
+                  ;; warnings about a missing directory.
+                  (substitute* "yasnippet.el"
+                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
+                     "))\n"))))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
