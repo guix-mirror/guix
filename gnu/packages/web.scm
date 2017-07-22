@@ -546,7 +546,7 @@ parser written in ANSI C and a small validating JSON generator.")
               ;; things from Git.
               (method git-fetch)
               (uri (git-reference
-                    (url "git://git.libwebsockets.org/libwebsockets")
+                    (url "https://github.com/warmcat/libwebsockets.git")
                     (commit (string-append "v" version
                                            "-chrome37-firefox30"))))
               (sha256

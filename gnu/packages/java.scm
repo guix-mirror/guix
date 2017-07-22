@@ -651,7 +651,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.savannah.gnu.org/classpath.git")
+                      (url "https://git.savannah.gnu.org/git/classpath.git")
                       (commit commit)))
                 (sha256
                  (base32

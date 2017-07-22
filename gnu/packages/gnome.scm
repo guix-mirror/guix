@@ -5882,7 +5882,7 @@ documents and diagrams, playing media, scanning, and much more.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.gnome.org/byzanz")
+                      (url "https://git.gnome.org/browse/byzanz")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256

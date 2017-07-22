@@ -336,7 +336,7 @@ kinds of basic applications for the foundation of a GNU internet.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.sv.gnu.org/guix/gnunet.git")
+                      (url "https://git.savannah.gnu.org/git/guix/gnunet.git/")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256

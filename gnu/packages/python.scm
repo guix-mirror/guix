@@ -13376,7 +13376,7 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://github.com/tgalal/python-axolotl-curve25519")
+             (url "https://github.com/tgalal/python-axolotl-curve25519")
              (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
        (file-name (string-append name "-" version "-checkout"))
        (sha256

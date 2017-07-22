@@ -190,7 +190,7 @@ streams from live audio.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "git://git.ardour.org/ardour/ardour.git")
+                    (url "https://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
                ;; Ardour expects this file to exist at build time.  The revision
