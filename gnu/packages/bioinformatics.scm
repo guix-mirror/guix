@@ -300,7 +300,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.4.1")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -308,18 +308,19 @@ BAM files.")
                     version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "024xv59bzv148b6w3das4jmldf7rywsf8y1fbqznap008qc8gl6p"))
-              (patches (search-patches "bcftools-fix-makefile.patch"))
+                "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
-               '(delete-file-recursively "htslib-1.4.1"))))
+               '(delete-file-recursively "htslib-1.5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:configure-flags (list "--with-htslib=system")
        #:make-flags
        (list
         "USE_GPL=1"
+        "LIBS=-lgsl -lgslcblas"
         (string-append "prefix=" (assoc-ref %outputs "out"))
         (string-append "HTSDIR=" (assoc-ref %build-inputs "htslib") "/include")
         (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.so")
@@ -328,7 +329,6 @@ BAM files.")
         (string-append "PACKAGE_VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
          (add-before 'check 'patch-tests
            (lambda _
              (substitute* "test/test.pl"
