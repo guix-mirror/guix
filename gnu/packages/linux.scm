@@ -342,7 +342,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
-                         (find-files "." "^(\\.config|bzImage|zImage|vmlinuz|System\\.map)$"))
+                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
                ;; Install device tree files
                (for-each (lambda (file) (install-file file dtbdir))
                          (find-files "." "\\.dtb$"))
@@ -3010,18 +3010,6 @@ write access to exFAT devices.")
 applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
     (license license:gpl2+)))
-
-(define-public ncurses/gpm
-  (package/inherit ncurses
-    (name "ncurses-with-gpm")
-    (arguments
-        (substitute-keyword-arguments (package-arguments ncurses)
-         ((#:configure-flags cf)
-          `(cons (string-append "--with-gpm="
-                                (assoc-ref %build-inputs "gpm")
-                                "/lib/libgpm.so.2") ,cf))))
-    (inputs
-     `(("gpm" ,gpm)))))
 
 (define-public btrfs-progs
   (package

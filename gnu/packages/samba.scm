@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
@@ -219,14 +221,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.9")
+    (version "2.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qhhf4ib9k65sri2ky115iya6j7dgg0dsdi1r03j4cm3i35x9aph"))))
+                "06gn45if56g81vbj3841fzdjsahrrczwqpfrydm2zv6nxd5yk1f9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -294,14 +296,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.31")
+    (version "0.9.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1z1bij9gccps34q8zakr1k7k3gpqs25jas20x1hch16qd8jz44sa"))))
+                "1p0vxmldk99xpp7i4y6kpb75f8m7hxyv5bzkspy9hhpxh7ljww92"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -329,14 +331,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.1.27")
+    (version "1.1.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1b1mkl5p8swb67s9aswavhzswlib34hpgsv66zgns009paf2df6d"))))
+                "0ipbz9m50dkancq0dbz12q815nkknbsp2i3sxpsqhmmknlm3xm84"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -351,7 +353,8 @@ many event types, including timers, signals, and the classic file descriptor eve
                                               "/lib/ldb/modules")
                                "--bundled-libraries=NONE"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
     (propagated-inputs
      ;; ldb.pc refers to all these.

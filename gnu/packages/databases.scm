@@ -769,14 +769,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.11")
+    (version "1.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0i1l38h0vyck6zkcj4fn2l03spadlmyr1qa1xpdp9dy2ccbm3s1r"))))
+                "1sfbia8xyaywgx9zy7x618vrvyx9gc3cgqf763shsii9javlnz9s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

@@ -3945,7 +3945,7 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.0.3")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -3954,31 +3954,29 @@ library, libgit2 implements Git plumbing.")
                            "/pyparsing-" version ".tar.gz"))
        (sha256
         (base32
-         "0kw4py7gn45j93q8r7bzajfrjdc3xlsn2yzln41lf9zmrghjkrq6"))))
+         "016b9gh606aa44sq92jslm89bg874ia0yyiyb643fa6dgbsbqch8"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f ; no test target
-       #:modules ((guix build python-build-system)
-                  (guix build utils))
        #:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((doc (string-append (assoc-ref outputs "doc")
-                                     "/share/doc/" ,name "-" ,version))
-                 (html-doc (string-append doc "/html"))
-                 (examples (string-append doc "/examples")))
-            (mkdir-p html-doc)
-            (mkdir-p examples)
-            (for-each
-             (lambda (dir tgt)
-               (map (lambda (file)
-                      (install-file file tgt))
-                    (find-files dir ".*")))
-             (list "docs" "htmldoc" "examples")
-             (list doc html-doc examples))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
+                    (html-doc (string-append doc "/html"))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p html-doc)
+               (mkdir-p examples)
+               (for-each
+                (lambda (dir tgt)
+                  (map (lambda (file)
+                         (install-file file tgt))
+                       (find-files dir ".*")))
+                (list "docs" "htmldoc" "examples")
+                (list doc html-doc examples))
+               #t))))))
     (home-page "http://pyparsing.wikispaces.com")
     (synopsis "Python parsing class library")
     (description
@@ -4121,16 +4119,14 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "2.0.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/matplotlib/matplotlib/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "matplotlib" version))
        (sha256
         (base32
-         "0w3k5m5qb3wsd7yhvmg042xddvligklvcq2visk2c5wnph3hhsln"))))
+         "1w8z2a1l7s72p1byfz7g03wqhygqxi8w82619dqb3a1lm97w9yqg"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
@@ -4366,16 +4362,14 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.18.1")
+    (version "0.19.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/scipy/scipy/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "17slsrfawjp7if6qrlx03zhgp05350ginxx8ddpw9zqx43x905sn"))))
+         "1rl411bvla6q7qfdb47fpdnyjhfgzl6smpha33n9ar1klykjr6m1"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)

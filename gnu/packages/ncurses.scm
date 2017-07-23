@@ -32,6 +32,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages linux)
   #:use-module (guix utils))
 
 (define-public ncurses
@@ -188,6 +189,19 @@ implement user interfaces for command-line applications.  The accompanying
 ncursesw library provides wide character support.")
     (license x11)
     (home-page "https://www.gnu.org/software/ncurses/")))
+
+(define-public ncurses/gpm
+  (package/inherit ncurses
+    (name "ncurses-with-gpm")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ncurses)
+       ((#:configure-flags cf)
+        `(cons (string-append "--with-gpm="
+                              (assoc-ref %build-inputs "gpm")
+                              "/lib/libgpm.so.2")
+               ,cf))))
+    (inputs
+     `(("gpm" ,gpm)))))
 
 (define-public dialog
   (package

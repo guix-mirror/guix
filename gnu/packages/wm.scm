@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,6 +381,39 @@ Custom layout algorithms, and other extensions, may be written by the user in
 config files.  Layouts are applied dynamically, and different layouts may be
 used on each workspace.  Xinerama is fully supported, allowing windows to be
 tiled on several screens.")
+    (license license:bsd-3)))
+
+(define-public xmobar
+  (package
+    (name "xmobar")
+    (version "0.24.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/xmobar/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sdzfj2wa4wpig1i2i5n9qpwm90jp88qifsmaa7j37yhhs6snfir"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-http" ,ghc-http)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex-compat" ,ghc-regex-compat)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-x11-xft" ,ghc-x11-xft)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("libxpm" ,libxpm)
+       ("wireless-tools" ,wireless-tools)))
+    (arguments
+     `(#:configure-flags
+       '("--flags=with_utf8 with_xft with_xpm with_inotify with_iwlib")))
+    (home-page "http://xmobar.org")
+    (synopsis "Minimalistic text based status bar")
+    (description
+     "@code{xmobar} is a lightweight, text-based, status bar written in
+Haskell.  It was originally designed to be used together with Xmonad, but it
+is also usable with any other window manager.  While xmobar is written in
+Haskell, no knowledge of the language is required to install and use it.")
     (license license:bsd-3)))
 
 (define-public ghc-xmonad-contrib

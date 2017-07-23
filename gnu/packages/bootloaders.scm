@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -263,7 +264,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2017.03")
+    (version "2017.07")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -271,7 +272,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gqihplap05dlpwdb971wsqyv01nz2vabwq5g5649gr5jczsyjzm"))))
+                "1zzywk0fgngm1mfnhkp8d0v57rs51zr1y6rp4p03i6nbibfbyx2k"))))
     (native-inputs
      `(("bc" ,bc)
        ("dtc" ,dtc)
@@ -336,3 +337,6 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
+
+(define-public u-boot-odroid-c2
+  (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
