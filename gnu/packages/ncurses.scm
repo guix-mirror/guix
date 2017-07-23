@@ -32,6 +32,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages linux)
   #:use-module (guix utils))
 
 (define-public ncurses
@@ -199,6 +200,19 @@ ncursesw library provides wide character support.")
           (append
             (origin-patches (package-source ncurses))
             (search-patches "ncurses-CVE-2017-10684-10685.patch")))))))
+
+(define-public ncurses/gpm
+  (package/inherit ncurses
+    (name "ncurses-with-gpm")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ncurses)
+       ((#:configure-flags cf)
+        `(cons (string-append "--with-gpm="
+                              (assoc-ref %build-inputs "gpm")
+                              "/lib/libgpm.so.2")
+               ,cf))))
+    (inputs
+     `(("gpm" ,gpm)))))
 
 (define-public dialog
   (package

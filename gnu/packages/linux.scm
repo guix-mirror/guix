@@ -3013,18 +3013,6 @@ applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
     (license license:gpl2+)))
 
-(define-public ncurses/gpm
-  (package/inherit ncurses
-    (name "ncurses-with-gpm")
-    (arguments
-        (substitute-keyword-arguments (package-arguments ncurses)
-         ((#:configure-flags cf)
-          `(cons (string-append "--with-gpm="
-                                (assoc-ref %build-inputs "gpm")
-                                "/lib/libgpm.so.2") ,cf))))
-    (inputs
-     `(("gpm" ,gpm)))))
-
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
