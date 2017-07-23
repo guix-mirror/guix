@@ -138,6 +138,7 @@ bind processes, and much more.")
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
                            "--enable-memchecker"
+                           "--with-sge"
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
