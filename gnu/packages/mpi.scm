@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.10.3")
+    (version "1.10.7")
     (source
      (origin
       (method url-fetch)
@@ -119,7 +120,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "0k95ri9f8kzx5vhzrdbzn59rn2324fs4a96w5v8jy20j8dkbp13l"))))
+        "142s1vny9gllkq336yafxayjgcirj2jv0ddabj879jgya7hyr2d0"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc "lib")
