@@ -462,21 +462,21 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.16")
+    (version "1.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0l9724rw1l3hg2ldr3n7ihqich4m9nc6y7l302bvdj4jmxdw530j"))))
+               "1abbch762gv8rjr579q3qyyk6c80plklbv2mw4x0vg71dgsw9bgz"))))
     (build-system gnu-build-system)
     (home-page "http://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
     (description
      "Lzip is a lossless data compressor with a user interface similar to the
 one of gzip or bzip2.  Lzip decompresses almost as fast as gzip and compresses
-more than bzip2, which makes it well suited for software distribution and data
+more than bzip2, which makes it well-suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (license license:gpl3+)))
 
