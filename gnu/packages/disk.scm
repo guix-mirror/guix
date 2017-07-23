@@ -245,7 +245,7 @@ and a @command{fsck.vfat} compatibility symlink for use in an initrd.")
 (define-public sdparm
   (package
     (name "sdparm")
-    (version "1.09")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -253,7 +253,7 @@ and a @command{fsck.vfat} compatibility symlink for use in an initrd.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0jakqyjwi72zqjzss04bally0xl0lc4710mx8da08vpmir1hfphg"))))
+         "1jjq3lzgfy4r76rc26q02lv4wm5cb4dx5nh913h489zjrr4f3jbx"))))
     (build-system gnu-build-system)
     (home-page "http://sg.danny.cz/sg/sdparm.html")
     (synopsis "Provide access to SCSI device parameters")
