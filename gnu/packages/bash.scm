@@ -263,7 +263,7 @@ without modification.")
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -271,7 +271,7 @@ without modification.")
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vx5bjasi0y3iwhgy2v72bdrsprkw8zjc9s8qd1l8rxil0nnbyv1"))
+                "07j484vb3k90f4989xh1g1x99g01akrp69p3dml4lza27wnqkfj1"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
