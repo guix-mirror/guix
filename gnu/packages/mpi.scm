@@ -156,9 +156,9 @@ bind processes, and much more.")
                         (for-each delete-file (find-files out "config.log"))
                         #t))))))
     (home-page "http://www.open-mpi.org")
-    (synopsis "MPI-2 implementation")
+    (synopsis "MPI-3 implementation")
     (description
-     "The Open MPI Project is an MPI-2 implementation that is developed and
+     "The Open MPI Project is an MPI-3 implementation that is developed and
 maintained by a consortium of academic, research, and industry partners.  Open
 MPI is therefore able to combine the expertise, technologies, and resources
 from all across the High Performance Computing community in order to build the
