@@ -90,7 +90,7 @@ tables.  It includes a library and command-line utility.")
 (define-public fdisk
   (package
     (name "fdisk")
-    (version "2.0.0a")
+    (version "2.0.0a1")
     (source
      (origin
       (method url-fetch)
@@ -98,13 +98,27 @@ tables.  It includes a library and command-line utility.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "04nd7civ561x2lwcmxhsqbprml3178jfc58fy1v7hzqg5k4nbhy3"))))
+        "1d8za79kw8ihnp2br084rgyjv9whkwp7957rzw815i0izx6xhqy9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
        ("guile" ,guile-1.8)
        ("util-linux" ,util-linux)
        ("parted" ,parted)))
+    ;; The build neglects to look for its own headers in its own tree.  A next
+    ;; release should fix this, but may never come: GNU fdisk looks abandoned.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-broken-header-probes
+           (lambda _
+             (substitute* "backend/configure"
+               (("gnufdisk-common.h .*") "\n"))
+             #t)))
+       #:make-flags (list (string-append "CPPFLAGS="
+                                         " -I../common/include "
+                                         " -I../debug/include "
+                                         " -I../exception/include"))))
     (home-page "https://www.gnu.org/software/fdisk/")
     (synopsis "Low-level disk partitioning and formatting")
     (description
