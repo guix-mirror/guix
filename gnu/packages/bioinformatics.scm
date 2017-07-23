@@ -3480,7 +3480,8 @@ form of assemblies or reads.")
         (base32
          "0ll00l81aflscgggs5nfhj12cbvdiz3gg7f7n5f537a3xhx60vn9"))
        (patches (search-patches "metabat-remove-compilation-date.patch"
-                                "metabat-fix-compilation.patch"))))
+                                "metabat-fix-compilation.patch"
+                                "metabat-fix-boost-issue.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
