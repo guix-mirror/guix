@@ -327,7 +327,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method url-fetch)
@@ -335,7 +335,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
                             "download/v" version "/edi-" version ".tar.bz2"))
         (sha256
          (base32
-          "1l90x1bw82a0df6r11wd55qizhi99gg0qcljwxga606ahy6ycnkn"))))
+          "0k0ymi9ilhkypqb9pniv365kh3jgbl2g2k0ylvsmisn2jhbqk49a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

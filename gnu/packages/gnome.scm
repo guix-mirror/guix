@@ -96,6 +96,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -131,8 +132,8 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
-  #:use-module (gnu packages qemu)
   #:use-module (gnu packages speech)
+  #:use-module (gnu packages virtualization)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -614,6 +615,7 @@ forgotten when the session ends.")
              (uri (string-append "mirror://gnome/sources/" name "/"
                                  (version-major+minor version) "/"
                                  name "-" version ".tar.xz"))
+             (patches (search-patches "evince-CVE-2017-1000083.patch"))
              (sha256
               (base32
                "13yw0i68dgqp9alyliy3zifszh7rikkpi1xbz5binvxxgfpraf04"))))
@@ -3539,7 +3541,15 @@ for application developers.")
        ("nettle" ,nettle)
        ("vala" ,vala)))
     (arguments
-     `(#:phases
+     `(;; Disable automatic GStreamer plugin installation via PackageKit and
+       ;; all that.
+       #:configure-flags '("--disable-easy-codec-installation"
+
+                           ;; Do not build .a files for the plugins, it's
+                           ;; completely useless.  This saves 2 MiB.
+                           "--disable-static")
+
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'wrap-totem
@@ -3922,6 +3932,67 @@ users connect their scanner and quickly have the image/document in an
 appropriate format.  Simple Scan is basically a frontend for SANE - which is
 the same backend as XSANE uses. This means that all existing scanners will
 work and the interface is well tested.")
+    (license license:gpl3+)))
+
+(define-public eolie
+  (package
+    (name "eolie")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/gnumdk/eolie/"
+                                  "releases/download/"
+                                  (version-major+minor version)
+                                  "/eolie-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lb3rd2as12vq24fcf9nmlhggf8vka3kli2i92i8iylwi7nq5n2a"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'wrap-more
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    ;; These libraries must be on LD_LIBRARY_PATH.
+                    (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
+                            "atk" "gtk+" "gsettings-desktop-schemas"
+                            "gobject-introspection"))
+                    (path (string-join
+                           (map (lambda (lib)
+                                  (string-append (assoc-ref inputs lib) "/lib"))
+                                libs)
+                           ":")))
+               (wrap-program (string-append out "/bin/eolie")
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("glib-networking" ,glib-networking)
+       ("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("libsecret" ,libsecret)
+       ("gtkspell3" ,gtkspell3)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://github.com/gnumdk/eolie/")
+    (synopsis "Web browser for GNOME")
+    (description
+     "Eolie is a new web browser for GNOME.  It features Firefox sync support,
+a secret password store, an adblocker, and a modern UI.")
     (license license:gpl3+)))
 
 (define-public epiphany
@@ -5868,7 +5939,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public moka-icon-theme
   (package
     (name "moka-icon-theme")
-    (version "5.3.5")
+    (version "5.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -5877,7 +5948,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "062rab0ggmgb3y0d6b3k5d47wsadi28cdnyyr2vqbjhza01dglci"))))
+                "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -6419,3 +6490,63 @@ duration, cost, and current progress.  It can also show a report of resource
 utilization that highlights under-utilized and over-utilized resources.  These
 views can be printed as PDF or PostScript files, or exported to HTML.")
     (license license:gpl2+)))
+
+(define-public lollypop
+  (package
+    (name "lollypop")
+    (version "0.9.240")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnumdk/lollypop/"
+                           "releases/download/" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0n1ycmg6dgz1pajs80fwlcbxw3rx1hff1xw6ja67zngm85ydbjvq"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%glib-or-gtk-build-system-modules)
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                        (wrap-program (string-append out "/bin/lollypop")
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                      #t))
+                  (add-after 'install 'wrap
+                    (@@ (guix build python-build-system) wrap)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("python" ,python)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-gst" ,python-gst)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pylast" ,python-pylast)
+       ("totem-pl-parser" ,totem-pl-parser)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(;; gst-plugins-base is required to start Lollypop,
+       ;; the others are required to play streaming.
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)))
+    (home-page "https://gnumdk.github.io/lollypop-web")
+    (synopsis "GNOME music playing application")
+    (description
+     "Lollypop is a music player designed to play well with GNOME desktop.
+Lollypop plays audio formats such as mp3, mp4, ogg and flac and gets information
+from artists and tracks from the web.  It also fetches cover artworks
+automatically and it can stream songs from online music services and charts.")
+    (license license:gpl3+)))

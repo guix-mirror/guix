@@ -365,8 +365,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12")
-(define %linux-libre-hash "153ibjdgys7friij4hnkvmp9ycvx50zgpyl9mwbr4prr409q3ndf")
+(define %linux-libre-version "4.12.3")
+(define %linux-libre-hash "1b02snh41fgr5i55wlc86nvksyzy1cq994mkmj195pa57hy6y6ak")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -375,14 +375,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.36"
-                    "1z58f15my3a8c3j8hfc6p9ydmwgq1399kp1zsbrfd89rxz3m4v6r"
+  (make-linux-libre "4.9.39"
+                    "03rnbz1wf3d0fi5zrhygx1b20bx23fy310d8h74zc6z4jh6fsbx3"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.76"
-                    "1qzgjqj7zv8hk162viyjy4cn24snwy159j8vir6d5jsrkvwq5wrk"
+  (make-linux-libre "4.4.78"
+                    "0g8pc0kam33rn2dx9fkp7w749s38qs2iykawpj0k9jm19775hn4k"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -428,11 +428,18 @@ It has been modified to remove all non-free binary blobs.")
        ;; ("cracklib" ,cracklib)
        ))
     (arguments
-     '(;; Most users, such as `shadow', expect the headers to be under
+     `(;; Most users, such as `shadow', expect the headers to be under
        ;; `security'.
        #:configure-flags (list (string-append "--includedir="
                                               (assoc-ref %outputs "out")
-                                              "/include/security"))
+                                              "/include/security")
+
+                               ;; XXX: <rpc/rpc.h> is missing from glibc when
+                               ;; cross-compiling, so we have to disable NIS
+                               ;; support altogether.
+                               ,@(if (%current-target-system)
+                                     '("--disable-nis")
+                                     '()))
 
        ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
        ;; isn't available.
@@ -1832,7 +1839,10 @@ system.")
     (native-search-paths
      (list (search-path-specification
             (variable "LOADKEYS_KEYMAP_PATH")
-            (files (list "share/keymaps")))))
+            ;; Append ‘/**’ to recursively search all directories.  One can then
+            ;; run (for example) ‘loadkeys en-latin9’ instead of having to find
+            ;; and type ‘i386/colemak/en-latin9’ on a mislabelled keyboard.
+            (files (list "share/keymaps/**")))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://kbd-project.org/")
     (synopsis "Linux keyboard utilities and keyboard maps")
@@ -3001,6 +3011,18 @@ applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
     (license license:gpl2+)))
 
+(define-public ncurses/gpm
+  (package/inherit ncurses
+    (name "ncurses-with-gpm")
+    (arguments
+        (substitute-keyword-arguments (package-arguments ncurses)
+         ((#:configure-flags cf)
+          `(cons (string-append "--with-gpm="
+                                (assoc-ref %build-inputs "gpm")
+                                "/lib/libgpm.so.2") ,cf))))
+    (inputs
+     `(("gpm" ,gpm)))))
+
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
@@ -3758,7 +3780,7 @@ Light is the successor of lightscript.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "0.9")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3768,7 +3790,7 @@ Light is the successor of lightscript.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xksm8ar6dbq0azbfz8qs9yyzqg1j333lyd5znc074rz8inj4yw8"))))
+                "1v3qpj9kp4rxwqapayd0i9419wwv4bikyrzjvqn0r9xkgnr1f9v4"))))
     (inputs `(("bash" ,bash)
               ("dbus" ,dbus)
               ("ethtool" ,ethtool)

@@ -107,7 +107,7 @@ silently and reliably flow across to every other.")
 (define-public qsyncthingtray
   (package
     (name "qsyncthingtray")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
       (origin
         (method url-fetch)
@@ -117,7 +117,7 @@ silently and reliably flow across to every other.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1qzlxgq36sb1dk621nkbjw9k6y3css6q3z8xzx6nv7f327vanvp6"))))
+          "1024778ml7q62ziqm4d22z5sc1715l34846pwfyzfpcyl32qlhpz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DQST_BUILD_WEBKIT=1")

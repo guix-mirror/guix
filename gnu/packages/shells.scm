@@ -6,8 +6,9 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@no-reply.infotropique.org>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,17 +55,12 @@
     (version "0.5.9.1")
     (source
      (origin
-       ;; The canonical source is offline, so we fetch the source code
-       ;; from the Git repository. See:
-       ;; https://www.mail-archive.com/dash@vger.kernel.org/msg01323.html
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://git.kernel.org/pub/scm/utils/dash/dash.git/")
-              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
+                           "dash-" version ".tar.gz"))
        (sha256
         (base32
-         "0p01vx7rbyf5hyyaff7h8cbhq81bm5fmq1m933484lncl9rafcai"))
+         "0ng695mq5ngg43h7ljhxvbjm46ym3nayj6ssn47d2gm9fbm5pkay"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -75,17 +71,10 @@
               "a command interpreter based on the original Bourne shell"))
            #t))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
     (inputs
      `(("libedit" ,libedit)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))
-       #:configure-flags '("--with-libedit")))
+     '(#:configure-flags '("--with-libedit")))
     (home-page "http://gondor.apana.org.au/~herbert/dash")
     (synopsis "POSIX-compliant shell optimised for size")
     (description
@@ -564,6 +553,29 @@ extra programs.  > is just another unix command, < is essentially cat(1).
 A @code{andglob} program is also provided along with s.")
       (license bsd-3))))
 
+(define-public oksh
+  (package
+    (name "oksh")
+    (version "0.5.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://connochaetos.org/oksh/oksh-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ln9yf6pxngsviqszv8klnnvn8vcpplvj1njdn8xr2y8frkbw8r3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(; The test files are not part of the distributed tarball.
+       #:tests? #f))
+    (home-page "https://connochaetos.org/oksh")
+    (synopsis "Port of OpenBSD Korn Shell")
+    (description
+     "Oksh is a port of the OpenBSD Korn Shell.
+The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
+    (license gpl3+)))
+
 (define-public loksh
   (package
     (name "loksh")
@@ -599,3 +611,42 @@ interactive POSIX shell targeted at resource-constrained systems.")
     ;; The file 'LEGAL' says it is the public domain, and the 2
     ;; exceptions which are listed are not included in this port.
     (license public-domain)))
+
+(define-public mksh
+  (package
+    (name "mksh")
+    (version "55")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.mirbsd.org/MirOS/dist/mir/mksh/mksh-R"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "0mssqd2wp3cs9x01v6g66iy3ymdxagbyw2c0v597vnc1l6s2rm6f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; tests require access to /dev/tty
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (setenv "CC" "gcc")
+             (zero? (system* (which "sh") "Build.sh"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "mksh" bin)
+               (with-directory-excursion bin
+                 (symlink "mksh" "ksh"))
+               (install-file "mksh.1" man)))))))
+    (home-page "https://www.mirbsd.org/mksh.htm")
+    (synopsis "Korn Shell from MirBSD")
+    (description "mksh is an actively developed free implementation of the
+Korn Shell programming language and a successor to the Public Domain Korn
+Shell (pdksh).")
+    (license (list miros
+                   isc)))) ; strlcpy.c

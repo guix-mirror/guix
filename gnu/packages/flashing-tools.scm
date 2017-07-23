@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,37 @@ BIOS/EFI/coreboot/firmware/optionROM images on mainboards,
 network/graphics/storage controller cards, and various other
 programmer devices.")
     (license gpl2)))
+
+(define-public 0xffff
+  (package
+    (name "0xffff")
+    (version "0.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/pali/0xffff/archive/"
+                          version ".tar.gz"))
+      (file-name (string-append "0xFFFF" version ".tar.gz" ))
+      (sha256
+       (base32
+        "1g4032c81wkk37wvbg1dxcqq6mnd76y9x7f2crmzqi6z4q9jcxmj"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libusb",libusb-0.1))) ; doesn't work with libusb-compat
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)) ; no configure
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f)) ; no 'check' target
+    (home-page "https://github.com/pali/0xFFFF")
+    (synopsis "Flash FIASCO images on Maemo devices")
+    (description
+     "The Open Free Fiasco Firmware Flasher (0xFFFF) is a flashing tool
+for FIASCO images.  It supports generating, unpacking, editing and
+flashing of FIASCO images for Maemo devices.  Use it with care.  It can
+brick your device.")
+    (license gpl3+)))
 
 (define-public avrdude
   (package

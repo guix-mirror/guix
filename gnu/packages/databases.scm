@@ -293,7 +293,7 @@ mapping from string keys to string values.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.18")
+    (version "5.7.19")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -305,7 +305,7 @@ mapping from string keys to string values.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "18m1mr55k9zmvnyqs0wr50csqsz3scs09fykh60wsml6c3np2p8b"))))
+               "1c8y54yk756179nx4dgg79dijmjdq5n8l057cnqsg70pjdpyfl9y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

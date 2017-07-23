@@ -47,6 +47,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 vlist)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -95,6 +96,13 @@
 ;;; "binary cache".  This program implements the Nix "substituter" protocol.
 ;;;
 ;;; Code:
+
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
 
 (define %narinfo-cache-directory
   ;; A local cache of narinfos, to avoid going to the network.  Most of the
@@ -593,14 +601,26 @@ if file doesn't exist, and the narinfo otherwise."
 (define (fetch-narinfos url paths)
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
-    (let ((done 0))
+    (let ((done 0)
+          (total (length paths)))
       (lambda ()
         (display #\cr (current-error-port))
         (force-output (current-error-port))
         (format (current-error-port)
                 (G_ "updating list of substitutes from '~a'... ~5,1f%")
-                url (* 100. (/ done (length paths))))
+                url (* 100. (/ done total)))
         (set! done (+ 1 done)))))
+
+  (define hash-part->path
+    (let ((mapping (fold (lambda (path result)
+                           (vhash-cons (store-path-hash-part path) path
+                                       result))
+                         vlist-null
+                         paths)))
+      (lambda (hash)
+        (match (vhash-assoc hash mapping)
+          (#f #f)
+          ((_ . path) path)))))
 
   (define (handle-narinfo-response request response port result)
     (let* ((code   (response-code response))
@@ -620,9 +640,7 @@ if file doesn't exist, and the narinfo otherwise."
             (if len
                 (get-bytevector-n port len)
                 (read-to-eof port))
-            (cache-narinfo! url
-                            (find (cut string-contains <> hash-part) paths)
-                            #f
+            (cache-narinfo! url (hash-part->path hash-part) #f
                             (if (= 404 code)
                                 ttl
                                 %narinfo-transient-error-ttl))

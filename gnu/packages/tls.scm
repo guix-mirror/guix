@@ -431,22 +431,22 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.4")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append
-             "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
-             version ".tar.gz"))
-      (sha256
-       (base32
-        "1ykf6dqlbafafhbdfmcj19pjj1z6wmsq0rmyqga1i0xv5x95nyhh"))))
+    (version "2.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://openbsd/LibreSSL/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i77viqy1afvbr392npk9v54k9zhr9zq2vhv6pliza22b0ymwzz5"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
      ;; and libc would return ENOSYS, which is not properly handled.
      ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
-     '(#:configure-flags '("ac_cv_func_getentropy=no")))
+     '(#:configure-flags '("ac_cv_func_getentropy=no"
+                           ;; Provide a TLS-enabled netcat.
+                           "--enable-nc")))
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
       ;; and are not actually "search paths."  In practice it works OK in
@@ -460,9 +460,10 @@ required structures.")
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
-    (description "LibreSSL is a version of the TLS/crypto stack forked
-from OpenSSL in 2014, with the goals of modernizing the codebase, improving
-security, and applying best practice development processes.")
+    (description "LibreSSL is a version of the TLS/crypto stack, forked from
+OpenSSL in 2014 with the goals of modernizing the codebase, improving security,
+and applying best practice development processes.  This package also includes a
+netcat implementation that supports TLS.")
     ;; Files taken from OpenSSL keep their license, others are under various
     ;; non-copyleft licenses.
     (license (list license:openssl
@@ -474,13 +475,13 @@ security, and applying best practice development processes.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.15.0")
+    (version "0.16.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
       (sha256
        (base32
-        "11zwgj663vr575pbqw74ia10wxaw16i8rnkcivsrbsx148rxdbcz"))))
+        "1kg9bnwywsr18hgvqyhxqqi90l2qa7449f41q3fdq2y59h9nk2sk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -531,7 +532,7 @@ security, and applying best practice development processes.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1srvmjxz75dbafx7xfg1w3n9h3srr9p2ljnfsih9dwwd5cxh9i5q"))))
+                "11p1vsps5rbpha3k5jnmf9i6rcp6299h9b34wdh21cq6dgyh2n3r"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

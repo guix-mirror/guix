@@ -255,7 +255,7 @@ overlapping images, as well as some command line tools.")
        ("help2man" ,help2man)
        ("imagemagick" ,imagemagick)
        ("libxml2" ,libxml2)
-       ("texlive-minimal" ,texlive-minimal)
+       ("texlive-minimal" ,texlive-tiny)
        ("tidy" ,tidy)
        ("transfig" ,transfig)))
     (inputs

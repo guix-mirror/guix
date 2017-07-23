@@ -2101,13 +2101,13 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.36")
+    (version "1.38")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "1kabb9b81hgvpd3wcznww549vss12b1xlvpnxg1r6n4c7gikgvnp"))))
+                "0rl7sxn1rcjl48fwga3dqf9f6pzspsny4ngxyf6pp337mrq0z693"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -2343,6 +2343,78 @@ create high quality music without the requirements of specialized, expensive
 equipment, and with a unique \"finger feel\" that is difficult to replicate in
 part.  The player is based on a highly modified version of the ModPlug engine,
 with a number of bugfixes and changes to improve IT playback.")
+    (license license:gpl2+)))
+
+(define-public sooperlooper
+  (package
+    (name "sooperlooper")
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0n2gdxw1fx8nxxnpzf4sj0kp6k6zi1yq59cbz6qqzcnsnpnvszbs"))
+              (patches (search-patches "sooperlooper-build-with-wx-30.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-sigc++-includes
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sig (assoc-ref inputs "libsigc++"))
+                   (xml (assoc-ref inputs "libxml2"))
+                   (cwd (getcwd)))
+               (setenv "CPATH"
+                       (string-append sig "/include/sigc++-2.0:"
+                                      sig "/lib/sigc++-2.0/include:"
+                                      xml "/include/libxml2/:"
+                                      cwd "/libs/pbd:"
+                                      cwd "/libs/midi++")))
+             (substitute* '("src/control_osc.hpp"
+                            "src/gui/app_frame.hpp"
+                            "src/gui/config_panel.hpp"
+                            "src/gui/keys_panel.hpp"
+                            "src/gui/latency_panel.hpp"
+                            "src/gui/main_panel.hpp"
+                            "src/gui/midi_bind_panel.hpp"
+                            "src/gui/prefs_dialog.hpp")
+               (("sigc\\+\\+/object.h")
+                "sigc++/sigc++.h"))
+             (substitute* '("src/engine.cpp"
+                            "src/gui/latency_panel.cpp"
+                            "src/gui/looper_panel.cpp"
+                            "src/gui/main_panel.cpp")
+               (("(\\(| )bind " _ pre)
+                (string-append pre "sigc::bind ")))
+             #t))
+         (add-after 'unpack 'fix-xpm-warnings
+           (lambda _
+             (substitute* (find-files "." "\\.xpm$")
+               (("static char") "static const char"))
+             #t)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)
+       ("wxwidgets" ,wxwidgets-gtk2)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("liblo" ,liblo)
+       ("rubberband" ,rubberband)
+       ("libxml2" ,libxml2)
+       ("libsigc++" ,libsigc++)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://essej.net/sooperlooper/")
+    (synopsis "Live looping sampler")
+    (description
+     "SooperLooper is a live looping sampler capable of immediate loop
+recording, overdubbing, multiplying, reversing and more. It allows for
+multiple simultaneous multi-channel loops limited only by your computer's
+available memory.")
     (license license:gpl2+)))
 
 (define-public moc

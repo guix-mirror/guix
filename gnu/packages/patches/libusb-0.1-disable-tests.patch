@@ -1,0 +1,15 @@
+Disable tests who fail because they have to run as root.
+
+--- libusb-0.1.12/tests/Makefile.in	2006-03-04 03:54:06.000000000 +0100
++++ libusb-0.1.12/tests/Makefile.in	2017-07-13 16:17:45.201728019 +0200
+@@ -255,8 +255,8 @@
+ hub_strings_LDADD = $(top_builddir)/libusbpp.la @OSLIBS@
+ driver_name_SOURCES = driver_name.cpp
+ driver_name_LDADD = $(top_builddir)/libusbpp.la @OSLIBS@
+-TESTS = testlibusb descriptor_test id_test find_hubs find_mice \
+-		get_resolution hub_strings $(OS_SPECIFIC)
++TESTS = testlibusb descriptor_test id_test find_hubs find_mice
++		#get_resolution hub_strings $(OS_SPECIFIC)
+ 
+ XFAIL_TESTS = get_resolution hub_strings $(OS_SPECIFIC_XFAIL)
+ all: all-am

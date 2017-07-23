@@ -361,6 +361,16 @@
          (lambda args
            (system-error-errno args)))))
 
+(test-equal "loopback-network-interface-running?"
+  ENODEV
+  (and (network-interface-running? "lo")
+       (catch 'system-error
+         (lambda ()
+           (network-interface-running? "nonexistent")
+           #f)
+         (lambda args
+           (system-error-errno args)))))
+
 (test-skip (if (zero? (getuid)) 1 0))
 (test-assert "set-network-interface-flags"
   (let ((sock (socket AF_INET SOCK_STREAM 0)))

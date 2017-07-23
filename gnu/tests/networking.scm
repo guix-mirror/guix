@@ -74,60 +74,61 @@ done" ))))))))))
 (define* (run-inetd-test)
   "Run tests in %INETD-OS, where the inetd service provides an echo service on
 port 7, and a dict service on port 2628."
-  (mlet* %store-monad ((os -> (marionette-operating-system %inetd-os))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (ice-9 rdelim)
-                         (srfi srfi-64)
-                         (gnu build marionette))
-            (define marionette
-              ;; Forward guest ports 7 and 2628 to host ports 8007 and 8628.
-              (make-marionette (list #$command "-net"
-                                     (string-append
-                                      "user"
-                                      ",hostfwd=tcp::8007-:7"
-                                      ",hostfwd=tcp::8628-:2628"))))
+  (define os
+    (marionette-operating-system %inetd-os))
 
-            (mkdir #$output)
-            (chdir #$output)
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((8007 . 7)
+                         (8628 . 2628)))))
 
-            (test-begin "inetd")
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (ice-9 rdelim)
+                       (srfi srfi-64)
+                       (gnu build marionette))
+          (define marionette
+            (make-marionette (list #$vm)))
 
-            ;; Make sure the PID file is created.
-            (test-assert "PID file"
-              (marionette-eval
-               '(file-exists? "/var/run/inetd.pid")
-              marionette))
+          (mkdir #$output)
+          (chdir #$output)
 
-            ;; Test the echo service.
-            (test-equal "echo response"
-              "Hello, Guix!"
-              (let ((echo (socket PF_INET SOCK_STREAM 0))
-                    (addr (make-socket-address AF_INET INADDR_LOOPBACK 8007)))
-                (connect echo addr)
-                (display "Hello, Guix!\n" echo)
-                (let ((response (read-line echo)))
-                  (close echo)
-                  response)))
+          (test-begin "inetd")
 
-            ;; Test the dict service
-            (test-equal "dict response"
-              "GNU Guix is a package management tool for the GNU system."
-              (let ((dict (socket PF_INET SOCK_STREAM 0))
-                    (addr (make-socket-address AF_INET INADDR_LOOPBACK 8628)))
-                (connect dict addr)
-                (display "DEFINE Guix\n" dict)
-                (let ((response (read-line dict)))
-                  (close dict)
-                  response)))
+          ;; Make sure the PID file is created.
+          (test-assert "PID file"
+            (marionette-eval
+             '(file-exists? "/var/run/inetd.pid")
+             marionette))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          ;; Test the echo service.
+          (test-equal "echo response"
+            "Hello, Guix!"
+            (let ((echo (socket PF_INET SOCK_STREAM 0))
+                  (addr (make-socket-address AF_INET INADDR_LOOPBACK 8007)))
+              (connect echo addr)
+              (display "Hello, Guix!\n" echo)
+              (let ((response (read-line echo)))
+                (close echo)
+                response)))
 
-    (gexp->derivation "inetd-test" test)))
+          ;; Test the dict service
+          (test-equal "dict response"
+            "GNU Guix is a package management tool for the GNU system."
+            (let ((dict (socket PF_INET SOCK_STREAM 0))
+                  (addr (make-socket-address AF_INET INADDR_LOOPBACK 8628)))
+              (connect dict addr)
+              (display "DEFINE Guix\n" dict)
+              (let ((response (read-line dict)))
+                (close dict)
+                response)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "inetd-test" test))
 
 (define %test-inetd
   (system-test

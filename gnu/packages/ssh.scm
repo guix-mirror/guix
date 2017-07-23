@@ -130,16 +130,12 @@ a server that supports the SSH-2 protocol.")
    (name "openssh")
    (version "7.5p1")
    (source (origin
-            (method url-fetch)
-            (uri (let ((tail (string-append name "-" version ".tar.gz")))
-                   (list (string-append "http://openbsd.cs.fau.de/pub/OpenBSD/OpenSSH/portable/"
-                                        tail)
-                         (string-append "http://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
-                                        tail)
-                         (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
-                                        tail))))
-            (sha256 (base32
-                     "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
+             (method url-fetch)
+             (uri (string-append "mirror://openbsd/OpenSSH/portable/"
+                                 name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
@@ -347,13 +343,13 @@ authentication scheme.")
 (define-public mosh
   (package
     (name "mosh")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mosh.org/mosh-" version ".tar.gz"))
               (sha256
                (base32
-                "0xikz40q873g9ihvz3x6bwkcb9hb8kcnp5wpcmb72pg5c7s143ij"))))
+                "05hjhlp6lk8yjcy59zywpf0r6s0h0b9zxq0lw66dh9x8vxrhaq6s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -409,8 +405,8 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (description
      "Eternal Terminal (ET) is a remote shell that automatically reconnects
 without interrupting the session.  Unlike SSH sessions, ET sessions will
-survive even after the network outages or IP changes.  ET uses a custom
-protocol over TCP, not the SSH protocol.")
+survive even network outages and IP changes.  ET uses a custom protocol over
+TCP, not the SSH protocol.")
     (home-page "https://mistertea.github.io/EternalTCP/")
     (license license:asl2.0)))
 

@@ -897,6 +897,7 @@ path."
                           #:key (select? true))
            ;; We don't use the 'operation' macro so we can pass SELECT? to
            ;; 'write-file'.
+           (record-operation 'add-to-store)
            (let ((port (nix-server-socket server)))
              (write-int (operation-id add-to-store) port)
              (write-string basename port)
@@ -1548,9 +1549,12 @@ valid inputs."
 (define (store-path-hash-part path)
   "Return the hash part of PATH as a base32 string, or #f if PATH is not a
 syntactically valid store path."
-  (let ((path-rx (store-regexp* (%store-prefix))))
-    (and=> (regexp-exec path-rx path)
-           (cut match:substring <> 1))))
+  (and (string-prefix? (%store-prefix) path)
+       (let ((base (string-drop path (+ 1 (string-length (%store-prefix))))))
+         (and (> (string-length base) 33)
+              (let ((hash (string-take base 32)))
+                (and (string-every %nix-base32-charset hash)
+                     hash))))))
 
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE

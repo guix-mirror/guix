@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -205,7 +205,9 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                            (inherit config)
                            (services
                             (append (dbus-configuration-services config)
-                                    services)))))))
+                                    services)))))
+
+                (default-value (dbus-configuration))))
 
 (define* (dbus-service #:key (dbus dbus) (services '()))
   "Return a service that runs the \"system bus\", using @var{dbus}, with
@@ -297,7 +299,9 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
                            (inherit config)
                            (actions
                             (append (polkit-configuration-actions config)
-                                    actions)))))))
+                                    actions)))))
+
+                (default-value (polkit-configuration))))
 
 (define* (polkit-service #:key (polkit polkit))
   "Return a service that runs the

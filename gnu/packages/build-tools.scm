@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ninja)
   #:use-module (guix build-system gnu)
@@ -69,7 +70,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.40.1")
+    (version "0.41.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -77,7 +78,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0yl6iryh89nn6hzhwv7kg16ki1chh9h0x1yk1y130h87iq42a35r"))))
+                "12ygjh1dxi8z06nl704rfb6zj0m2zjqp279nymfgzfgy5zq032d4"))))
     (build-system python-build-system)
     (inputs `(("ninja", ninja)))
     (home-page "https://mesonbuild.com/")
@@ -90,3 +91,37 @@ Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
 files}, are written in a custom domain-specific language (DSL) that resembles
 Python.")
     (license license:asl2.0)))
+
+(define-public premake4
+  (package
+    (name "premake")
+    (version "4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/premake/Premake/"
+                                  version "/premake-" version "-src.zip"))
+              (sha256
+               (base32
+                "1017rd0wsjfyq2jvpjjhpszaa7kmig6q1nimw76qx3cjz2868lrn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip))) ; for unpacking the source
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "build/gmake.unix") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "../../bin/release/premake4"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (synopsis "Portable software build tool")
+    (description "@code{premake4} is a command line utility that reads a
+scripted definition of a software project and outputs @file{Makefile}s or
+other lower-level build files.")
+    (home-page "https://premake.github.io")
+    (license license:bsd-3)))

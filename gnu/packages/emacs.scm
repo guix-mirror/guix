@@ -2514,6 +2514,35 @@ number.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-pomodoro
+  (package
+    (name "emacs-org-pomodoro")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lolownia/org-pomodoro/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jalsggw3q5kvj353f84x4nl04a5vmq07h75ggppy1627lb31zm4"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-alert" ,emacs-alert)))
+    (home-page "https://github.com/lolownia/org-pomodoro")
+    (synopsis "Pomodoro technique for org-mode")
+    (description "@code{emacs-org-pomodoro} adds very basic support for
+Pomodoro technique in Emacs org-mode.
+
+Run @code{M-x org-pomodoro} for the task at point or select one of the
+last tasks that you clocked time for.  Each clocked-in pomodoro starts
+a timer of 25 minutes and after each pomodoro a break timer of 5
+minutes is started automatically.  Every 4 breaks a long break is
+started with 20 minutes.  All values are customizable.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
@@ -2586,14 +2615,14 @@ package provides a light and a dark variant.")
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
-               "1p2zaq0s4bbl5cx6wyab24wamw7m0mysb0v47dqjmnvfc25z84rq"))))
+               "1n8k12mfn01f20j0pyd7ycj77x0y3a008xc94frklaaqjc0v26s4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ahungry/color-theme-ahungry")
     (synopsis "Ahungry color theme for Emacs")

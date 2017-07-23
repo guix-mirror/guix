@@ -126,6 +126,7 @@ program.")
         (method url-fetch)
         (uri (string-append "https://github.com/astrand/xclip"
                             "/archive/" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
            "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
@@ -451,7 +452,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.45")
+    (version "6.3.47")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -460,12 +461,13 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lzyjcg6yff1vzlsda45i57khajp56yrmcjfa5faw3i60fnqqiy7"))))
+                "1kjivsq4c7dr7ggp44k09xm97i9chg8czvachqrfnv6fiqvwys0i"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("glm" ,glm)
+     `(("glew" ,glew)
+       ("glm" ,glm)
        ("icu4c" ,icu4c)
        ("libxext" ,libxext)
        ("libxrender" ,libxrender)
@@ -483,7 +485,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.4.63")
+    (version "5.4.64")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -492,7 +494,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ncly3mmg9pihda3jfwmvfa4sd3xanrm8hpvfq7lr2rl8rqknx80"))))
+                "0y7ajwcp6x9q7581alz2b5xqijs5cb9l38h10fzinswqrcz53ak1"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -1060,7 +1062,7 @@ by name.")
 (define-public tint2
   (package
     (name "tint2")
-    (version "0.12.11")
+    (version "0.14.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/o9000/" name
@@ -1068,7 +1070,7 @@ by name.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dv7zaj2ahnfclnwnwcz9arrvzxn65yy29z7fqdgifdh3jk1kl2h"))))
+                "1kwzwxy4myagybm3rc7dgynfgp75742n348qibn1p2an9ggyivda"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test target

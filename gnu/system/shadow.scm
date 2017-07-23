@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -143,7 +143,7 @@
     (with-imported-modules '((guix build utils))
       #~(begin
           (use-modules (guix build utils))
-          (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
+          (copy-file (car (find-files #+guile-wm "wm-init-sample.scm"))
                      #$output))))
 
   (let ((profile (plain-file "bash_profile" "\

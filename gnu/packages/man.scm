@@ -37,7 +37,7 @@
 (define-public libpipeline
   (package
     (name "libpipeline")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -45,7 +45,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1dlvp2mxlhg5zbj509kc60h7g39hpgwkzkpdf855cyzizgkmkivr"))))
+                "1gkrfqkphdc6gk8gic68asallj59i3cfq6nd31ppks0cljdgrwgy"))))
     (build-system gnu-build-system)
     (home-page "http://libpipeline.nongnu.org/")
     (synopsis "C library for manipulating pipelines of subprocesses")
@@ -57,14 +57,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.7.5")
+    (version "2.7.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "056a3il7agfazac12yggcg4gf412yq34k065im0cpfxbcw6xskaw"))))
+                "0gqgs4zc3r87apns0k5qp689p2ylxx2596s2mkmkxjjay99brv88"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -93,7 +93,12 @@ a flexible and convenient way.")
              (xz    (assoc-ref %build-inputs "xz"))
              (util  (assoc-ref %build-inputs "util-linux")))
          ;; Invoke groff, less, gzip, bzip2, and xz directly from the store.
-         (append (list "--disable-setuid" ;; Disable setuid man user.
+         (append (list ;; Disable setuid man user.
+                       "--disable-setuid"
+                       ;; Don't constrain ownership of system-wide cache files.
+                       ;; Otherwise creating the manpage database fails with
+                       ;; man-db > 2.7.5.
+                       "--disable-cache-owner"
                        (string-append "--with-pager=" less "/bin/less")
                        (string-append "--with-gzip=" gzip "/bin/gzip")
                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
@@ -133,7 +138,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.11")
+    (version "4.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -146,7 +151,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "097m0gsbaz0gf9ir4lmph3h5jj6wmydk1rglfz82dysybx4q1pmd"))))
+                "14z0zcwm0m98fk2m2b3pvr8rs2sb602mg8f7wwb4xl7yj7cpjvbg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)

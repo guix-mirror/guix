@@ -306,7 +306,7 @@ Use Alt-F2 for documentation.
      ;; the appropriate one.
      (cons* (file-system
               (mount-point "/")
-              (device "GuixSD")
+              (device "GuixSD_image")
               (title 'label)
               (type "ext4"))
 

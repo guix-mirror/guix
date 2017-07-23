@@ -2315,6 +2315,22 @@ package builds referenced by those generations can be reclaimed.  This
 is achieved by running @code{guix package --delete-generations}
 (@pxref{Invoking guix package}).
 
+Our recommendation is to run a garbage collection periodically, or when
+you are short on disk space.  For instance, to guarantee that at least
+5@tie{}GB are available on your disk, simply run:
+
+@example
+guix gc -F 5G
+@end example
+
+It is perfectly safe to run as a non-interactive periodic job
+(@pxref{Scheduled Job Execution}, for how to set up such a job on
+GuixSD).  Running @command{guix gc} with no arguments will collect as
+much garbage as it can, but that is often inconvenient: you may find
+yourself having to rebuild or re-download software that is ``dead'' from
+the GC viewpoint but that is necessary to build other pieces of
+software---e.g., the compiler tool chain.
+
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
 files (the @code{--delete} option), to print garbage-collector
@@ -6338,6 +6354,16 @@ The available options are:
 Use substitute information from @var{urls}.
 @xref{client-substitute-urls, the same option for @code{guix build}}.
 
+@item --sort=@var{key}
+Sort lines according to @var{key}, one of the following options:
+
+@table @code
+@item closure
+the total size of the item's closure (the default);
+@item self
+the size of each item.
+@end table
+
 @item --map-file=@var{file}
 Write a graphical map of disk usage in PNG format to @var{file}.
 
@@ -6934,7 +6960,8 @@ guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
 
 Additionally, when @option{--cache} is used, cached entries that have
-not been accessed for @var{ttl} may be deleted.
+not been accessed for @var{ttl} and that no longer have a corresponding
+item in the store, may be deleted.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files
@@ -14746,6 +14773,10 @@ from source.
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
 
+@item @code{fallback?} (default: @code{#f})
+When substituting a pre-built binary fails, fall back to building
+packages locally.
+
 @item @code{load-path} (default: @code{'()})
 This allows users to define their own packages and make them visible to
 cuirass as in @command{guix build} command.
@@ -15921,10 +15952,10 @@ The type of a bootloader configuration declaration.
 @cindex UEFI, bootloader
 @cindex BIOS, bootloader
 The bootloader to use, as a @code{bootloader} object. For now
-@code{grub-bootloader}, @code{grub-efi-bootloader} and
-@code{extlinux-bootloader} are supported.  @code{grub-efi-bootloader},
-allows to boot on modern systems using the @dfn{Unified Extensible
-Firmware Interface} (UEFI).
+@code{grub-bootloader}, @code{grub-efi-bootloader},
+@code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
+@code{grub-efi-bootloader} allows to boot on modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).
 
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
 modules.

@@ -40,6 +40,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader.scm				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
+  %D%/bootloader/u-boot.scm                     \
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -98,6 +99,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cpio.scm				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
+  %D%/packages/cran.scm				\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
   %D%/packages/cryptsetup.scm			\
@@ -149,6 +151,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fonts.scm			\
   %D%/packages/fontutils.scm			\
   %D%/packages/fpga.scm				\
+  %D%/packages/forth.scm			\
   %D%/packages/freedesktop.scm			\
   %D%/packages/freeipmi.scm			\
   %D%/packages/ftp.scm				\
@@ -163,7 +166,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gdb.scm				\
   %D%/packages/geo.scm				\
   %D%/packages/gettext.scm			\
-  %D%/packages/gforth.scm			\
   %D%/packages/ghostscript.scm			\
   %D%/packages/gimp.scm				\
   %D%/packages/gkrellm.scm			\
@@ -264,6 +266,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/maths.scm			\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
+  %D%/packages/medical.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
@@ -327,7 +330,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/tryton.scm			\
-  %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
   %D%/packages/rails.scm			\
@@ -363,6 +365,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
   %D%/packages/smalltalk.scm			\
+  %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
   %D%/packages/ssh.scm				\
@@ -397,6 +400,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/version-control.scm		\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
+  %D%/packages/virtualization.scm		\
   %D%/packages/vpn.scm				\
   %D%/packages/w3m.scm				\
   %D%/packages/wdiff.scm			\
@@ -518,7 +522,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-completion-directories.patch	\
-  %D%/packages/patches/bigloo-gc-shebangs.patch			\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
@@ -534,6 +537,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chicken-CVE-2017-6949.patch		\
+  %D%/packages/patches/chicken-CVE-2017-11343.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
@@ -574,6 +578,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
+  %D%/packages/patches/evince-CVE-2017-1000083.patch		\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
   %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
@@ -684,8 +689,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
+  %D%/packages/patches/heimdal-CVE-2017-6594.patch		\
+  %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
+  %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
-  %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
@@ -696,6 +703,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
+  %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
   %D%/packages/patches/jbig2dec-CVE-2017-7885.patch		\
@@ -771,6 +779,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
+  %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
@@ -812,6 +821,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
+  %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
@@ -932,17 +942,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-cython-fix-tests-32bit.patch	\
-  %D%/packages/patches/python-fake-factory-fix-build-32bit.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
+  %D%/packages/patches/python-pbr-fix-man-page-support.patch	\
   %D%/packages/patches/python-pillow-freetype-2.7-test-failure.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
-  %D%/packages/patches/python-pyopenssl-17.1.0-test-overflow.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/qemu-CVE-2017-7493.patch			\
   %D%/packages/patches/qemu-CVE-2017-8112.patch			\
@@ -950,9 +959,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-8379.patch			\
   %D%/packages/patches/qemu-CVE-2017-8380.patch			\
   %D%/packages/patches/qemu-CVE-2017-9524.patch			\
+  %D%/packages/patches/qemu-CVE-2017-11334.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
+  %D%/packages/patches/quassel-fix-tls-check.patch              \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
@@ -983,11 +994,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
+  %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/spice-CVE-2016-9577.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-1.patch		\
   %D%/packages/patches/spice-CVE-2016-9578-2.patch		\
+  %D%/packages/patches/spice-CVE-2017-7506.patch		\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
+  %D%/packages/patches/supertuxkart-angelscript-ftbfs.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
@@ -1038,6 +1052,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\
   %D%/packages/patches/vpnc-script.patch			\
+  %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
   %D%/packages/patches/weechat-python.patch			\

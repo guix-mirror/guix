@@ -118,7 +118,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -126,7 +126,7 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsrca7903g08zrifv4102gkxrhmzvgwd1sb6vw9pa00qhzsfkzs"))))
+                "0dqwarc2aw5clgpf24d9dxh43b0k0z3l6kksn30arx9bdlmrk5rx"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
@@ -136,10 +136,15 @@ spying and/or modification by the server.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    (synopsis "File verification and repair tool")
-    (description "Par2cmdline is a tool for generating RAID-like PAR2 recovery
-files using Reed-Solomon coding.  PAR2 files can be stored along side backups
-or distributed files for recovering from bitrot.")
+    (synopsis "File verification and repair tools")
+    (description "Par2cmdline uses Reed-Solomon error-correcting codes to
+generate and verify PAR2 recovery files.  These files can be distributed
+alongside the source files or stored together with back-ups to protect against
+transmission errors or @dfn{bit rot}, the degradation of storage media over
+time.
+Unlike a simple checksum, PAR2 doesn't merely detect errors: as long as the
+damage isn't too extensive (and smaller than the size of the recovery file), it
+can even repair them.")
     (home-page "https://github.com/Parchive/par2cmdline")
     (license license:gpl3+)))
 
@@ -456,13 +461,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.10")
+    (version "1.0.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "1sarmpzwr8dhbg0hsvaclcsjfax36ssb32d9klhhah4j8kqji3wp"))
+                "14fjk5dfwmjkn7nmkbhhbrk3g1wfrn8arvqd5r9jaij534nzsvpw"))
               (modules '((guix build utils)))
               (snippet
                '(for-each

@@ -39,7 +39,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
-  #:use-module (gnu packages qemu)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages linux)
@@ -68,7 +68,10 @@
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
-            system-disk-image))
+            system-disk-image
+
+            virtual-machine
+            virtual-machine?))
 
 
 ;;; Commentary:
@@ -105,16 +108,19 @@
                                              (guile-for-build
                                               (%guile-for-build))
 
+                                             (single-file-output? #f)
                                              (make-disk-image? #f)
                                              (references-graphs #f)
                                              (memory-size 256)
                                              (disk-image-format "qcow2")
                                              (disk-image-size 'guess))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
-derivation).  In the virtual machine, EXP has access to all its inputs from the
-store; it should put its output files in the `/xchg' directory, which is
-copied to the derivation's output when the VM terminates.  The virtual machine
-runs with MEMORY-SIZE MiB of memory.
+derivation).  The virtual machine runs with MEMORY-SIZE MiB of memory.  In the
+virtual machine, EXP has access to all its inputs from the store; it should
+put its output file(s) in the '/xchg' directory.
+
+If SINGLE-FILE-OUTPUT? is true, copy a single file from '/xchg' to OUTPUT.
+Otherwise, copy the contents of /xchg to a new directory OUTPUT.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of type
 DISK-IMAGE-FORMAT (e.g., 'qcow2' or 'raw'), of DISK-IMAGE-SIZE bytes and
@@ -164,6 +170,7 @@ made available under the /xchg CIFS share."
                                 #:linux linux #:initrd initrd
                                 #:memory-size #$memory-size
                                 #:make-disk-image? #$make-disk-image?
+                                #:single-file-output? #$single-file-output?
                                 #:disk-image-format #$disk-image-format
                                 #:disk-image-size size
                                 #:references-graphs graphs)))))
@@ -219,6 +226,7 @@ INPUTS is a list of inputs (as for packages)."
            (reboot))))
    #:system system
    #:make-disk-image? #f
+   #:single-file-output? #t
    #:references-graphs inputs))
 
 (define* (qemu-image #:key
@@ -345,7 +353,7 @@ to USB sticks meant to be read-only."
     ;; Volume name of the root file system.  Since we don't know which device
     ;; will hold it, we use the volume name to find it (using the UUID would
     ;; be even better, but somewhat less convenient.)
-    (normalize-label "GuixSD"))
+    (normalize-label "GuixSD_image"))
 
   (define file-systems-to-keep
     (remove (lambda (fs)
@@ -576,7 +584,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 full-boot?
                                                 (disk-image-size
                                                  (* (if full-boot? 500 70)
-                                                    (expt 2 20))))
+                                                    (expt 2 20)))
+                                                (options '()))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host.  The virtual machine runs with
 MEMORY-SIZE MiB of memory.
@@ -609,7 +618,8 @@ it is mostly useful when FULL-BOOT?  is true."
               #$@(common-qemu-options image
                                       (map file-system-mapping-source
                                            (cons %store-mapping mappings)))
-              "-m " (number->string #$memory-size)))
+              "-m " (number->string #$memory-size)
+              #$@options))
 
     (define builder
       #~(call-with-output-file #$output
@@ -620,5 +630,64 @@ it is mostly useful when FULL-BOOT?  is true."
             (chmod port #o555))))
 
     (gexp->derivation "run-vm.sh" builder)))
+
+
+;;;
+;;; High-level abstraction.
+;;;
+
+(define-record-type* <virtual-machine> %virtual-machine
+  make-virtual-machine
+  virtual-machine?
+  (operating-system virtual-machine-operating-system) ;<operating-system>
+  (qemu             virtual-machine-qemu              ;<package>
+                    (default qemu))
+  (graphic?         virtual-machine-graphic?      ;Boolean
+                    (default #f))
+  (memory-size      virtual-machine-memory-size   ;integer (MiB)
+                    (default 256))
+  (port-forwardings virtual-machine-port-forwardings ;list of integer pairs
+                    (default '())))
+
+(define-syntax virtual-machine
+  (syntax-rules ()
+    "Declare a virtual machine running the specified OS, with the given
+options."
+    ((_ os)                                       ;shortcut
+     (%virtual-machine (operating-system os)))
+    ((_ fields ...)
+     (%virtual-machine fields ...))))
+
+(define (port-forwardings->qemu-options forwardings)
+  "Return the QEMU option for the given port FORWARDINGS as a string, where
+FORWARDINGS is a list of host-port/guest-port pairs."
+  (string-join
+   (map (match-lambda
+          ((host-port . guest-port)
+           (string-append "hostfwd=tcp::"
+                          (number->string host-port)
+                          "-:" (number->string guest-port))))
+        forwardings)
+   ","))
+
+(define-gexp-compiler (virtual-machine-compiler (vm <virtual-machine>)
+                                                system target)
+  ;; XXX: SYSTEM and TARGET are ignored.
+  (match vm
+    (($ <virtual-machine> os qemu graphic? memory-size ())
+     (system-qemu-image/shared-store-script os
+                                            #:qemu qemu
+                                            #:graphic? graphic?
+                                            #:memory-size memory-size))
+    (($ <virtual-machine> os qemu graphic? memory-size forwardings)
+     (let ((options
+            `("-net" ,(string-append
+                       "user,"
+                       (port-forwardings->qemu-options forwardings)))))
+       (system-qemu-image/shared-store-script os
+                                              #:qemu qemu
+                                              #:graphic? graphic?
+                                              #:memory-size memory-size
+                                              #:options options)))))
 
 ;;; vm.scm ends here

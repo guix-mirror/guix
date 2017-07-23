@@ -248,7 +248,7 @@ structure of the predicted RNA.")
        ("python-nose" ,python2-nose)
        ("python-pysam" ,python2-pysam)))
     (inputs
-     `(("htslib" ,htslib)
+     `(("htslib" ,htslib-1.3) ; At least one test fails on htslib-1.4+.
        ("samtools" ,samtools)
        ("bwa" ,bwa)
        ("grep" ,grep)
@@ -300,7 +300,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.3.1")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -308,33 +308,27 @@ BAM files.")
                     version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "095ry68vmz9q5s1scjsa698dhgyvgw5aicz24c19iwfbai07mhqj"))
+                "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
-               '(delete-file-recursively "htslib-1.3.1"))))
+               '(delete-file-recursively "htslib-1.5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:configure-flags (list "--with-htslib=system")
        #:make-flags
        (list
         "USE_GPL=1"
+        "LIBS=-lgsl -lgslcblas"
         (string-append "prefix=" (assoc-ref %outputs "out"))
         (string-append "HTSDIR=" (assoc-ref %build-inputs "htslib") "/include")
-        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.a")
+        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.so")
         (string-append "BGZIP=" (assoc-ref %build-inputs "htslib") "/bin/bgzip")
-        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix"))
+        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix")
+        (string-append "PACKAGE_VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; Do not attempt to build htslib.
-               (("^include \\$\\(HTSDIR\\)/htslib\\.mk") "")
-               ;; Link against GSL cblas.
-               (("-lcblas") "-lgslcblas"))
-             #t))
-         (delete 'configure)
          (add-before 'check 'patch-tests
            (lambda _
              (substitute* "test/test.pl"
@@ -1195,7 +1189,7 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.2.9")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
@@ -1203,7 +1197,7 @@ errors at the end of reads.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vp5db8i7is57iwjybcdg18f5ivyzlj5g1ix1nlvxainzivhz55g"))
+                "0hwa5r9qbglppb7sz5z79rlmmddr3n51n468jb3wh8rwjgn3yr90"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1211,28 +1205,28 @@ errors at the end of reads.")
                   (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
                   (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)
-              ("perl-clone" ,perl-clone)
-              ("perl-test-deep" ,perl-test-deep)
-              ("perl-test-simple" ,perl-test-simple)
-              ("python" ,python-2)
-              ("tbb" ,tbb)))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-clone" ,perl-clone)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-simple" ,perl-test-simple)
+       ("python" ,python-2)
+       ("tbb" ,tbb)
+       ("zlib" ,zlib)))
     (arguments
      '(#:make-flags
        (list "allall"
              "WITH_TBB=1"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-delete
-        'configure
-        (alist-replace
-         'check
-         (lambda* (#:key outputs #:allow-other-keys)
-           (system* "perl"
-                    "scripts/test/simple_tests.pl"
-                    "--bowtie2=./bowtie2"
-                    "--bowtie2-build=./bowtie2-build"))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "perl"
+                             "scripts/test/simple_tests.pl"
+                             "--bowtie2=./bowtie2"
+                             "--bowtie2-build=./bowtie2-build")))))))
     (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
     (synopsis "Fast and sensitive nucleotide sequence read aligner")
     (description
@@ -1424,7 +1418,7 @@ multiple sequence alignments.")
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.10.0")
+    (version "0.11.2.2")
     (source (origin
               (method url-fetch)
               ;; Test data is missing on PyPi.
@@ -1434,7 +1428,7 @@ multiple sequence alignments.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mmvn91agr238kwz7226xq0i7k84lg2nxywn9712mzj7gvgqhfy8"))
+                "1cfqdxsqs3xhacns9n0271ck6wkc76px66ddjm91wfw2jxxfklvc"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
@@ -1533,13 +1527,13 @@ UCSC genome browser.")
 (define-public python-plastid
   (package
     (name "python-plastid")
-    (version "0.4.6")
+    (version "0.4.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "plastid" version))
               (sha256
                (base32
-                "1sqkz5d3b9kf688mp7k771c87ins42j7j0whmkb49cb3fsg8s8lj"))))
+                "0l24dd3q66if8yj042m4s0g95n6acn7im1imqd3p6h8ns43kxhj8"))))
     (build-system python-build-system)
     (arguments
      ;; Some test files are not included.
@@ -3051,7 +3045,7 @@ manipulating HTS data.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.3.1")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3059,7 +3053,7 @@ manipulating HTS data.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))
+                "0bcjmnbwp2bib1z1bkrp95w9v2syzdwdfqww10mkb1hxlmg52ax0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3071,7 +3065,9 @@ manipulating HTS data.")
               (("/bin/bash") (which "bash")))
             #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("openssl" ,openssl)
+       ("curl" ,curl)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "http://www.htslib.org")
@@ -3082,6 +3078,20 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
     ;; Files under cram/ are released under the modified BSD license;
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
+
+;; This package should be removed once no packages rely upon it.
+(define htslib-1.3
+  (package
+    (inherit htslib)
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))))
 
 (define-public idr
   (package
@@ -3457,23 +3467,20 @@ form of assemblies or reads.")
                    license:cpl1.0))))     ; Open Bloom Filter
 
 (define-public metabat
-  ;; We package from a git commit because compilation of the released version
-  ;; fails.
-  (let ((commit "cbdca756993e66ae57e50a27970595dda9cbde1b"))
-    (package
-      (name "metabat")
-      (version (string-append "0.32.4-1." (string-take commit 8)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://bitbucket.org/berkeleylab/metabat.git")
-               (commit commit)))
-         (file-name (string-append name "-" version))
-         (sha256
-          (base32
-           "0byia8nsip6zvc4ha0qkxkxxyjf4x7jcvy48q2dvb0pzr989syzr"))
-         (patches (search-patches "metabat-remove-compilation-date.patch"))))
+  (package
+    (name "metabat")
+    (version "2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/berkeleylab/metabat/get/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ll00l81aflscgggs5nfhj12cbvdiz3gg7f7n5f537a3xhx60vn9"))
+       (patches (search-patches "metabat-remove-compilation-date.patch"
+                                "metabat-fix-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3490,35 +3497,35 @@ form of assemblies or reads.")
                 "#include \"htslib/kseq.h\""))
              #t))
          (add-after 'unpack 'fix-scons
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "SConstruct"
-                (("^htslib_dir = 'samtools'")
-                 (string-append "hitslib_dir = '"
-                                (assoc-ref inputs "htslib")
-                                "'"))
-                (("^samtools_dir = 'samtools'")
-                 (string-append "samtools_dir = '"
-                                (assoc-ref inputs "htslib")
-                                "'"))
-                (("^findStaticOrShared\\('bam', hts_lib")
-                 (string-append "findStaticOrShared('bam', '"
-                                (assoc-ref inputs "samtools")
-                                "/lib'"))
-                ;; Do not distribute README.
-                (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
-              #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "SConstruct"
+               (("^htslib_dir += 'samtools'")
+                (string-append "htslib_dir = '"
+                               (assoc-ref inputs "htslib")
+                               "'"))
+               (("^samtools_dir = 'samtools'")
+                (string-append "samtools_dir = '"
+                               (assoc-ref inputs "samtools")
+                               "'"))
+               (("^findStaticOrShared\\('bam', hts_lib")
+                (string-append "findStaticOrShared('bam', '"
+                               (assoc-ref inputs "samtools")
+                               "/lib'"))
+               ;; Do not distribute README.
+               (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
+             #t))
          (delete 'configure)
          (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (mkdir (assoc-ref outputs "out"))
-                    (zero? (system* "scons"
-                                    (string-append
-                                     "PREFIX="
-                                     (assoc-ref outputs "out"))
-                                    (string-append
-                                     "BOOST_ROOT="
-                                     (assoc-ref inputs "boost"))
-                                    "install"))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir (assoc-ref outputs "out"))
+             (zero? (system* "scons"
+                             (string-append
+                              "PREFIX="
+                              (assoc-ref outputs "out"))
+                             (string-append
+                              "BOOST_ROOT="
+                              (assoc-ref inputs "boost"))
+                             "install"))))
          ;; Check and install are carried out during build phase.
          (delete 'check)
          (delete 'install))))
@@ -3539,8 +3546,8 @@ sequences to deconvolute complex microbial communities, or metagenome binning,
 enables the study of individual organisms and their interactions.  MetaBAT is
 an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
-   (license (license:non-copyleft "file://license.txt"
-                                  "See license.txt in the distribution.")))))
+    (license (license:non-copyleft "file://license.txt"
+                                   "See license.txt in the distribution."))))
 
 (define-public minced
   (package
@@ -4320,6 +4327,8 @@ extremely diverse sets of genomes.")
     (description
      "RAxML is a tool for phylogenetic analysis and post-analysis of large
 phylogenies.")
+    ;; The source includes x86 specific code
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public rsem
@@ -4512,7 +4521,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.3.1")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
@@ -4521,7 +4530,7 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "0znnnxc467jbf1as2dpskrjhfh8mbll760j6w6rdkwlwbqsp8gbc"))))
+         "1xidmv0jmfy7l0kb32hdnlshcxgzi1hmygvig0cqrq1fhckdlhl5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -4529,36 +4538,35 @@ to the user's query of interest.")
                   (guix build gnu-build-system)
                   (guix build utils))
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:configure-flags (list "--with-ncurses")
+       #:configure-flags (list "--with-ncurses" "--with-htslib=system")
        #:phases
-       (alist-cons-after
-        'unpack 'patch-tests
-        (lambda _
-          (substitute* "test/test.pl"
-            ;; The test script calls out to /bin/bash
-            (("/bin/bash") (which "bash")))
-          #t)
-        (alist-cons-after
-         'install 'install-library
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (install-file "libbam.a" lib)
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               ;; The test script calls out to /bin/bash
+               (("/bin/bash") (which "bash")))
              #t))
-         (alist-cons-after
-          'install 'install-headers
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((include (string-append (assoc-ref outputs "out")
-                                          "/include/samtools/")))
-              (for-each (lambda (file)
-                          (install-file file include))
-                        (scandir "." (lambda (name) (string-match "\\.h$" name))))
-              #t))
-          %standard-phases)))))
+         (add-after 'install 'install-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "libbam.a" lib)
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((include (string-append (assoc-ref outputs "out")
+                                           "/include/samtools/")))
+               (for-each (lambda (file)
+                           (install-file file include))
+                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
+               #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("ncurses" ,ncurses)
-              ("perl" ,perl)
-              ("python" ,python)
-              ("zlib" ,zlib)))
+    (inputs
+     `(("htslib" ,htslib)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))
     (home-page "http://samtools.sourceforge.net")
     (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
     (description
@@ -5316,6 +5324,8 @@ and operational taxonomic unit (OTU) picking of next generation
 sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
 allows for fast and sensitive analyses of nucleotide sequences.  The main
 application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
+    ;; The source includes x86 specific code
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:lgpl3)))
 
 (define-public star
@@ -6528,13 +6538,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.14.0")
+    (version "0.14.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0ywwrs4d752xfk0p0w122kvi0xvp6nmxnyynchbsa8zciqymhgv8"))))
+                "1r7s4pfw026qazzic090mhk8d9m39j2nwl87dyqcpdylyq7gq5qs"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -6780,13 +6790,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.28.0")
+    (version "1.28.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "10x9zx0b7j05d1j6p0xs4q4f4wzbhf3rq64wzi9cgv7f44q43a5n"))))
+                "1y15kg1q81h8rmga83ljiwr8whkajcargfjiljr212d6if17ys1z"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
@@ -7559,7 +7569,7 @@ Stephens (1990).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
+                "0479qx4bapgcp5chj10a63chk0s28x9cx1gamz3f5m3yd7jzwcf2"))))
     (properties
      `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
     (build-system r-build-system)

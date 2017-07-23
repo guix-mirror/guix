@@ -84,12 +84,16 @@
   "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
 return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
 '-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
-  (if (and %user-profile-directory
-           (string=? (canonicalize-path (dirname profile))
-                     (dirname %user-profile-directory))
-           (string=? (basename profile) (basename %user-profile-directory)))
-      %current-profile
-      profile))
+
+  ;; Trim trailing slashes so that the basename comparison below works as
+  ;; intended.
+  (let ((profile (string-trim-right profile #\/)))
+    (if (and %user-profile-directory
+             (string=? (canonicalize-path (dirname profile))
+                       (dirname %user-profile-directory))
+             (string=? (basename profile) (basename %user-profile-directory)))
+        %current-profile
+        profile)))
 
 (define (user-friendly-profile profile)
   "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
@@ -709,9 +713,12 @@ processed, #f otherwise."
                (raise (condition (&profile-not-found-error
                                   (profile profile)))))
               ((string-null? pattern)
-               (list-generation display-profile-content
-                                (car (profile-generations profile)))
-               (diff-profiles profile (profile-generations profile)))
+               (match (profile-generations profile)
+                 (()
+                  #t)
+                 ((first rest ...)
+                  (list-generation display-profile-content first)
+                  (diff-profiles profile (cons first rest)))))
               ((matching-generations pattern profile)
                =>
                (lambda (numbers)

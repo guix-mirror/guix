@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0 bsd-3))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages serialization)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -74,8 +76,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "de9d8f0e295928d92e0e5ea43a4e594fa78c76fb")
-        (revision 2))
+        (commit "b547349d505c57fd679b6e48c472d8ab65469c96")
+        (revision 3))
     (package
       (name "guix")
 
@@ -91,7 +93,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0px7n4vajc9am3snhnnvddrmnwnb2ygwz0f8isk0qhk8b1ks4kdx"))
+                  "0q6qr9hvrac1wj2ygn4jj4w89h1m35zkcjjd741sibc3l46pa93l"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -516,3 +518,183 @@ different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
     (license gpl3+)))
+
+(define-public python-anaconda-client
+  (package
+    (name "python-anaconda-client")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Anaconda-Platform/"
+                           "anaconda-client/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv4wi6k5jz7rlwfgvgfdizv77x3cr1wa2aj0k1595g7fbhkjhz2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-clyent" ,python-clyent)))
+    (native-inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil)
+       ("python-mock" ,python-mock)
+       ("python-coverage" ,python-coverage)
+       ("python-pillow" ,python-pillow)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for some tests.
+         (add-before 'check 'set-up-home
+           (lambda* _ (setenv "HOME" "/tmp") #t))
+         (add-before 'check 'remove-network-tests
+           (lambda* _
+             ;; Remove tests requiring a network connection
+             (let ((network-tests '("tests/test_upload.py"
+                                    "tests/test_authorizations.py"
+                                    "tests/test_login.py"
+                                    "tests/test_whoami.py"
+                                    "utils/notebook/tests/test_data_uri.py"
+                                    "utils/notebook/tests/test_base.py"
+                                    "utils/notebook/tests/test_downloader.py"
+                                    "inspect_package/tests/test_conda.py")))
+               (with-directory-excursion "binstar_client"
+                 (for-each delete-file network-tests)))
+             #t)))))
+    (home-page "https://github.com/Anaconda-Platform/anaconda-client")
+    (synopsis "Anaconda Cloud command line client library")
+    (description
+     "Anaconda Cloud command line client library provides an interface to
+Anaconda Cloud.  Anaconda Cloud is useful for sharing packages, notebooks and
+environments.")
+    (license bsd-3)))
+
+(define-public python2-anaconda-client
+  (package-with-python2 python-anaconda-client))
+
+(define-public python-conda
+  (package
+    (name "python-conda")
+    (version "4.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/conda/conda/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jq8hyrc5npb5sf4vw6s6by4602yj8f79vzpbwdfgpkn02nfk1dv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'create-version-file
+           (lambda _
+             (with-output-to-file "conda/.version"
+               (lambda () (display ,version)))
+             #t))
+         (add-before 'check 'remove-failing-tests
+           (lambda _
+             ;; These tests require internet/network access
+             (let ((network-tests '("test_cli.py"
+                                    "test_create.py"
+                                    "test_export.py"
+                                    "test_fetch.py"
+                                    "test_history.py"
+                                    "test_info.py"
+                                    "test_install.py"
+                                    "test_priority.py"
+                                    "conda_env/test_cli.py"
+                                    "conda_env/test_create.py"
+                                    "conda_env/specs/test_notebook.py"
+                                    "conda_env/utils/test_notebooks.py"
+                                    "core/test_index.py"
+                                    "core/test_repodata.py")))
+               (with-directory-excursion "tests"
+                 (for-each delete-file network-tests)
+
+                 ;; FIXME: This test creates a file, then deletes it and tests
+                 ;; that the file was deleted.  For some reason it fails when
+                 ;; building with guix, but does not when you run it in the
+                 ;; directory left when you build with the --keep-failed
+                 ;; option
+                 (delete-file "gateways/disk/test_delete.py")
+                 #t))))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-pycosat" ,python-pycosat)
+       ("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-anaconda-client" ,python-anaconda-client)))
+    (home-page "https://github.com/conda/conda")
+    (synopsis "Cross-platform, OS-agnostic, system-level binary package manager")
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.
+
+This package provides Conda as a library.")
+    (license bsd-3)))
+
+(define-public python2-conda
+  (package-with-python2 python-conda))
+
+(define-public conda
+  (package (inherit python-conda)
+    (name "conda")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-conda)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; This test fails when run before installation.
+               (delete-file "tests/test_activate.py")
+
+               ;; Fix broken defaults
+               (substitute* "conda/base/context.py"
+                 (("return sys.prefix")
+                  (string-append "return \"" (assoc-ref outputs "out") "\""))
+                 (("return (prefix_is_writable\\(self.root_prefix\\))" _ match)
+                  (string-append "return False if self.root_prefix == self.conda_prefix else "
+                                 match)))
+
+               ;; The util/setup-testing.py is used to build conda in
+               ;; application form, rather than the default, library form.
+               ;; With this, we are able to run commands like `conda --help`
+               ;; directly on the command line
+               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (target (string-append out "/lib/python"
+                                             ((@@ (guix build python-build-system)
+                                                  get-python-version)
+                                              (assoc-ref inputs "python"))
+                                             "/site-packages/")))
+                 ;; The installer aborts if the target directory is not on
+                 ;; PYTHONPATH.
+                 (setenv "PYTHONPATH"
+                         (string-append target ":" (getenv "PYTHONPATH")))
+
+                 ;; And it aborts if the directory doesn't exist.
+                 (mkdir-p target)
+                 (zero? (system* "python" "utils/setup-testing.py" "install"
+                                 (string-append "--prefix=" out))))))))))
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.")))

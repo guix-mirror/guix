@@ -72,9 +72,9 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
@@ -94,14 +94,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.26")
+    (version "2.4.27")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "11ykcfv7b9zpd7fb93a7yhnyfwrilryjz21iklaf0yf8mwpvazm0"))))
+               "0fn1778mxhf78np2d8qlycg1c2ak18rxax41plahasca4clc3z3i"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -132,14 +132,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.12.0")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c2vg6530qplwk8rhldww5r3cwcbw1avka53qg9sh85nzlk2w8ml"))))
+                "1yvnmj7vlykrqdi6amkvs63lva6qkxd98sqv0a8hz8w5ci1bz4w7"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -543,7 +543,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -551,10 +551,13 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0jyxwc6bcvkcahkwcq237a0x209cysb63n5lak5m7zbglbb2jmq2"))))
+                "00iids8ldsqnnndmcfjp6kc00lv7fawf5l24mpbdbkh98yazgc4i"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("icu4c" ,icu4c)
+     `(("libidn2" ,libidn2)
+       ("libunistring" ,libunistring)
        ("python-2" ,python-2)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
@@ -2236,14 +2239,14 @@ kinds of HTML parsing operations.")
 (define-public perl-html-template
   (package
     (name "perl-html-template")
-    (version "2.95")
+    (version "2.97")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/W/WO/WONKO/"
+              (uri (string-append "mirror://cpan/authors/id/S/SA/SAMTREGAR/"
                                   "HTML-Template-" version ".tar.gz"))
               (sha256
                (base32
-                "07ahpfgidxsw2yb7y8i7bbr8s64aq6qgq832h9jswmksxbd0l43q"))))
+                "17qjw8swj2q4b1ic285pndgrkmvpsqw0j68nhqzpk1daydhsyiv5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
@@ -4702,3 +4705,58 @@ arrays.  It creates a JSON string on stdout from words provided as
 command-line arguments or read from stdin.")
     (license (list l:gpl2+
                    l:expat)))) ; json.c, json.h
+
+(define-public python-internetarchive
+  (package
+    (name "python-internetarchive")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jjjake/internetarchive/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00v1489rv1ydcihwbdl7sqpcpmm98b9kqqlfggr32k0ndmv7ivas"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; 11 tests of 105 fail to mock "requests".
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs target (tests? (not target)) #:allow-other-keys)
+             (if tests?
+               (begin
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                               ":" (getenv "PATH")))
+                 (zero? (system* "py.test")))
+               (begin
+                 (format #t "test suite not run~%")
+                 #t)))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-jsonpatch" ,python-jsonpatch-0.4)
+       ("python-docopt" ,python-docopt)
+       ("python-clint" ,python-clint)
+       ("python-six" ,python-six)
+       ("python-schema" ,python-schema-0.5)
+       ("python-backports-csv" ,python-backports-csv)))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest-capturelog" ,python-pytest-capturelog)
+       ("python-responses" ,python-responses)))
+    (home-page "https://github.com/jjjake/internetarchive")
+    (synopsis "Command-line interface to archive.org")
+    (description "@code{ia} is a command-line tool for using
+@url{archive.org} from the command-line.  It also emplements the
+internetarchive python module for programatic access to archive.org.")
+    (properties
+     `((python2-variant . ,(delay python2-internetarchive))))
+    (license l:agpl3+)))
+
+(define-public python2-internetarchive
+  (package-with-python2
+   (strip-python2-variant python-internetarchive)))

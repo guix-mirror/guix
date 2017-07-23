@@ -271,7 +271,13 @@ re-executing them as necessary.")
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")
+     `(#:configure-flags '("--localstatedir=/var"
+
+                           ;; Make sure 'PATH_PROCNET_DEV' gets defined when
+                           ;; cross-compiling (by default it does not.)
+                           ,@(if (%current-target-system)
+                                 '("--with-path-procnet-dev=/proc/net/dev")
+                                 '()))
        ;; On some systems, 'libls.sh' may fail with an error such as:
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
@@ -300,7 +306,7 @@ hostname.")
                 "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Assume System V `setpgrp (void)', which is the default on GNU
+     `(;; Assume System V `setpgrp (void)', which is the default on GNU
        ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
        #:configure-flags
        '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
@@ -310,7 +316,10 @@ hostname.")
          (add-before 'build 'set-nscd-file-name
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Use the right file name for nscd.
-             (let ((libc (assoc-ref inputs "libc")))
+             (let ((libc (assoc-ref inputs
+                                    ,(if (%current-target-system)
+                                         "cross-libc"
+                                         "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
                   (string-append libc "/sbin/nscd"))))))

@@ -31,7 +31,13 @@ choice.
 @section Building from Git
 
 If you want to hack Guix itself, it is recommended to use the latest
-version from the Git repository.  When building Guix from a checkout,
+version from the Git repository:
+
+@example
+git clone https://git.savannah.gnu.org/git/guix.git
+@end example
+
+When building Guix from a checkout,
 the following packages are required in addition to those mentioned in
 the installation instructions (@pxref{Requirements}).
 

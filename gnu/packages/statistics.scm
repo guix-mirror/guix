@@ -34,6 +34,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cran)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
@@ -643,26 +644,6 @@ Many fast algorithmic operations such as @code{match} and @code{order} support
 interactive data exploration and manipulation and optionally leverage
 caching.")
     (license license:gpl2)))
-
-(define-public r-colorspace
-  (package
-    (name "r-colorspace")
-    (version "1.3-2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "colorspace" version))
-       (sha256
-        (base32 "0d1ya7hx4y58n5ivwmdmq2zgh0g2sbv7ykh13n85c1355csd57yx"))))
-    (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/colorspace")
-    (synopsis "Color space manipulation")
-    (description
-     "This package carries out a mapping between assorted color spaces
-including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB and polar
-CIELAB.  Qualitative, sequential, and diverging color palettes based on HCL
-colors are provided.")
-    (license license:bsd-3)))
 
 (define-public r-dichromat
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -653,6 +653,20 @@ seats.)"
            (inherit pam)
            (session (cons pam-elogind (pam-service-session pam)))))))
 
+(define (elogind-shepherd-service config)
+  "Return a Shepherd service to start elogind according to @var{config}."
+  (list (shepherd-service
+         (requirement '(dbus-system))
+         (provision '(elogind))
+         (start #~(make-forkexec-constructor
+                   (list #$(file-append (elogind-package config)
+                                        "/libexec/elogind/elogind"))
+                   #:environment-variables
+                   (list (string-append "ELOGIND_CONF_FILE="
+                                        #$(elogind-configuration-file
+                                           config)))))
+         (stop #~(make-kill-destructor)))))
+
 (define elogind-service-type
   (service-type (name 'elogind)
                 (extensions
@@ -662,6 +676,12 @@ seats.)"
                                           (compose list elogind-package))
                        (service-extension polkit-service-type
                                           (compose list elogind-package))
+
+                       ;; Start elogind from the Shepherd rather than waiting
+                       ;; for bus activation.  This ensures that it can handle
+                       ;; events like lid close, etc.
+                       (service-extension shepherd-root-service-type
+                                          elogind-shepherd-service)
 
                        ;; Provide the 'loginctl' command.
                        (service-extension profile-service-type

@@ -19,7 +19,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages qemu)
+(define-module (gnu packages virtualization)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
@@ -42,6 +42,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
@@ -80,7 +81,8 @@
                                       "qemu-CVE-2017-8309.patch"
                                       "qemu-CVE-2017-8379.patch"
                                       "qemu-CVE-2017-8380.patch"
-                                      "qemu-CVE-2017-9524.patch"))
+                                      "qemu-CVE-2017-9524.patch"
+                                      "qemu-CVE-2017-11334.patch"))
              (sha256
               (base32
                "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))
@@ -265,6 +267,52 @@ all common programming languages.  Vala bindings are also provided.")
     ;; The library files are released under LGPLv2.1 or later; the source
     ;; files in the "tools" directory are released under GPLv2+.
     (license (list lgpl2.1+ gpl2+))))
+
+(define-public lxc
+  (package
+    (name "lxc")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://linuxcontainers.org/downloads/lxc/lxc-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "15449r56rqg3487kzsnfvz0w4p5ajrq0krcsdh6c9r6g0ark93hd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libcap" ,libcap)
+       ("libseccomp" ,libseccomp)
+       ("libselinux" ,libselinux)))
+    (arguments
+     '(#:configure-flags
+       '("--sysconfdir=/etc"
+         "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out         (assoc-ref outputs "out"))
+                    (bashcompdir (string-append out "/etc/bash_completion.d")))
+               (zero? (system*
+                       "make" "install"
+                       (string-append "bashcompdir=" bashcompdir)
+                       ;; Don't install files into /var and /etc.
+                       "LXCPATH=/tmp/var/lib/lxc"
+                       "localstatedir=/tmp/var"
+                       "sysconfdir=/tmp/etc"
+                       "sysconfigdir=/tmp/etc/default"))))))))
+    (synopsis "Linux container tools")
+    (home-page "https://linuxcontainers.org/")
+    (description
+     "LXC is a userspace interface for the Linux kernel containment features.
+Through a powerful API and simple tools, it lets Linux users easily create and
+manage system or application containers.")
+    (license lgpl2.1+)))
 
 (define-public libvirt
   (package

@@ -34,6 +34,7 @@
   (package
    (name "pcre")
    (version "8.40")
+   (replacement pcre-8.41)
    (source (origin
             (method url-fetch)
             (uri (list
@@ -71,6 +72,21 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "http://www.pcre.org/")))
+
+(define pcre-8.41
+  (package
+    (inherit pcre)
+    (version "8.41")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/pcre/pcre/"
+                                        version "/pcre-" version ".tar.bz2")
+                         (string-append "ftp://ftp.csx.cam.ac.uk"
+                                        "/pub/software/programming/pcre/"
+                                        "pcre-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0c5m469p5pd7jip621ipq6hbgh7128lzh7xndllfgh77ban7wb76"))))))
 
 (define-public pcre2
   (package

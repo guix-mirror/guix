@@ -77,8 +77,22 @@ if ITEM is not in the store."
              (leave (G_ "no available substitute information for '~a'~%")
                     item)))))))
 
-(define* (display-profile profile #:optional (port (current-output-port)))
-  "Display PROFILE, a list of PROFILE objects, to PORT."
+(define profile-closure<?
+  (match-lambda*
+    ((($ <profile> name1 self1 total1)
+      ($ <profile> name2 self2 total2))
+     (< total1 total2))))
+
+(define profile-self<?
+  (match-lambda*
+    ((($ <profile> name1 self1 total1)
+      ($ <profile> name2 self2 total2))
+     (< self1 self2))))
+
+(define* (display-profile profile #:optional (port (current-output-port))
+                          #:key (profile<? profile-closure<?))
+  "Display PROFILE, a list of PROFILE objects, to PORT.  Sort entries
+according to PROFILE<?."
   (define MiB (expt 2 20))
 
   (format port "~64a ~8a ~a\n"
@@ -89,11 +103,7 @@ if ITEM is not in the store."
                  (format port "~64a  ~6,1f  ~6,1f ~5,1f%\n"
                          name (/ total MiB) (/ self MiB)
                          (* 100. (/ self whole 1.)))))
-              (sort profile
-                    (match-lambda*
-                      ((($ <profile> name1 self1 total1)
-                        ($ <profile> name2 self2 total2))
-                       (> total1 total2)))))
+              (sort profile (negate profile<?)))
     (format port (G_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
 
 (define display-profile*
@@ -224,6 +234,9 @@ Report the size of PACKAGE and its dependencies.\n"))
                          fetch substitute from URLS if they are authorized"))
   (display (G_ "
   -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""))
+  ;; TRANSLATORS: "closure" and "self" must not be translated.
+  (display (G_ "
+      --sort=KEY         sort according to KEY--\"closure\" or \"self\""))
   (display (G_ "
   -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
   (newline)
@@ -247,6 +260,15 @@ Report the size of PACKAGE and its dependencies.\n"))
                                      (string-tokenize arg)
                                      (alist-delete 'substitute-urls result))
                          rest)))
+        (option '("sort") #t #f
+                (lambda (opt name arg result . rest)
+                  (match arg
+                    ("closure"
+                     (alist-cons 'profile<? profile-closure<? result))
+                    ("self"
+                     (alist-cons 'profile<? profile-self<? result))
+                    (_
+                     (leave (G_ "~a: invalid sorting key~%") arg)))))
         (option '(#\m "map-file") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'map-file arg result)))
@@ -259,7 +281,8 @@ Report the size of PACKAGE and its dependencies.\n"))
                   (show-version-and-exit "guix size")))))
 
 (define %default-options
-  `((system . ,(%current-system))))
+  `((system . ,(%current-system))
+    (profile<? . ,profile-closure<?)))
 
 
 ;;;
@@ -273,6 +296,7 @@ Report the size of PACKAGE and its dependencies.\n"))
                                    (('argument . file) file)
                                    (_ #f))
                                  opts))
+           (profile<? (assoc-ref opts 'profile<?))
            (map-file (assoc-ref opts 'map-file))
            (system   (assoc-ref opts 'system))
            (urls     (assoc-ref opts 'substitute-urls)))
@@ -298,5 +322,6 @@ Report the size of PACKAGE and its dependencies.\n"))
                       (begin
                         (profile->page-map profile map-file)
                         (return #t))
-                      (display-profile* profile)))
+                      (display-profile* profile (current-output-port)
+                                        #:profile<? profile<?)))
                 #:system system)))))))))

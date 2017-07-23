@@ -5,6 +5,8 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +30,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -1373,6 +1376,109 @@ contain over 620 classes.")
               ("qt" ,qt-4)))
            (inputs
             `(("python" ,python-2)))))
+
+(define-public qscintilla
+  (package
+    (name "qscintilla")
+    (version "2.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/pyqt/QScintilla2/"
+                                  "QScintilla-" version "/QScintilla_gpl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0r7s7ndblv3jc0xig1y4l64b6mfr879cdv3zwdndn27rj6fqmycp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chdir "Qt4Qt5")
+               (substitute* "qscintilla.pro"
+                 (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                  (string-append out "/lib"))
+                 (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
+                  (string-append out "/include"))
+                 (("\\$\\$\\[QT_INSTALL_TRANSLATIONS\\]")
+                  (string-append out "/translations"))
+                 (("\\$\\$\\[QT_INSTALL_DATA\\]") out)
+                 (("\\$\\$\\[QT_HOST_DATA\\]") out))
+               (zero? (system* "qmake"))))))))
+    (native-inputs `(("qtbase" ,qtbase)))
+    (home-page "http://www.riverbankcomputing.co.uk/software/qscintilla/intro")
+    (synopsis "Qt port of the Scintilla C++ editor control")
+    (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
+editor control.  QScintilla includes features especially useful when editing
+and debugging source code.  These include support for syntax styling, error
+indicators, code completion and call tips.")
+    (license license:gpl3+)))
+
+(define-public python-qscintilla
+  (package (inherit qscintilla)
+    (name "python-qscintilla")
+    (arguments
+     `(#:configure-flags
+       (list "--pyqt=PyQt5"
+             (string-append "--pyqt-sipdir="
+                            (assoc-ref %build-inputs "python-pyqt")
+                            "/share/sip")
+             (string-append "--qsci-incdir="
+                            (assoc-ref %build-inputs "qscintilla")
+                            "/include")
+             (string-append "--qsci-libdir="
+                            (assoc-ref %build-inputs "qscintilla")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (chdir "Python")
+             (and (zero? (apply system* "python3" "configure.py"
+                                configure-flags))
+                  ;; Install to the right directory
+                  (begin
+                    (substitute* '("Makefile"
+                                   "Qsci/Makefile")
+                      (("\\$\\(INSTALL_ROOT\\)/gnu/store/[^/]+")
+                       (assoc-ref outputs "out")))
+                    #t)))))))
+    (inputs
+     `(("qscintilla" ,qscintilla)
+       ("python" ,python)
+       ("python-pyqt" ,python-pyqt)))
+    (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
+editor control.  QScintilla includes features especially useful when editing
+and debugging source code.  These include support for syntax styling, error
+indicators, code completion and call tips.
+
+This package provides the Python bindings.")))
+
+;; PyQt only looks for modules in its own directory.  It ignores environment
+;; variables such as PYTHONPATH, so we need to build a union package to make
+;; it work.
+(define-public python-pyqt+qscintilla
+  (package (inherit python-pyqt)
+    (name "python-pyqt+qscintilla")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs
+     `(("python-pyqt" ,python-pyqt)
+       ("python-qscintilla" ,python-qscintilla)))
+    (synopsis "Union of PyQt and the Qscintilla extension")
+    (description
+     "This package contains the union of PyQt and the Qscintilla extension.")))
 
 (define-public qtkeychain
   (package

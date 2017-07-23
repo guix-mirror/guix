@@ -90,7 +90,7 @@
   over a network connection.  It can be used to redirect traffic from a USB device
   to a different (virtual) machine than the one to which the USB device is
   attached.")
-      (home-page "http://www.spice-space.org")
+      (home-page "https://www.spice-space.org")
       (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+)))))
 
 (define-public virglrenderer
@@ -122,7 +122,7 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.12.12")
+    (version "0.12.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -130,7 +130,7 @@ system to use the host GPU to accelerate 3D rendering.")
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "00wx81f2ml62g3maw63jq9w217zym921rdi38h7lpm5m8ckxraqp"))))
+                "0cwrgkp558mblcf4vrhacb3iizz12khsrrl82w38w9nj0ar13vl9"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
@@ -211,7 +211,8 @@ which allows users to view a desktop computing environment.")
                (base32
                 "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))
               (patches
-               (search-patches "spice-CVE-2016-9577.patch"
+               (search-patches "spice-CVE-2017-7506.patch"
+                               "spice-CVE-2016-9577.patch"
                                "spice-CVE-2016-9578-1.patch"
                                "spice-CVE-2016-9578-2.patch"))))
     (build-system gnu-build-system)
@@ -297,7 +298,7 @@ resolution scaling on graphical console window resize.")
 (define-public virt-viewer
   (package
     (name "virt-viewer")
-    (version "4.0")
+    (version "5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -305,7 +306,7 @@ resolution scaling on graphical console window resize.")
                 "virt-viewer-" version ".tar.gz"))
               (sha256
                (base32
-                "07zsi1fqg05mag1ayniaqj25fzb6dxg76d4ka5196lq4l477nhhw"))))
+                "0blbp1wkw8ahss9va0bmcz2yx18j0mvm6fzrzhh2ly3sja5ysb8b"))))
     (build-system gnu-build-system)
     (inputs
       `(("gtk+" ,gtk+)

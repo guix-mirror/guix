@@ -60,7 +60,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0600")
+    (version "8.0.0727")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -68,7 +68,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1ifaj0lfzqn06snkcd83l58m9r6lg7lk3wspx71k5ycvypyfi67s"))))
+               "0hwqglpsk8qlp2rn6q9p35fxk88xixljk1yv42m3j01g3bgqg0gx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -111,8 +111,20 @@ configuration files.")
 
 (define-public vim-full
   (package
+    ;; This package should share its source with Vim, but it doesn't
+    ;; build reliably, and we want to keep Vim up to date due to the
+    ;; frequency of important bug fixes.
     (inherit vim)
     (name "vim-full")
+    (version "8.0.0600")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/vim/vim/archive/v"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1ifaj0lfzqn06snkcd83l58m9r6lg7lk3wspx71k5ycvypyfi67s"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-lua-prefix="

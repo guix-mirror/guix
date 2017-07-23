@@ -670,7 +670,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.1.1")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
@@ -679,32 +679,20 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0dybpz44pi0zm8djppjna0r8yh5wvl3l885dv2f1wp5366bk59n3"))))
-    (build-system gnu-build-system)
+         "1y30xc1dzq9knww274d4y0m8gridcf5j851rxdri8j2s64p3qqgk"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("check" ,check)
-       ("pkg-config" ,pkg-config)))
-    (inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
      `(("libsodium" ,libsodium)
        ("opus" ,opus)
        ("libvpx" ,libvpx)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           ;; The tarball source is not bootstrapped.
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))
-       #:tests? #f)) ; FIXME: Testsuite fails, needs internet connection.
+    (home-page "https://tox.chat")
     (synopsis "Library for the Tox encrypted messenger protocol")
     (description
-     "Official fork of the C library implementation of the Tox
-encrypted messenger protocol.")
-    (license license:gpl3+)
-    (home-page "https://tox.chat")))
+     "Official fork of the C library implementation of the Tox encrypted
+messenger protocol.")
+    (license license:gpl3+)))
 
 (define-public utox
   (package

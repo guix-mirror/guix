@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170609")
+    (version "20170714")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1kdhnhdlv84v6brhqgh8g0h6cpcbwfc59b4g09zkkgqc4fnggapy"))))
+         "10x3sxai773n0gfqpi904ci1qvngymcbc2didswrm92wz4h8km20"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -416,7 +416,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.1")
+    (version "7.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -424,7 +424,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00xpxh0pxcvv3mjgb3vq3x51v498dhqcaixyb3a4srmfgskzh956"))))
+                "0rnw7gpx3cp4irja5143haszgv4xhndc8wivhg8r0gpp6ig460vj"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -805,7 +805,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "4.52.0")
+    (version "5.1")
     (source
      (origin
        (method url-fetch)
@@ -813,7 +813,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pzplrlxwbxydvfw4kkwn60l40hk1h5sxawaa6pi0k75c220k4ni"))))
+         "0zh220vx10wi6x61qi0mjayjxgvllk9f6vd4hjrgzha1xbjj0vix"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests

@@ -472,24 +472,7 @@ variants.")
               (sha256
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi/")))
-           (setenv "PATH" PATH)
-           (mkdir-p font-dir)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (chdir "wqy-zenhei")
-           (install-file "wqy-zenhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
@@ -516,23 +499,7 @@ ko (Korean) locales for @code{fontconfig}.")
               (sha256
                (base32
                 "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi")))
-           (mkdir-p font-dir)
-           (setenv "PATH" PATH)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (install-file "wqy-microhei/wqy-microhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
@@ -594,7 +561,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.04")
+    (version "10.0.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -602,7 +569,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "150p79rq4rzb4pbg2dwcz93k1chzzvm0l0nwh60spw19nfyrxj0p"))))
+                "07sajc32l2knnz6gmd81zxjhcxq8xr6r2kf42wig56vj05s3d1cb"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
