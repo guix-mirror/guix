@@ -4655,7 +4655,7 @@ reruns flaky tests.
 
 Ideally, tests reliably pass or fail, but sometimes test fixtures must rely
 on components that aren't 100% reliable.  With flaky, instead of removing
-those tests or marking them to @code{@skip}, they can be automatically
+those tests or marking them to @code{@@skip}, they can be automatically
 retried.")
     (license license:asl2.0)))
 
