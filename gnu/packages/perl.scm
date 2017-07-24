@@ -1518,15 +1518,15 @@ code that, when \"eval\"ed, produces a deep copy of the original arguments.")
 (define-public perl-data-dumper-concise
   (package
     (name "perl-data-dumper-concise")
-    (version "2.022")
+    (version "2.023")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Data-Dumper-Concise-" version ".tar.gz"))
        (sha256
         (base32
-         "0z7vxgk1f2kw2zpiimdsyf7jq9f4s5dhh3dlimq5yrirypnk03sc"))))
+         "0lsqbl1mxhkj0qnjfa1jrvx8wwbyi81bgwfyj1si6cdg7h8jzhm6"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Data-Dumper-Concise")
     (synopsis "Concise data dumper")
