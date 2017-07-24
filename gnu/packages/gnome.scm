@@ -1288,6 +1288,17 @@ is intended for user preferences; not arbitrary data storage.")
     (native-inputs
      `(("perl" ,perl)
        ("intltool" ,intltool)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'configure 'use-our-intltool
+                    (lambda _
+                      ;; Do not use the bundled intltool commands, which lack
+                      ;; the "dotless @INC" fixes of our 'intltool' package.
+                      (substitute* (find-files "." "^Makefile$")
+                        (("^INTLTOOL_(EXTRACT|UPDATE|MERGE) = .*$" _ tool)
+                         (string-append "INTLTOOL_" tool " = intltool-"
+                                        (string-downcase tool) "\n")))
+                      #t)))))
     (home-page "http://www.gnome.org")
     (synopsis "Base MIME and Application database for GNOME")
     (description  "GNOME Mime Data is a module which contains the base MIME
