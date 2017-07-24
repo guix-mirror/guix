@@ -2515,7 +2515,16 @@ environment from an HTTP::Request.")
     (arguments
      ;; See the discussion of a related tests issue at
      ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00346.html
-     `(#:tests? #f))
+     `(#:tests? #f
+
+       #:phases (modify-phases %standard-phases
+                   (add-before 'configure 'set-search-path
+                     (lambda _
+                       ;; Work around "dotless @INC" build failure.
+                       (setenv "PERL5LIB"
+                               (string-append (getcwd) ":"
+                                              (getenv "PERL5LIB")))
+                       #t)))))
     (home-page "http://search.cpan.org/dist/HTTP-Server-Simple")
     (synopsis "Lightweight HTTP server")
     (description "HTTP::Server::Simple is a simple standalone HTTP daemon with

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -6161,6 +6161,15 @@ of a system.")
         (base32
          "1i7kd9v8fjsqyhr4rx4a1jv7n5vfjjm1v4agb24pizh0b72p3qk7"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-search-path
+                    (lambda _
+                      ;; Work around "dotless @INC" build failure.
+                      (setenv "PERL5LIB"
+                              (string-append (getcwd) ":"
+                                             (getenv "PERL5LIB")))
+                      #t)))))
     (home-page "http://search.cpan.org/dist/Task-Weaken")
     (synopsis "Ensure that a platform has weaken support")
     (description "One recurring problem in modules that use Scalar::Util's
@@ -7722,6 +7731,15 @@ common serialisation formats such as JSON or CBOR.")
         (base32
          "0v04bcyjfcfap4kfpc8q3ikq3j7s68nym4ckw3iasmmksdskmcq0"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-search-path
+                    (lambda _
+                      ;; Work around "dotless @INC" build failure.
+                      (setenv "PERL5LIB"
+                              (string-append (getcwd) ":"
+                                             (getenv "PERL5LIB")))
+                      #t)))))
     (home-page "http://search.cpan.org/dist/Unicode-Normalize")
     (synopsis "Unicode normalization forms")
     (description "This Perl module provides Unicode normalization forms.")
