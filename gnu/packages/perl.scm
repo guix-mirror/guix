@@ -5642,14 +5642,14 @@ variables that should not be changed.")
 (define-public perl-regexp-common
   (package
     (name "perl-regexp-common")
-    (version "2013031301")
+    (version "2017060201")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/A/AB/ABIGAIL/"
                                   "Regexp-Common-" version ".tar.gz"))
               (sha256
                (base32
-                "112wybsm0vr8yfannx6sdfvgp5vza28gjgr3pgn69ak4sac836kj"))))
+                "16q8d7mx0c4nbjrvj69jdn4q33d1k40imgxn83h11wq6xqx8a1zf"))))
     (build-system perl-build-system)
     (synopsis "Provide commonly requested regular expressions")
     (description
