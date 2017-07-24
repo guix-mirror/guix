@@ -641,30 +641,6 @@ process, passing on the arguments as command line arguments.")
 programs.")
     (license license:gpl3+)))
 
-(define-public let-alist
-  (package
-    (name "emacs-let-alist")
-    (version "1.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/let-alist-"
-                                  version ".el"))
-              (sha256
-               (base32
-                "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/let-alist.html")
-    (synopsis "Easily let-bind values of an assoc-list by their names")
-    (description
-     "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
-macro takes a first argument, whose value must be an alist (association list),
-and a body.
-
-The macro expands to a let form containing the body, where each dotted symbol
-inside body is let-bound to their cdrs in the alist.  Only those present in
-the body are let-bound and this search is done at compile time.")
-    (license license:gpl3+)))
-
 (define-public flycheck
   (package
     (name "emacs-flycheck")
@@ -680,7 +656,6 @@ the body are let-bound and this search is done at compile time.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
-       ("emacs-let-alist" ,let-alist)
        ("emacs-seq" ,emacs-seq)))
     (home-page "https://www.flycheck.org")
     (synopsis "On-the-fly syntax checking")
@@ -1326,8 +1301,6 @@ single buffer.")
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-minimal)))
-    (propagated-inputs
-     `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
               ("cairo" ,cairo)
               ("glib" ,glib)
@@ -1579,8 +1552,7 @@ strings.")
                 "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-markdown-mode" ,emacs-markdown-mode)
-       ("let-alist" ,let-alist)))
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)))
     (home-page "https://github.com/vermiculus/sx.el/")
     (synopsis "Emacs StackExchange client")
     (description
