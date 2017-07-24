@@ -3390,6 +3390,30 @@ sources.")
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
 
+(define-public python-guzzle-sphinx-theme
+  (package
+    (name "python-guzzle-sphinx-theme")
+    (version "0.7.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "guzzle_sphinx_theme" version))
+        (sha256
+         (base32
+          "1rnkzrrsbnifn3vsb4pfaia3nlvgvw6ndpxp7lzjrh23qcwid34v"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/guzzle/guzzle_sphinx_theme")
+    (synopsis "Sphinx theme used by Guzzle")
+    (description "This package provides guzzle_sphinx_theme, a theme for the
+Sphinx documentation system, used by @uref{http://docs.guzzlephp.org, Guzzle}
+and several other projects.")
+    (license license:expat)))
+
+(define-public python2-guzzle-sphinx-theme
+  (package-with-python2 python-guzzle-sphinx-theme))
+
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
