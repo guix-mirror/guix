@@ -655,8 +655,7 @@ programs.")
                 "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-seq" ,emacs-seq)))
+     `(("emacs-dash" ,emacs-dash)))
     (home-page "https://www.flycheck.org")
     (synopsis "On-the-fly syntax checking")
     (description
@@ -3007,26 +3006,6 @@ be removed from the front.  This type of data structure is sometimes called an
 ongoing operations.")
     (license license:gpl3+)))
 
-(define-public emacs-seq
-  (package
-    (name "emacs-seq")
-    (version "2.19")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/seq-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "11hb7is6a4h1lscjcfrzh576j0g3m5yjydn16s6x5bxp5gsr6zha"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/seq.html")
-    (synopsis "Sequence manipulation functions for Emacs")
-    (description
-     "This Emacs library provides sequence-manipulation functions that
-complement basic functions provided by @code{subr.el}.  All provided functions
-work on lists, strings and vectors.")
-    (license license:gpl3+)))
-
 (define-public emacs-sparql-mode
   (package
     (name "emacs-sparql-mode")
@@ -3532,8 +3511,7 @@ for search-based navigation of buffers.")
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-pkg-info" ,emacs-pkg-info)
-       ("emacs-queue" ,emacs-queue)
-       ("emacs-seq" ,emacs-seq)))
+       ("emacs-queue" ,emacs-queue)))
     (home-page "https://cider.readthedocs.org/")
     (synopsis "Clojure development environment for Emacs")
     (description
