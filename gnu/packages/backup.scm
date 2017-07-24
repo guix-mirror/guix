@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -462,13 +462,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.11")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "14fjk5dfwmjkn7nmkbhhbrk3g1wfrn8arvqd5r9jaij534nzsvpw"))
+                "0vwyg0b4kxb0rspqwhvgi5c78dzimgkydf03wif27a40qhh1235l"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -540,7 +540,7 @@ detection, and lossless compression.")
        ("python-pytest" ,python-pytest-3.0)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+       ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))
     (inputs
      `(("acl" ,acl)
        ("lz4" ,lz4)
