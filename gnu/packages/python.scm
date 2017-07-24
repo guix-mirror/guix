@@ -5237,7 +5237,8 @@ cluster without needing to write any wrapper code yourself.")
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest-3.0)
        ("man-db" ,man-db)
-       ("which" ,which)))
+       ("which" ,which)
+       ("bash-full" ,bash)))                 ;full Bash for 'test_replwrap.py'
     (propagated-inputs
      `(("python-ptyprocess" ,python-ptyprocess)))
     (home-page "http://pexpect.readthedocs.org/")
