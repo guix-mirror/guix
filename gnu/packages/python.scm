@@ -5871,7 +5871,11 @@ features useful for text console applications.")
       (inherit python2-urwid)
       (arguments
        (append
-        '(#:phases
+        `(;; Explicitly using Python 2 is necessary due the argument list being
+          ;; built from only the 'delete-test_vterm.py' phase and python-urwid's
+          ;; package arguments, which by default assumes the use of Python 3.
+          #:python ,python-2
+          #:phases
           (modify-phases %standard-phases
             ;; Disable the vterm tests because of non-deterministic failures
             ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
