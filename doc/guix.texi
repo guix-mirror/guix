@@ -10203,7 +10203,10 @@ shell daemon, @command{sshd}.  Its value must be an
 (service openssh-service-type
          (openssh-configuration
            (x11-forwarding? #t)
-           (permit-root-login 'without-password)))
+           (permit-root-login 'without-password)
+           (authorized-keys
+             `(("alice" ,(local-file "alice.pub"))
+               ("bob" ,(local-file "bob.pub"))))))
 @end example
 
 See below for details about @code{openssh-configuration}.
@@ -10278,8 +10281,30 @@ server.  Alternately, one can specify the @command{sftp-server} command:
 (service openssh-service-type
          (openssh-configuration
           (subsystems
-           '(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
+           `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
 @end example
+
+@item @code{authorized-keys} (default: @code{'()})
+@cindex authorized keys, SSH
+@cindex SSH authorized keys
+This is the list of authorized keys.  Each element of the list is a user
+name followed by one or more file-like objects that represent SSH public
+keys.  For example:
+
+@example
+(openssh-configuration
+  (authorized-keys
+    `(("rekado" ,(local-file "rekado.pub"))
+      ("chris" ,(local-file "chris.pub"))
+      ("root" ,(local-file "rekado.pub") ,(local-file "chris.pub")))))
+@end example
+
+@noindent
+registers the specified public keys for user accounts @code{rekado},
+@code{chris}, and @code{root}.
+
+Note that this does @emph{not} interfere with the use of
+@file{~/.ssh/authorized_keys}.
 @end table
 @end deftp
 
