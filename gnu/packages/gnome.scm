@@ -687,16 +687,15 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
                                  (version-major+minor version) "/"
                                  name "-" version ".tar.xz"))
-             (patches (search-patches "evince-CVE-2017-1000083.patch"))
              (sha256
               (base32
-               "13yw0i68dgqp9alyliy3zifszh7rikkpi1xbz5binvxxgfpraf04"))))
+               "0dqgzwxl0xfr341r5i8j8hn6j6rhv62lmc6xbzjppcq76hhwb84w"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
