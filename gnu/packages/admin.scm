@@ -661,14 +661,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.0")
+    (version "4.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
+                "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
