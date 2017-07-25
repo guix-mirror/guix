@@ -158,6 +158,7 @@ Utilities
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
+* Invoking guix weather::       Assessing substitute availability.
 
 Invoking @command{guix build}
 
@@ -2200,6 +2201,9 @@ HTTPS clients such as Web browsers usually do.  This is because Guix
 authenticates substitute information itself, as explained above, which
 is what we care about (whereas X.509 certificates are about
 authenticating bindings between domain names and public keys.)
+
+You can get statistics on the substitutes provided by a server using the
+@command{guix weather} command (@pxref{Invoking guix weather}).
 
 The substitute mechanism can be disabled globally by running
 @code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
@@ -4933,6 +4937,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
+* Invoking guix weather::       Assessing substitute availability.
 @end menu
 
 @node Invoking guix build
@@ -6869,7 +6874,8 @@ serves them.  This ``on-the-fly'' mode is convenient in that it requires
 no setup and is immediately available.  However, when serving lots of
 clients, we recommend using the @option{--cache} option, which enables
 caching of the archives before they are sent to clients---see below for
-details.
+details.  The @command{guix weather} command provides a handy way to
+check what a server provides (@pxref{Invoking guix weather}).
 
 As a bonus, @command{guix publish} also serves as a content-addressed
 mirror for source files referenced in @code{origin} records
@@ -7268,6 +7274,73 @@ Note that the @var{pid} cannot be the parent process of a container.  It
 must be PID 1 of the container or one of its child processes.
 
 @end table
+
+@node Invoking guix weather
+@section Invoking @command{guix weather}
+
+Occasionally you're grumpy because substitutes are lacking and you end
+up building packages by yourself (@pxref{Substitutes}).  The
+@command{guix weather} command reports on substitute availability on the
+specified servers so you can have an idea of whether you'll be grumpy
+today.  It can sometimes be useful info as a user, but it is primarily
+useful to people running @command{guix publish} (@pxref{Invoking guix
+publish}).
+
+@cindex statistics, for substitutes
+@cindex availability of substitutes
+@cindex substitute availability
+@cindex weather, substitute availability
+Here's a sample run:
+
+@example
+$ guix weather --substitute-urls=https://guix.example.org
+computing 5,872 package derivations for x86_64-linux...
+looking for 6,128 store items on https://guix.example.org..
+updating list of substitutes from 'https://guix.example.org'... 100.0%
+https://guix.example.org
+  43.4% substitutes available (2,658 out of 6,128)
+  7,032.5 MiB of nars (compressed)
+  19,824.2 MiB on disk (uncompressed)
+  0.030 seconds per request (182.9 seconds in total)
+  33.5 requests per second
+@end example
+
+As you can see, it reports the fraction of all the packages for which
+substitutes are available on the server---regardless of whether
+substitutes are enabled, and regardless of whether this server's signing
+key is authorized.  It also reports the size of the compressed archives
+(``nars'') provided by the server, the size the corresponding store
+items occupy in the store (assuming deduplication is turned off), and
+the server's throughput.
+
+To achieve that, @command{guix weather} queries over HTTP(S) meta-data
+(@dfn{narinfos}) for all the relevant store items.  Like @command{guix
+challenge}, it ignores signatures on those substitutes, which is
+innocuous since the command only gathers statistics and cannot install
+those substitutes.
+
+Among other things, it is possible to query specific system types and
+specific package sets.  The available options are listed below.
+
+@table @code
+@item --substitute-urls=@var{urls}
+@var{urls} is the space-separated list of substitute server URLs to
+query.  When this option is omitted, the default set of substitute
+servers is queried.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Query substitutes for @var{system}---e.g., @code{aarch64-linux}.  This
+option can be repeated, in which case @command{guix weather} will query
+substitutes for several system types.
+
+@item --manifest=@var{file}
+Instead of querying substitutes for all the packages, only ask for those
+specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
+with the @code{-m} option of @command{guix package} (@pxref{Invoking
+guix package}).
+@end table
+
 
 @c *********************************************************************
 @node GNU Distribution
