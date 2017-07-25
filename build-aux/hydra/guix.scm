@@ -43,6 +43,7 @@
 (use-modules (guix store)
              (guix packages)
              (guix utils)
+             (guix grafts)
              (guix derivations)
              (guix build-system gnu)
              (gnu packages package-management)
@@ -59,7 +60,9 @@
                          #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
   `((derivation . ,(derivation-file-name
-                    (package-derivation store package system)))
+                    (parameterize ((%graft? #f))
+                      (package-derivation store package system
+                                          #:graft? #f))))
     (description . ,(package-synopsis package))
     (long-description . ,(package-description package))
     (license . ,(package-license package))
@@ -85,6 +88,19 @@
   (let ((file (assq-ref guix-checkout 'file-name)))
     (format (current-error-port) "using checkout ~s (~s)~%"
             guix-checkout file)
+
     `((tarball . ,(cute package->alist store
                         (dist-package guix file)
-                        (%current-system))))))
+                        (%current-system)))
+
+      ,@(map (lambda (system)
+               (let ((name (string->symbol
+                            (string-append "guix." system))))
+                 `(,name
+                   . ,(cute package->alist store
+                            (package
+                              (inherit guix)
+                              (version "latest")
+                              (source file))
+                            system))))
+             %hydra-supported-systems))))
