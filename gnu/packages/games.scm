@@ -4617,3 +4617,123 @@ computer-hosted roleplaying games.  This is the last version released by
 Crowther & Woods, its original authors, in 1995.  It has been known as
 \"adventure 2.5\" and \"430-point adventure\".")
       (license license:bsd-2))))
+
+(define-public tome4
+  (package
+    (name "tome4")
+    (version "1.5.5")
+    (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
+       (modules '((guix build utils)))
+       (snippet
+        '(for-each (lambda (file)
+                     (substitute* file
+                       (("#elif defined(__FreeBSD__)" line)
+                        (string-append
+                         line " || defined(__GNUC__)"))))
+                   '("src/music.h" "src/tSDL.h")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("glu" ,glu)
+       ("premake4" ,premake4)
+       ("openal" ,openal)
+       ("vorbis" ,libvorbis)
+       ("luajit" ,luajit)))
+    (arguments
+     `(#:make-flags '("CC=gcc" "config=release")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda _
+                      (zero? (system* "premake4" "gmake"))
+                      #t))
+                  (add-after 'set-paths 'set-sdl-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL2"))
+                      #t))
+                  (delete 'check)
+                  ;; premake doesn't provide install target
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (usr (string-append out "/usr"))
+                             (bin (string-append out "/bin"))
+                             (licenses (string-append out "/share/licenses"))
+                             (documents (string-append out "/share/doc"))
+                             (pixmaps (string-append out "/share/pixmaps"))
+                             (icon "te4-icon.png")
+                             (data (string-append out "/share/" ,name))
+                             (applications (string-append
+                                            out "/share/applications"))
+                             (unzip (string-append
+                                     (assoc-ref inputs "unzip") "/bin/unzip"))
+                             (wrapper (string-append bin "/" ,name)))
+                        ;; icon
+                        (mkdir-p pixmaps)
+                        (system* unzip "-j"
+                                 (string-append
+                                  "game/engines/te4-" ,version ".teae")
+                                 (string-append
+                                  "data/gfx/" icon) "-d" pixmaps)
+                        ;; game executable
+                        (install-file "t-engine" data)
+                        (mkdir-p bin)
+                        (with-output-to-file wrapper
+                          (lambda ()
+                            (display
+                             (string-append
+                              "#!/bin/sh\n"
+                              ;; No bootstrap code found,
+                              ;; defaulting to working directory
+                              ;; for engine code!
+                              "cd " data "\n"
+                              "exec -a tome4 ./t-engine \"$@\"\n"))))
+                        (chmod wrapper #o555)
+                        ;; licenses
+                        (for-each (lambda (file)
+                                    (install-file file licenses))
+                                  '("COPYING" "COPYING-MEDIA"))
+                        ;; documents
+                        (for-each (lambda (file)
+                                    (install-file file documents))
+                                  '("CONTRIBUTING" "CREDITS"))
+                        ;; data
+                        (copy-recursively "bootstrap" (string-append
+                                                       data "/bootstrap"))
+                        (copy-recursively "game" (string-append data "/game"))
+                        ;; launcher
+                        (mkdir-p applications)
+                        (with-output-to-file (string-append applications "/"
+                                                            ,name ".desktop")
+                          (lambda ()
+                            (display
+                             (string-append
+                              "[Desktop Entry]
+Name=ToME4
+Comment=" ,synopsis "\n"
+"Exec=" ,name "\n"
+"Icon=" icon "\n"
+"Terminal=false
+Type=Application
+Categories=Game;RolePlaying;\n")))))
+                      #t)))))
+    (home-page "https://te4.org")
+    (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
+combat and advanced character building.  Play as one of many unique races and
+classes in the lore-filled world of Eyal, exploring random dungeons, facing
+challenging battles, and developing characters with your own tailored mix of
+abilities and powers.  With a modern graphical and customisable interface,
+intuitive mouse control, streamlined mechanics and deep, challenging combat,
+Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
+    (license license:gpl3+)))
