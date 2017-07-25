@@ -5685,14 +5685,14 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "322")
+    (version "330")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
                                   "xterm-" version ".tgz"))
               (sha256
                (base32
-                "1mh9s5g3fs64iimnl7axk0isb5306dyshisxlv5gr8vn7ysl3nws"))))
+                "1psnfmqd23v9gxj8a98nzrgvymrk0p1whwqi92gy15bbkzrgkvks"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
