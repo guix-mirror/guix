@@ -400,6 +400,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                                      "cat" "/proc/loadavg"))
             (line (read-line pipe)))
        (close-port pipe)
+       (disconnect! session)
 
        (if (eof-object? line)
            +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
