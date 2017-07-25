@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,11 +45,7 @@
              (guix utils)
              (guix derivations)
              (guix build-system gnu)
-             (gnu packages version-control)
              (gnu packages package-management)
-             (gnu packages imagemagick)
-             (gnu packages graphviz)
-             (gnu packages man)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -70,29 +66,6 @@
     (home-page . ,(package-home-page package))
     (maintainers . ("bug-guix@gnu.org"))))
 
-(define (tarball-package checkout)
-  "Return a package that does `make distcheck' from CHECKOUT, a directory
-containing a Git checkout of Guix."
-  (let ((guix (@@ (gnu packages package-management) guix)))
-    (dist-package (package
-                    (inherit guix)
-                    (arguments (package-arguments guix))
-                    (native-inputs `(("imagemagick" ,imagemagick)
-                                     ,@(package-native-inputs guix))))
-                  checkout
-
-                  #:phases
-                  '(modify-phases %dist-phases
-                     (add-before 'build 'build-daemon
-                       ;; Build 'guix-daemon' first so that help2man
-                       ;; successfully creates 'guix-daemon.1'.
-                       (lambda _
-                         (let ((n (number->string
-                                   (parallel-job-count))))
-                           (zero? (system* "make"
-                                           "nix/libstore/schema.sql.hh"
-                                           "guix-daemon" "-j" n)))))))))
-
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define systems
@@ -109,9 +82,9 @@ containing a Git checkout of Guix."
   (define guix-checkout
     (assq-ref arguments 'guix))
 
-  (let ((guix (assq-ref guix-checkout 'file-name)))
+  (let ((file (assq-ref guix-checkout 'file-name)))
     (format (current-error-port) "using checkout ~s (~s)~%"
-            guix-checkout guix)
+            guix-checkout file)
     `((tarball . ,(cute package->alist store
-                        (tarball-package guix)
+                        (dist-package guix file)
                         (%current-system))))))
