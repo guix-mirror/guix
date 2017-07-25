@@ -480,6 +480,36 @@ more than bzip2, which makes it well suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (license license:gpl3+)))
 
+(define-public lziprecover
+  (package
+    (name "lziprecover")
+    (version "1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/lzip/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z5fbkm0qprypjf7kxkqganniibj0zml13zvfkrchnjafcmmzyld"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.nongnu.org/lzip/lziprecover.html")
+    (synopsis "Recover and decompress data from damaged lzip files")
+    (description
+     "Lziprecover is a data recovery tool and decompressor for files in the lzip
+compressed data format (.lz).  It can test the integrity of lzip files, extract
+data from damaged ones, and repair most files with small errors (up to one
+single-byte error per member) entirely.
+
+Lziprecover is not a replacement for regular backups, but a last line of defence
+when even the backups are corrupt.  It can recover files by merging the good
+parts of two or more damaged copies, such as can be easily produced by running
+@command{ddrescue} on a failing device.
+
+This package also includes @command{unzcrash}, a tool to test the robustness of
+decompressors when faced with corrupted input.")
+    (license (list license:bsd-2        ; arg_parser.{cc,h}
+                   license:gpl2+))))    ; everything else
+
 (define-public sharutils
   (package
     (name "sharutils")
