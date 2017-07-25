@@ -1841,6 +1841,9 @@ is not available for Guile 2.0.")
 manipulate repositories of the Git version control system.")
       (license license:gpl3+))))
 
+(define-public guile2.0-git
+  (package-for-guile-2.0 guile-git))
+
 (define-public guile-syntax-highlight
   (let ((commit "a047675e66861b647426372aa2ba7820f749616d")
         (revision "0"))
