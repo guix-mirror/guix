@@ -59,6 +59,8 @@
             tailon-configuration-file-tail-lines
             tailon-configuration-file-allowed-commands
             tailon-configuration-file-debug?
+            tailon-configuration-file-wrap-lines
+
 
             <tailon-configuration>
             tailon-configuration
@@ -220,7 +222,9 @@ for ROTATION."
   (allowed-commands        tailon-configuration-file-allowed-commands
                            (default '("tail" "grep" "awk")))
   (debug?                  tailon-configuration-file-debug?
-                           (default #f)))
+                           (default #f))
+  (wrap-lines              tailon-configuration-file-wrap-lines
+                           (default #t)))
 
 (define (tailon-configuration-files-string files)
   (string-append
@@ -249,7 +253,8 @@ for ROTATION."
   (match file
     (($ <tailon-configuration-file> files bind relative-root
                                     allow-transfers? follow-names?
-                                    tail-lines allowed-commands debug?)
+                                    tail-lines allowed-commands debug?
+                                    wrap-lines)
      (text-file
       "tailon-config.yaml"
       (string-concatenate
@@ -267,7 +272,8 @@ for ROTATION."
           ("commands" . ,(string-append "["
                                         (string-join allowed-commands ", ")
                                         "]"))
-          ,@(if debug? '(("debug" . "true")) '()))))))))
+          ,@(if debug? '(("debug" . "true")) '())
+          ("wrap-lines" . ,(if wrap-lines "true" "false")))))))))
 
 (define-record-type* <tailon-configuration>
   tailon-configuration make-tailon-configuration

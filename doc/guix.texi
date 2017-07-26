@@ -13769,6 +13769,11 @@ Commands to allow running. By default, @code{sed} is disabled.
 @item @code{debug?} (default: @code{#f})
 Set @code{debug?} to @code{#t} to show debug messages.
 
+@item @code{wrap-lines} (default: @code{#t})
+Initial line wrapping state in the web interface. Set to @code{#t} to
+initially wrap lines (the default), or to @code{#f} to initially not
+wrap lines.
+
 @end table
 @end deftp
 
