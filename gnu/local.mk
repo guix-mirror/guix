@@ -270,7 +270,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
-  %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
   %D%/packages/moe.scm				\
   %D%/packages/monitoring.scm			\
