@@ -261,6 +261,12 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
+                  (add-before 'build 'correct-location-of-difftool
+                    (lambda _
+                      (substitute* "buffer.c"
+                        (("/usr/bin/diff")
+                         (which "diff")))
+                      #t))
                   (add-before 'install 'patch-tutorial-location
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "mg.1"
