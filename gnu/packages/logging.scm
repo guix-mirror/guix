@@ -96,18 +96,19 @@ command line.")
 (define-public tailon
   (package
     (name "tailon")
-    (version "1.1.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "08clrwpfdxcv2z2b5ardpmim4alahbw4l7631dhw62xhbcf6wjzz"))))
+         "0wl2wm6p3pc0vkk33s7rzgcfvs9cwxfmlz997pdfhlw72r00l7s5"))))
     (build-system python-build-system)
     (inputs
      `(("python-pyyaml" ,python-pyyaml)
        ("python-sockjs-tornado" ,python-sockjs-tornado)
+       ("python-tornado-http-auth" ,python-tornado-http-auth)
        ("python-tornado" ,python-tornado)))
     (arguments
      `(#:phases
