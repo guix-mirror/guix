@@ -1288,6 +1288,9 @@ network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
     (license license:gpl2+)))
 
+(define-public net-tools-for-tests
+  (hidden-package net-tools))
+
 (define-public libcap
   (package
     (name "libcap")
