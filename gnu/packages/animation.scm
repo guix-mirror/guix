@@ -78,6 +78,16 @@ C++ @dfn{Standard Template Library} (STL).")
                             "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-boost-build-error
+           ;; A chain of Boost headers leads to this error: "make_array" is
+           ;; not a member of "boost::serialization".  This can be avoided by
+           ;; loading the "array_wrapper" header first.
+           (lambda _
+             (substitute* "src/synfig/valuenodes/valuenode_dynamic.cpp"
+               (("#include <boost/numeric/odeint/integrate/integrate.hpp>" match)
+                (string-append
+                 "#include <boost/serialization/array_wrapper.hpp>\n" match)))
+             #t))
          (add-after 'unpack 'adapt-to-libxml++-changes
           (lambda _
             (substitute* "configure"
