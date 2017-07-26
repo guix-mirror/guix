@@ -145,7 +145,7 @@
      `(("alsa-lib" ,alsa-lib)
        ("attr" ,attr)
        ("glib" ,glib)
-       ;; ("libaio" ,libaio)
+       ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
        ("libjpeg" ,libjpeg-8)
