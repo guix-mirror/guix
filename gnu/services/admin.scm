@@ -276,7 +276,7 @@ for ROTATION."
           ("commands" . ,(string-append "["
                                         (string-join allowed-commands ", ")
                                         "]"))
-          ,@(if debug? '(("debug" . "true")) '())
+          ("debug" . ,(if debug? "true" #f))
           ("wrap-lines" . ,(if wrap-lines "true" "false"))
           ("http-auth" . ,http-auth)
           ("users" . ,(if users
