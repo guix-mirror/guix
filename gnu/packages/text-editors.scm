@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -234,14 +234,14 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20161005")
+    (version "20170401")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homepage.boetes.org/software/mg/mg-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qaydk2cy765n9clghmi5gdnpwn15y2v0fj6r0jcm0v7d89vbz5p"))
+                "1arasswgdadbb265rahq3867r9s54jva6k4m3p5n0f8mgjqhhdha"))
               (modules '((guix build utils)))
               (snippet
                '(begin
