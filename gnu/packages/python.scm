@@ -15815,3 +15815,30 @@ pure Python module.")
 
 (define-public python2-rencode
   (package-with-python2 python-rencode))
+
+(define-public python-flask-principal
+  (package
+    (name "python-flask-principal")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-Principal" version))
+        (sha256
+          (base32
+           "0lwlr5smz8vfm5h9a9i7da3q1c24xqc6vm9jdywdpgxfbi5i7mpm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-blinker" ,python-blinker)))
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-nose" ,python-nose)))
+    (home-page "http://packages.python.org/Flask-Principal/")
+    (synopsis "Identity management for Flask")
+    (description "@code{flask_principal} is a identity management library for
+Flask.  It supports managing both authentication and authorization data in a
+thread-local variable.")
+    (license license:expat)))
+
+(define-public python2-flask-principal
+  (package-with-python2 python-flask-principal))
