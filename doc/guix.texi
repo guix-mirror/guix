@@ -13774,6 +13774,24 @@ Initial line wrapping state in the web interface. Set to @code{#t} to
 initially wrap lines (the default), or to @code{#f} to initially not
 wrap lines.
 
+@item @code{http-auth} (default: @code{#f})
+HTTP authentication type to use. Set to @code{#f} to disable
+authentication (the default). Supported values are @code{"digest"} or
+@code{"basic"}.
+
+@item @code{users} (default: @code{#f})
+If HTTP authentication is enabled (see @code{http-auth}), access will be
+restricted to the credentials provided here. To configure users, use a
+list of pairs, where the first element of the pair is the username, and
+the 2nd element of the pair is the password.
+
+@example
+(tailon-configuration-file
+  (http-auth "basic")
+  (users     '(("user1" . "password1")
+               ("user2" . "password2"))))
+@end example
+
 @end table
 @end deftp
 
