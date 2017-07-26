@@ -57,7 +57,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.8")
+      (version "0.9")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -66,7 +66,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1igmrks20ci6l5c0jx2bn4swf0w8jy5inhg61cwld9d7hwanmdnj"))))
+                  "0ph0fvabpb7zhbk4zpacbp7m4b142ds17dq5dzn00m7dz8farw9r"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -91,12 +91,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                  (lambda ()
                    (display "Please run
     build-aux/gitlog-to-changelog --srcdir=<git-checkout> > ChangeLog\n")))
-               #t)))))
-      (synopsis "Maxwell Equations of Software")
+               #t))
+           (delete 'strip)))) ; binutil's strip b0rkes Mescc/M1/hex2 binaries
+      (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
-       "Mes aims to create full source bootstrapping for GuixSD.  It
-consists of a mutual self-hosting [close to Guile-] Scheme interpreter
-prototype in C and a Nyacc-based C compiler in [Guile] Scheme.")
+       "Mes [Maxwell Equations of Software] aims to create full source
+bootstrapping for GuixSD.  It consists of a mutual self-hosting [close to
+Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
+[Guile] Scheme.")
       (home-page "https://gitlab.com/janneke/mes")
       (license gpl3+))))
 
