@@ -237,7 +237,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
     (version "20170401")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://homepage.boetes.org/software/mg/mg-"
+              (uri (string-append "https://homepage.boetes.org/software/mg/mg-"
                                   version ".tar.gz"))
               (sha256
                (base32
