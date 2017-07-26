@@ -4633,12 +4633,10 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
          "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
        (modules '((guix build utils)))
        (snippet
-        '(for-each (lambda (file)
-                     (substitute* file
-                       (("#elif defined(__FreeBSD__)" line)
-                        (string-append
-                         line " || defined(__GNUC__)"))))
-                   '("src/music.h" "src/tSDL.h")))))
+        '(substitute* '("src/music.h" "src/tSDL.h")
+           (("#elif defined(__FreeBSD__)" line)
+            (string-append
+             line " || defined(__GNUC__)"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
