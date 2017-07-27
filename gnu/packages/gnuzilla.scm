@@ -281,7 +281,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.31")
+    (version "3.32")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -292,7 +292,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0pd643a8ns7q5az5ai3ascrw666i2kbfiyy1c9hlhw9jd8jn21g9"))
+                "0dfkgvah0ji8b8lpxyy2w0b3lyz5ldmryii4z7j2bfwnrj0z7iim"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -364,6 +364,7 @@ in the Mozilla clients.")
                  ;; phase to fail.  Here we simply delete libgtest1.so, since it
                  ;; seems to be used only during the tests.
                  (delete-file (string-append lib "/libgtest1.so"))
+                 (delete-file (string-append lib "/libgtestutil.so"))
 
                  #t))))))
     (inputs
