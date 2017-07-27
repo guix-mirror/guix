@@ -2001,7 +2001,7 @@ order to create the appropriate objects.")
 (define-public perl-datetime-format-natural
   (package
     (name "perl-datetime-format-natural")
-    (version "1.02")
+    (version "1.05")
     (source
      (origin
        (method url-fetch)
@@ -2009,7 +2009,7 @@ order to create the appropriate objects.")
                            "DateTime-Format-Natural-" version ".tar.gz"))
        (sha256
         (base32
-         "1qq3adq1y08d0jlmwk9059s5d39hb26f3zjag099gjjyvs5c8yal"))))
+         "10ldrhz5rnpsd8qmqn1a4s0w5hhfbjrr13a93yx7kpp89g85pxqv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
