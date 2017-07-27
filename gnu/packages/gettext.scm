@@ -144,6 +144,13 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t))
          ;; FIXME: One test fails as we don't have SGMLS.pm
          (add-before 'check 'disable-sgml-test
           (lambda _
