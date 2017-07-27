@@ -3142,16 +3142,18 @@ distributions.  It is a companion module to File::ShareDir.")
 (define-public perl-file-sharedir-install
   (package
     (name "perl-file-sharedir-install")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GW/GWYN/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "File-ShareDir-Install-" version ".tar.gz"))
        (sha256
         (base32
-         "1xz60bi7x8755lq24rx7y1jkyk3icssn7s55z665mysdxhfzg2kh"))))
+         "1j0cw1aq9fdv9kl1a6fnfa4zihsvmcqzy9sb0xk0i9pyx5r8ggrj"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/File-ShareDir-Install")
     (synopsis "Install shared files")
     (description "File::ShareDir::Install allows you to install read-only data
