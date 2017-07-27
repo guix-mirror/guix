@@ -168,9 +168,9 @@ tables, and it understands a variety of different formats.")
     (home-page "http://www.rodsbooks.com/gdisk/")
     (synopsis "Low-level GPT disk partitioning and formatting")
     (description "GPT fdisk (aka gdisk) is a text-mode partitioning tool that
-works on Globally Unique Identifier (GUID) Partition Table (GPT) disks, rather
-than on the more common (through 2009) Master Boot Record (MBR) partition
-tables.")
+works on Globally Unique Identifier (@dfn{GUID}) Partition Table (@dfn{GPT})
+disks, rather than on the older Master Boot Record (@dfn{MBR}) partition
+scheme.")
     (license license:gpl2)))
 
 (define-public ddrescue
