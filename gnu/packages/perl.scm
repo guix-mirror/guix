@@ -3096,7 +3096,7 @@ accepts wildcards, * and ?, as arguments for file names.")
 (define-public perl-file-sharedir
   (package
     (name "perl-file-sharedir")
-    (version "1.102")
+    (version "1.104")
     (source
      (origin
        (method url-fetch)
@@ -3104,7 +3104,7 @@ accepts wildcards, * and ?, as arguments for file names.")
                            "File-ShareDir-" version ".tar.gz"))
        (sha256
         (base32
-         "04blqn4cms9zjmhlfvwyx6mrglaaq1mmy4xwv7xqf9c8fjwk8wvw"))))
+         "1bqwhk3qfg60bkpi5b83bh93sng8jx20i3ka5sixc0prrppjidh7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-sharedir-install" ,perl-file-sharedir-install)))
