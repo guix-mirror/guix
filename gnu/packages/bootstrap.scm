@@ -40,6 +40,8 @@
             package-with-bootstrap-guile
             glibc-dynamic-linker
 
+            bootstrap-guile-origin
+
             %bootstrap-guile
             %bootstrap-coreutils&co
             %bootstrap-binutils
@@ -225,6 +227,14 @@ successful, or false to signal an error."
      (base32 "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))
     ("aarch64-linux"
      (base32 "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))
+
+(define (bootstrap-guile-origin system)
+  "Return an <origin> object for the Guile tarball of SYSTEM."
+  (origin
+    (method url-fetch)
+    (uri (map (cute string-append <> (bootstrap-guile-url-path system))
+              %bootstrap-base-urls))
+    (sha256 (bootstrap-guile-hash system))))
 
 (define (download-bootstrap-guile store system)
   "Return a derivation that downloads the bootstrap Guile tarball for SYSTEM."

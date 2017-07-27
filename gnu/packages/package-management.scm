@@ -33,6 +33,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
@@ -229,39 +230,19 @@
                        ("graphviz" ,graphviz)
                        ("help2man" ,help2man)))
       (inputs
-       (let ((boot-guile (lambda (arch hash)
-                           (origin
-                             (method url-fetch)
-                             (uri (boot-guile-uri arch))
-                             (sha256 hash)))))
-         `(("bzip2" ,bzip2)
-           ("gzip" ,gzip)
-           ("zlib" ,zlib)                         ;for 'guix publish'
+       `(("bzip2" ,bzip2)
+         ("gzip" ,gzip)
+         ("zlib" ,zlib)                           ;for 'guix publish'
 
-           ("sqlite" ,sqlite)
-           ("libgcrypt" ,libgcrypt)
-           ("guile" ,guile-2.2)
+         ("sqlite" ,sqlite)
+         ("libgcrypt" ,libgcrypt)
+         ("guile" ,guile-2.2)
 
-           ("boot-guile/i686"
-            ,(boot-guile "i686"
-                         (base32
-                          "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp")))
-           ("boot-guile/x86_64"
-            ,(boot-guile "x86_64"
-                         (base32
-                          "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3")))
-           ("boot-guile/mips64el"
-            ,(boot-guile "mips64el"
-                         (base32
-                          "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr")))
-           ("boot-guile/armhf"
-            ,(boot-guile "armhf"
-                         (base32
-                          "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5")))
-           ("boot-guile/aarch64"
-            ,(boot-guile "aarch64"
-                         (base32
-                          "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
+         ("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux"))
+         ("boot-guile/x86_64" ,(bootstrap-guile-origin "x86_64-linux"))
+         ("boot-guile/mips64el" ,(bootstrap-guile-origin "mips64el-linux"))
+         ("boot-guile/armhf" ,(bootstrap-guile-origin "armhf-linux"))
+         ("boot-guile/aarch64" ,(bootstrap-guile-origin "aarch64-linux"))))
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
