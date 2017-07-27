@@ -1875,7 +1875,7 @@ within a time range.")
 (define-public perl-datetime-event-ical
   (package
     (name "perl-datetime-event-ical")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -1883,7 +1883,7 @@ within a time range.")
                            "DateTime-Event-ICal-" version ".tar.gz"))
        (sha256
         (base32
-         "1rfrjhczfmasf7aaz8rfd89vhwjj2nkxlnirxxrmy75z10nmrpjk"))))
+         "1skmykxbrf98ldi72d5s1v6228gfdr5iy4y0gpl0xwswxy247njk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
