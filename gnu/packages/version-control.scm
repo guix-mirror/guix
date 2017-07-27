@@ -785,14 +785,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.17")
+    (version "1.8.18")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "1450fkj1jmxyphqn6cd95z1ykwsabajm9jw4i412qpwss8w9a4fy"))))
+               "19lpqdrl86mjfdpayhn3f9rkmpb6zs2iny38cnxq6wcj7snh0sz5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
