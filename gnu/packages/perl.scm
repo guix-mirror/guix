@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3117,6 +3118,25 @@ module to have access to a large amount of read-only data that is stored on
 the file-system at run-time.  Once the files have been installed to the
 correct directory, you can use File::ShareDir to find your files again after
 the installation.")
+    (license (package-license perl))))
+
+(define-public perl-file-sharedir-dist
+  (package
+    (name "perl-file-sharedir-dist")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
+                           "File-ShareDir-Dist-" version ".tar.gz"))
+       (sha256
+        (base32
+         "028vnjw3fdmwk540w3b07cmr93ap0s13ni2b4c7iv56mgyy6gfc1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-ShareDir-Dist")
+    (synopsis "Locate per-dist shared files")
+    (description "File::ShareDir::Dist finds share directories for
+distributions.  It is a companion module to File::ShareDir.")
     (license (package-license perl))))
 
 (define-public perl-file-sharedir-install
