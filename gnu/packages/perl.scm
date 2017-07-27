@@ -6501,6 +6501,28 @@ into tables.")
 etc built upon the Test2 testing library.")
     (license (package-license perl))))
 
+(define-public perl-test2-plugin-nowarnings
+  (package
+    (name "perl-test2-plugin-nowarnings")
+    (version "0.06")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/Test2-Plugin-NoWarnings-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "002qk6qsm0l6r2kaxywvc38w0yf0mlavgywq8li076pn6kcw3242"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test2-bundle-extended" ,perl-test2-bundle-extended)))
+    (home-page "http://search.cpan.org/dist/Test2-Plugin-NoWarnings/")
+    (synopsis "Fail if tests warn")
+    (description "Loading this plugin causes your tests to fail if there any
+warnings while they run.  Each warning generates a new failing test and the
+warning content is outputted via diag.")
+    (license (package-license perl))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
