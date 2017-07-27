@@ -480,6 +480,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests.scm					\
   %D%/tests/admin.scm				\
   %D%/tests/base.scm				\
+  %D%/tests/databases.scm			\
   %D%/tests/dict.scm				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\

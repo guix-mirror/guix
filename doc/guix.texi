@@ -11724,6 +11724,38 @@ TCP port on which the database server listens for incoming connections.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} memcached-service-type
+This is the service type for the @uref{https://memcached.org/,
+Memcached} service, which provides a distributed in memory cache.  The
+value for the service type is a @code{memcached-configuration} object.
+@end defvr
+
+@example
+(service memcached-service-type)
+@end example
+
+@deftp {Data Type} memcached-configuration
+Data type representing the configuration of memcached.
+
+@table @asis
+@item @code{memcached} (default: @code{memcached})
+The Memcached package to use.
+
+@item @code{interfaces} (default: @code{'("0.0.0.0")})
+Network interfaces on which to listen.
+
+@item @code{tcp-port} (default: @code{11211})
+Port on which to accept connections on,
+
+@item @code{udp-port} (default: @code{11211})
+Port on which to accept UDP connections on, a value of 0 will disable
+listening on a UDP socket.
+
+@item @code{additional-options} (default: @code{'()})
+Additional command line options to pass to @code{memcached}.
+@end table
+@end deftp
+
 @defvr {Scheme Variable} redis-service-type
 This is the service type for the @uref{https://redis.io/, Redis}
 key/value store, whose value is a @code{redis-configuration} object.
