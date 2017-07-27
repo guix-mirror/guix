@@ -174,7 +174,8 @@ else
     PS1='\\u@\\h \\w\\$ '
 fi
 alias ls='ls -p --color'
-alias ll='ls -l'\n"))
+alias ll='ls -l'
+alias grep='grep --color'\n"))
         (zlogin    (plain-file "zlogin" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
