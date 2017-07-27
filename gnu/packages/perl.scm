@@ -1848,7 +1848,7 @@ precise.")
 (define-public perl-datetime-set
   (package
     (name "perl-datetime-set")
-    (version "0.3400")
+    (version "0.3900")
     (source
      (origin
        (method url-fetch)
@@ -1856,7 +1856,7 @@ precise.")
                            "DateTime-Set-" version ".tar.gz"))
        (sha256
         (base32
-         "1b27699zkj68w5ll9chjhs52vmf39f9via6x5r5844as30qh9zxb"))))
+         "0ih9pi6myg5i26hjpmpzqn58s0yljl2qxdd6gzpy9zda4hwirx4l"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
