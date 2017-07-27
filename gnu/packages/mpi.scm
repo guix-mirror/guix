@@ -135,7 +135,6 @@ bind processes, and much more.")
     (arguments
      `(#:configure-flags `("--enable-static"
 
-                           "--enable-mpi-thread-multiple"
                            "--enable-builtin-atomics"
 
                            "--enable-mpi-ext=all"
@@ -184,3 +183,17 @@ best MPI library available.  Open MPI offers advantages for system and
 software vendors, application developers and computer science researchers.")
     ;; See file://LICENSE
     (license bsd-2)))
+
+(define-public openmpi-thread-multiple
+  (package
+    (inherit openmpi)
+    (name "openmpi-thread-multiple")
+    (arguments
+     (substitute-keyword-arguments (package-arguments openmpi)
+       ((#:configure-flags flags)
+        `(cons "--enable-mpi-thread-multiple" ,flags))))
+    (description " This version of Open@tie{}MPI has an implementation of
+@code{MPI_Init_thread} that provides @code{MPI_THREAD_MULTIPLE}.  This won't
+work correctly with all transports (such as @code{openib}), and the
+performance is generally worse than the vanilla @code{openmpi} package, which
+only provides @code{MPI_THREAD_FUNNELED}.")))
