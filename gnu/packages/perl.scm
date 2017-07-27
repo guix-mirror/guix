@@ -5044,6 +5044,7 @@ subset of the functionality for reduced startup time.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-any-moose" ,perl-any-moose)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-mouse" ,perl-mouse)))
