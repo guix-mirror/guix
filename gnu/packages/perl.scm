@@ -1793,7 +1793,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.18")
+    (version "1.43")
     (source
      (origin
        (method url-fetch)
@@ -1801,15 +1801,17 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0fli1ls298qa8nfki15myxqqqfpxvslxk4j5r3vjk577wfgjrnms"))))
+         "0xgrcqs7zza7646g81j54z3fcxb8rw11ynlfm02afr436lgfnfql"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-module-build" ,perl-module-build)
        ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-datetime-locale" ,perl-datetime-locale)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-file-sharedir" ,perl-file-sharedir)
        ("perl-params-validate" ,perl-params-validate)
        ("perl-try-tiny" ,perl-try-tiny)))
     (home-page "http://search.cpan.org/dist/DateTime")
