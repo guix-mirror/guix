@@ -3446,6 +3446,29 @@ merged.")
 that may contain multiple values per key, inspired by MultiDict of WebOb.")
     (license (package-license perl))))
 
+(define-public perl-importer
+  (package
+    (name "perl-importer")
+    (version "0.024")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/Importer-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0mx50xds7iphxykbr9b0w2qki92l3gpagsdchm4ncsrnxc67c68x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Importer/")
+    (synopsis "Alternative but compatible interface to modules that export symbols")
+    (description "This module acts as a layer between Exporter and modules which
+consume exports.  It is feature-compatible with Exporter, plus some much needed
+extras.  You can use this to import symbols from any exporter that follows
+Exporters specification.  The exporter modules themselves do not need to use or
+inherit from the Exporter module, they just need to set @EXPORT and/or other
+variables.")
+    (license (package-license perl))))
+
 (define-public perl-import-into
   (package
     (name "perl-import-into")
