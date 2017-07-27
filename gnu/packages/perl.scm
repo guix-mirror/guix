@@ -2561,6 +2561,11 @@ also known as JIS 2000.")
         (base32
          "0fj4vd8iva2i0j6s2fyhwgr9afrvhr6gjlzi7805h257mmnb1m0z"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
     (home-page "http://search.cpan.org/dist/Encode-HanExtra")
     (synopsis "Additional Chinese encodings")
     (description "This Perl module provides Chinese encodings that are not
