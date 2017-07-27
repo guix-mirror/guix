@@ -1,6 +1,7 @@
 ;;; guix-emacs.el --- Emacs packages installed with Guix
 
 ;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
+;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 
 ;; This file is part of GNU Guix.
 
@@ -87,9 +88,11 @@ profiles.
   (interactive (list (if (fboundp 'guix-read-package-profile)
                          (funcall 'guix-read-package-profile)
                        guix-user-profile)))
-  (let ((profiles (or profiles
-                      (list "/run/current-system/profile"
-                            guix-user-profile))))
+  (let* ((env      (getenv "GUIX_ENVIRONMENT"))
+         (profiles (or profiles
+                       (append (list "/run/current-system/profile"
+                                     guix-user-profile)
+                               (and env (list env))))))
     (dolist (profile profiles)
       (let ((dirs (guix-emacs-directories profile)))
         (when dirs
