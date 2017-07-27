@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -411,89 +411,6 @@ download by itself using its own dependencies."
                     ;; for that built-in is widespread.
                     #:local-build? #t)))
 
-(define* (in-band-download file-name url
-                           #:key system hash-algo hash
-                           mirrors content-addressed-mirrors
-                           guile)
-  "Download FILE-NAME from URL using a normal, \"in-band\" fixed-output
-derivation.
-
-This is now deprecated since it has the drawback of causing bootstrapping
-issues: we may need to build GnuTLS just to be able to download the source of
-GnuTLS itself and its dependencies.  See <http://bugs.gnu.org/22774>."
-  (define need-gnutls?
-    ;; True if any of the URLs need TLS support.
-    (let ((https? (cut string-prefix? "https://" <>)))
-      (match url
-        ((? string?)
-         (https? url))
-        ((url ...)
-         (any https? url)))))
-
-  (define builder
-    (with-imported-modules '((guix build download)
-                             (guix build utils)
-                             (guix ftp-client)
-                             (guix base32)
-                             (guix base64))
-      #~(begin
-          #+(if need-gnutls?
-
-                ;; Add GnuTLS to the inputs and to the load path.
-                #~(eval-when (load expand eval)
-                    (set! %load-path
-                      (cons (string-append #+(gnutls-package)
-                                           "/share/guile/site/"
-                                           (effective-version))
-                            %load-path)))
-                #~#t)
-
-          (use-modules (guix build download)
-                       (guix base32))
-
-          (let ((value-from-environment (lambda (variable)
-                                          (call-with-input-string
-                                              (getenv variable)
-                                            read))))
-            (url-fetch (value-from-environment "guix download url")
-                       #$output
-                       #:mirrors (call-with-input-file #$mirrors read)
-
-                       ;; Content-addressed mirrors.
-                       #:hashes
-                       (value-from-environment "guix download hashes")
-                       #:content-addressed-mirrors
-                       (primitive-load #$content-addressed-mirrors)
-
-                       ;; No need to validate certificates since we know the
-                       ;; hash of the expected result.
-                       #:verify-certificate? #f)))))
-
-  (mlet %store-monad ((guile (package->derivation guile system)))
-    (gexp->derivation file-name builder
-                      #:guile-for-build guile
-                      #:system system
-                      #:hash-algo hash-algo
-                      #:hash hash
-
-                      ;; Use environment variables and a fixed script
-                      ;; name so there's only one script in store for
-                      ;; all the downloads.
-                      #:script-name "download"
-                      #:env-vars
-                      `(("guix download url" . ,(object->string url))
-                        ("guix download hashes"
-                         . ,(object->string `((,hash-algo . ,hash)))))
-
-                      ;; Honor the user's proxy settings.
-                      #:leaked-env-vars '("http_proxy" "https_proxy")
-
-                      ;; In general, offloading downloads is not a good
-                      ;; idea.  Daemons before 0.8.3 would also
-                      ;; interpret this as "do not substitute" (see
-                      ;; <https://bugs.gnu.org/18747>.)
-                      #:local-build? #t)))
-
 (define* (url-fetch url hash-algo hash
                     #:optional name
                     #:key (system (%current-system))
@@ -520,18 +437,21 @@ in the store."
             (and uri (memq (uri-scheme uri) '(#f file))))
         (interned-file (if uri (uri-path uri) url)
                        (or name file-name))
-        (mlet* %store-monad ((builtins (built-in-builders*))
-                             (download -> (if (member "download" builtins)
-                                              built-in-download
-                                              in-band-download)))
-          (download (or name file-name) url
-                    #:guile guile
-                    #:system system
-                    #:hash-algo hash-algo
-                    #:hash hash
-                    #:mirrors %mirror-file
-                    #:content-addressed-mirrors
-                    %content-addressed-mirror-file)))))
+        (mlet %store-monad ((builtins (built-in-builders*)))
+          ;; The "download" built-in builder was added in guix-daemon in
+          ;; Nov. 2016 and made it in the 0.12.0 release of Dec. 2016.  We now
+          ;; require it.
+          (unless (member "download" builtins)
+            (error "'guix-daemon' is too old, please upgrade" builtins))
+
+          (built-in-download (or name file-name) url
+                             #:guile guile
+                             #:system system
+                             #:hash-algo hash-algo
+                             #:hash hash
+                             #:mirrors %mirror-file
+                             #:content-addressed-mirrors
+                             %content-addressed-mirror-file)))))
 
 (define* (url-fetch/tarbomb url hash-algo hash
                             #:optional name
