@@ -148,7 +148,7 @@ Report the availability of substitutes.\n"))
       --substitute-urls=URLS
                          check for available substitutes at URLS"))
   (display (G_ "
-      --manifest=MANIFEST
+  -m, --manifest=MANIFEST
                          look up substitutes for packages specified in MANIFEST"))
   (display (G_ "
   -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""))
