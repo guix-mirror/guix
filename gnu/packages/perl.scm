@@ -1897,7 +1897,7 @@ create DateTime::Set objects for RFC 2445 style recurrences.")
 (define-public perl-datetime-event-recurrence
   (package
     (name "perl-datetime-event-recurrence")
-    (version "0.16")
+    (version "0.19")
     (source
      (origin
        (method url-fetch)
@@ -1905,7 +1905,7 @@ create DateTime::Set objects for RFC 2445 style recurrences.")
                            "DateTime-Event-Recurrence-" version ".tar.gz"))
        (sha256
         (base32
-         "02c6ky3k26r0c8r87rcsd8gbn7rd6j2pylryin8pllnrdh9f0wiq"))))
+         "19dms2vg9hvfx80p85m8gkn2ww0yxjrjn8qsr9k7f431lj4qfh7r"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
