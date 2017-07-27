@@ -5485,6 +5485,36 @@ checking parameters easier.")
 function call parameters to an arbitrary level of specificity.")
     (license artistic2.0)))
 
+(define-public perl-params-validationcompiler
+  (package
+    (name "perl-params-validationcompiler")
+    (version "0.24")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                            "Params-ValidationCompiler-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11s29wd7gci4c7gcksxw7pzxfzganvr8x4f1dsww4676p93kg5m8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-without-module" ,perl-test-without-module)
+       ("perl-test2-bundle-extended" ,perl-test2-bundle-extended)
+       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)))
+    (propagated-inputs
+     `(("perl-eval-closure" ,perl-eval-closure)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-specio" ,perl-specio)))
+    (home-page "https://github.com/houseabsolute/Params-ValidationCompiler")
+    (synopsis "Build an optimized subroutine parameter validator")
+    (description "This module creates a customized, highly efficient
+parameter checking subroutine.  It can handle named or positional
+parameters, and can return the parameters as key/value pairs or a list
+of values.  In addition to type checks, it also supports parameter
+defaults, optional parameters, and extra \"slurpy\" parameters.")
+    (license artistic2.0)))
+
 (define-public perl-par-dist
   (package
     (name "perl-par-dist")
