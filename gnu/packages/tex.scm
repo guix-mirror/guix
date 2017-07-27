@@ -4059,7 +4059,7 @@ values (strings, macros, or numbers) pasted together.")
 (define-public biber
   (package
     (name "biber-next")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/plk/biber/archive/v"
@@ -4067,7 +4067,7 @@ values (strings, macros, or numbers) pasted together.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "158smzgjhjvyabdv97si5q88zjj5l8j1zbfnddvzy6fkpfhskgkp"))))
+                "17wd80jg98qyddhvz4cin8779ycvppaf2va77r1lyvymjz6w9bx0"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
