@@ -400,6 +400,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                                      "cat" "/proc/loadavg"))
             (line (read-line pipe)))
        (close-port pipe)
+       (disconnect! session)
 
        (if (eof-object? line)
            +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
@@ -427,13 +428,9 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
   "Return the name of the file used as a lock when choosing a build machine."
   (string-append %state-directory "/offload/machine-choice.lock"))
 
-
-(define %slots
-  ;; List of acquired build slots (open ports).
-  '())
-
 (define (choose-build-machine machines)
-  "Return the best machine among MACHINES, or #f."
+  "Return two values: the best machine among MACHINES and its build
+slot (which must later be released with 'release-build-slot'), or #f and #f."
 
   ;; Proceed like this:
   ;;   1. Acquire the global machine-choice lock.
@@ -480,14 +477,15 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
                 ;; Release slots from the uninteresting machines.
                 (for-each release-build-slot slots)
 
-                ;; Prevent SLOT from being GC'd.
-                (set! %slots (cons slot %slots))
-                best))
+                ;; The caller must keep SLOT to protect it from GC and to
+                ;; eventually release it.
+                (values best slot)))
              (begin
                ;; BEST is overloaded, so try the next one.
                (release-build-slot slot)
                (loop others))))
-        (() #f)))))
+        (()
+         (values #f #f))))))
 
 (define* (process-request wants-local? system drv features
                           #:key
@@ -505,19 +503,25 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
        ;; We'll never be able to match REQS.
        (display "# decline\n"))
       ((x ...)
-       (let ((machine (choose-build-machine candidates)))
+       (let-values (((machine slot)
+                     (choose-build-machine candidates)))
          (if machine
-             (begin
-               ;; Offload DRV to MACHINE.
-               (display "# accept\n")
-               (let ((inputs  (string-tokenize (read-line)))
-                     (outputs (string-tokenize (read-line))))
-                 (transfer-and-offload drv machine
-                                       #:inputs inputs
-                                       #:outputs outputs
-                                       #:max-silent-time max-silent-time
-                                       #:build-timeout build-timeout
-                                       #:print-build-trace? print-build-trace?)))
+             (dynamic-wind
+               (const #f)
+               (lambda ()
+                 ;; Offload DRV to MACHINE.
+                 (display "# accept\n")
+                 (let ((inputs  (string-tokenize (read-line)))
+                       (outputs (string-tokenize (read-line))))
+                   (transfer-and-offload drv machine
+                                         #:inputs inputs
+                                         #:outputs outputs
+                                         #:max-silent-time max-silent-time
+                                         #:build-timeout build-timeout
+                                         #:print-build-trace?
+                                         print-build-trace?)))
+               (lambda ()
+                 (release-build-slot slot)))
 
              ;; Not now, all the machines are busy.
              (display "# postpone\n")))))))

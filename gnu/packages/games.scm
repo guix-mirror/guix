@@ -242,6 +242,44 @@ giant insects to killer robots and things far stranger and deadlier, and against
 the others like yourself, that want what you have.")
     (license license:cc-by-sa3.0)))
 
+(define-public cowsay
+  (package
+    (name "cowsay")
+    (version "3.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://web.archive.org/web/20071026043648/"
+                                  "http://www.nog.net:80/~tony/warez/"
+                                  "cowsay-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bxj802na2si2bk5zh7n0b7c33mg8a5n2wnvh0vihl9bmjkp51hb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'install)
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "sh" "install.sh"
+                             (assoc-ref outputs "out")))))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* (string-append (assoc-ref outputs "out")
+                                            "/bin/cowsay")
+                             "We're done!")))))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page (string-append "https://web.archive.org/web/20071026043648/"
+                              "http://www.nog.net:80/~tony/warez/"))
+    (synopsis "Speaking cow text filter")
+    (description "Cowsay is basically a text filter.  Send some text into it,
+and you get a cow saying your text.  If you think a talking cow isn't enough,
+cows can think too.  All you have to do is run @code{cowthink}.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
+
 (define-public freedoom
   (package
    (name "freedoom")
@@ -725,7 +763,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.4")
+    (version "6.2.5")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +771,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1vw2w3jwnmn44d5vsw47f8y70xvxcsz9m5msq9fgqlzjch15qhiw"))))
+         "00j8s0npgfdi41a0mr5w9qbdxagdk2v41lcr42rwl1jp6miyk6cs"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")

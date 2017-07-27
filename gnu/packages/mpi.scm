@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.10.3")
+    (version "1.10.7")
     (source
      (origin
       (method url-fetch)
@@ -119,8 +120,9 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "0k95ri9f8kzx5vhzrdbzn59rn2324fs4a96w5v8jy20j8dkbp13l"))))
+        "142s1vny9gllkq336yafxayjgcirj2jv0ddabj879jgya7hyr2d0"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
     (inputs
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
@@ -137,6 +139,7 @@ bind processes, and much more.")
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
                            "--enable-memchecker"
+                           "--with-sge"
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
@@ -153,11 +156,25 @@ bind processes, and much more.")
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
                         (for-each delete-file (find-files out "config.log"))
+                        #t)))
+                  (add-after 'install 'move-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Move 19 MiB of static libraries to 'static'.
+                      (let* ((out    (assoc-ref outputs "out"))
+                             (static (assoc-ref outputs "static"))
+                             (lib    (string-append out "/lib"))
+                             (slib   (string-append static "/lib")))
+                        (mkdir-p slib)
+                        (for-each (lambda (file)
+                                    (rename-file
+                                     file
+                                     (string-append slib "/" (basename file))))
+                                  (find-files lib "\\.a$"))
                         #t))))))
     (home-page "http://www.open-mpi.org")
-    (synopsis "MPI-2 implementation")
+    (synopsis "MPI-3 implementation")
     (description
-     "The Open MPI Project is an MPI-2 implementation that is developed and
+     "The Open MPI Project is an MPI-3 implementation that is developed and
 maintained by a consortium of academic, research, and industry partners.  Open
 MPI is therefore able to combine the expertise, technologies, and resources
 from all across the High Performance Computing community in order to build the

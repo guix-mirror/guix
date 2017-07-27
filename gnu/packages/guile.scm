@@ -1554,16 +1554,28 @@ is no support for parsing block and inline level HTML.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04lgh0nk6ddnwgh20hnz4pyhczaik0xbd50kikjsxcwcl46shavb"))))
+                "04lgh0nk6ddnwgh20hnz4pyhczaik0xbd50kikjsxcwcl46shavb"))
+              (patches (search-patches "guile-bytestructures-name-clash.patch"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils)
+                      (ice-9 ftw)
                       (ice-9 match)
                       (ice-9 popen)
                       (ice-9 rdelim))
+         ;; Unpack.
+         (setenv "PATH"
+                 (string-join (list (assoc-ref %build-inputs "tar")
+                                    (assoc-ref %build-inputs "xz"))
+                              "/bin:" 'suffix))
+         (system* "tar" "xf" (assoc-ref %build-inputs "source"))
+         (match (scandir ".")
+           (("." ".." directory)
+            (chdir directory)))
+
          (let* ((out (assoc-ref %outputs "out"))
                 (guile (assoc-ref %build-inputs "guile"))
                 (effective (read-line
@@ -1572,7 +1584,7 @@ is no support for parsing block and inline level HTML.")
                                         "-c" "(display (effective-version))")))
                 (module-dir (string-append out "/share/guile/site/"
                                            effective))
-                (source (assoc-ref %build-inputs "source"))
+                (source (getcwd))
                 (doc (string-append out "/share/doc/scheme-bytestructures"))
                 (sld-files (with-directory-excursion source
                              (find-files "bytestructures/r7" "\\.exports.sld$")))
@@ -1612,6 +1624,9 @@ is no support for parsing block and inline level HTML.")
            ;; Also copy over the README.
            (install-file "README.md" doc)
            #t))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("xz" ,xz)))
     (inputs
      `(("guile" ,guile-2.2)))
     (home-page "https://github.com/TaylanUB/scheme-bytestructures")
@@ -1623,6 +1638,9 @@ system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
     (license license:gpl3+)))
+
+(define-public guile2.0-bytestructures
+  (package-for-guile-2.0 guile-bytestructures))
 
 (define-public guile-aspell
   (package
@@ -1837,6 +1855,9 @@ is not available for Guile 2.0.")
        "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
       (license license:gpl3+))))
+
+(define-public guile2.0-git
+  (package-for-guile-2.0 guile-git))
 
 (define-public guile-syntax-highlight
   (let ((commit "a047675e66861b647426372aa2ba7820f749616d")

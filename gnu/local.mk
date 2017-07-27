@@ -270,7 +270,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
-  %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
   %D%/packages/moe.scm				\
   %D%/packages/monitoring.scm			\
@@ -563,6 +562,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dblatex-remove-multirow.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
+  %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/doc++-include-directives.patch		\
@@ -578,7 +578,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
-  %D%/packages/patches/evince-CVE-2017-1000083.patch		\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
   %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
@@ -663,6 +662,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-default-utf8.patch		\
+  %D%/packages/patches/guile-bytestructures-name-clash.patch	\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
@@ -885,6 +885,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pcre2-CVE-2017-8786.patch		\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
+  %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   %D%/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \

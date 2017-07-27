@@ -316,7 +316,7 @@ the OCaml language.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.62")
+    (version "4.63")
     (source
      (origin
       (method url-fetch)
@@ -324,7 +324,7 @@ the OCaml language.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0w7s3869ybwyq9a4490dikpib1qp3jnn5nqz1vvwqy1qz3ilnvh9"))))
+        "1xp7nclmp8inp20968bvvfcwmz3mz03sbm0v3yjz8aqwlpqjfkci"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -2075,8 +2075,7 @@ to BMP, JPEG or PNG image formats.")
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gcc" ,gcc)
-       ("gcl" ,gcl)
+     `(("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
@@ -2100,13 +2099,6 @@ to BMP, JPEG or PNG image formats.")
        #:make-flags (list "TMPDIR=/tmp")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-gcc-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "lisp-utils/defsystem.lisp"
-               (("\\(defparameter \\*c-compiler\\* \"gcc\"\\)")
-                (string-append "(defparameter *c-compiler* \""
-                               (assoc-ref inputs "gcc") "/bin/gcc\")")))
-             #t))
          (add-before 'check 'pre-check
            (lambda _
              (chmod "src/maxima" #o555)
@@ -2118,7 +2110,9 @@ to BMP, JPEG or PNG image formats.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((gnuplot (assoc-ref inputs "gnuplot"))
                     (out (assoc-ref outputs "out"))
-                    (datadir (string-append out "/share/maxima/" ,version)))
+                    (datadir (string-append out "/share/maxima/" ,version))
+                    (binutils (string-append (assoc-ref inputs "binutils")
+                                             "/bin")))
                (with-directory-excursion out
                  (mkdir-p "share/emacs")
                  (mkdir-p "share/doc")
@@ -2134,7 +2128,11 @@ to BMP, JPEG or PNG image formats.")
                     (format out "~a ~s~a~%"
                             "(setf $gnuplot_command "
                             (string-append gnuplot "/bin/gnuplot") ")")
-                    (dump-port in out)))))
+                    (dump-port in out))))
+               ;; Ensure that Maxima will have access to the GNU binutils
+               ;; components at runtime.
+               (wrap-program (string-append out "/bin/maxima")
+                 `("PATH" prefix (,binutils))))
              #t)))))
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")

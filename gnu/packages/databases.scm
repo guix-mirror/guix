@@ -1015,7 +1015,8 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))))
+         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))
+       (patches (search-patches "perl-dbd-mysql-CVE-2017-10788.patch"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))

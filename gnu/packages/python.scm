@@ -4659,7 +4659,7 @@ reruns flaky tests.
 
 Ideally, tests reliably pass or fail, but sometimes test fixtures must rely
 on components that aren't 100% reliable.  With flaky, instead of removing
-those tests or marking them to @code{@skip}, they can be automatically
+those tests or marking them to @code{@@skip}, they can be automatically
 retried.")
     (license license:asl2.0)))
 
@@ -5876,7 +5876,11 @@ features useful for text console applications.")
       (inherit python2-urwid)
       (arguments
        (append
-        '(#:phases
+        `(;; Explicitly using Python 2 is necessary due the argument list being
+          ;; built from only the 'delete-test_vterm.py' phase and python-urwid's
+          ;; package arguments, which by default assumes the use of Python 3.
+          #:python ,python-2
+          #:phases
           (modify-phases %standard-phases
             ;; Disable the vterm tests because of non-deterministic failures
             ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
@@ -7637,14 +7641,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0qadys01517k5wy0rifxip02p08kzrqxm5j0lmmlp0kr07h9jc7h"))))
+         "0yvi2cp23rg20bq3hd47ixbvjh0zgxnxrriqx5v17d7vkmliwbsi"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7659,14 +7663,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1c40qlxyn1jgg99f3pqi7146d3561rn9zdqc7w8f7kwr9ysm696k"))))
+         "1aq6ilnf2zdqshwqai4w8gmb5y6p7ip34qrjp1yb7sz77rkb501p"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -15812,3 +15816,30 @@ pure Python module.")
 
 (define-public python2-rencode
   (package-with-python2 python-rencode))
+
+(define-public python-flask-principal
+  (package
+    (name "python-flask-principal")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Flask-Principal" version))
+        (sha256
+          (base32
+           "0lwlr5smz8vfm5h9a9i7da3q1c24xqc6vm9jdywdpgxfbi5i7mpm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-blinker" ,python-blinker)))
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-nose" ,python-nose)))
+    (home-page "http://packages.python.org/Flask-Principal/")
+    (synopsis "Identity management for Flask")
+    (description "@code{flask_principal} is a identity management library for
+Flask.  It supports managing both authentication and authorization data in a
+thread-local variable.")
+    (license license:expat)))
+
+(define-public python2-flask-principal
+  (package-with-python2 python-flask-principal))

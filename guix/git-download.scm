@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:export (git-reference
             git-reference?
@@ -125,45 +127,84 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   "Return the file-name for packages using git-download."
   (string-append name "-" version "-checkout"))
 
+
+;;;
+;;; 'git-predicate'.
+;;;
+
+(define (files->directory-tree files)
+  "Return a tree of vhashes representing the directory listed in FILES, a list
+like '(\"a/b\" \"b/c/d\")."
+  (fold (lambda (file result)
+          (let loop ((file (string-split file #\/))
+                     (result result))
+            (match file
+              ((_)
+               result)
+              ((directory children ...)
+               (match (vhash-assoc directory result)
+                 (#f
+                  (vhash-cons directory (loop children vlist-null)
+                              result))
+                 ((_ . previous)
+                  ;; XXX: 'vhash-delete' is O(n).
+                  (vhash-cons directory (loop children previous)
+                              (vhash-delete directory result)))))
+              (()
+               result))))
+        vlist-null
+        files))
+
+(define (directory-in-tree? tree directory)
+  "Return true if DIRECTORY, a string like \"a/b\", denotes a directory listed
+in TREE."
+  (let loop ((directory (string-split directory #\/))
+             (tree       tree))
+    (match directory
+      (()
+       #t)
+      ((head . tail)
+       (match (vhash-assoc head tree)
+         ((_ . sub-tree) (loop tail sub-tree))
+         (#f #f))))))
+
 (define (git-predicate directory)
   "Return a predicate that returns true if a file is part of the Git checkout
 living at DIRECTORY.  Upon Git failure, return #f instead of a predicate.
 
 The returned predicate takes two arguments FILE and STAT where FILE is an
 absolute file name and STAT is the result of 'lstat'."
-  (define (parent-directory? thing directory)
-    ;; Return #t if DIRECTORY is the parent of THING.
-    (or (string-suffix? thing directory)
-        (and (string-index thing #\/)
-             (parent-directory? (dirname thing) directory))))
-
-  (let* ((pipe        (with-directory-excursion directory
-                        (open-pipe* OPEN_READ "git" "ls-files")))
-         (files       (let loop ((lines '()))
-                        (match (read-line pipe)
-                          ((? eof-object?)
-                           (reverse lines))
-                          (line
-                           (loop (cons line lines))))))
-         (inodes      (map (lambda (file)
-                             (let ((stat (lstat
-                                          (string-append directory "/" file))))
-                               (cons (stat:dev stat) (stat:ino stat))))
-                           files))
-         (status      (close-pipe pipe)))
+  (let* ((pipe           (with-directory-excursion directory
+                           (open-pipe* OPEN_READ "git" "ls-files")))
+         (files          (let loop ((lines '()))
+                           (match (read-line pipe)
+                             ((? eof-object?)
+                              (reverse lines))
+                             (line
+                              (loop (cons line lines))))))
+         (directory-tree (files->directory-tree files))
+         (inodes         (fold (lambda (file result)
+                                 (let ((stat
+                                        (lstat (string-append directory "/"
+                                                              file))))
+                                   (vhash-consv (stat:ino stat) (stat:dev stat)
+                                                result)))
+                               vlist-null
+                               files))
+         (prefix-length  (+ 1 (string-length (canonicalize-path directory))))
+         (status         (close-pipe pipe)))
     (and (zero? status)
          (lambda (file stat)
            (match (stat:type stat)
              ('directory
-              ;; 'git ls-files' does not list directories, only regular files,
-              ;; so we need this special trick.
-              (any (lambda (f) (parent-directory? f file))
-                   files))
+              (directory-in-tree? directory-tree
+                                  (string-drop file prefix-length)))
              ((or 'regular 'symlink)
               ;; Comparing file names is always tricky business so we rely on
               ;; inode numbers instead
-              (member (cons (stat:dev stat) (stat:ino stat))
-                      inodes))
+              (match (vhash-assv (stat:ino stat) inodes)
+                ((_ . dev) (= dev (stat:dev stat)))
+                (#f        #f)))
              (_
               #f))))))
 

@@ -667,14 +667,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.24.2")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma"))))
+                "02z6d87ip1hkipz8d7w0sfklg8dd5fd5vlgp768640ixg0gqvlk5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -930,6 +930,11 @@ compresses it.")
     (arguments
       '(#:configure-flags
         '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        #:make-flags
+        ;; Disable updating icon cache since it's done by the profile hook.
+        ;; Conflict with other packages in the profile would be inevitable
+        ;; otherwise.
+        '("gtk_update_icon_cache=true")
         #:phases (modify-phases %standard-phases
                    (add-before 'build 'patch-mime
                      (lambda* (#:key inputs #:allow-other-keys)

@@ -661,14 +661,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.0")
+    (version "4.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
+                "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -2169,7 +2169,7 @@ tool for remote execution and deployment.")
                  (("\"/etc/neofetch")
                   (string-append "\"" out "/etc/neofetch"))
                  (("\"/usr/share/neofetch")
-                  (string-append "\"" out "/usr/share/neofetch"))))
+                  (string-append "\"" out "/share/neofetch"))))
              #t))
          (delete 'configure))))
     (home-page "https://github.com/dylanaraps/neofetch")
@@ -2184,7 +2184,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2192,7 +2192,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08l0wcwwsl5kix9kg3h51s2afzg97y1rjjfi0ijs294kz57g1cfq"))))
+                "0sivgcmg3hihz15v2wgbxnd0icn06pyvvqdqh8x0mwkhvm434fpb"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))

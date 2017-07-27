@@ -106,6 +106,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -1189,14 +1190,96 @@ consists of several tools, of which the most important are @command{ip} and
 messages and are accompanied by a set of manpages.")
     (license license:gpl2+)))
 
+;; There are two packages for net-tools. The first, net-tools, is more recent
+;; and probably safer to use with untrusted inputs (i.e. the internet).  The
+;; second, net-tools-for-tests, is relatively old and buggy. It can be used in
+;; package test suites and should never be referred to by a built package. Use
+;; #:disallowed-references to enforce this.
+;;
+;; When we are able to rebuild many packages (i.e. core-updates), we can update
+;; net-tools-for-tests if appropriate.
+;;
+;; See <https://bugs.gnu.org/27811> for more information.
 (define-public net-tools
   ;; XXX: This package is basically unmaintained, but it provides a few
   ;; commands not yet provided by Inetutils, such as 'route', so we have to
   ;; live with it.
-  (package
-    (name "net-tools")
+  (let ((commit "479bb4a7e11a4084e2935c0a576388f92469225b")
+        (revision "0"))
+    (package
+      (name "net-tools")
+      (version (string-append "1.60-" revision "." (string-take commit 7)))
+      (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                      (url "https://git.code.sf.net/p/net-tools/code")
+                      (commit commit)))
+               (file-name (string-append name "-" version "-checkout"))
+               (sha256
+                (base32
+                 "189mdjfbd7j7j0jysy34nqn5byy9g5f6ylip1sikk7kz08vjml4s"))))
+      (home-page "http://net-tools.sourceforge.net/")
+      (build-system gnu-build-system)
+      (arguments
+       '(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-1)
+                    (srfi srfi-26))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/bin"))
+                 (mkdir-p (string-append out "/sbin"))
+
+                 ;; Pretend we have everything...
+                 (system "yes | make config")
+
+                 ;; ... except for the things we don't have.
+                 ;; HAVE_AFDECnet requires libdnet, which we don't have.
+                 ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
+                 ;; that have been removed.
+                 ;; XXX SELINUX and AFBLUETOOTH are removed for now, but we should
+                 ;; think about adding them later.
+                 (substitute* '("config.make" "config.h")
+                   (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR|SELINUX|AFBLUETOOTH)[ =]1.*$")
+                    "")))))
+           (add-after 'install 'remove-redundant-commands
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Remove commands and man pages redundant with Inetutils.
+               (let* ((out (assoc-ref outputs "out"))
+                      (dup (append-map (cut find-files out <>)
+                                       '("^hostname"
+                                         "^(yp|nis|dns)?domainname"))))
+                 (for-each delete-file dup)
+                 #t))))
+         ;; Binaries that depend on libnet-tools.a don't declare that
+         ;; dependency, making it parallel-unsafe.
+         #:parallel-build? #f
+
+         #:tests? #f                                ; no test suite
+         #:make-flags (let ((out (assoc-ref %outputs "out")))
+                        (list "CC=gcc"
+                              (string-append "BASEDIR=" out)
+                              (string-append "INSTALLNLSDIR=" out "/share/locale")
+                              (string-append "mandir=/share/man")))))
+      (native-inputs `(("gettext" ,gettext-minimal)))
+      (synopsis "Tools for controlling the network subsystem in Linux")
+      (description
+       "This package includes the important tools for controlling the network
+subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and
+route.  Additionally, this package contains utilities relating to particular
+network hardware types (plipconfig, slattach) and advanced aspects of IP
+configuration (iptunnel, ipmaddr).")
+      (license license:gpl2+))))
+
+(define-public net-tools-for-tests
+  (hidden-package (package (inherit net-tools)
     (version "1.60")
-    (home-page "http://net-tools.sourceforge.net/")
+    ;; Git depends on net-tools-for-tests via GnuTLS, so we can't use git-fetch
+    ;; here.  We should find a better workaround for this problem so that we can
+    ;; use the latest upstream source.
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -1272,23 +1355,17 @@ messages and are accompanied by a set of manpages.")
 
     ;; Use the big Debian patch set (the thing does not even compile out of
     ;; the box.)
+    ;; XXX The patch is not actually applied, due to a bug in the 'patch' phase
+    ;; above. However, this package variant is only used in GnuTLS's tests. It
+    ;; will be adjusted when convenient for the build farm.
+    ;; See <https://bugs.gnu.org/27811> for more information.
     (inputs `(("patch" ,(origin
                          (method url-fetch)
                          (uri
                           "http://ftp.de.debian.org/debian/pool/main/n/net-tools/net-tools_1.60-24.2.diff.gz")
                          (sha256
                           (base32
-                           "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
-    (native-inputs `(("gettext" ,gettext-minimal)))
-
-    (synopsis "Tools for controlling the network subsystem in Linux")
-    (description
-     "This package includes the important tools for controlling the network
-subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and
-route.  Additionally, this package contains utilities relating to particular
-network hardware types (plipconfig, slattach) and advanced aspects of IP
-configuration (iptunnel, ipmaddr).")
-    (license license:gpl2+)))
+                           "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p")))))))))
 
 (define-public libcap
   (package

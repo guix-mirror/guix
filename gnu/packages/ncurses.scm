@@ -206,7 +206,7 @@ ncursesw library provides wide character support.")
 (define-public dialog
   (package
     (name "dialog")
-    (version "1.2-20150920")
+    (version "1.3-20170509")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -214,7 +214,7 @@ ncursesw library provides wide character support.")
                     version ".tgz"))
               (sha256
                (base32
-                "01ccd585c241nkj02n0zdbx8jqhylgcfpcmmshynh0c7fv2ixrn4"))))
+                "0mj7rl5psilaj3bxxvjfd44qjknxjli98b0d1lxd3f9jqrsbmw9g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite

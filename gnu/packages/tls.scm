@@ -131,6 +131,9 @@ coordinating the use of PKCS#11 by different components or libraries
 living in the same process.")
     (license license:bsd-3)))
 
+
+;; TODO Add net-tools-for-tests to #:disallowed-references when we can afford
+;; rebuild GnuTLS (i.e. core-updates).
 (define-public gnutls
   (package
     (name "gnutls")
@@ -185,7 +188,7 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(("net-tools" ,net-tools)
+     `(("net-tools" ,net-tools-for-tests)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
