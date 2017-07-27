@@ -6473,6 +6473,34 @@ screen size, and retrieval/modification of the control characters.")
 into tables.")
     (license (package-license perl))))
 
+(define-public perl-test2-bundle-extended
+  (package
+    (name "perl-test2-bundle-extended")
+    (version "0.000072")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/Test2-Suite-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0hgd6n29qjh1pwqvbglm2kb852yqshmixqqjhsr2kvvibdr58qpf"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+    (propagated-inputs
+     `(("perl-importer" ,perl-importer)
+       ("perl-term-table" ,perl-term-table)
+       ("perl-sub-info" ,perl-sub-info)))
+    (home-page "http://search.cpan.org/~exodist/Test2-Suite/lib/Test2/Bundle/Extended.pm")
+    (synopsis "Full set of tools for Test2::Suite")
+    (description "This package provides a rich set of tools, plugins, bundles,
+etc built upon the Test2 testing library.")
+    (license (package-license perl))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
