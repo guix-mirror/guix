@@ -7636,14 +7636,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0qadys01517k5wy0rifxip02p08kzrqxm5j0lmmlp0kr07h9jc7h"))))
+         "0yvi2cp23rg20bq3hd47ixbvjh0zgxnxrriqx5v17d7vkmliwbsi"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7658,14 +7658,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.0")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1c40qlxyn1jgg99f3pqi7146d3561rn9zdqc7w8f7kwr9ysm696k"))))
+         "1aq6ilnf2zdqshwqai4w8gmb5y6p7ip34qrjp1yb7sz77rkb501p"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
