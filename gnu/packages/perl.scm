@@ -2094,7 +2094,7 @@ the DateTime.pm class.")
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
-    (version "1.86")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
@@ -2102,7 +2102,7 @@ the DateTime.pm class.")
                            "DateTime-TimeZone-" version ".tar.gz"))
        (sha256
         (base32
-         "1aj5liy9as7yci2s9cqv9gqna5wggah8yg2jqrc89dnrin25s26z"))))
+         "1371sk4p9clygfwxzvivfqz6q9dy8gn3n4dr1424d0xqsv63jg9k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -2111,7 +2111,8 @@ the DateTime.pm class.")
      `(("perl-class-singleton" ,perl-class-singleton)
        ("perl-list-allutils" ,perl-list-allutils)
        ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-params-validate" ,perl-params-validate)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-params-validationcompiler" ,perl-params-validationcompiler)
        ("perl-try-tiny" ,perl-try-tiny)))
     (home-page "http://search.cpan.org/dist/DateTime-TimeZone")
     (synopsis "Time zone object for Perl")
