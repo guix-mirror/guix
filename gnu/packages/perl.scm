@@ -5868,6 +5868,38 @@ compact.")
 arrays by one or multiple calculated keys.")
     (license (package-license perl))))
 
+(define-public perl-specio
+  (package
+    (name "perl-specio")
+    (version "0.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Specio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s5xd9awwrzc94ymimjkxqs6jq513wwlmwwarxaklvg2hk4lps0l"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-eval-closure" ,perl-eval-closure)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-needs" ,perl-test-needs)))
+    (home-page "http://search.cpan.org/dist/Specio/")
+    (synopsis "Classes for representing type constraints and coercion")
+    (description "The Specio distribution provides classes for representing type
+constraints and coercion, along with syntax sugar for declaring them.  Note that
+this is not a proper type system for Perl. Nothing in this distribution will
+magically make the Perl interpreter start checking a value's type on assignment
+to a variable. In fact, there's no built-in way to apply a type to a variable at
+all.  Instead, you can explicitly check a value against a type, and optionally
+coerce values to that type.")
+    (license artistic2.0)))
+
 (define-public perl-spiffy
   (package
     (name "perl-spiffy")
