@@ -2034,7 +2034,7 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.56")
+    (version "1.73")
     (source
      (origin
        (method url-fetch)
@@ -2042,13 +2042,16 @@ parsing logic.")
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
         (base32
-         "0a4bszmff16rw6fz1yr4v9001q9vxrdxnxkj9sqaln83b87rvxig"))))
+         "1gmjcmvh81cla6yn2pvlkr7i25bspg90pzzsizrfb0c5xc37h1vd"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-locale" ,perl-datetime-locale)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-params-validate" ,perl-params-validate)))
+       ("perl-package-deprecationmanager" ,perl-package-deprecationmanager)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (home-page "http://search.cpan.org/dist/DateTime-Format-Strptime")
     (synopsis "Parse and format strp and strf time patterns")
     (description "This module implements most of `strptime(3)`, the POSIX
