@@ -7923,6 +7923,7 @@ attribute names.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-fatal" ,perl-test-fatal)))
     (home-page "http://search.cpan.org/dist/XS-Object-Magic")
     (synopsis "Opaque, extensible XS pointer backed objects using sv_magic")
