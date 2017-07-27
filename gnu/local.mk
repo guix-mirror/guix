@@ -452,6 +452,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/shepherd.scm			\
   %D%/services/herd.scm				\
   %D%/services/pm.scm				\
+  %D%/services/rsync.scm			\
   %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
@@ -498,6 +499,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
+  %D%/tests/rsync.scm				\
   %D%/tests/ssh.scm				\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm

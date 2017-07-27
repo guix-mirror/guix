@@ -10335,6 +10335,75 @@ In addition, @var{extra-settings} specifies a string to append to the
 configuration file.
 @end deffn
 
+The @code{(gnu services rsync)} module provides the following services:
+
+You might want an rsync daemon if you have files that you want available
+so anyone (or just yourself) can download existing files or upload new
+files.
+
+@deffn {Scheme Variable} rsync-service-type
+This is the type for the @uref{https://rsync.samba.org, rsync} rsync daemon,
+@command{rsync-configuration} record as in this example:
+
+@example
+(service rsync-service-type)
+@end example
+
+See below for details about @code{rsync-configuration}.
+@end deffn
+
+@deftp {Data Type} rsync-configuration
+Data type representing the configuration for @code{rsync-service}.
+
+@table @asis
+@item @code{package} (default: @var{rsync})
+@code{rsync} package to use.
+
+@item @code{port-number} (default: @code{873})
+TCP port on which @command{rsync} listens for incoming connections.  If port
+is less than @code{1024} @command{rsync} needs to be started as the
+@code{root} user and group.
+
+@item @code{pid-file} (default: @code{"/var/run/rsyncd/rsyncd.pid"})
+Name of the file where @command{rsync} writes its PID.
+
+@item @code{lock-file} (default: @code{"/var/run/rsyncd/rsyncd.lock"})
+Name of the file where @command{rsync} writes its lock file.
+
+@item @code{log-file} (default: @code{"/var/log/rsyncd.log"})
+Name of the file where @command{rsync} writes its log file.
+
+@item @code{use-chroot?} (default: @var{#t})
+Whether to use chroot for @command{rsync} shared directory.
+
+@item @code{share-path} (default: @file{/srv/rsync})
+Location of the @command{rsync} shared directory.
+
+@item @code{share-comment} (default: @code{"Rsync share"})
+Comment of the @command{rsync} shared directory.
+
+@item @code{read-only?} (default: @var{#f})
+Read-write permissions to shared directory.
+
+@item @code{timeout} (default: @code{300})
+I/O timeout in seconds.
+
+@item @code{user} (default: @var{"root"})
+Owner of the @code{rsync} process.
+
+@item @code{group} (default: @var{"root"})
+Group of the @code{rsync} process.
+
+@item @code{uid} (default: @var{"rsyncd"})
+User name or user ID that file transfers to and from that module should take
+place as when the daemon was run as @code{root}.
+
+@item @code{gid} (default: @var{"rsyncd"})
+Group name or group ID that will be used when accessing the module.
+
+@end table
+@end deftp
+
 Furthermore, @code{(gnu services ssh)} provides the following services.
 @cindex SSH
 @cindex SSH server
