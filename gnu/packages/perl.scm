@@ -6092,6 +6092,27 @@ renaming exports, if they try to use them.")
 references.")
     (license (package-license perl))))
 
+(define-public perl-sub-info
+  (package
+    (name "perl-sub-info")
+    (version "0.002")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/Sub-Info-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1snhrmc6gpw2zjnj7zvvqj69mlw711bxah6kk4dg5vxxjvb5cc7a"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-importer" ,perl-importer)))
+    (home-page "http://search.cpan.org/dist/Sub-Info/")
+    (synopsis "Tool to inspect subroutines")
+    (description "This package provides tools for inspecting subroutines
+in Perl.")
+    (license (package-license perl))))
+
 (define-public perl-sub-install
   (package
     (name "perl-sub-install")
