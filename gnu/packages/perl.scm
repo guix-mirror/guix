@@ -6431,6 +6431,27 @@ other terminal related features, including retrieval/modification of the
 screen size, and retrieval/modification of the control characters.")
     (license (package-license perl))))
 
+(define-public perl-term-table
+  (package
+    (name "perl-term-table")
+    (version "0.008")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/Term-Table-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0gi4lyvs6n8y6hjwmflfpamfl65y7mb1g39zi0rx35nclj8xb370"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-importer" ,perl-importer)))
+    (home-page "http://search.cpan.org/dist/Term-Table/")
+    (synopsis "Format a header and rows into a table")
+    (description "This module is able to generically format rows of data
+into tables.")
+    (license (package-license perl))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
