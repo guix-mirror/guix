@@ -2063,7 +2063,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
-    (version "0.45")
+    (version "1.16")
     (source
      (origin
        (method url-fetch)
@@ -2071,13 +2071,20 @@ takes a string and a pattern and returns the `DateTime` object associated.")
                            "DateTime-Locale-" version ".tar.gz"))
        (sha256
         (base32
-         "175grkrxiv012n6ch3z1sip4zprcili6m5zqi3njdk5c1gdvi8ca"))))
+         "1zkc0wggbsczbj4qadahh197imr9fa6knxr10zl241lw2i14rbyz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     `(("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-test-file-sharedir-dist" ,perl-test-file-sharedir-dist)
+       ("perl-test-warnings" ,perl-test-warnings)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-file-sharedir-install" ,perl-file-sharedir-install)
+       ("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-params-validate" ,perl-params-validate)))
+       ("perl-params-validationcompiler" ,perl-params-validationcompiler)))
     (home-page "http://search.cpan.org/dist/DateTime-Locale")
     (synopsis "Localization support for DateTime.pm")
     (description "The DateTime::Locale modules provide localization data for
