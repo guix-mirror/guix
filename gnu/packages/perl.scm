@@ -6762,6 +6762,32 @@ Test::Exception.  It does much less, but should allow greater flexibility in
 testing exception-throwing code with about the same amount of typing.")
     (license (package-license perl))))
 
+(define-public perl-test-file-sharedir-dist
+  (package
+    (name "perl-test-file-sharedir-dist")
+    (version "1.001002")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://cpan/authors/id/K/KE/KENTNL/"
+                            "Test-File-ShareDir-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1bbs6cx69wcinq77gif4i4pmrj8a7lwb92sgvvxzrwmjnk5lfdmk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-tiny" ,perl-class-tiny)
+       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-scope-guard" ,perl-scope-guard)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (home-page "https://github.com/kentnl/Test-File-ShareDir")
+    (synopsis "Dist oriented ShareDir tester")
+    (description "This module creates a Fake ShareDir for your modules
+for testing.")
+    (license (package-license perl))))
+
 (define-public perl-test-files
   (package
     (name "perl-test-files")
