@@ -9024,7 +9024,7 @@ declaration.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
-* Database Services::           SQL databases.
+* Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
 * Monitoring Services::         Monitoring services.
