@@ -1159,56 +1159,7 @@ dist_bootstrap_mips64el_linux_DATA =		\
   %D%/packages/bootstrap/mips64el-linux/tar	\
   %D%/packages/bootstrap/mips64el-linux/xz
 
-# Big bootstrap binaries are not included in the tarball.  Instead, they
-# are downloaded.
-nodist_bootstrap_x86_64_linux_DATA =					\
-  %D%/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz
-nodist_bootstrap_i686_linux_DATA =					\
-  %D%/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
-nodist_bootstrap_armhf_linux_DATA =					\
-  %D%/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz
-nodist_bootstrap_aarch64_linux_DATA =					\
-  %D%/packages/bootstrap/aarch64-linux/guile-2.0.14.tar.xz
-nodist_bootstrap_mips64el_linux_DATA =					\
-  %D%/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
-
 # Those files must remain executable, so they remain executable once
 # imported into the store.
 set-bootstrap-executable-permissions:
 	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}
-
-BOOTSTRAP_GUILE_TARBALLS =			\
-  $(nodist_bootstrap_x86_64_linux_DATA)		\
-  $(nodist_bootstrap_i686_linux_DATA)		\
-  $(nodist_bootstrap_armhf_linux_DATA)		\
-  $(nodist_bootstrap_aarch64_linux_DATA)	\
-  $(nodist_bootstrap_mips64el_linux_DATA)
-
-DISTCLEANFILES = $(BOOTSTRAP_GUILE_TARBALLS)
-
-# Method to download a file from an external source.
-DOWNLOAD_FILE =								\
-  GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
-  $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
-           "$(top_srcdir)/build-aux/download.scm"
-
-%D%/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz:
-	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
-	$(DOWNLOAD_FILE) "$@"			\
-	  "037b103522a2d0d7d69c7ffd8de683dfe5bb4b59c1fafd70b4ffd397fd2f57f0"
-%D%/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz:
-	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
-	$(DOWNLOAD_FILE) "$@"			\
-	  "b757cd46bf13ecac83fb8e955fb50096ac2d17bb610ca8eb816f29302a00a846"
-%D%/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz:
-	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
-	$(DOWNLOAD_FILE) "$@"			\
-	  "e551d05d4d385d6706ab8d574856a087758294dc90ab4c06e70a157a685e23d6"
-%D%/packages/bootstrap/aarch64-linux/guile-2.0.14.tar.xz:
-	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
-	$(DOWNLOAD_FILE) "$@"			\
-	  "3939909f24dcb955621aa7f81ecde6844bea8a083969c2d275c55699af123ebe"
-%D%/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz:
-	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
-	$(DOWNLOAD_FILE) "$@" 			\
-	  "994680f0001346864aa2c2cc5110f380ee7518dcd701c614291682b8e948f73b"

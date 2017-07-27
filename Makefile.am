@@ -388,7 +388,7 @@ check-local:
 
 endif !CAN_RUN_TESTS
 
-check-system: $(GOBJECTS) $(BOOTSTRAP_GUILE_TARBALLS)
+check-system: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env			\
 	   $(GUILE) --no-auto-compile				\
 	   -e '(@@ (run-system-tests) run-system-tests)'	\
@@ -418,7 +418,6 @@ EXTRA_DIST =						\
   build-aux/hydra/guix.scm				\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
-  build-aux/download.scm				\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\

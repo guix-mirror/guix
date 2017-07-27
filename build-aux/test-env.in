@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -110,6 +110,20 @@ then
 
     daemon_pid=$!
     trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT
+
+    # The test suite expects the 'guile-bootstrap' package to be available.
+    # Normally the Guile bootstrap tarball is downloaded by a fixed-output
+    # derivation but when network access is missing we allow users to drop
+    # the tarball in 'gnu/packages/bootstrap/SYSTEM' and "intern" it here.
+    bootstrap_directory="@abs_top_builddir@/gnu/packages/bootstrap/@guix_system@"
+    if [ -d "$bootstrap_directory" ]
+    then
+	for file in "$bootstrap_directory"/guile-*
+	do
+	    "@abs_top_builddir@/pre-inst-env"			\
+		guix download "file://$file" > /dev/null
+	done
+    fi
 fi
 
 # Avoid issues that could stem from l10n, such as language/encoding
