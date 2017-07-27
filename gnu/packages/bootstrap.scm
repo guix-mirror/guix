@@ -26,8 +26,10 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix store) #:select (add-to-store add-text-to-store))
-  #:use-module ((guix derivations) #:select (derivation))
+  #:use-module ((guix store)
+                #:select (run-with-store add-to-store add-text-to-store))
+  #:use-module ((guix derivations)
+                #:select (derivation derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
   #:use-module ((guix build utils) #:select (elf-file?))
   #:use-module (guix memoization)
@@ -191,6 +193,47 @@ successful, or false to signal an error."
 ;;; Bootstrap packages.
 ;;;
 
+(define %bootstrap-base-urls
+  ;; This is where the initial binaries come from.
+  '("ftp://alpha.gnu.org/gnu/guix/bootstrap"
+    "http://alpha.gnu.org/gnu/guix/bootstrap"
+    "http://www.fdn.fr/~lcourtes/software/guix/packages"
+    "http://flashner.co.il/guix/bootstrap"))
+
+(define (bootstrap-guile-url-path system)
+  "Return the URI for FILE."
+  (string-append "/" system
+                 (match system
+                   ("aarch64-linux"
+                    "/20170217/guile-2.0.14.tar.xz")
+                   ("armhf-linux"
+                    "/20150101/guile-2.0.11.tar.xz")
+                   (_
+                    "/20131110/guile-2.0.9.tar.xz"))))
+
+(define (bootstrap-guile-hash system)
+  "Return the SHA256 hash of the Guile bootstrap tarball for SYSTEM."
+  (match system
+    ("x86_64-linux"
+     (base32 "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3"))
+    ("i686-linux"
+     (base32 "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp"))
+    ("mips64el-linux"
+     (base32 "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))
+    ("armhf-linux"
+     (base32 "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))
+    ("aarch64-linux"
+     (base32 "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))
+
+(define (download-bootstrap-guile store system)
+  "Return a derivation that downloads the bootstrap Guile tarball for SYSTEM."
+  (let* ((path (bootstrap-guile-url-path system))
+         (base (basename path))
+         (urls (map (cut string-append <> path) %bootstrap-base-urls)))
+    (run-with-store store
+      (url-fetch urls 'sha256 (bootstrap-guile-hash system)
+                 #:system system))))
+
 (define* (raw-build store name inputs
                     #:key outputs system search-paths
                     #:allow-other-keys)
@@ -205,13 +248,7 @@ successful, or false to signal an error."
          (xz    (->store "xz"))
          (mkdir (->store "mkdir"))
          (bash  (->store "bash"))
-         (guile (->store (match system
-                           ("armhf-linux"
-                            "guile-2.0.11.tar.xz")
-                           ("aarch64-linux"
-                            "guile-2.0.14.tar.xz")
-                           (_
-                            "guile-2.0.9.tar.xz"))))
+         (guile (download-bootstrap-guile store system))
          ;; The following code, run by the bootstrap guile after it is
          ;; unpacked, creates a wrapper for itself to set its load path.
          ;; This replaces the previous non-portable method based on
@@ -246,7 +283,7 @@ exec -a \"~a0\" ~a \"~a@\"\n"
 echo \"unpacking bootstrap Guile to '$out'...\"
 ~a $out
 cd $out
-~a -dc < ~a | ~a xv
+~a -dc < $GUILE_TARBALL | ~a xv
 
 # Use the bootstrap guile to create its own wrapper to set the load path.
 GUILE_SYSTEM_PATH=$out/share/guile/2.0 \
@@ -255,14 +292,16 @@ $out/bin/guile -c ~s $out ~a
 
 # Sanity check.
 $out/bin/guile --version~%"
-                                     mkdir xz guile tar
+                                     mkdir xz tar
                                      (format #f "~s" make-guile-wrapper)
                                      bash)
-                             (list mkdir xz guile tar bash))))
+                             (list mkdir xz tar bash))))
     (derivation store name
                 bash `(,builder)
                 #:system system
-                #:inputs `((,bash) (,builder)))))
+                #:inputs `((,bash) (,builder) (,guile))
+                #:env-vars `(("GUILE_TARBALL"
+                              . ,(derivation->output-path guile))))))
 
 (define* (make-raw-bag name
                        #:key source inputs native-inputs outputs
@@ -293,13 +332,6 @@ $out/bin/guile --version~%"
      (description "Pre-built Guile for bootstrapping purposes.")
      (home-page #f)
      (license lgpl3+))))
-
-(define %bootstrap-base-urls
-  ;; This is where the initial binaries come from.
-  '("ftp://alpha.gnu.org/gnu/guix/bootstrap"
-    "http://alpha.gnu.org/gnu/guix/bootstrap"
-    "http://www.fdn.fr/~lcourtes/software/guix/packages"
-    "http://flashner.co.il/guix/bootstrap"))
 
 (define %bootstrap-coreutils&co
   (package-from-tarball "bootstrap-binaries"
