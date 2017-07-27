@@ -5490,7 +5490,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.24.1")
+    (version "3.24.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5498,7 +5498,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cn6bmzmahzlwcd4gllsvx6dva386xm3papgzpv1r34abw73sf27"))))
+                "1cv138z04qx0fh1a2z2hvxy4p1x15vdv5gmkx5f3hb6c3w2rsz9m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
