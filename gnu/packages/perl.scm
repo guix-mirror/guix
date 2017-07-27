@@ -1947,7 +1947,7 @@ to do this without writing reams of structural code.")
 (define-public perl-datetime-format-flexible
   (package
     (name "perl-datetime-format-flexible")
-    (version "0.26")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -1955,7 +1955,7 @@ to do this without writing reams of structural code.")
                            "DateTime-Format-Flexible-" version ".tar.gz"))
        (sha256
         (base32
-         "0gb9dsn178dpvgbbgwnaf3v2v8zy4xj36i0w5q8qbhvwx32znvj3"))))
+         "1g63zs0q2x40h29r7in50c55g6kxiw3m2faw2p6c4rg74sj2k2b5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
