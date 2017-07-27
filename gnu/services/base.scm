@@ -37,7 +37,7 @@
   #:use-module ((gnu packages linux)
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module ((gnu packages base)
-                #:select (canonical-package glibc))
+                #:select (canonical-package glibc glibc-utf8-locales))
   #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages linux)
@@ -1499,7 +1499,15 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                                    #~())
                             #$@(if cache
                                    #~((string-append "--cache=" #$cache))
-                                   #~()))))
+                                   #~()))
+
+                      ;; Make sure we run in a UTF-8 locale so we can produce
+                      ;; nars for packages that contain UTF-8 file names such
+                      ;; as 'nss-certs'.  See <https://bugs.gnu.org/26948>.
+                      #:environment-variables
+                      (list (string-append "GUIX_LOCPATH="
+                                           #$glibc-utf8-locales "/lib/locale")
+                            "LC_ALL=en_US.utf8")))
             (stop #~(make-kill-destructor)))))))
 
 (define %guix-publish-accounts
