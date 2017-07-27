@@ -1980,7 +1980,11 @@ with Encode::decode(locale => $string).")
     (build-system perl-build-system)
     (arguments
      ;; Tests expect to query files at http://stupidfool.org/perl/feeds/
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
     (inputs
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-html-parser" ,perl-html-parser)
