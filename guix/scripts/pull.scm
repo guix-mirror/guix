@@ -163,9 +163,10 @@ Download and deploy the latest version of Guix.\n"))
   ;; a makefile, and, similarly, is intended to always keep this name.
   "build-aux/build-self.scm")
 
-(define* (build-from-source source #:key verbose?)
+(define* (build-from-source source
+                            #:key verbose? commit)
   "Return a derivation to build Guix from SOURCE, using the self-build script
-contained therein."
+contained therein.  Use COMMIT as the version string."
   ;; Running the self-build script makes it easier to update the build
   ;; procedure: the self-build script of the Guix-to-be-installed contains the
   ;; right dependencies, build procedure, etc., which the Guix-in-use may not
@@ -174,12 +175,13 @@ contained therein."
          (build  (primitive-load script)))
     ;; BUILD must be a monadic procedure of at least one argument: the source
     ;; tree.
-    (build source #:verbose? verbose?)))
+    (build source #:verbose? verbose? #:version commit)))
 
 (define* (build-and-install source config-dir
-                            #:key verbose?)
+                            #:key verbose? commit)
   "Build the tool from SOURCE, and install it in CONFIG-DIR."
   (mlet* %store-monad ((source        (build-from-source source
+                                                         #:commit commit
                                                          #:verbose? verbose?))
                        (source-dir -> (derivation->output-path source))
                        (to-do?        (what-to-build (list source)))
@@ -280,6 +282,7 @@ certificates~%"))
                                                      (canonical-package guile-2.0)))))
                (run-with-store store
                  (build-and-install checkout (config-directory)
+                                    #:commit commit
                                     #:verbose? (assoc-ref opts 'verbose?)))))))))))
 
 ;;; pull.scm ends here
