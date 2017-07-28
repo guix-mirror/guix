@@ -2463,46 +2463,34 @@ a native C extension.")
 (define-public ruby-json-pure
   (package
     (name "ruby-json-pure")
-    (version "1.8.3")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "json_pure" version))
               (sha256
                (base32
-                "025aykr360x6dr1jmg8pmsrx7gr30pws4p1q686vnb48zyw1sc94"))))
+                "12yf9fmhr4c2jm3xl20vf1qyz5i63vc8a6ngz9j0f86nqwhmi2as"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (ice-9 regex)
-                  (rnrs io ports)
-                  (guix build ruby-build-system)
-                  (guix build utils))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'replace-git-ls-files
+         (add-after 'unpack 'fix-rakefile
            (lambda _
-             ;; The existing gemspec file already contains a nice list of
-             ;; files that belong to the gem.  We extract the list from the
-             ;; gemspec file and then replace the file list in the Rakefile to
-             ;; get rid of the call to "git ls-files".
-             (let* ((contents (call-with-input-file "json.gemspec" get-string-all))
-                    ;; Guile is unhappy about the #\nul characters in comments.
-                    (filtered (string-filter (lambda (char)
-                                               (not (equal? #\nul char)))
-                                             contents))
-                    (files (match:substring
-                            (string-match "  s\\.files = ([^]]+\\])" filtered) 1)))
-               (substitute* "Rakefile"
-                 (("FileList\\[`git ls-files`\\.split\\(/\\\\n/\\)\\]")
-                  (string-append "FileList" files))))
-             (substitute* "Gemfile"
-               ((".*json-java.*") "\n"))
-             #t)))))
+             (substitute* "Rakefile"
+               ;; Since this is not a git repository, do not call 'git'.
+               (("`git ls-files`") "`find . -type f |sort`")
+               ;; Loosen dependency constraint.
+               (("'test-unit', '~> 2.0'") "'test-unit', '>= 2.0'"))
+             #t))
+         (add-after 'replace-git-ls-files 'regenerate-gemspec
+           (lambda _
+             ;; Regenerate gemspec so loosened dependency constraints are
+             ;; propagated.
+             (zero? (system* "rake" "gemspec")))))))
     (native-inputs
-     `(("ruby-permutation" ,ruby-permutation)
-       ("ruby-utils" ,ruby-utils)
-       ("ragel" ,ragel)
-       ("bundler" ,bundler)))
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
