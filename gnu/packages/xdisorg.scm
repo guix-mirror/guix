@@ -93,16 +93,7 @@
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
-       #:tests? #f ;no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'make-xrandr-available
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/arandr")
-               `("PATH" ":" prefix (,(string-append (assoc-ref inputs "xrandr")
-                                                    "/bin"))))
-             #t)))))
+       #:tests? #f)) ;no tests
     (inputs `(("pygtk" ,python2-pygtk)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
