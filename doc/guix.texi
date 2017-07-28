@@ -580,6 +580,10 @@ later, including 2.2.x;
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
+@item
+@c FIXME: Specify a version number once a release has been made.
+@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
+2017 or later;
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 

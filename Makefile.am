@@ -66,6 +66,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/git.scm					\
   guix/graph.scm				\
   guix/cache.scm				\
   guix/cve.scm					\
@@ -206,13 +207,6 @@ MODULES +=					\
   guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
-
-if HAVE_GUILE_GIT
-
-MODULES +=					\
-  guix/git.scm
-
-endif HAVE_GUILE_GIT
 
 if BUILD_DAEMON_OFFLOAD
 
