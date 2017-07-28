@@ -2477,7 +2477,8 @@ Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
 pull}: the command downloads the latest Guix source code and package
-descriptions, and deploys it.
+descriptions, and deploys it.  Source code is downloaded from a
+@uref{https://git-scm.com, Git} repository.
 
 On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
@@ -2503,24 +2504,18 @@ but it supports the following options:
 Produce verbose output, writing build logs to the standard error output.
 
 @item --url=@var{url}
-Download the source tarball of Guix from @var{url}.
+Download Guix from the Git repository at @var{url}.
 
-By default, the tarball is taken from its canonical address at
+By default, the source is taken from its canonical Git repository at
 @code{gnu.org}, for the stable branch of Guix.
 
-With some Git servers, this can be used to deploy any version of Guix.
-For example, to download and deploy version 0.12.0 of Guix from the
-canonical Git repo:
+@item --commit=@var{commit}
+Deploy @var{commit}, a valid Git commit ID represented as a hexadecimal
+string.
 
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
-@end example
-
-It can also be used to deploy arbitrary Git revisions:
-
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
-@end example
+@item --branch=@var{branch}
+Deploy the tip of @var{branch}, the name of a Git branch available on
+the repository at @var{url}.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
