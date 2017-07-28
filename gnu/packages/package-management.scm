@@ -187,6 +187,7 @@
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
+                               (git    (assoc-ref inputs "guile-git"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (effective
@@ -196,6 +197,7 @@
                                              "-c" "(display (effective-version))")))
                                (path   (string-append
                                         json "/share/guile/site/" effective ":"
+                                        git "/share/guile/site/" effective ":"
                                         ssh "/share/guile/site/" effective ":"
                                         gnutls "/share/guile/site/" effective)))
 
@@ -252,7 +254,8 @@
       (propagated-inputs
        `(("gnutls" ,gnutls/guile-2.2)             ;for 'guix download' & co.
          ("guile-json" ,guile-json)
-         ("guile-ssh" ,guile-ssh)))
+         ("guile-ssh" ,guile-ssh)
+         ("guile-git" ,guile-git)))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -278,7 +281,8 @@ the Nix package manager.")
     (propagated-inputs
      `(("gnutls" ,gnutls)
        ("guile-json" ,guile2.0-json)
-       ("guile-ssh" ,guile2.0-ssh)))))
+       ("guile-ssh" ,guile2.0-ssh)
+       ("guile-git" ,guile2.0-git)))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
