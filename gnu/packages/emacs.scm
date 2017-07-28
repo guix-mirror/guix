@@ -5200,3 +5200,26 @@ src block.")
      "@code{emacs-emamux} lets Emacs interact with the @code{tmux} terminal
 multiplexer.")
     (license license:gpl3+)))
+
+(define-public emacs-rpm-spec-mode
+  (package
+    (name "emacs-rpm-spec-mode")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       ;; URI has the Fedora release number instead of the version
+       ;; number. This will have to updated manually every new release.
+       (uri (string-append
+             "https://src.fedoraproject.org/cgit/rpms"
+             "/emacs-rpm-spec-mode.git/snapshot"
+             "/emacs-rpm-spec-mode-f26.tar.gz"))
+       (sha256
+        (base32
+         "17dz80lhjrc89fj17pysl8slahzrqdkxgcjdk55zls6jizkr6kz3"))))
+    (build-system emacs-build-system)
+    (home-page "http://pkgs.fedoraproject.org/cgit/rpms/emacs-rpm-spec-mode.git")
+    (synopsis "Emacs major mode for editing RPM spec files")
+    (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
+editing RPM spec files.")
+    (license license:gpl2+)))
