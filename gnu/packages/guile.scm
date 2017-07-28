@@ -1807,8 +1807,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "2")
-        (commit "06f9fc3d9ac95798d4a51e6310f7b594ce5597e0"))
+  (let ((revision "3")
+        (commit "e156a1054cc1d9e58d9be82e36e8acf5c9f9ee8d"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1818,7 +1818,7 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0rcq0f8dhl89ia7336bq8y279q5ada0b1kabcqw9zl3125k3cp4v"))
+                  "1vhr2bqkljy1zzdy02dky2nk1w9bd46afj5wd4gp4kr333pz4ch6"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -1829,6 +1829,7 @@ is not available for Guile 2.0.")
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
+         ("texinfo" ,texinfo)
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-2.2)
