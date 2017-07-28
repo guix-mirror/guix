@@ -228,6 +228,7 @@ Services
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
+* Virtualization Services::     Virtualization services.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -9104,6 +9105,7 @@ declaration.
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
+* Virtualization Services::     Virtualization services.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -15837,6 +15839,713 @@ an absolute path can be specified here.
 
 @end table
 @end deftp
+
+@node Virtualization Services
+@subsubsection Virtualization services
+The @code{(gnu services virtualization)} module provides services for
+the libvirt and virtlog daemons.
+
+@subsubheading Libvirt daemon
+@code{libvirtd} is the server side daemon component of the libvirt
+virtualization management system. This daemon runs on host servers
+and performs required management tasks for virtualized guests.
+
+@deffn {Scheme Variable} libvirt-service-type
+This is the type of the @uref{https://libvirt.org, libvirt daemon}.
+Its value must be a @code{libvirt-configuration}.
+
+@example
+(service libvirt-service-type
+         (libvirt-configuration
+          (unix-sock-group "libvirt")
+          (tls-port "16555")))
+@end example
+@end deffn
+
+@c Auto-generated with (generate-libvirt-documentation)
+Available @code{libvirt-configuration} fields are:
+
+@deftypevr {@code{libvirt-configuration} parameter} package libvirt
+Libvirt package.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean listen-tls?
+Flag listening for secure TLS connections on the public TCP/IP port.
+must set @code{listen} for this to have any effect.
+
+It is necessary to setup a CA and issue server certificates before using
+this capability.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean listen-tcp?
+Listen for unencrypted TCP connections on the public TCP/IP port.  must
+set @code{listen} for this to have any effect.
+
+Using the TCP socket requires SASL authentication by default.  Only SASL
+mechanisms which support data encryption are allowed.  This is
+DIGEST_MD5 and GSSAPI (Kerberos5)
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tls-port
+Port for accepting secure TLS connections This can be a port number, or
+service name
+
+Defaults to @samp{"16514"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tcp-port
+Port for accepting insecure TCP connections This can be a port number,
+or service name
+
+Defaults to @samp{"16509"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string listen-addr
+IP address or hostname used for client connections.
+
+Defaults to @samp{"0.0.0.0"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean mdns-adv?
+Flag toggling mDNS advertisement of the libvirt service.
+
+Alternatively can disable for all services on a host by stopping the
+Avahi daemon.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string mdns-name
+Default mDNS advertisement name.  This must be unique on the immediate
+broadcast network.
+
+Defaults to @samp{"Virtualization Host <hostname>"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-group
+UNIX domain socket group ownership.  This can be used to allow a
+'trusted' set of users access to management capabilities without
+becoming root.
+
+Defaults to @samp{"root"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-ro-perms
+UNIX socket permissions for the R/O socket.  This is used for monitoring
+VM status only.
+
+Defaults to @samp{"0777"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-rw-perms
+UNIX socket permissions for the R/W socket.  Default allows only root.
+If PolicyKit is enabled on the socket, the default will change to allow
+everyone (eg, 0777)
+
+Defaults to @samp{"0770"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-admin-perms
+UNIX socket permissions for the admin socket.  Default allows only owner
+(root), do not change it unless you are sure to whom you are exposing
+the access to.
+
+Defaults to @samp{"0777"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-dir
+The directory in which sockets will be found/created.
+
+Defaults to @samp{"/var/run/libvirt"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-unix-ro
+Authentication scheme for UNIX read-only sockets.  By default socket
+permissions allow anyone to connect
+
+Defaults to @samp{"polkit"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-unix-rw
+Authentication scheme for UNIX read-write sockets.  By default socket
+permissions only allow root.  If PolicyKit support was compiled into
+libvirt, the default will be to use 'polkit' auth.
+
+Defaults to @samp{"polkit"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-tcp
+Authentication scheme for TCP sockets.  If you don't enable SASL, then
+all TCP traffic is cleartext.  Don't do this outside of a dev/test
+scenario.
+
+Defaults to @samp{"sasl"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-tls
+Authentication scheme for TLS sockets.  TLS sockets already have
+encryption provided by the TLS layer, and limited authentication is done
+by certificates.
+
+It is possible to make use of any SASL authentication mechanism as well,
+by using 'sasl' for this option
+
+Defaults to @samp{"none"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list access-drivers
+API access control scheme.
+
+By default an authenticated user is allowed access to all APIs.  Access
+drivers can place restrictions on this.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string key-file
+Server key file path.  If set to an empty string, then no private key is
+loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string cert-file
+Server key file path.  If set to an empty string, then no certificate is
+loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string ca-file
+Server key file path.  If set to an empty string, then no CA certificate
+is loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string crl-file
+Certificate revocation list path.  If set to an empty string, then no
+CRL is loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean tls-no-sanity-cert
+Disable verification of our own server certificates.
+
+When libvirtd starts it performs some sanity checks against its own
+certificates.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean tls-no-verify-cert
+Disable verification of client certificates.
+
+Client certificate verification is the primary authentication mechanism.
+Any client which does not present a certificate signed by the CA will be
+rejected.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list tls-allowed-dn-list
+Whitelist of allowed x509 Distinguished Name.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list sasl-allowed-usernames
+Whitelist of allowed SASL usernames.  The format for username depends on
+the SASL authentication mechanism.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tls-priority
+Override the compile time default TLS priority string.  The default is
+usually "NORMAL" unless overridden at build time.  Only set this is it
+is desired for libvirt to deviate from the global default settings.
+
+Defaults to @samp{"NORMAL"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-clients
+Maximum number of concurrent client connections to allow over all
+sockets combined.
+
+Defaults to @samp{5000}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-queued-clients
+Maximum length of queue of connections waiting to be accepted by the
+daemon.  Note, that some protocols supporting retransmission may obey
+this so that a later reattempt at connection succeeds.
+
+Defaults to @samp{1000}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-anonymous-clients
+Maximum length of queue of accepted but not yet authenticated clients.
+Set this to zero to turn this feature off
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer min-workers
+Number of workers to start up initially.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-workers
+Maximum number of worker threads.
+
+If the number of active clients exceeds @code{min-workers}, then more
+threads are spawned, up to max_workers limit.  Typically you'd want
+max_workers to equal maximum number of clients allowed.
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer prio-workers
+Number of priority workers.  If all workers from above pool are stuck,
+some calls marked as high priority (notably domainDestroy) can be
+executed in this pool.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-requests
+Total global limit on concurrent RPC calls.
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-client-requests
+Limit on concurrent requests from a single client connection.  To avoid
+one client monopolizing the server this should be a small fraction of
+the global max_requests and max_workers parameter.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-min-workers
+Same as @code{min-workers} but for the admin interface.
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-workers
+Same as @code{max-workers} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-clients
+Same as @code{max-clients} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-queued-clients
+Same as @code{max-queued-clients} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-client-requests
+Same as @code{max-client-requests} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer log-level
+Logging level.  4 errors, 3 warnings, 2 information, 1 debug.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string log-filters
+Logging filters.
+
+A filter allows to select a different logging level for a given category
+of logs The format for a filter is one of:
+
+@itemize @bullet
+@item
+x:name
+
+@item
+x:+name
+
+@end itemize
+
+where @code{name} is a string which is matched against the category
+given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
+file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
+be a substring of the full category name, in order to match multiple
+similar categories), the optional "+" prefix tells libvirt to log stack
+trace for each message matching name, and @code{x} is the minimal level
+where matching messages should be logged:
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple filters can be defined in a single filters statement, they just
+need to be separated by spaces.
+
+Defaults to @samp{"3:remote 4:event"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string log-outputs
+Logging outputs.
+
+An output is one of the places to save logging information The format
+for an output can be:
+
+@table @code
+@item x:stderr
+output goes to stderr
+
+@item x:syslog:name
+use syslog for the output and use the given name as the ident
+
+@item x:file:file_path
+output to a file, with the given filepath
+
+@item x:journald
+output to journald logging system
+
+@end table
+
+In all case the x prefix is the minimal level, acting as a filter
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple outputs can be defined, they just need to be separated by
+spaces.
+
+Defaults to @samp{"3:stderr"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer audit-level
+Allows usage of the auditing subsystem to be altered
+
+@itemize @bullet
+@item
+0: disable all auditing
+
+@item
+1: enable auditing, only if enabled on host
+
+@item
+2: enable auditing, and exit if disabled on host.
+
+@end itemize
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean audit-logging
+Send audit messages via libvirt logging infrastructure.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-string host-uuid
+Host UUID.  UUID must not have all digits be the same.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string host-uuid-source
+Source to read host UUID.
+
+@itemize @bullet
+@item
+@code{smbios}: fetch the UUID from @code{dmidecode -s system-uuid}
+
+@item
+@code{machine-id}: fetch the UUID from @code{/etc/machine-id}
+
+@end itemize
+
+If @code{dmidecode} does not provide a valid UUID a temporary UUID will
+be generated.
+
+Defaults to @samp{"smbios"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer keepalive-interval
+A keepalive message is sent to a client after @code{keepalive_interval}
+seconds of inactivity to check if the client is still responding.  If
+set to -1, libvirtd will never send keepalive requests; however clients
+can still send them and the daemon will send responses.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer keepalive-count
+Maximum number of keepalive messages that are allowed to be sent to the
+client without getting any response before the connection is considered
+broken.
+
+In other words, the connection is automatically closed approximately
+after @code{keepalive_interval * (keepalive_count + 1)} seconds since
+the last message received from the client.  When @code{keepalive-count}
+is set to 0, connections will be automatically closed after
+@code{keepalive-interval} seconds of inactivity without sending any
+keepalive messages.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-keepalive-interval
+Same as above but for admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-keepalive-count
+Same as above but for admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer ovs-timeout
+Timeout for Open vSwitch calls.
+
+The @code{ovs-vsctl} utility is used for the configuration and its
+timeout option is set by default to 5 seconds to avoid potential
+infinite waits blocking libvirt.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@c %end of autogenerated docs
+
+@subsubheading Virtlog daemon
+The virtlogd service is a server side daemon component of libvirt that is
+used to manage logs from virtual machine consoles.
+
+This daemon is not used directly by libvirt client applications, rather it
+is called on their behalf by @code{libvirtd}. By maintaining the logs in a
+standalone daemon, the main @code{libvirtd} daemon can be restarted without
+risk of losing logs. The @code{virtlogd} daemon has the ability to re-exec()
+itself upon receiving @code{SIGUSR1}, to allow live upgrades without downtime.
+
+@deffn {Scheme Variable} virtlog-service-type
+This is the type of the virtlog daemon.
+Its value must be a @code{virtlog-configuration}.
+
+@example
+(service virtlog-service-type
+         (virtlog-configuration
+          (max-clients 1000)))
+@end example
+@end deffn
+
+@deftypevr {@code{virtlog-configuration} parameter} integer log-level
+Logging level.  4 errors, 3 warnings, 2 information, 1 debug.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} string log-filters
+Logging filters.
+
+A filter allows to select a different logging level for a given category
+of logs The format for a filter is one of:
+
+@itemize @bullet
+@item
+x:name
+
+@item
+x:+name
+
+@end itemize
+
+where @code{name} is a string which is matched against the category
+given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
+file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
+be a substring of the full category name, in order to match multiple
+similar categories), the optional "+" prefix tells libvirt to log stack
+trace for each message matching name, and @code{x} is the minimal level
+where matching messages should be logged:
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple filters can be defined in a single filters statement, they just
+need to be separated by spaces.
+
+Defaults to @samp{"3:remote 4:event"}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} string log-outputs
+Logging outputs.
+
+An output is one of the places to save logging information The format
+for an output can be:
+
+@table @code
+@item x:stderr
+output goes to stderr
+
+@item x:syslog:name
+use syslog for the output and use the given name as the ident
+
+@item x:file:file_path
+output to a file, with the given filepath
+
+@item x:journald
+output to journald logging system
+
+@end table
+
+In all case the x prefix is the minimal level, acting as a filter
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple outputs can be defined, they just need to be separated by
+spaces.
+
+Defaults to @samp{"3:stderr"}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-clients
+Maximum number of concurrent client connections to allow over all
+sockets combined.
+
+Defaults to @samp{1024}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-size
+Maximum file size before rolling over.
+
+Defaults to @samp{2MB}
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-backups
+Maximum number of backup files to keep.
+
+Defaults to @samp{3}
+
+@end deftypevr
+
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services

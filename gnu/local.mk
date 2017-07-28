@@ -440,6 +440,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dns.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
+  %D%/services/virtualization.scm		\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
   %D%/services/messaging.scm			\
