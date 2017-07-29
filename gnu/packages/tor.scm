@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -54,8 +54,7 @@
                "0hhyb1wil8japynqnm07r1f67w3wdnafdg9amzlrrcfcyq5qim28"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-expensive-hardening"
-                               "--enable-gcc-hardening"
+     `(#:configure-flags (list "--enable-gcc-hardening"
                                "--enable-linker-hardening")))
     (native-inputs
      `(("python" ,python-2)))  ; for tests
