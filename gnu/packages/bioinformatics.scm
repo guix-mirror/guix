@@ -3469,7 +3469,7 @@ form of assemblies or reads.")
 (define-public metabat
   (package
     (name "metabat")
-    (version "2.11.1")
+    (version "2.11.2")
     (source
      (origin
        (method url-fetch)
@@ -3478,7 +3478,7 @@ form of assemblies or reads.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ll00l81aflscgggs5nfhj12cbvdiz3gg7f7n5f537a3xhx60vn9"))
+         "0rws9r1ziv6way8cf49jg8bzj7x2131kfqkhj8byf0z5hnrq3bwv"))
        (patches (search-patches "metabat-remove-compilation-date.patch"
                                 "metabat-fix-compilation.patch"))))
     (build-system gnu-build-system)
