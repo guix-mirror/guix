@@ -130,7 +130,7 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.1")
+    (version "1.0.3")
     (source
      (origin
       (method url-fetch)
@@ -138,7 +138,7 @@ tables, and it understands a variety of different formats.")
                           version "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1izazbyv5n2d81qdym77i8mg9m870hiydmq4d0s51npx5vp8lk46"))))
+        "0p0vr67lnqdsgdv2y144xmjqa1a2nijrrd3clc8dc2f46pn5mzc9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
