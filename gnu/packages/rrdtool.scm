@@ -53,15 +53,16 @@
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("groff" ,groff)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (substitute* "libtool"
-                     (("/bin/sed") (which "sed")))
-                   (substitute* "src/Makefile.in"
-                     (("^rrdcached_LDADD = librrd_th.la")
-                      "rrdcached_LDADD = librrd_th.la -lglib-2.0")))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (substitute* "libtool"
+               (("/bin/sed") (which "sed")))
+             (substitute* "src/Makefile.in"
+               (("^rrdcached_LDADD = librrd_th.la")
+                "rrdcached_LDADD = librrd_th.la -lglib-2.0"))
+             #t)))))
     (home-page "http://oss.oetiker.ch/rrdtool/")
     (synopsis "Time-series data storage and display system")
     (description

@@ -58,23 +58,24 @@
      `(("perl" ,perl)))
     (arguments
      `(#:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Makefile contains no install target
-          (let* ((out (assoc-ref outputs "out"))
-                 (bin (string-append out "/bin"))
-                 (doc (string-append out "/share/doc/delta-" ,version)))
-            (begin
-              (mkdir-p bin)
-              (mkdir-p doc)
-              (for-each (lambda (h)
-                          (install-file h doc))
-                        `("License.txt" ,@(find-files "www" ".*\\.html")))
-              (for-each (lambda (b)
-                          (install-file b bin))
-                        `("delta" "multidelta" "topformflat")))))
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Makefile contains no install target
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/delta-" ,version)))
+               (begin
+                 (mkdir-p bin)
+                 (mkdir-p doc)
+                 (for-each (lambda (h)
+                             (install-file h doc))
+                           `("License.txt" ,@(find-files "www" ".*\\.html")))
+                 (for-each (lambda (b)
+                             (install-file b bin))
+                           `("delta" "multidelta" "topformflat"))))
+             #t))
+         (delete 'configure))))
     (home-page "http://delta.tigris.org/")
     (synopsis "Heuristical file minimizer")
     (description
@@ -114,23 +115,24 @@ program to exhibit a bug.")
        ("sys-cpu"         ,perl-sys-cpu)
        ("term-readkey"    ,perl-term-readkey)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'install 'set-load-paths
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   ;; Tell creduce where to find the perl modules it needs.
-                   (let* ((out (assoc-ref outputs "out"))
-                          (prog (string-append out "/bin/creduce")))
-                     (wrap-program
-                      prog
-                      `("PERL5LIB" ":" prefix
-                        ,(map (lambda (p)
-                                (string-append (assoc-ref inputs p)
-                                               "/lib/perl5/site_perl/"
-                                               ,(package-version perl)))
-                              '("term-readkey"    "exporter-lite"
-                                "file-which"      "getopt-tabular"
-                                "regex-common"    "sys-cpu"))))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'set-load-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Tell creduce where to find the perl modules it needs.
+             (let* ((out (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/creduce")))
+               (wrap-program
+                   prog
+                 `("PERL5LIB" ":" prefix
+                   ,(map (lambda (p)
+                           (string-append (assoc-ref inputs p)
+                                          "/lib/perl5/site_perl/"
+                                          ,(package-version perl)))
+                         '("term-readkey"    "exporter-lite"
+                           "file-which"      "getopt-tabular"
+                           "regex-common"    "sys-cpu")))))
+             #t)))))
     (home-page "http://embed.cs.utah.edu/creduce")
     (synopsis "Reducer for interesting code")
     (description

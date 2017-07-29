@@ -456,13 +456,14 @@ large scale eigenvalue problems.")
 
                           ;; Build the 'LAPACKE_clatms' functions.
                           "-DLAPACKE_WITH_TMG=ON")
-       #:phases (alist-cons-before
-                 'check 'patch-python
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((python (assoc-ref inputs "python")))
-                     (substitute* "lapack_testing.py"
-                       (("/usr/bin/env python") python))))
-                  %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* "lapack_testing.py"
+                 (("/usr/bin/env python") python)))
+             #t)))))
     (synopsis "Library for numerical linear algebra")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
@@ -1866,12 +1867,12 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
     (arguments
      `(#:parallel-build? #f             ;race conditions using ar
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (call-with-output-file "make.inc"
-            (lambda (port)
-              (format port "
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (call-with-output-file "make.inc"
+               (lambda (port)
+                 (format port "
 PLAT        =
 DSuperLUroot = ~a
 DSUPERLULIB  = ~a/lib/libsuperlu_dist.a
@@ -1894,47 +1895,46 @@ FORTRAN     = mpifort
 FFLAGS      = -O2 -g $(PIC)
 LOADER      = $(CC)
 CDEFS       = -DAdd_"
-                      (getcwd)
-                      (assoc-ref outputs "out")
-                      (assoc-ref inputs "lapack")
-                      (assoc-ref inputs "pt-scotch")))))
-        (alist-cons-after
-         'unpack 'remove-broken-symlinks
-         (lambda _
-           (for-each delete-file
-                     (find-files "MAKE_INC" "\\.#make\\..*")))
-         (alist-cons-before
-          'build 'create-install-directories
-          (lambda* (#:key outputs #:allow-other-keys)
-            (for-each
-             (lambda (dir)
-               (mkdir-p (string-append (assoc-ref outputs "out")
-                                       "/" dir)))
-             '("lib" "include")))
-          (alist-replace
-           'check
+                         (getcwd)
+                         (assoc-ref outputs "out")
+                         (assoc-ref inputs "lapack")
+                         (assoc-ref inputs "pt-scotch"))))
+             #t))
+         (add-after 'unpack 'remove-broken-symlinks
+           (lambda _
+             (for-each delete-file
+                       (find-files "MAKE_INC" "\\.#make\\..*"))
+             #t))
+         (add-before 'build 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (dir)
+                (mkdir-p (string-append (assoc-ref outputs "out")
+                                        "/" dir)))
+              '("lib" "include"))
+             #t))
+         (replace 'check
            (lambda _
              (with-directory-excursion "EXAMPLE"
                (and
                 (zero? (system* "mpirun" "-n" "2"
                                 "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
                 (zero? (system* "mpirun" "-n" "2"
-                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua")))))
-           (alist-replace
-            'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Library is placed in lib during the build phase.  Copy over
-              ;; headers to include.
-              (let* ((out    (assoc-ref outputs "out"))
-                     (incdir (string-append out "/include")))
-                (for-each (lambda (file)
-                            (let ((base (basename file)))
-                              (format #t "installing `~a' to `~a'~%"
-                                      base incdir)
-                              (copy-file file
-                                         (string-append incdir "/" base))))
-                          (find-files "SRC" ".*\\.h$"))))
-            %standard-phases)))))))
+                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Library is placed in lib during the build phase.  Copy over
+             ;; headers to include.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (incdir (string-append out "/include")))
+               (for-each (lambda (file)
+                           (let ((base (basename file)))
+                             (format #t "installing `~a' to `~a'~%"
+                                     base incdir)
+                             (copy-file file
+                                        (string-append incdir "/" base))))
+                         (find-files "SRC" ".*\\.h$")))
+             #t)))))
     (home-page (package-home-page superlu))
     (synopsis "Parallel supernodal direct solver")
     (description
@@ -2621,7 +2621,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        ;; no configure script
-       (alist-delete 'configure %standard-phases)
+       (modify-phases %standard-phases (delete 'configure))
        #:tests? #f)) ;the tests are part of the default target
     (home-page "http://openlibm.org/")
     (synopsis "Portable C mathematical library (libm)")
@@ -2660,7 +2660,7 @@ environments.")
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")

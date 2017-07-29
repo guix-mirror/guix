@@ -56,14 +56,13 @@
         "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))))
     (build-system gnu-build-system)
     (arguments
-    `(#:phases (alist-replace
-                'install
-                (lambda _
-                  (zero?
-                   (system* "make" "install-data")))
-                (alist-delete
-                 'build
-                 %standard-phases))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda _
+             (zero?
+              (system* "make" "install-data"))))
+         (delete 'build))
 
       ;; GNU Mach supports only IA32 currently, so cheat so that we can at
       ;; least install its headers.
@@ -125,11 +124,12 @@ communication.")
     (native-inputs
      `(("mig" ,mig)))
     (arguments
-     `(#:phases (alist-replace
-                 'install
-                 (lambda _
-                   (zero? (system* "make" "install-headers" "no_deps=t")))
-                 (alist-delete 'build %standard-phases))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda _
+             (zero? (system* "make" "install-headers" "no_deps=t"))))
+         (delete 'build))
 
        #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
                            ;; that.
@@ -164,24 +164,22 @@ Library and other user programs.")
     (arguments
      (substitute-keyword-arguments (package-arguments hurd-headers)
        ((#:phases _)
-        '(alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; We need to copy libihash.a to the output directory manually,
-              ;; since there is no target for that in the makefile.
-              (mkdir-p (string-append out "/include"))
-              (copy-file "libihash/ihash.h"
-                         (string-append out "/include/ihash.h"))
-              (mkdir-p (string-append out "/lib"))
-              (copy-file "libihash/libihash.a"
-                         (string-append out "/lib/libihash.a"))
-              #t))
-          (alist-replace
-           'build
-           (lambda _
-             (zero? (system* "make" "-Clibihash" "libihash.a")))
-           %standard-phases)))))
+        '(modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; We need to copy libihash.a to the output directory manually,
+                 ;; since there is no target for that in the makefile.
+                 (mkdir-p (string-append out "/include"))
+                 (copy-file "libihash/ihash.h"
+                            (string-append out "/include/ihash.h"))
+                 (mkdir-p (string-append out "/lib"))
+                 (copy-file "libihash/libihash.a"
+                            (string-append out "/lib/libihash.a"))
+                 #t)))
+           (replace 'build
+             (lambda _
+               (zero? (system* "make" "-Clibihash" "libihash.a"))))))))
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description

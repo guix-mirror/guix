@@ -56,12 +56,12 @@
                      "0kmgr5w3b1qwzxnsnw94q6rqs0hr8nbv9clf07ca2a2fyypx9kjk"))))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda _
-          (substitute* "src/applog.cpp"
-            (("^// TODO sc.*") "#include <sys/types.h>\n#include <sys/stat.h>\n")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (substitute* "src/applog.cpp"
+               (("^// TODO sc.*") "#include <sys/types.h>\n#include <sys/stat.h>\n"))
+             #t)))))
    (build-system gnu-build-system)
    (synopsis "(u)Common C++ framework for threaded applications")
    (description "GNU Common C++ is an portable, optimized class framework for

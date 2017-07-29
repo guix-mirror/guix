@@ -66,12 +66,13 @@
    (build-system gnu-build-system)
    (arguments
     `(#:phases
-       (alist-cons-before
-        'configure 'remove-unsupported-gcc-flags
-        (lambda _
-          ;; remove option that is not supported by gcc any more
-          (substitute* "configure" ((" -fforce-mem") "")))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'remove-unsupported-gcc-flags
+         (lambda _
+           ;; remove option that is not supported by gcc any more
+           (substitute* "configure" ((" -fforce-mem") ""))
+           #t)
+         %standard-phases))))
    (synopsis "MPEG audio decoder")
    (description
     "MAD (MPEG Audio Decoder) supports MPEG-1 and the MPEG-2 extension to
@@ -123,20 +124,20 @@ versions of ID3v2.")
    (inputs `(("zlib" ,zlib)))
    (arguments
     `(#:phases
-       (alist-cons-before
-        'configure 'apply-patches
-        ;; TODO: create a patch for origin instead?
-        (lambda _
-          (substitute* "configure"
-            (("iomanip.h") "")) ; drop check for unused header
-          ;; see http://www.linuxfromscratch.org/patches/downloads/id3lib/
-          (substitute* "include/id3/id3lib_strings.h"
-            (("include <string>") "include <cstring>\n#include <string>"))
-          (substitute* "include/id3/writers.h"
-            (("//\\#include <string.h>") "#include <cstring>"))
-          (substitute* "examples/test_io.cpp"
-            (("dami;") "dami;\nusing namespace std;")))
-         %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'apply-patches
+          ;; TODO: create a patch for origin instead?
+          (lambda _
+            (substitute* "configure"
+              (("iomanip.h") "")) ; drop check for unused header
+            ;; see http://www.linuxfromscratch.org/patches/downloads/id3lib/
+            (substitute* "include/id3/id3lib_strings.h"
+              (("include <string>") "include <cstring>\n#include <string>"))
+            (substitute* "include/id3/writers.h"
+              (("//\\#include <string.h>") "#include <cstring>"))
+            (substitute* "examples/test_io.cpp"
+              (("dami;") "dami;\nusing namespace std;"))
+            #t)))))
    (synopsis "Library for reading, writing, and manipulating ID3v1 and ID3v2 tags")
    (description
     "Id3lib is a cross-platform software development library for reading,
@@ -194,29 +195,30 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (build-system gnu-build-system)
     (outputs '("out" "gui"))                      ;GTK+ interface in "gui"
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile"
-                       (("prefix=.*")
-                        (string-append "prefix := " out "\n")))))
-                 (alist-cons-before
-                  'install 'pre-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (mkdir-p (string-append out "/bin"))
-                      (mkdir-p (string-append out "/share/man/man1"))))
-                  (alist-cons-after
-                   'install 'post-install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; Move the GTK+ interface to "gui".
-                     (let ((out (assoc-ref outputs "out"))
-                           (gui (assoc-ref outputs "gui")))
-                       (mkdir-p (string-append gui "/bin"))
-                       (rename-file (string-append out "/bin/gmp3info")
-                                    (string-append gui "/bin/gmp3info"))))
-                   %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("prefix=.*")
+                  (string-append "prefix := " out "\n"))))
+             #t))
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/share/man/man1")))
+             #t))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move the GTK+ interface to "gui".
+             (let ((out (assoc-ref outputs "out"))
+                   (gui (assoc-ref outputs "gui")))
+               (mkdir-p (string-append gui "/bin"))
+               (rename-file (string-append out "/bin/gmp3info")
+                            (string-append gui "/bin/gmp3info")))
+             #t)))
         #:tests? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

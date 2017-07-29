@@ -1399,11 +1399,10 @@ encapsulated.")
        ("libtool" ,libtool)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))))
 
 (define-public libdvdcss
   (package

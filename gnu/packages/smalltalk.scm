@@ -60,14 +60,15 @@
     (inputs
      `(("zip" ,zip)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'fix-libc
-                 (lambda _
-                   (let ((libc (assoc-ref %build-inputs "libc")))
-                     (substitute* "libc.la.in"
-                       (("@LIBC_SO_NAME@") "libc.so")
-                       (("@LIBC_SO_DIR@")  (string-append libc "/lib")))))
-                %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-libc
+           (lambda _
+             (let ((libc (assoc-ref %build-inputs "libc")))
+               (substitute* "libc.la.in"
+                 (("@LIBC_SO_NAME@") "libc.so")
+                 (("@LIBC_SO_DIR@")  (string-append libc "/lib"))))
+             #t)))))
     (home-page "http://smalltalk.gnu.org/")
     (synopsis "Smalltalk environment")
     (description

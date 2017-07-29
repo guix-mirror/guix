@@ -630,13 +630,12 @@ and understanding different BRDFs (and other component functions).")
              (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
                             "/lib"))
        #:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          ;; let's call configure from configure phase and not now
-          (substitute* "autogen.sh" (("./configure") "# ./configure"))
-          (zero? (system* "sh" "autogen.sh")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             ;; let's call configure from configure phase and not now
+             (substitute* "autogen.sh" (("./configure") "# ./configure"))
+             (zero? (system* "sh" "autogen.sh")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libtool" ,libtool)

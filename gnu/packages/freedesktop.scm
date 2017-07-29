@@ -357,23 +357,22 @@ manager for the current system.")
     (build-system python-build-system)
     (arguments
      '(#:phases
-       (alist-replace
-        'check
-        (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "XDG_DATA_DIRS"
-                  (string-append (assoc-ref inputs "shared-mime-info")
-                                 "/share/"))
-          (substitute* "test/test-icon.py"
-            (("/usr/share/icons/hicolor/index.theme")
-             (string-append (assoc-ref inputs "hicolor-icon-theme")
-                            "/share/icons/hicolor/index.theme")))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS"
+                     (string-append (assoc-ref inputs "shared-mime-info")
+                                    "/share/"))
+             (substitute* "test/test-icon.py"
+               (("/usr/share/icons/hicolor/index.theme")
+                (string-append (assoc-ref inputs "hicolor-icon-theme")
+                               "/share/icons/hicolor/index.theme")))
 
-          ;; One test fails with:
-          ;; AssertionError: 'x-apple-ios-png' != 'png'
-          (substitute* "test/test-mime.py"
-            (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
-          (zero? (system* "nosetests" "-v")))
-        %standard-phases)))
+             ;; One test fails with:
+             ;; AssertionError: 'x-apple-ios-png' != 'png'
+             (substitute* "test/test-mime.py"
+               (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
+             (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("shared-mime-info" ,shared-mime-info) ;for tests
        ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests

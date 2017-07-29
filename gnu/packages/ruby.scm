@@ -150,16 +150,16 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
@@ -184,16 +184,16 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))))
 
 (define-public ruby-hoe
   (package

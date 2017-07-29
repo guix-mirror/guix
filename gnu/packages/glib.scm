@@ -504,22 +504,23 @@ has an ease of use unmatched by other C++ callback libraries.")
                "1926b3adx903hzvdp8glblsgjyadzqnwgkj8hg605d4wv98m1n0z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda _
-                   ;; This test uses /etc/fstab as an example file to read
-                   ;; from; choose a better example.
-                   (substitute* "tests/giomm_simple/main.cc"
-                     (("/etc/fstab")
-                      (string-append (getcwd)
-                                     "/tests/giomm_simple/main.cc")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; This test uses /etc/fstab as an example file to read
+             ;; from; choose a better example.
+             (substitute* "tests/giomm_simple/main.cc"
+               (("/etc/fstab")
+                (string-append (getcwd)
+                               "/tests/giomm_simple/main.cc")))
 
-                   ;; This test does a DNS lookup, and then expects to be able
-                   ;; to open a TLS session; just skip it.
-                   (substitute* "tests/giomm_tls_client/main.cc"
-                     (("Gio::init.*$")
-                      "return 77;\n")))
-                 %standard-phases)))
+             ;; This test does a DNS lookup, and then expects to be able
+             ;; to open a TLS session; just skip it.
+             (substitute* "tests/giomm_tls_client/main.cc"
+               (("Gio::init.*$")
+                "return 77;\n"))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")))
     (propagated-inputs

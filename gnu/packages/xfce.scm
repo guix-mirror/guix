@@ -114,17 +114,17 @@ Xfce Desktop Environment.")
     (arguments
      '(#:phases
        ;; Run check after install phase to test dbus activation.
-       (alist-cons-after
-        'install 'check
-        (lambda _
-          (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
-          ;; Run test-suite under a dbus session.
-          (setenv "XDG_DATA_DIRS" ; for finding org.xfce.Xfconf.service
-                  (string-append %output "/share"))
-          ;; For the missing '/etc/machine-id'.
-          (setenv "DBUS_FATAL_WARNINGS" "0");
-          (zero? (system* "dbus-launch" "make" "check")))
-        (alist-delete 'check %standard-phases))))
+       (modify-phases %standard-phases
+         (add-after 'install 'check
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
+             ;; Run test-suite under a dbus session.
+             (setenv "XDG_DATA_DIRS" ; for finding org.xfce.Xfconf.service
+                     (string-append %output "/share"))
+             ;; For the missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0");
+             (zero? (system* "dbus-launch" "make" "check"))))
+         (delete 'check))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))

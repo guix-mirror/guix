@@ -809,16 +809,16 @@ for settings shared by various components of the GNOME desktop.")
        ("perl-xml-simple" ,perl-xml-simple)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'install 'set-load-paths
-        ;; Tell 'icon-name-mapping' where XML::Simple is.
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out  (assoc-ref outputs "out"))
-                 (prog (string-append out "/libexec/icon-name-mapping")))
-            (wrap-program
-             prog
-             `("PERL5LIB" = ,(list (getenv "PERL5LIB"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'set-load-paths
+           ;; Tell 'icon-name-mapping' where XML::Simple is.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/libexec/icon-name-mapping")))
+               (wrap-program
+                   prog
+                 `("PERL5LIB" = ,(list (getenv "PERL5LIB")))))
+             #t)))))
     (home-page "http://tango.freedesktop.org/Standard_Icon_Naming_Specification")
     (synopsis
      "Utility to implement the Freedesktop Icon Naming Specification")
@@ -1260,12 +1260,12 @@ functionality was designed to be as reusable and portable as possible.")
        '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* "linc2/src/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* "linc2/src/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("glib" ,glib)
               ("libidl" ,libidl)))
     (native-inputs
@@ -1300,12 +1300,12 @@ featuring mature C, C++ and Python bindings.")
        '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* "activation-server/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* "activation-server/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -1408,19 +1408,18 @@ designed to be accessed through the MIME functions in GnomeVFS.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* '("libgnomevfs/Makefile.in"
-                         "daemon/Makefile.in")
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-          #t)
-        (alist-cons-before
-         'configure 'patch-test-async-cancel-to-never-fail
-         (lambda _
-           (substitute* "test/test-async-cancel.c"
-             (("EXIT_FAILURE") "77")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* '("libgnomevfs/Makefile.in"
+                            "daemon/Makefile.in")
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t))
+         (add-before 'configure 'patch-test-async-cancel-to-never-fail
+           (lambda _
+             (substitute* "test/test-async-cancel.c"
+               (("EXIT_FAILURE") "77"))
+             #t)))))
     (inputs `(("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
               ("gconf" ,gconf)
@@ -1455,12 +1454,12 @@ to access local and remote files with a single consistent API.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'enable-deprecated
-        (lambda _
-          (substitute* "libgnome/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'enable-deprecated
+           (lambda _
+             (substitute* "libgnome/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
@@ -1695,18 +1694,17 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'start-xserver
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                (disp ":1"))
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (disp ":1"))
 
-            (setenv "HOME" (getcwd))
-            (setenv "DISPLAY" disp)
-            ;; There must be a running X server and make check doesn't start one.
-            ;; Therefore we must do it.
-            (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))
-        %standard-phases)))
+               (setenv "HOME" (getcwd))
+               (setenv "DISPLAY" disp)
+               ;; There must be a running X server and make check doesn't start one.
+               ;; Therefore we must do it.
+               (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     ;; Mentioned as Required by the .pc file
     (propagated-inputs `(("libxml2" ,libxml2)))
     (inputs
@@ -1820,14 +1818,13 @@ Hints specification (EWMH).")
                (base32 "05fvzbs5bin05bbsr4dp79aiva3lnq0a3a40zq55i13vnsz70l0n"))))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'fix-pcre-check
-        (lambda _
-          ;; Only glib.h can be included directly.  See
-          ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
-          (substitute* "configure"
-            (("glib/gregex\\.h") "glib.h")) #t)
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pcre-check
+           (lambda _
+             ;; Only glib.h can be included directly.  See
+             ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
+             (substitute* "configure"
+               (("glib/gregex\\.h") "glib.h")) #t)))
 
        ,@(package-arguments goffice)))
     (propagated-inputs
@@ -2200,19 +2197,19 @@ and RDP protocols.")
                             (assoc-ref %outputs "out") "/lib")
              "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
        #:phases
-       (alist-cons-before
-        'configure 'fix-docbook
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "docs/Makefile.in"
-            (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-             (string-append (assoc-ref inputs "docbook-xsl")
-                            "/xml/xsl/docbook-xsl-"
-                            ,(package-version docbook-xsl)
-                            "/manpages/docbook.xsl")))
-          (setenv "XML_CATALOG_FILES"
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/catalog.xml")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/Makefile.in"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             (setenv "XML_CATALOG_FILES"
+                     (string-append (assoc-ref inputs "docbook-xml")
+                                    "/xml/dtd/docbook/catalog.xml"))
+             #t)))))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose

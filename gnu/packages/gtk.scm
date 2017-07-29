@@ -279,16 +279,17 @@ functions which were removed.")
                 "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
     (build-system waf-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'set-flags
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Compile with C++11, required by gtkmm.
-                   (setenv "CXXFLAGS" "-std=c++11")
-                   ;; Allow 'bin/ganv_bench' to find libganv-1.so.
-                   (setenv "LDFLAGS"
-                           (string-append "-Wl,-rpath="
-                                          (assoc-ref outputs "out") "/lib")))
-                 %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-flags
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Compile with C++11, required by gtkmm.
+             (setenv "CXXFLAGS" "-std=c++11")
+             ;; Allow 'bin/ganv_bench' to find libganv-1.so.
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref outputs "out") "/lib"))
+             #t)))
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -349,24 +350,24 @@ diagrams.")
      `(#:phases
        ;; Unfortunately, some of the tests in "make check" are highly dependent
        ;; on the environment therefore, some black magic is required.
-       (alist-cons-before
-        'check 'start-xserver
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                (mime (assoc-ref inputs "shared-mime-info")))
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (mime (assoc-ref inputs "shared-mime-info")))
 
-            ;; There must be a running X server and make check doesn't start one.
-            ;; Therefore we must do it.
-            (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
-            (setenv "DISPLAY" ":1")
+               ;; There must be a running X server and make check doesn't start one.
+               ;; Therefore we must do it.
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
 
-            ;; The .lang files must be found in $XDG_DATA_HOME/gtksourceview-2.0
-            (system "ln -s gtksourceview gtksourceview-2.0")
-            (setenv "XDG_DATA_HOME" (getcwd))
+               ;; The .lang files must be found in $XDG_DATA_HOME/gtksourceview-2.0
+               (system "ln -s gtksourceview gtksourceview-2.0")
+               (setenv "XDG_DATA_HOME" (getcwd))
 
-            ;; Finally, the mimetypes must be available.
-            (setenv "XDG_DATA_DIRS" (string-append mime "/share/")) ))
-        %standard-phases)))
+               ;; Finally, the mimetypes must be available.
+               (setenv "XDG_DATA_DIRS" (string-append mime "/share/")))
+             #t)))))
     (synopsis "Widget that extends the standard GTK+ 2.x 'GtkTextView' widget")
     (description
      "GtkSourceView is a portable C library that extends the standard GTK+
@@ -875,18 +876,19 @@ images onto Cairo surfaces.")
                    "godir = $(moddir)\n")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let* ((out   (assoc-ref outputs "out"))
-                          (bin   (string-append out "/bin"))
-                          (guile (assoc-ref inputs "guile")))
-                     (substitute* (find-files bin ".*")
-                       (("guile")
-                        (string-append guile "/bin/guile -L "
-                                       out "/share/guile/site/2.0 -C "
-                                       out "/share/guile/site/2.0 ")))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile")))
+               (substitute* (find-files bin ".*")
+                 (("guile")
+                  (string-append guile "/bin/guile -L "
+                                 out "/share/guile/site/2.0 -C "
+                                 out "/share/guile/site/2.0 "))))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
@@ -1160,7 +1162,7 @@ extensive documentation, including API reference and a tutorial.")
      `(#:python ,python-2
        ,@(substitute-keyword-arguments (package-arguments python-pycairo)
            ((#:phases phases)
-            `(alist-delete 'patch-waf ,phases))
+            `(modify-phases ,phases (delete 'patch-waf)))
            ((#:native-inputs native-inputs)
             `(alist-delete "python-waf" ,native-inputs)))))
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
@@ -1254,7 +1256,7 @@ write GNOME applications.")
        #:test-target "test"
        #:tests? #f ; Tests fail with "Gtk cannot open display:"
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (build-system gnu-build-system)
     (home-page "https://pwmt.org/projects/girara/")
     (synopsis "Library for minimalistic gtk+3 user interfaces")

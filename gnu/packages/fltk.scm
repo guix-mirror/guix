@@ -63,27 +63,27 @@
        (list "--enable-shared"
              (string-append "DSOFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
-       (alist-cons-before
-        'configure 'patch-makeinclude
-        (lambda _
-          (substitute* "makeinclude.in"
-            (("/bin/sh") (which "sh"))))
-        (alist-cons-after
-         'install 'patch-config
-         ;; Provide -L flags for image libraries when querying fltk-config to
-         ;; avoid propagating inputs.
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (use-modules (srfi srfi-26))
-           (let* ((conf (string-append (assoc-ref outputs "out")
-                                      "/bin/fltk-config"))
-                  (jpeg (assoc-ref inputs "libjpeg"))
-                  (png  (assoc-ref inputs "libpng"))
-                  (zlib (assoc-ref inputs "zlib")))
-             (substitute* conf
-               (("-ljpeg") (string-append "-L" jpeg "/lib -ljpeg"))
-               (("-lpng") (string-append "-L" png "/lib -lpng"))
-               (("-lz") (string-append "-L" zlib "/lib -lz")))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-makeinclude
+           (lambda _
+             (substitute* "makeinclude.in"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'install 'patch-config
+           ;; Provide -L flags for image libraries when querying fltk-config to
+           ;; avoid propagating inputs.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (srfi srfi-26))
+             (let* ((conf (string-append (assoc-ref outputs "out")
+                                         "/bin/fltk-config"))
+                    (jpeg (assoc-ref inputs "libjpeg"))
+                    (png  (assoc-ref inputs "libpng"))
+                    (zlib (assoc-ref inputs "zlib")))
+               (substitute* conf
+                 (("-ljpeg") (string-append "-L" jpeg "/lib -ljpeg"))
+                 (("-lpng") (string-append "-L" png "/lib -lpng"))
+                 (("-lz") (string-append "-L" zlib "/lib -lz"))))
+             #t)))))
     (home-page "http://www.fltk.org")
     (synopsis "3D C++ GUI library")
     (description "FLTK is a C++ GUI toolkit providing modern GUI functionality

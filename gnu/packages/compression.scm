@@ -521,14 +521,14 @@ decompressors when faced with corrupted input.")
      `(("which" ,which)))
     (arguments
      `(#:phases
-        (alist-cons-after
-         'patch-source-shebangs 'unpatch-source-shebang
-         ;; revert the patch-shebang phase on a script which is
-         ;; in fact test data
-         (lambda _
-           (substitute* "tests/shar-1.ok"
-             (((which "sh")) "/bin/sh")))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'unpatch-source-shebang
+           ;; revert the patch-shebang phase on a script which is
+           ;; in fact test data
+           (lambda _
+             (substitute* "tests/shar-1.ok"
+               (((which "sh")) "/bin/sh"))
+             #t)))))
     (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description

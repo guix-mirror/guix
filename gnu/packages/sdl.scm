@@ -405,30 +405,30 @@ directory.")
                             (assoc-ref %build-inputs "sdl-union")))
        #:parallel-build? #f ; parallel build fails
        #:phases
-       (alist-cons-before
-        'configure 'fix-env-and-patch
-        (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "GUILE_AUTO_COMPILE" "0")
-          ;; SDL_image needs to dlopen libjpeg in the test suite.
-          (setenv "LD_LIBRARY_PATH"
-                  (string-append (assoc-ref inputs "libjpeg") "/lib"))
-          ;; Change the site directory /site/2.0 like Guile expects.
-          (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
-            (("\"/site\"") "\"/site/2.0\""))
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-env-and-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             ;; SDL_image needs to dlopen libjpeg in the test suite.
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "libjpeg") "/lib"))
+             ;; Change the site directory /site/2.0 like Guile expects.
+             (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
+               (("\"/site\"") "\"/site/2.0\""))
 
-          ;; Skip tests that rely on sound support, which is unavailable in
-          ;; the build environment.
-          (substitute* "test/Makefile.in"
-            (("HAVE_MIXER = .*$")
-             "HAVE_MIXER = 0\n")))
-        (alist-cons-before
-         'check 'start-xorg-server
-         (lambda* (#:key inputs #:allow-other-keys)
-           ;; The test suite requires a running X server.
-           (system (format #f "~a/bin/Xvfb :1 &"
-                           (assoc-ref inputs "xorg-server")))
-           (setenv "DISPLAY" ":1"))
-         %standard-phases))))
+             ;; Skip tests that rely on sound support, which is unavailable in
+             ;; the build environment.
+             (substitute* "test/Makefile.in"
+               (("HAVE_MIXER = .*$")
+                "HAVE_MIXER = 0\n"))
+             #t))
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (format #f "~a/bin/Xvfb :1 &"
+                             (assoc-ref inputs "xorg-server")))
+             (setenv "DISPLAY" ":1")
+             #t)))))
     (synopsis "Guile interface for SDL (Simple DirectMedia Layer)")
     (description "Guile-SDL is a set of bindings to the Simple DirectMedia
 Layer (SDL).  With them, Guile programmers can have easy access to graphics,

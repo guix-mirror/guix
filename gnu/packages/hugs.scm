@@ -39,36 +39,37 @@
         "1mdy4aq4campgmnpc2qwq7bsbfhaxfsqdghbyyz2wms4lnfcmyma"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'fix-sh-n-cp
-                 (lambda _
-                   (substitute*
-                       '("configure"
-                         "libraries/configure"
-                         "packages/time/configure"
-                         "packages/base/configure"
-                         "packages/X11/configure"
-                         "packages/HGL/configure"
-                         "packages/OpenAL/configure"
-                         "packages/OpenGL/configure"
-                         "packages/network/configure"
-                         "packages/unix/configure"
-                         "packages/Cabal/tests/HSQL/configure"
-                         "packages/ALUT/configure"
-                         "packages/GLUT/configure"
-                         "packages/base/cbits/execvpe.c"
-                         "packages/base/System/Process/Internals.hs"
-                         "packages/Cabal/Distribution/attic"
-                         "packages/Cabal/Distribution/Simple/Register.hs"
-                         "packages/Cabal/Distribution/Simple/Hugs.hs"
-                         "tools/hugs-hc"
-                         "src/machdep.c"
-                         "libraries/Makefile.in")
-                     (("/bin/sh") (which "sh")))
-                   (substitute* '("demos/Makefile.in"
-                                  "libraries/Makefile.in")
-                     (("/bin/cp") (which "cp"))))
-                  %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-sh-n-cp
+           (lambda _
+             (substitute*
+                 '("configure"
+                   "libraries/configure"
+                   "packages/time/configure"
+                   "packages/base/configure"
+                   "packages/X11/configure"
+                   "packages/HGL/configure"
+                   "packages/OpenAL/configure"
+                   "packages/OpenGL/configure"
+                   "packages/network/configure"
+                   "packages/unix/configure"
+                   "packages/Cabal/tests/HSQL/configure"
+                   "packages/ALUT/configure"
+                   "packages/GLUT/configure"
+                   "packages/base/cbits/execvpe.c"
+                   "packages/base/System/Process/Internals.hs"
+                   "packages/Cabal/Distribution/attic"
+                   "packages/Cabal/Distribution/Simple/Register.hs"
+                   "packages/Cabal/Distribution/Simple/Hugs.hs"
+                   "tools/hugs-hc"
+                   "src/machdep.c"
+                   "libraries/Makefile.in")
+               (("/bin/sh") (which "sh")))
+             (substitute* '("demos/Makefile.in"
+                            "libraries/Makefile.in")
+               (("/bin/cp") (which "cp")))
+             #t)))
        #:tests? #f)) ; no test target
     ;; FIXME: Fails to build with GCC 5.
     (native-inputs `(("gcc" ,gcc-4.9)))

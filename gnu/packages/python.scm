@@ -485,11 +485,10 @@ pidof, tty, taskset, pmap.")
      `(("python-py-bcrypt" ,python-py-bcrypt)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'set-PYTHON_EGG_CACHE
-        ;; some tests require access to "$HOME/.cython"
-        (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp"))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'set-PYTHON_EGG_CACHE
+           ;; some tests require access to "$HOME/.cython"
+           (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
     (home-page "https://bitbucket.org/ecollins/passlib")
     (synopsis
      "Comprehensive password hashing framework")
@@ -1079,12 +1078,10 @@ multiple Unicode code points, e.g. \"G\" + acute-accent)
        ("gmp" ,gmp)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'build 'set-build-env
-        ;; pycrypto runs an autoconf configure script behind the scenes
-        (lambda _
-          (setenv "CONFIG_SHELL" (which "bash")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'build 'set-build-env
+           ;; pycrypto runs an autoconf configure script behind the scenes
+           (lambda _ (setenv "CONFIG_SHELL" (which "bash")) #t)))))
     (home-page "http://www.pycrypto.org/")
     (synopsis "Cryptographic modules for Python")
     (description
@@ -1496,11 +1493,11 @@ other Python program.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
-       #:phases (alist-replace
-                 'check
-                 (lambda _
-                   (zero? (system* "./test.sh")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "./test.sh")))))))
     (home-page "http://www.alcyone.com/software/empy/")
     (synopsis "Templating system for Python")
     (description
@@ -4665,10 +4662,10 @@ as the original project seems to have been abandoned circa 2007.")
        ("python-pytest" ,python-pytest)
        ("python-mock"   ,python-mock))) ;for tests
     (arguments
-     `(#:phases (alist-replace
-                 'check
-                 (lambda _ (zero? (system* "py.test")))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "py.test")))))))
     (home-page "http://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
@@ -8581,10 +8578,10 @@ automatically detect a wide range of file encodings.")
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (arguments
-     `(#:phases (alist-replace
-                 'check
-                 (lambda _ (zero? (system* "py.test")))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "py.test")))))))
     (home-page "http://docopt.org")
     (synopsis "Command-line interface description language for Python")
     (description "This library allows the user to define a command-line

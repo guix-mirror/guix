@@ -35,47 +35,46 @@
                "10hdd6mrk26kyh4bnng4ah5h1pnanhsrhqa7qwqy6dyv3rng44y9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'install 'pre-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (mkdir-p (string-append out "/share/texmf/tex/latex"))
-                     #t))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs inputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out"))
-                          (cu  (assoc-ref inputs "coreutils"))
-                          (du  (assoc-ref inputs "diffutils")))
-                      (with-directory-excursion out
-                        (for-each (lambda (prog)
-                                    (substitute* prog
-                                      (("nawk") (which "awk"))))
-                                  (append (map (lambda (x)
-                                                 (string-append "bin/" x))
-                                               '("noweb" "nountangle"
-                                                 "noroots" "noroff"
-                                                 "noindex"))
-                                          (map (lambda (x)
-                                                 (string-append "lib/" x))
-                                               '("btdefn" "emptydefn" "noidx"
-                                                 "pipedocs" "toascii" "tohtml"
-                                                 "toroff" "totex" "unmarkup"))))
-                        (substitute* "bin/cpif"
-                          (("^PATH=.*$")
-                           (string-append "PATH=" cu "/bin:" du "/bin\n"))))
-                      #t))
-                  (alist-replace
-                   'configure
-                   (lambda _
-                     ;; Jump in the source.
-                     (chdir "src")
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/texmf/tex/latex"))
+               #t)))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (cu  (assoc-ref inputs "coreutils"))
+                   (du  (assoc-ref inputs "diffutils")))
+               (with-directory-excursion out
+                 (for-each (lambda (prog)
+                             (substitute* prog
+                               (("nawk") (which "awk"))))
+                           (append (map (lambda (x)
+                                          (string-append "bin/" x))
+                                        '("noweb" "nountangle"
+                                          "noroots" "noroff"
+                                          "noindex"))
+                                   (map (lambda (x)
+                                          (string-append "lib/" x))
+                                        '("btdefn" "emptydefn" "noidx"
+                                          "pipedocs" "toascii" "tohtml"
+                                          "toroff" "totex" "unmarkup"))))
+                 (substitute* "bin/cpif"
+                   (("^PATH=.*$")
+                    (string-append "PATH=" cu "/bin:" du "/bin\n"))))
+               #t)))
+         (replace 'configure
+           (lambda _
+             ;; Jump in the source.
+             (chdir "src")
 
-                     ;; The makefile reads "source: FAQ", but FAQ isn't
-                     ;; available.
-                     (substitute* "Makefile"
-                       (("FAQ") "")))
-                   %standard-phases)))
+             ;; The makefile reads "source: FAQ", but FAQ isn't
+             ;; available.
+             (substitute* "Makefile"
+               (("FAQ") ""))
+             #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "BIN=" out "/bin")
                             (string-append "LIB=" out "/lib")

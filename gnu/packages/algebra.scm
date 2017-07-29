@@ -334,22 +334,21 @@ fast arithmetic.")
       ("mpfr" ,mpfr)))
    (arguments
     `(#:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out"))
-                 (flint (assoc-ref inputs "flint"))
-                 (gmp (assoc-ref inputs "gmp"))
-                 (mpfr (assoc-ref inputs "mpfr")))
-             ;; do not pass "--enable-fast-install", which makes the
-             ;; homebrew configure process fail
-             (zero? (system*
-                     "./configure"
-                     (string-append "--prefix=" out)
-                     (string-append "--with-flint=" flint)
-                     (string-append "--with-gmp=" gmp)
-                     (string-append "--with-mpfr=" mpfr)))))
-         %standard-phases)))
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (flint (assoc-ref inputs "flint"))
+                  (gmp (assoc-ref inputs "gmp"))
+                  (mpfr (assoc-ref inputs "mpfr")))
+              ;; do not pass "--enable-fast-install", which makes the
+              ;; homebrew configure process fail
+              (zero? (system*
+                      "./configure"
+                      (string-append "--prefix=" out)
+                      (string-append "--with-flint=" flint)
+                      (string-append "--with-gmp=" gmp)
+                      (string-append "--with-mpfr=" mpfr)))))))))
    (synopsis "Arbitrary precision floating-point ball arithmetic")
    (description
     "Arb is a C library for arbitrary-precision floating-point ball

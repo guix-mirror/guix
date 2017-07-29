@@ -427,7 +427,7 @@ glxgears, glxheads, and glxinfo.")
                   (("/lib64") "/lib")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "GLEW_PREFIX="
                                          (assoc-ref %outputs "out"))
                           (string-append "GLEW_DEST="

@@ -445,36 +445,33 @@ statistical profiler, a code coverage tool, and many other extensions.")
                   (guix build utils)
                   (guix build gnu-build-system))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
-               (begin (chdir "ccl") #t)))
-        (alist-delete
-         'configure
-         (alist-cons-before
-          'build 'pre-build
-          ;; Enter the source directory for the current platform's lisp
-          ;; kernel, and run 'make clean' to remove the precompiled one.
-          (lambda _
-            (chdir (string-append
-                    "lisp-kernel/"
-                    ,(match (or (%current-target-system) (%current-system))
-                       ("i686-linux"   "linuxx8632")
-                       ("x86_64-linux" "linuxx8664")
-                       ("armhf-linux"  "linuxarm")
-                       ;; Prevent errors when querying this package
-                       ;; on unsupported platforms, e.g. when running
-                       ;; "guix package --search="
-                       (_              "UNSUPPORTED"))))
-            (substitute* '("Makefile")
-              (("/bin/rm") "rm"))
-            (setenv "CC" "gcc")
-            (zero? (system* "make" "clean")))
-          ;; XXX Do we need to recompile the heap image as well for Guix?
-          ;; For now just use the one we already got in the tarball.
-          (alist-replace
-           'install
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
+                  (begin (chdir "ccl") #t))))
+         (delete 'configure)
+         (add-before 'build 'pre-build
+           ;; Enter the source directory for the current platform's lisp
+           ;; kernel, and run 'make clean' to remove the precompiled one.
+           (lambda _
+             (chdir (string-append
+                     "lisp-kernel/"
+                     ,(match (or (%current-target-system) (%current-system))
+                        ("i686-linux"   "linuxx8632")
+                        ("x86_64-linux" "linuxx8664")
+                        ("armhf-linux"  "linuxarm")
+                        ;; Prevent errors when querying this package
+                        ;; on unsupported platforms, e.g. when running
+                        ;; "guix package --search="
+                        (_              "UNSUPPORTED"))))
+             (substitute* '("Makefile")
+               (("/bin/rm") "rm"))
+             (setenv "CC" "gcc")
+             (zero? (system* "make" "clean"))))
+         ;; XXX Do we need to recompile the heap image as well for Guix?
+         ;; For now just use the one we already got in the tarball.
+         (replace 'install
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; The lisp kernel built by running 'make' in lisp-kernel/$system
              ;; is put back into the original directory, so go back.  The heap
@@ -513,8 +510,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
                      "CCL_DEFAULT_DIRECTORY=" libdir "\n"
                      "export CCL_DEFAULT_DIRECTORY\n"
                      "exec " libdir kernel "\n"))))
-               (chmod wrapper #o755)))
-           %standard-phases))))))
+               (chmod wrapper #o755))
+             #t)))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
     (home-page "http://ccl.clozure.com/")
     (synopsis "Common Lisp implementation")

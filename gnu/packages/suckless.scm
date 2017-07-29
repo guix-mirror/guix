@@ -154,7 +154,7 @@ optimising the environment for the application in use and the task performed.")
                                          (assoc-ref %build-inputs "freetype")
                                          "/include/freetype2"))
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("freetype" ,freetype)
        ("libxft" ,libxft)
@@ -211,7 +211,7 @@ numbers of user-defined menu items efficiently.")
      '(#:tests? #f ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)

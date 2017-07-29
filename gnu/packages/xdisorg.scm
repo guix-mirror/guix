@@ -689,7 +689,7 @@ Guile will work for XBindKeys.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))))
@@ -796,7 +796,8 @@ within a single process.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:phases (alist-delete 'configure %standard-phases) ; no configure script
+       ;; no configure script
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "MANDIR=/share/man/man1"
                           "CC=gcc")))

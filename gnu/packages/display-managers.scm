@@ -337,17 +337,18 @@ GTK+, lets you select a desktop session and log in to it.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases (alist-cons-before
-		 'configure 'set-new-etc-location
-		 (lambda _
-		   (substitute* "CMakeLists.txt"
-		     (("/etc")
-		      (string-append (assoc-ref %outputs "out") "/etc"))
-                     (("install.*systemd.*")
-                      ;; The build system's logic here is: if "Linux", then
-                      ;; "systemd".  Strip that.
-                      "")))
-		 %standard-phases)
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-new-etc-location
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("/etc")
+                (string-append (assoc-ref %outputs "out") "/etc"))
+               (("install.*systemd.*")
+               ;; The build system's logic here is: if "Linux", then
+                ;; "systemd".  Strip that.
+                ""))
+             #t)))
        #:configure-flags '("-DUSE_PAM=yes"
                            "-DUSE_CONSOLEKIT=no")
        #:tests? #f))

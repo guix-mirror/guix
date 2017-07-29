@@ -1435,22 +1435,22 @@ Linux-based operating systems.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda _
-                   ;; Fix "field ‘ip6’ has incomplete type" errors.
-                   (substitute* "libbridge/libbridge.h"
-                     (("#include <linux/if_bridge.h>")
-                      "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             ;; Fix "field ‘ip6’ has incomplete type" errors.
+             (substitute* "libbridge/libbridge.h"
+               (("#include <linux/if_bridge.h>")
+                "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
 
-                   ;; Ensure that the entire build fails if one of the
-                   ;; sub-Makefiles fails.
-                   (substitute* "Makefile.in"
-                     (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
-                      "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
+             ;; Ensure that the entire build fails if one of the
+             ;; sub-Makefiles fails.
+             (substitute* "Makefile.in"
+               (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
+                "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
 
-                   (zero? (system* "autoreconf" "-vf")))
-                 %standard-phases)
+             (zero? (system* "autoreconf" "-vf")))))
        #:tests? #f))                              ; no 'check' target
 
     (home-page
@@ -1555,7 +1555,7 @@ configuration and monitoring interfaces.")
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://wireless.wiki.kernel.org/")
     (synopsis "Tool for configuring wireless devices")
     (description
@@ -1688,27 +1688,28 @@ processes currently causing I/O.")
                                (string-append "UDEV_RULES_PATH="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
-      #:phases (alist-cons-before
-                'build 'set-file-names
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; libfuse calls out to mount(8) and umount(8).  Make sure
-                  ;; it refers to the right ones.
-                  (substitute* '("lib/mount_util.c" "util/mount_util.c")
-                    (("/bin/(u?)mount" _ maybe-u)
-                     (string-append (assoc-ref inputs "util-linux")
-                                    "/bin/" maybe-u "mount")))
-                  (substitute* '("util/mount.fuse.c")
-                    (("/bin/sh")
-                     (which "sh")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libfuse calls out to mount(8) and umount(8).  Make sure
+             ;; it refers to the right ones.
+             (substitute* '("lib/mount_util.c" "util/mount_util.c")
+               (("/bin/(u?)mount" _ maybe-u)
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/" maybe-u "mount")))
+             (substitute* '("util/mount.fuse.c")
+               (("/bin/sh")
+                (which "sh")))
 
-                  ;; This hack leads libfuse to search for 'fusermount' in
-                  ;; $PATH, where it may find a setuid-root binary, instead of
-                  ;; trying solely $out/sbin/fusermount and failing because
-                  ;; it's not setuid.
-                  (substitute* "lib/Makefile"
-                    (("-DFUSERMOUNT_DIR=[[:graph:]]+")
-                     "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))
-                %standard-phases)))
+             ;; This hack leads libfuse to search for 'fusermount' in
+             ;; $PATH, where it may find a setuid-root binary, instead of
+             ;; trying solely $out/sbin/fusermount and failing because
+             ;; it's not setuid.
+             (substitute* "lib/Makefile"
+               (("-DFUSERMOUNT_DIR=[[:graph:]]+")
+                "-DFUSERMOUNT_DIR=\\\"/var/empty\\\""))
+             #t)))))
     (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
     (description
@@ -1786,20 +1787,20 @@ UnionFS-FUSE additionally supports copy-on-write.")
     (arguments
      '(#:tests? #f
        #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (exe (string-append out "/bin/unionfs")))
-                     ;; By default, 'unionfs' keeps references to
-                     ;; $glibc/share/locale and similar stuff.  Remove them.
-                     (remove-store-references exe)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (exe (string-append out "/bin/unionfs")))
+               ;; By default, 'unionfs' keeps references to
+               ;; $glibc/share/locale and similar stuff.  Remove them.
+               (remove-store-references exe)
 
-                     ;; 'unionfsctl' has references to glibc as well.  Since
-                     ;; we don't need it, remove it.
-                     (delete-file (string-append out "/bin/unionfsctl"))
-                     #t))
-                 %standard-phases)))
+               ;; 'unionfsctl' has references to glibc as well.  Since
+               ;; we don't need it, remove it.
+               (delete-file (string-append out "/bin/unionfsctl"))
+               #t))))))
     (inputs `(("fuse" ,fuse-static)))))
 
 (define-public sshfs-fuse
@@ -2374,43 +2375,42 @@ country-specific regulations for the wireless spectrum.")
                           (string-append "ETCDIR=" %output "/etc")
                           (string-append "MANDIR=" %output "/share/man"))
        #:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (substitute* "prog/detect/sensors-detect"
-             (("`uname")
-              (string-append "`" (assoc-ref inputs "coreutils")
-                             "/bin/uname"))
-             (("(`|\")modprobe" all open-quote)
-              (string-append open-quote
-                             (assoc-ref inputs "kmod")
-                             "/bin/modprobe")))
-           (substitute* '("prog/pwm/pwmconfig"
-                          "prog/pwm/fancontrol")
-             (("gnuplot")
-              (string-append (assoc-ref inputs "gnuplot")
-                             "/bin/gnuplot"))
-             (("cat ")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/cat "))
-             (("egrep ")
-              (string-append (assoc-ref inputs "grep")
-                             "/bin/egrep "))
-             (("sed -e")
-              (string-append (assoc-ref inputs "sed")
-                             "/bin/sed -e"))
-             (("cut -d")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/cut -d"))
-             (("sleep ")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/sleep "))
-             (("readlink -f")
-              (string-append (assoc-ref inputs "coreutils")
-                             "/bin/readlink -f"))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "prog/detect/sensors-detect"
+               (("`uname")
+                (string-append "`" (assoc-ref inputs "coreutils")
+                               "/bin/uname"))
+               (("(`|\")modprobe" all open-quote)
+                (string-append open-quote
+                               (assoc-ref inputs "kmod")
+                               "/bin/modprobe")))
+             (substitute* '("prog/pwm/pwmconfig"
+                            "prog/pwm/fancontrol")
+               (("gnuplot")
+                (string-append (assoc-ref inputs "gnuplot")
+                               "/bin/gnuplot"))
+               (("cat ")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/cat "))
+               (("egrep ")
+                (string-append (assoc-ref inputs "grep")
+                               "/bin/egrep "))
+               (("sed -e")
+                (string-append (assoc-ref inputs "sed")
+                               "/bin/sed -e"))
+               (("cut -d")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/cut -d"))
+               (("sleep ")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/sleep "))
+               (("readlink -f")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/readlink -f")))
+             #t)))))
     (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
@@ -2437,7 +2437,7 @@ It works with most newer systems.")
        #:make-flags (list (string-append "prefix=" %output)
                           "CC=gcc")
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("perl" ,perl)))
     (home-page "http://jdelvare.nerim.net/devel.html#i2ctools")
@@ -2466,18 +2466,19 @@ SMBus access.")
               ("gtk" ,gtk+-2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'enable-deprecated
-                 (lambda _
-                   (substitute* "src/Makefile.in"
-                     (("-DGDK_DISABLE_DEPRECATED") "")
-                     (("-DGTK_DISABLE_DEPRECATED") "")))
-                 (alist-cons-before
-                  'configure 'remove-Werror
-                  (lambda _
-                    (substitute* '("configure" "src/Makefile.in")
-                      (("-Werror") "")))
-                  %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enable-deprecated
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("-DGDK_DISABLE_DEPRECATED") "")
+               (("-DGTK_DISABLE_DEPRECATED") ""))
+             #t))
+         (add-before 'configure 'remove-Werror
+           (lambda _
+             (substitute* '("configure" "src/Makefile.in")
+               (("-Werror") ""))
+             #t)))))
     (home-page "http://www.linuxhardware.org/xsensors/")
     (synopsis "Hardware health information viewer")
     (description
@@ -2493,12 +2494,13 @@ in a digital read-out.")
     (source (package-source linux-libre))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (setenv "SHELL_PATH" (which "bash"))
-                   (chdir "tools/perf"))
-                 %standard-phases)
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "SHELL_PATH" (which "bash"))
+             (chdir "tools/perf")
+             #t)))
        #:make-flags (list (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
                           "WERROR=0"
@@ -2837,22 +2839,23 @@ MPEG-2 and audio over Linux IEEE 1394.")
                             (string-append "BINDIR=" out "/sbin")
                             (string-append "MANDIR=" out "/share/man")
                             (string-append "UDEVDIR=" out "/lib/udev")))
-       #:phases (alist-cons-before
-                 'build 'patch-program-paths
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((coreutils (assoc-ref inputs "coreutils")))
-                     (substitute* "udev-md-raid-arrays.rules"
-                       (("/usr/bin/(readlink|basename)" all program)
-                        (string-append coreutils "/bin/" program)))))
-                 (alist-cons-before
-                  'build 'remove-W-error
-                  (lambda _
-                    ;; We cannot build with -Werror on i686 due to a
-                    ;; 'sign-compare' warning in util.c.
-                    (substitute* "Makefile"
-                      (("-Werror") ""))
-                    #t)
-                  (alist-delete 'configure %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-program-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils")))
+               (substitute* "udev-md-raid-arrays.rules"
+                 (("/usr/bin/(readlink|basename)" all program)
+                  (string-append coreutils "/bin/" program))))
+             #t))
+         (add-before 'build 'remove-W-error
+           (lambda _
+             ;; We cannot build with -Werror on i686 due to a
+             ;; 'sign-compare' warning in util.c.
+             (substitute* "Makefile"
+               (("-Werror") ""))
+             #t))
+         (delete 'configure))
        ;;tests must be done as root
        #:tests? #f))
     (home-page "http://neil.brown.name/blog/mdadm")
@@ -2987,7 +2990,7 @@ Linux Device Mapper multipathing driver:
        (list "CC=gcc" (string-append "prefix=" %output))
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
-       (alist-delete 'configure %standard-phases))) ; no configure script
+       (modify-phases %standard-phases (delete 'configure)))) ; no configure script
     (home-page "http://lse.sourceforge.net/io/aio.html")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
@@ -3642,13 +3645,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
      ;; FIXME: The upstream tarball lacks man pages, and building them would
      ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
      ;; but they vanished.  In the meantime, fake it.
-     '(#:phases (alist-cons-before
-                 'configure 'fake-docbook
-                 (lambda _
-                   (substitute* "Makefile.in"
-                     (("^DOCBOOKTOMAN.*$")
-                      "DOCBOOKTOMAN = true\n")))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fake-docbook
+           (lambda _
+             (substitute* "Makefile.in"
+               (("^DOCBOOKTOMAN.*$")
+                "DOCBOOKTOMAN = true\n"))
+             #t)))))
     (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description

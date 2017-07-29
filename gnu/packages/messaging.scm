@@ -142,20 +142,19 @@ keys, no previous conversation is compromised.")
               ("python" ,python-2)
               ("perl" ,perl)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'install 'install-etc
-                 (lambda* (#:key (make-flags '()) #:allow-other-keys)
-                   (zero? (apply system* "make" "install-etc" make-flags)))
-                 (alist-replace
-                  'configure
-                  ;; bitlbee's configure script does not tolerate many of the
-                  ;; variable settings that Guix would pass to it.
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))
-                                    "--otr=1")))
-                  %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-etc
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-etc" make-flags))))
+         (replace 'configure
+           ;; bitlbee's configure script does not tolerate many of the
+           ;; variable settings that Guix would pass to it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "./configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))
+                             "--otr=1")))))))
     (synopsis "IRC to instant messaging gateway")
     (description "BitlBee brings IM (instant messaging) to IRC clients, for
 people who have an IRC client running all the time and don't want to run an

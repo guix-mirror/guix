@@ -376,54 +376,50 @@ sample proximities between pairs of cases.")
     (arguments
      '(#:tests? #f ;no check target
        #:phases
-       (alist-cons-after
-        'unpack 'delete-broken-symlinks
-        (lambda _
-          (for-each delete-file '("applications/arts/data"
-                                  "applications/asp/data"
-                                  "applications/easysvm/data"
-                                  "applications/msplicer/data"
-                                  "applications/ocr/data"
-                                  "examples/documented/data"
-                                  "examples/documented/matlab_static"
-                                  "examples/documented/octave_static"
-                                  "examples/undocumented/data"
-                                  "examples/undocumented/matlab_static"
-                                  "examples/undocumented/octave_static"
-                                  "tests/integration/data"
-                                  "tests/integration/matlab_static"
-                                  "tests/integration/octave_static"
-                                  "tests/integration/python_modular/tests"))
-          #t)
-        (alist-cons-after
-         'unpack 'change-R-target-path
-         (lambda* (#:key outputs #:allow-other-keys)
-           (substitute* '("src/interfaces/r_modular/CMakeLists.txt"
-                          "src/interfaces/r_static/CMakeLists.txt"
-                          "examples/undocumented/r_modular/CMakeLists.txt")
-             (("\\$\\{R_COMPONENT_LIB_PATH\\}")
-              (string-append (assoc-ref outputs "out")
-                             "/lib/R/library/")))
-           #t)
-         (alist-cons-after
-          'unpack 'fix-octave-modules
-          (lambda* (#:key outputs #:allow-other-keys)
-            (substitute* '("src/interfaces/octave_modular/CMakeLists.txt"
-                           "src/interfaces/octave_static/CMakeLists.txt")
-              (("^include_directories\\(\\$\\{OCTAVE_INCLUDE_DIRS\\}")
-               "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave"))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-broken-symlinks
+           (lambda _
+             (for-each delete-file '("applications/arts/data"
+                                     "applications/asp/data"
+                                     "applications/easysvm/data"
+                                     "applications/msplicer/data"
+                                     "applications/ocr/data"
+                                     "examples/documented/data"
+                                     "examples/documented/matlab_static"
+                                     "examples/documented/octave_static"
+                                     "examples/undocumented/data"
+                                     "examples/undocumented/matlab_static"
+                                     "examples/undocumented/octave_static"
+                                     "tests/integration/data"
+                                     "tests/integration/matlab_static"
+                                     "tests/integration/octave_static"
+                                     "tests/integration/python_modular/tests"))
+             #t))
+         (add-after 'unpack 'change-R-target-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("src/interfaces/r_modular/CMakeLists.txt"
+                            "src/interfaces/r_static/CMakeLists.txt"
+                            "examples/undocumented/r_modular/CMakeLists.txt")
+               (("\\$\\{R_COMPONENT_LIB_PATH\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/lib/R/library/")))
+             #t))
+         (add-after 'unpack 'fix-octave-modules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("src/interfaces/octave_modular/CMakeLists.txt"
+                            "src/interfaces/octave_static/CMakeLists.txt")
+               (("^include_directories\\(\\$\\{OCTAVE_INCLUDE_DIRS\\}")
+                "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave"))
 
-            ;; change target directory
-            (substitute* "src/interfaces/octave_modular/CMakeLists.txt"
-              (("\\$\\{OCTAVE_OCT_LOCAL_API_FILE_DIR\\}")
-               (string-append (assoc-ref outputs "out")
-                              "/share/octave/packages")))
-            #t)
-          (alist-cons-before
-           'build 'set-HOME
+             ;; change target directory
+             (substitute* "src/interfaces/octave_modular/CMakeLists.txt"
+               (("\\$\\{OCTAVE_OCT_LOCAL_API_FILE_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/octave/packages")))
+             #t))
+         (add-before 'build 'set-HOME
            ;; $HOME needs to be set at some point during the build phase
-           (lambda _ (setenv "HOME" "/tmp") #t)
-           %standard-phases))))
+           (lambda _ (setenv "HOME" "/tmp") #t)))
        #:configure-flags
        (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
              "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT

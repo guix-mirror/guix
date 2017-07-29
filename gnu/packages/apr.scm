@@ -80,19 +80,18 @@ around or take advantage of platform-specific deficiencies or features.")
      `(("expat" ,expat)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out   (assoc-ref outputs "out"))
-                (apr   (assoc-ref inputs  "apr"))
-                (expat (assoc-ref inputs  "expat")))
-            (setenv "CONFIG_SHELL" (which "bash"))
-            (zero?
-             (system* "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--with-apr=" apr)
-                      (string-append "--with-expat=" expat)))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out   (assoc-ref outputs "out"))
+                   (apr   (assoc-ref inputs  "apr"))
+                   (expat (assoc-ref inputs  "expat")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "--with-apr=" apr)
+                         (string-append "--with-expat=" expat)))))))
 
        ;; There are race conditions during 'make check'.  Typically, the
        ;; 'testall' executable is not built yet by the time 'make check' tries

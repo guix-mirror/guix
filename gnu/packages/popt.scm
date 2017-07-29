@@ -66,14 +66,15 @@ line syntax.")
                "1j2c61nn2n351nhj4d25mnf3vpiddcykq005w2h6kw79dwlysa77"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'patch-test
-                 (lambda _
-                   (substitute* "test-poptrc.in"
-                     (("/bin/echo") (which "echo")))
-                   (substitute* "testit.sh"   ; don't expect old libtool names
-                     (("lt-test1") "test1")))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-test
+           (lambda _
+             (substitute* "test-poptrc.in"
+               (("/bin/echo") (which "echo")))
+             (substitute* "testit.sh"   ; don't expect old libtool names
+               (("lt-test1") "test1"))
+             #t)))))
     (home-page "http://rpm5.org/files/popt/")
     (synopsis "Command line option parsing library")
     (description

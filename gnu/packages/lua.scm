@@ -124,7 +124,7 @@ for configuration, scripting, and rapid prototyping.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;luajit is distributed without tests
-       #:phases (alist-delete 'configure %standard-phases)
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (home-page "http://www.luajit.org/")
     (synopsis "Just in time compiler for Lua programming language version 5.1")

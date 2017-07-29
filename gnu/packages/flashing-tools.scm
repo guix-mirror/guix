@@ -62,17 +62,16 @@
                           "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f   ; no 'check' target
        #:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (substitute* "dmi.c"
-             (("\"dmidecode\"")
-              (format #f "~S"
-                      (string-append (assoc-ref inputs "dmidecode")
-                                     "/sbin/dmidecode")))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "dmi.c"
+               (("\"dmidecode\"")
+                (format #f "~S"
+                        (string-append (assoc-ref inputs "dmidecode")
+                                       "/sbin/dmidecode"))))
+             #t)))))
     (home-page "http://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description
