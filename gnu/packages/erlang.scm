@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
@@ -45,7 +46,8 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b47jh549yywyp8fbs8a8j4ydr3zn982navzyqvlms6rg8vwb0pw"))))
+                "1b47jh549yywyp8fbs8a8j4ydr3zn982navzyqvlms6rg8vwb0pw"))
+              (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
