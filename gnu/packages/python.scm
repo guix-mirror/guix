@@ -203,6 +203,7 @@
                                   '("Lib/subprocess.py"
                                     "Lib/popen2.py"
                                     "Lib/distutils/tests/test_spawn.py"
+                                    "Lib/test/support/__init__.py"
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
 
@@ -328,23 +329,22 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define-public python-3.5
+(define-public python-3.6
   (package (inherit python-2)
-    (version "3.5.3")
+    (version "3.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-fix-tests.patch"
-                        "python-3.5-fix-tests.patch"
-                        "python-3.5-getentropy-on-old-kernels.patch"
+                        "python-3-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
+                "1nl1raaagr4car787a2hmjv2dw6gqny53xfd6wisbgx4r5kxk9yd"))
               (snippet
                '(begin
                   (for-each delete-file
@@ -361,7 +361,7 @@ data types.")
                                         "/site-packages"))))))))
 
 ;; Current 3.x version.
-(define-public python-3 python-3.5)
+(define-public python-3 python-3.6)
 
 ;; Current major version.
 (define-public python python-3)
