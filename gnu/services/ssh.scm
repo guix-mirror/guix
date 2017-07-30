@@ -29,6 +29,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (lsh-configuration
@@ -450,6 +451,13 @@ of user-name/file-like tuples."
          #:allow-empty-passwords?
          (openssh-configuration-allow-empty-passwords? config))))
 
+(define (extend-openssh-authorized-keys config keys)
+  "Extend CONFIG with the extra authorized keys listed in KEYS."
+  (openssh-configuration
+   (inherit config)
+   (authorized-keys
+    (append (openssh-authorized-keys config) keys))))
+
 (define openssh-service-type
   (service-type (name 'openssh)
                 (extensions
@@ -461,6 +469,8 @@ of user-name/file-like tuples."
                                           openssh-activation)
                        (service-extension account-service-type
                                           (const %openssh-accounts))))
+                (compose concatenate)
+                (extend extend-openssh-authorized-keys)
                 (default-value (openssh-configuration))))
 
 

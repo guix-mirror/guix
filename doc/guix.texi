@@ -10210,6 +10210,15 @@ shell daemon, @command{sshd}.  Its value must be an
 @end example
 
 See below for details about @code{openssh-configuration}.
+
+This service can be extended with extra authorized keys, as in this
+example:
+
+@example
+(service-extension openssh-service-type
+                   (const `(("charlie"
+                             ,(local-file "charlie.pub")))))
+@end example
 @end deffn
 
 @deftp {Data Type} openssh-configuration
@@ -10302,6 +10311,9 @@ keys.  For example:
 @noindent
 registers the specified public keys for user accounts @code{rekado},
 @code{chris}, and @code{root}.
+
+Additional authorized keys can be specified @i{via}
+@code{service-extension}.
 
 Note that this does @emph{not} interfere with the use of
 @file{~/.ssh/authorized_keys}.
