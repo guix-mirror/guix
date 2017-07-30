@@ -16,6 +16,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
@@ -61,6 +64,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -1178,3 +1182,46 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (fMRI) brain images.")
     (home-page "http://niftilib.sourceforge.net")
     (license license:public-domain)))
+
+(define-public gpick
+  (package
+    (name "gpick")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/thezbyg/gpick/archive/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("boost" ,boost)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("scons" ,scons)))
+    (inputs
+     `(("expat" ,expat)
+       ("gtk2" ,gtk+-2)
+       ("lua" ,lua-5.2)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-lua-reference
+           (lambda _
+             (substitute* "SConscript"
+               (("lua5.2") "lua-5.2"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "scons"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dest (assoc-ref outputs "out")))
+               (zero? (system* "scons" "install"
+                               (string-append "DESTDIR=" dest)))))))))
+    (home-page "http://www.gpick.org/")
+    (synopsis "Color picker")
+    (description "Gpick is an advanced color picker and palette editing tool.")
+    (license license:bsd-3)))
