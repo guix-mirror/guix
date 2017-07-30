@@ -3197,3 +3197,46 @@ as equations, scalars, vectors, and matrices.")
 theories} (SMT) solver.  It provides a C/C++ API.")
     (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("/bin/sh") (which "sh")))))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") "")))))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is an open source model checker for verifying safety
+properties of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by an
+arbitrary number of processes.  Cache coherence protocols and mutual exclusion
+algorithms are typical examples of such systems.")
+    (license license:asl2.0)))
