@@ -7106,39 +7106,48 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "2.5.4")
+    (version "3.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "flake8" version))
         (sha256
           (base32
-            "0bs9cz4fr99r2rwig1b8jwaadl1nan7kgpdzqwj0bwbckwbmh7nc"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin
-            ;; Remove pre-compiled .pyc files from source.
-            (for-each delete-file-recursively
-                      (find-files "." "__pycache__" #:directories? #t))
-            (for-each delete-file (find-files "." "\\.pyc$"))
-            #t))))
+            "1n0i38592vy3q0x2a9bf8z6rhhn04i30wsn5i5zzcj7qkxvl8062"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (add-installed-pythonpath inputs outputs)
+            (zero? (system* "pytest" "-v")))))))
     (propagated-inputs
-      `(("python-pep8" ,python-pep8)
+      `(("python-pycodestyle" ,python-pycodestyle)
         ("python-pyflakes" ,python-pyflakes)
+        ;; flake8 depends on a newer setuptools than provided by python.
+        ("python-setuptools" ,python-setuptools)
         ("python-mccabe" ,python-mccabe)))
     (native-inputs
-      `(("python-mock" ,python-mock) ; TODO: only required for < 3.3
-        ("python-nose" ,python-nose)))
+      `(("python-mock" ,python-mock-2) ; TODO: only required for < 3.3
+        ("python-pytest" ,python-pytest-bootstrap)
+        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis
       "The modular source code checker: pep8, pyflakes and co")
     (description
       "Flake8 is a wrapper around PyFlakes, pep8 and python-mccabe.")
+    (properties `((python2-variant . ,(delay python2-flake8))))
     (license license:expat)))
 
 (define-public python2-flake8
-  (package-with-python2 python-flake8))
+  (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-configparser" ,python2-configparser)
+         ("python2-enum" ,python2-enum)
+          ,@(package-propagated-inputs base))))))
 
 (define-public python-flake8-polyfill
   (package
