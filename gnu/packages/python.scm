@@ -7000,14 +7000,14 @@ PEP 8.")
 (define-public python-mccabe
   (package
     (name "python-mccabe")
-    (version "0.4.0")
+    (version "0.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mccabe" version))
         (sha256
           (base32
-            "0yr08a36h8lqlif10l4xcikbbig7q8f41gqywir7rrvnv3mi4aws"))))
+            "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-pytest" ,python-pytest-bootstrap)
