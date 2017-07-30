@@ -1301,15 +1301,15 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
+       (uri (string-append "https://github.com/libretro/RetroArch/archive/"
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "121h9j57gvjr155vvm4f7ybphfvqrdz2ib059kfi444xcxz19sl0"))))
+        (base32 "0a0w2sjizjs20376h7j1gfi0qccr8mhkl1cm6hi0c17hy1493l6d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
