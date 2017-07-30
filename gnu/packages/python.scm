@@ -971,6 +971,7 @@ have been used.")
           "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
     (propagated-inputs
      `(("python-pbr" ,python-pbr-minimal)
+       ("python-six" ,python-six)
        ,@(package-propagated-inputs python-mock)))))
 
 (define-public python-setuptools
