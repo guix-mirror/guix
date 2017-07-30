@@ -23,6 +23,7 @@
   #:use-module (guix records)
   #:use-module (gnu packages admin)
   #:autoload   (gnu packages ci) (cuirass)
+  #:autoload   (gnu packages version-control) (git)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
@@ -105,6 +106,12 @@
                             #$@(if fallback? '("--fallback") '())
                             #$@(if (null? load-path) '()
                                  `("--load-path" ,(string-join load-path ":"))))
+
+                      #:environment-variables
+                      (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
+                            (string-append "GIT_EXEC_PATH=" #$git
+                                           "/libexec/git-core"))
+
                       #:user #$user
                       #:group #$group
                       #:log-file #$log-file))
