@@ -1186,7 +1186,7 @@ password storage.")
              (zero? (system* "py.test" "-v")))))))
     (native-inputs
      `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest-bootstrap)))
     (home-page "http://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
@@ -1969,6 +1969,16 @@ and many external plugins.")
         `(("python2-enum34" ,python2-enum34)
           ,@(package-native-inputs base))))))
 
+(define-public python-pytest-bootstrap
+  (package
+    (inherit python-pytest)
+    (name "python-pytest-bootstrap")
+    (native-inputs '())
+    (arguments `(#:tests? #f))))
+
+(define-public python2-pytest-bootstrap
+  (package-with-python2 python-pytest-bootstrap))
+
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
@@ -2029,7 +2039,7 @@ supports coverage of subprocesses.")
                (string-append "version = \"" ,version "\"")))
             #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest-bootstrap)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
@@ -7005,7 +7015,7 @@ PEP 8.")
             "0yr08a36h8lqlif10l4xcikbbig7q8f41gqywir7rrvnv3mi4aws"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-pytest" ,python-pytest)
+      `(("python-pytest" ,python-pytest-bootstrap)
         ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/flintwork/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
@@ -10120,7 +10130,7 @@ Amazon Web Services (AWS) API.")
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest-bootstrap)))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
