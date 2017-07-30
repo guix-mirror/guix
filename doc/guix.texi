@@ -16472,7 +16472,13 @@ passed.
 @anchor{guix system vm}
 Build a virtual machine that contains the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
-Arguments given to the script are passed to QEMU.
+Arguments given to the script are passed to QEMU as in the example
+below, which enables networking and requests 1@tie{}GiB of RAM for the
+emulated machine:
+
+@example
+$ /gnu/store/@dots{}-run-vm.sh -m 1024 -net user
+@end example
 
 The VM shares its store with the host system.
 
