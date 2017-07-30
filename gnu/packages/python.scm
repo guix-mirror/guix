@@ -1178,6 +1178,12 @@ password storage.")
        (base32
         "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "-v")))))))
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest)))
