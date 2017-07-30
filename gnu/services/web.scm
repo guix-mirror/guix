@@ -30,16 +30,47 @@
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (nginx-configuration
+  #:export (<nginx-configuration>
+            nginx-configuration
             nginx-configuration?
+            nginx-configuartion-nginx
+            nginx-configuration-log-directory
+            nginx-configuration-run-directory
+            nginx-configuration-server-blocks
+            nginx-configuration-upstream-blocks
+            nginx-configuration-file
+
+            <nginx-server-configuration>
             nginx-server-configuration
             nginx-server-configuration?
+            nginx-server-configuration-http-port
+            nginx-server-configuartion-https-port
+            nginx-server-configuration-server-name
+            nginx-server-configuration-root
+            nginx-server-configuration-locations
+            nginx-server-configuration-index
+            nginx-server-configuration-ssl-certificate
+            nginx-server-configuration-ssl-certificate-key
+            nginx-server-configuration-server-tokens?
+
+            <nginx-upstream-configuration>
             nginx-upstream-configuration
             nginx-upstream-configuration?
+            nginx-upstream-configuration-name
+            nginx-upstream-configuration-servers
+
+            <nginx-location-configuration>
             nginx-location-configuration
             nginx-location-configuration?
+            nginx-location-configuration-uri
+            nginx-location-configuration-body
+
+            <nginx-named-location-configuration>
             nginx-named-location-configuration
             nginx-named-location-configuration?
+            nginx-named-location-configuration-name
+            nginx-named-location-configuration-body
+
             nginx-service
             nginx-service-type
 
