@@ -354,6 +354,47 @@ played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
 
+(define-public knights
+  (package
+    (name "knights")
+    (version "025")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.knightsgame.org.uk/files/knights_"
+                                  version "_src.tar.gz"))
+              (sha256
+               (base32
+                "18vp2ygvn0s0jz8rm585jqf6hjqkam1ximq81k0r9hpmfj7wb88f"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; No configure script.
+         (delete 'configure))
+       #:tests? #f)) ;; No check target.
+    (inputs
+     `(("boost" ,boost)
+       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))
+       ("freetype" ,freetype)
+       ("fontconfig" ,fontconfig)
+       ("curl" ,curl)))
+    (home-page "http://www.knightsgame.org.uk/")
+    (synopsis "Multiplayer dungeon game involving knights and quests")
+    (description "Knights is a multiplayer game involving several knights who
+must run around a dungeon and complete various quests.  Each game revolves
+around a quest – for example, you might have to find some items and carry them
+back to your starting point.  This may sound easy, but as there are only
+enough items in the dungeon for one player to win, you may end up having to
+kill your opponents to get their stuff!  Other quests involve escaping from
+the dungeon, fighting a duel to the death against the enemy knights, or
+destroying an ancient book using a special wand.")
+    ;; This package includes modified sources of lua (X11), enet (Expat), and
+    ;; guichan (BSD-3).  The "Coercri" library is released under the Boost
+    ;; license.  The whole package is released under GPLv3+.
+    (license license:gpl3+)))
+
 (define-public gnubg
   (package
     (name "gnubg")
