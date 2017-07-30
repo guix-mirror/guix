@@ -239,6 +239,7 @@ the @code{Graph} class and write it out in a specific file format.")
     (native-inputs
      `(("perl-datetime" ,perl-datetime)
        ;; TODO package: perl-datetime-format-atom
+       ("perl-module-install" ,perl-module-install)
        ("perl-xml-xpath" ,perl-xml-xpath)))
     (inputs
      `(("perl-class-data-inheritable" ,perl-class-data-inheritable)

@@ -2473,6 +2473,8 @@ supported.")
         (base32
          "02d84xq1mm53c7jl33qyb7v5w4372vydp74z6qj0vc96wcrnhkkr"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (home-page "http://search.cpan.org/dist/HTTP-Parser-XS")
     (synopsis "Fast HTTP request parser")
     (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
@@ -3230,6 +3232,7 @@ methods for WebSocket URIs as it does for HTTP URIs.")
     (native-inputs
      `(("perl-test-pod-coverage" ,perl-test-pod-coverage)
        ("perl-test-pod" ,perl-test-pod)
+       ("perl-module-install" ,perl-module-install)
        ("perl-json" ,perl-json)))
     (home-page "http://search.cpan.org/dist/URI-Template")
     (synopsis "Object for handling URI templates")
@@ -3253,6 +3256,8 @@ RFC 6570.")
     (build-system perl-build-system)
     (arguments
      '(#:tests? #f))                        ;XXX: tests require network access
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (inputs `(("curl" ,curl)))
     (synopsis "Perl extension interface for libcurl")
     (description

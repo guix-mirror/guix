@@ -1066,7 +1066,8 @@ module, and nothing else.")
          "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs

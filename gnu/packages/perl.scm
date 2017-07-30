@@ -415,6 +415,8 @@ compiling the surrounding scope.")
                (base32
                 "1gl9ybm9hgia3ld5s11b7bv2p2hmx5rss5hxcfy6rmbzrjcnci01"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     ;; The optional input module Statistics::PointEstimation (from
     ;; Statistics-TTest) lists no license.
     (synopsis "Benchmarking with statistical confidence")
@@ -790,7 +792,8 @@ the same mk_accessors interface.")
          "1zp74yv023q3macrf4rv3i82z8pkffqyhh7xk9xg8fbr63ikwqf4"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-module-runtime" ,perl-module-runtime)
@@ -861,7 +864,8 @@ supporting the same interface, but using Class::C3 to do the hard work.")
          "1nzav8arxll0rya7r2vp032s3acliihbb9mjlfa13rywhh77bzvl"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-class-c3" ,perl-class-c3)
        ("perl-class-inspector" ,perl-class-inspector)
@@ -3252,6 +3256,8 @@ shell.")
                (base32
                 "16v61rn0yimpv5kp6b20z2f1c93n5kpsyjvr0gq4w2dc43gfvc8w"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (home-page "http://search.cpan.org/dist/File-Zglob")
     (synopsis "Extended Unix style glob functionality")
     (description "@code{File::Zglob} provides a traditional Unix @code{glob}
@@ -4544,7 +4550,8 @@ sentences.")
          "1lkn1h4sxr1483jicsgsgzclbfw63g2i2c3m4v4j9ar75yrb0kh8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-moose" ,perl-moose)))
     (home-page "http://search.cpan.org/dist/MooseX-Emulate-Class-Accessor-Fast")
@@ -5207,6 +5214,8 @@ subroutine, which you can call with a value to be tested against.")
         (base32
          "0c8l7195bjvx0v6zmkgdnxvwg7yj2zq8hi7xd25a3iikd12dc4f6"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (home-page "http://search.cpan.org/dist/Object-Signature")
     (synopsis "Generate cryptographic signatures for objects")
     (description "Object::Signature is an abstract base class that you can
@@ -6245,6 +6254,8 @@ processing in Perl code.")
         (base32
          "1k6g4q7snxggv5fdqnzw29al4mwbwg0hl0skzfnczh508qiyfx7j"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (home-page "http://search.cpan.org/dist/Term-Encoding")
     (synopsis "Detect encoding of the current terminal")
     (description "Term::Encoding is a simple module to detect the encoding of
@@ -7062,6 +7073,8 @@ from boxed blocks of test code.")
         (base32
          "0yhvf735v334qqvp9zg7i66qyk6r4cbk5s2psv93d3fdd4bindzg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (home-page "http://search.cpan.org/dist/Test-utf8")
     (synopsis "UTF-8 testing in Perl")
     (description "This module is a collection of tests useful for dealing with
@@ -7540,7 +7553,8 @@ $object->TIEHASH are avoided.")
          "0klg33yzb7pr9ra76s6gj5k7nravqnw2lbh022x1xwlj92f43756"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
     (home-page "http://search.cpan.org/dist/Time-Duration")
     (synopsis "English expression of durations")
