@@ -324,7 +324,9 @@ of index files."
                             (inherit config)
                             (server-blocks
                               (append (nginx-configuration-server-blocks config)
-                              servers)))))))
+                              servers)))))
+                (default-value
+                  (nginx-configuration))))
 
 (define* (nginx-service #:key (nginx nginx)
                         (log-directory "/var/log/nginx")
