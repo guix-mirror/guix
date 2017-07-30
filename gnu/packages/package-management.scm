@@ -121,6 +121,7 @@
 
          #:modules ((guix build gnu-build-system)
                     (guix build utils)
+                    (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
 
@@ -190,20 +191,28 @@
                                (git    (assoc-ref inputs "guile-git"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (deps   (list json gnutls git ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
                                              (string-append guile "/bin/guile")
                                              "-c" "(display (effective-version))")))
-                               (path   (string-append
-                                        json "/share/guile/site/" effective ":"
-                                        git "/share/guile/site/" effective ":"
-                                        ssh "/share/guile/site/" effective ":"
-                                        gnutls "/share/guile/site/" effective)))
+                               (path   (string-join
+                                        (map (cut string-append <>
+                                                  "/share/guile/site/"
+                                                  effective)
+                                             deps)
+                                        ":"))
+                               (gopath (string-join
+                                        (map (cut string-append <>
+                                                  "/lib/guile/" effective
+                                                  "/site-ccache")
+                                             deps)
+                                        ":")))
 
                           (wrap-program (string-append out "/bin/guix")
                             `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
