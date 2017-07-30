@@ -191,7 +191,12 @@ absolute file name and STAT is the result of 'lstat'."
                                                 result)))
                                vlist-null
                                files))
-         (prefix-length  (+ 1 (string-length (canonicalize-path directory))))
+
+         ;; Note: For this to work we must *not* call 'canonicalize-path' on
+         ;; DIRECTORY or we would get discrepancies of the returned lambda is
+         ;; called with a non-canonical file name.
+         (prefix-length  (+ 1 (string-length directory)))
+
          (status         (close-pipe pipe)))
     (and (zero? status)
          (lambda (file stat)
