@@ -1920,14 +1920,14 @@ code introspection, and logging.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.0.7")
+    (version "3.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
+         "0g6w86ks73fnrnsyib9ii2rbyx830vn7aglsjqz9v1n2xwbndyi7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1951,29 +1951,24 @@ code introspection, and logging.")
        ("bash" ,bash)
        ("python-hypothesis" ,python-hypothesis)
        ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)))
+       ("python-mock" ,python-mock)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "http://pytest.org")
     (synopsis "Python testing library")
     (description
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (properties `((python2-variant . ,(delay python2-pytest))))
     (license license:expat)))
 
 (define-public python2-pytest
-  (let ((base (package-with-python2
-                (strip-python2-variant python-pytest))))
-    (package (inherit base)
-      (native-inputs
-        `(("python2-enum34" ,python2-enum34)
-          ,@(package-native-inputs base))))))
+  (package-with-python2 python-pytest))
 
 (define-public python-pytest-bootstrap
   (package
     (inherit python-pytest)
     (name "python-pytest-bootstrap")
-    (native-inputs '())
+    (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
     (arguments `(#:tests? #f))))
 
 (define-public python2-pytest-bootstrap
