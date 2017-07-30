@@ -334,10 +334,13 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
 
 (define %ntp-servers
-  ;; Default set of NTP servers.
-  '("0.pool.ntp.org"
-    "1.pool.ntp.org"
-    "2.pool.ntp.org"))
+  ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
+  ;; Within Guix, Leo Famulari <leo@famulari.name> is the administrative contact
+  ;; for this NTP pool "zone".
+  '("0.guix.pool.ntp.org"
+    "1.guix.pool.ntp.org"
+    "2.guix.pool.ntp.org"
+    "3.guix.pool.ntp.org"))
 
 
 ;;;
