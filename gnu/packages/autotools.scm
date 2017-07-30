@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -237,6 +237,7 @@ output is indexed in many ways to simplify browsing.")
     (license gpl3+)))
 
 (define-public automake
+  ;; Replace with 'automake/latest' on the next rebuild cycle.
   (package
     (name "automake")
     (version "1.15")
@@ -314,6 +315,22 @@ standards-compliant Makefiles.  Build requirements are entered in an
 intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
+
+
+(define-public automake/latest
+  ;; Merge with 'automake' on the next rebuild cycle.
+  (package
+    (inherit automake)
+    (version "1.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/automake/automake-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1bzd9g32dfm4rsbw93ld9x7b5nc1y6i4m6zp032qf1i28a8s6sxg"))
+              (patches
+               (search-patches "automake-skip-amhello-tests.patch"))))))
 
 (define-public libtool
   (package
