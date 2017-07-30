@@ -118,8 +118,7 @@ data units.")
                               "not test_printics_read_from_stdin "
                               "and not test_import_from_stdin"))))))))
     (native-inputs
-      ;; XXX Uses tmpdir_factory, introduced in pytest 2.8.
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-setuptools-scm" ,python-setuptools-scm)
        ;; Required for tests

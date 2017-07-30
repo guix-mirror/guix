@@ -1920,28 +1920,36 @@ code introspection, and logging.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "2.7.3")
+    (version "3.0.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pytest/pytest-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1z4yi986f9n0p8qmzmn21m21m8j1x78hk3505f89baqm6pdw7afm"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; One of the tests involves the /usr directory, so it fails.
-        '(substitute* "testing/test_argcomplete.py"
-           (("def test_remove_dir_prefix\\(self\\):")
-            "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):")))))
+         "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-invalid-tests
+           (lambda _
+             ;; Some tests involves the /usr directory, and fails.
+             (substitute* "testing/test_argcomplete.py"
+               (("def test_remove_dir_prefix\\(self\\):")
+                "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):"))
+             (substitute* "testing/test_argcomplete.py"
+               (("def test_remove_dir_prefix" line)
+                (string-append "@pytest.mark.skip"
+                               "(reason=\"Assumes that /usr exists.\")\n    "
+                               line)))
+             #t)))))
     (propagated-inputs
      `(("python-py" ,python-py)))
     (native-inputs
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
+       ("python-hypothesis" ,python-hypothesis)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (home-page "http://pytest.org")
@@ -1950,42 +1958,12 @@ code introspection, and logging.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
+    (properties `((python2-variant . ,(delay python2-pytest))))
     (license license:expat)))
 
 (define-public python2-pytest
-  (package-with-python2 python-pytest))
-
-;; Some packages require a newer pytest.
-(define-public python-pytest-3.0
-  (package
-    (inherit python-pytest)
-    (name "python-pytest")
-    (version "3.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "pytest" version))
-              (sha256
-               (base32
-                "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-invalid-test
-           (lambda _
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix" line)
-                (string-append "@pytest.mark.skip"
-                               "(reason=\"Assumes that /usr exists.\")\n    "
-                               line)))
-             #t)))))
-    (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ,@(package-native-inputs python-pytest)))
-    (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
-
-(define-public python2-pytest-3.0
   (let ((base (package-with-python2
-                (strip-python2-variant python-pytest-3.0))))
+                (strip-python2-variant python-pytest))))
     (package (inherit base)
       (native-inputs
         `(("python2-enum34" ,python2-enum34)
@@ -2888,7 +2866,7 @@ somewhat intelligible.")
            #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/progrium/pyjwt")
@@ -3344,7 +3322,7 @@ sources.")
      `(("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)
        ,@(package-propagated-inputs python-sphinx)))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("imagemagick" ,imagemagick) ; for "convert"
        ,@(package-native-inputs python-sphinx)))
     (properties '())))
@@ -3362,7 +3340,7 @@ sources.")
         (base32
          "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ,@(package-native-inputs python-sphinx)))))
 
 (define-public python2-sphinx
@@ -5313,7 +5291,7 @@ Python language binding specification.")
     (arguments '(#:tests? #f)) ; Test file 'grako.ebnf' is missing from archive.
     (native-inputs
      `(("unzip" ,unzip)
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://bitbucket.org/neogeny/grako")
     (synopsis "EBNF parser generator")
@@ -5371,7 +5349,7 @@ cluster without needing to write any wrapper code yourself.")
         (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-mock" ,python-mock)
        ("python-tox" ,python-tox)
        ("which" ,which))) ;for tests
@@ -5434,7 +5412,7 @@ displayed.")
          (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("man-db" ,man-db)
        ("which" ,which)
        ("bash-full" ,bash)))                 ;full Bash for 'test_replwrap.py'
@@ -8013,7 +7991,7 @@ responses, rather than doing any computation.")
        ("python-hypothesis" ,python-hypothesis)
        ("python-pretend" ,python-pretend)
        ("python-pytz" ,python-pytz)
-       ("python-pytest" ,python-pytest-3.0)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
     (description
@@ -8073,7 +8051,7 @@ message digests and key derivation functions.")
     (native-inputs
      `(("python-flaky" ,python-flaky)
        ("python-pretend" ,python-pretend)
-       ("python-pytest" ,python-pytest-3.0)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
@@ -15043,7 +15021,7 @@ for Flask.")
          "0gf2dpahpl5igb7jh1sr9acj3z3gp7zahqdqb69nk6wx01c8kc1g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "https://github.com/fschulze/pytest-warnings")
     (synopsis "Pytest plugin to list Python warnings in pytest report")
     (description
@@ -15067,7 +15045,7 @@ pytest report.")
          "038049nyjl7di59ycnxvc9nydivc5m8np3hqq84j2iirkccdbs5n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "http://bitbucket.org/memedough/pytest-capturelog/overview")
     (synopsis "Pytest plugin to catch log messages")
     (description
@@ -15092,7 +15070,7 @@ pytest report.")
     (native-inputs
      `(("unzip" ,unzip)))
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "https://github.com/eisensheng/pytest-catchlog")
     (synopsis "Pytest plugin to catch log messages")
     (description
@@ -16083,7 +16061,7 @@ address is valid and really exists.")
      `(("python-dateutil" ,python-dateutil)
        ("python-simplejson" ,python-simplejson)))
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native
@@ -16130,7 +16108,7 @@ complex datatypes to and from native Python datatypes.")
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-flask" ,python-flask)
        ("python-marshmallow" ,python-marshmallow)
        ("python-tornado" ,python-tornado)
@@ -16183,7 +16161,7 @@ Swagger 2.0).")
        ("python-flake8" ,python-flake8)
        ("python-flask-restful" ,python-flask-restful)
        ("python-flex" ,python-flex)
-       ("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-marshmallow" ,python-marshmallow)
        ("python-apispec" ,python-apispec)))
