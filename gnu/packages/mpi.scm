@@ -122,7 +122,6 @@ bind processes, and much more.")
        (base32
         "142s1vny9gllkq336yafxayjgcirj2jv0ddabj879jgya7hyr2d0"))))
     (build-system gnu-build-system)
-    (outputs '("out" "static"))
     (inputs
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
@@ -133,9 +132,7 @@ bind processes, and much more.")
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (arguments
-     `(#:configure-flags `("--enable-static"
-
-                           "--enable-builtin-atomics"
+     `(#:configure-flags `("--enable-builtin-atomics"
 
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
@@ -157,20 +154,6 @@ bind processes, and much more.")
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
                         (for-each delete-file (find-files out "config.log"))
-                        #t)))
-                  (add-after 'install 'move-static-libraries
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Move 19 MiB of static libraries to 'static'.
-                      (let* ((out    (assoc-ref outputs "out"))
-                             (static (assoc-ref outputs "static"))
-                             (lib    (string-append out "/lib"))
-                             (slib   (string-append static "/lib")))
-                        (mkdir-p slib)
-                        (for-each (lambda (file)
-                                    (rename-file
-                                     file
-                                     (string-append slib "/" (basename file))))
-                                  (find-files lib "\\.a$"))
                         #t))))))
     (home-page "http://www.open-mpi.org")
     (synopsis "MPI-3 implementation")
