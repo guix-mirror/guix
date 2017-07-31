@@ -272,7 +272,7 @@ and a supporting cryptographic kernel.")
          ("libtool" ,libtool)))
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-before 'configure 'autoconf
+                    (add-after 'unpack 'autoconf
                       (lambda _
                         (zero? (system* "autoreconf" "-vfi")))))))
       (home-page "https://gitlab.savoirfairelinux.com/sflphone/libiax2")

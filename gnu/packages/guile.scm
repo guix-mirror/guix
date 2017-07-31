@@ -365,7 +365,7 @@ AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
                  ;; reasons.  It does not fail when run outside of Guix.
                  (("tests/database.scm") ""))
                #t))
-           (add-before 'configure 'autogen
+           (add-after 'fix-bug-22 'autogen
              (lambda _
                (zero? (system* "sh" "autogen.sh")))))))
       (inputs
@@ -654,12 +654,12 @@ format is also supported.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autoreconf
-                              (lambda _
-                                ;; Repository comes with a broken symlink
-                                (delete-file "README")
-                                (symlink "README.org" "README")
-                                (zero? (system* "autoreconf" "-fi")))))))
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      ;; Repository comes with a broken symlink
+                      (delete-file "README")
+                      (symlink "README.org" "README")
+                      (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
      `(("autoconf" ,(autoconf-wrapper))
        ("automake" ,automake)
@@ -1126,7 +1126,7 @@ Guile's foreign function interface.")
          ("sqlite" ,sqlite)))
       (arguments
        '(#:phases (modify-phases %standard-phases
-                    (add-before 'configure 'autoreconf
+                    (add-after 'unpack 'autoreconf
                       (lambda _
                         (zero? (system* "autoreconf" "-vfi"))))
                     (add-before 'build 'set-sqlite3-file-name

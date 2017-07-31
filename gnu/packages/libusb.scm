@@ -332,7 +332,7 @@ devices.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
+         (add-after 'unpack 'bootstrap
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))))
     (inputs

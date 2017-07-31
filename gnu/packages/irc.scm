@@ -180,9 +180,9 @@ SILC and ICB protocols via plugins.")
                                 "--with-tclconfig="
                                 (assoc-ref %build-inputs "tcl") "/lib"))
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autogen
+                  (add-after 'unpack 'autogen
                     (lambda _
-                      (zero? (system* "./autogen.sh"))))
+                      (zero? (system* "sh" "autogen.sh"))))
                   (add-after 'install 'wrap
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))

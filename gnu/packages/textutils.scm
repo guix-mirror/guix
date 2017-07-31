@@ -579,7 +579,7 @@ categories.")
      `(#:tests? #f ; FIXME maketest.sh does not work.
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs

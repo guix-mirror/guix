@@ -190,9 +190,9 @@ classification.")
                                  "@unittest.skip(\"Disabled by Guix\")\n"
                                  line)))
                #t))
-           (add-before 'configure 'autogen
+           (add-after 'disable-broken-tests 'autogen
              (lambda _
-               (zero? (system* "bash" "./autogen.sh")))))))
+               (zero? (system* "bash" "autogen.sh")))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))

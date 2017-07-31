@@ -45,12 +45,12 @@
      '(#:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-after 'unpack 'pre-configure
            (lambda _
              (chdir "Project/GNU/Library")))
-         (add-before 'configure 'autogen
+         (add-after 'pre-configure 'autogen
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/MediaArea/ZenLib")
     (synopsis "C++ utility library")
     (description "ZenLib is a C++ utility library.  It includes classes for handling

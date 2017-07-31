@@ -1273,7 +1273,7 @@ single buffer.")
          ;; Build server side using 'gnu-build-system'.
          (add-after 'unpack 'enter-server-dir
            (lambda _ (chdir "server") #t))
-         (add-before 'configure 'autogen
+         (add-after 'enter-server-dir 'autogen
            (lambda _
              (zero? (system* "bash" "autogen.sh"))))
 

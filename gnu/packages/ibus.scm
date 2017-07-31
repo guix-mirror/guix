@@ -148,9 +148,9 @@ may also simplify input method development.")
    (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autogen
-          (lambda _ (and (zero? (system* "intltoolize"))
-                         (zero? (system* "autoreconf" "-vif")))))
+         (add-after 'unpack 'autogen
+           (lambda _ (and (zero? (system* "intltoolize"))
+                          (zero? (system* "autoreconf" "-vif")))))
          (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup-libpinyin' runs with the correct

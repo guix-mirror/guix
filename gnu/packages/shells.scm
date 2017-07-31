@@ -430,7 +430,7 @@ use of experts and novices alike.")
                  (delete-file-recursively "rx")
                  (symlink rxpath "rx"))
                #t))
-           (add-before 'configure 'autoreconf
+           (add-after 'unpack 'autoreconf
              (lambda _
                (zero? (system* "autoreconf")))))))
       (inputs

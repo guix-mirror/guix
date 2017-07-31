@@ -161,7 +161,7 @@ OpenBSD tool of the same name.")
     (arguments
      `(#:configure-flags '("--disable-tools" "--disable-python")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autoconf
+                  (add-after 'unpack 'autoconf
                     (lambda _
                       (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "https://github.com/savoirfairelinux/opendht/")

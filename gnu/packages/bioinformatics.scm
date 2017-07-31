@@ -3450,7 +3450,7 @@ sequences).")
                (("^#include \"kseq\\.h\"")
                 "#include \"htslib/kseq.h\""))
              #t))
-         (add-before 'configure 'autoconf
+         (add-after 'fix-includes 'autoconf
            (lambda _ (zero? (system* "autoconf")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4486,7 +4486,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                        "Data2DB"
                        "PCL2Bin")))
            (modify-phases %standard-phases
-             (add-before 'configure 'bootstrap
+             (add-after 'unpack 'bootstrap
                (lambda _
                  (zero? (system* "bash" "gen_auto"))))
              (add-after 'build 'build-additional-tools
@@ -6164,8 +6164,8 @@ track.  The database is exposed as a @code{TxDb} object.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autogen
-                     (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+         (add-after 'unpack 'autogen
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
@@ -8381,14 +8381,14 @@ used by @code{ensembldb}, @code{Organism.dplyr}, and other packages.")
 AC_DEFINE([PLD_png], [1], [Define to 1 if PNG support is available])
 AM_CONDITIONAL(AMPNG, true)"))
              #t))
-         (add-after 'unpack 'disable-update-check
+         (add-after 'fix-checks 'disable-update-check
            (lambda _
              ;; At build time there is no connection to the Internet, so
              ;; looking for updates will not work.
              (substitute* "Makefile.am"
                (("\\$\\(bindir\\)/embossupdate") ""))
              #t))
-         (add-before 'configure 'autogen
+         (add-after 'disable-update-check 'autogen
            (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      `(("perl" ,perl)
@@ -9453,7 +9453,7 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
        (substitute-keyword-arguments (package-arguments htslib)
          ((#:phases phases)
           `(modify-phases  ,phases
-             (add-before 'configure 'bootstrap
+             (add-after 'unpack 'bootstrap
                (lambda _
                  (zero? (system* "autoreconf" "-vif"))))))))
       (native-inputs

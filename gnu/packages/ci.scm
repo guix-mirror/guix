@@ -216,7 +216,7 @@ their dependencies.")
                (substitute* "Makefile.am"
                  (("tests/repo.scm \\\\") "\\"))
                #t))
-           (add-before 'configure 'bootstrap
+           (add-after 'disable-repo-tests 'bootstrap
              (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)

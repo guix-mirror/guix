@@ -3122,7 +3122,7 @@ write access to exFAT devices.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
+                  (add-after 'unpack 'bootstrap
                     (lambda _
                       ;; The tarball was not generated with 'make dist' so we
                       ;; need to bootstrap things ourselves.

@@ -136,9 +136,8 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
       #:phases
       (modify-phases %standard-phases
-       (add-before
-        'configure 'autogen
-        (lambda _ (zero? (system* "autoconf"))))))) ; configure.ac was patched
+        (add-after 'unpack 'autogen
+          (lambda _ (zero? (system* "autoconf"))))))) ; configure.ac was patched
    (home-page "http://slurm.schedmd.com/")
    (synopsis "Workload manager for cluster computing")
    (description

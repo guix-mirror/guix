@@ -316,7 +316,7 @@ languages are C and C++.")
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autoreconf
+           (add-after 'unpack 'autoreconf
              (lambda _
                (zero? (system* "autoreconf" "-vfi")))))))
       (home-page "http://repo.or.cz/w/libjaylink.git")
@@ -400,7 +400,7 @@ language.")
                         "presto" "openjtag")))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autoreconf
+           (add-after 'unpack 'autoreconf
              (lambda _
                (zero? (system* "autoreconf" "-vfi")))))))
       (home-page "http://openocd.org")

@@ -485,16 +485,16 @@ ready for production.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
-          (lambda _
-            ;; Build rules contain references to Russian translation, but the
-            ;; needed files are missing; see
-            ;; http://sourceforge.net/p/gerbv/bugs/174/
-            (delete-file "po/LINGUAS")
-            (substitute* "man/Makefile.am"
-              (("PO_FILES= gerbv.ru.1.in.po") "")
-              (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
-            (zero? (system* "autoreconf" "-vfi")))))))
+         (add-after 'unpack 'autoconf
+           (lambda _
+             ;; Build rules contain references to Russian translation, but the
+             ;; needed files are missing; see
+             ;; http://sourceforge.net/p/gerbv/bugs/174/
+             (delete-file "po/LINGUAS")
+             (substitute* "man/Makefile.am"
+               (("PO_FILES= gerbv.ru.1.in.po") "")
+               (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
+             (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

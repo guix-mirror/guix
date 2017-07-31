@@ -1263,7 +1263,7 @@ output of the 'git' command.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
+                  (add-after 'unpack 'bootstrap
                     (lambda _
                       (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs `(("autoconf" ,autoconf)
