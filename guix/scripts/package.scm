@@ -486,6 +486,11 @@ Install, remove, or upgrade packages in a single transaction.\n"))
                              arg-handler))))
          (option '(#\u "upgrade") #f #t
                  (lambda (opt name arg result arg-handler)
+                   (when (string-prefix? "-" arg)
+                     (warning (G_ "upgrade regexp '~a' looks like a \
+command-line option~%")
+                              arg)
+                     (warning (G_ "is this intended?~%")))
                    (let arg-handler ((arg arg) (result result))
                      (values (alist-cons 'upgrade arg
                                          ;; Delete any prior "upgrade all"
