@@ -137,6 +137,11 @@ bind processes, and much more.")
                            "--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
+
+                           ;; VampirTrace is obsoleted by scorep and disabling
+                           ;; it reduces the closure size considerably.
+                           "--disable-vt"
+
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
