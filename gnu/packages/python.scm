@@ -1866,17 +1866,27 @@ interfaces and processes.")
 (define-public python-unittest2
   (package
     (name "python-unittest2")
-    (version "0.5.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/unittest2py3k/unittest2py3k-"
-             version ".tar.gz"))
+       (uri (pypi-uri "unittest2" version))
+       (patches
+        (search-patches "python-unittest2-python3-compat.patch"
+                        "python-unittest2-remove-argparse.patch"))
        (sha256
         (base32
-         "00yl6lskygcrddx5zspkhr0ibgvpknl4678kkm6s626539grq93q"))))
+         "0y855kmx7a8rnf81d3lh5lyxai1908xjp0laf4glwa4c8472m212"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest2" "discover" "--verbose")))))))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-traceback2" ,python-traceback2)))
     (home-page "http://pypi.python.org/pypi/unittest2")
     (synopsis "Python unit testing library")
     (description
@@ -1885,26 +1895,7 @@ standard library.")
     (license license:psfl)))
 
 (define-public python2-unittest2
-  (package (inherit python-unittest2)
-    (name "python2-unittest2")
-    (version "1.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/unittest2/unittest2-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0y855kmx7a8rnf81d3lh5lyxai1908xjp0laf4glwa4c8472m212"))
-       (patches
-        (search-patches "python2-unittest2-remove-argparse.patch"))))
-    (propagated-inputs
-     `(("python2-six" ,python2-six)
-       ("python2-traceback2" ,python2-traceback2)))
-    (arguments
-     `(#:python ,python-2
-       #:tests? #f)))) ; no setup.py test command
+  (package-with-python2 python-unittest2))
 
 (define-public python-pafy
   (package
