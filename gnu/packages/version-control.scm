@@ -345,6 +345,7 @@ everything from small to very large projects with speed and efficiency.")
                 "1fdk9yhwvl1w1z71ykzcvgh4nsf8scxcbclz5anh98zpplmhmisa"))
               (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
