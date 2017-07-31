@@ -334,7 +334,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.25.1")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -342,9 +342,8 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cdwcw38frc1wf28x5ppddazv9hywc718j92f3xa3ybzzycyds3s"))
-              (patches (search-patches "libgit2-use-after-free.patch"
-                                       "libgit2-0.25.1-mtime-0.patch"))))
+                "1fdk9yhwvl1w1z71ykzcvgh4nsf8scxcbclz5anh98zpplmhmisa"))
+              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
