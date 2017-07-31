@@ -5225,3 +5225,40 @@ multiplexer.")
     (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
 editing RPM spec files.")
     (license license:gpl2+)))
+
+(define-public emacs-git-messenger
+  (package
+    (name "emacs-git-messenger")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-git-messenger/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17mqki6g0wx46fn7dcbcc2pjxik7vvrcb1j9jzxim8b9psbsbnp9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-popup" ,emacs-popup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-popup")
+                                   "/share/emacs/site-lisp/guix.d/popup-"
+                                   ,(package-version emacs-popup))
+                             "-l" "test/test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/syohex/emacs-git-messenger")
+    (synopsis "Popup commit message at current line")
+    (description "@code{emacs-git-messenger} provides
+@code{git-messenger:popup-message}, a function that when called, will popup
+the last git commit message for the current line.  This uses git-blame
+internally.")
+    (license license:gpl3+)))
