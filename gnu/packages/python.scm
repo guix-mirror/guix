@@ -1845,6 +1845,27 @@ interfaces and processes.")
 (define-public python2-nose2
   (package-with-python2 python-nose2))
 
+(define-public python2-funcsigs
+  (package
+    (name "python2-funcsigs")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "funcsigs" version))
+              (sha256
+               (base32
+                "0l4g5818ffyfmfs1a924811azhjj8ax9xd1cffr1mzd3ycn0zfx7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python2-unittest2" ,python2-unittest2)))
+    (home-page "http://funcsigs.readthedocs.org")
+    (synopsis "Python function signatures from PEP362")
+    (description
+     "Backport of @code{funcsigs} which was introduced in Python 3.3.")
+    (license license:asl2.0)))
+
 (define-public python-unittest2
   (package
     (name "python-unittest2")
