@@ -134,8 +134,7 @@ bind processes, and much more.")
     (arguments
      `(#:configure-flags `("--enable-builtin-atomics"
 
-                           "--enable-mpi-ext=all"
-                           "--with-devel-headers"
+                           "--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
                            ,(string-append "--with-valgrind="
