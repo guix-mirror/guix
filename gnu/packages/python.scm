@@ -933,46 +933,43 @@ API for locking files.")
 (define-public python-mock
   (package
     (name "python-mock")
-    (version "1.0.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mock" version))
        (sha256
         (base32
-         "0kzlsbki6q0awf89rc287f3aj8x431lrajf160a70z0ikhnxsfdq"))))
+         "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr-minimal)
+       ("python-six" ,python-six)))
     (build-system python-build-system)
-    (arguments '(#:test-target "check"))
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "unit2")))))))
     (home-page "https://github.com/testing-cabal/mock")
     (synopsis "Python mocking and patching library for testing")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
 have been used.")
+    (properties `((python2-variant . ,(delay python2-mock))))
     (license license:expat)))
 
 (define-public python2-mock
-  (package-with-python2 python-mock))
-
-;;; Some packages (notably, certbot and python-acme) rely on this newer version
-;;; of python-mock. However, a large number of packages fail to build with
-;;; mock@2, so we add a new variable for now. Also, there may be a dependency
-;;; cycle between mock and six, so we avoid creating python2-mock@2 for now.
-(define-public python-mock-2
-  (package
-    (inherit python-mock)
-    (version "2.0.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mock" version))
-        (sha256
-         (base32
-          "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
-    (propagated-inputs
-     `(("python-pbr" ,python-pbr-minimal)
-       ("python-six" ,python-six)
-       ,@(package-propagated-inputs python-mock)))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-mock))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-functools32" ,python2-functools32)
+         ("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-setuptools
   (package
@@ -7151,7 +7148,7 @@ complexity of Python source code.")
         ("python-setuptools" ,python-setuptools)
         ("python-mccabe" ,python-mccabe)))
     (native-inputs
-      `(("python-mock" ,python-mock-2) ; TODO: only required for < 3.3
+      `(("python-mock" ,python-mock) ; TODO: only required for < 3.3
         ("python-pytest" ,python-pytest-bootstrap)
         ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://gitlab.com/pycqa/flake8")
