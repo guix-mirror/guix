@@ -347,7 +347,8 @@ everything from small to very large projects with speed and efficiency.")
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
