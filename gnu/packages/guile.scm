@@ -1573,6 +1573,8 @@ is no support for parsing block and inline level HTML.")
                                         "-c" "(display (effective-version))")))
                 (module-dir (string-append out "/share/guile/site/"
                                            effective))
+                (object-dir (string-append out "/lib/guile/" effective
+                                           "/site-ccache"))
                 (source (getcwd))
                 (doc (string-append out "/share/doc/scheme-bytestructures"))
                 (sld-files (with-directory-excursion source
@@ -1592,7 +1594,7 @@ is no support for parsing block and inline level HTML.")
            (for-each (lambda (file)
                        (let* ((dest-file (string-append module-dir "/"
                                                         file))
-                              (go-file (string-append module-dir "/"
+                              (go-file (string-append object-dir "/"
                                                       (substring file 0
                                                                  (string-rindex file #\.))
                                                       ".go")))
