@@ -2605,6 +2605,27 @@ options on a per-package basis.  Options set by a given package only apply to
 that package, other packages are unaffected.")
     (license license:expat)))
 
+(define-public r-blob
+  (package
+    (name "r-blob")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "blob" version))
+              (sha256
+               (base32
+                "05pazzcyz3c3vd2l70zq9cf172cgjff4dnf419zigfnxycyn1mhn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/hadley/blob")
+    (synopsis "Simple S3 Class for representing vectors of binary data")
+    (description "Raw vectors in R are useful for storing a single binary
+object.  What if you want to put a vector of them in a data frame?  The blob
+package provides the blob object, a list of raw vectors, suitable for use as
+a column in data frame.")
+    (license license:gpl3+)))
+
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
