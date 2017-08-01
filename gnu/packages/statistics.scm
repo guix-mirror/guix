@@ -373,7 +373,7 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "1mcrm2pydimbyjhkrw5h380bifj1jhwzifph1xgh90asf3lvd1xd"))))
+         "0j0z815zyp8n97rk6hlk68d1r8b26vls39s03viq0pnx3cbpwyga"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
