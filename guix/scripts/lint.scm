@@ -878,24 +878,39 @@ move to the previous or next line")
                                    #:key (reporters %formatting-reporters))
   "Report white-space issues in FILE starting from STARTING-LINE, and report
 them for PACKAGE."
-  (define last-line
-    ;; Number of the presumed last line.
-    ;; XXX: Ideally we'd stop at the boundaries of the surrounding sexp, but
-    ;; for now just use this simple heuristic.
-    (+ starting-line 60))
+  (define (sexp-last-line port)
+    ;; Return the last line of the sexp read from PORT or an estimate thereof.
+    (define &failure (list 'failure))
+
+    (let ((start      (ftell port))
+          (start-line (port-line port))
+          (sexp       (catch 'read-error
+                        (lambda () (read port))
+                        (const &failure))))
+      (let ((line (port-line port)))
+        (seek port start SEEK_SET)
+        (set-port-line! port start-line)
+        (if (eq? sexp &failure)
+            (+ start-line 60)                     ;conservative estimate
+            line))))
 
   (call-with-input-file file
     (lambda (port)
-      (let loop ((line-number 1))
+      (let loop ((line-number 1)
+                 (last-line #f))
         (let ((line (read-line port)))
           (or (eof-object? line)
-              (> line-number last-line)
-              (begin
-                (unless (< line-number starting-line)
-                  (for-each (lambda (report)
-                              (report package line line-number))
-                            reporters))
-                (loop (+ 1 line-number)))))))))
+              (and last-line (> line-number last-line))
+              (if (and (= line-number starting-line)
+                       (not last-line))
+                  (loop (+ 1 line-number)
+                        (+ 1 (sexp-last-line port)))
+                  (begin
+                    (unless (< line-number starting-line)
+                      (for-each (lambda (report)
+                                  (report package line line-number))
+                                reporters))
+                    (loop (+ 1 line-number) last-line)))))))))
 
 (define (check-formatting package)
   "Check the formatting of the source code of PACKAGE."
