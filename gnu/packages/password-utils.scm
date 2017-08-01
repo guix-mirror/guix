@@ -136,7 +136,8 @@ database, which is locked with one master key or a key-file which can be stored
 on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
     ;; Non functional parts use various licences.
-    (license license:gpl3)))
+    (license license:gpl3)
+    (properties `((superseded . ,keepassxc)))))
 
 (define-public shroud
   (package
