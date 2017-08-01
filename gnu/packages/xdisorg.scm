@@ -476,7 +476,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.4.64")
+    (version "5.4.66")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -485,7 +485,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0y7ajwcp6x9q7581alz2b5xqijs5cb9l38h10fzinswqrcz53ak1"))))
+                "077aww1fab3ihzxdybxpdh0h3d7fbgpvsm9q92byfb2ig32viyfa"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
