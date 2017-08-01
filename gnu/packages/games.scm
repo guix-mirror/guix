@@ -3532,7 +3532,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4n")
+    (version "10.0e")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3543,7 +3543,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1kf9i9gqadnb0m143c860dcvdn91vp6vnfzma4bcgfgwmcn9sx0r"))))
+                "1p6fam73khhys54098qsgmp52d0rnqc3k5hknjig0znvfb2kwi38"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3565,7 +3565,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
-               (substitute* "graph.cpp"
+               (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* "sound.cpp"
@@ -3618,7 +3618,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1vrk0k0ch3azpa72y7acmmpifvks6c0466fvmz804hici93pglvi"))))
+             "1z9w3nd57ybnf4w7ckhhp5vfws2hwd8x26fx6h496f6160fgcj6m"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
