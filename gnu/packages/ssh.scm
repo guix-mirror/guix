@@ -215,7 +215,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.11.0")
+    (version "0.11.2")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
@@ -227,19 +227,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0r261i8kc3avbmbwgyzak2vnqwssjlgz37g2y2fwm80w9bmn2m7j"))
-              (patches (search-patches "guile-ssh-rexec-bug.patch"
-                                       "guile-ssh-double-free.patch"
-                                       "guile-ssh-channel-finalization.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; 'configure.ac' mistakenly tries to link files from examples/
-               ;; that are not instantiated yet.  Work around it.
-               '(substitute* "configure.ac"
-                  (("AC_CONFIG_LINKS\\(\\[examples/([^:]+):.*" _ file)
-                   (string-append "AC_CONFIG_FILES([examples/" file
-                                  "], [chmod +x examples/"
-                                  file "])\n"))))))
+                "1w0k5s09xj5xycb7lbp5b7rm0xncclms3jwl98lwj8fxwngi1s90"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
