@@ -3546,6 +3546,8 @@ sequences to deconvolute complex microbial communities, or metagenome binning,
 enables the study of individual organisms and their interactions.  MetaBAT is
 an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
+    ;; The source code contains inline assembly.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license (license:non-copyleft "file://license.txt"
                                    "See license.txt in the distribution."))))
 
