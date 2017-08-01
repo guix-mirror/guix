@@ -2587,6 +2587,24 @@ the plog header-only C++ logging library, and a method to log to R's standard
 error stream.")
     (license license:expat)))
 
+(define-public r-pkgconfig
+  (package
+    (name "r-pkgconfig")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "pkgconfig" version))
+              (sha256
+               (base32
+                "0h2sp93fqqjbfqgq82a3i94ybnndx6ghaal8pbf99firnsjb40mb"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/pkgconfig")
+    (synopsis "Private configuration for R packages")
+    (description "This package provides the functionality to set configuration
+options on a per-package basis.  Options set by a given package only apply to
+that package, other packages are unaffected.")
+    (license license:expat)))
+
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
