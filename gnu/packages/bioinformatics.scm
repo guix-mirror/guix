@@ -7133,13 +7133,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.28.0")
+    (version "1.28.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "1pjxlr34ygv8pvfwpyq268wpgqzphiwpij85fyhjqdwdp0a253ik"))))
+                "01ylvg275iy0cvsbxkbfxcf9pi9al597v5wnlqi2xdpmrcxyc3q0"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
