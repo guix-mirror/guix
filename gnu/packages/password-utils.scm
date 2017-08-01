@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -74,6 +74,39 @@
     (description "Pwgen generates passwords which can be easily memorized by a
 human.")
     (license license:gpl2)))
+
+(define-public keepassxc
+  (package
+    (name "keepassxc")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/keepassxreboot/" name
+                           "/releases/download/" version "/keepassxc-"
+                           version "-src.tar.xz"))
+       (sha256
+        (base32
+         "0nby6aq6w8g7c9slzahf7i34sbj8majf8rhmqqww87v6kaypxi3i"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libxi" ,libxi)
+       ("libxtst" ,libxtst)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (home-page "https://www.keepassxc.org")
+    (synopsis "Password manager")
+    (description "KeePassXC is a password manager or safe which helps you to
+manage your passwords in a secure way.  You can put all your passwords in one
+database, which is locked with one master key or a key-file which can be stored
+on an external storage device.  The databases are encrypted using the
+algorithms AES or Twofish.")
+    ;; Non functional parts use various licences.
+    (license license:gpl3)))
 
 (define-public keepassx
   (package
