@@ -1504,6 +1504,24 @@ private members, and they support inheritance, even when the classes are
 defined in different packages.")
     (license license:expat)))
 
+(define-public r-rlang
+  (package
+    (name "r-rlang")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rlang" version))
+              (sha256
+               (base32
+                "0grwqy3zkvz96mvpwfbfyqid4jkfrqh3ldy2n6dpv2kjd1fzj0ar"))))
+    (build-system r-build-system)
+    (home-page "http://rlang.tidyverse.org")
+    (synopsis "Functions for base types, core R and Tidyverse features")
+    (description "This package provides a toolbox for working with base types,
+core R features like the condition system, and core @code{Tidyverse} features
+like tidy evaluation.")
+    (license license:gpl3)))
+
 (define-public r-tibble
   (package
     (name "r-tibble")
