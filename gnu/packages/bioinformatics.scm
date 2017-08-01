@@ -6518,13 +6518,13 @@ that accept short and long options.")
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")
-    (version "1.50.0")
+    (version "1.50.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DNAcopy" version))
               (sha256
                (base32
-                "0112ry62z18m7rdyrn3gvbxq2f6m44cawhcfb1f02z9xzlsj0k28"))))
+                "0f0x83db7rm5xf9fg5pjhvs4i165qqaf01lbwb8kj13fsqpwx15p"))))
     (properties
      `((upstream-name . "DNAcopy")))
     (build-system r-build-system)
