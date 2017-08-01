@@ -6644,13 +6644,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.12.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "1bwwhscjl376a5p43mx8ijrqajxmgypbqhv049pgagl22hkkf0y3"))))
+                "1hjxgmcnrngp1307ipqaq9hgxz4j0ldn7d46knhzs30k2r4qnrfp"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
