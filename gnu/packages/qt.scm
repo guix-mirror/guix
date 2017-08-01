@@ -1197,6 +1197,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (inputs
      `(("qtbase" ,qtbase)))))
 
+(define-public qtremoteobjects
+  (package (inherit qtsvg)
+    (name "qtremoteobjects")
+    (version "5.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "10kwq0fgmi6zsqhb6s1nkcydpyl8d8flzdpgmyj50c4h2xhg2km0"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
