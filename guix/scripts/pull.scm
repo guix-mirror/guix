@@ -27,6 +27,7 @@
   #:use-module (guix derivations)
   #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
   #:use-module ((guix build utils)
@@ -256,33 +257,36 @@ certificates~%"))
 
        (unless (assoc-ref opts 'dry-run?)         ;XXX: not very useful
          (with-store store
-           (set-build-options-from-command-line store opts)
+           (parameterize ((%graft? (assoc-ref opts 'graft?)))
+             (set-build-options-from-command-line store opts)
 
-           ;; For reproducibility, always refer to the LE certificates when we
-           ;; know we're talking to Savannah.
-           (when (use-le-certs? url)
-             (honor-lets-encrypt-certificates! store))
-
-           (format (current-error-port)
-                   (G_ "Updating from Git repository at '~a'...~%")
-                   url)
-
-           (let-values (((checkout commit)
-                         (latest-repository-commit store url
-                                                   #:ref ref
-                                                   #:cache-directory cache)))
+             ;; For reproducibility, always refer to the LE certificates when we
+             ;; know we're talking to Savannah.
+             (when (use-le-certs? url)
+               (honor-lets-encrypt-certificates! store))
 
              (format (current-error-port)
-                     (G_ "Building from Git commit ~a...~%")
-                     commit)
-             (parameterize ((%guile-for-build
-                             (package-derivation store
-                                                 (if (assoc-ref opts 'bootstrap?)
-                                                     %bootstrap-guile
-                                                     (canonical-package guile-2.0)))))
-               (run-with-store store
-                 (build-and-install checkout (config-directory)
-                                    #:commit commit
-                                    #:verbose? (assoc-ref opts 'verbose?)))))))))))
+                     (G_ "Updating from Git repository at '~a'...~%")
+                     url)
+
+             (let-values (((checkout commit)
+                           (latest-repository-commit store url
+                                                     #:ref ref
+                                                     #:cache-directory cache)))
+
+               (format (current-error-port)
+                       (G_ "Building from Git commit ~a...~%")
+                       commit)
+               (parameterize ((%guile-for-build
+                               (package-derivation
+                                store
+                                (if (assoc-ref opts 'bootstrap?)
+                                    %bootstrap-guile
+                                    (canonical-package guile-2.0)))))
+                 (run-with-store store
+                   (build-and-install checkout (config-directory)
+                                      #:commit commit
+                                      #:verbose?
+                                      (assoc-ref opts 'verbose?))))))))))))
 
 ;;; pull.scm ends here
