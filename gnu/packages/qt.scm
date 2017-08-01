@@ -1214,6 +1214,27 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtspeech
+  (package (inherit qtsvg)
+    (name "qtspeech")
+    (version "5.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "00daxkf8iwf6n9rhkkv3isv5qa8wijwzb0zy1f6zlm3vcc8fz75c"))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtxmlpatterns" ,qtxmlpatterns)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
