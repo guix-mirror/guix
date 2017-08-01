@@ -2629,13 +2629,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "1.1-2")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "0mg9yhdvny3vjn72agai5ghqxd3vk8cd4x1lsc0gzc2b2dm2w0p4"))))
+                "1xpg1i1jkzkzv44k512k90c2vvl960pl2d4a3spwcha6yclyc3vz"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2643,13 +2643,16 @@ a column in data frame.")
        ("r-bh" ,r-bh)
        ("r-memoise" ,r-memoise)
        ("r-plogr" ,r-plogr)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-bit64" ,r-bit64)
+       ("r-blob" ,r-blob)
+       ("r-pkgconfig" ,r-pkgconfig)))
     (home-page "https://github.com/rstats-db/RSQLite")
     (synopsis "SQLite interface for R")
     (description
      "This package embeds the SQLite database engine in R and provides an
 interface compliant with the DBI package.  The source for the SQLite
-engine (version 3.8.6) is included.")
+engine (version 3.8.8.2) is included.")
     (license license:lgpl2.0+)))
 
 (define-public r-rcurl
