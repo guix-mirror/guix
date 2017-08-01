@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix sets)
+  #:use-module (guix packages)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -170,9 +172,9 @@ typically returned by 'node-edges' or 'node-back-edges'."
           name))
 (define (emit-epilogue port)
   (display "\n}\n" port))
-(define (emit-node id label port)
+(define (emit-node id node port)
   (format port "  \"~a\" [label = \"~a\", shape = box, fontname = Helvetica];~%"
-          id label))
+          id (package-full-name node)))
 (define (emit-edge id1 id2 port)
   (format port "  \"~a\" -> \"~a\" [color = ~a];~%"
           id1 id2 (pop-color id1)))
@@ -213,11 +215,11 @@ var nodes = {},
   (format port "</script><script type=\"text/javascript\" src=\"~a\"></script></body></html>"
           (search-path %load-path "graph.js")))
 
-(define (emit-d3js-node id label port)
+(define (emit-d3js-node id node port)
   (format port "\
 nodes[\"~a\"] = {\"id\": \"~a\", \"label\": \"~a\", \"index\": nodeArray.length};
 nodeArray.push(nodes[\"~a\"]);~%"
-          id id label id))
+          id id (package-full-name node) id))
 
 (define (emit-d3js-edge id1 id2 port)
   (format port "links.push({\"source\": \"~a\", \"target\": \"~a\"});~%"
@@ -241,9 +243,9 @@ nodeArray.push(nodes[\"~a\"]);~%"
 (define (emit-cypher-epilogue port)
   (format port ""))
 
-(define (emit-cypher-node id label port)
+(define (emit-cypher-node id node port)
   (format port "MERGE (p:Package { id: ~s }) SET p.name = ~s;~%"
-          id label ))
+          id (package-name node)))
 
 (define (emit-cypher-edge id1 id2 port)
   (format port "MERGE (a:Package { id: ~s });~%" id1)
@@ -296,7 +298,7 @@ true, draw reverse arrows."
                                         (ids          (mapm %store-monad
                                                             node-identifier
                                                             dependencies)))
-                     (emit-node id (node-label head) port)
+                     (emit-node id head port)
                      (for-each (lambda (dependency dependency-id)
                                  (if reverse-edges?
                                      (emit-edge dependency-id id port)
