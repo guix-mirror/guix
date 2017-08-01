@@ -6592,13 +6592,13 @@ utilities for sequence data management under the ACNUC system.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.10.0")
+    (version "2.10.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0zp4mxm9h1p4krj7m7cinkvwa2ibqkq59jwpan97yvhb4z8q0d6n"))))
+                "1brmzs3rsf97gymridrh9c9r3vws8b3rpghaanxnniw36lmcajfy"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
