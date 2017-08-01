@@ -1181,6 +1181,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))))
 
+(define-public qtnetworkauth
+  (package (inherit qtsvg)
+    (name "qtnetworkauth")
+    (version "5.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1fgax3p7lqcz29z2n1qxnfpkj3wxq1x9bfx61q6nss1fs74pxzra"))))
+    (inputs
+     `(("qtbase" ,qtbase)))))
+
 (define-public python-sip
   (package
     (name "python-sip")
