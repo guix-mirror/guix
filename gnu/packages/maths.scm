@@ -561,18 +561,17 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.12")
+    (version "4.2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "020jh563sjyxsgml8l809d2i1d4ms9shivwj3gbm7n0ilxbll8id"))
+        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))
-
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
