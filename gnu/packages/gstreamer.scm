@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -244,15 +244,9 @@ for the GStreamer multimedia library.")
           'unpack 'disable-failing-tests
           (lambda _
             ;; Disable tests that fail non-deterministically.
-            ;; XXX FIXME: Try removing this for version > 1.8.0.
-            (substitute* "tests/check/elements/rtprtx.c"
-              (("tcase_add_test \\(tc_chain, test_push_forward_seq\\);" all)
-               (string-append "/* " all " */"))
-              (("tcase_add_test \
-\\(tc_chain, test_rtxreceive_data_reconstruction\\);" all)
-               (string-append "/* " all " */")))
-            (substitute* "tests/check/elements/splitmux.c"
-              (("tcase_add_test \\(tc_chain, test_splitmuxsink\\);" all)
+            ;; This test fails on aarch64 on 1.12.x.
+            (substitute* "tests/check/elements/alpha.c"
+              (("tcase_add_test \\(tc_chain, test_chromakeying\\);" all)
                (string-append "/* " all " */")))
             #t)))))
     (home-page "https://gstreamer.freedesktop.org/")

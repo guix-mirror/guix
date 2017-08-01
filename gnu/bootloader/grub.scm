@@ -316,16 +316,14 @@ code."
 STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
 entries corresponding to old generations of the system."
   (define all-entries
-    (append entries (map menu-entry->boot-parameters
-                         (bootloader-configuration-menu-entries config))))
-
-  (define (boot-parameters->gexp params)
-    (let ((device (boot-parameters-store-device params))
-          (device-mount-point (boot-parameters-store-mount-point params))
-          (label (boot-parameters-label params))
-          (kernel (boot-parameters-kernel params))
-          (arguments (boot-parameters-kernel-arguments params))
-          (initrd (boot-parameters-initrd params)))
+    (append entries (bootloader-configuration-menu-entries config)))
+  (define (menu-entry->gexp entry)
+    (let ((device (menu-entry-device entry))
+          (device-mount-point (menu-entry-device-mount-point entry))
+          (label (menu-entry-label entry))
+          (kernel (menu-entry-linux entry))
+          (arguments (menu-entry-linux-arguments entry))
+          (initrd (menu-entry-initrd entry)))
       ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
       ;; Use the right file names for KERNEL and INITRD in case
       ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
@@ -341,11 +339,10 @@ entries corresponding to old generations of the system."
                   #$(grub-root-search device kernel)
                   #$kernel (string-join (list #$@arguments))
                   #$initrd))))
-
   (mlet %store-monad ((sugar (eye-candy config
-                                        (boot-parameters-store-device
+                                        (menu-entry-device
                                          (first all-entries))
-                                        (boot-parameters-store-mount-point
+                                        (menu-entry-device-mount-point
                                          (first all-entries))
                                         #:system system
                                         #:port #~port)))
@@ -362,12 +359,12 @@ set default=~a
 set timeout=~a~%"
                     #$(bootloader-configuration-default-entry config)
                     #$(bootloader-configuration-timeout config))
-            #$@(map boot-parameters->gexp all-entries)
+            #$@(map menu-entry->gexp all-entries)
 
             #$@(if (pair? old-entries)
                    #~((format port "
 submenu \"GNU system, old configurations...\" {~%")
-                      #$@(map boot-parameters->gexp old-entries)
+                      #$@(map menu-entry->gexp old-entries)
                       (format port "}~%"))
                    #~()))))
 

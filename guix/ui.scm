@@ -36,7 +36,6 @@
   #:use-module (guix combinators)
   #:use-module (guix build-system)
   #:use-module (guix serialization)
-  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns))
@@ -79,7 +78,6 @@
             read/eval
             read/eval-package-expression
             location->string
-            config-directory
             fill-paragraph
             texi->plain-text
             package-description-string
@@ -855,25 +853,6 @@ replacement if PORT is not Unicode-capable."
     (#f (G_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
-
-(define* (config-directory #:key (ensure? #t))
-  "Return the name of the configuration directory, after making sure that it
-exists if ENSURE? is true.  Honor the XDG specs,
-<http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>."
-  (let ((dir (and=> (or (getenv "XDG_CONFIG_HOME")
-                        (and=> (getenv "HOME")
-                               (cut string-append <> "/.config")))
-                    (cut string-append <> "/guix"))))
-    (catch 'system-error
-      (lambda ()
-        (when ensure?
-          (mkdir-p dir))
-        dir)
-      (lambda args
-        (let ((err (system-error-errno args)))
-          ;; ERR is necessarily different from EEXIST.
-          (leave (G_ "failed to create configuration directory `~a': ~a~%")
-                 dir (strerror err)))))))
 
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming

@@ -38,6 +38,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages mtools)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -150,6 +151,7 @@ menu to select one of the installed operating systems.")
     (synopsis "GRand Unified Boot loader (UEFI version)")
     (inputs
      `(("efibootmgr" ,efibootmgr)
+       ("mtools", mtools)
        ,@(package-inputs grub)))
     (arguments
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
@@ -167,7 +169,19 @@ menu to select one of the installed operating systems.")
                      (("efibootmgr")
                       (string-append (assoc-ref inputs "efibootmgr")
                                      "/sbin/efibootmgr")))
-                   #t)))))))))
+                   #t))
+               (add-after 'patch-stuff 'use-absolute-mtools-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((mtools (assoc-ref inputs "mtools")))
+                     (substitute* "util/grub-mkrescue.c"
+                       (("\"mformat\"")
+                        (string-append "\"" mtools
+                                       "/bin/mformat\"")))
+                     (substitute* "util/grub-mkrescue.c"
+                       (("\"mcopy\"")
+                        (string-append "\"" mtools
+                                       "/bin/mcopy\"")))
+                     #t))))))))))
 
 (define-public syslinux
   (let ((commit "bb41e935cc83c6242de24d2271e067d76af3585c"))

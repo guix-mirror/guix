@@ -373,7 +373,7 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "1mcrm2pydimbyjhkrw5h380bifj1jhwzifph1xgh90asf3lvd1xd"))))
+         "0j0z815zyp8n97rk6hlk68d1r8b26vls39s03viq0pnx3cbpwyga"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
@@ -1600,26 +1600,6 @@ transformations.")
      "This package provides tools that are useful in finding groups in data.
 It is based on the methods described in Kaufman and Rousseeuw (1990) \"Finding
 Groups in Data\".")
-    (license license:gpl2+)))
-
-(define-public r-foreign
-  (package
-    (name "r-foreign")
-    (version "0.8-67")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "foreign" version))
-       (sha256
-        (base32
-         "1mcrm2pydimbyjhkrw5h380bifj1jhwzifph1xgh90asf3lvd1xd"))))
-    (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/foreign")
-    (synopsis "Read data stored by other statistics software in R")
-    (description
-     "This package provides functions for reading and writing data stored by
-some versions of Epi Info, Minitab, S, SAS, SPSS, Stata, Systat and Weka, and
-for reading and writing some dBase files.")
     (license license:gpl2+)))
 
 (define-public r-formula

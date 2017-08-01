@@ -366,8 +366,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12.3")
-(define %linux-libre-hash "1b02snh41fgr5i55wlc86nvksyzy1cq994mkmj195pa57hy6y6ak")
+(define %linux-libre-version "4.12.4")
+(define %linux-libre-hash "13c6ka4fhzi41bjlssbkz84hkag7knqpvfyp2jjhm3wm25r4lhw8")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -376,14 +376,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.39"
-                    "03rnbz1wf3d0fi5zrhygx1b20bx23fy310d8h74zc6z4jh6fsbx3"
+  (make-linux-libre "4.9.40"
+                    "1qaqi2dcydyxw79yj9pa7yxf13ss4rng7bgg0i1dl63c3g7qjgcz"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.78"
-                    "0g8pc0kam33rn2dx9fkp7w749s38qs2iykawpj0k9jm19775hn4k"
+  (make-linux-libre "4.4.79"
+                    "03x1nc2fxmh29sf2fbsqzmw8qrdzv5gakr9xrg1shxh31c6xr3xr"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3091,7 +3091,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.11.1")
+    (version "4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3099,10 +3099,10 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0vcp9a0a35chhjhq291kvirqhd4i9w5f4zql4y5n81kbwcrxil6h"))))
+                "1kif8xw2dbyc70ygkp0wyq4x96p1mkwdv4430f99qllx9b410xwi"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "static"))      ; static versions of binaries in "out" (~16MiB!)
+               "static"))      ; static versions of the binaries in "out"
     (arguments
      '(#:phases (modify-phases %standard-phases
                  (add-after 'build 'build-static

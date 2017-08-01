@@ -99,7 +99,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.11.1-P3")
+    (version "9.11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -107,7 +107,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1x6cfwkcv6nwc0mh5fzv70f38nl04yhgq90gr5nrjiif8dsnwhjj"))))
+                "0yn7wgi2y8mpmvbjbkl4va7p0xsnn48m4yjx6ynb1hzp423asikz"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs

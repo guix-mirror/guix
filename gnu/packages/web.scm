@@ -449,7 +449,7 @@ current version of any major web browser.")
 (define-public rapidjson
   (package
     (name "rapidjson")
-    (version "1.0.2")
+    (version "1.1.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -458,13 +458,7 @@ current version of any major web browser.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0rl6s0vg5y1dhh9vfl1lqay3sxf69sxjh0czxrjmasn7ng91wwf3"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; Building with GCC 4.8 with -Werror was fine, but 4.9.3
-              ;; complains in new ways, so turn of -Werror.
-              '(substitute* (find-files "." "^CMakeLists\\.txt$")
-                 (("-Werror") "")))))
+               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))))
     (build-system cmake-build-system)
     (arguments
      `(,@(if (string-prefix? "aarch64" (or (%current-target-system)

@@ -478,7 +478,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
+  %D%/tests/admin.scm				\
   %D%/tests/base.scm				\
+  %D%/tests/databases.scm			\
   %D%/tests/dict.scm				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
@@ -576,6 +578,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
+  %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
@@ -668,9 +671,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-relocatable.patch			\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
-  %D%/packages/patches/guile-ssh-channel-finalization.patch	\
-  %D%/packages/patches/guile-ssh-double-free.patch		\
-  %D%/packages/patches/guile-ssh-rexec-bug.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
@@ -750,7 +750,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
-  %D%/packages/patches/libgit2-use-after-free.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
@@ -948,7 +947,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
-  %D%/packages/patches/python-pbr-fix-man-page-support.patch	\
   %D%/packages/patches/python-pillow-freetype-2.7-test-failure.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\

@@ -443,13 +443,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.15.1")
+    (version "1.15.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "1mq0n8g08vf2rnd7fvylx3f4sspx15abid49gycf9zzsjj7w8vps"))))
+                "125amldnpzzrfw76mmr7mlx002k1k6xdyrqf5bdnzl5hajvn0s5f"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -929,13 +929,13 @@ Ruby Gems.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.14")
+    (version "1.9.18")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "1nkcrmxqr0vb1y4rwliclwlj2ajsi4ddpdx2gvzjy0xbkk5iqzfp"))))
+                "034f52xf7zcqgbvwbl20jwdyjwznvqnwpbaps9nk18v9lgb1dpx0"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.
@@ -1913,24 +1913,24 @@ to reproduce user environments.")
 
 (define-public ruby-mini-portile-2
   (package (inherit ruby-mini-portile)
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mini_portile2" version))
               (sha256
                (base32
-                "1y25adxb1hgg1wb2rn20g3vl07qziq6fz364jc5694611zz863hb"))))))
+                "0g5bpgy08q0nc0anisg3yvwc1gc3inl854fcrg48wvg7glqd6dpm"))))))
 
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.7.0.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "10xahg0fwydh27psm8bv429mdja2ks6x83vxizq26ib8wvs05mv3"))))
+                "1nffsyx1xjg6v5n9rrbi8y1arrcx2i5f21cp6clgh9iwiqkr7rnn"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -2463,46 +2463,34 @@ a native C extension.")
 (define-public ruby-json-pure
   (package
     (name "ruby-json-pure")
-    (version "1.8.3")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "json_pure" version))
               (sha256
                (base32
-                "025aykr360x6dr1jmg8pmsrx7gr30pws4p1q686vnb48zyw1sc94"))))
+                "12yf9fmhr4c2jm3xl20vf1qyz5i63vc8a6ngz9j0f86nqwhmi2as"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (ice-9 regex)
-                  (rnrs io ports)
-                  (guix build ruby-build-system)
-                  (guix build utils))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'replace-git-ls-files
+         (add-after 'unpack 'fix-rakefile
            (lambda _
-             ;; The existing gemspec file already contains a nice list of
-             ;; files that belong to the gem.  We extract the list from the
-             ;; gemspec file and then replace the file list in the Rakefile to
-             ;; get rid of the call to "git ls-files".
-             (let* ((contents (call-with-input-file "json.gemspec" get-string-all))
-                    ;; Guile is unhappy about the #\nul characters in comments.
-                    (filtered (string-filter (lambda (char)
-                                               (not (equal? #\nul char)))
-                                             contents))
-                    (files (match:substring
-                            (string-match "  s\\.files = ([^]]+\\])" filtered) 1)))
-               (substitute* "Rakefile"
-                 (("FileList\\[`git ls-files`\\.split\\(/\\\\n/\\)\\]")
-                  (string-append "FileList" files))))
-             (substitute* "Gemfile"
-               ((".*json-java.*") "\n"))
-             #t)))))
+             (substitute* "Rakefile"
+               ;; Since this is not a git repository, do not call 'git'.
+               (("`git ls-files`") "`find . -type f |sort`")
+               ;; Loosen dependency constraint.
+               (("'test-unit', '~> 2.0'") "'test-unit', '>= 2.0'"))
+             #t))
+         (add-after 'replace-git-ls-files 'regenerate-gemspec
+           (lambda _
+             ;; Regenerate gemspec so loosened dependency constraints are
+             ;; propagated.
+             (zero? (system* "rake" "gemspec")))))))
     (native-inputs
-     `(("ruby-permutation" ,ruby-permutation)
-       ("ruby-utils" ,ruby-utils)
-       ("ragel" ,ragel)
-       ("bundler" ,bundler)))
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
@@ -3639,14 +3627,14 @@ subprocess.")
 (define-public ruby-bio-commandeer
   (package
     (name "ruby-bio-commandeer")
-    (version "0.1.3")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "bio-commandeer" version))
        (sha256
         (base32
-         "0lin6l99ldqqjc90l9ihcrv882c4xgbgqm16jqkdy6jf955jd9a8"))))
+         "1xlcnh13r33zybpmqniw0j8q5n0kq9al67ygqpf0xbbwxnnkqqvj"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases

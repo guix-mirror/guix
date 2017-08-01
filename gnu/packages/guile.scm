@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
@@ -395,55 +395,81 @@ program can be installed in one go.")
 ;;;
 
 (define-public artanis
-  (package
-    (name "artanis")
-    (version "0.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/artanis/artanis-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "041ajcg2pz918kd9iqcj4inpzddc3impvz3r2nhlpbv8zrz011hn"))))
-    (build-system gnu-build-system)
-    ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
-    (inputs `(("guile" ,guile-2.2)))
-    (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
-                     ("pkgconfig"  ,pkg-config)
-                     ("util-linux" ,util-linux))) ;for the `script' command
-    (arguments
-     '(#:make-flags
-       ;; TODO: The documentation must be built with the `docs' target.
-       (let* ((out (assoc-ref %outputs "out"))
-              (scm (string-append out "/share/guile/site/2.2"))
-              (go  (string-append out "/lib/guile/2.2/site-ccache")))
-         ;; Don't use (%site-dir) for site paths.
-         (list (string-append "MOD_PATH=" scm)
-               (string-append "MOD_COMPILED_PATH=" go)))
-       #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'substitute-root-dir
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out")))
-              (substitute* "Makefile"   ;ignore the execution of bash.bashrc
-                ((" /etc/bash.bashrc") " /dev/null"))
-              (substitute* "Makefile"   ;set the root of config files to OUT
-                ((" /etc") (string-append " " out "/etc")))
-              (mkdir-p (string-append out "/bin")) ;for the `art' executable
-              #t)))
-         (add-after 'install 'wrap-art
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (scm (string-append out "/share/guile/site/2.2"))
-                    (go  (string-append out "/lib/guile/2.2/site-ccache")))
-               (wrap-program (string-append bin "/art")
-                 `("GUILE_LOAD_PATH" ":" prefix (,scm))
-                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,go)))
-               #t))))))
-    (synopsis "Web application framework written in Guile")
-    (description "GNU Artanis is a web application framework written in Guile
+  (let ((release "0.2.1")
+	(revision 3))
+    (package
+      (name "artanis")
+      (version (if (zero? revision)
+                   release
+                   (string-append release "-"
+                                  (number->string revision))))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "mirror://gnu/artanis/artanis-"
+                                    release ".tar.gz"))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "041ajcg2pz918kd9iqcj4inpzddc3impvz3r2nhlpbv8zrz011hn"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    (delete-file-recursively "artanis/third-party/json.scm")
+                    (delete-file-recursively "artanis/third-party/json")
+                    (substitute* '("artanis/artanis.scm"
+                                   "artanis/oht.scm")
+                      (("(#:use-module \\()artanis third-party (json\\))" _
+                        use-module json)
+                       (string-append use-module json)))
+                    (substitute* "artanis/oht.scm"
+                      (("([[:punct:][:space:]]+)(->json-string)([[:punct:][:space:]]+)"
+                        _ pre json-string post)
+                       (string-append pre
+                                      "scm" json-string
+                                      post)))
+                    (substitute* "artanis/artanis.scm"
+                      (("[[:punct:][:space:]]+->json-string[[:punct:][:space:]]+")
+                       ""))))))
+      (build-system gnu-build-system)
+      ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
+      (inputs `(("guile" ,guile-2.2)
+                ("guile-json" ,guile-json)))
+      (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
+                       ("pkgconfig"  ,pkg-config)
+                       ("util-linux" ,util-linux))) ;for the `script' command
+      (arguments
+       '(#:make-flags
+         ;; TODO: The documentation must be built with the `docs' target.
+         (let* ((out (assoc-ref %outputs "out"))
+                (scm (string-append out "/share/guile/site/2.2"))
+                (go  (string-append out "/lib/guile/2.2/site-ccache")))
+           ;; Don't use (%site-dir) for site paths.
+           (list (string-append "MOD_PATH=" scm)
+                 (string-append "MOD_COMPILED_PATH=" go)))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'substitute-root-dir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out  (assoc-ref outputs "out")))
+                 (substitute* "Makefile"   ;ignore the execution of bash.bashrc
+                   ((" /etc/bash.bashrc") " /dev/null"))
+                 (substitute* "Makefile"   ;set the root of config files to OUT
+                   ((" /etc") (string-append " " out "/etc")))
+                 (mkdir-p (string-append out "/bin")) ;for the `art' executable
+                 #t)))
+           (add-after 'install 'wrap-art
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scm (string-append out "/share/guile/site/2.2"))
+                      (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                 (wrap-program (string-append bin "/art")
+                   `("GUILE_LOAD_PATH" ":" prefix (,scm))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,go)))
+                 #t))))))
+      (synopsis "Web application framework written in Guile")
+      (description "GNU Artanis is a web application framework written in Guile
 Scheme.  A web application framework (WAF) is a software framework that is
 designed to support the development of dynamic websites, web applications, web
 services and web resources.  The framework aims to alleviate the overhead
@@ -451,8 +477,8 @@ associated with common activities performed in web development.  Artanis
 provides several tools for web development: database access, templating
 frameworks, session management, URL-remapping for RESTful, page caching, and
 more.")
-    (home-page "https://www.gnu.org/software/artanis/")
-    (license (list license:gpl3+ license:lgpl3+)))) ;dual license
+      (home-page "https://www.gnu.org/software/artanis/")
+      (license (list license:gpl3+ license:lgpl3+))))) ;dual license
 
 (define-public guile-reader
   (package
@@ -1584,6 +1610,8 @@ is no support for parsing block and inline level HTML.")
                                         "-c" "(display (effective-version))")))
                 (module-dir (string-append out "/share/guile/site/"
                                            effective))
+                (object-dir (string-append out "/lib/guile/" effective
+                                           "/site-ccache"))
                 (source (getcwd))
                 (doc (string-append out "/share/doc/scheme-bytestructures"))
                 (sld-files (with-directory-excursion source
@@ -1603,7 +1631,7 @@ is no support for parsing block and inline level HTML.")
            (for-each (lambda (file)
                        (let* ((dest-file (string-append module-dir "/"
                                                         file))
-                              (go-file (string-append module-dir "/"
+                              (go-file (string-append object-dir "/"
                                                       (substring file 0
                                                                  (string-rindex file #\.))
                                                       ".go")))
@@ -1822,8 +1850,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "2")
-        (commit "06f9fc3d9ac95798d4a51e6310f7b594ce5597e0"))
+  (let ((revision "3")
+        (commit "e156a1054cc1d9e58d9be82e36e8acf5c9f9ee8d"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1833,17 +1861,30 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0rcq0f8dhl89ia7336bq8y279q5ada0b1kabcqw9zl3125k3cp4v"))
+                  "1vhr2bqkljy1zzdy02dky2nk1w9bd46afj5wd4gp4kr333pz4ch6"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       '(#:phases (modify-phases %standard-phases
+       `(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (zero? (system* "autoreconf" "-vfi"))))
+
+                    ;; FIXME: On i686, bytestructures miscalculates the offset
+                    ;; of the 'old-file' and 'new-file' fields within the
+                    ;; '%diff-delta' structure.
+                    ,@(if (string=? (%current-system) "x86_64-linux")
+                          '()
+                          '((add-before 'check 'skip-tests
+                              (lambda _
+                                (substitute* "Makefile"
+                                  (("tests/status\\.scm")
+                                   ""))
+                                #t)))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
+         ("texinfo" ,texinfo)
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("guile" ,guile-2.2)

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -1269,6 +1269,32 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     ;; others under a 4-clause BSD license. Refer to the files in the source
     ;; distribution for clarification.
     (license (list license:bsd-3 license:bsd-4))))
+
+(define-public pidentd
+  (package
+    (name "pidentd")
+    (version "3.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ptrrkssn/pidentd/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y3kd1bkydqkpc1qdff24yswysamsqivvadjy0468qri5730izgc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests are included
+    (inputs
+     `(("openssl" ,openssl))) ; For the DES library
+    (home-page "https://www.lysator.liu.se/~pen/pidentd/")
+    (synopsis "Small Ident Daemon")
+    (description
+     "@dfn{Pidentd} (Peter's Ident Daemon) is a identd, which implements a
+identification server.  Pidentd looks up specific TCP/IP connections and
+returns the user name and other information about the connection.")
+    (license license:public-domain)))
 
 (define-public spiped
   (package

@@ -2280,15 +2280,14 @@ protocol.")
 (define python-pbr-minimal
   (package
     (name "python-pbr-minimal")
-    (version "1.10.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pbr" version))
        (sha256
         (base32
-         "177kd9kbv1hvf2ban7l3x9ymzbi1md4hkaymwbgnz7ihf312hr0q"))
-       (patches (search-patches "python-pbr-fix-man-page-support.patch"))))
+         "14fs5acnalnb3h62s7q7av239j541fk0n0z0lawh4h09b1s93s6p"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))

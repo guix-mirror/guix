@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
@@ -144,14 +144,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.52")
+   (version "0.9.55")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1smgxw6jv81yybg86bzr4c2sn7a31apf8q4zz0kpch9xfrp7yyal"))))
+              "1y6h1slav5l6k8zyb01dpw65dscdgxxgfa3a0z9qnn7jr66sn70c"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -160,7 +160,17 @@ tool to extract metadata from a file and print the results.")
       ("openssl" ,openssl)
       ("zlib" ,zlib)))
    (arguments
-    `(#:parallel-tests? #f))
+    `(#:parallel-tests? #f
+      #:phases (modify-phases %standard-phases
+                 (add-before 'check 'add-missing-LDFLAGS
+                   (lambda _
+                     ;; The two test_upgrade* programs depend on GnuTLS
+                     ;; directly but lack -lgnutls; add it.
+                     (substitute* "src/microhttpd/Makefile"
+                       (("^test_upgrade(.*)LDFLAGS = (.*)$" _ first rest)
+                        (string-append "test_upgrade" first
+                                       "LDFLAGS = -lgnutls " rest)))
+                     #t)))))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
     "GNU libmicrohttpd is a small, embeddable HTTP server implemented as a

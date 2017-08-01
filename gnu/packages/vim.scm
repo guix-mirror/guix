@@ -60,7 +60,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0727")
+    (version "8.0.0808")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -68,20 +68,13 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0hwqglpsk8qlp2rn6q9p35fxk88xixljk1yv42m3j01g3bgqg0gx"))))
+               "0qrn9fhq5wdrrf2qhpygwfm5rynl32l406xhbr7lg69r9wl8cjjn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'make-bit-reproducable
-           (lambda _
-             (substitute* "src/version.c"
-               ((" VIM_VERSION_LONG_DATE") " VIM_VERSION_LONG")
-               ((" __DATE__") "")
-               ((" __TIME__") ""))
-             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
@@ -116,15 +109,6 @@ configuration files.")
     ;; frequency of important bug fixes.
     (inherit vim)
     (name "vim-full")
-    (version "8.0.0600")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/vim/vim/archive/v"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1ifaj0lfzqn06snkcd83l58m9r6lg7lk3wspx71k5ycvypyfi67s"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-lua-prefix="
@@ -144,17 +128,6 @@ configuration files.")
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-after 'build 'drop-failing-tests
-                 (lambda _
-                   ;; These tests fail mysteriously with GUI enabled.
-                   ;; https://github.com/vim/vim/issues/1460
-                   (substitute* "src/testdir/test_cmdline.vim"
-                     (("call assert_equal\\(.+getcmd.+\\(\\)\\)") ""))
-                   ;; FIXME: This test broke after GCC-5 core-updates merge.
-                   ;; "Test_system_exmode line 7: Expected '0' but got '/'"
-                   (substitute* "src/testdir/test_system.vim"
-                     (("call assert_equal\\('0', a\\[0\\]\\)") ""))
-                   #t))
                (add-before 'check 'start-xserver
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; Some tests require an X server, but does not start one.

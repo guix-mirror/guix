@@ -641,30 +641,6 @@ process, passing on the arguments as command line arguments.")
 programs.")
     (license license:gpl3+)))
 
-(define-public let-alist
-  (package
-    (name "emacs-let-alist")
-    (version "1.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/let-alist-"
-                                  version ".el"))
-              (sha256
-               (base32
-                "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/let-alist.html")
-    (synopsis "Easily let-bind values of an assoc-list by their names")
-    (description
-     "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
-macro takes a first argument, whose value must be an alist (association list),
-and a body.
-
-The macro expands to a let form containing the body, where each dotted symbol
-inside body is let-bound to their cdrs in the alist.  Only those present in
-the body are let-bound and this search is done at compile time.")
-    (license license:gpl3+)))
-
 (define-public flycheck
   (package
     (name "emacs-flycheck")
@@ -679,9 +655,7 @@ the body are let-bound and this search is done at compile time.")
                 "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-let-alist" ,let-alist)
-       ("emacs-seq" ,emacs-seq)))
+     `(("emacs-dash" ,emacs-dash)))
     (home-page "https://www.flycheck.org")
     (synopsis "On-the-fly syntax checking")
     (description
@@ -1113,7 +1087,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "11.90.0")
+    (version "11.91.0")
     (source
      (origin
        (method url-fetch)
@@ -1123,7 +1097,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "04nsndwcf0dimgc2p1yzzrymc36amzdnjg0158nxplmjkzdp28gy"))))
+         "1yh182mxgngjmwpkyv2n9km3vyq95bqfq8mnly3dbv78nwk7f2l3"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -1326,8 +1300,6 @@ single buffer.")
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-minimal)))
-    (propagated-inputs
-     `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
               ("cairo" ,cairo)
               ("glib" ,glib)
@@ -1579,8 +1551,7 @@ strings.")
                 "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-markdown-mode" ,emacs-markdown-mode)
-       ("let-alist" ,let-alist)))
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)))
     (home-page "https://github.com/vermiculus/sx.el/")
     (synopsis "Emacs StackExchange client")
     (description
@@ -3035,26 +3006,6 @@ be removed from the front.  This type of data structure is sometimes called an
 ongoing operations.")
     (license license:gpl3+)))
 
-(define-public emacs-seq
-  (package
-    (name "emacs-seq")
-    (version "2.19")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/seq-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "11hb7is6a4h1lscjcfrzh576j0g3m5yjydn16s6x5bxp5gsr6zha"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/seq.html")
-    (synopsis "Sequence manipulation functions for Emacs")
-    (description
-     "This Emacs library provides sequence-manipulation functions that
-complement basic functions provided by @code{subr.el}.  All provided functions
-work on lists, strings and vectors.")
-    (license license:gpl3+)))
-
 (define-public emacs-sparql-mode
   (package
     (name "emacs-sparql-mode")
@@ -3134,7 +3085,9 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There is no test suite.
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "LISPDIR=" %output
+                                         "/share/emacs/site-lisp/guix.d/ess"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -3558,8 +3511,7 @@ for search-based navigation of buffers.")
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-pkg-info" ,emacs-pkg-info)
-       ("emacs-queue" ,emacs-queue)
-       ("emacs-seq" ,emacs-seq)))
+       ("emacs-queue" ,emacs-queue)))
     (home-page "https://cider.readthedocs.org/")
     (synopsis "Clojure development environment for Emacs")
     (description
@@ -4160,7 +4112,7 @@ mode-line.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/joaotavora/yasnippet/"
@@ -4168,7 +4120,18 @@ mode-line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
+                "1yqiprighgqz1hsslph50cy09xxqabc06jffrnjcsdf6nj70xlkc"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; YASnippet expects a "snippets" subdirectory in the same
+                  ;; directory as yasnippet.el, but we don't install it
+                  ;; because it's a git submodule pointing to an external
+                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
+                  ;; warnings about a missing directory.
+                  (substitute* "yasnippet.el"
+                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
+                     "))\n"))))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
@@ -4176,6 +4139,51 @@ mode-line.")
      "YASnippet is a template system for Emacs.  It allows you to type an
 abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
+
+(define-public emacs-yasnippet-snippets
+  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
+        (revision "1"))
+    (package
+      (name "emacs-yasnippet-snippets")
+      (version (string-append "1-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((ice-9 ftw)
+                    (ice-9 regex)
+                    (guix build utils))
+         #:builder
+         (begin
+           (use-modules (ice-9 ftw)
+                        (ice-9 regex)
+                        (guix build utils))
+           (with-directory-excursion (assoc-ref %build-inputs "source")
+             (for-each (lambda (dir)
+                         (copy-recursively
+                          dir
+                          (string-append %output
+                                         "/share/emacs/yasnippet-snippets/"
+                                         dir)))
+                       (scandir "." (lambda (fname)
+                                      (and (string-match "-mode$" fname)
+                                           (directory-exists? fname)))))))))
+      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+      (synopsis "Collection of YASnippet snippets for many languages")
+      (description
+       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
+To make YASnippet aware of these snippets, add the above directory to
+@code{yas-snippet-dirs}.")
+      (license license:expat))))
 
 (define-public emacs-memoize
   (package
@@ -5200,3 +5208,26 @@ src block.")
      "@code{emacs-emamux} lets Emacs interact with the @code{tmux} terminal
 multiplexer.")
     (license license:gpl3+)))
+
+(define-public emacs-rpm-spec-mode
+  (package
+    (name "emacs-rpm-spec-mode")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       ;; URI has the Fedora release number instead of the version
+       ;; number. This will have to updated manually every new release.
+       (uri (string-append
+             "https://src.fedoraproject.org/cgit/rpms"
+             "/emacs-rpm-spec-mode.git/snapshot"
+             "/emacs-rpm-spec-mode-f26.tar.gz"))
+       (sha256
+        (base32
+         "17dz80lhjrc89fj17pysl8slahzrqdkxgcjdk55zls6jizkr6kz3"))))
+    (build-system emacs-build-system)
+    (home-page "http://pkgs.fedoraproject.org/cgit/rpms/emacs-rpm-spec-mode.git")
+    (synopsis "Emacs major mode for editing RPM spec files")
+    (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
+editing RPM spec files.")
+    (license license:gpl2+)))

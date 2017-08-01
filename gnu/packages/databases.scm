@@ -53,6 +53,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
@@ -288,6 +289,28 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (description
      "LevelDB is a fast key-value storage library that provides an ordered
 mapping from string keys to string values.")
+    (license license:bsd-3)))
+
+(define-public memcached
+  (package
+    (name "memcached")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://memcached.org/files/memcached-" version ".tar.gz"))
+       (sha256
+        (base32 "0chwc0g7wfvcad36z8pf2jbgygdnm9nm1l6pwjsn3d2b089gh0f0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevent" ,libevent)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (home-page "https://memcached.org/")
+    (synopsis "In memory caching service")
+    (description "Memcached is a in memory key value store.  It has a small
+and generic API, and was originally intended for use with dynamic web
+applications.")
     (license license:bsd-3)))
 
 (define-public mysql
@@ -1181,14 +1204,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.2.4")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "1wb9jd692a0y52bkkxr6815kk4g039mirjdrvqx24265lv2l5l1a"))))
+                "14bm8lkhylc93r4dgl7kkzzpw2xq7gr6w6h80n3jazqnx5mcsj90"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

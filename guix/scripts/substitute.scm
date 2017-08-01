@@ -113,7 +113,7 @@
       (or (and=> (getenv "XDG_CACHE_HOME")
                  (cut string-append <> "/guix/substitute"))
           (string-append %state-directory "/substitute/cache"))
-      (string-append (cache-directory) "/substitute")))
+      (string-append (cache-directory #:ensure? #f) "/substitute")))
 
 (define %allow-unauthenticated-substitutes?
   ;; Whether to allow unchecked substitutes.  This is useful for testing

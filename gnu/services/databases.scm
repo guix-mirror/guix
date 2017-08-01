@@ -25,6 +25,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages databases)
+  #:use-module (guix modules)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
@@ -32,6 +33,16 @@
             postgresql-configuration?
             postgresql-service
             postgresql-service-type
+
+            memcached-service-type
+            <memcached-configuration>
+            memcached-configuration
+            memcached-configuration?
+            memcached-configuration-memecached
+            memcached-configuration-interfaces
+            memcached-configuration-tcp-port
+            memcached-configuration-udp-port
+            memcached-configuration-additional-options
 
             mysql-service
             mysql-service-type
@@ -175,6 +186,68 @@ and stores the database cluster in @var{data-directory}."
             (locale locale)
             (config-file config-file)
             (data-directory data-directory))))
+
+
+;;;
+;;; Memcached
+;;;
+
+(define-record-type* <memcached-configuration>
+  memcached-configuration make-memcached-configuration
+  memcached-configuration?
+  (memcached          memcached-configuration-memcached ;<package>
+                      (default memcached))
+  (interfaces         memcached-configuration-interfaces
+                      (default '("0.0.0.0")))
+  (tcp-port           memcached-configuration-tcp-port
+                      (default 11211))
+  (udp-port           memcached-configuration-udp-port
+                      (default 11211))
+  (additional-options memcached-configuration-additional-options
+                      (default '())))
+
+(define %memcached-accounts
+  (list (user-group (name "memcached") (system? #t))
+        (user-account
+         (name "memcached")
+         (group "memcached")
+         (system? #t)
+         (comment "Memcached server user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define memcached-shepherd-service
+  (match-lambda
+    (($ <memcached-configuration> memcached interfaces tcp-port udp-port
+                                  additional-options)
+     (with-imported-modules (source-module-closure
+                             '((gnu build shepherd)))
+       (list (shepherd-service
+              (provision '(memcached))
+              (documentation "Run the Memcached daemon.")
+              (requirement '(user-processes loopback))
+              (modules '((gnu build shepherd)))
+              (start #~(make-forkexec-constructor
+                        `(#$(file-append memcached "/bin/memcached")
+                          "-l" #$(string-join interfaces ",")
+                          "-p" #$(number->string tcp-port)
+                          "-U" #$(number->string udp-port)
+                          "--daemon"
+                          "-P" "/var/run/memcached.pid"
+                          "-u" "memcached"
+                          ,#$@additional-options)
+                        #:log-file "/var/log/memcached"
+                        #:pid-file "/var/run/memcached.pid"))
+              (stop #~(make-kill-destructor))))))))
+
+(define memcached-service-type
+  (service-type (name 'memcached)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          memcached-shepherd-service)
+                       (service-extension account-service-type
+                                          (const %memcached-accounts))))
+                (default-value (memcached-configuration))))
 
 
 ;;;

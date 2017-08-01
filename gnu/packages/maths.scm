@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3161,3 +3162,37 @@ as equations, scalars, vectors, and matrices.")
     (home-page "https://www.gnu.org/software/jacal/")
     (license license:gpl3+)))
 
+(define-public z3
+  (package
+    (name "z3")
+    (version "4.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Z3Prover/z3/archive/z3-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (zero?
+              (system* "python" "scripts/mk_make.py"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "out"))))))
+         (add-after 'configure 'change-dir
+           (lambda _
+             (chdir "build")
+             #t)))))
+    (native-inputs
+     `(("python" ,python-2)))
+    (synopsis "Theorem prover")
+    (description "Z3 is a theorem prover and @dfn{satisfiability modulo
+theories} (SMT) solver.  It provides a C/C++ API.")
+    (home-page "https://github.com/Z3Prover/z3")
+    (license license:expat)))

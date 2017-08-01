@@ -1,0 +1,24 @@
+Patch originally from https://sources.debian.net/patches/erlang/1:20.0.1%2Bdfsg-2/man.patch/
+by Francois-Denis Gonthier <neumann@lostwebsite.net>.
+
+Patch description rewritten for Guix.
+
+This patch allows access to the man page with the 'erl -man' command
+(Erlang manual pages are placed to /gnu/store/..erlang../share/man/ hierarchy
+as other man pages.)
+
+--- a/erts/etc/common/erlexec.c
++++ b/erts/etc/common/erlexec.c
+@@ -709,8 +709,10 @@
+ 			error("-man not supported on Windows");
+ #else
+ 			argv[i] = "man";
+-			erts_snprintf(tmpStr, sizeof(tmpStr), "%s/man", rootdir);
+-			set_env("MANPATH", tmpStr);
++			/*
++			* Conform to erlang-manpages content.
++			*/
++			putenv(strsave("MANSECT=1:3:5:7"));
+ 			execvp("man", argv+i);
+ 			error("Could not execute the 'man' command.");
+ #endif

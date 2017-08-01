@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
@@ -34,7 +35,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "19.3")
+    (version "20.0")
     (source (origin
               (method url-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -45,7 +46,8 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b47jh549yywyp8fbs8a8j4ydr3zn982navzyqvlms6rg8vwb0pw"))))
+                "1azjjyb743i6vjq7rnh5qnslsqg0x60a9zrlhg9n3dpm13z1b22l"))
+              (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -60,7 +62,7 @@
                                version ".tar.gz"))
            (sha256
             (base32
-             "0p6r3n3y7lbhv38sw8f2vi1xlmc137gyspk9ap086w1nszyjy6gq"))))))
+             "1k25p37w1l1j20qd8rga4j4q7s7r0rbsi02x3xwzhw51jhm59wdp"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -109,8 +111,7 @@
                  (("date\\(\\), time\\(\\),")
                   (date->string source-date-epoch
                                 "{~Y,~m,~d}, {~H,~M,~S},")))
-               (substitute* '("lib/dialyzer/test/small_SUITE_data/src/gs_make.erl"
-                              "lib/gs/src/gs_make.erl")
+               (substitute* "lib/dialyzer/test/small_SUITE_data/src/gs_make.erl"
                  (("tuple_to_list\\(date\\(\\)\\),tuple_to_list\\(time\\(\\)\\)")
                   (date->string
                     source-date-epoch

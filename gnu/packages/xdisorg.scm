@@ -93,16 +93,7 @@
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
-       #:tests? #f ;no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'make-xrandr-available
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/arandr")
-               `("PATH" ":" prefix (,(string-append (assoc-ref inputs "xrandr")
-                                                    "/bin"))))
-             #t)))))
+       #:tests? #f)) ;no tests
     (inputs `(("pygtk" ,python2-pygtk)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
@@ -452,7 +443,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.47")
+    (version "7.3.48")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -461,7 +452,7 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kjivsq4c7dr7ggp44k09xm97i9chg8czvachqrfnv6fiqvwys0i"))))
+                "14igmf6a6vwx75gjnj10497n04klc35dvq87id8g9jn9rd3m6n25"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -485,7 +476,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.4.64")
+    (version "5.4.66")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -494,7 +485,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0y7ajwcp6x9q7581alz2b5xqijs5cb9l38h10fzinswqrcz53ak1"))))
+                "077aww1fab3ihzxdybxpdh0h3d7fbgpvsm9q92byfb2ig32viyfa"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target

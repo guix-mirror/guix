@@ -28,10 +28,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
@@ -3153,3 +3156,238 @@ writing to these structures, and they are accessed via the Bigarray module.")
     (synopsis "Minimal library providing hexadecimal converters")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
+
+(define-public coq-flocq
+  (package
+    (name "coq-flocq")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
+                                  "/36199/flocq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h5mlasirfzc0wwn2isg4kahk384n73145akkpinrxq5jsn5d22h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Flocq"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+             ;; TODO: requires coq-gappa and coq-interval.
+             ;(zero? (system* "./remake" "check-more"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://flocq.gforge.inria.fr/")
+    (synopsis "Floating-point formalization for the Coq system")
+    (description "Flocq (Floats for Coq) is a floating-point formalization for
+the Coq system.  It provides a comprehensive library of theorems on a multi-radix
+multi-precision arithmetic.  It also supports efficient numerical computations
+inside Coq.")
+    (license license:lgpl3+)))
+
+(define-public coq-gappa
+  (package
+    (name "coq-gappa")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36351/gappa-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0924jr6f15fx22qfsvim5vc0qxqg30ivg9zxj34lf6slbgdl3j39"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("boost" ,boost)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Gappa"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://gappa.gforge.inria.fr/")
+    (synopsis "Verify and formally prove properties on numerical programs")
+    (description "Gappa is a tool intended to help verifying and formally proving
+properties on numerical programs dealing with floating-point or fixed-point
+arithmetic.  It has been used to write robust floating-point filters for CGAL
+and it is used to certify elementary functions in CRlibm.  While Gappa is
+intended to be used directly, it can also act as a backend prover for the Why3
+software verification plateform or as an automatic tactic for the Coq proof
+assistant.")
+    (license (list license:gpl2+ license:cecill))));either gpl2+ or cecill
+
+(define-public coq-mathcomp
+  (package
+    (name "coq-mathcomp")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1j9ylggjzrxz1i2hdl2yhsvmvy5z6l4rprwx7604401080p5sgjw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (arguments
+     `(#:tests? #f; No need to test formally-verified programs :)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "mathcomp")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (zero? (system* "make" "-f" "Makefile.coq"
+                             (string-append "COQLIB=" (assoc-ref outputs "out")
+                                            "/lib/coq/")
+                             "install")))))))
+    (home-page "https://math-comp.github.io/math-comp/")
+    (synopsis "Mathematical Components for Coq")
+    (description "Mathematical Components for Coq has its origins in the formal
+proof of the Four Colour Theorem.  Since then it has grown to cover many areas
+of mathematics and has been used for large scale projects like the formal proof
+of the Odd Order Theorem.
+
+The library is written using the Ssreflect proof language that is an integral
+part of the distribution.")
+    (license license:cecill-b)))
+
+(define-public coq-coquelicot
+  (package
+    (name "coq-coquelicot")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "file/36537/coquelicot-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fx99bvsbdizj00gx2im8939y4wwl05f4qhw184j90kcx5vjxxv9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (propagated-inputs
+     `(("mathcomp" ,coq-mathcomp)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Coquelicot"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://coquelicot.saclay.inria.fr/index.html")
+    (synopsis "Coq library for Reals")
+    (description "Coquelicot is an easier way of writing formulas and theorem
+statements, achieved by relying on total functions in place of dependent types
+for limits, derivatives, integrals, power series, and so on.  To help with the
+proof process, the library comes with a comprehensive set of theorems that cover
+not only these notions, but also some extensions such as parametric integrals,
+two-dimensional differentiability, asymptotic behaviors.  It also offers some
+automations for performing differentiability proofs.  Moreover, Coquelicot is a
+conservative extension of Coq's standard library and provides correspondence
+theorems between the two libraries.")
+    (license license:lgpl3+)))
+
+(define-public coq-interval
+  (package
+    (name "coq-interval")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "file/36538/interval-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16ir7mizl18kwa1ls8fwjih6r87894bvc1r6lh85cd43la7nriq3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)
+       ("coq" ,coq)))
+    (propagated-inputs
+     `(("flocq" ,coq-flocq)
+       ("coquelicot" ,coq-coquelicot)
+       ("mathcomp" ,coq-mathcomp)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib/Gappa"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-remake
+           (lambda _
+             (substitute* "remake.cpp"
+               (("/bin/sh") (which "sh")))))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./remake"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "./remake" "check"))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "./remake" "install")))))))
+    (home-page "http://coq-interval.gforge.inria.fr/")
+    (synopsis "Coq tactics to simplify inequality proofs")
+    (description "Interval provides vernacular files containing tactics for
+simplifying the proofs of inequalities on expressions of real numbers for the
+Coq proof assistant.")
+    (license license:cecill-c)))

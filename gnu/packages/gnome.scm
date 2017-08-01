@@ -109,6 +109,7 @@
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages slang)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
@@ -1766,14 +1767,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.34")
+    (version "0.10.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "00yn5ly1x50ynrwgl783pwnjy4k2ckp8n54mfnqv6qsq5fi7ajjm"))))
+               (base32 "0f2p3p7idfpbms4mi75031014mqsv09s21b6w1359p09raph3461"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;4.1 MiB of gtk-doc
@@ -4349,7 +4350,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.26.1")
+    (version "0.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4357,7 +4358,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xak1f69lp1yx3p8jgmr9c0z3jypi8zjpy3kiknn5n9g2f5cqq0a"))))
+                "0frjqa6nmh025clwnb74z2rzbdq65wjcp2lf9csgcbkpahyjhrag"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -5026,6 +5027,7 @@ users.")
        ("libnl" ,libnl)
        ("libsoup" ,libsoup)
        ("modem-manager" ,modem-manager)
+       ("newt" ,newt)                       ;for the 'nmtui' console interface
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
@@ -5549,7 +5551,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.24.1")
+    (version "3.24.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5557,7 +5559,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cn6bmzmahzlwcd4gllsvx6dva386xm3papgzpv1r34abw73sf27"))))
+                "1cv138z04qx0fh1a2z2hvxy4p1x15vdv5gmkx5f3hb6c3w2rsz9m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags

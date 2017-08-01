@@ -431,8 +431,6 @@ generation as its default entry.  STORE is an open connection to the store."
   "Re-install bootloader for existing system profile generation NUMBER.
 STORE is an open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
-         (params (unless-file-not-found
-                  (read-boot-parameters-file generation)))
          ;; Detect the bootloader used in %system-profile.
          (bootloader (lookup-bootloader-by-name (system-bootloader-name)))
 
@@ -442,10 +440,12 @@ STORE is an open connection to the store."
                              (bootloader bootloader)))
 
          ;; Make the specified system generation the default entry.
-         (entries (profile-boot-parameters %system-profile (list number)))
+         (params (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-boot-parameters
-                       %system-profile old-generations)))
+         (old-params (profile-boot-parameters
+                       %system-profile old-generations))
+         (entries (map boot-parameters->menu-entry params))
+         (old-entries (map boot-parameters->menu-entry old-params)))
     (run-with-store store
       (mlet* %store-monad
           ((bootcfg ((bootloader-configuration-file-generator bootloader)
@@ -657,7 +657,8 @@ output when building a system derivation, such as a disk image."
                       os
                       (if (eq? 'init action)
                           '()
-                          (profile-boot-parameters)))))
+                          (map boot-parameters->menu-entry
+                               (profile-boot-parameters))))))
        (bootcfg-file -> (bootloader-configuration-file bootloader))
        (bootloader-installer
         (let ((installer (bootloader-installer bootloader))

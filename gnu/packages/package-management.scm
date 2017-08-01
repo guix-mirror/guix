@@ -76,8 +76,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "f1ddfe4f14b8a8d963f2f3e68d800b745696246d")
-        (revision 4))
+        (commit "228a3982df157847554abc9d0831d687264d8ebd")
+        (revision 5))
     (package
       (name "guix")
 
@@ -93,7 +93,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "11yjsn957igh6migxrnicdqrxc76skz5r0l7hfnm5gp45my1kd9p"))
+                  "1gnc1w9kby7db9jih4xwrhrv0j57zy09lmr85gbmcqna6bx3wypw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -121,6 +121,7 @@
 
          #:modules ((guix build gnu-build-system)
                     (guix build utils)
+                    (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
 
@@ -187,21 +188,31 @@
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
+                               (git    (assoc-ref inputs "guile-git"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (deps   (list json gnutls git ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
                                              (string-append guile "/bin/guile")
                                              "-c" "(display (effective-version))")))
-                               (path   (string-append
-                                        json "/share/guile/site/" effective ":"
-                                        ssh "/share/guile/site/" effective ":"
-                                        gnutls "/share/guile/site/" effective)))
+                               (path   (string-join
+                                        (map (cut string-append <>
+                                                  "/share/guile/site/"
+                                                  effective)
+                                             deps)
+                                        ":"))
+                               (gopath (string-join
+                                        (map (cut string-append <>
+                                                  "/lib/guile/" effective
+                                                  "/site-ccache")
+                                             deps)
+                                        ":")))
 
                           (wrap-program (string-append out "/bin/guix")
                             `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
@@ -252,7 +263,8 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
-         ("guile-ssh" ,guile-ssh)))
+         ("guile-ssh" ,guile-ssh)
+         ("guile-git" ,guile-git)))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -278,7 +290,8 @@ the Nix package manager.")
     (propagated-inputs
      `(("gnutls" ,gnutls/guile-2.0)
        ("guile-json" ,guile2.0-json)
-       ("guile-ssh" ,guile2.0-ssh)))))
+       ("guile-ssh" ,guile2.0-ssh)
+       ("guile-git" ,guile2.0-git)))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical

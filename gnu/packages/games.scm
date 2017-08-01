@@ -1301,15 +1301,15 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
+       (uri (string-append "https://github.com/libretro/RetroArch/archive/"
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "121h9j57gvjr155vvm4f7ybphfvqrdz2ib059kfi444xcxz19sl0"))))
+        (base32 "0a0w2sjizjs20376h7j1gfi0qccr8mhkl1cm6hi0c17hy1493l6d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -3532,7 +3532,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4n")
+    (version "10.0e")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3543,7 +3543,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1kf9i9gqadnb0m143c860dcvdn91vp6vnfzma4bcgfgwmcn9sx0r"))))
+                "1p6fam73khhys54098qsgmp52d0rnqc3k5hknjig0znvfb2kwi38"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3565,7 +3565,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
-               (substitute* "graph.cpp"
+               (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* "sound.cpp"
@@ -3618,7 +3618,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1vrk0k0ch3azpa72y7acmmpifvks6c0466fvmz804hici93pglvi"))))
+             "1z9w3nd57ybnf4w7ckhhp5vfws2hwd8x26fx6h496f6160fgcj6m"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -4617,3 +4617,121 @@ computer-hosted roleplaying games.  This is the last version released by
 Crowther & Woods, its original authors, in 1995.  It has been known as
 \"adventure 2.5\" and \"430-point adventure\".")
       (license license:bsd-2))))
+
+(define-public tome4
+  (package
+    (name "tome4")
+    (version "1.5.5")
+    (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
+       (modules '((guix build utils)))
+       (snippet
+        '(substitute* '("src/music.h" "src/tSDL.h")
+           (("#elif defined(__FreeBSD__)" line)
+            (string-append
+             line " || defined(__GNUC__)"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("glu" ,glu)
+       ("premake4" ,premake4)
+       ("openal" ,openal)
+       ("vorbis" ,libvorbis)
+       ("luajit" ,luajit)))
+    (arguments
+     `(#:make-flags '("CC=gcc" "config=release")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda _
+                      (zero? (system* "premake4" "gmake"))
+                      #t))
+                  (add-after 'set-paths 'set-sdl-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL2"))
+                      #t))
+                  (delete 'check)
+                  ;; premake doesn't provide install target
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (usr (string-append out "/usr"))
+                             (bin (string-append out "/bin"))
+                             (licenses (string-append out "/share/licenses"))
+                             (documents (string-append out "/share/doc"))
+                             (pixmaps (string-append out "/share/pixmaps"))
+                             (icon "te4-icon.png")
+                             (data (string-append out "/share/" ,name))
+                             (applications (string-append
+                                            out "/share/applications"))
+                             (unzip (string-append
+                                     (assoc-ref inputs "unzip") "/bin/unzip"))
+                             (wrapper (string-append bin "/" ,name)))
+                        ;; icon
+                        (mkdir-p pixmaps)
+                        (system* unzip "-j"
+                                 (string-append
+                                  "game/engines/te4-" ,version ".teae")
+                                 (string-append
+                                  "data/gfx/" icon) "-d" pixmaps)
+                        ;; game executable
+                        (install-file "t-engine" data)
+                        (mkdir-p bin)
+                        (with-output-to-file wrapper
+                          (lambda ()
+                            (display
+                             (string-append
+                              "#!/bin/sh\n"
+                              ;; No bootstrap code found,
+                              ;; defaulting to working directory
+                              ;; for engine code!
+                              "cd " data "\n"
+                              "exec -a tome4 ./t-engine \"$@\"\n"))))
+                        (chmod wrapper #o555)
+                        ;; licenses
+                        (for-each (lambda (file)
+                                    (install-file file licenses))
+                                  '("COPYING" "COPYING-MEDIA"))
+                        ;; documents
+                        (for-each (lambda (file)
+                                    (install-file file documents))
+                                  '("CONTRIBUTING" "CREDITS"))
+                        ;; data
+                        (copy-recursively "bootstrap" (string-append
+                                                       data "/bootstrap"))
+                        (copy-recursively "game" (string-append data "/game"))
+                        ;; launcher
+                        (mkdir-p applications)
+                        (with-output-to-file (string-append applications "/"
+                                                            ,name ".desktop")
+                          (lambda ()
+                            (display
+                             (string-append
+                              "[Desktop Entry]
+Name=ToME4
+Comment=" ,synopsis "\n"
+"Exec=" ,name "\n"
+"Icon=" icon "\n"
+"Terminal=false
+Type=Application
+Categories=Game;RolePlaying;\n")))))
+                      #t)))))
+    (home-page "https://te4.org")
+    (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
+combat and advanced character building.  Play as one of many unique races and
+classes in the lore-filled world of Eyal, exploring random dungeons, facing
+challenging battles, and developing characters with your own tailored mix of
+abilities and powers.  With a modern graphical and customisable interface,
+intuitive mouse control, streamlined mechanics and deep, challenging combat,
+Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
+    (license license:gpl3+)))

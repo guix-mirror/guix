@@ -120,14 +120,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.13.3")
+   (version "2.13.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qiy696pwqhbxcrvm3zhyjnfjrym541glhvgc4cynrwg8az27ali"))))
+              "1nmg0n9l5ix876iqhcyhdnmiy7ihv0ybdijf1lssch6ja8m5j6ip"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -140,7 +140,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1hl1fhbr3jn4y9pkj26kk9frj6wjlxiphl7x5c9ma6x4081xna0i"))))))
+            "0ljxkfi7ski9bgpdb8xpikl1xgjjk7bdzmzzkbj93jybk6iajkv7"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -334,7 +334,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.25.1")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -342,12 +342,13 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cdwcw38frc1wf28x5ppddazv9hywc718j92f3xa3ybzzycyds3s"))
-              (patches (search-patches "libgit2-use-after-free.patch"
-                                       "libgit2-0.25.1-mtime-0.patch"))))
+                "1fdk9yhwvl1w1z71ykzcvgh4nsf8scxcbclz5anh98zpplmhmisa"))
+              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
