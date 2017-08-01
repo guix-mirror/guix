@@ -8619,18 +8619,21 @@ number detection tools.")
 (define-public r-sva
   (package
     (name "r-sva")
-    (version "3.24.0")
+    (version "3.24.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "sva" version))
        (sha256
         (base32
-         "04pxl61iyc845wmqca1qv8kbb8zcp0qp72zgvgki3zzmrph9a362"))))
+         "0wcway4ai9im81xnrzb1vij2iidq5pw24qhjfgacmhxvx3dzhbsc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genefilter" ,r-genefilter)
-       ("r-mgcv" ,r-mgcv)))
+       ("r-mgcv" ,r-mgcv)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-limma" ,r-limma)))
     (home-page "http://bioconductor.org/packages/sva")
     (synopsis "Surrogate variable analysis")
     (description
