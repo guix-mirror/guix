@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
-;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -91,11 +91,27 @@ library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
+;; libpng-apng should be updated when the APNG patch is released:
+;; <https://bugs.gnu.org/27556>
 (define-public libpng-apng
   (package
-    (inherit libpng)
     (name "libpng-apng")
-    (version (package-version libpng))
+    (version "1.6.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
+                                 version "/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                   "/libpng16/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                   "/libpng16/libpng-" version ".tar.xz")))
+       (sha256
+        (base32
+         "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+    (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -111,7 +127,7 @@ library.  It supports almost all PNG features and is extensible.")
                (and (apply-patch "the-patch")
                     (for-each apply-patch
                               (find-files "\\.patch"))))
-           #t))
+             #t))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
@@ -126,15 +142,19 @@ library.  It supports almost all PNG features and is extensible.")
                                   version "/libpng-" version "-apng.patch.gz"))
                   (sha256
                    (base32
-                    "026r0gbkf6d6v54wca02cdxln8sj4m2c1yk62sj2aasv2ki2ffh5"))))))
+                    "0m5nv70n9903x3xzxw9qqc6sgf2rp106ha0x6gix0xf8wcrljaab"))))))
     (native-inputs
      `(("libtool" ,libtool)))
+    ;; libpng.la says "-lz", so propagate it.
+    (propagated-inputs
+     `(("zlib" ,zlib)))
     (synopsis "APNG patch for libpng")
     (description
      "APNG (Animated Portable Network Graphics) is an unofficial
 extension of the APNG (Portable Network Graphics) format.
 APNG patch provides APNG support to libpng.")
-    (home-page "https://sourceforge.net/projects/libpng-apng/")))
+    (home-page "https://sourceforge.net/projects/libpng-apng/")
+    (license license:zlib)))
 
 (define-public libpng-1.2
   (package
