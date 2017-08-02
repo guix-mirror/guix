@@ -3290,7 +3290,8 @@ used.  For version control checkouts, it is recommended to provide the
 file name explicitly because the default is not very descriptive.
 
 @item @code{patches} (default: @code{'()})
-A list of file names containing patches to be applied to the source.
+A list of file names, origins, or file-like objects (@pxref{G-Expressions,
+file-like objects}) pointing to patches to be applied to the source.
 
 This list of patches must be unconditional.  In particular, it cannot
 depend on the value of @code{%current-system} or
