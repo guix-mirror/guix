@@ -645,6 +645,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
+  %D%/packages/patches/glibc-CVE-2016-3075.patch		\
+  %D%/packages/patches/glibc-CVE-2016-3706.patch		\
+  %D%/packages/patches/glibc-CVE-2016-4429.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
