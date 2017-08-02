@@ -14000,50 +14000,131 @@ Local accounts with lower values will silently fail to authenticate.
 The @code{(gnu services web)} module provides the nginx web server and
 also a fastcgi wrapper daemon.
 
-@deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
-       [#:log-directory ``/var/log/nginx''] @
-       [#:run-directory ``/var/run/nginx''] @
-       [#:server-list '()] @
-       [#:upstream-list '()] @
-       [#:config-file @code{#f}]
-
-Return a service that runs @var{nginx}, the nginx web server.
-
-The nginx daemon loads its runtime configuration from @var{config-file}.
-Log files are written to @var{log-directory} and temporary runtime data
-files are written to @var{run-directory}.  For proper operation, these
-arguments should match what is in @var{config-file} to ensure that the
-directories are created when the service is activated.
-
-As an alternative to using a @var{config-file}, @var{server-list} can be
-used to specify the list of @dfn{server blocks} required on the host and
-@var{upstream-list} can be used to specify a list of @dfn{upstream
-blocks} to configure.  For this to work, use the default value for
-@var{config-file}.
-
-At startup, @command{nginx} has not yet read its configuration file, so it
-uses a default file to log error messages.  If it fails to load its
-configuration file, that is where error messages are logged.  After the
-configuration file is loaded, the default error log file changes as per
-configuration.  In our case, startup error messages can be found in
-@file{/var/run/nginx/logs/error.log}, and after configuration in
-@file{/var/log/nginx/error.log}.  The second location can be changed with the
-@var{log-directory} configuration option.
-
-@end deffn
-
 @deffn {Scheme Variable} nginx-service-type
-This is type for the nginx web server.
+Service type for the @uref{https://nginx.org/,NGinx} web server.  The
+value for this service type is a @code{<nginx-configuration>} record.
 
-This service can be extended to add server blocks in addition to the
-default one, as in this example:
+A simple example configuration is given below.
+
+@example
+(service nginx-service-type
+         (nginx-configuration
+           (server-list
+             (list (nginx-server-configuration
+                     (server-name '("www.example.com"))
+                     (root "/srv/http/www.example.com")
+                     (https-port #f)
+                     (ssl-certificate #f)
+                     (ssl-certificate-key #f))))))
+@end example
+
+In addition to adding server blocks to the service configuration
+directly, this service can be extended by other services to add server
+blocks, as in this example:
 
 @example
 (simple-service 'my-extra-server nginx-service-type
                 (list (nginx-server-configuration
                         (https-port #f)
+                        (ssl-certificate #f)
+                        (ssl-certificate-key #f)
                         (root "/srv/http/extra-website"))))
 @end example
+@end deffn
+
+At startup, @command{nginx} has not yet read its configuration file, so
+it uses a default file to log error messages.  If it fails to load its
+configuration file, that is where error messages are logged.  After the
+configuration file is loaded, the default error log file changes as per
+configuration.  In our case, startup error messages can be found in
+@file{/var/run/nginx/logs/error.log}, and after configuration in
+@file{/var/log/nginx/error.log}.  The second location can be changed
+with the @var{log-directory} configuration option.
+
+@deffn {Data Type} nginx-configuration
+This data type represents the configuration for NGinx. Some
+configuration can be done through this and the other provided record
+types, or alternatively, a config file can be provided.
+
+@table @asis
+@item @code{nginx} (default: @code{nginx})
+The nginx package to use.
+
+@item @code{log-directory} (default: @code{"/var/log/nginx"})
+The directory to which NGinx will write log files.
+
+@item @code{run-directory} (default: @code{"/var/run/nginx"})
+The directory in which NGinx will create a pid file, and write temporary
+files.
+
+@item @code{server-list} (default: @code{'()})
+A list of @dfn{server blocks} to create in the generated configuration
+file, the elements should be of type
+@code{<nginx-server-configuration>}.
+
+The following example would setup NGinx to serve @code{www.example.com}
+from the @code{/srv/http/www.example.com} directory, without using
+HTTPS.
+@example
+(service nginx-service-type
+         (nginx-configuration
+           (server-list
+             (list (nginx-server-configuration
+                     (server-name '("www.example.com"))
+                     (root "/srv/http/www.example.com")
+                     (https-port #f)
+                     (ssl-certificate #f)
+                     (ssl-certificate-key #f))))))
+@end example
+
+@item @code{upstream-list} (default: @code{'()})
+A list of @dfn{upstream blocks} to create in the generated configuration
+file, the elements should be of type
+@code{<nginx-upstream-configuration>}.
+
+Configuring upstreams through the @code{upstream-list} can be useful
+when combined with @code{locations} in the
+@code{<nginx-server-configuration>} records.  The following example
+creates a server configuration with one location configuration, that
+will proxy requests to a upstream configuration, which will handle
+requests with two servers.
+
+@example
+(service
+  nginx-service-type
+  (nginx-configuration
+    (server-list
+      (list (nginx-server-configuration
+              (server-name '("www.example.com"))
+              (root "/srv/http/www.example.com")
+              (https-port #f)
+              (ssl-certificate #f)
+              (ssl-certificate-key #f)
+              (locations
+                (list
+                  (nginx-location-configuration
+                  (uri "/path1")
+                  (body '("proxy_pass http://server-proxy;"))))))))
+    (upstream-list
+      (list (nginx-upstream-configuration
+              (name "server-proxy")
+              (servers (list "server1.example.com"
+                             "server2.example.com")))))))
+@end example
+
+@item @code{config-file} (default: @code{#f})
+If the @var{config-file} is provided, this will be used, rather than
+generating a configuration file from the provided @code{log-directory},
+@code{run-directory}, @code{server-list} and @code{upstream-list}.  For
+proper operation, these arguments should match what is in
+@var{config-file} to ensure that the directories are created when the
+service is activated.
+
+This can be useful if you have an existing configuration file, or it's
+not possible to do what is required through the other parts of the
+nginx-configuration record.
+
+@end table
 @end deffn
 
 @deftp {Data Type} nginx-server-configuration

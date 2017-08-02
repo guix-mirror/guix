@@ -328,25 +328,6 @@ of index files."
                 (default-value
                   (nginx-configuration))))
 
-(define* (nginx-service #:key (nginx nginx)
-                        (log-directory "/var/log/nginx")
-                        (run-directory "/var/run/nginx")
-                        (server-list '())
-                        (upstream-list '())
-                        (config-file #f))
-  "Return a service that runs NGINX, the nginx web server.
-
-The nginx daemon loads its runtime configuration from CONFIG-FILE, stores log
-files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
-  (service nginx-service-type
-           (nginx-configuration
-            (nginx nginx)
-            (log-directory log-directory)
-            (run-directory run-directory)
-            (server-blocks server-list)
-            (upstream-blocks upstream-list)
-            (file config-file))))
-
 (define-record-type* <fcgiwrap-configuration> fcgiwrap-configuration
   make-fcgiwrap-configuration
   fcgiwrap-configuration?
