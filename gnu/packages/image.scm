@@ -113,7 +113,10 @@ library.  It supports almost all PNG features and is extensible.")
          "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-apng
            (lambda* (#:key inputs #:allow-other-keys)
@@ -123,11 +126,10 @@ library.  It supports almost all PNG features and is extensible.")
              (let ((apng.gz (assoc-ref inputs "apng")))
                (format #t "Applying APNG patch '~a'...~%"
                        apng.gz)
-               (system (string-append "gunzip < " apng.gz " > the-patch"))
-               (and (apply-patch "the-patch")
-                    (for-each apply-patch
-                              (find-files "\\.patch"))))
-             #t))
+               (and
+                 (zero?
+                   (system (string-append "gunzip < " apng.gz " > the-patch")))
+                 (apply-patch "the-patch")))))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
