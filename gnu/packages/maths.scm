@@ -3179,26 +3179,38 @@ as equations, scalars, vectors, and matrices.")
               (sha256
                (base32
                 "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:test-target "test"
+     `(#:configure-flags
+       (list "-DBUILD_PYTHON_BINDINGS=true"
+             "-DINSTALL_PYTHON_BINDINGS=true"
+             (string-append "-DCMAKE_INSTALL_PYTHON_PKG_DIR="
+                            %output
+                            "/lib/python2.7/site-packages")
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            %output
+                            "/lib"))
+
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (zero?
-              (system* "python" "scripts/mk_make.py"
-                       (string-append "--prefix="
-                                      (assoc-ref outputs "out"))))))
-         (add-after 'configure 'change-dir
+         (add-before 'configure 'bootstrap
            (lambda _
-             (chdir "build")
-             #t)))))
+             (zero?
+              (system* "python" "contrib/cmake/bootstrap.py" "create"))))
+         (add-before 'check 'make-test-z3
+           (lambda _
+             ;; Build the test suite executable.
+             (zero? (system* "make" "test-z3" "-j"
+                             (number->string (parallel-job-count))))))
+         (replace 'check
+           (lambda _
+             ;; Run all the tests that don't require arguments.
+             (zero? (system* "./test-z3" "/a")))))))
     (native-inputs
      `(("python" ,python-2)))
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
-theories} (SMT) solver.  It provides a C/C++ API.")
+theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
     (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
 
