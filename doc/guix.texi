@@ -3576,6 +3576,21 @@ specified with the @code{#:glib} parameter.
 Both phases are executed after the @code{install} phase.
 @end defvr
 
+@defvr {Scheme Variable} minify-build-system
+This variable is exported by @code{(guix build-system minify)}.  It
+implements a minification procedure for simple JavaScript packages.
+
+It adds @code{uglify-js} to the set of inputs and uses it to compress
+all JavaScript files in the @file{src} directory.  A different minifier
+package can be specified with the @code{#:uglify-js} parameter, but it
+is expected that the package writes the minified code to the standard
+output.
+
+When the input JavaScript files are not all located in the @file{src}
+directory, the parameter @code{#:javascript-files} can be used to
+specify a list of file names to feed to the minifier.
+@end defvr
+
 @defvr {Scheme Variable} ocaml-build-system
 This variable is exported by @code{(guix build-system ocaml)}.  It implements
 a build procedure for @uref{https://ocaml.org, OCaml} packages, which consists
