@@ -793,30 +793,6 @@ see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
 Munsell colour system.")
     (license license:expat)))
 
-(define-public r-rcpp
-  (package
-    (name "r-rcpp")
-    (version "0.12.12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "Rcpp" version))
-       (sha256
-        (base32 "1byyqvlgb2p46p1gv243k73rk69fa8pa4l5m5asmckag2pkb2glz"))))
-    (build-system r-build-system)
-    (home-page "http://www.rcpp.org")
-    (synopsis "Seamless R and C++ Integration")
-    (description
-     "The Rcpp package provides R functions as well as C++ classes which offer
-a seamless integration of R and C++.  Many R data types and objects can be
-mapped back and forth to C++ equivalents which facilitates both writing of new
-code as well as easier integration of third-party libraries.  Documentation
-about Rcpp is provided by several vignettes included in this package, via the
-'Rcpp Gallery' site at <http://gallery.rcpp.org>, the paper by Eddelbuettel
-and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
-'citation(\"Rcpp\")' for details on these last two.")
-    (license license:gpl2+)))
-
 (define-public r-permute
   (package
    (name "r-permute")

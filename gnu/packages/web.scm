@@ -54,6 +54,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cran)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
