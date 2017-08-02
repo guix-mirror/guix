@@ -2251,25 +2251,21 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.13.2")
+    (version "1.13.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "08ajsr12wd31lsx3jv5l9mq4063dc5fpr9lcnzra6kl59vi5pa7v"))))
+                "146wb09cmfh10vhn1ps2nmzx104zldb3nj9qv2ic0gbcikbbryp6"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-curl" ,r-curl)
-       ("r-digest" ,r-digest)
-       ("r-evaluate" ,r-evaluate)
+     `(("r-digest" ,r-digest)
        ("r-git2r" ,r-git2r)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-memoise" ,r-memoise)
-       ("r-roxygen2" ,r-roxygen2)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-rversions" ,r-rversions)
        ("r-whisker" ,r-whisker)
        ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/devtools")
