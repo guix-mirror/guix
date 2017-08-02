@@ -661,7 +661,12 @@ This package provides Conda as a library.")
     (license bsd-3)))
 
 (define-public python2-conda
-  (package-with-python2 python-conda))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-conda))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-enum34" ,python2-enum34)
+                ,@(package-native-inputs base))))))
 
 (define-public conda
   (package (inherit python-conda)
