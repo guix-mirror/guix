@@ -101,6 +101,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -1467,6 +1468,8 @@ transparently through a bridge.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
        ("libnl3-doc"
         ,(origin
            (method url-fetch)
@@ -1476,10 +1479,31 @@ transparently through a bridge.")
                  "/libnl-doc-" version ".tar.gz"))
            (sha256
             (base32 "0srab805yj8wb13l64qjyp3mdbqapxg5vk46v3zlhhzpmxqw8j7r"))))))
-    (outputs '("out" "doc"))
+    (inputs
+     `(("python-2" ,python-2)
+       ("python-3" ,python-3)))
+    (outputs '("out" "doc" "python2" "python3"))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'install-python
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (python-inst python)
+               (let ((ldflags (format #f "LDFLAGS=-Wl,-rpath=~a/lib"
+                                      (assoc-ref %outputs "out")))
+                     (pyout (assoc-ref %outputs python)))
+                 (and
+                  (zero? (system (format #f "~a ~a setup.py build"
+                                         ldflags python pyout)))
+                  (zero?
+                   (system (format #f "~a ~a setup.py install --prefix=~a"
+                                   ldflags python pyout)))
+                  (zero? (system* python "setup.py" "clean")))))
+             (with-directory-excursion "./python"
+               (every python-inst '("python2" "python3")))))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((dest (string-append (assoc-ref outputs "doc")
