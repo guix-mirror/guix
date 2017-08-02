@@ -4306,3 +4306,34 @@ tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
    (home-page "http://github.com/jamesodhunt/procenv/")
    (license license:gpl3+)))
+
+(define-public libfabric
+  (package
+    (name "libfabric")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ofiwg/libfabric/releases/download/v"
+                       version "/libfabric-" version ".tar.bz2"))
+       (sha256
+        (base32 "19l2m1frna1l765z4j7wl8hp4rb9wrh0hy5496685hd183hmy5pv"))))
+    (build-system gnu-build-system)
+    (inputs `(("rdma-core" ,rdma-core)
+              ;; TODO: add psm, psm(2).
+              ("libnl" ,libnl)))
+    (home-page "https://ofiwg.github.io/libfabric/")
+    (synopsis "Open Fabric Interfaces")
+    (description
+     "OpenFabrics Interfaces (OFI) is a framework focused on exporting fabric
+communication services to applications.  OFI is best described as a collection
+of libraries and applications used to export fabric services.  The key
+components of OFI are: application interfaces, provider libraries, kernel
+services, daemons, and test applications.
+
+Libfabric is a core component of OFI.  It is the library that defines and
+exports the user-space API of OFI, and is typically the only software that
+applications deal with directly.  It works in conjunction with provider
+libraries, which are often integrated directly into libfabric.")
+    (license (list license:bsd-2 license:gpl2)))) ;dual
