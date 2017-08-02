@@ -1523,20 +1523,23 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.5.0")
+    (version "0.7.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0ks5cklb03laqf5ygcw986g1lv7wk1ipvypjlha8xly2y4lvilwk"))))
+                "0jpb32ca1c0mr660igna4yw4fmzydzfhxshd0g8wgmggkynx2qi2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-r6" ,r-r6)
        ("r-magrittr" ,r-magrittr)
-       ("r-lazyeval" ,r-lazyeval)
-       ("r-dbi" ,r-dbi)
+       ("r-rlang" ,r-rlang)
+       ("r-plogr" ,r-plogr)
+       ("r-glue" ,r-glue)
+       ("r-pkgconfig" ,r-pkgconfig)
+       ("r-bindrcpp" ,r-bindrcpp)
        ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
