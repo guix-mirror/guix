@@ -320,7 +320,7 @@ manage system or application containers.")
     (version "3.5.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://libvirt.org/sources/libvirt-"
+              (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
@@ -381,7 +381,7 @@ manage system or application containers.")
        ("iptables" ,iptables)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://libvirt.org")
+    (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
 capabilities of recent versions of Linux.  The library aims at providing long
