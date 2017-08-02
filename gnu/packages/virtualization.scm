@@ -317,14 +317,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.5.0")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "05mm4xdw6g960rwvc9189nhxpm1vrilnmpl4h4m1lha11pivlqr9"))))
+                "0gcyql5dp6j370kvik9hjhxirrg89m7l1q52yq0g75h7jpv9fb1s"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -334,7 +334,7 @@ manage system or application containers.")
        ;; FAIL: networkxml2firewalltest
        ;; FAIL: nwfilterebiptablestest
        ;; FAIL: nwfilterxml2firewalltest
-       ;; Times out after PASS: virsh-vcpupin
+       ;; Times while running commandest.
        #:tests? #f
        #:configure-flags
        (list "--with-polkit"
