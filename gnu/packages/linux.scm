@@ -1464,7 +1464,29 @@ transparently through a bridge.")
                (base32
                 "1r3lw3hjvqxi5zqyq2w1qadm3gisd9nlf71dkl4yplacmssnhm3h"))))
     (build-system gnu-build-system)
-    (native-inputs `(("flex" ,flex) ("bison" ,bison)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("libnl3-doc"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/thom311/libnl/releases/download/libnl"
+                 (string-join (string-split version #\.) "_")
+                 "/libnl-doc-" version ".tar.gz"))
+           (sha256
+            (base32 "0srab805yj8wb13l64qjyp3mdbqapxg5vk46v3zlhhzpmxqw8j7r"))))))
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((dest (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/libnl")))
+               (mkdir-p dest)
+               (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
+                               "--strip-components=1" "-C" dest))))))))
     (home-page "http://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description
