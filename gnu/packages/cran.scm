@@ -125,3 +125,26 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
      "This package provides a simple interface for creating active bindings
 where the bound function accepts additional arguments.")
     (license license:expat)))
+
+(define-public r-bindrcpp
+  (package
+    (name "r-bindrcpp")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bindrcpp" version))
+       (sha256
+        (base32
+         "0l1l22zl87wiyl79m3gj2vlxmkhxvrkl4alhyy08h55q7hqs3vyh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bindr" ,r-bindr)
+       ("r-plogr" ,r-plogr)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/krlmlr/bindrcpp")
+    (synopsis "Rcpp interface to active bindings")
+    (description
+     "This package provides an easy way to fill an environment with active
+bindings that call a C++ function.")
+    (license license:expat)))
