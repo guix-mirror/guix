@@ -146,7 +146,7 @@
     (inputs
      `(("libx11" ,libx11)
        ;; For libiberty, needed for objdump support.
-       ("gcc:lib" ,(canonical-package gcc-4.9) "lib")
+       ("gcc:lib" ,(canonical-package gcc) "lib")
        ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
      `(#:modules ((guix build gnu-build-system)
