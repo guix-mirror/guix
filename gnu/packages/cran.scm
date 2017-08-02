@@ -106,3 +106,22 @@ about Rcpp is provided by several vignettes included in this package, via the
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
+
+(define-public r-bindr
+  (package
+    (name "r-bindr")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bindr" version))
+       (sha256
+        (base32
+         "0d95ifm0x4mrfzi20xf39f5pzd7rfzqsld0vjqf6xzga5rhnd8fc"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/krlmlr/bindr")
+    (synopsis "Parametrized active bindings")
+    (description
+     "This package provides a simple interface for creating active bindings
+where the bound function accepts additional arguments.")
+    (license license:expat)))
