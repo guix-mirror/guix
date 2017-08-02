@@ -974,6 +974,11 @@ GLIBC/HURD for a Hurd host"
                 "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2015-5180.patch"
+                                       "glibc-CVE-2015-7547.patch"
+                                       "glibc-CVE-2016-3075.patch"
+                                       "glibc-CVE-2016-3706.patch"
+                                       "glibc-CVE-2016-4429.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))
