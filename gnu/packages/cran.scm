@@ -42,3 +42,23 @@ including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB and polar
 CIELAB.  Qualitative, sequential, and diverging color palettes based on HCL
 colors are provided.")
     (license license:bsd-3)))
+
+(define-public r-glue
+  (package
+    (name "r-glue")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glue" version))
+       (sha256
+        (base32
+         "01awmqby7rwzhzr51m7d87wqibx7ggl6xair8fi3z3q1hkyyv7ih"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/tidyverse/glue")
+    (synopsis "Interpreted string literals")
+    (description
+     "This package provides an implementation of interpreted string literals,
+inspired by Python's Literal String Interpolation (PEP-0498) and
+Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
+    (license license:expat)))
