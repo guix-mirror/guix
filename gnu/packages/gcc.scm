@@ -340,6 +340,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and
 Go.  It also includes runtime support libraries for these languages.")
       (license gpl3+)
+      (supported-systems (delete "aarch64-linux" %supported-systems))
       (home-page "https://gcc.gnu.org/"))))
 
 (define-public gcc-4.8
@@ -352,7 +353,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
-              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))))
+              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
+    (supported-systems %supported-systems)))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -366,7 +368,8 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-libvtv-runpath.patch"))))
-    (native-inputs `(("texinfo" ,texinfo)))))
+    (native-inputs `(("texinfo" ,texinfo)))
+    (supported-systems %supported-systems)))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
