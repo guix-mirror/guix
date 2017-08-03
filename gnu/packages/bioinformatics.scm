@@ -1636,7 +1636,7 @@ databases.")
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; only Python 2 is supported
     (inputs
-     `(("htseq" ,htseq)
+     `(("htseq" ,python2-htseq)
        ("python-pybedtools" ,python2-pybedtools)
        ("python-cython" ,python2-cython)
        ("python-scikit-learn" ,python2-scikit-learn)
@@ -2981,7 +2981,7 @@ HMMs).")
 (define-public htseq
   (package
     (name "htseq")
-    (version "0.6.1")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2989,20 +2989,25 @@ HMMs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i85ppf2j2lj12m0x690qq5nn17xxk23pbbx2c83r8ayb5wngzwv"))))
+                "11flgb1381xdhk43bzbfm3vhnszkpqg6jk76rpa5xd1zbrvvlnxg"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2)) ; only Python 2 is supported
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     ;; Numpy needs to be propagated when htseq is used as a Python library.
     (propagated-inputs
-     `(("python-numpy" ,python2-numpy)))
+     `(("python-numpy" ,python-numpy)))
     (inputs
-     `(("python-pysam" ,python2-pysam)))
+     `(("python-pysam" ,python-pysam)
+       ("python-matplotlib" ,python-matplotlib)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
     (synopsis "Analysing high-throughput sequencing data with Python")
     (description
      "HTSeq is a Python package that provides infrastructure to process data
 from high-throughput sequencing assays.")
     (license license:gpl3+)))
+
+(define-public python2-htseq
+  (package-with-python2 htseq))
 
 (define-public java-htsjdk
   (package
