@@ -2339,13 +2339,13 @@ disk (or a connection).")
 (define-public r-plotrix
   (package
     (name "r-plotrix")
-    (version "3.6-4")
+    (version "3.6-5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotrix" version))
               (sha256
                (base32
-                "1wxzjnzvkl3aga51ad2xhv4s7v46kvnp4z0nz4cb9cn10057sfw8"))))
+                "01655y3qzy0283ppc85bi0g42g20zrqzcl0qb30cl6rcbflhymlb"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/plotrix")
     (synopsis "Various plotting functions")
