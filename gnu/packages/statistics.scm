@@ -3615,26 +3615,30 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "4.5.6")
+    (version "4.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "09yw977yxlcxv57kni3q899zrxyxa6pznr06cylr9lqkyr7llfhx"))))
+                "0wj9lw7w28z8w9ip9vadv6sydjhqyg65kfiai9m3bndzz50b1m3w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
+       ("r-crosstalk" ,r-crosstalk)
        ("r-digest" ,r-digest)
+       ("r-data-table" ,r-data-table)
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
        ("r-hexbin" ,r-hexbin)
+       ("r-htmltools" ,r-htmltools)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-scales" ,r-scales)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
