@@ -229,3 +229,26 @@ for JavaScript.  It works in (at least) node.js and browsers.  It supports
 localization and timezones.  Most standard specifiers from C are supported as
 well as some other extensions from Ruby.")
     (license license:expat)))
+
+(define-public js-highlight
+  (package
+    (name "js-highlight")
+    (version "9.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/isagalaev/highlight.js/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jjn9mj7fwq4zpr6is438bscf03b3q8jkj0k5c3fc6pkmjnhw939"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("src/highlight.js")))
+    (home-page "https://github.com/isagalaev/highlight.js")
+    (synopsis "Syntax highlighting for JavaScript")
+    (description "Highlight.js is a syntax highlighter written in JavaScript.
+It works in the browser as well as on the server.  It works with pretty much
+any markup, doesn’t depend on any framework and has automatic language
+detection.")
+    (license license:bsd-3)))
