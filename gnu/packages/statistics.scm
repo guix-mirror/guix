@@ -366,14 +366,14 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
 (define-public r-foreign
   (package
     (name "r-foreign")
-    (version "0.8-67")
+    (version "0.8-69")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "0j0z815zyp8n97rk6hlk68d1r8b26vls39s03viq0pnx3cbpwyga"))))
+         "0s1lxmd85dd0kxx8hwk02w9l7pmpk4bpy7787fbyh2dbq5g9ys0k"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
