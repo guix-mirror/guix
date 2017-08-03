@@ -841,11 +841,8 @@ ext3 or ext4 partition.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (mkdir-p bin)
-               (copy-file "zerofree"
-                          (string-append bin "/zerofree"))
-               (chmod (string-append bin "/zerofree")
-                      #o555)
+               (chmod "zerofree" #o555)
+               (install-file "zerofree" bin)
                #t))))
        #:tests? #f))                    ; no tests
     (inputs `(("libext2fs" ,e2fsprogs)))
