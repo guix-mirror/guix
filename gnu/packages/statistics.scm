@@ -3283,14 +3283,14 @@ performing parallel computations on multicore machines.")
 (define-public r-igraph
   (package
     (name "r-igraph")
-    (version "1.0.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "igraph" version))
        (sha256
         (base32
-         "00jnm8v3kvxpxav5klld2z2nnkcpj4sdwv4ksipddy5mp04ysr6w"))))
+         "1v26wyk52snh8z6m5p7yqwcd9dbqifhm57j112i9x53ppi0npcc9"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -3300,7 +3300,8 @@ performing parallel computations on multicore machines.")
     (propagated-inputs
      `(("r-irlba" ,r-irlba)
        ("r-magrittr" ,r-magrittr)
-       ("r-nmf" ,r-nmf)))
+       ("r-matrix" ,r-matrix)
+       ("r-pkgconfig" ,r-pkgconfig)))
     (home-page "http://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
