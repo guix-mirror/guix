@@ -6498,14 +6498,14 @@ support for default values, positional argument support, etc.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.3.2")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1g8as89r91xxi5j5azsd6vrfrhg84mnfx2683j7pacdp8s33radw"))))
+         "1ff4wmsszrb3spwfp7ynfs8w11qpy1sdzfxm1wk8dqqvdwris7qb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
