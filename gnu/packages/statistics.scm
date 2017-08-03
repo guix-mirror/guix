@@ -1120,13 +1120,13 @@ evaluation (NSE) in R.")
 (define-public r-dbi
   (package
     (name "r-dbi")
-    (version "0.6-1")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DBI" version))
               (sha256
                (base32
-                "1fg158k4n6l3rzx9nrwhp4nwkwpbmv1q7z2xz5rw138zws68fkgr"))))
+                "04fyrxdpqcygg5wviy637y6lgk64xqjjq31lvv4hwqj5kbaxamr5"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/DBI")
     (synopsis "R database interface")
