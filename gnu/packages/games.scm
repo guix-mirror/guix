@@ -354,6 +354,56 @@ played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
 
+(define-public meandmyshadow
+  (package
+    (name "meandmyshadow")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/meandmyshadow/"
+                                  version "/meandmyshadow-" version
+                                  "-src.tar.gz"))
+              (sha256
+               (base32
+                "1dpb7s32b2psj5w3nr5kqibib8nndi86mw8gxp4hmxwrfiisf86d"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-sdl'paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
+               (("/usr/local/include/SDL")
+                (string-append (assoc-ref inputs "sdl")
+                               "/include/SDL")))
+             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
+             ;; link with libX11, even though we're using the GL backend.
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
+             )))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl
+                                sdl-image
+                                sdl-gfx
+                                sdl-mixer
+                                sdl-ttf)))
+       ("libx11" ,libx11) ; needed by sdl's libX11
+       ("libarchive" ,libarchive)
+       ("openssl" ,openssl)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("curl" ,curl)))
+    (home-page "http://meandmyshadow.sourceforge.net/")
+    (synopsis "Puzzle/platform game")
+    (description "Me and My Shadow is a puzzle/platform game in which you try
+to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
+and much more stand between you and the exit.  Record your moves and let your
+shadow mimic them to reach blocks you couldn't reach alone.")
+    (license license:gpl3+)))
+
 (define-public knights
   (package
     (name "knights")
