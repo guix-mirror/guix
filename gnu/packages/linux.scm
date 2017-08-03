@@ -848,9 +848,10 @@ ext3 or ext4 partition.")
     (inputs `(("libext2fs" ,e2fsprogs)))
     (synopsis "Zero non-allocated regions in ext2/ext3/ext4 file systems")
     (description
-     "The zerofree command scans the free blocks in an ext2 file system and
-fills any non-zero blocks with zeroes.  This is a useful way to make disk
-images more compressible.")
+     "Zerofree finds the unallocated blocks with non-zero value content in an
+ext2, ext3, or ext4 file system and fills them with zeroes (or another value).
+This is a simple way to make disk images more compressible.
+Zerofree requires the file system to be unmounted or mounted read-only.")
     (license license:gpl2)))
 
 (define-public strace
