@@ -822,15 +822,15 @@ ext3 or ext4 partition.")
 (define-public zerofree
   (package
     (name "zerofree")
-    (version "1.0.3")
-    (home-page "http://intgat.tigress.co.uk/rmy/uml/")
+    (version "1.1.0")
+    (home-page "https://frippery.org/uml/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page name "-" version
                                   ".tgz"))
               (sha256
                (base32
-                "1xncw3dn2cp922ly42m96p6fh7jv8ysg6bwqbk5xvw701f3dmkrs"))))
+                "059g29x5r1xj6wcj4xj85l8w6qrxyl86yqbybjqqz6nxz4falxzf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
