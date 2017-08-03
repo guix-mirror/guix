@@ -26,7 +26,9 @@
   #:use-module (gnu packages lisp)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix git-download)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix build-system minify))
 
 (define-public js-mathjax
   (package
@@ -159,3 +161,48 @@ Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.")
     ;;   version 2). This means you are free to choose with which of both
     ;;   licenses (MIT or GPL version 2) you want to use this library.
     (license (list license:expat license:gpl2))))
+
+(define-public js-json2
+  (let ((commit "031b1d9e6971bd4c433ca85e216cc853f5a867bd")
+        (revision "1"))
+    (package
+      (name "js-json2")
+      (version (string-append "2016-10-28." revision "-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/douglascrockford/JSON-js.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1fvb6b2y5sd3sqdgcj683sdxcbxdii34q0ysc9wg0dq1sy81l11v"))))
+      (build-system minify-build-system)
+      (arguments
+       `(#:javascript-files '("json2.js"
+                              "json_parse.js"
+                              "json_parse_state.js"
+                              "cycle.js")))
+      (home-page "https://github.com/douglascrockford/JSON-js")
+      (synopsis "JSON encoders and decoders")
+      (description "The files in this collection implement JSON
+encoders/decoders in JavaScript.
+
+@code{json2.js}: This file creates a JSON property in the global object, if
+there isn't already one, setting its value to an object containing a stringify
+method and a parse method.  The @code{parse} method uses the @code{eval}
+method to do the parsing, guarding it with several regular expressions to
+defend against accidental code execution hazards.  On current browsers, this
+file does nothing, preferring the built-in JSON object.
+
+@code{json_parse.js}: This file contains an alternative JSON @code{parse}
+function that uses recursive descent instead of @code{eval}.
+
+@code{json_parse_state.js}: This files contains an alternative JSON
+@code{parse} function that uses a state machine instead of @code{eval}.
+
+@code{cycle.js}: This file contains two functions, @code{JSON.decycle} and
+@code{JSON.retrocycle}, which make it possible to encode cyclical structures
+and DAGs in JSON, and to then recover them.  This is a capability that is not
+provided by ES5.  @code{JSONPath} is used to represent the links.")
+      (license license:public-domain))))
