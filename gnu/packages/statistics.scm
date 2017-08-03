@@ -1158,13 +1158,13 @@ for template use among CRAN packages.")
 (define-public r-evaluate
   (package
     (name "r-evaluate")
-    (version "0.10")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "evaluate" version))
               (sha256
                (base32
-                "0mwna7rjyrmc76651a1fm7c76ippdsc2wsp3sj3iwb1c73mvlqv1"))))
+                "070vvmnbdlp7sz2zhza7fhd2a6mlwiln8fn4hyzhsiizbn4n79y9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)))
