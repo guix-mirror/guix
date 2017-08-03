@@ -1626,12 +1626,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.0.4")
+    (version "2.0.7")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1z3i90mkzwvp9di17caf4934z2xlb2imm3hwxllcrbwvmnmhrwyc"))))
+        (base32 "0hxa0rbbp54j0c05qj7vfwhqfdmiz5ax8vhqxd09g33x7c0hqbc5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
