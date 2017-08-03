@@ -252,3 +252,27 @@ It works in the browser as well as on the server.  It works with pretty much
 any markup, doesn’t depend on any framework and has automatic language
 detection.")
     (license license:bsd-3)))
+
+(define-public js-datatables
+  (package
+    (name "js-datatables")
+    (version "1.10.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://datatables.net/releases/DataTables-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "1y9xqyqyz7x1ls3ska71pshl2hpiy3qnw1f7wygyslbhy4ssgf57"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("media/js/dataTables.bootstrap.js"
+                            "media/js/jquery.dataTables.js")))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://datatables.net")
+    (synopsis "DataTables plug-in for jQuery")
+    (description "DataTables is a table enhancing plug-in for the jQuery
+Javascript library, adding sorting, paging and filtering abilities to plain
+HTML tables with minimal effort.")
+    (license license:expat)))
