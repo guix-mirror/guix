@@ -2984,9 +2984,7 @@ HMMs).")
     (version "0.9.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/H/HTSeq/HTSeq-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "HTSeq" version))
               (sha256
                (base32
                 "11flgb1381xdhk43bzbfm3vhnszkpqg6jk76rpa5xd1zbrvvlnxg"))))
