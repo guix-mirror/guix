@@ -134,3 +134,28 @@ be able to view it naturally and easily.")))
 script to enable responsive web designs in browsers that don't support CSS3
 Media Queries.")
     (license license:expat)))
+
+(define-public js-html5shiv
+  (package
+    (name "js-html5shiv")
+    (version "3.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/aFarkas/html5shiv/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0inlbpxpqzdyi24lqagzf7l24zxg0y02xcpqs2h4npjscazzw7hg"))))
+    (build-system minify-build-system)
+    (home-page "https://github.com/aFarkas/html5shiv")
+    (synopsis "Enable HTML5 sectioning elements in legacy browsers")
+    (description "The HTML5 Shiv enables use of HTML5 sectioning elements in
+legacy Internet Explorer and provides basic HTML5 styling for Internet
+Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.")
+    ;; From the file "MIT and GPL2 licenses.md":
+    ;;
+    ;;   This software is licensed under a dual license system (MIT or GPL
+    ;;   version 2). This means you are free to choose with which of both
+    ;;   licenses (MIT or GPL version 2) you want to use this library.
+    (license (list license:expat license:gpl2))))
