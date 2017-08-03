@@ -276,3 +276,24 @@ detection.")
 Javascript library, adding sorting, paging and filtering abilities to plain
 HTML tables with minimal effort.")
     (license license:expat)))
+
+(define-public js-selectize
+  (package
+    (name "js-selectize")
+    (version "0.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/selectize/selectize.js/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0756p49aaz34mw2dx8k1gxf210mngfrri25vkba0j7wihd2af8gn"))))
+    (build-system minify-build-system)
+    (arguments `(#:javascript-files '("src/selectize.js")))
+    (home-page "http://selectize.github.io/selectize.js/")
+    (synopsis "Hybrid widget between a textbox and <select> box")
+    (description "Selectize is the hybrid of a textbox and @code{<select>}
+box.  It's jQuery based and it has autocomplete and native-feeling keyboard
+navigation; it is useful for tagging, contact lists, etc.")
+    (license license:asl2.0)))
