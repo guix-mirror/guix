@@ -3590,18 +3590,17 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-purrr
   (package
     (name "r-purrr")
-    (version "0.2.2")
+    (version "0.2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "purrr" version))
        (sha256
         (base32
-         "0lss8q733nv7s154wargm6vnxq55qygnxakib8xdj4jv0y86sxc3"))))
+         "1i1n651xf15489pd6xjdvyp8wyayn8p33d27br39mddn1xdjrpc1"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-bh" ,r-bh)
-       ("r-dplyr" ,r-dplyr)
+     `(("r-tibble" ,r-tibble)
        ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
        ("r-rcpp" ,r-rcpp)))
