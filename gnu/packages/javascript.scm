@@ -297,3 +297,29 @@ HTML tables with minimal effort.")
 box.  It's jQuery based and it has autocomplete and native-feeling keyboard
 navigation; it is useful for tagging, contact lists, etc.")
     (license license:asl2.0)))
+
+(define-public js-es5-shim
+  (package
+    (name "js-es5-shim")
+    (version "4.5.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/es-shims/es5-shim/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yfndyijz0ykddzprpvfjb2453gzpn528klmwycwbqc1bqd3m1hl"))))
+    (build-system minify-build-system)
+    (arguments `(#:javascript-files
+                 '("es5-sham.js"
+                   "es5-shim.js")))
+    (home-page "https://github.com/es-shims/es5-shim")
+    (synopsis "ECMAScript 5 compatibility shims for legacy JavaScript engines")
+    (description "@code{es5-shim.js} patches a JavaScript context to contain
+all ECMAScript 5 methods that can be faithfully emulated with a legacy
+JavaScript engine.  @code{es5-sham.js} patches other ES5 methods as closely as
+possible.  Many of these shams are intended only to allow code to be written
+to ES5 without causing run-time errors in older engines.  In many cases, this
+means that these shams cause many ES5 methods to silently fail.")
+    (license license:expat)))
