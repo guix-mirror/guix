@@ -3535,14 +3535,14 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.6.1")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "11hs3gqpbaw3w281as4m7j9n594ix5axfpwbyjsd0l62pwnzj217"))))
+         "14s57zrjm2phiy600z9ivq4az71z0ggmp6nj0js7yrybxf0dlah6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
