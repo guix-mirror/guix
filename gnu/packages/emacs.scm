@@ -4631,7 +4631,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.14")
+    (version "0.15")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -4639,7 +4639,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "14hjjpbasm84p54fxy73fg7g1fdwqkvisdw8dwwgzkflmd647mkx"))))
+                "1y7nqry9y0a99bsdqkk9f554vczfw4sz6raadw3138835qy697jg"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -4673,12 +4673,9 @@ It should enable you to implement low-level X11 applications.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
-               ;; Set DISPLAY variable to work around
-               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
-                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
