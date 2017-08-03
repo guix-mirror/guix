@@ -206,3 +206,26 @@ function that uses recursive descent instead of @code{eval}.
 and DAGs in JSON, and to then recover them.  This is a capability that is not
 provided by ES5.  @code{JSONPath} is used to represent the links.")
       (license license:public-domain))))
+
+(define-public js-strftime
+  (package
+    (name "js-strftime")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samsonjs/strftime/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1iya43w7y26y2dp9l4d40bhjc4scb5a9mng5ng5c8hsqr82f1375"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("strftime.js")))
+    (home-page "https://github.com/samsonjs/strftime")
+    (synopsis "Implementation of strftime to JavaScript")
+    (description "This is an implementation of the @code{strftime} procedure
+for JavaScript.  It works in (at least) node.js and browsers.  It supports
+localization and timezones.  Most standard specifiers from C are supported as
+well as some other extensions from Ruby.")
+    (license license:expat)))
