@@ -3067,6 +3067,8 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 @item NVIDIA GPUs / CUDA (in development)
 @end enumerate\n")
     (home-page "https://github.com/VcDevel/Vc")
+    ;; "No support_???.cpp file exists for this architecture."
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:bsd-3)))
 
 (define-public reducelcs
