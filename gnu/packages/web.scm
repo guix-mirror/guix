@@ -73,6 +73,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
@@ -4748,3 +4749,106 @@ internetarchive python module for programatic access to archive.org.")
 (define-public python2-internetarchive
   (package-with-python2
    (strip-python2-variant python-internetarchive)))
+
+(define-public r-shiny
+  (package
+    (name "r-shiny")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rstudio/shiny/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z2v2s4hd44mvzjn7r70549kdzkrrch9nxhp27r6x2cy6micizm3"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build r-build-system)
+                  (guix build minify-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules (,@%r-build-system-modules
+                           (guix build minify-build-system))
+       #:phases
+       (modify-phases (@ (guix build r-build-system) %standard-phases)
+         (add-after 'unpack 'replace-bundled-minified-JavaScript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((replace-file (lambda (old new)
+                                   (format #t "replacing ~a with ~a\n" old new)
+                                   (delete-file old)
+                                   (symlink new old))))
+               ;; NOTE: Files in ./inst/www/shared/datepicker/js/locales/
+               ;; contain just data.  They are not minified code, so we don't
+               ;; replace them.
+               (with-directory-excursion "inst/www/shared"
+                 (replace-file "bootstrap/shim/respond.min.js"
+                               (string-append (assoc-ref inputs "js-respond")
+                                              "/share/javascript/respond.min.js"))
+                 (replace-file "bootstrap/shim/html5shiv.min.js"
+                               (string-append (assoc-ref inputs "js-html5shiv")
+                                              "/share/javascript/html5shiv.min.js"))
+                 (replace-file "json2-min.js"
+                               (string-append (assoc-ref inputs "js-json2")
+                                              "/share/javascript/json2.min.js"))
+                 (replace-file "strftime/strftime-min.js"
+                               (string-append (assoc-ref inputs "js-strftime")
+                                              "/share/javascript/strftime.min.js"))
+                 (replace-file "highlight/highlight.pack.js"
+                               (string-append (assoc-ref inputs "js-highlight")
+                                              "/share/javascript/highlight.min.js"))
+                 (replace-file "datatables/js/jquery.dataTables.min.js"
+                               (string-append (assoc-ref inputs "js-datatables")
+                                              "/share/javascript/jquery.dataTables.min.js"))
+                 (replace-file "selectize/js/selectize.min.js"
+                               (string-append (assoc-ref inputs "js-selectize")
+                                              "/share/javascript/selectize.min.js"))
+                 (replace-file "selectize/js/es5-shim.min.js"
+                               (string-append (assoc-ref inputs "js-es5-shim")
+                                              "/share/javascript/es5-shim.min.js"))
+                 (for-each (match-lambda
+                             ((source . target)
+                              (delete-file target)
+                              (minify source #:target target)))
+                           '(("jqueryui/jquery-ui.js" .
+                              "jqueryui/jquery-ui.min.js")
+                             ("showdown/src/showdown.js" .
+                              "showdown/compressed/showdown.js")
+                             ("datepicker/js/bootstrap-datepicker.js" .
+                              "datepicker/js/bootstrap-datepicker.min.js")
+                             ("ionrangeslider/js/ion.rangeSlider.js" .
+                              "ionrangeslider/js/ion.rangeSlider.min.js")
+                             ("bootstrap/js/bootstrap.js" .
+                              "bootstrap/js/bootstrap.min.js")
+                             ("shiny.js" .
+                              "shiny.min.js")
+                             ("jquery.js" .
+                              "jquery.min.js")))))
+             #t)))))
+    (propagated-inputs
+     `(("r-httpuv" ,r-httpuv)
+       ("r-mime" ,r-mime)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-xtable" ,r-xtable)
+       ("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-r6" ,r-r6)
+       ("r-sourcetools" ,r-sourcetools)))
+    (inputs
+     `(("js-datatables" ,js-datatables)
+       ("js-html5shiv" ,js-html5shiv)
+       ("js-json2" ,js-json2)
+       ("js-respond" ,js-respond)
+       ("js-selectize" ,js-selectize)
+       ("js-strftime" ,js-strftime)
+       ("js-highlight" ,js-highlight)
+       ("js-es5-shim" ,js-es5-shim)))
+    (home-page "http://shiny.rstudio.com")
+    (synopsis "Easy interactive web applications with R")
+    (description
+     "Makes it incredibly easy to build interactive web applications
+with R.  Automatic \"reactive\" binding between inputs and outputs and
+extensive prebuilt widgets make it possible to build beautiful,
+responsive, and powerful applications with minimal effort.")
+    (license l:artistic2.0)))
