@@ -833,19 +833,21 @@ ext3 or ext4 partition.")
                 "1xncw3dn2cp922ly42m96p6fh7jv8ysg6bwqbk5xvw701f3dmkrs"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (mkdir-p bin)
-                     (copy-file "zerofree"
-                                (string-append bin "/zerofree"))
-                     (chmod (string-append bin "/zerofree")
-                            #o555)
-                     #t))
-                 (alist-delete 'configure %standard-phases))
-       #:tests? #f))                              ;no tests
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           ;; The Makefile lacks an ‘install’ target.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "zerofree"
+                          (string-append bin "/zerofree"))
+               (chmod (string-append bin "/zerofree")
+                      #o555)
+               #t))))
+       #:tests? #f))                    ; no tests
     (inputs `(("libext2fs" ,e2fsprogs)))
     (synopsis "Zero non-allocated regions in ext2/ext3/ext4 file systems")
     (description
