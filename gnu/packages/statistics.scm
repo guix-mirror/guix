@@ -5126,17 +5126,19 @@ diagnostic tools (@code{ctlcurves} and @code{DiscrFact}).")
 (define-public r-ranger
   (package
     (name "r-ranger")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ranger" version))
        (sha256
         (base32
-         "0g1rnpk4c06lmy0r5n0j7i2xna190kqalmxp42d9gnk3drnb1x43"))))
+         "1fdbm879wx3hlng8s4c4f8f2x5yxz57llakcqnpa0lymybidw3vz"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-matrix" ,r-matrix)
+       ("r-rcppeigen" ,r-rcppeigen)))
     (home-page "https://github.com/imbs-hl/ranger")
     (synopsis "Fast implementation of random forests")
     (description
