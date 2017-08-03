@@ -1602,14 +1602,14 @@ Groups in Data\".")
 (define-public r-formula
   (package
     (name "r-formula")
-    (version "1.2-1")
+    (version "1.2-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Formula" version))
        (sha256
         (base32
-         "02in5325zzrqbhlygx6s0dinj6ymw845q70y56frqacv25ayzcax"))))
+         "0ad49bzip1zqmpj1d8jajwl4bd81fm3k6dq8p26x6mvlzc04dvwd"))))
     (properties `((upstream-name . "Formula")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/Formula")
