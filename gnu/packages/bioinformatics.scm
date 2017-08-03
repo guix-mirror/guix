@@ -6570,14 +6570,14 @@ S4Vectors package itself.")
 (define-public r-seqinr
   (package
     (name "r-seqinr")
-    (version "3.3-6")
+    (version "3.4-5")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "seqinr" version))
         (sha256
           (base32
-            "13d0qxm2244wgdl2dy2s8vnrnf5fx4n47if9gkb49dqx6c0sx8s2"))))
+            "17zv0n5cji17izwmwg0jcbxbjl3w5rls91w15svcnlpxjms38ahn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
