@@ -3030,14 +3030,14 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "2.0-5")
+   (version "2.0-10")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
       (base32
-       "1cbpzmbv837fvq88rgn6mgzgr9f1wqp9fg8gh2kkmngvr1957a9c"))))
+       "07n2hz4fvjyv0siai8z8wqwfj8d58i8n1vzf1ckdfzp4kxa3z08d"))))
    (build-system r-build-system)
    (inputs
     `(("gfortran" ,gfortran)))
