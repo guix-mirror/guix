@@ -1745,7 +1745,7 @@ UnionFS-FUSE additionally supports copy-on-write.")
 (define-public sshfs-fuse
   (package
     (name "sshfs-fuse")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/sshfs/releases/"
@@ -1753,7 +1753,7 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1pp5wsl1jx11apkv2fpp559miifqhi8ka400npy5awp9ghlf3la6"))))
+                "00fir2iykdx11g8nv5gijg0zjrp2g3ldypnv0yi6lq3h5pg5v13h"))))
     (build-system gnu-build-system)
     (inputs
      `(("fuse" ,fuse)
