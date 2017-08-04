@@ -13500,7 +13500,8 @@ specs from your Flask-Restful projects.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pexpect" ,python-pexpect)
-       ("tcsh" ,tcsh)))
+       ("tcsh" ,tcsh)
+       ("bash-full" ,bash)))             ;full Bash for 'test_file_completion'
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion
