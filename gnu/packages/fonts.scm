@@ -870,6 +870,24 @@ designed to work well in user interface environments.")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
 
+(define-public font-fira-sans
+  (package
+    (name "font-fira-sans")
+    (version "4.202")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mozilla/Fira/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r6zdnqqp4bgq5nmgqbj0vvj7x1h9w912851ggbl9wc7fdjnjqnq"))))
+    (build-system font-build-system)
+    (home-page "http://mozilla.github.io/Fira/")
+    (synopsis "Mozilla's Fira Sans Font")
+    (description "This is the typeface used by Mozilla in Firefox OS.")
+    (license license:silofl1.1)))
+
 (define-public font-awesome
   (package
    (name "font-awesome")
