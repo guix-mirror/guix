@@ -742,17 +742,18 @@ time for compression ratio.")
 (define-public python-lz4
   (package
     (name "python-lz4")
-    (version "0.8.2")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lz4" version))
        (sha256
         (base32
-         "1irad4sq4hdr30fr53smvv3zzk4rddcf9b4jx19w8s9xsxhr1x3b"))))
+         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/python-lz4/python-lz4")
     (synopsis "LZ4 Bindings for Python")
     (description
