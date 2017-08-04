@@ -755,7 +755,7 @@ time for compression ratio.")
      `(("python-nose" ,python-nose)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/python-lz4/python-lz4")
-    (synopsis "LZ4 Bindings for Python")
+    (synopsis "LZ4 bindings for Python")
     (description
      "This package provides python bindings for the lz4 compression library
 by Yann Collet.  The project contains bindings for the LZ4 block format and
