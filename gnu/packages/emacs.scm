@@ -4767,12 +4767,9 @@ other operations.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
-               ;; Set DISPLAY variable to work around
-               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
-                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
