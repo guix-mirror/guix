@@ -21,12 +21,15 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages xml))
 
 (define-public igraph
@@ -82,3 +85,34 @@ more.")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://pypi.python.org/pypi/python-igraph")
     (synopsis "Python bindings for the igraph network analysis library")))
+
+(define-public r-igraph
+  (package
+    (name "r-igraph")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "igraph" version))
+       (sha256
+        (base32
+         "1v26wyk52snh8z6m5p7yqwcd9dbqifhm57j112i9x53ppi0npcc9"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-irlba" ,r-irlba)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-pkgconfig" ,r-pkgconfig)))
+    (home-page "http://igraph.org")
+    (synopsis "Network analysis and visualization")
+    (description
+     "This package provides routines for simple graphs and network analysis.
+It can handle large graphs very well and provides functions for generating
+random and regular graphs, graph visualization, centrality methods and much
+more.")
+    (license license:gpl2+)))
