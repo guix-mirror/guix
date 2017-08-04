@@ -986,7 +986,16 @@ differences in file encoding, image quality, and other small variations.")
        ("libjpeg" ,libjpeg)
        ("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CXXFLAGS=-fpermissive"))) ;required for MHashPP.cc
+     `(#:make-flags '("CXXFLAGS=-fpermissive")    ;required for MHashPP.cc
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-perl-search-path
+                    (lambda _
+                      ;; Work around "dotless @INC" build failure.
+                      (setenv "PERL5LIB"
+                              (string-append (getcwd) "/tests:"
+                                             (getenv "PERL5LIB")))
+                      #t)))))
     (home-page "http://steghide.sourceforge.net")
     (synopsis "Image and audio steganography")
     (description

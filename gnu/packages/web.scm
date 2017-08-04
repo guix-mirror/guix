@@ -3249,7 +3249,16 @@ RFC 6570.")
                 "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
     (build-system perl-build-system)
     (arguments
-     '(#:tests? #f))                        ;XXX: tests require network access
+     '(#:tests? #f                          ;XXX: tests require network access
+
+       #:phases (modify-phases %standard-phases
+                   (add-before 'configure 'set-search-path
+                     (lambda _
+                       ;; Work around "dotless @INC" build failure.
+                       (setenv "PERL5LIB"
+                               (string-append (getcwd) ":"
+                                              (getenv "PERL5LIB")))
+                       #t)))))
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
     (inputs `(("curl" ,curl)))

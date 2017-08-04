@@ -4680,6 +4680,10 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
         'configure
         (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
+            ;; Allow 'konfigure.perl' to find 'package.prl'.
+            (setenv "PERL5LIB"
+                    (string-append ".:" (getenv "PERL5LIB")))
+
             ;; The 'configure' script doesn't recognize things like
             ;; '--enable-fast-install'.
             (zero? (system* "./configure"
