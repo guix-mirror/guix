@@ -523,7 +523,7 @@ transactions from C or Python.")
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)
               ("python-chardet" ,python-chardet)))
-    (home-page "http://diffoscope.org/")
+    (home-page "https://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
      "Diffoscope tries to get to the bottom of what makes files or directories
