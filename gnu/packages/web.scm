@@ -4852,3 +4852,30 @@ with R.  Automatic \"reactive\" binding between inputs and outputs and
 extensive prebuilt widgets make it possible to build beautiful,
 responsive, and powerful applications with minimal effort.")
     (license l:artistic2.0)))
+
+(define-public r-crosstalk
+  (package
+    (name "r-crosstalk")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "crosstalk" version))
+       (sha256
+        (base32
+         "0lfa89vhrzi7a1rghmygcjr8gzddw35sinb3jx6g49mc9jias7mk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-r6" ,r-r6)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://rstudio.github.io/crosstalk/")
+    (synopsis "Inter-widget interactivity for HTML widgets")
+    (description
+     "This package provides building blocks for allowing HTML widgets to
+communicate with each other, with Shiny or without (i.e.  static @code{.html}
+files).  It currently supports linked brushing and filtering.")
+    (license l:expat)))
