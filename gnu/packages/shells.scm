@@ -366,14 +366,14 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.5.9")
+    (version "0.5.12")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "09s5k7fh4p0vkq0fha4ikwqlqsyv84vmlbqn8ggn0ymd47ajv38z"))
+            "1yz595hx5bni524m73cx8a08vcr6vfksfci14nx2ylz53igzva2c"))
         (modules '((guix build utils)))
         (snippet
          `(begin
