@@ -4902,3 +4902,43 @@ reference class object that implements a @code{call} method or an R closure
 that takes exactly one argument, an environment, and returns a list with three
 named elements: the @code{status}, the @code{headers}, and the @code{body}.")
     (license l:gpl2)))
+
+(define-public rss-bridge
+  (package
+    (name "rss-bridge")
+    (version "2017-08-03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/RSS-Bridge/rss-bridge/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05s16y552hbyj91s7bnlkx1bi64s6aw0fjy29az8via3i3b21yhl"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share-rss-bridge (string-append out "/share/rss-bridge")))
+           (set-path-environment-variable
+            "PATH" '("bin") (map (match-lambda ((_ . input) input))
+                                 %build-inputs))
+           (mkdir-p share-rss-bridge)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source")
+                    "--strip-components" "1" "-C" share-rss-bridge)
+           #t))))
+    (home-page "https://github.com/RSS-Bridge/rss-bridge")
+    (synopsis "Generate Atom feeds for social networking websites")
+    (description "rss-bridge generates Atom feeds for social networking
+websites lacking feeds.  Supported websites include Facebook, Twitter,
+Instagram and YouTube.")
+    (license (list l:public-domain
+                   l:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
