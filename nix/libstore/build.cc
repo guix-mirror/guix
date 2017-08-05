@@ -26,7 +26,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <cstring>
-#include <stdint.h>
 
 #include <pwd.h>
 #include <grp.h>
@@ -2009,11 +2008,7 @@ void DerivationGoal::startBuilder()
 	char stack[32 * 1024];
 	int flags = CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD;
 	if (!fixedOutput) flags |= CLONE_NEWNET;
-
-	/* Ensure proper alignment on the stack.  On aarch64, it has to be 16
-	   bytes.  */
-	pid = clone(childEntry, (char *)(((uintptr_t)stack + 16) & ~0xf),
-		    flags, this);
+	pid = clone(childEntry, stack + sizeof(stack) - 8, flags, this);
 	if (pid == -1)
 	    throw SysError("cloning builder process");
     } else
