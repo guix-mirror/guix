@@ -146,7 +146,7 @@ result.  Otherwise return #f."
     (force-output sock)
 
     (match (read sock)
-      (('reply ('version 0 _ ...) ('result (result)) ('error #f)
+      (('reply ('version 0 _ ...) ('result result) ('error #f)
                ('messages messages))
        (for-each display-message messages)
        (cont result))
