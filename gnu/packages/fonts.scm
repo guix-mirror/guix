@@ -170,6 +170,45 @@ itself."))))
 sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (license license:silofl1.1)))
 
+(define-public font-lato
+  (package
+    (name "font-lato")
+    (version "2.010")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.latofonts.com/download/Lato2OFL.zip"))
+              (sha256
+               (base32
+                "1f5540g0ja1nx3ddd3ywn77xc81ssrxpq8n3gyb9sabyq2b4xda2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH     (string-append (assoc-ref %build-inputs
+                                                             "unzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype")))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (for-each (lambda (ttf)
+                                 (install-file ttf font-dir))
+                               (find-files "." "\\.ttf$"))))))
+
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "http://www.latofonts.com/lato-free-fonts/")
+    (synopsis "Lato sans-serif typeface")
+    (description
+     "Lato is a sanserif typeface family.  It covers over 3000 glyphs per style.
+The Lato 2.010 family supports more than 100 Latin-based languages, over
+50 Cyrillic-based languages as well as Greek and IPA phonetics.")
+    (license license:silofl1.1)))
+
 (define-public font-gnu-freefont-ttf
   (package
     (name "font-gnu-freefont-ttf")
