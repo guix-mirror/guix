@@ -333,48 +333,56 @@ also initializes the boards (RAM etc).")
 
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
-  (package
-    (inherit u-boot)
-    (name (string-append "u-boot-" (string-downcase board)))
-    (native-inputs
-     `(("cross-gcc" ,(cross-gcc triplet))
-       ("cross-binutils" ,(cross-binutils triplet))
-       ,@(package-native-inputs u-boot)))
-    (arguments
-     `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
-       #:test-target "test"
-       #:make-flags
-       (list "HOSTCC=gcc" (string-append "CROSS_COMPILE=" ,triplet "-"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (let ((config-name (string-append ,board "_defconfig")))
-               (if (file-exists? (string-append "configs/" config-name))
-                   (zero? (apply system* "make" `(,@make-flags ,config-name)))
-                   (begin
-                     (display "Invalid board name. Valid board names are:")
-                     (let ((suffix-len (string-length "_defconfig")))
-                       (scandir "configs"
-                                (lambda (file-name)
-                                  (when (string-suffix? "_defconfig" file-name)
-                                    (format #t
-                                            "- ~A\n"
-                                            (string-drop-right file-name
-                                                               suffix-len))))))
-                     #f)))))
-         (replace 'install
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (libexec (string-append out "/libexec"))
-                    (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
-               (mkdir-p libexec)
-               (for-each
-                (lambda (file)
-                  (let ((target-file (string-append libexec "/" file)))
-                    (mkdir-p (dirname target-file))
-                    (copy-file file target-file)))
-                uboot-files)))))))))
+  (let ((same-arch? (if (string-prefix? (%current-system) triplet)
+                      `#t
+                      `#f)))
+    (package
+      (inherit u-boot)
+      (name (string-append "u-boot-" (string-downcase board)))
+      (native-inputs
+       `(,@(if (not same-arch?)
+             `(("cross-gcc" ,(cross-gcc triplet))
+               ("cross-binutils" ,(cross-binutils triplet)))
+             '())
+         ,@(package-native-inputs u-boot)))
+      (arguments
+       `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
+         #:test-target "test"
+         #:make-flags
+         (list "HOSTCC=gcc"
+               ,@(if (not same-arch?)
+                   `((string-append "CROSS_COMPILE=" ,triplet "-"))
+                   '()))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs make-flags #:allow-other-keys)
+               (let ((config-name (string-append ,board "_defconfig")))
+                 (if (file-exists? (string-append "configs/" config-name))
+                     (zero? (apply system* "make" `(,@make-flags ,config-name)))
+                     (begin
+                       (display "Invalid board name. Valid board names are:")
+                       (let ((suffix-len (string-length "_defconfig")))
+                         (scandir "configs"
+                                  (lambda (file-name)
+                                    (when (string-suffix? "_defconfig" file-name)
+                                      (format #t
+                                              "- ~A\n"
+                                              (string-drop-right file-name
+                                                                 suffix-len))))))
+                       #f)))))
+           (replace 'install
+             (lambda* (#:key outputs make-flags #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libexec (string-append out "/libexec"))
+                      (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
+                 (mkdir-p libexec)
+                 (for-each
+                  (lambda (file)
+                    (let ((target-file (string-append libexec "/" file)))
+                      (mkdir-p (dirname target-file))
+                      (copy-file file target-file)))
+                  uboot-files))))))))))
 
 (define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
