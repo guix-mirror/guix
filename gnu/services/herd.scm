@@ -49,7 +49,8 @@
             unload-services
             unload-service
             load-services
-            start-service))
+            start-service
+            stop-service))
 
 ;;; Commentary:
 ;;;
@@ -220,6 +221,10 @@ returns a shepherd <service> object."
 
 (define (start-service name)
   (with-shepherd-action name ('start) result
+    result))
+
+(define (stop-service name)
+  (with-shepherd-action name ('stop) result
     result))
 
 ;; Local Variables:
