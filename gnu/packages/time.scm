@@ -82,3 +82,33 @@ to a file.")
 
 (define-public python2-tzdata
   (package-with-python2 python-pytzdata))
+
+(define-public python-pendulum
+  (package
+    (name "python-pendulum")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pendulum" version))
+       (sha256
+        (base32
+         "1fj36yxi2f4lzchzd8ny1qjl67dbypnk0gn8qwad2w78579m8m8z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-pytzdata" ,python-pytzdata)
+       ("python-tzlocal" ,python-tzlocal)))
+    (home-page "https://github.com/sdispater/pendulum")
+    (synopsis "Alternate API for Python datetimes")
+    (description "Pendulum is a drop-in replacement for the standard
+@{datetime} class, providing an alternative API.  As it inherits from the
+standard @code{datetime} all @code{datetime} instances can be replaced by
+Pendulum instances.")
+    (license expat)))
+
+(define-public python2-pendulum
+  (package-with-python2 python-pendulum))
