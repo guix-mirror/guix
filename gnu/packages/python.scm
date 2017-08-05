@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
@@ -12178,6 +12178,32 @@ YAML-serialized data.")
 
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
+
+(define-public python-backpack
+  (package
+    (name "python-backpack")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "backpack" version))
+       (sha256
+        (base32
+         "14rq1mvm0jda90lcx9gyyby9dvq4x3js2cmxvd6vl4686ixwyqh1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/sdispater/backpack")
+    (synopsis "Utilities for working with Python collections")
+    (description "Backpack provides some useful utilities for working with
+collections of data.")
+    (license license:expat)))
+
+(define-public python2-backpack
+  (package-with-python2 python-backpack))
 
 (define-public python-flexmock
   (package
