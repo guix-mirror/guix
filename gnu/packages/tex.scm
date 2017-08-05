@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,29 +67,28 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-extra.tar.xz")
     (sha256 (base32
-              "0q4a92zmwhn4ry6xgrp4k8wq11ax2sg9rg9yrsrdkr719y0x887a"))))
+              "0zvd2zskk78ig114mfj24g15qys41hzqv59fmqpirdbgq9c9gr5g"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-texmf.tar.xz")
-    (patches (search-patches "texlive-texmf-CVE-2016-10243.patch"))
-    (patch-flags '("-p2"))
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-texmf.tar.xz")
     (sha256 (base32
-              "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
+              "1v69y3kgkbk24f7s4dfkknwd317mqmck5jgpyb35wqgqfy5p0qrz"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "2016")
+   (version "20170524")
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-source.tar.xz")
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
+                          "texlive-" version "-source.tar.xz"))
       (sha256 (base32
-               "1v91vahxlxkdra0qz3f132vvx5d9cx2jy84yl1hkch0agyj2rcx8"))))
+               "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -3808,7 +3808,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2016")
+   (version "2017")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -3880,7 +3880,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2016")
+   (version "2017")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
