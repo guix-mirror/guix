@@ -109,6 +109,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
@@ -12232,24 +12233,44 @@ mocks, stubs and fakes.")
 (define-public python-orator
   (package
     (name "python-orator")
-    (version "0.8.2")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "orator" version))
               (sha256
                (base32
-                "1li49irsqha17nrda4nsb48biyy0rarp9pphf0jpqwm5zr8hv569"))))
+                "14r58z64fdp76ixnvmi4lni762b405ynmsx6chr1qihs3yl9zn6c"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-dependencies
+           ;; Tests are not actually run since they are not included with the
+           ;; distributed package, but dependencies are checked.
+           (lambda _
+             (substitute* "setup.py"
+               ((",<.*'") "'")
+               (("flexmock==0.9.7") "flexmock")
+               ;; The pytest-mock package is out of date, so we remove minimum
+               ;; version requirement.
+               (("pytest-mock.*'") "pytest-mock'"))
+             #t)))))
+    (native-inputs
+     `(("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest" ,python-pytest-3.0)
+       ("python-flexmock" ,python-flexmock)))
     (propagated-inputs
-     `(("python-arrow" ,python-arrow)
+     `(("python-backpack" ,python-backpack)
        ("python-blinker" ,python-blinker)
        ("python-cleo" ,python-cleo)
        ("python-faker" ,python-faker)
        ("python-inflection" ,python-inflection)
        ("python-lazy-object-proxy" ,python-lazy-object-proxy)
+       ("python-pendulum" ,python-pendulum)
        ("python-pyaml" ,python-pyaml)
+       ("python-pygments" ,python-pygments)
        ("python-simplejson" ,python-simplejson)
+       ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
     (home-page "https://orator-orm.com/")
     (synopsis "ActiveRecord ORM for Python")
@@ -12260,12 +12281,7 @@ implementation for Python.")
     (properties `((python2-variant . ,(delay python2-orator))))))
 
 (define-public python2-orator
-  (let ((base (package-with-python2 (strip-python2-variant python-orator))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-propagated-inputs base))))))
+  (package-with-python2 (strip-python2-variant python-orator)))
 
 (define-public python-prompt-toolkit
  (package
