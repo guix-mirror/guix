@@ -216,6 +216,14 @@ and stores the database cluster in @var{data-directory}."
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define memcached-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (let ((user (getpwnam "memcached")))
+        (mkdir-p "/var/run/memcached")
+        (chown "/var/run/memcached"
+               (passwd:uid user) (passwd:gid user)))))
+
 (define memcached-shepherd-service
   (match-lambda
     (($ <memcached-configuration> memcached interfaces tcp-port udp-port
@@ -233,11 +241,14 @@ and stores the database cluster in @var{data-directory}."
                           "-p" #$(number->string tcp-port)
                           "-U" #$(number->string udp-port)
                           "--daemon"
-                          "-P" "/var/run/memcached.pid"
+                          ;; Memcached changes to the memcached user prior to
+                          ;; writing the pid file, so write it to a directory
+                          ;; that memcached owns.
+                          "-P" "/var/run/memcached/pid"
                           "-u" "memcached"
                           ,#$@additional-options)
                         #:log-file "/var/log/memcached"
-                        #:pid-file "/var/run/memcached.pid"))
+                        #:pid-file "/var/run/memcached/pid"))
               (stop #~(make-kill-destructor))))))))
 
 (define memcached-service-type
@@ -245,6 +256,8 @@ and stores the database cluster in @var{data-directory}."
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           memcached-shepherd-service)
+                       (service-extension activation-service-type
+                                          (const memcached-activation))
                        (service-extension account-service-type
                                           (const %memcached-accounts))))
                 (default-value (memcached-configuration))))
