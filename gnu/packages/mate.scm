@@ -24,8 +24,10 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -33,6 +35,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages python))
 
 (define-public mate-icon-theme
@@ -205,3 +208,58 @@ the MATE desktop environment.")
 specification, the MATE menu layout configuration files, .directory files and
 assorted menu related utility programs.")
     (license (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public caja
+  (package
+    (name "caja")
+    (version "1.18.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0mljqcx7k8p27854zm7qzzn8ca6hs7hva9p43hp4p507z52caqmm"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-update-mimedb")
+       #:tests? #f ; tests fail even with display set
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("xorg-server" ,xorg-server)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("exempi" ,exempi)
+       ("gtk+" ,gtk+)
+       ("gvfs" ,gvfs)
+       ("libexif" ,libexif)
+       ("libnotify" ,libnotify)
+       ("libsm" ,libsm)
+       ("libxml2" ,libxml2)
+       ("mate-desktop" ,mate-desktop)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "File manager for the MATE desktop")
+    (description
+     "Caja is the official file manager for the MATE desktop.
+It allows for browsing directories, as well as previewing files and launching
+applications associated with them.  Caja is also responsible for handling the
+icons on the MATE desktop.  It works on local and remote filesystems.")
+    ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
+    ;; does not exist. It is safe to assume that this is of no concern
+    ;; for us.
+    (license license:gpl2+)))
