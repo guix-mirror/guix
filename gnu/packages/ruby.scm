@@ -2905,29 +2905,34 @@ tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
       (license license:expat))))
 
 (define-public ruby-nokogiri-diff
-  (package
-    (name "ruby-nokogiri-diff")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "nokogiri-diff" version))
-              (sha256
-               (base32
-                "0njr1s42war0bj1axb2psjvk49l74a8wzr799wckqqdcb6n51lc1"))))
-    (build-system ruby-build-system)
-    (propagated-inputs
-     `(("ruby-tdiff" ,ruby-tdiff)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
-    (native-inputs
-     `(("ruby-rspec-2" ,ruby-rspec-2)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
-    (synopsis "Calculate the differences between two XML/HTML documents")
-    (description
-     "@code{Nokogiri::Diff} adds the ability to calculate the
+  ;; Use a newer than released snapshot so that rspec-2 is not required.
+  (let ((commit "a38491e4d8709b7406f2cae11a50226d927d06f5"))
+    (package
+      (name "ruby-nokogiri-diff")
+      (version (string-append "0.2.0-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/postmodern/nokogiri-diff.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1ah2sfjh9n1p0ln2wkqzfl448ml7j4zfy6dhp1qgzq2m41php6rf"))))
+      (build-system ruby-build-system)
+      (propagated-inputs
+       `(("ruby-tdiff" ,ruby-tdiff)
+         ("ruby-nokogiri" ,ruby-nokogiri)))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)
+         ("ruby-yard" ,ruby-yard)
+         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+      (synopsis "Calculate the differences between two XML/HTML documents")
+      (description
+       "@code{Nokogiri::Diff} adds the ability to calculate the
 differences (added or removed nodes) between two XML/HTML documents.")
-    (home-page "https://github.com/postmodern/nokogiri-diff")
-    (license license:expat)))
+      (home-page "https://github.com/postmodern/nokogiri-diff")
+      (license license:expat))))
 
 (define-public ruby-rack
   (package
