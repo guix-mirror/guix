@@ -5102,6 +5102,28 @@ prettified JSON to stdout.  It also offers a complementary \"compact\"-mode,
 essentially the opposite of pretty-printing.")
     (license license:bsd-3)))
 
+(define-public ghc-boxes
+  (package
+    (name "ghc-boxes")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/boxes/boxes-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1n7xiplzd3s1a39nizwjcgsh3wi2348mp21c3fk19v98ialfjgjf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-split" ,ghc-split)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/boxes")
+    (synopsis "2D text pretty-printing library")
+    (description
+     "Boxes is a pretty-printing library for laying out text in two dimensions,
+using a simple box model.")
+    (license license:bsd-3)))
+
 (define-public ghc-wai
   (package
     (name "ghc-wai")
