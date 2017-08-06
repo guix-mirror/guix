@@ -330,14 +330,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.21")
+    (version "1.4.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0xi2mshq8f6zbarb5f61c9w2qzwrdbjm4q8fqsrwlzc51h8a6ivb"))))
+                "1d1hz4szh1kvwhsw7w2zxa6q5ndrk3qy6hj289l1b8k3xi5s554m"))))
     (native-inputs '())
     (inputs
      `(("zlib" ,zlib)

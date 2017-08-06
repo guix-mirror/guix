@@ -41,6 +41,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
@@ -126,6 +127,8 @@
        ("python2-lxml" ,python2-lxml)
        ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
+       ;; python2-msgpack is needed for the network content server to work.
+       ("python2-msgpack" ,python2-msgpack)
        ("python2-netifaces" ,python2-netifaces)
        ("python2-pillow" ,python2-pillow)
        ("python2-pygments" ,python2-pygments)

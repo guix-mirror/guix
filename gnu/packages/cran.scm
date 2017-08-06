@@ -42,3 +42,109 @@ including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB and polar
 CIELAB.  Qualitative, sequential, and diverging color palettes based on HCL
 colors are provided.")
     (license license:bsd-3)))
+
+(define-public r-glue
+  (package
+    (name "r-glue")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glue" version))
+       (sha256
+        (base32
+         "01awmqby7rwzhzr51m7d87wqibx7ggl6xair8fi3z3q1hkyyv7ih"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/tidyverse/glue")
+    (synopsis "Interpreted string literals")
+    (description
+     "This package provides an implementation of interpreted string literals,
+inspired by Python's Literal String Interpolation (PEP-0498) and
+Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
+    (license license:expat)))
+
+(define-public r-plogr
+  (package
+    (name "r-plogr")
+    (version "0.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "plogr" version))
+       (sha256
+        (base32
+         "13zliqlbkl8b04k9ga0sx5jsh7k867gracgl84l2a9kcqy9mqx92"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/krlmlr/plogr")
+    (synopsis "R bindings for the plog C++ logging library")
+    (description
+     "This package provides the header files for a stripped-down version of
+the plog header-only C++ logging library, and a method to log to R's standard
+error stream.")
+    (license license:expat)))
+
+(define-public r-rcpp
+  (package
+    (name "r-rcpp")
+    (version "0.12.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rcpp" version))
+       (sha256
+        (base32 "1byyqvlgb2p46p1gv243k73rk69fa8pa4l5m5asmckag2pkb2glz"))))
+    (build-system r-build-system)
+    (home-page "http://www.rcpp.org")
+    (synopsis "Seamless R and C++ integration")
+    (description
+     "The Rcpp package provides R functions as well as C++ classes which offer
+a seamless integration of R and C++.  Many R data types and objects can be
+mapped back and forth to C++ equivalents which facilitates both writing of new
+code as well as easier integration of third-party libraries.  Documentation
+about Rcpp is provided by several vignettes included in this package, via the
+'Rcpp Gallery' site at <http://gallery.rcpp.org>, the paper by Eddelbuettel
+and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
+'citation(\"Rcpp\")' for details on these last two.")
+    (license license:gpl2+)))
+
+(define-public r-bindr
+  (package
+    (name "r-bindr")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bindr" version))
+       (sha256
+        (base32
+         "0d95ifm0x4mrfzi20xf39f5pzd7rfzqsld0vjqf6xzga5rhnd8fc"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/krlmlr/bindr")
+    (synopsis "Parametrized active bindings")
+    (description
+     "This package provides a simple interface for creating active bindings
+where the bound function accepts additional arguments.")
+    (license license:expat)))
+
+(define-public r-bindrcpp
+  (package
+    (name "r-bindrcpp")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bindrcpp" version))
+       (sha256
+        (base32
+         "0l1l22zl87wiyl79m3gj2vlxmkhxvrkl4alhyy08h55q7hqs3vyh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bindr" ,r-bindr)
+       ("r-plogr" ,r-plogr)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/krlmlr/bindrcpp")
+    (synopsis "Rcpp interface to active bindings")
+    (description
+     "This package provides an easy way to fill an environment with active
+bindings that call a C++ function.")
+    (license license:expat)))

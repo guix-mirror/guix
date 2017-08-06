@@ -72,15 +72,14 @@ to remotely control a user's Windows desktop.")
 (define-public freerdp
   (package
     (name "freerdp")
-    (version "1.2.0-beta1+android9")
+    (version "2.0.0-rc0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://github.com/FreeRDP/FreeRDP.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/FreeRDP/FreeRDP/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "1m0lzrr7hkxfvc5f9p8snimv0rmin2463zhg25mv36wig8g5k7l3"))))
+               (base32 "0r36zwhl7fhmdng5pvl2a106gqbcqq184g2i2klz6ilna8pxjcml"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -111,15 +110,6 @@ to remotely control a user's Windows desktop.")
        '("-DCMAKE_INSTALL_LIBDIR=lib"
          "-DWITH_PULSE=ON"
          "-DWITH_CUPS=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-cmakelists
-           (lambda _
-             ;; CMake would return an error on REMOVE_DUPLICATES because this
-             ;; list is empty.
-             (substitute* "channels/client/CMakeLists.txt"
-               (("list\\(REMOVE_DUPLICATES CHANNEL_STATIC_CLIENT_ENTRIES\\)")
-                "")))))
        #:tests? #f))                              ; no 'test' target
     (home-page "https://www.freerdp.com")
     (synopsis "Remote Desktop Protocol implementation")

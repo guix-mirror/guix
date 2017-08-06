@@ -339,7 +339,11 @@ visual effects work for film.")
        #:configure-flags
        (list (string-append "-DCMAKE_INSTALL_RPATH="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib64"))))
+                            (assoc-ref %outputs "out") "/lib64")
+             ;; We need to set this flag or otherwise 'rd' will be added
+             ;; to the name of the library binaries and break linking
+             ;; with other programs.
+             "-DCMAKE_BUILD_TYPE=Release")))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs

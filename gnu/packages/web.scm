@@ -54,6 +54,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cran)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
@@ -72,6 +73,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
@@ -3380,13 +3382,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.3.3")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "0aibs0hf38n8f6xxx4g2i2lzd6l5h92m5pscx2z834sdvhnladxv"))))
+                "1sg4f223zfyd265b28rlhsn3b6mqflcpnmya98cjmjncmy9vjdj3"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/rstudio/httpuv")
@@ -3404,13 +3406,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "11rgkjp5qir79niad0aizjxvjzyvkl6l9nsrv3ikv446vllmrasn"))))
+                "00lfg464jhf7k01bal9pcjvbdf5cxk6xi2h46hccp1x3h883g434"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
@@ -3428,13 +3430,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "1ixcl9xjc1k9zvl6v6bsw4kpramr1h53b4s46qg8kahkqy6kqd8a"))))
+                "0sqz3wssxa19g9mpmf9s4gx2a5rvzl8nrd11qkgpz5v3iqsc6ysr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3453,13 +3455,13 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.3.5")
+    (version "0.3.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "0j9bf80grd6gwh7116m575pycv87c0wcwkxsz3gzzfs4aw3pxyr9"))))
+                "18k8r1s8sz1jy7dkz35n69wj20xhmllr53xmwb4pdzf2z61gpbs4"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -3487,13 +3489,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "1df3pwl34rvdbr9sgr5h27q9bmqpckvpwq4frl3d1v614y3vfclj"))))
+                "0plqkfqys1ca3ki7sb7yc6gwjpi7yy4g3mzh7hfy8s6qri0vam0i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3541,13 +3543,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "2.5")
+    (version "2.8.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "09p86i5f88gx1i7cidm1ka56g0jjkghqfam96p1jhwlh2fv6nrks"))))
+                "0dgfl7wn4r8inv55xnk4ybf1y2x4qmi4cbr6phr3lfi1dnjm4hsm"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -4781,3 +4783,133 @@ internetarchive python module for programatic access to archive.org.")
 (define-public python2-internetarchive
   (package-with-python2
    (strip-python2-variant python-internetarchive)))
+
+(define-public r-shiny
+  (package
+    (name "r-shiny")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rstudio/shiny/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z2v2s4hd44mvzjn7r70549kdzkrrch9nxhp27r6x2cy6micizm3"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build r-build-system)
+                  (guix build minify-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules (,@%r-build-system-modules
+                           (guix build minify-build-system))
+       #:phases
+       (modify-phases (@ (guix build r-build-system) %standard-phases)
+         (add-after 'unpack 'replace-bundled-minified-JavaScript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((replace-file (lambda (old new)
+                                   (format #t "replacing ~a with ~a\n" old new)
+                                   (delete-file old)
+                                   (symlink new old))))
+               ;; NOTE: Files in ./inst/www/shared/datepicker/js/locales/
+               ;; contain just data.  They are not minified code, so we don't
+               ;; replace them.
+               (with-directory-excursion "inst/www/shared"
+                 (replace-file "bootstrap/shim/respond.min.js"
+                               (string-append (assoc-ref inputs "js-respond")
+                                              "/share/javascript/respond.min.js"))
+                 (replace-file "bootstrap/shim/html5shiv.min.js"
+                               (string-append (assoc-ref inputs "js-html5shiv")
+                                              "/share/javascript/html5shiv.min.js"))
+                 (replace-file "json2-min.js"
+                               (string-append (assoc-ref inputs "js-json2")
+                                              "/share/javascript/json2.min.js"))
+                 (replace-file "strftime/strftime-min.js"
+                               (string-append (assoc-ref inputs "js-strftime")
+                                              "/share/javascript/strftime.min.js"))
+                 (replace-file "highlight/highlight.pack.js"
+                               (string-append (assoc-ref inputs "js-highlight")
+                                              "/share/javascript/highlight.min.js"))
+                 (replace-file "datatables/js/jquery.dataTables.min.js"
+                               (string-append (assoc-ref inputs "js-datatables")
+                                              "/share/javascript/jquery.dataTables.min.js"))
+                 (replace-file "selectize/js/selectize.min.js"
+                               (string-append (assoc-ref inputs "js-selectize")
+                                              "/share/javascript/selectize.min.js"))
+                 (replace-file "selectize/js/es5-shim.min.js"
+                               (string-append (assoc-ref inputs "js-es5-shim")
+                                              "/share/javascript/es5-shim.min.js"))
+                 (for-each (match-lambda
+                             ((source . target)
+                              (delete-file target)
+                              (minify source #:target target)))
+                           '(("jqueryui/jquery-ui.js" .
+                              "jqueryui/jquery-ui.min.js")
+                             ("showdown/src/showdown.js" .
+                              "showdown/compressed/showdown.js")
+                             ("datepicker/js/bootstrap-datepicker.js" .
+                              "datepicker/js/bootstrap-datepicker.min.js")
+                             ("ionrangeslider/js/ion.rangeSlider.js" .
+                              "ionrangeslider/js/ion.rangeSlider.min.js")
+                             ("bootstrap/js/bootstrap.js" .
+                              "bootstrap/js/bootstrap.min.js")
+                             ("shiny.js" .
+                              "shiny.min.js")
+                             ("jquery.js" .
+                              "jquery.min.js")))))
+             #t)))))
+    (propagated-inputs
+     `(("r-httpuv" ,r-httpuv)
+       ("r-mime" ,r-mime)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-xtable" ,r-xtable)
+       ("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-r6" ,r-r6)
+       ("r-sourcetools" ,r-sourcetools)))
+    (inputs
+     `(("js-datatables" ,js-datatables)
+       ("js-html5shiv" ,js-html5shiv)
+       ("js-json2" ,js-json2)
+       ("js-respond" ,js-respond)
+       ("js-selectize" ,js-selectize)
+       ("js-strftime" ,js-strftime)
+       ("js-highlight" ,js-highlight)
+       ("js-es5-shim" ,js-es5-shim)))
+    (home-page "http://shiny.rstudio.com")
+    (synopsis "Easy interactive web applications with R")
+    (description
+     "Makes it incredibly easy to build interactive web applications
+with R.  Automatic \"reactive\" binding between inputs and outputs and
+extensive prebuilt widgets make it possible to build beautiful,
+responsive, and powerful applications with minimal effort.")
+    (license l:artistic2.0)))
+
+(define-public r-crosstalk
+  (package
+    (name "r-crosstalk")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "crosstalk" version))
+       (sha256
+        (base32
+         "0lfa89vhrzi7a1rghmygcjr8gzddw35sinb3jx6g49mc9jias7mk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-r6" ,r-r6)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://rstudio.github.io/crosstalk/")
+    (synopsis "Inter-widget interactivity for HTML widgets")
+    (description
+     "This package provides building blocks for allowing HTML widgets to
+communicate with each other, with Shiny or without (i.e.  static @code{.html}
+files).  It currently supports linked brushing and filtering.")
+    (license l:expat)))

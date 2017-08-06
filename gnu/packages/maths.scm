@@ -561,18 +561,17 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.12")
+    (version "4.2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "020jh563sjyxsgml8l809d2i1d4ms9shivwj3gbm7n0ilxbll8id"))
+        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))
-
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -1627,12 +1626,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.0.4")
+    (version "2.0.7")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1z3i90mkzwvp9di17caf4934z2xlb2imm3hwxllcrbwvmnmhrwyc"))))
+        (base32 "0hxa0rbbp54j0c05qj7vfwhqfdmiz5ax8vhqxd09g33x7c0hqbc5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
@@ -3068,6 +3067,8 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 @item NVIDIA GPUs / CUDA (in development)
 @end enumerate\n")
     (home-page "https://github.com/VcDevel/Vc")
+    ;; "No support_???.cpp file exists for this architecture."
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:bsd-3)))
 
 (define-public reducelcs
@@ -3196,3 +3197,46 @@ as equations, scalars, vectors, and matrices.")
 theories} (SMT) solver.  It provides a C/C++ API.")
     (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("/bin/sh") (which "sh")))))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") "")))))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is an open source model checker for verifying safety
+properties of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by an
+arbitrary number of processes.  Cache coherence protocols and mutual exclusion
+algorithms are typical examples of such systems.")
+    (license license:asl2.0)))

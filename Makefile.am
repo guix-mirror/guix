@@ -66,6 +66,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/git.scm					\
   guix/graph.scm				\
   guix/cache.scm				\
   guix/cve.scm					\
@@ -78,6 +79,7 @@ MODULES =					\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
+  guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
@@ -104,6 +106,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
@@ -206,13 +209,6 @@ MODULES +=					\
   guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
-
-if HAVE_GUILE_GIT
-
-MODULES +=					\
-  guix/git.scm
-
-endif HAVE_GUILE_GIT
 
 if BUILD_DAEMON_OFFLOAD
 

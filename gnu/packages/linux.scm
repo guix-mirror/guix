@@ -824,36 +824,36 @@ ext3 or ext4 partition.")
 (define-public zerofree
   (package
     (name "zerofree")
-    (version "1.0.3")
-    (home-page "http://intgat.tigress.co.uk/rmy/uml/")
+    (version "1.1.0")
+    (home-page "https://frippery.org/uml/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page name "-" version
                                   ".tgz"))
               (sha256
                (base32
-                "1xncw3dn2cp922ly42m96p6fh7jv8ysg6bwqbk5xvw701f3dmkrs"))))
+                "059g29x5r1xj6wcj4xj85l8w6qrxyl86yqbybjqqz6nxz4falxzf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (mkdir-p bin)
-                     (copy-file "zerofree"
-                                (string-append bin "/zerofree"))
-                     (chmod (string-append bin "/zerofree")
-                            #o555)
-                     #t))
-                 (alist-delete 'configure %standard-phases))
-       #:tests? #f))                              ;no tests
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           ;; The Makefile lacks an ‘install’ target.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (chmod "zerofree" #o555)
+               (install-file "zerofree" bin)
+               #t))))
+       #:tests? #f))                    ; no tests
     (inputs `(("libext2fs" ,e2fsprogs)))
     (synopsis "Zero non-allocated regions in ext2/ext3/ext4 file systems")
     (description
-     "The zerofree command scans the free blocks in an ext2 file system and
-fills any non-zero blocks with zeroes.  This is a useful way to make disk
-images more compressible.")
+     "Zerofree finds the unallocated blocks with non-zero value content in an
+ext2, ext3, or ext4 file system and fills them with zeroes (or another value).
+This is a simple way to make disk images more compressible.
+Zerofree requires the file system to be unmounted or mounted read-only.")
     (license license:gpl2)))
 
 (define-public strace
@@ -1747,7 +1747,7 @@ UnionFS-FUSE additionally supports copy-on-write.")
 (define-public sshfs-fuse
   (package
     (name "sshfs-fuse")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/sshfs/releases/"
@@ -1755,7 +1755,7 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1pp5wsl1jx11apkv2fpp559miifqhi8ka400npy5awp9ghlf3la6"))))
+                "00fir2iykdx11g8nv5gijg0zjrp2g3ldypnv0yi6lq3h5pg5v13h"))))
     (build-system gnu-build-system)
     (inputs
      `(("fuse" ,fuse)

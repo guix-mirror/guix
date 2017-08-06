@@ -100,13 +100,15 @@ if test "x$have_gnutls" != "xyes"; then
   AC_MSG_ERROR([The Guile bindings of GnuTLS are missing; please install them.])
 fi
 
+dnl Check for Guile-Git.
+GUILE_MODULE_AVAILABLE([have_guile_git], [(git)])
+if test "x$have_guile_git" != "xyes"; then
+  AC_MSG_ERROR([Guile-Git is missing; please install it.])
+fi
+
 dnl Guile-JSON is used in various places.
 GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
 AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
-
-dnl Check for Guile-Git.
-GUILE_MODULE_AVAILABLE([have_guile_git], [(git)])
-AM_CONDITIONAL([HAVE_GUILE_GIT], [test "x$have_guile_git" = "xyes"])
 
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])

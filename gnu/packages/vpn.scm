@@ -239,14 +239,14 @@ DNS domain name queries.")
 (define-public sshoot
   (package
     (name "sshoot")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0a92lk8790dpp9j64vb6p4sazax0x3nby01lnfll7mxs1hx6n27q"))))
+         "1ccgh0hjyxrwkgy3hnxz3hgbjbs0lmfs25d5l5jam0xbpcpj63h0"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -265,7 +265,7 @@ DNS domain name queries.")
      `(("python-fixtures" ,python-fixtures)
        ("python-pbr" ,python-pbr)
        ("python-testtools" ,python-testtools)))
-    (home-page "https://bitbucket.org/ack/sshoot")
+    (home-page "https://github.com/albertodonato/sshoot")
     (synopsis "sshuttle VPN session manager")
     (description "sshoot provides a command-line interface to manage multiple
 @command{sshuttle} virtual private networks.  It supports flexible profiles

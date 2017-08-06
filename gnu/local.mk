@@ -582,7 +582,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
-  %D%/packages/patches/fabric-tests.patch			\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
@@ -620,6 +619,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcr-disable-failing-tests.patch		\
   %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gdk-pixbuf-list-dir.patch		\
+  %D%/packages/patches/gd-CVE-2017-7890.patch		\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
@@ -637,6 +637,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
+  %D%/packages/patches/glibc-CVE-2015-5180.patch		\
+  %D%/packages/patches/glibc-CVE-2015-7547.patch		\
+  %D%/packages/patches/glibc-CVE-2016-3075.patch		\
+  %D%/packages/patches/glibc-CVE-2016-3706.patch		\
+  %D%/packages/patches/glibc-CVE-2016-4429.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\

@@ -1718,7 +1718,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.18")
+    (version "3.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1726,7 +1726,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xsvkqh89rgxq5w03mnlcfkn9y39nfwhb2pjabjspcc2mi2mq5y6"))
+                "191zbvkyc02h0wwd46xwj4zzg7jhlr8xv0ji6knqkgjnk0nvqq01"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2105,28 +2105,22 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.13.1")
+    (version "1.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))
-       (patches (search-patches "fabric-tests.patch"))))
+         "0k944dxr41whw7ib6380q9x15wyskx7fqni656icdn8rzshn9bwq"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))                       ;Python 2 only
+     `(#:python ,python-2))             ; Python 2 only
     (native-inputs
-     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
-       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
-       ("python2-nose" ,python2-nose))) ; Requires < 2.0
+     `(("python2-fudge" ,python2-fudge)
+       ("python2-jinja2" ,python2-jinja2)
+       ("python2-nose" ,python2-nose)))
     (propagated-inputs
-     ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
-     ;; between python-paramiko and newer python-pycrypto. Without this, the
-     ;; `fab` command fails with "ValueError: CTR mode needs counter
-     ;; parameter, not IV". See:
-     ;; https://github.com/paramiko/paramiko/pull/714#issuecomment-281191548.
      `(("python2-paramiko" ,python2-paramiko)))
     (home-page "http://fabfile.org")
     (synopsis "Simple Pythonic remote execution and deployment tool")

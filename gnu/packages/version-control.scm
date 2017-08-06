@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,14 +121,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.13.4")
+   (version "2.14.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1nmg0n9l5ix876iqhcyhdnmiy7ihv0ybdijf1lssch6ja8m5j6ip"))))
+              "0xarcp0m7jbncic0g3ahz8l2d6b27h0g9ndgrhy9abkx61m6wgpr"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -140,7 +141,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0ljxkfi7ski9bgpdb8xpikl1xgjjk7bdzmzzkbj93jybk6iajkv7"))))))
+            "0kc2n6b1lrbr0wc8lk3xnrljn4fgzgab82icv658gdvyl9l3qrbx"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -176,7 +177,6 @@ as well as the classic centralized workflow.")
                      ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
-      #:tests? #f ; FIXME: Many tests are failing
 
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.
@@ -202,6 +202,37 @@ as well as the classic centralized workflow.")
           (lambda _
             ;; Add the "PM.stamp" to avoid "no rule to make target".
             (call-with-output-file "perl/PM.stamp" (const #t))
+            #t))
+        (add-before 'check 'patch-tests
+          (lambda _
+            ;; These files contain some funny bytes that Guile is unable
+            ;; to decode for shebang patching. Just delete them.
+            (for-each delete-file '("t/t4201-shortlog.sh"
+                                    "t/t7813-grep-icase-iso.sh"))
+            ;; Many tests contain inline shell scripts (hooks etc).
+            (substitute* (find-files "t" "\\.sh$")
+              (("#!/bin/sh") (string-append "#!" (which "sh"))))
+            ;; Un-do shebang patching here to prevent checksum mismatch.
+            (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
+              (("^#!.*/bin/perl") "#!/usr/bin/perl"))
+            (substitute* "t/t5003-archive-zip.sh"
+              (("cp /bin/sh") (string-append "cp " (which "sh"))))
+            (substitute* "t/t6030-bisect-porcelain.sh"
+              (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
+            ;; FIXME: This test runs `git commit` with a bogus EDITOR
+            ;; and empty commit message, but does not fail the way it's
+            ;; expected to. The test passes when invoked interactively.
+            (substitute* "t/t7508-status.sh"
+              (("\tcommit_template_commented") "\ttrue"))
+            ;; More checksum mismatches due to odd shebangs.
+            (substitute* "t/t9100-git-svn-basic.sh"
+              (("\"#!/gnu.*/bin/sh") "\"#!/bin/sh"))
+            (substitute* "t/t9300-fast-import.sh"
+              (("\t#!/gnu.*/bin/sh") "\t#!/bin/sh")
+              (("'#!/gnu.*/bin/sh") "'#!/bin/sh"))
+            ;; FIXME: Some hooks fail with "basename: command not found".
+            ;; See 't/trash directory.t9164.../svn-hook.log'.
+            (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
             #t))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)

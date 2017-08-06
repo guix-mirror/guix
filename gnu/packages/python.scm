@@ -5172,6 +5172,34 @@ Python language binding specification.")
 (define-public python2-drmaa
   (package-with-python2 python-drmaa))
 
+(define-public python-grako
+  (package
+    (name "python-grako")
+    (version "3.99.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (pypi-uri "grako" version ".zip"))
+       (sha256
+        (base32
+         "0r63i68wcnv63rfjkasq1ah81frz61a6mzbcnaxhrkdpx84p7hzw"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Test file 'grako.ebnf' is missing from archive.
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://bitbucket.org/neogeny/grako")
+    (synopsis "EBNF parser generator")
+    (description
+     "Grako takes a grammar in a variation of EBNF as input, and outputs a
+memoizing PEG/Packrat parser in Python.")
+    (license license:bsd-3)))
+
+(define-public python2-grako
+  (package-with-python2 python-grako))
+
 (define-public python-gridmap
   (package
     (name "python-gridmap")

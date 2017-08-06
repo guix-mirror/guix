@@ -224,6 +224,23 @@ files."
                                      (current-error-port)
                                      (%make-void-port "w")))))
 
+  (unless guile-git
+    ;; XXX: Guix before February 2017 lacks a 'guile-git' package altogether.
+    ;; If we try to upgrade anyway, the logic in (guix scripts pull) will not
+    ;; build (guix git), which will leave us with an unusable 'guix pull'.  To
+    ;; avoid that, fail early.
+    (format (current-error-port)
+            "\
+Your installation is too old and lacks a '~a' package.
+Please upgrade to an intermediate version first, for instance with:
+
+  guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.13.0.tar.gz
+\n"
+            (match (effective-version)
+              ("2.0" "guile2.0-git")
+              (_     "guile-git")))
+    (exit 1))
+
   (mlet %store-monad ((guile (guile-for-build)))
     (gexp->derivation "guix-latest" builder
                       #:modules '((guix build pull)

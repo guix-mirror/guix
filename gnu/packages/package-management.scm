@@ -523,7 +523,7 @@ transactions from C or Python.")
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)
               ("python-chardet" ,python-chardet)))
-    (home-page "http://diffoscope.org/")
+    (home-page "https://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
      "Diffoscope tries to get to the bottom of what makes files or directories
@@ -661,7 +661,12 @@ This package provides Conda as a library.")
     (license bsd-3)))
 
 (define-public python2-conda
-  (package-with-python2 python-conda))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-conda))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-enum34" ,python2-enum34)
+                ,@(package-native-inputs base))))))
 
 (define-public conda
   (package (inherit python-conda)

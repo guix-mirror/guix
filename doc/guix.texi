@@ -580,6 +580,10 @@ later, including 2.2.x;
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
+@item
+@c FIXME: Specify a version number once a release has been made.
+@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
+2017 or later;
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -2473,7 +2477,8 @@ Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
 pull}: the command downloads the latest Guix source code and package
-descriptions, and deploys it.
+descriptions, and deploys it.  Source code is downloaded from a
+@uref{https://git-scm.com, Git} repository.
 
 On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
@@ -2499,24 +2504,18 @@ but it supports the following options:
 Produce verbose output, writing build logs to the standard error output.
 
 @item --url=@var{url}
-Download the source tarball of Guix from @var{url}.
+Download Guix from the Git repository at @var{url}.
 
-By default, the tarball is taken from its canonical address at
+By default, the source is taken from its canonical Git repository at
 @code{gnu.org}, for the stable branch of Guix.
 
-With some Git servers, this can be used to deploy any version of Guix.
-For example, to download and deploy version 0.12.0 of Guix from the
-canonical Git repo:
+@item --commit=@var{commit}
+Deploy @var{commit}, a valid Git commit ID represented as a hexadecimal
+string.
 
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
-@end example
-
-It can also be used to deploy arbitrary Git revisions:
-
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
-@end example
+@item --branch=@var{branch}
+Deploy the tip of @var{branch}, the name of a Git branch available on
+the repository at @var{url}.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -3291,7 +3290,8 @@ used.  For version control checkouts, it is recommended to provide the
 file name explicitly because the default is not very descriptive.
 
 @item @code{patches} (default: @code{'()})
-A list of file names containing patches to be applied to the source.
+A list of file names, origins, or file-like objects (@pxref{G-Expressions,
+file-like objects}) pointing to patches to be applied to the source.
 
 This list of patches must be unconditional.  In particular, it cannot
 depend on the value of @code{%current-system} or
@@ -3574,6 +3574,21 @@ specified with the @code{#:glib} parameter.
 @end table
 
 Both phases are executed after the @code{install} phase.
+@end defvr
+
+@defvr {Scheme Variable} minify-build-system
+This variable is exported by @code{(guix build-system minify)}.  It
+implements a minification procedure for simple JavaScript packages.
+
+It adds @code{uglify-js} to the set of inputs and uses it to compress
+all JavaScript files in the @file{src} directory.  A different minifier
+package can be specified with the @code{#:uglify-js} parameter, but it
+is expected that the package writes the minified code to the standard
+output.
+
+When the input JavaScript files are not all located in the @file{src}
+directory, the parameter @code{#:javascript-files} can be used to
+specify a list of file names to feed to the minifier.
 @end defvr
 
 @defvr {Scheme Variable} ocaml-build-system
