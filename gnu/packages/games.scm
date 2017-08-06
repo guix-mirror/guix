@@ -433,6 +433,47 @@ scriptable with Guile.")
 Chess).  It is similar to standard chess but this variant is far more complicated.")
     (license license:gpl3+)))
 
+(define-public ltris
+  (package
+    (name "ltris")
+    (version "1.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; The code in LTris uses traditional GNU semantics for inline functions
+       #:configure-flags '("CFLAGS=-fgnu89-inline")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL"))
+             #t)))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://lgames.sourceforge.net/LTris/")
+    (synopsis "Tetris clone based on the SDL library")
+    (description
+     "LTris is a tetris clone: differently shaped blocks are falling down the
+rectangular playing field and can be moved sideways or rotated by 90 degree
+units with the aim of building lines without gaps which then disappear (causing
+any block above the deleted line to fall down).  LTris has three game modes: In
+Classic you play until the stack of blocks reaches the top of the playing field
+and no new blocks can enter.  In Figures the playing field is reset to a new
+figure each level and later on tiles and lines suddenly appear.  In Multiplayer
+up to three players (either human or CPU) compete with each other sending
+removed lines to all opponents.  There is also a Demo mode in which you can
+watch your CPU playing while enjoying a cup of tea!")
+    (license license:gpl2+)))
+
 (define-public prboom-plus
   (package
    (name "prboom-plus")
