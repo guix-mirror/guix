@@ -28,6 +28,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -303,4 +304,55 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
     ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
     ;; does not exist. It is safe to assume that this is of no concern
     ;; for us.
+    (license license:gpl2+)))
+
+(define-public marco
+  (package
+    (name "marco")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0lwbp9wyd66hl5d7g272l8g3k1pb9s4s2p9fb04750a58w87d8k5"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxft" ,libxft)
+       ("libxml2" ,libxml2)
+       ("zenity" ,zenity)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libgtop" ,libgtop)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("libxdamage" ,libxdamage)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("mate-desktop" ,mate-desktop)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Window manager for the MATE desktop")
+    (description
+     "Marco is a minimal X window manager that uses GTK+ for drawing
+window frames.  It is aimed at non-technical users and is designed to integrate
+well with the MATE desktop.  It lacks some features that may be expected by
+some users; these users may want to investigate other available window managers
+for use with MATE or as a standalone window manager.")
     (license license:gpl2+)))
