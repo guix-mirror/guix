@@ -10,6 +10,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1324,7 +1325,7 @@ various Haskell streaming data libraries, such as @code{conduit} and
 (define-public cpphs
   (package
     (name "cpphs")
-    (version "1.19.3")
+    (version "1.20.8")
     (source
      (origin
        (method url-fetch)
@@ -1333,7 +1334,7 @@ various Haskell streaming data libraries, such as @code{conduit} and
              name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1njpmxgpah5pcqppcl1cxb5xicf6xlqrd162qm12khp9hainlm72"))))
+         "1bh524asqhk9v1s0wvipl0hgn7l63iy3js867yv0z3h5v2kn8vg5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-polyparse" ,ghc-polyparse)
