@@ -2625,6 +2625,27 @@ The goal of this game is to create a tile with value 2048.  The size of the
 board and goal value can be customized.")
   (license license:gpl3+)))
 
+(define-public emacs-base16-theme
+  (package
+    (name "emacs-base16-theme")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/base16-theme-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0z6hrwz2jlz6jbr381rcqcqvx6hss5cad352klx07rark7zccacj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/belak/base16-emacs")
+    (synopsis "Base16 color themes for Emacs")
+    (description
+     "Base16 provides carefully chosen syntax highlighting and a default set
+of sixteen colors suitable for a wide range of applications.  Base16 is not a
+single theme but a set of guidelines with numerous implementations.")
+    (license license:expat)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
