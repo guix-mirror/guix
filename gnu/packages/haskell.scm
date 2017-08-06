@@ -7077,6 +7077,27 @@ other transformers.")
                (base32
                 "0a364zfcm17mhpy0c4ms2j88sys4yvgd6071qsgk93la2wjm8mkr"))))))
 
+(define-public ghc-stmonadtrans
+  (package
+    (name "ghc-stmonadtrans")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/STMonadTrans"
+                           "/STMonadTrans-" version ".tar.gz"))
+       (sha256
+        (base32 "1nr26fnmi5fdjc6d00w13kjhmfyvb5b837d0006w4dj0yxndaksp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://hackage.haskell.org/package/STMonadTrans")
+    (synopsis "Monad transformer version of the ST monad")
+    (description
+     "This package provides a monad transformer version of the @code{ST} monad
+for strict state threads.")
+    (license license:bsd-3)))
+
 (define-public ghc-findbin
   (package
     (name "ghc-findbin")
