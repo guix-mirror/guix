@@ -2878,26 +2878,31 @@ including comments and whitespace.")
     (license license:expat)))
 
 (define-public ruby-tdiff
-  (package
-    (name "ruby-tdiff")
-    (version "0.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "tdiff" version))
-              (sha256
-               (base32
-                "0k41jbvn8qq4mgrixnhlk742b971d136i8wpbcv2cczvi22xpc86"))))
-    (build-system ruby-build-system)
-    (native-inputs
-     `(("ruby-rspec-2" ,ruby-rspec-2)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
-    (synopsis "Calculate the differences between two tree-like structures")
-    (description
-     "This library provides functions to calculate the differences between two
+  ;; Use a newer than released snapshot so that rspec-2 is not required.
+  (let ((commit "b662a6048f08abc45c1a834e5f34dd1c662935e2"))
+    (package
+      (name "ruby-tdiff")
+      (version (string-append "0.3.3-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/postmodern/tdiff.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0n3gq8rx49f7ln6zqlshqfg2mgqyy30rsdjlnki5mv307ykc7ad4"))))
+      (build-system ruby-build-system)
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)
+         ("ruby-yard" ,ruby-yard)
+         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+      (synopsis "Calculate the differences between two tree-like structures")
+      (description
+       "This library provides functions to calculate the differences between two
 tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
-    (home-page "https://github.com/postmodern/tdiff")
-    (license license:expat)))
+      (home-page "https://github.com/postmodern/tdiff")
+      (license license:expat))))
 
 (define-public ruby-nokogiri-diff
   (package
