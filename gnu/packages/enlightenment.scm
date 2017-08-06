@@ -286,14 +286,17 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.19.0")
+    (version "1.20.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "python-efl" version))
+        (uri (list
+               (pypi-uri "python-efl" version)
+               (string-append "http://download.enlightenment.org/rel/bindings/"
+                              "python/python-efl-" version ".tar.gz")))
         (sha256
          (base32
-          "0l0f9bv1134qh5376p5asycncidrhp8hdb6qwd8ybr1a61q9zq67"))))
+          "1680pgpf501nhbc9arm0nfj6rpcw17aryh0pgmmmszxlgpifpdzy"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -312,11 +315,7 @@ embedded systems.")
           (lambda _
             ;; Some tests require write access to HOME.
             (setenv "HOME" "/tmp")
-            #t)))
-       ;; FIXME: Some tests require a running D-Bus server or a network
-       ;; connection and should be disabled. Other test failures looks
-       ;; legitimate. Disabled for now, needs work!
-       #:tests? #f))
+            #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
