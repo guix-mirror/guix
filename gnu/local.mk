@@ -875,7 +875,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
-  %D%/packages/patches/ntfs-3g-CVE-2017-0358.patch		\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
