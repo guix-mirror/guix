@@ -213,6 +213,8 @@ normally do not detect.  The goal is to detect only real errors in the code
         (base32
          "1n5p1m2m3fjrjdj752lf92f9wq3pl5cbsfrb49jqbg52ghkz99jq"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("python-2" ,python-2)))
     (home-page "https://github.com/google/googletest/")
