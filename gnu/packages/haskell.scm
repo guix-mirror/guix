@@ -6099,6 +6099,31 @@ supports for high level forms of ASN1 (BER, and DER).")
 when ASN1 pattern matching is not convenient.")
     (license license:bsd-3)))
 
+(define-public ghc-edit-distance
+  (package
+    (name "ghc-edit-distance")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/edit-distance"
+                           "/edit-distance-" version ".tar.gz"))
+       (sha256
+        (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/phadej/edit-distance")
+    (synopsis "Levenshtein and restricted Damerau-Levenshtein edit distances")
+    (description
+     "This package provides optimized functions to determine the edit
+distances for fuzzy matching, including Levenshtein and restricted
+Damerau-Levenshtein algorithms.")
+    (license license:bsd-3)))
+
 (define-public ghc-tasty-kat
   (package
     (name "ghc-tasty-kat")
