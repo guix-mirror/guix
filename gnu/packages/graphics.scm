@@ -36,11 +36,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages python)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
@@ -60,6 +62,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -227,6 +230,74 @@ abstraction.  Imath implements 2D and 3D vectors, 3x3 and 4x4 matrices,
 quaternions and other useful 2D and 3D math functions.  Iex is an
 exception-handling library.")
     (license license:bsd-3)))
+
+(define-public ogre
+  (package
+    (name "ogre")
+    (version "1.10.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/OGRECave/" name
+                           "/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ab354bmwwryxr4zgxchfkm6h4z38mjgif8yn89x640rsrgw5ipj"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             ;; It expects googletest source to be downloaded and
+             ;; be in a specific place.
+             (substitute* "Tests/CMakeLists.txt"
+               (("URL(.*)$" _ suffix)
+                (string-append "URL " suffix
+                               "\t\tURL_HASH "
+                               "MD5=16877098823401d1bf2ed7891d7dce36\n")))
+             #t))
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (assoc-ref inputs "googletest-source")
+                        (string-append (getcwd)
+                                       "/Tests/googletest-prefix/src/"
+                                       "release-1.8.0.tar.gz"))
+             #t)))
+       #:configure-flags
+       (list "-DOGRE_BUILD_TESTS=TRUE"
+             (string-append "-DCMAKE_INSTALL_RPATH="
+                            (assoc-ref %outputs "out") "/lib:"
+                            (assoc-ref %outputs "out") "/lib/OGRE:"
+                            (assoc-ref %build-inputs "googletest") "/lib")
+             "-DOGRE_INSTALL_DOCS=TRUE"
+             "-DOGRE_INSTALL_SAMPLES=TRUE"
+             "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE")))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("googletest-source" ,(package-source googletest))
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("freeimage" ,freeimage)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("googletest" ,googletest)
+       ("sdl2" ,sdl2)
+       ("libxaw" ,libxaw)
+       ("libxrandr" ,libxrandr)
+       ("tinyxml" ,tinyxml)
+       ("zziplib" ,zziplib)))
+    (synopsis "Scene-oriented, flexible 3D engine written in C++")
+    (description
+     "OGRE (Object-Oriented Graphics Rendering Engine) is a scene-oriented,
+flexible 3D engine written in C++ designed to make it easier and more intuitive
+for developers to produce applications utilising hardware-accelerated 3D
+graphics.")
+    (home-page "http://www.ogre3d.org/")
+    (license license:expat)))
 
 (define-public openexr
   (package
