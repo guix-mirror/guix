@@ -3287,7 +3287,7 @@ from userspace.")
                                "--enable-mount-helper"
                                "--enable-posix-acls"
                                "--enable-xattr-mappings")))
-    (home-page "http://www.tuxera.com/community/open-source-ntfs-3g/")
+    (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description
      "NTFS-3G provides read-write access to NTFS file systems, which are
