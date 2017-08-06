@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
@@ -55,6 +55,7 @@
   (package
     (name "libtasn1")
     (version "4.12")
+    (replacement libtasn1/fixed)
     (source
      (origin
       (method url-fetch)
@@ -73,6 +74,13 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
+
+(define libtasn1/fixed
+  (package
+    (inherit libtasn1)
+    (source (origin
+              (inherit (package-source libtasn1))
+              (patches (search-patches "libtasn1-CVE-2017-10790.patch"))))))
 
 (define-public asn1c
   (package
