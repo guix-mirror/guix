@@ -1808,6 +1808,26 @@ capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
     (license license:bsd-3)))
 
+(define-public ghc-strict
+  (package
+    (name "ghc-strict")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/strict/strict-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "08cjajqz9h47fkq98mlf3rc8n5ghbmnmgn8pfsl3bdldjdkmmlrc"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/strict")
+    (synopsis "Strict data types and String IO")
+    (description
+     "This package provides strict versions of some standard Haskell data
+types, such as pairs, @code{Maybe} and @code{Either}.  It also contains strict
+IO operations.")
+    (license license:bsd-3)))
+
 (define-public ghc-hashable
   (package
     (name "ghc-hashable")
