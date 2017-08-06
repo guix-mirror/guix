@@ -168,6 +168,47 @@ desktop and the mate-about program.")
 the MATE desktop environment.")
     (license license:lgpl2.1+)))
 
+(define-public mate-terminal
+  (package
+    (name "mate-terminal")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1zihm609d2d9cw53ry385whshjl1dnkifpk41g1ddm9f58hv4da1"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxml2" ,libxml2)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libx11" ,libx11)
+       ("mate-desktop" ,mate-desktop)
+       ("pango" ,pango)
+       ("vte" ,vte)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "MATE Terminal Emulator")
+    (description
+     "MATE Terminal is a terminal emulation application that you can
+use to access a shell.  With it, you can run any application that
+is designed to run on VT102, VT220, and xterm terminals.
+MATE Terminal also has the ability to use multiple terminals
+in a single window (tabs) and supports management of different
+configurations (profiles).")
+    (license license:gpl3)))
+
 (define-public mate-menus
   (package
     (name "mate-menus")
