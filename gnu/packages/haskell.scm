@@ -5797,6 +5797,28 @@ maintained mirror of the @uref{https://hackage.haskell.org/package/geniplate,
 geniplate} package, written by Lennart Augustsson.")
     (license license:bsd-3)))
 
+(define-public ghc-gitrev
+  (package
+    (name "ghc-gitrev")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/gitrev/gitrev-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0cl3lfm6k1h8fxp2vxa6ihfp4v8igkz9h35iwyq2frzm4kdn96d8"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-base-compat" ,ghc-base-compat)))
+    (home-page "https://github.com/acfoltzer/gitrev")
+    (synopsis "Compile git revision info into Haskell projects")
+    (description
+     "This package provides some handy Template Haskell splices for including
+the current git hash and branch in the code of your project.  This is useful
+for including in panic messages, @command{--version} output, or diagnostic
+info for more informative bug reports.")
+    (license license:bsd-3)))
+
 (define-public ghc-haskell-src-meta
   (package
     (name "ghc-haskell-src-meta")
