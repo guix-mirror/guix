@@ -1881,6 +1881,28 @@ combine hash values.")
 It includes hashing functions for all basic Haskell98 types.")
     (license license:bsd-3)))
 
+(define-public ghc-murmur-hash
+  (package
+    (name "ghc-murmur-hash")
+    (version "0.1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/murmur-hash"
+                           "/murmur-hash-" version ".tar.gz"))
+       (sha256
+        (base32 "1bb58kfnzvx3mpc0rc0dhqc1fk36nm8prd6gvf20gk6lxaadpfc9"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/nominolo/murmur-hash")
+    (synopsis "MurmurHash2 implementation for Haskell")
+    (description
+     "This package provides an implementation of MurmurHash2, a good, fast,
+general-purpose, non-cryptographic hashing function.  See
+@url{https://sites.google.com/site/murmurhash/} for details.  This
+implementation is pure Haskell, so it might be a bit slower than a C FFI
+binding.")
+    (license license:bsd-3)))
+
 (define-public ghc-hunit
   (package
     (name "ghc-hunit")
