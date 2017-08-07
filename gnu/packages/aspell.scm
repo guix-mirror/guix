@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,10 +124,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2016.11.20-0"
+                     #:version "2017.01.22-0"
                      #:sha256
                      (base32
-                      "1496jnhh2jvhkzcj0p4vy89bcs4g5wz6a76m33vw4dhchn5xm9jw")))
+                      "1qamzpw1fsnn5n9jpsnnnzqj1a0m0xvsikmkdp5a6pmb7sp3ziwk")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
