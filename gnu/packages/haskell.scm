@@ -3897,6 +3897,30 @@ Collections such as sets, bags and heaps; and Associative Collections such as
 finite maps and priority queues where the priority and element are distinct.")
     (license license:expat)))
 
+(define-public ghc-edisoncore
+  (package
+    (name "ghc-edisoncore")
+    (version "1.3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/EdisonCore"
+                           "/EdisonCore-" version ".tar.gz"))
+       (sha256
+        (base32 "06shxmcqxcahcn6zgl64vlqix4fnq53d97drcgsh94qp7gp201ry"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-edisonapi" ,ghc-edisonapi)))
+    (home-page "http://rwd.rdockins.name/edison/home/")
+    (synopsis "Library of efficent, purely-functional data structures")
+    (description
+     "This package provides the core Edison data structure implementations,
+including multiple sequence, set, bag, and finite map concrete implementations
+with various performance characteristics.")
+    (license license:expat)))
+
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
