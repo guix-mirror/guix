@@ -3872,6 +3872,31 @@ different keys; hence the name.  Also provided is a @code{locker} type,
 representing a store for a single element.")
     (license license:bsd-3)))
 
+(define-public ghc-edisonapi
+  (package
+    (name "ghc-edisonapi")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/EdisonAPI"
+                           "/EdisonAPI-" version ".tar.gz"))
+       (sha256
+        (base32 "0vmmlsj8ggbpwx6fkf5fvb6jp0zpx6iba6b28m80lllr2p8bi8wm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://rwd.rdockins.name/edison/home/")
+    (synopsis "Library of efficient, purely-functional data structures (API)")
+    (description
+     "Edison is a library of purely functional data structures written by
+Chris Okasaki.  It is named after Thomas Alva Edison and for the mnemonic
+value EDiSon (Efficient Data Structures).  Edison provides several families of
+abstractions, each with multiple implementations.  The main abstractions
+provided by Edison are: Sequences such as stacks, queues, and dequeues;
+Collections such as sets, bags and heaps; and Associative Collections such as
+finite maps and priority queues where the priority and element are distinct.")
+    (license license:expat)))
+
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
