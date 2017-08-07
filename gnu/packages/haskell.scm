@@ -3970,6 +3970,30 @@ a subset of @code{MonadBase} into which generic control operations such as
 @code{catch} can be lifted from @code{IO} or any other base monad.")
     (license license:bsd-3)))
 
+(define-public ghc-fail
+  (package
+    (name "ghc-fail")
+    (version "4.9.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/fail/fail-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "18nlj6xvnggy61gwbyrpmvbdkq928wv0wx2zcsljb52kbhddnp3d"))))
+    (build-system haskell-build-system)
+    (home-page "https://prime.haskell.org/wiki/Libraries/Proposals/MonadFail")
+    (synopsis "Forward-compatible MonadFail class")
+    (description
+     "This package contains the @code{Control.Monad.Fail} module providing the
+@uref{https://prime.haskell.org/wiki/Libraries/Proposals/MonadFail, MonadFail}
+class that became available in
+@uref{https://hackage.haskell.org/package/base-4.9.0.0, base-4.9.0.0} for
+older @code{base} package versions.  This package turns into an empty package
+when used with GHC versions which already provide the
+@code{Control.Monad.Fail} module.")
+    (license license:bsd-3)))
+
 (define-public ghc-byteorder
   (package
     (name "ghc-byteorder")
