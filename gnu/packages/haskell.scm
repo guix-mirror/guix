@@ -1858,6 +1858,29 @@ data structures.  The package provides instances for basic types and a way to
 combine hash values.")
     (license license:bsd-3)))
 
+(define-public ghc-data-hash
+  (package
+    (name "ghc-data-hash")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/data-hash"
+                           "/data-hash-" version ".tar.gz"))
+       (sha256
+        (base32 "1ghbqvc48gf9p8wiy71hdpaj7by3b9cw6wgwi3qqz8iw054xs5wi"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://hackage.haskell.org/package/data-hash")
+    (synopsis "Combinators for building fast hashing functions")
+    (description
+     "This package provides combinators for building fast hashing functions.
+It includes hashing functions for all basic Haskell98 types.")
+    (license license:bsd-3)))
+
 (define-public ghc-hunit
   (package
     (name "ghc-hunit")
