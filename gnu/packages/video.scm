@@ -1615,7 +1615,8 @@ manipulation.  It aims to be a modern rewrite of Avisynth, supporting
 multithreading, generalized colorspaces, per frame properties, and videos with
 format changes.")
     ;; src/core/cpufeatures only allows x86, ARM or PPC
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "aarch64-linux")))
     ;; As seen from the source files.
     (license license:lgpl2.1+)))
 
