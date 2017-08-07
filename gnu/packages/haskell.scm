@@ -5775,6 +5775,28 @@ and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
     (license license:bsd-3)))
 
+(define-public ghc-geniplate-mirror
+  (package
+    (name "ghc-geniplate-mirror")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package"
+                           "/geniplate-mirror"
+                           "/geniplate-mirror-" version ".tar.gz"))
+       (sha256
+        (base32 "17vjps2118s5z3k39ij00lkmkxv3mqf8h59wv6qdamlgmhyr36si"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://github.com/danr/geniplate")
+    (synopsis "Use Template Haskell to generate Uniplate-like functions")
+    (description
+     "Use Template Haskell to generate Uniplate-like functions.  This is a
+maintained mirror of the @uref{https://hackage.haskell.org/package/geniplate,
+geniplate} package, written by Lennart Augustsson.")
+    (license license:bsd-3)))
+
 (define-public ghc-haskell-src-meta
   (package
     (name "ghc-haskell-src-meta")
