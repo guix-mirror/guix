@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -1073,3 +1073,33 @@ resolutions.")
     (synopsis "Fonts for MathJax")
     (description "This package contains the fonts required for MathJax.")
     (license license:asl2.0)))
+
+(define-public font-open-dyslexic
+  (package
+    (name "font-open-dyslexic")
+    (version "20160623")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/antijingoist/open-dyslexic/"
+                           "archive/" version "-Stable.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0al0j9kb32kfavcpq1kigsd36yzvf5yhzqhds0jkh7ngbxyxwkx4"))))
+    (build-system font-build-system)
+    (home-page "https://opendyslexic.org")
+    (synopsis "Font for dyslexics and high readability")
+    (description "OpenDyslexic is a font designed to help readability for some
+of the symptoms of dyslexia.  Letters have heavy weighted bottoms to provide
+an indication of orientation to make it more difficult to confuse with other
+similar letters.  Consistently weighted bottoms can also help reinforce the
+line of text.  The unique shapes of each letter can help prevent flipping and
+swapping.  The italic style for OpenDyslexic has been crafted to be used for
+emphasis while still being readable.")
+    (license
+     (license:fsdg-compatible
+      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
+      "The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself."))))

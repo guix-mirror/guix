@@ -3212,7 +3212,7 @@ theories} (SMT) solver.  It provides a C/C++ API.")
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
-       ("which" ,which)))
+       ("which" ,(@@ (gnu packages base) which))))
     (propagated-inputs
      `(("z3" ,z3)))
     (arguments

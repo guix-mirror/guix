@@ -9259,13 +9259,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.5")
+    (version "3.11.6")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "0y6f2js983ag0d138xx4pzyc71gf44hyqmjsdvw6pq2xrkpj8jzk"))))
+               "1ny9mbm9zgghl612b8wc4ap52bz3kgl486d7f307gxjmlqgz3i64"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -15871,3 +15871,26 @@ thread-local variable.")
 
 (define-public python2-flask-principal
   (package-with-python2 python-flask-principal))
+
+(define-public python-flask-httpauth
+  (package
+    (name "python-flask-httpauth")
+    (version "3.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-HTTPAuth" version))
+       (sha256
+        (base32
+         "13gff5w1mqpzm5nccyg02v3ifb9ifqh5k866cssjhghhg6msfjsz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flask" ,python-flask)))
+    (home-page "http://github.com/miguelgrinberg/flask-httpauth/")
+    (synopsis "Basic and Digest HTTP authentication for Flask routes")
+    (description "@code{flask_httpauth} provides Basic and Digest HTTP
+authentication for Flask routes.")
+    (license license:expat)))
+
+(define-public python2-flask-httpauth
+  (package-with-python2 python-flask-httpauth))

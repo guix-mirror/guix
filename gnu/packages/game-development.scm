@@ -101,39 +101,17 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "4.4.902")
+   (version "5.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/" name
-                                "/archive/v" version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+                                "/releases/download/v" version "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0rwz1yzgd539x4h25kzhar4q02xyxjwfrcpz4m8ixi312a82p7cn"))))
+              "1jvffcpq64hk3jysz4q6zi9hqkksy151ci9553h8q7wrrkbw0i9z"))))
    (build-system gnu-build-system)
-   (arguments
-    '(#:tests? #f ; no check target
-      #:phases
-      (modify-phases %standard-phases
-        ;; The provided configure script takes a restricted number of arguments.
-        (replace 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (zero? (system* "./configure" "--prefix"
-                                   (assoc-ref %outputs "out")))))
-        ;; "make install" is broken for this package.
-        ;; Notably, the binaries overrwrite one another upon installation as
-        ;; they are all installed to the "bin" file in the output directory,
-        ;; and the manual page fails to install because the directory for the
-        ;; manual page is not created.
-        (replace 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (share (string-append out "/share")))
-                     (install-file "deusf" bin)
-                     (install-file "deutex" bin)
-                     (install-file "deutex.6" (string-append share "/man/man6")))
-                   #t)))))
+   (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description

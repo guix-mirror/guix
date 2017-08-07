@@ -605,14 +605,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mbz03smlc054i2m9q2sbqymml9m897kfs84q7g81i26y811p6wq"))))
+                "0ks6hq7vwq13ljkzxp3a490bf8dnracgl2azf57rg49ad2fzab45"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

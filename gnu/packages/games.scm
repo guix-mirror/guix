@@ -283,7 +283,7 @@ cows can think too.  All you have to do is run @code{cowthink}.")
 (define-public freedoom
   (package
    (name "freedoom")
-   (version "0.11.2")
+   (version "0.11.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/" name "/" name
@@ -291,7 +291,7 @@ cows can think too.  All you have to do is run @code{cowthink}.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "0b9k61f97spivi75f76zwwg8a3bgc6iil2hidqfj8s50lhqggwbb"))))
+              "1bjijdfqhpazyifx1qda7scj7dry1azhjrnl8h8zn2vqfgdmlh0q"))))
    (build-system gnu-build-system)
    (arguments
     '(#:make-flags `(,(string-append "prefix=" (assoc-ref %outputs "out")))
@@ -299,7 +299,6 @@ cows can think too.  All you have to do is run @code{cowthink}.")
       #:tests? #f ; no check target
       #:phases
       (modify-phases %standard-phases
-        (add-before 'unpack 'no (lambda _ #t))
         (replace 'configure
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (let* ((dejavu (assoc-ref inputs "font-dejavu"))

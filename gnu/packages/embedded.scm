@@ -509,7 +509,8 @@ with a layered architecture of JTAG interface and TAP support.")
                   (origin-patches (package-source gcc-4.7))
                   (search-patches "gcc-4.6-gnu-inline.patch"
                                   "gcc-cross-environment-variables.patch")))))
-      (home-page "https://github.com/dbetz/propgcc-gcc"))))
+      (home-page "https://github.com/dbetz/propgcc-gcc")
+      (supported-systems (delete "aarch64-linux" %supported-systems)))))
 
 ;; Version 6 is experimental and may not work correctly.  This is why we
 ;; default to version 4, which is also used in the binary toolchain bundle
