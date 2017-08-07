@@ -4029,7 +4029,7 @@ part of the Prawn PDF generator.")
 (define-public ruby-puma
   (package
     (name "ruby-puma")
-    (version "3.6.0")
+    (version "3.9.1")
     (source
      (origin
        (method url-fetch)
@@ -4039,32 +4039,17 @@ part of the Prawn PDF generator.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08aws79n9slcr50d9lwm011cp1pxvr1409c2jmyjxywvrc0a30v1"))
-       ;; Ignore broken tests reported upstream.
-       ;; https://github.com/puma/puma/issues/995
-       ;; https://github.com/puma/puma/issues/1044
-       (patches (search-patches "ruby-puma-ignore-broken-test.patch"))))
+         "03pifga841h17brh4vgia8i2ybh3cmsyg0dbybzdf6dq51wzcxdx"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests require an out-dated version of minitest.
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-integration-tests
-           (lambda _
-             ;; One broken test in this file cannot be easily removed in
-             ;; isolation, it probably causes race conditions.  So we delete
-             ;; the entire file.
-             (delete-file "test/test_integration.rb")
-             #t))
          (add-before 'build 'fix-gemspec
            (lambda _
              (substitute* "puma.gemspec"
                (("git ls-files") "find * |sort"))
              #t)))))
-    (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-hoe-git" ,ruby-hoe-git)
-       ("ruby-rack" ,ruby-rack)))
     (synopsis "Simple, concurrent HTTP server for Ruby/Rack")
     (description
      "Puma is a simple, fast, threaded, and highly concurrent HTTP 1.1 server
