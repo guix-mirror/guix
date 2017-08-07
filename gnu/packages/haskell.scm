@@ -3994,6 +3994,26 @@ when used with GHC versions which already provide the
 @code{Control.Monad.Fail} module.")
     (license license:bsd-3)))
 
+(define-public ghc-monadplus
+  (package
+    (name "ghc-monadplus")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/monadplus"
+                           "/monadplus-" version ".tar.gz"))
+       (sha256
+        (base32 "15b5320wdpmdp5slpphnc1x4rhjch3igw245dp2jxbqyvchdavin"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/monadplus")
+    (synopsis "Filtering and folding over arbitrary MonadPlus instances")
+    (description
+     "This package generalizes many common stream operations such as
+@code{filter}, @code{catMaybes} etc, enabling filtering and folding over
+arbitrary @code{MonadPlus} instances.")
+    (license license:bsd-3)))
+
 (define-public ghc-byteorder
   (package
     (name "ghc-byteorder")
