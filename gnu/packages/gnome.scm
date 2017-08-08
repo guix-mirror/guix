@@ -5432,7 +5432,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "1.12.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5440,7 +5440,7 @@ easy, safe, and automatic.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vsrzzkcfvmylhpk1ww6xdx8z9sgjs0gn74gz82qngjyq3c3s6c3"))))
+                "1zdzh8l5ahi906i40i4pqw2cs1hwrl6l9a7fp344a3idk3pl5szb"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
