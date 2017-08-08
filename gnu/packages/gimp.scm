@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +86,7 @@ provided as well as the framework to add new color models and data types.")
      `(;; More than just the one test disabled below now fails; disable them
        ;; all according to the rationale given below.
        #:tests? #f
+       #:configure-flags '("LDFLAGS=-lm")
        #:phases
        (alist-cons-before
         'build 'pre-build
