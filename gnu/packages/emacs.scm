@@ -5262,3 +5262,24 @@ editing RPM spec files.")
 the last git commit message for the current line.  This uses git-blame
 internally.")
     (license license:gpl3+)))
+
+(define-public emacs-gitpatch
+  (package
+    (name "emacs-gitpatch")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tumashu/gitpatch/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yj6pmic541lcnscjin300k380qp9xdfprs55xg1q57jrkq6f6k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/gitpatch")
+    (synopsis "Mail git patch from Emacs")
+    (description "@code{emacs-gitpatch} lets users easily send git patches,
+created by @code{git format-patch}, from @code{magit}, @code{dired} and
+@code{ibuffer} buffers.")
+    (license license:gpl3+)))
