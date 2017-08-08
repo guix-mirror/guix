@@ -1342,16 +1342,15 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.7.1")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://slepc.upv.es/download/download.php?"
-                           "filename=slepc-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "http://slepc.upv.es/download/distrib/slepc-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1hijlmrvxvfqslnx8yydzw5xqbsn1yy02g32w0hln1z3cgr1c0k7"))))
+         "12pbl8yd6r8k9xjlr1qw25rs0k1acgic7hw1s6l6bhiv9s285drg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
