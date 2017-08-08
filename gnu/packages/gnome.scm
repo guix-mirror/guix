@@ -578,7 +578,7 @@ and keep up to date translations of documentation.")
      `(("p11-kit" ,p11-kit)
        ("glib" ,glib)
        ("gtk+" ,gtk+)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Libraries for displaying certificates and accessing key stores")
     (description
      "The GCR package contains libraries used for displaying certificates and
@@ -609,7 +609,7 @@ GNOME Desktop.")
     (propagated-inputs
      ;; Referred to in .h files and .pc.
      `(("glib" ,glib)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Accessing passwords from the GNOME keyring")
     (description
      "Client library to access passwords from the GNOME keyring.")
@@ -673,7 +673,7 @@ GNOME Desktop.")
        ("libxslt" ,libxslt) ;for documentation
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Daemon to store passwords and encryption keys")
     (description
      "gnome-keyring is a program that keeps passwords and other secrets for
@@ -744,7 +744,7 @@ forgotten when the session ends.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (home-page
-     "http://www.gnome.org/projects/evince/")
+     "https://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
     (description
      "Evince is a document viewer for multiple document formats.  It
@@ -843,7 +843,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      `(("icon-naming-utils" ,icon-naming-utils)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://art.gnome.org/")
+    (home-page "https://art.gnome.org/")
     (synopsis
      "GNOME icon theme")
     (description
@@ -1142,7 +1142,7 @@ XML/CSS rendering engine.")
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.gnome.org/projects/libgsf")
+    (home-page "https://www.gnome.org/projects/libgsf")
     (synopsis "GNOME's Structured File Library")
     (description
      "Libgsf aims to provide an efficient extensible I/O abstraction for
@@ -1366,7 +1366,7 @@ is intended for user preferences; not arbitrary data storage.")
     (native-inputs
      `(("perl" ,perl)
        ("intltool" ,intltool)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Base MIME and Application database for GNOME")
     (description  "GNOME Mime Data is a module which contains the base MIME
 and Application database for GNOME.  The data stored by this module is
@@ -1984,7 +1984,7 @@ passwords in the GNOME keyring.")
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
     (propagated-inputs
      `(("glib" ,glib))) ; required by libvala-0.26.pc
-    (home-page "http://live.gnome.org/Vala/")
+    (home-page "https://live.gnome.org/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
      "Vala is a programming language that aims to bring modern programming
@@ -2018,7 +2018,7 @@ libraries written in C.")
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
        ("gnutls" ,gnutls)                         ;ditto
        ("pcre2" ,pcre2)))                         ;ditto
-    (home-page "http://www.gnome.org/")
+    (home-page "https://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
      "VTE is a library (libvte) implementing a terminal emulator widget for
@@ -2288,7 +2288,7 @@ indicators etc).")
      `(("python" ,python-2)
        ("python2-pygtk" ,python2-pygtk)
        ("librsvg" ,librsvg)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Python bindings to librsvg")
     (description
      "This packages provides Python bindings to librsvg, the SVG rendering
@@ -2339,7 +2339,7 @@ library.")
        ("gnutls" ,gnutls)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("p11-kit" ,p11-kit)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Network-related GIO modules")
     (description
      "This package contains various network related extensions for the GIO
@@ -2961,7 +2961,7 @@ services for numerous locations.")
        ("librsvg" ,librsvg)
        ("xf86-input-wacom" ,xf86-input-wacom)
        ("network-manager" ,network-manager)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
      "This package contains the daemon responsible for setting the various
@@ -3284,7 +3284,7 @@ GL based interactive canvas library.")
        ("cairo" ,cairo)
        ("gtk+3" ,gtk+)
        ("glib" ,glib)))
-    (home-page "http://projects.gnome.org/libchamplain/")
+    (home-page "https://projects.gnome.org/libchamplain/")
     (synopsis "C library providing a ClutterActor to display maps")
     (description
      "libchamplain is a C library providing a ClutterActor to display maps.
@@ -3453,7 +3453,7 @@ as possible!")
             (variable "GRL_PLUGIN_PATH")
             (files (list (string-append "lib/grilo-"
                                         (version-major+minor version)))))))
-    (home-page "http://live.gnome.org/Grilo")
+    (home-page "https://live.gnome.org/Grilo")
     (synopsis "Framework for discovering and browsing media")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
@@ -3506,7 +3506,7 @@ for application developers.")
        ;; with: "assertion failed: (source)".  Outside of the build container,
        ;; most tests succeed.
        #:tests? #f))
-    (home-page "http://live.gnome.org/Grilo")
+    (home-page "https://live.gnome.org/Grilo")
     (synopsis "Plugins for the Grilo media discovery library")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
@@ -4505,7 +4505,7 @@ configuration program to choose applications starting on login.")
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
     (synopsis "Javascript bindings for GNOME")
-    (home-page "http://live.gnome.org/Gjs")
+    (home-page "https://live.gnome.org/Gjs")
     (description
      "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey
 javascript engine and the GObject introspection framework.")
@@ -4592,7 +4592,7 @@ powerful general purpose text editor.")
      `(("libnotify" ,libnotify)
        ("webkitgtk" ,webkitgtk)))
     (synopsis "Display graphical dialog boxes from shell scripts")
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (description
      "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you
 to display dialog boxes from the commandline and shell scripts.")
@@ -4690,7 +4690,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("xkeyboard-config" ,xkeyboard-config)
        ("zenity" ,zenity)))
     (synopsis "Window and compositing manager")
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (description
      "Mutter is a window and compositing manager that displays and manages your
 desktop via OpenGL.  Mutter combines a sophisticated display engine using the
@@ -4975,7 +4975,7 @@ users.")
        ("util-linux" ,util-linux)
        ("elogind" ,elogind)))
     (synopsis "Network connection manager")
-    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
      "NetworkManager is a system network service that manages your network
 devices and connections, attempting to keep active network connectivity when
@@ -5038,7 +5038,7 @@ services.")
        ("jansson" ,jansson) ; for team support
        ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
-    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
      "This package contains a systray applet for NetworkManager.  It displays
 the available networks and allows users to easily switch between them.")
@@ -5139,7 +5139,7 @@ libxml2.")
        ("libcanberra" ,libcanberra)
        ("linux-pam" ,linux-pam)))
     (synopsis "Display manager for GNOME")
-    (home-page "http://wiki.gnome.org/Projects/GDM/")
+    (home-page "https://wiki.gnome.org/Projects/GDM/")
     (description
      "GNOME Display Manager is a system service that is responsible for
 providing graphical log-ins and managing local and remote displays.")

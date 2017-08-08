@@ -140,7 +140,7 @@ provide serif, sans and monospaced variants.")
               (base32
                "1p3qs51x5327gnk71yq8cvmxc6wgx79sqxfvxcv80cdvgggjfnyv"))))
     (build-system font-build-system)
-    (home-page "http://www.gnome.org/fonts/")
+    (home-page "https://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
 package provides the TrueType (TTF) files.")
