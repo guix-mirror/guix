@@ -6454,17 +6454,17 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
              #t)))))
     (inputs
      `(("enchant" ,enchant)
-       ("iso-codes" ,iso-codes)
        ("gtk+" ,gtk+)
-       ("glib" ,glib)))
+       ("glib" ,glib)
+       ("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
 
        ;; For tests.
-       ("xorg-server" ,xorg-server)
-       ("aspell-dict-en" ,aspell-dict-en)))
+       ("aspell-dict-en" ,aspell-dict-en)
+       ("xorg-server" ,xorg-server)))
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description
