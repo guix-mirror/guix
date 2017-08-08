@@ -4525,8 +4525,7 @@ javascript engine and the GObject introspection framework.")
                 "0as9r5zvnyrxh699q6jnd0p9ddqy5qamfbxggpdjzagzixhw6yxa"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags '("--disable-spell") ; XXX: gspell not packaged yet
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after
           'install 'wrap-gedit
@@ -4552,6 +4551,7 @@ javascript engine and the GObject introspection framework.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
+       ("gspell" ,gspell)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
        ("libpeas" ,libpeas)
