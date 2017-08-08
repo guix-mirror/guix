@@ -1247,6 +1247,10 @@ September 2004}")
                          (assoc-ref %build-inputs "superlu") "/include")
          ,(string-append "--with-superlu-lib="
                          (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+       #:make-flags
+       ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
+       ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
+       (list (format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
         (replace 'configure
@@ -1261,13 +1265,17 @@ September 2004}")
               (format #t "configure flags: ~s~%" flags)
               (zero? (apply system* "./configure" flags)))))
         (add-after 'configure 'clean-local-references
-          (lambda* (#:key inputs outputs #:allow-other-keys)
+          (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
                 ;; Prevent build directory from leaking into compiled code
                 (((getcwd)) out)
                 ;; Scrub timestamp for reproducibility
                 ((".*Libraries compiled on.*") ""))
+              (substitute* (find-files "." "petscvariables")
+                ;; Do not expose build machine characteristics, set to defaults.
+                (("MAKE_NP = [:digit:]+") "MAKE_NP = 2")
+                (("NPMAX = [:digit:]+") "NPMAX = 2"))
               #t)))
         (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
@@ -1364,6 +1372,8 @@ scientific applications modeled by partial differential equations.")
        #:configure-flags
        `(,(string-append "--with-arpack-dir="
                          (assoc-ref %build-inputs "arpack") "/lib"))
+       #:make-flags                     ;honor (parallel-job-count)
+       `(,(format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
