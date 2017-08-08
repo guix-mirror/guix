@@ -141,7 +141,7 @@
 (define-public brasero
   (package
     (name "brasero")
-    (version "3.12.1")
+    (version "3.12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -149,7 +149,7 @@
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "09vi2hyhl0bz7imv3ky6h7x5m3d546n968wcghydwrkvwm9ylpls"))))
+               "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
@@ -165,7 +165,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "plugins/growisofs/burn-growisofs.c"
                (("\"growisofs") (string-append "\"" (which "growisofs"))))
-             #t )))))
+             #t)))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
