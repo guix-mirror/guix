@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -695,18 +696,28 @@ Zoner Draw version 4 and 5.")
 (define-public hunspell
   (package
     (name "hunspell")
-    (version "1.5.4")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/hunspell/hunspell/archive/v"
                           version ".tar.gz"))
       (sha256 (base32
-               "0ngwk18dwd8p5a5f20h2jlgrz9wbc1k189mmmprb2zmqwfi02b45"))
+               "0j9c20sj7bgd6f77193g1ihy8w905byk2gdhdc0r9dsh7irr7x9h"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("perl" ,perl)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "https://hunspell.github.io/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
