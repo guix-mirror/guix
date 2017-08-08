@@ -5310,3 +5310,24 @@ the nick color and the background color
 @end itemize\n")
     (home-page "https://github.com/leathekd/erc-hl-nicks")
     (license license:gpl3+)))
+
+(define-public emacs-engine-mode
+  (package
+    (name "emacs-engine-mode")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hrs/engine-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vm4p7pcp1vnwwxvps1bhm7i7hkabqqxl898knxf2hqvxys76684"))))
+    (build-system emacs-build-system)
+    (synopsis "Minor mode for defining and querying search engines")
+    (description "@code{engine-mode} is a global minor mode for Emacs.  It
+enables you to easily define search engines, bind them to keybindings, and
+query them from the comfort of your editor.")
+    (home-page "https://github.com/hrs/engine-mode")
+    (license license:gpl3+)))
