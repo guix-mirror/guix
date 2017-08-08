@@ -34,6 +34,14 @@
                (base32
                 "0psh3zl9dj4n4r3lx25390nx34xz0bg0ql48zdskhq354ljni5p6"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'reproducible
+                    (lambda _
+                      ;; Ensure there are no timestamps in .svgz files.
+                      (substitute* "desktopfiles/Makefile.in"
+                        (("gzip") "gzip -n"))
+                      #t)))))
     (home-page "http://djvu.sourceforge.net/")
     (synopsis "Implementation of DjVu, the document format")
     (description "DjVuLibre is an implementation of DjVu,
