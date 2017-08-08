@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -1216,7 +1216,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.7.2")
+    (version "3.7.6")
     (source
      (origin
       (method url-fetch)
@@ -1224,7 +1224,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0jfrq6rd4zagw1iimz05m2w91k0jvz3qbik1lk8pqcxw3rvdqk5d"))))
+       (base32 "1y3f5jjq0v5b62i3sabp4kp5mgfyp3vnk0dxhwkrhpypax77nzxh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
