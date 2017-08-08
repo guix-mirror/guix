@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
+;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,16 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-force-devr") ; do not analyze /dev/random
-       #:tests? #f)) ; no tests exist
+       #:tests? #f ; no tests exist
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'reproducible
+                    (lambda _
+                      ;; Sort source files deterministically so that the *.a
+                      ;; and *.so files are reproducible.
+                      (substitute* "Makefile"
+                        (("\\$\\(ALL_SRCS:%.c=%.o\\)")
+                         "$(sort $(ALL_SRCS:%.c=%.o))"))
+                      #t)))))
     (home-page "http://skarnet.org/software/skalibs/")
     (synopsis "Platform abstraction libraries for skarnet.org software")
     (description
