@@ -83,27 +83,27 @@ provided as well as the framework to add new color models and data types.")
               (patches (search-patches "gegl-CVE-2012-4433.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; More than just the one test disabled below now fails; disable them
+     '(;; More than just the one test disabled below now fails; disable them
        ;; all according to the rationale given below.
        #:tests? #f
        #:configure-flags '("LDFLAGS=-lm")
        #:phases
-       (alist-cons-before
-        'build 'pre-build
-        (lambda _
-          ;; This test program seems to crash on exit. Specifically, whilst
-          ;; g_object_unreffing bufferA and bufferB - This seems to be a bug
-          ;; in the destructor.  This is just a test program so will not have
-          ;; any wider effect, although might be hiding another problem.
-          ;; According to advice received on irc.gimp.org#gegl although 0.2.0
-          ;; is the latest released version, any bug reports against it will
-          ;; be ignored.  So we are on our own.
-          (substitute* "tools/img_cmp.c"
-            (("g_object_unref \\(buffer.\\);") ""))
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; This test program seems to crash on exit. Specifically, whilst
+             ;; g_object_unreffing bufferA and bufferB - This seems to be a bug
+             ;; in the destructor.  This is just a test program so will not have
+             ;; any wider effect, although might be hiding another problem.
+             ;; According to advice received on irc.gimp.org#gegl although 0.2.0
+             ;; is the latest released version, any bug reports against it will
+             ;; be ignored.  So we are on our own.
+             (substitute* "tools/img_cmp.c"
+               (("g_object_unref \\(buffer.\\);") ""))
 
-          (substitute* "tests/compositions/Makefile"
-            (("/bin/sh") (which "sh"))))
-        %standard-phases)))
+             (substitute* "tests/compositions/Makefile"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
