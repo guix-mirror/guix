@@ -707,7 +707,7 @@ Zoner Draw version 4 and 5.")
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
-    (home-page "http://hunspell.sourceforge.net/")
+    (home-page "https://hunspell.github.io/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
 library and program designed for languages with rich morphology and complex
