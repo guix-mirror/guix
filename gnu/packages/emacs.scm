@@ -5283,3 +5283,30 @@ internally.")
 created by @code{git format-patch}, from @code{magit}, @code{dired} and
 @code{ibuffer} buffers.")
     (license license:gpl3+)))
+
+(define-public emacs-erc-hl-nicks
+  (package
+    (name "emacs-erc-hl-nicks")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/leathekd/erc-hl-nicks"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01svpl9bps5kx4y1wnymakxya2cznqmlynvqv2r500wpnbxczrbs"))))
+    (build-system emacs-build-system)
+    (synopsis "Nickname highlighting for Emacs ERC")
+    (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
+client for Emacs.  The main features are:
+@itemize
+@item Auto-colorizes nicknames without having to specify colors
+@item Ignores certain characters that IRC clients add to nicknames to avoid
+duplicates (nickname, nickname’, nickname\", etc.)
+@item Attempts to produce colors with a sufficient amount of contrast between
+the nick color and the background color
+@end itemize\n")
+    (home-page "https://github.com/leathekd/erc-hl-nicks")
+    (license license:gpl3+)))
