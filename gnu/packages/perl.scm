@@ -7726,6 +7726,34 @@ that are designed to minimize common mistakes with eval blocks, and nothing
 else.")
     (license x11)))
 
+(define-public perl-type-tie
+  (package
+    (name "perl-type-tie")
+    (version "0.009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Type-Tie-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv32kd7gx4kfyvzs13y029f49qbbji991wawvarac7rlz09wpan"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-hash-fieldhash" ,perl-hash-fieldhash)))
+    (home-page "http://search.cpan.org/dist/Type-Tie")
+    (synopsis "Tie a variable to a type constraint")
+    (description "This module exports a single function: @code{ttie}.  It ties
+a variable to a type constraint, ensuring that whatever values stored in the
+variable will conform to the type constraint.  If the type constraint has
+coercions, these will be used if necessary to ensure values assigned to the
+variable conform.")
+    (license (package-license perl))))
+
 (define-public perl-types-serialiser
   (package
     (name "perl-types-serialiser")
