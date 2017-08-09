@@ -4678,6 +4678,34 @@ generally.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-robust
+  (package
+    (name "r-robust")
+    (version "0.4-18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "robust" version))
+       (sha256
+        (base32
+         "1b7qh1aff500nd6dh4y2ipmjgdiq8991shflb63pc39vpc0ny6g4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fit-models" ,r-fit-models)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-robustbase" ,r-robustbase)
+       ("r-rrcov" ,r-rrcov)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/robust")
+    (synopsis "Port of the S+ \"Robust Library\"")
+    (description
+     "This package is a port of the S+ \"Robust Library\".  It provides
+methods for robust statistics, notably for robust regression and robust
+multivariate analysis.")
+    (license license:gpl2)))
+
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
