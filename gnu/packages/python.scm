@@ -7981,14 +7981,14 @@ Debian-related files, such as:
 (define-public python-nbformat
   (package
     (name "python-nbformat")
-    (version "4.1.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbformat" version))
        (sha256
         (base32
-         "0mq8iki3d4mnx7wy05phss7x98mds4fqydin8lcagidp1knw1xnv"))))
+         "12s7j4qja8b5bs1kyw5dzmrqbjxxj8wk52cyasbiqbv7fblcrssz"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (propagated-inputs
