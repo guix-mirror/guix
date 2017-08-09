@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
@@ -3383,6 +3383,30 @@ cleaned up when expected.
 Specifically, this module supports two different types of guards: guard
 objects, which execute a given code block when destroyed, and scoped guards,
 which are tied to the scope exit.")
+    (license (package-license perl))))
+
+(define-public perl-hash-fieldhash
+  (package
+    (name "perl-hash-fieldhash")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                           "Hash-FieldHash-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wg8nzczfxif55j2nbymbhyd25pjy7dqs4bvd6jrcds3ll3mflaw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/Hash-FieldHash")
+    (synopsis "Lightweight field hash for inside-out objects")
+    (description "@code{Hash::FieldHash} provides the field hash mechanism
+which supports the inside-out technique.  It is an alternative to
+@code{Hash::Util::FieldHash} with a simpler interface, higher performance, and
+relic support.")
     (license (package-license perl))))
 
 (define-public perl-hash-merge
