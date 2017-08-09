@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,14 +186,14 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.54.1")
+   (version "7.55.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/"
                                 name "-" version ".tar.bz2"))
             (sha256
              (base32
-              "0szbj352h95sgc9kbx9wzkgjksmg3g5k6cvlc7hz3wrbdh5gb0a4"))))
+              "0i9bik76rbyag3mbxbk8j383iaxs5v7lmjkn4v36ascl6bdks6vn"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
