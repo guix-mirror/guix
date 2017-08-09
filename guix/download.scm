@@ -67,12 +67,13 @@
        ,@(map (cut string-append <> "/gcc") gnu-mirrors))
       (gnupg
        "http://gd.tuwien.ac.at/privacy/gnupg/"
+       "http://artfiles.org/gnupg.org"
+       "http://www.crysys.hu/"
+       "https://gnupg.org/ftp/gcrypt/"
        "ftp://mirrors.dotsrc.org/gcrypt/"
        "ftp://mirror.cict.fr/gnupg/"
-       "http://artfiles.org/gnupg.org"
        "ftp://ftp.franken.de/pub/crypt/mirror/ftp.gnupg.org/gcrypt/"
        "ftp://ftp.freenet.de/pub/ftp.gnupg.org/gcrypt/"
-       "http://www.crysys.hu/"
        "ftp://ftp.hi.is/pub/mirrors/gnupg/"
        "ftp://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/"
        "ftp://ftp.bit.nl/mirror/gnupg/"
