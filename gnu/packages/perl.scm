@@ -7796,6 +7796,40 @@ coercions, these will be used if necessary to ensure values assigned to the
 variable conform.")
     (license (package-license perl))))
 
+(define-public perl-type-tiny
+  (package
+    (name "perl-type-tiny")
+    (version "1.002001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Type-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p8krim8kvw123nady96fagi8sk2pj1z8jkr4r8n45ihyamfxjck"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-devel-lexalias" ,perl-devel-lexalias)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-moo" ,perl-moo)
+       ("perl-moose" ,perl-moose)
+       ("perl-mouse" ,perl-mouse)
+       ("perl-ref-util-xs" ,perl-ref-util-xs)
+       ("perl-regexp-util" ,perl-regexp-util)
+       ("perl-type-tie" ,perl-type-tie)))
+    (home-page "http://search.cpan.org/dist/Type-Tiny")
+    (synopsis "Tiny, yet Moo(se)-compatible type constraint")
+    (description "@code{Type::Tiny} is a small class for writing type
+constraints, inspired by Moose's type constraint API.  It has only one
+non-core dependency (and even that is simply a module that was previously
+distributed as part of @code{Type::Tiny} but has since been spun off), and can
+be used with Moose, Mouse and Moo (or none of the above).")
+    (license (package-license perl))))
+
 (define-public perl-types-serialiser
   (package
     (name "perl-types-serialiser")
