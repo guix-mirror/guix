@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
@@ -893,3 +895,42 @@ suitable for pixel art, game graphics, and generally any detailed graphics
 painted with a mouse.")
     (home-page "http://pulkomandy.tk/projects/GrafX2")
     (license license:gpl2))) ; GPLv2 only
+
+(define-public ois
+  (package
+    (name "ois")
+    (version "1.3")
+    (source
+     (origin
+       ;; Development has moved to github and there are no recent tarball
+       ;; releases.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wgois/OIS.git")
+             (commit "bb75ccc1aabc1c547195579963601ff6080ca2f2")))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0w0pamjc3vj0jr718hysrw8x076fq6n9rd6wcb36sn2jd0lqvi98"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _ (zero? (system* "sh" "bootstrap")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (synopsis "Object Oriented Input System")
+    (description
+     "Cross Platform Object Oriented Input Lib System is a cross platform,
+simple solution for using all kinds of Input Devices (Keyboards, Mice,
+Joysticks, etc) and feedback devices (e.g. force feedback).  Meant to be very
+robust and compatible with many systems and operating systems.")
+    (home-page "https://github.com/wgois/OIS")
+    (license license:zlib)))

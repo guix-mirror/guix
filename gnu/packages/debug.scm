@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -287,20 +287,26 @@ down the road.")
        ;; not accept a directory name instead.  To let the gnu-build-system's
        ;; patch-* phases work properly, we unpack the source first, then
        ;; repack before the configure phase.
-       `(#:configure-flags '("--with-make-tar=./make.tar.xz")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-make
-             (lambda* (#:key inputs #:allow-other-keys)
-               (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
-           (add-before 'configure 'repack-make
-             (lambda _
-               (zero? (system* "tar" "cJf" "./make.tar.xz"
-                               (string-append "make-"
-                                              ,(package-version gnu-make))))))
-           (add-before 'configure 'bootstrap
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))))
+       (let ((make-dir (string-append "make-" (package-version gnu-make))))
+         `(#:configure-flags '("--with-make-tar=./make.tar.xz")
+           #:phases
+           (modify-phases %standard-phases
+             (add-after 'unpack 'unpack-make
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
+             (add-after 'unpack-make 'set-default-shell
+               (lambda _
+                 ;; Taken mostly directly from (@ (gnu packages base) gnu-make)
+                 (substitute* (string-append ,make-dir "/job.c")
+                   (("default_shell = .*$")
+                    (format #f "default_shell = \"~a\";\n"
+                            (which "sh"))))))
+             (add-before 'configure 'repack-make
+               (lambda _
+                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))
+             (add-before 'configure 'bootstrap
+               (lambda _
+                 (zero? (system* "autoreconf" "-vfi"))))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description

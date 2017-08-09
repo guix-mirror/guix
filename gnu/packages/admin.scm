@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -849,29 +849,29 @@ system administrator.")
        ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
        #:parallel-build? #f
 
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (substitute* "src/sudo_usage.h.in"
-                     ;; Do not capture 'configure' arguments since we would
-                     ;; unduly retain references, and also because the
-                     ;; CPPFLAGS above would close the string literal
-                     ;; prematurely.
-                     (("@CONFIGURE_ARGS@") "\"\""))
-                   (substitute* (find-files "." "Makefile\\.in")
-                     (("-o [[:graph:]]+ -g [[:graph:]]+")
-                      ;; Allow installation as non-root.
-                      "")
-                     (("^install: (.*)install-sudoers(.*)" _ before after)
-                      ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n"))
-                     (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
-                      ;; Don't try to create /run/sudo.
-                      "$(TMPDIR)/dummy")
-                     (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
-                      ;; Don't try to create /var/db/sudo.
-                      "$(TMPDIR)/dummy")))
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (substitute* "src/sudo_usage.h.in"
+               ;; Do not capture 'configure' arguments since we would
+               ;; unduly retain references, and also because the
+               ;; CPPFLAGS above would close the string literal
+               ;; prematurely.
+               (("@CONFIGURE_ARGS@") "\"\""))
+             (substitute* (find-files "." "Makefile\\.in")
+               (("-o [[:graph:]]+ -g [[:graph:]]+")
+                ;; Allow installation as non-root.
+                "")
+               (("^install: (.*)install-sudoers(.*)" _ before after)
+                ;; Don't try to create /etc/sudoers.
+                (string-append "install: " before after "\n"))
+               (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
+                ;; Don't try to create /run/sudo.
+                "$(TMPDIR)/dummy")
+               (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
+                ;; Don't try to create /var/db/sudo.
+                "$(TMPDIR)/dummy")))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.

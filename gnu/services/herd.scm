@@ -49,7 +49,8 @@
             unload-services
             unload-service
             load-services
-            start-service))
+            start-service
+            stop-service))
 
 ;;; Commentary:
 ;;;
@@ -146,7 +147,7 @@ result.  Otherwise return #f."
     (force-output sock)
 
     (match (read sock)
-      (('reply ('version 0 _ ...) ('result (result)) ('error #f)
+      (('reply ('version 0 _ ...) ('result result) ('error #f)
                ('messages messages))
        (for-each display-message messages)
        (cont result))
@@ -220,6 +221,10 @@ returns a shepherd <service> object."
 
 (define (start-service name)
   (with-shepherd-action name ('start) result
+    result))
+
+(define (stop-service name)
+  (with-shepherd-action name ('stop) result
     result))
 
 ;; Local Variables:

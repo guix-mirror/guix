@@ -141,7 +141,7 @@
 (define-public brasero
   (package
     (name "brasero")
-    (version "3.12.1")
+    (version "3.12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -149,7 +149,7 @@
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "09vi2hyhl0bz7imv3ky6h7x5m3d546n968wcghydwrkvwm9ylpls"))))
+               "0h90y674j26rvjahb8cc0w79zx477rb6zaqcj26wzvq8kmpic8k8"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
@@ -165,7 +165,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "plugins/growisofs/burn-growisofs.c"
                (("\"growisofs") (string-append "\"" (which "growisofs"))))
-             #t )))))
+             #t)))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
@@ -345,6 +345,13 @@ formats like PNG, SVG, PDF and EPS.")
              ;; The ca-certificates.crt is not available in the build
              ;; environment.
              (setenv "SSL_CERT_FILE" "/dev/null")
+             #t))
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
+             ;; They have been removed in libgdata 0.17.6, so just do the same.
+             (substitute* "gdata/tests/Makefile"
+               (("picasaweb\\$\\(EXEEXT\\) ") ""))
              #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
@@ -578,7 +585,7 @@ and keep up to date translations of documentation.")
      `(("p11-kit" ,p11-kit)
        ("glib" ,glib)
        ("gtk+" ,gtk+)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Libraries for displaying certificates and accessing key stores")
     (description
      "The GCR package contains libraries used for displaying certificates and
@@ -609,7 +616,7 @@ GNOME Desktop.")
     (propagated-inputs
      ;; Referred to in .h files and .pc.
      `(("glib" ,glib)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Accessing passwords from the GNOME keyring")
     (description
      "Client library to access passwords from the GNOME keyring.")
@@ -673,7 +680,7 @@ GNOME Desktop.")
        ("libxslt" ,libxslt) ;for documentation
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Daemon to store passwords and encryption keys")
     (description
      "gnome-keyring is a program that keeps passwords and other secrets for
@@ -744,7 +751,7 @@ forgotten when the session ends.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (home-page
-     "http://www.gnome.org/projects/evince/")
+     "https://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
     (description
      "Evince is a document viewer for multiple document formats.  It
@@ -843,7 +850,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      `(("icon-naming-utils" ,icon-naming-utils)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://art.gnome.org/")
+    (home-page "https://art.gnome.org/")
     (synopsis
      "GNOME icon theme")
     (description
@@ -1142,7 +1149,7 @@ XML/CSS rendering engine.")
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.gnome.org/projects/libgsf")
+    (home-page "https://www.gnome.org/projects/libgsf")
     (synopsis "GNOME's Structured File Library")
     (description
      "Libgsf aims to provide an efficient extensible I/O abstraction for
@@ -1377,7 +1384,7 @@ is intended for user preferences; not arbitrary data storage.")
                          (string-append "INTLTOOL_" tool " = intltool-"
                                         (string-downcase tool) "\n")))
                       #t)))))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Base MIME and Application database for GNOME")
     (description  "GNOME Mime Data is a module which contains the base MIME
 and Application database for GNOME.  The data stored by this module is
@@ -1832,7 +1839,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.34")
+    (version "1.12.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1840,7 +1847,7 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09f7h4lvwzyl0amd3axapwbsrnrvvpwxyhs540jlrv425n0j0j8b"))))
+                "02kcq2af16m9mlzgkbdzswhw0nl6zf01dmvsfq3shy1mab7f7cbp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -1995,7 +2002,7 @@ passwords in the GNOME keyring.")
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
     (propagated-inputs
      `(("glib" ,glib))) ; required by libvala-0.26.pc
-    (home-page "http://live.gnome.org/Vala/")
+    (home-page "https://live.gnome.org/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
      "Vala is a programming language that aims to bring modern programming
@@ -2029,7 +2036,7 @@ libraries written in C.")
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
        ("gnutls" ,gnutls)                         ;ditto
        ("pcre2" ,pcre2)))                         ;ditto
-    (home-page "http://www.gnome.org/")
+    (home-page "https://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
      "VTE is a library (libvte) implementing a terminal emulator widget for
@@ -2299,7 +2306,7 @@ indicators etc).")
      `(("python" ,python-2)
        ("python2-pygtk" ,python2-pygtk)
        ("librsvg" ,librsvg)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Python bindings to librsvg")
     (description
      "This packages provides Python bindings to librsvg, the SVG rendering
@@ -2350,7 +2357,7 @@ library.")
        ("gnutls" ,gnutls)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("p11-kit" ,p11-kit)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "Network-related GIO modules")
     (description
      "This package contains various network related extensions for the GIO
@@ -3020,7 +3027,7 @@ services for numerous locations.")
        ("librsvg" ,librsvg)
        ("xf86-input-wacom" ,xf86-input-wacom)
        ("network-manager" ,network-manager)))
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
      "This package contains the daemon responsible for setting the various
@@ -3343,7 +3350,7 @@ GL based interactive canvas library.")
        ("cairo" ,cairo)
        ("gtk+3" ,gtk+)
        ("glib" ,glib)))
-    (home-page "http://projects.gnome.org/libchamplain/")
+    (home-page "https://projects.gnome.org/libchamplain/")
     (synopsis "C library providing a ClutterActor to display maps")
     (description
      "libchamplain is a C library providing a ClutterActor to display maps.
@@ -3512,7 +3519,7 @@ as possible!")
             (variable "GRL_PLUGIN_PATH")
             (files (list (string-append "lib/grilo-"
                                         (version-major+minor version)))))))
-    (home-page "http://live.gnome.org/Grilo")
+    (home-page "https://live.gnome.org/Grilo")
     (synopsis "Framework for discovering and browsing media")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
@@ -3565,7 +3572,7 @@ for application developers.")
        ;; with: "assertion failed: (source)".  Outside of the build container,
        ;; most tests succeed.
        #:tests? #f))
-    (home-page "http://live.gnome.org/Grilo")
+    (home-page "https://live.gnome.org/Grilo")
     (synopsis "Plugins for the Grilo media discovery library")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
@@ -4087,7 +4094,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4095,7 +4102,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13f5h7mbxdyjf93jp46hiaxsrngpr6frgf69d8iza7arc060vg2s"))))
+                "0m51cclpnb7lxk8w526rriyb2bi3aj17fbcvikhkg7qd65v1dxgy"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -4564,7 +4571,7 @@ configuration program to choose applications starting on login.")
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
     (synopsis "Javascript bindings for GNOME")
-    (home-page "http://live.gnome.org/Gjs")
+    (home-page "https://live.gnome.org/Gjs")
     (description
      "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey
 javascript engine and the GObject introspection framework.")
@@ -4573,7 +4580,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.22.0")
+    (version "3.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4581,11 +4588,10 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0i9z5d31vibb3dd329gwvyga38zq5k1a2glcdq7m93ycbl5mlfq6"))))
+                "0as9r5zvnyrxh699q6jnd0p9ddqy5qamfbxggpdjzagzixhw6yxa"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags '("--disable-spell") ; XXX: gspell not packaged yet
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after
           'install 'wrap-gedit
@@ -4611,6 +4617,7 @@ javascript engine and the GObject introspection framework.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
+       ("gspell" ,gspell)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
        ("libpeas" ,libpeas)
@@ -4651,7 +4658,7 @@ powerful general purpose text editor.")
      `(("libnotify" ,libnotify)
        ("webkitgtk" ,webkitgtk)))
     (synopsis "Display graphical dialog boxes from shell scripts")
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (description
      "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you
 to display dialog boxes from the commandline and shell scripts.")
@@ -4660,7 +4667,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.24.2")
+    (version "3.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4668,7 +4675,7 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "043q3384vwrkjdfhbwn9pwdml6z0g0ad0cj2fjnjzg6402i67071"))))
+                "1slspy5krbqfvnma72lvdnxjf8ag2cvxssa8bvi7y3xxy7xv603k"))))
     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
     ;; versions of cogl and clutter.  As a result, many of the inputs,
     ;; propagated-inputs, and configure flags used in cogl and clutter are
@@ -4749,7 +4756,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("xkeyboard-config" ,xkeyboard-config)
        ("zenity" ,zenity)))
     (synopsis "Window and compositing manager")
-    (home-page "http://www.gnome.org")
+    (home-page "https://www.gnome.org")
     (description
      "Mutter is a window and compositing manager that displays and manages your
 desktop via OpenGL.  Mutter combines a sophisticated display engine using the
@@ -4760,7 +4767,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.24.1")
+    (version "3.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4768,7 +4775,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lgniqmkr6ffdw3kcqd34lvp969j2q2qzcy30zkzl5c09r7anc0a"))))
+                "1fmgywfcvlb5sa0slxxlg80gafiaal8vnq6h5lcybqa12lnxa2mp"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -5034,7 +5041,7 @@ users.")
        ("util-linux" ,util-linux)
        ("elogind" ,elogind)))
     (synopsis "Network connection manager")
-    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
      "NetworkManager is a system network service that manages your network
 devices and connections, attempting to keep active network connectivity when
@@ -5097,7 +5104,7 @@ services.")
        ("jansson" ,jansson) ; for team support
        ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
-    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
      "This package contains a systray applet for NetworkManager.  It displays
 the available networks and allows users to easily switch between them.")
@@ -5198,7 +5205,7 @@ libxml2.")
        ("libcanberra" ,libcanberra)
        ("linux-pam" ,linux-pam)))
     (synopsis "Display manager for GNOME")
-    (home-page "http://wiki.gnome.org/Projects/GDM/")
+    (home-page "https://wiki.gnome.org/Projects/GDM/")
     (description
      "GNOME Display Manager is a system service that is responsible for
 providing graphical log-ins and managing local and remote displays.")
@@ -5491,7 +5498,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "1.12.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5499,7 +5506,7 @@ easy, safe, and automatic.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vsrzzkcfvmylhpk1ww6xdx8z9sgjs0gn74gz82qngjyq3c3s6c3"))))
+                "1zdzh8l5ahi906i40i4pqw2cs1hwrl6l9a7fp344a3idk3pl5szb"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
@@ -6512,18 +6519,19 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                     "/lib/aspell"))
              #t)))))
     (inputs
-     `(("enchant" ,enchant)
-       ("iso-codes" ,iso-codes)
-       ("gtk+" ,gtk+)
-       ("glib" ,glib)))
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("iso-codes" ,iso-codes)))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
 
        ;; For tests.
-       ("xorg-server" ,xorg-server)
-       ("aspell-dict-en" ,aspell-dict-en)))
+       ("aspell-dict-en" ,aspell-dict-en)
+       ("xorg-server" ,xorg-server)))
+    (propagated-inputs
+     `(("enchant" ,enchant)))           ; enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description

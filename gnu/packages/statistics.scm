@@ -1031,14 +1031,14 @@ aesthetic attributes.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "0l8c4bh6765x9s6rw3mfm1bgicdzdngir1kxh9pxx4sidrdndcip"))))
+         "09y9x09gri33ghhrvjjnj5k5rk0kdpsk3wq02cln8gmywd6728vk"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -3280,37 +3280,6 @@ optimized in C++, and the main interface function provides an easy way of
 performing parallel computations on multicore machines.")
     (license license:gpl2+)))
 
-(define-public r-igraph
-  (package
-    (name "r-igraph")
-    (version "1.1.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "igraph" version))
-       (sha256
-        (base32
-         "1v26wyk52snh8z6m5p7yqwcd9dbqifhm57j112i9x53ppi0npcc9"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (inputs
-     `(("gmp" ,gmp)
-       ("libxml2" ,libxml2)))
-    (propagated-inputs
-     `(("r-irlba" ,r-irlba)
-       ("r-magrittr" ,r-magrittr)
-       ("r-matrix" ,r-matrix)
-       ("r-pkgconfig" ,r-pkgconfig)))
-    (home-page "http://igraph.org")
-    (synopsis "Network analysis and visualization")
-    (description
-     "This package provides routines for simple graphs and network analysis.
-It can handle large graphs very well and provides functions for generating
-random and regular graphs, graph visualization, centrality methods and much
-more.")
-    (license license:gpl2+)))
-
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
@@ -4217,13 +4186,13 @@ representation of R code.")
 (define-public r-ggbeeswarm
   (package
     (name "r-ggbeeswarm")
-    (version "0.5.3")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggbeeswarm" version))
               (sha256
                (base32
-                "1jgp55rvmzc4agcrlsjn8m5lk85di9c4wj94xzikqkql4lvq3qpd"))))
+                "0crk29p5vi1r3a988kms4y7r0iqwgwzsikgvh18r9wbzyr98bb5v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beeswarm" ,r-beeswarm)
@@ -4631,6 +4600,111 @@ can be efficiently implemented directly in the R language.")
      "This packages allows to analyze data with robust methods such as
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
+
+(define-public r-pcapp
+  (package
+    (name "r-pcapp")
+    (version "1.9-72")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pcaPP" version))
+       (sha256
+        (base32
+         "0i2822bv86dpqmk3q17x61nsp3gjjnn4nr8191rwvbiib7xhpgaq"))))
+    (properties `((upstream-name . "pcaPP")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "http://cran.r-project.org/web/packages/pcaPP")
+    (synopsis "Robust PCA by projection pursuit")
+    (description
+     "This package provides functions for robust @dfn{principal component
+analysis} (PCA) by projection pursuit.")
+    (license license:gpl3+)))
+
+(define-public r-rrcov
+  (package
+    (name "r-rrcov")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rrcov" version))
+       (sha256
+        (base32
+         "0kagqggi634mvrhd67ia7mpjrj5v6w2wq0z3kyppg5xkvzh335nq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-lattice" ,r-lattice)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-pcapp" ,r-pcapp)
+       ("r-robustbase" ,r-robustbase)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/rrcov")
+    (synopsis "Scalable robust estimators with high breakdown Point")
+    (description
+     "This package provides an implementation of robust location and scatter
+estimation and robust multivariate analysis with high breakdown point.")
+    (license license:gpl2+)))
+
+(define-public r-fit-models
+  (package
+    (name "r-fit-models")
+    (version "0.5-14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fit.models" version))
+       (sha256
+        (base32
+         "0vjbzmx0ambm6yzidb4vbgmhclwzwv2iz2cwl54ccdkvx4cx3fck"))))
+    (properties `((upstream-name . "fit.models")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://cran.r-project.org/web/packages/fit.models")
+    (synopsis "Compare fitted models")
+    (description
+     "The @code{fit.models} function and its associated methods (coefficients, print,
+summary, plot, etc.) were originally provided in the @code{robust} package to
+compare robustly and classically fitted model objects.  The aim of the
+@code{fit.models} package is to separate this fitted model object comparison
+functionality from the robust package and to extend it to support fitting
+methods (e.g., classical, robust, Bayesian, regularized, etc.) more
+generally.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-robust
+  (package
+    (name "r-robust")
+    (version "0.4-18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "robust" version))
+       (sha256
+        (base32
+         "1b7qh1aff500nd6dh4y2ipmjgdiq8991shflb63pc39vpc0ny6g4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fit-models" ,r-fit-models)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-robustbase" ,r-robustbase)
+       ("r-rrcov" ,r-rrcov)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/robust")
+    (synopsis "Port of the S+ \"Robust Library\"")
+    (description
+     "This package is a port of the S+ \"Robust Library\".  It provides
+methods for robust statistics, notably for robust regression and robust
+multivariate analysis.")
+    (license license:gpl2)))
 
 (define-public r-trimcluster
   (package

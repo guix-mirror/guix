@@ -283,7 +283,7 @@ shared NFS home directories.")
     "GLib provides data structure handling for C, portability wrappers,
 and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
-   (home-page "http://developer.gnome.org/glib/")
+   (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
 
 (define gobject-introspection

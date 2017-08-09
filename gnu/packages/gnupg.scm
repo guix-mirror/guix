@@ -203,14 +203,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.22")
+    (version "2.1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1msazgy1q1pp7y2xr46z0il4pfzmzgzkp7v0hv5cz4hvkspnywa6"))))
+                "0xqd5nm4j3w9lwk35vg57gl2i8bfkmx7d24i44gkbscm2lwpci59"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -229,8 +229,7 @@ compatible to GNU Pth.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
    (arguments
-    `(#:configure-flags '("--enable-gpg2-is-gpg"
-                          ;; Otherwise, the test suite looks for the `gpg`
+    `(#:configure-flags '(;; Otherwise, the test suite looks for the `gpg`
                           ;; executable in its installation directory in
                           ;; /gnu/store before it has been installed.
                           "--enable-gnupg-builddir-envvar")

@@ -49,6 +49,7 @@
 (define-public ruby
   (package
     (name "ruby")
+    (replacement ruby-2.4.1)
     (version "2.4.0")
     (source
      (origin
@@ -101,6 +102,26 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
+
+(define-public ruby-2.4.1
+  (package
+    (inherit ruby)
+    (name "ruby")
+    (version "2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0m763zf2v0jhrha3cx21g4dif6vc9gm714invs8h3sg35ncskj2g"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))))
 
 (define-public ruby-2.3
   (package
@@ -2544,14 +2565,14 @@ you about the changes.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.0.0")
+    (version "5.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "0k7zhnz0aw1ym8phs10r85f91ja45vsd058fm9v0h2k0igw12cpf"))))
+         "16r18n6b1nlky0xx2lw8c1f15gr2vm34xz5g4byjcxf88m1s07xh"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -2857,51 +2878,61 @@ including comments and whitespace.")
     (license license:expat)))
 
 (define-public ruby-tdiff
-  (package
-    (name "ruby-tdiff")
-    (version "0.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "tdiff" version))
-              (sha256
-               (base32
-                "0k41jbvn8qq4mgrixnhlk742b971d136i8wpbcv2cczvi22xpc86"))))
-    (build-system ruby-build-system)
-    (native-inputs
-     `(("ruby-rspec-2" ,ruby-rspec-2)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
-    (synopsis "Calculate the differences between two tree-like structures")
-    (description
-     "This library provides functions to calculate the differences between two
+  ;; Use a newer than released snapshot so that rspec-2 is not required.
+  (let ((commit "b662a6048f08abc45c1a834e5f34dd1c662935e2"))
+    (package
+      (name "ruby-tdiff")
+      (version (string-append "0.3.3-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/postmodern/tdiff.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0n3gq8rx49f7ln6zqlshqfg2mgqyy30rsdjlnki5mv307ykc7ad4"))))
+      (build-system ruby-build-system)
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)
+         ("ruby-yard" ,ruby-yard)
+         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+      (synopsis "Calculate the differences between two tree-like structures")
+      (description
+       "This library provides functions to calculate the differences between two
 tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
-    (home-page "https://github.com/postmodern/tdiff")
-    (license license:expat)))
+      (home-page "https://github.com/postmodern/tdiff")
+      (license license:expat))))
 
 (define-public ruby-nokogiri-diff
-  (package
-    (name "ruby-nokogiri-diff")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "nokogiri-diff" version))
-              (sha256
-               (base32
-                "0njr1s42war0bj1axb2psjvk49l74a8wzr799wckqqdcb6n51lc1"))))
-    (build-system ruby-build-system)
-    (propagated-inputs
-     `(("ruby-tdiff" ,ruby-tdiff)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
-    (native-inputs
-     `(("ruby-rspec-2" ,ruby-rspec-2)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
-    (synopsis "Calculate the differences between two XML/HTML documents")
-    (description
-     "@code{Nokogiri::Diff} adds the ability to calculate the
+  ;; Use a newer than released snapshot so that rspec-2 is not required.
+  (let ((commit "a38491e4d8709b7406f2cae11a50226d927d06f5"))
+    (package
+      (name "ruby-nokogiri-diff")
+      (version (string-append "0.2.0-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/postmodern/nokogiri-diff.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1ah2sfjh9n1p0ln2wkqzfl448ml7j4zfy6dhp1qgzq2m41php6rf"))))
+      (build-system ruby-build-system)
+      (propagated-inputs
+       `(("ruby-tdiff" ,ruby-tdiff)
+         ("ruby-nokogiri" ,ruby-nokogiri)))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)
+         ("ruby-yard" ,ruby-yard)
+         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+      (synopsis "Calculate the differences between two XML/HTML documents")
+      (description
+       "@code{Nokogiri::Diff} adds the ability to calculate the
 differences (added or removed nodes) between two XML/HTML documents.")
-    (home-page "https://github.com/postmodern/nokogiri-diff")
-    (license license:expat)))
+      (home-page "https://github.com/postmodern/nokogiri-diff")
+      (license license:expat))))
 
 (define-public ruby-rack
   (package
@@ -3998,7 +4029,7 @@ part of the Prawn PDF generator.")
 (define-public ruby-puma
   (package
     (name "ruby-puma")
-    (version "3.6.0")
+    (version "3.9.1")
     (source
      (origin
        (method url-fetch)
@@ -4008,32 +4039,17 @@ part of the Prawn PDF generator.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08aws79n9slcr50d9lwm011cp1pxvr1409c2jmyjxywvrc0a30v1"))
-       ;; Ignore broken tests reported upstream.
-       ;; https://github.com/puma/puma/issues/995
-       ;; https://github.com/puma/puma/issues/1044
-       (patches (search-patches "ruby-puma-ignore-broken-test.patch"))))
+         "03pifga841h17brh4vgia8i2ybh3cmsyg0dbybzdf6dq51wzcxdx"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests require an out-dated version of minitest.
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-integration-tests
-           (lambda _
-             ;; One broken test in this file cannot be easily removed in
-             ;; isolation, it probably causes race conditions.  So we delete
-             ;; the entire file.
-             (delete-file "test/test_integration.rb")
-             #t))
          (add-before 'build 'fix-gemspec
            (lambda _
              (substitute* "puma.gemspec"
                (("git ls-files") "find * |sort"))
              #t)))))
-    (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-hoe-git" ,ruby-hoe-git)
-       ("ruby-rack" ,ruby-rack)))
     (synopsis "Simple, concurrent HTTP server for Ruby/Rack")
     (description
      "Puma is a simple, fast, threaded, and highly concurrent HTTP 1.1 server

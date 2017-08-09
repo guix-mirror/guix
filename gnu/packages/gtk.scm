@@ -1355,7 +1355,7 @@ can also be used to document application code.")
     (inputs
      ;; Don't propagate GTK+ to reduce "profile pollution".
      `(("gtk+" ,gtk+-2))) ; required by gtk-engines-2.pc
-    (home-page "http://live.gnome.org/GnomeArt")
+    (home-page "https://live.gnome.org/GnomeArt")
     (synopsis "Theming engines for GTK+ 2.x")
     (description
      "This package contains the standard GTK+ 2.x theming engines including
@@ -1385,7 +1385,7 @@ Redmond95 and ThinIce.")
        ("intltool" ,intltool)))
     (propagated-inputs
      `(("gtk+" ,gtk+-2)))
-    (home-page "http://live.gnome.org/GnomeArt")
+    (home-page "https://live.gnome.org/GnomeArt")
     (synopsis "Cairo-based theming engine for GTK+ 2.x")
     (description
      "Murrine is a cairo-based GTK+ theming engine.  It is named after the

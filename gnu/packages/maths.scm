@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -1216,7 +1216,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.7.2")
+    (version "3.7.6")
     (source
      (origin
       (method url-fetch)
@@ -1224,7 +1224,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0jfrq6rd4zagw1iimz05m2w91k0jvz3qbik1lk8pqcxw3rvdqk5d"))))
+       (base32 "1y3f5jjq0v5b62i3sabp4kp5mgfyp3vnk0dxhwkrhpypax77nzxh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
@@ -1247,6 +1247,10 @@ September 2004}")
                          (assoc-ref %build-inputs "superlu") "/include")
          ,(string-append "--with-superlu-lib="
                          (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+       #:make-flags
+       ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
+       ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
+       (list (format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
         (replace 'configure
@@ -1261,13 +1265,17 @@ September 2004}")
               (format #t "configure flags: ~s~%" flags)
               (zero? (apply system* "./configure" flags)))))
         (add-after 'configure 'clean-local-references
-          (lambda* (#:key inputs outputs #:allow-other-keys)
+          (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
                 ;; Prevent build directory from leaking into compiled code
                 (((getcwd)) out)
                 ;; Scrub timestamp for reproducibility
                 ((".*Libraries compiled on.*") ""))
+              (substitute* (find-files "." "petscvariables")
+                ;; Do not expose build machine characteristics, set to defaults.
+                (("MAKE_NP = [:digit:]+") "MAKE_NP = 2")
+                (("NPMAX = [:digit:]+") "NPMAX = 2"))
               #t)))
         (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
@@ -1342,16 +1350,15 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.7.1")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://slepc.upv.es/download/download.php?"
-                           "filename=slepc-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "http://slepc.upv.es/download/distrib/slepc-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1hijlmrvxvfqslnx8yydzw5xqbsn1yy02g32w0hln1z3cgr1c0k7"))))
+         "12pbl8yd6r8k9xjlr1qw25rs0k1acgic7hw1s6l6bhiv9s285drg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1365,6 +1372,8 @@ scientific applications modeled by partial differential equations.")
        #:configure-flags
        `(,(string-append "--with-arpack-dir="
                          (assoc-ref %build-inputs "arpack") "/lib"))
+       #:make-flags                     ;honor (parallel-job-count)
+       `(,(format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -2415,7 +2424,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "4.4.3")
+    (version "4.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2424,33 +2433,31 @@ Fresnel integrals, and similar related functions as well.")
              version ".tar.gz"))
        (sha256
         (base32
-         "100hdzr0mf4mzlwnqpmwpfw4pymgsf9n3g0ywb1yps2nk1zbkdy5"))))
+         "1dnr6pmjzc2qmbkmb4shigx1l74ilf6abn7svyd6brxgvph8vadr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled metis source
+        '(delete-file-recursively "metis-5.1.0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f ;cholmod build fails otherwise
-       #:tests? #f  ;no "check" target
+     '(#:tests? #f  ;no "check" target
        #:make-flags
        (list "CC=gcc"
              "BLAS=-lblas"
              "TBB=-ltbb"
-             "CHOLMOD_CONFIG=-DNPARTITION" ;required when METIS is not used
+             "MY_METIS_LIB=-lmetis"
              (string-append "INSTALL_LIB="
                             (assoc-ref %outputs "out") "/lib")
              (string-append "INSTALL_INCLUDE="
-                            (assoc-ref %outputs "out") "/include"))
+                            (assoc-ref %outputs "out") "/include")
+             "library")
        #:phases
-       (alist-cons-before
-        'install 'prepare-out
-        ;; README.txt states that the target directories must exist prior to
-        ;; running "make install".
-        (lambda _
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))
-        ;; no configure script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure script
     (inputs
      `(("tbb" ,tbb)
-       ("lapack" ,lapack)))
+       ("lapack" ,lapack)
+       ("metis" ,metis)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
     (description
@@ -2686,7 +2693,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.4.1")
+    (version "8.5.0")
     (source
      (origin
        (method url-fetch)
@@ -2694,7 +2701,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "1bdksvvyp1rj37df1ndh8j3x9nzpc3sazw8nd0hzvnlw0qnyk800"))
+         "0yfpy4zh8j7hmqakw17zdlmvfdcmhwgs66wcb716plc4y7v3z4g6"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -2713,21 +2720,10 @@ revised simplex and the branch-and-bound methods.")
        ("suitesparse" ,suitesparse)))   ;for UMFPACK
     (arguments
      `(#:build-type "DebugRelease" ;only supports Release, Debug, or DebugRelease
-       #:configure-flags '("-DCOMPAT_FILES=OFF") ;Follow new directory structure
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'install 'hint-example-prefix
-                   ;; Set Cmake hints in examples so that they can find this
-                   ;; deal.II when configuring.
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref %outputs "out"))
-                            (exmpl (string-append out "/share/doc"
-                                                  "/dealii/examples")))
-                       (substitute* (find-files exmpl "CMakeLists.txt")
-                         (("([[:space:]]*HINTS.*)\n" _ line)
-                          (string-append line " $ENV{HOME}/.guix-profile "
-                                         out "\n")))
-                       #t))))))
+       #:configure-flags
+       ;; Work around a bug in libsuitesparseconfig linking
+       ;; see https://github.com/dealii/dealii/issues/4745
+       '("-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON")))
     (home-page "https://www.dealii.org")
     (synopsis "Finite element library")
     (description
