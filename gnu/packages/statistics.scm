@@ -4601,6 +4601,28 @@ can be efficiently implemented directly in the R language.")
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
 
+(define-public r-pcapp
+  (package
+    (name "r-pcapp")
+    (version "1.9-72")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pcaPP" version))
+       (sha256
+        (base32
+         "0i2822bv86dpqmk3q17x61nsp3gjjnn4nr8191rwvbiib7xhpgaq"))))
+    (properties `((upstream-name . "pcaPP")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "http://cran.r-project.org/web/packages/pcaPP")
+    (synopsis "Robust PCA by projection pursuit")
+    (description
+     "This package provides functions for robust @dfn{principal component
+analysis} (PCA) by projection pursuit.")
+    (license license:gpl3+)))
+
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
