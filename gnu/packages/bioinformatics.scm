@@ -8067,14 +8067,14 @@ in SNV base substitution data.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.60")
+    (version "1.61")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "16mxhwzhh5q48wmz1iba2r21cp0n0v8g11am4pi52iv6g0663ixl"))))
+         "1vrc2k33a196hrrl7k0z534fp96vv0shmigcr65ny1q0v6lq0h6i"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8086,6 +8086,9 @@ in SNV base substitution data.")
        ("r-go-db" ,r-go-db)
        ("r-hmisc" ,r-hmisc)
        ("r-impute" ,r-impute)
+       ("r-rcpp" ,r-rcpp)
+       ("r-robust" ,r-robust)
+       ("r-survival" ,r-survival)
        ("r-matrixstats" ,r-matrixstats)
        ("r-preprocesscore" ,r-preprocesscore)))
     (home-page
