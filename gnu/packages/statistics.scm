@@ -4623,6 +4623,33 @@ regression methodology including model selections and multivariate statistics.")
 analysis} (PCA) by projection pursuit.")
     (license license:gpl3+)))
 
+(define-public r-rrcov
+  (package
+    (name "r-rrcov")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rrcov" version))
+       (sha256
+        (base32
+         "0kagqggi634mvrhd67ia7mpjrj5v6w2wq0z3kyppg5xkvzh335nq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-lattice" ,r-lattice)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-pcapp" ,r-pcapp)
+       ("r-robustbase" ,r-robustbase)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/rrcov")
+    (synopsis "Scalable robust estimators with high breakdown Point")
+    (description
+     "This package provides an implementation of robust location and scatter
+estimation and robust multivariate analysis with high breakdown point.")
+    (license license:gpl2+)))
+
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
