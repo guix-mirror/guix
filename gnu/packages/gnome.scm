@@ -345,6 +345,13 @@ formats like PNG, SVG, PDF and EPS.")
              ;; The ca-certificates.crt is not available in the build
              ;; environment.
              (setenv "SSL_CERT_FILE" "/dev/null")
+             #t))
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
+             ;; They have been removed in libgdata 0.17.6, so just do the same.
+             (substitute* "gdata/tests/Makefile"
+               (("picasaweb\\$\\(EXEEXT\\) ") ""))
              #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
