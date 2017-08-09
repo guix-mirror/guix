@@ -2693,7 +2693,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.4.1")
+    (version "8.5.0")
     (source
      (origin
        (method url-fetch)
@@ -2701,7 +2701,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "1bdksvvyp1rj37df1ndh8j3x9nzpc3sazw8nd0hzvnlw0qnyk800"))
+         "0yfpy4zh8j7hmqakw17zdlmvfdcmhwgs66wcb716plc4y7v3z4g6"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -2720,21 +2720,10 @@ revised simplex and the branch-and-bound methods.")
        ("suitesparse" ,suitesparse)))   ;for UMFPACK
     (arguments
      `(#:build-type "DebugRelease" ;only supports Release, Debug, or DebugRelease
-       #:configure-flags '("-DCOMPAT_FILES=OFF") ;Follow new directory structure
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'install 'hint-example-prefix
-                   ;; Set Cmake hints in examples so that they can find this
-                   ;; deal.II when configuring.
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref %outputs "out"))
-                            (exmpl (string-append out "/share/doc"
-                                                  "/dealii/examples")))
-                       (substitute* (find-files exmpl "CMakeLists.txt")
-                         (("([[:space:]]*HINTS.*)\n" _ line)
-                          (string-append line " $ENV{HOME}/.guix-profile "
-                                         out "\n")))
-                       #t))))))
+       #:configure-flags
+       ;; Work around a bug in libsuitesparseconfig linking
+       ;; see https://github.com/dealii/dealii/issues/4745
+       '("-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON")))
     (home-page "https://www.dealii.org")
     (synopsis "Finite element library")
     (description
