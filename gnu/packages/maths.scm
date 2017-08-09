@@ -2424,7 +2424,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "4.4.3")
+    (version "4.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2433,32 +2433,31 @@ Fresnel integrals, and similar related functions as well.")
              version ".tar.gz"))
        (sha256
         (base32
-         "100hdzr0mf4mzlwnqpmwpfw4pymgsf9n3g0ywb1yps2nk1zbkdy5"))))
+         "1dnr6pmjzc2qmbkmb4shigx1l74ilf6abn7svyd6brxgvph8vadr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled metis source
+        '(delete-file-recursively "metis-5.1.0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f ;cholmod build fails otherwise
-       #:tests? #f  ;no "check" target
+     '(#:tests? #f  ;no "check" target
        #:make-flags
        (list "CC=gcc"
              "BLAS=-lblas"
              "TBB=-ltbb"
-             "CHOLMOD_CONFIG=-DNPARTITION" ;required when METIS is not used
+             "MY_METIS_LIB=-lmetis"
              (string-append "INSTALL_LIB="
                             (assoc-ref %outputs "out") "/lib")
              (string-append "INSTALL_INCLUDE="
-                            (assoc-ref %outputs "out") "/include"))
+                            (assoc-ref %outputs "out") "/include")
+             "library")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configure script
-         (add-before 'install 'prepare-out
-           ;; README.txt states that the target directories must exist prior to
-           ;; running "make install".
-           (lambda _
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))))))
+         (delete 'configure))))         ;no configure script
     (inputs
      `(("tbb" ,tbb)
-       ("lapack" ,lapack)))
+       ("lapack" ,lapack)
+       ("metis" ,metis)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
     (description
