@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -52,6 +52,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public libsodium
@@ -437,3 +438,30 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 
 (define-public python2-asn1crypto
   (package-with-python2 python-asn1crypto))
+
+(define-public perl-math-random-isaac-xs
+  (package
+    (name "perl-math-random-isaac-xs")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JA/JAWNSY/"
+                           "Math-Random-ISAAC-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yxqqcqvj51fn7b7j5xqhz65v74arzgainn66c6k7inijbmr1xws"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC-XS")
+    (synopsis "C implementation of the ISAAC PRNG algorithm")
+    (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
+fast pseudo-random number generator.  It is suitable for applications where a
+significant amount of random data needs to be produced quickly, such as
+solving using the Monte Carlo method or for games.  The results are uniformly
+distributed, unbiased, and unpredictable unless you know the seed.
+
+This package implements the same interface as @code{Math::Random::ISAAC}.")
+    (license license:public-domain)))
