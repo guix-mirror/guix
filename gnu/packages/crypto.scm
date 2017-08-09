@@ -494,3 +494,33 @@ distributed, unbiased, and unpredictable unless you know the seed.
 This package provides a Perl interface to the ISAAC pseudo random number
 generator.")
     (license license:public-domain)))
+
+(define-public perl-crypt-random-source
+  (package
+    (name "perl-crypt-random-source")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Crypt-Random-Source-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00mw5m52sbz9nqp3f6axyrgcrihqxn7k8gv0vi1kvm1j1nc9g29h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-module-find" ,perl-module-find)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-type-tiny" ,perl-type-tiny)))
+    (home-page "http://search.cpan.org/dist/Crypt-Random-Source")
+    (synopsis "Get weak or strong random data from pluggable sources")
+    (description "This module provides implementations for a number of
+byte-oriented sources of random data.")
+    (license (package-license perl))))
