@@ -1031,14 +1031,14 @@ aesthetic attributes.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "0l8c4bh6765x9s6rw3mfm1bgicdzdngir1kxh9pxx4sidrdndcip"))))
+         "09y9x09gri33ghhrvjjnj5k5rk0kdpsk3wq02cln8gmywd6728vk"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
