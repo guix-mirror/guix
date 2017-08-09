@@ -2448,15 +2448,14 @@ Fresnel integrals, and similar related functions as well.")
              (string-append "INSTALL_INCLUDE="
                             (assoc-ref %outputs "out") "/include"))
        #:phases
-       (alist-cons-before
-        'install 'prepare-out
-        ;; README.txt states that the target directories must exist prior to
-        ;; running "make install".
-        (lambda _
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))
-        ;; no configure script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'install 'prepare-out
+           ;; README.txt states that the target directories must exist prior to
+           ;; running "make install".
+           (lambda _
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))))))
     (inputs
      `(("tbb" ,tbb)
        ("lapack" ,lapack)))
