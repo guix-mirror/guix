@@ -5676,6 +5676,27 @@ can also be useful as a development and debugging tool for catching updates to
 variables that should not be changed.")
     (license (package-license perl))))
 
+(define-public perl-ref-util-xs
+  (package
+    (name "perl-ref-util-xs")
+    (version "0.116")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Ref-Util-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l5dzbd71iclv8fdjk7685rq6pbfiiydh0n70br6g9l9iy2smr6f"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Ref-Util-XS")
+    (synopsis "XS implementation for Ref::Util")
+    (description "@code{Ref::Util::XS} is the XS implementation of
+@code{Ref::Util}, which provides several functions to help identify references
+in a more convenient way than the usual approach of examining the return value
+of @code{ref}.")
+    (license x11)))
+
 (define-public perl-regexp-common
   (package
     (name "perl-regexp-common")
