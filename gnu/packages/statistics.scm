@@ -4650,6 +4650,34 @@ analysis} (PCA) by projection pursuit.")
 estimation and robust multivariate analysis with high breakdown point.")
     (license license:gpl2+)))
 
+(define-public r-fit-models
+  (package
+    (name "r-fit-models")
+    (version "0.5-14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fit.models" version))
+       (sha256
+        (base32
+         "0vjbzmx0ambm6yzidb4vbgmhclwzwv2iz2cwl54ccdkvx4cx3fck"))))
+    (properties `((upstream-name . "fit.models")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://cran.r-project.org/web/packages/fit.models")
+    (synopsis "Compare fitted models")
+    (description
+     "The @code{fit.models} function and its associated methods (coefficients, print,
+summary, plot, etc.) were originally provided in the @code{robust} package to
+compare robustly and classically fitted model objects.  The aim of the
+@code{fit.models} package is to separate this fitted model object comparison
+functionality from the robust package and to extend it to support fitting
+methods (e.g., classical, robust, Bayesian, regularized, etc.) more
+generally.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
