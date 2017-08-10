@@ -335,13 +335,13 @@ groups.")
 (define-public ruby-diff-lcs
   (package
     (name "ruby-diff-lcs")
-    (version "1.2.5")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "diff-lcs" version))
               (sha256
                (base32
-                "1vf9civd41bnqi6brr5d9jifdw73j9khc6fkhfl1f8r9cpkdvlx1"))))
+                "18w22bjz424gzafv6nzv98h0aqkwz3d9xhm7cbr1wfbyas8zayza"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
