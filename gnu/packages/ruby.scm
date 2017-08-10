@@ -2111,14 +2111,14 @@ file or directories are modified.")
 (define-public ruby-thread-safe
   (package
     (name "ruby-thread-safe")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "thread_safe" version))
        (sha256
         (base32
-         "1hq46wqsyylx5afkp6jmcihdpv4ynzzq9ygb6z2pb1cbz5js0gcr"))))
+         "0nmhcgq6cgz44srylra07bmaw99f5271l0dpsvl5f75m44l0gmwy"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs simplecov, among others
