@@ -3037,14 +3037,14 @@ files.")
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
-    (version "1.5.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "cucumber-core" version))
        (sha256
         (base32
-         "0qj2fsqvp94nggnikbnrfvnmzr1pl6ifmdsxj69kdw1kkab30jjr"))))
+         "136hnvqv444qyxzcgy1k60y4i6cn3sn9lbqr4wan9dzz1yzllqbm"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-gherkin" ,ruby-gherkin)))
