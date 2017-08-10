@@ -1563,13 +1563,13 @@ easier to re-run individual failing tests.")
 (define-public ruby-minitest-bacon
   (package
     (name "ruby-minitest-bacon")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest-bacon" version))
               (sha256
                (base32
-                "0cm7r68422743i3b6fm4rrm0r6cnnjmglq5gcmmgl1f0rk5hnf6r"))))
+                "0zhdwcl6bgha61qiyfvr7zs7ywaxc33wmj9xhxl8jdmpdvifvfaj"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
