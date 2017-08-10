@@ -2523,13 +2523,13 @@ a native C extension.")
 (define-public ruby-rb-fsevent
   (package
     (name "ruby-rb-fsevent")
-    (version "0.9.6")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rb-fsevent" version))
               (sha256
                (base32
-                "1hq57by28iv0ijz8pk9ynih0xdg7vnl1010xjcijfklrcv89a1j2"))))
+                "1fbpmjypwxkb8r7y1kmhmyp6gawa4byw0yb3jc3dn9ly4ld9lizf"))))
     (build-system ruby-build-system)
     ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
     ;; "listen", which needs "rb-fsevent" at runtime.
