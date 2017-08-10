@@ -2384,13 +2384,13 @@ Ruby's large and slower test/unit.")
 (define-public ruby-term-ansicolor
   (package
     (name "ruby-term-ansicolor")
-    (version "1.3.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "term-ansicolor" version))
               (sha256
                (base32
-                "0ydbbyjmk5p7fsi55ffnkq79jnfqx65c3nj8d9rpgl6sw85ahyys"))))
+                "1b1wq9ljh7v3qyxkk8vik2fqx2qzwh5lval5f92llmldkw7r7k7b"))))
     (build-system ruby-build-system)
     ;; Rebuilding the gemspec seems to require git, even though this is not a
     ;; git repository, so we just build the gem from the existing gemspec.
