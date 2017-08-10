@@ -1191,13 +1191,13 @@ use GNU gettext tools for maintenance.")
 (define-public ruby-packnga
   (package
     (name "ruby-packnga")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "packnga" version))
               (sha256
                (base32
-                "1i71yhvlkvi5fp3m8jl9317cnddkbnrcy0syrmiw4y1lrq0cbncj"))))
+                "1vv2j0i43s4xid2km5hgrrxqlqpwgq8nlm8kaxfg2531c1vwfsd4"))))
     (build-system ruby-build-system)
     ;; ruby-test-unit is required to run tests, but that needs ruby-packnga.
     ;; To break the dependency cycle we disable tests.
