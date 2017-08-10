@@ -2775,14 +2775,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "0.20.0")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "03xcgwjs6faxis81jxf2plnlalg55dhhafqv3kvjxfr8ic7plpw5"))))
+         "00vhasqwc4f98qb4wxqn2h07fjwzhp5lwyi41j2gndi2g02wrdqh"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
