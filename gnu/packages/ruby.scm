@@ -2736,13 +2736,13 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-redcloth
   (package
     (name "ruby-redcloth")
-    (version "4.2.9")
+    (version "4.3.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "RedCloth" version))
               (sha256
                (base32
-                "06pahxyrckhgb7alsxwhhlx1ib2xsx33793finj01jk8i054bkxl"))))
+                "0m9dv7ya9q93r8x1pg2gi15rxlbck8m178j1fz7r5v6wr1avrrqy"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no tests
