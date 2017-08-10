@@ -1679,14 +1679,14 @@ MiniTest @code{Object#stub} with a global @code{stub} method.")
 (define-public ruby-minitest-bonus-assertions
   (package
     (name "ruby-minitest-bonus-assertions")
-    (version "2.0")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-bonus-assertions" version))
        (sha256
         (base32
-         "11nrd32kwy61ndg9csk7l1ifya79ghrrv3vsrxj57k50m7na6jkm"))))
+         "1hbq9jk904xkz868yha1bqcm6azm7kmjsll2k4pn2nrcib508h2a"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
