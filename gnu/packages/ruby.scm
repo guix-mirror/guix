@@ -2131,14 +2131,14 @@ utilities for Ruby.")
 (define-public ruby-tzinfo
   (package
     (name "ruby-tzinfo")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "tzinfo" version))
        (sha256
         (base32
-         "1c01p3kg6xvy1cgjnzdfq45fggbwish8krd0h864jvbpybyx7cgx"))))
+         "05r81lk7q7275rdq7xipfm0yxgqyd2ggh73xpc98ypngcclqcscl"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-thread-safe" ,ruby-thread-safe)))
