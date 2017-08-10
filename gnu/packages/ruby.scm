@@ -1785,13 +1785,13 @@ run as a daemon and to be controlled by simple start/stop/restart commands.")
 (define-public ruby-git
   (package
     (name "ruby-git")
-    (version "1.2.9.1")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "git" version))
               (sha256
                (base32
-                "1sqfj8lmhl7c5zamcckkpik4izfph2zkv6krw0i8mzj5pdws5acs"))))
+                "1waikaggw7a1d24nw0sh8fd419gbf7awh000qhsf411valycj6q3"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no tests
