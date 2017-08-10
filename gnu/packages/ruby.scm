@@ -978,13 +978,13 @@ and JRuby.")
 (define-public ruby-simplecov-html
   (package
     (name "ruby-simplecov-html")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "simplecov-html" version))
               (sha256
                (base32
-                "1qni8g0xxglkx25w54qcfbi4wjkpvmb28cb7rj5zk3iqynjcdrqf"))))
+                "0f3psphismgp6jp1fxxz09zbswh7m2xxxr6gqlzdh7sgv415clvm"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (native-inputs
