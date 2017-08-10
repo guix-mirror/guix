@@ -2801,14 +2801,14 @@ with PostgreSQL 8.4 and later.")
 (define-public ruby-byebug
   (package
     (name "ruby-byebug")
-    (version "6.0.2")
+    (version "9.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "byebug" version))
        (sha256
         (base32
-         "0537h9qbhr6csahmzyn4lk1g5b2lcligbzd21gfy93nx9lbfdnzc"))))
+         "1kbfcn65rgdhi72n8x9l393b89rvi5z542459k7d1ggchpb0idb0"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
