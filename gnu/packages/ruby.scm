@@ -773,13 +773,13 @@ same log file.")
 (define-public ruby-nenv
   (package
     (name "ruby-nenv")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nenv" version))
               (sha256
                (base32
-                "152wxwri0afwgnxdf93gi6wjl9rr5z7vwp8ln0gpa3rddbfc27s6"))))
+                "0r97jzknll9bhd8yyg2bngnnkj8rjhal667n7d32h8h7ny7nvpnr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests included
