@@ -2438,13 +2438,13 @@ process tree data structure for the current host.")
 (define-public ruby-utils
   (package
     (name "ruby-utils")
-    (version "0.2.4")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "utils" version))
               (sha256
                (base32
-                "0vycgscxf3s1xn4yyfsq54zlh082581ga8azybmqgc4pij6iz2cd"))))
+                "196zhgcygrnx09bb9mh22qas03rl9avzx8qs0wnxznpin4pffwcl"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-tins" ,ruby-tins)
