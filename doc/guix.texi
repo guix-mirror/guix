@@ -2599,7 +2599,7 @@ The available formats are:
 @table @code
 @item tarball
 This is the default format.  It produces a tarball containing all the
-specifies binaries and symlinks.
+specified binaries and symlinks.
 
 @item docker
 This produces a tarball that follows the
