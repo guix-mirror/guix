@@ -2274,13 +2274,13 @@ documentation for Ruby code.")
 (define-public ruby-tins
   (package
     (name "ruby-tins")
-    (version "1.7.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "tins" version))
               (sha256
                (base32
-                "1060h8dgnjl9az0sv1b74yrni8d4mh3x858wq6yfbfdf5dxrfl0a"))))
+                "09whix5a7ics6787zrkwjmp16kqyh6560p9f317syks785805f7s"))))
     (build-system ruby-build-system)
     ;; This gem needs gem-hadar at development time, but gem-hadar needs tins
     ;; at runtime.  To avoid the dependency on gem-hadar we disable rebuilding
