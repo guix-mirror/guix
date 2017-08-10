@@ -2543,14 +2543,14 @@ a native C extension.")
 (define-public ruby-listen
   (package
     (name "ruby-listen")
-    (version "3.0.3")
+    (version "3.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "listen" version))
        (sha256
         (base32
-         "10lhshjklxlrkw7999j0xl6sdxd4x32kiy8rp88jwr68kis5vq2b"))))
+         "01v5mrnfqm6sgm8xn2v5swxsn1wlmq7rzh2i48d4jzjsc7qvb6mx"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (propagated-inputs
