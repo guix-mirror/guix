@@ -4225,14 +4225,14 @@ libraries for compiling Ruby native extensions.")
 (define-public ruby-net-http-digest-auth
   (package
     (name "ruby-net-http-digest-auth")
-    (version "1.4")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "net-http-digest_auth" version))
        (sha256
         (base32
-         "14801gr34g0rmqz9pv4rkfa3crfdbyfk6r48vpg5a5407v0sixqi"))))
+         "1nq859b0gh2vjhvl1qh1zrk09pc7p54r9i6nnn6sb06iv07db2jb"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
