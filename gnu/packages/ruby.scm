@@ -1820,13 +1820,13 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
 (define-public ruby-slop
   (package
     (name "ruby-slop")
-    (version "4.1.0")
+    (version "4.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "slop" version))
               (sha256
                (base32
-                "0dj0ps6v1mqd02k84mgwd7hp578n2bzl7c51h3grdhxfl3jkfsj5"))))
+                "0bfm8535g0rkn9cbjndkckf0f7a3wj0rg4rqhrpsgxnbfdf2lm0p"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
