@@ -4203,14 +4203,14 @@ patterns.")
 (define-public ruby-pkg-config
   (package
     (name "ruby-pkg-config")
-    (version "1.1.7")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pkg-config" version))
        (sha256
         (base32
-         "0lljiqnm0b4z6iy87lzapwrdfa6ps63x2z5zbs038iig8dqx2g0z"))))
+         "056mzqdh4yjznsg36fi0xiq76f24vxlhzh2n4az919l3x5k318ar"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests require extra files not included in the gem.
