@@ -4247,14 +4247,14 @@ of the more insecure basic authentication scheme.")
 (define-public ruby-mail
   (package
     (name "ruby-mail")
-    (version "2.6.4")
+    (version "2.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mail" version))
        (sha256
         (base32
-         "0c9vqfy0na9b5096i5i4qvrvhwamjnmajhgqi3kdsdfl8l6agmkp"))))
+         "0d7lhj2dw52ycls6xigkfz6zvfhc6qggply9iycjmcyj9760yvz9"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-mime-types" ,ruby-mime-types)))
