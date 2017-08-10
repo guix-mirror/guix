@@ -4108,14 +4108,14 @@ associated records.")
 (define-public ruby-timecop
   (package
     (name "ruby-timecop")
-    (version "0.8.1")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "timecop" version))
        (sha256
         (base32
-         "0vwbkwqyxhavzvr1820hqwz43ylnfcf6w4x6sag0nghi44sr9kmx"))))
+         "0d7mm786180v4kzvn1f77rhfppsg5n0sq2bdx63x9nv114zm8jrp"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
