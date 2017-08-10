@@ -1499,13 +1499,13 @@ with processes on remote servers, via SSH2.")
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
-    (version "5.10.2")
+    (version "5.10.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "11my86fnihvpndyknn3c14hc82nhsgggnhlxh8h3bdjpmfsvl0my"))))
+                "05521clw19lrksqgvg2kmm025pvdhdaniix52vmbychrn2jm7kz2"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
