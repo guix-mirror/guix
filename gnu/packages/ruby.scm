@@ -751,13 +751,13 @@ interfaces.")
 (define-public ruby-lumberjack
   (package
     (name "ruby-lumberjack")
-    (version "1.0.10")
+    (version "1.0.12")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "lumberjack" version))
               (sha256
                (base32
-                "0ily8j83q959w19zb7qm6m7y53sdj9afxj4x6mn2adl4i7vpdsv4"))))
+                "0yz26k9mi0djx1qvlmvdw1xw2yf7a2rkfmnb2j0d28kms33xpibp"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
