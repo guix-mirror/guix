@@ -1061,13 +1061,13 @@ features.")
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "1b2bb3k39ni5mzcnqlv9y4yjkbin20s7dkwzp0jw2jf1rmzcgrmy"))))
+                "17vpaj6kyf2i8bimaxz7rg1kyadf4d10642ja67qiqlhwgczl2w7"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
