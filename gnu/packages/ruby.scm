@@ -730,13 +730,13 @@ Ruby.")
 (define-public ruby-thor
   (package
     (name "ruby-thor")
-    (version "0.19.1")
+    (version "0.19.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "thor" version))
               (sha256
                (base32
-                "08p5gx18yrbnwc6xc0mxvsfaxzgy2y9i78xq7ds0qmdm67q39y4z"))))
+                "01n5dv9kql60m6a00zc0r66jvaxx98qhdny3klyj0p3w34pad2ns"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
