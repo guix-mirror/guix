@@ -2183,14 +2183,14 @@ IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
 (define-public ruby-rb-inotify
   (package
     (name "ruby-rb-inotify")
-    (version "0.9.5")
+    (version "0.9.10")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rb-inotify" version))
        (sha256
         (base32
-         "0kddx2ia0qylw3r52nhg83irkaclvrncgy2m1ywpbhlhsz1rymb9"))))
+         "0yfsgw5n7pkpyky6a9wkf1g9jafxb0ja7gz0qw0y14fd2jnzfh71"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f ; there are no tests
