@@ -855,13 +855,13 @@ the output produced by running shell commands.")
 (define-public ruby-notiffany
   (package
     (name "ruby-notiffany")
-    (version "0.0.7")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "notiffany" version))
               (sha256
                (base32
-                "1v5x1w59qq85r6dpv3y9ga34dfd7hka1qxyiykaw7gm0i6kggbhi"))))
+                "0x838fa5il0dd9zbm3lxkpbfxcf5fxv9556mayc2mxsdl5ghv8nx"))))
     (build-system ruby-build-system)
     ;; Tests are not included in the gem.
     (arguments `(#:tests? #f))
