@@ -1080,13 +1080,13 @@ interface for Ruby programs.")
 (define-public ruby-net-http-persistent
   (package
     (name "ruby-net-http-persistent")
-    (version "2.9.4")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-http-persistent" version))
               (sha256
                (base32
-                "1y9fhaax0d9kkslyiqi1zys6cvpaqx9a0y0cywp24rpygwh4s9r4"))))
+                "156rv95bgxfz6qw5y1r7c7bswr77918hygl8dyl14qzbqc5vyp18"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-connection-pool" ,ruby-connection-pool)
