@@ -3014,14 +3014,14 @@ Ruby classes.")
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
-    (version "4.0.0")
+    (version "4.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (rubygems-uri "gherkin" version))
         (sha256
           (base32
-            "1ripjv97hg746xszx9isal8z8vrlb98asc2rdxl291b3hr6pj0pr"))))
+            "1d18r8mf2qyd9jbq9xxvca8adyysdzvwdy8v9c2s5hrd6p02kg79"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
