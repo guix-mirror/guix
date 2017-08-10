@@ -683,14 +683,14 @@ extensions.")
 (define-public ruby-libxml
   (package
     (name "ruby-libxml")
-    (version "2.8.0")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "libxml-ruby" version))
        (sha256
         (base32
-         "1dhjqp4r9vkdp00l6h1cj8qfndzxlhlxk6b9g0w4v55gz857ilhb"))))
+         "0xy8wmjwjcnv36zi042678ncjzpxvy351ccbv7mzkns2n3kxfp54"))))
     (build-system ruby-build-system)
     (inputs
      `(("zlib" ,zlib)
