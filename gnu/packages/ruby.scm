@@ -1766,13 +1766,13 @@ for specs that share expensive database setup code.")
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
-    (version "1.2.2")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "daemons" version))
               (sha256
                (base32
-                "121c7vkimg3baxga69xvdkwxiq8wkmxqvdbyqi5i82vhih5d3cn3"))))
+                "1bmb4qrd95b5gl3ym5j3q6mf090209f4vkczggn49n56w6s6zldz"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite
