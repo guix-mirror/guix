@@ -1345,13 +1345,13 @@ knowing anything about the constructor.")
 (define-public ruby-introspection
   (package
     (name "ruby-introspection")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "introspection" version))
               (sha256
                (base32
-                "0g1j71sqfxbqk32wj7d0bkd3dlayfqzprfq3dbr0rq107xbxjcrr"))))
+                "1y2nbijkc0zlfmn9ss6588ilarq2kbn2i7w7pwwsli66dj84zgca"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
