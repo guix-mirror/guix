@@ -509,13 +509,13 @@ supported: XML Markup and XML Events.")
 (define-public ruby-rjb
   (package
     (name "ruby-rjb")
-    (version "1.5.3")
+    (version "1.5.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rjb" version))
               (sha256
                (base32
-                "0gzs92dagk981s4vrymnqg0vll783b9k564j0cdgp167nc5a2zg4"))))
+                "1ppj8rbicj3w0nhh7f73mflq19yd7pzdzkh2a91hcvphriy5b0ca"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no rakefile
