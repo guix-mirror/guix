@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1013,3 +1014,40 @@ specified in high-level description language into ready-to-compile C code for
 the API of spice simulators.  Based on transformations specified in XML
 language, ADMS transforms Verilog-AMS code into other target languages.")
     (license license:gpl3)))
+
+(define-public capstone
+  (package
+    (name "capstone")
+    (version "3.0.5-rc2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/aquynh/capstone/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cqms9r2p43aiwp5spd84zaccp16ih03r7sjhrv16nddahj0jz2q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; cstool's Makefile overrides LDFLAGS, so we cannot pass it as a make flag.
+         (add-before 'build 'fix-cstool-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "cstool/Makefile"
+               (("LDFLAGS =")
+                (string-append "LDFLAGS = -Wl,-rpath=" (assoc-ref outputs "out")
+                               "/lib")))
+             #t)))))
+    (home-page "http://www.capstone-engine.org")
+    (synopsis "Lightweight multi-platform, multi-architecture disassembly framework")
+    (description
+     "Capstone is a lightweight multi-platform, multi-architecture disassembly
+framework.  Capstone can disassemble machine code for many supported architectures
+such as x86, x86_64, arm, arm64, mips, ppc, sparc, sysz and xcore.  It provides
+bindings for Python, Java, OCaml and more.")
+    (license license:bsd-3)))
