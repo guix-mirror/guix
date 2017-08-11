@@ -33,7 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -1051,3 +1051,30 @@ framework.  Capstone can disassemble machine code for many supported architectur
 such as x86, x86_64, arm, arm64, mips, ppc, sparc, sysz and xcore.  It provides
 bindings for Python, Java, OCaml and more.")
     (license license:bsd-3)))
+
+;; FIXME: This package has a timestamp embedded in
+;; lib/python3.5/site-packages/capstone/__pycache__/__iti__.cpython-35.pyc
+(define-public python-capstone
+  (package
+    (inherit capstone)
+    (name "python-capstone")
+    (propagated-inputs
+     `(("capstone" ,capstone)))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-and-fix-setup-py
+           (lambda _
+             (chdir "bindings/python")
+             ;; Do not build the library again, because we already have it.
+             (substitute* "setup.py" ((".*   build_libraries.*") ""))
+             ;; This substitution tells python-capstone where to find the
+             ;; library.
+             (substitute* "capstone/__init__.py"
+               (("pkg_resources.resource_filename.*")
+                (string-append "'" (assoc-ref %build-inputs "capstone") "/lib',\n")))
+             #t)))))))
+
+(define-public python2-capstone
+  (package-with-python2 python-capstone))
