@@ -14322,10 +14322,12 @@ Pylint has many rules enabled by default, way too much to silence them
 all on a minimally sized program.  It's highly configurable and handle
 pragmas to control it from within your code.  Additionally, it is
 possible to write plugins to add your own checks.")
+    (properties `((python2-variant . ,(delay python2-pylint))))
     (license license:gpl2+)))
 
 (define-public python2-pylint
-  (let ((pylint (package-with-python2 python-pylint)))
+  (let ((pylint (package-with-python2
+                  (strip-python2-variant python-pylint))))
     (package (inherit pylint)
              (propagated-inputs
               `(("python2-backports-functools-lru-cache"
