@@ -66,14 +66,14 @@ migration.")
 (define-public ruby-debug-inspector
   (package
     (name "ruby-debug-inspector")
-    (version "0.0.2")
+    (version "0.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "debug_inspector" version))
        (sha256
         (base32
-         "109761g00dbrw5q0dfnbqg8blfm699z4jj70l4zrgf9mzn7ii50m"))))
+         "0vxr0xa1mfbkfcrn71n7c4f2dj7la5hvphn904vh20j3x4j5lrx0"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases

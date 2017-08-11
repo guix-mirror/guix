@@ -59,6 +59,8 @@
             tailon-configuration-file-tail-lines
             tailon-configuration-file-allowed-commands
             tailon-configuration-file-debug?
+            tailon-configuration-file-http-auth
+            tailon-configuration-file-users
 
             <tailon-configuration>
             tailon-configuration
@@ -220,6 +222,12 @@ for ROTATION."
   (allowed-commands        tailon-configuration-file-allowed-commands
                            (default '("tail" "grep" "awk")))
   (debug?                  tailon-configuration-file-debug?
+                           (default #f))
+  (wrap-lines              tailon-configuration-file-wrap-lines
+                           (default #t))
+  (http-auth               tailon-configuration-file-http-auth
+                           (default #f))
+  (users                   tailon-configuration-file-users
                            (default #f)))
 
 (define (tailon-configuration-files-string files)
@@ -249,7 +257,8 @@ for ROTATION."
   (match file
     (($ <tailon-configuration-file> files bind relative-root
                                     allow-transfers? follow-names?
-                                    tail-lines allowed-commands debug?)
+                                    tail-lines allowed-commands debug?
+                                    wrap-lines http-auth users)
      (text-file
       "tailon-config.yaml"
       (string-concatenate
@@ -267,7 +276,18 @@ for ROTATION."
           ("commands" . ,(string-append "["
                                         (string-join allowed-commands ", ")
                                         "]"))
-          ,@(if debug? '(("debug" . "true")) '()))))))))
+          ("debug" . ,(if debug? "true" #f))
+          ("wrap-lines" . ,(if wrap-lines "true" "false"))
+          ("http-auth" . ,http-auth)
+          ("users" . ,(if users
+                          (string-concatenate
+                           (cons "\n"
+                                 (map (match-lambda
+                                       ((user . pass)
+                                        (string-append
+                                         "  " user ":" pass)))
+                                      users)))
+                          #f)))))))))
 
 (define-record-type* <tailon-configuration>
   tailon-configuration make-tailon-configuration

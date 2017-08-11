@@ -5225,3 +5225,109 @@ multiplexer.")
     (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
 editing RPM spec files.")
     (license license:gpl2+)))
+
+(define-public emacs-git-messenger
+  (package
+    (name "emacs-git-messenger")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-git-messenger/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17mqki6g0wx46fn7dcbcc2pjxik7vvrcb1j9jzxim8b9psbsbnp9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-popup" ,emacs-popup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-popup")
+                                   "/share/emacs/site-lisp/guix.d/popup-"
+                                   ,(package-version emacs-popup))
+                             "-l" "test/test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/syohex/emacs-git-messenger")
+    (synopsis "Popup commit message at current line")
+    (description "@code{emacs-git-messenger} provides
+@code{git-messenger:popup-message}, a function that when called, will popup
+the last git commit message for the current line.  This uses git-blame
+internally.")
+    (license license:gpl3+)))
+
+(define-public emacs-gitpatch
+  (package
+    (name "emacs-gitpatch")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tumashu/gitpatch/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yj6pmic541lcnscjin300k380qp9xdfprs55xg1q57jrkq6f6k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/gitpatch")
+    (synopsis "Mail git patch from Emacs")
+    (description "@code{emacs-gitpatch} lets users easily send git patches,
+created by @code{git format-patch}, from @code{magit}, @code{dired} and
+@code{ibuffer} buffers.")
+    (license license:gpl3+)))
+
+(define-public emacs-erc-hl-nicks
+  (package
+    (name "emacs-erc-hl-nicks")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/leathekd/erc-hl-nicks"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01svpl9bps5kx4y1wnymakxya2cznqmlynvqv2r500wpnbxczrbs"))))
+    (build-system emacs-build-system)
+    (synopsis "Nickname highlighting for Emacs ERC")
+    (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
+client for Emacs.  The main features are:
+@itemize
+@item Auto-colorizes nicknames without having to specify colors
+@item Ignores certain characters that IRC clients add to nicknames to avoid
+duplicates (nickname, nickname’, nickname\", etc.)
+@item Attempts to produce colors with a sufficient amount of contrast between
+the nick color and the background color
+@end itemize\n")
+    (home-page "https://github.com/leathekd/erc-hl-nicks")
+    (license license:gpl3+)))
+
+(define-public emacs-engine-mode
+  (package
+    (name "emacs-engine-mode")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hrs/engine-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vm4p7pcp1vnwwxvps1bhm7i7hkabqqxl898knxf2hqvxys76684"))))
+    (build-system emacs-build-system)
+    (synopsis "Minor mode for defining and querying search engines")
+    (description "@code{engine-mode} is a global minor mode for Emacs.  It
+enables you to easily define search engines, bind them to keybindings, and
+query them from the comfort of your editor.")
+    (home-page "https://github.com/hrs/engine-mode")
+    (license license:gpl3+)))

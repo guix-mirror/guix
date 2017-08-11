@@ -615,7 +615,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
 (define-public mksh
   (package
     (name "mksh")
-    (version "55")
+    (version "56")
     (source
      (origin
        (method url-fetch)
@@ -623,7 +623,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
                            version ".tgz"))
        (sha256
         (base32
-         "0mssqd2wp3cs9x01v6g66iy3ymdxagbyw2c0v597vnc1l6s2rm6f"))))
+         "1x4zjj9259ijpf8jw0nyh1fnr1pbm5fwvylclpvcrlb45xrglf5d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; tests require access to /dev/tty

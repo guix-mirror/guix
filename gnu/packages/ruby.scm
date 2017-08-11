@@ -240,13 +240,13 @@ announcement.")
 (define-public ruby-rake-compiler
   (package
     (name "ruby-rake-compiler")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rake-compiler" version))
               (sha256
                (base32
-                "1lf91nf1fcnmsh54mxz06wyfmjkwh58vljr35zns5cwbg8fwmi20"))))
+                "1xpdi4w8zaklk1i9ps8g3k0icw3v5fcks092l84w28rgrpx82qip"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs cucumber
@@ -335,13 +335,13 @@ groups.")
 (define-public ruby-diff-lcs
   (package
     (name "ruby-diff-lcs")
-    (version "1.2.5")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "diff-lcs" version))
               (sha256
                (base32
-                "1vf9civd41bnqi6brr5d9jifdw73j9khc6fkhfl1f8r9cpkdvlx1"))))
+                "18w22bjz424gzafv6nzv98h0aqkwz3d9xhm7cbr1wfbyas8zayza"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -509,13 +509,13 @@ supported: XML Markup and XML Events.")
 (define-public ruby-rjb
   (package
     (name "ruby-rjb")
-    (version "1.5.3")
+    (version "1.5.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rjb" version))
               (sha256
                (base32
-                "0gzs92dagk981s4vrymnqg0vll783b9k564j0cdgp167nc5a2zg4"))))
+                "1ppj8rbicj3w0nhh7f73mflq19yd7pzdzkh2a91hcvphriy5b0ca"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no rakefile
@@ -683,14 +683,14 @@ extensions.")
 (define-public ruby-libxml
   (package
     (name "ruby-libxml")
-    (version "2.8.0")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "libxml-ruby" version))
        (sha256
         (base32
-         "1dhjqp4r9vkdp00l6h1cj8qfndzxlhlxk6b9g0w4v55gz857ilhb"))))
+         "0xy8wmjwjcnv36zi042678ncjzpxvy351ccbv7mzkns2n3kxfp54"))))
     (build-system ruby-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -730,13 +730,13 @@ Ruby.")
 (define-public ruby-thor
   (package
     (name "ruby-thor")
-    (version "0.19.1")
+    (version "0.19.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "thor" version))
               (sha256
                (base32
-                "08p5gx18yrbnwc6xc0mxvsfaxzgy2y9i78xq7ds0qmdm67q39y4z"))))
+                "01n5dv9kql60m6a00zc0r66jvaxx98qhdny3klyj0p3w34pad2ns"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
@@ -751,13 +751,13 @@ interfaces.")
 (define-public ruby-lumberjack
   (package
     (name "ruby-lumberjack")
-    (version "1.0.10")
+    (version "1.0.12")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "lumberjack" version))
               (sha256
                (base32
-                "0ily8j83q959w19zb7qm6m7y53sdj9afxj4x6mn2adl4i7vpdsv4"))))
+                "0yz26k9mi0djx1qvlmvdw1xw2yf7a2rkfmnb2j0d28kms33xpibp"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
@@ -773,13 +773,13 @@ same log file.")
 (define-public ruby-nenv
   (package
     (name "ruby-nenv")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nenv" version))
               (sha256
                (base32
-                "152wxwri0afwgnxdf93gi6wjl9rr5z7vwp8ln0gpa3rddbfc27s6"))))
+                "0r97jzknll9bhd8yyg2bngnnkj8rjhal667n7d32h8h7ny7nvpnr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests included
@@ -855,13 +855,13 @@ the output produced by running shell commands.")
 (define-public ruby-notiffany
   (package
     (name "ruby-notiffany")
-    (version "0.0.7")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "notiffany" version))
               (sha256
                (base32
-                "1v5x1w59qq85r6dpv3y9ga34dfd7hka1qxyiykaw7gm0i6kggbhi"))))
+                "0x838fa5il0dd9zbm3lxkpbfxcf5fxv9556mayc2mxsdl5ghv8nx"))))
     (build-system ruby-build-system)
     ;; Tests are not included in the gem.
     (arguments `(#:tests? #f))
@@ -978,13 +978,13 @@ and JRuby.")
 (define-public ruby-simplecov-html
   (package
     (name "ruby-simplecov-html")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "simplecov-html" version))
               (sha256
                (base32
-                "1qni8g0xxglkx25w54qcfbi4wjkpvmb28cb7rj5zk3iqynjcdrqf"))))
+                "0f3psphismgp6jp1fxxz09zbswh7m2xxxr6gqlzdh7sgv415clvm"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (native-inputs
@@ -1025,13 +1025,13 @@ suites.")
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
-    (version "0.13.3")
+    (version "0.16.8")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "useragent" version))
               (sha256
                (base32
-                "0kz7yyz7528bv4a2kfymvkcm8whqcddhmgaw1ksw1d90n30hhkpc"))))
+                "1139cjqyv1hk1qcw89k81ajjkqyakqgbcyvmfrsmjqi8yn9kgqhq"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no test suite
@@ -1061,13 +1061,13 @@ features.")
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "1b2bb3k39ni5mzcnqlv9y4yjkbin20s7dkwzp0jw2jf1rmzcgrmy"))))
+                "17vpaj6kyf2i8bimaxz7rg1kyadf4d10642ja67qiqlhwgczl2w7"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -1080,13 +1080,13 @@ interface for Ruby programs.")
 (define-public ruby-net-http-persistent
   (package
     (name "ruby-net-http-persistent")
-    (version "2.9.4")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-http-persistent" version))
               (sha256
                (base32
-                "1y9fhaax0d9kkslyiqi1zys6cvpaqx9a0y0cywp24rpygwh4s9r4"))))
+                "156rv95bgxfz6qw5y1r7c7bswr77918hygl8dyl14qzbqc5vyp18"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-connection-pool" ,ruby-connection-pool)
@@ -1191,13 +1191,13 @@ use GNU gettext tools for maintenance.")
 (define-public ruby-packnga
   (package
     (name "ruby-packnga")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "packnga" version))
               (sha256
                (base32
-                "1i71yhvlkvi5fp3m8jl9317cnddkbnrcy0syrmiw4y1lrq0cbncj"))))
+                "1vv2j0i43s4xid2km5hgrrxqlqpwgq8nlm8kaxfg2531c1vwfsd4"))))
     (build-system ruby-build-system)
     ;; ruby-test-unit is required to run tests, but that needs ruby-packnga.
     ;; To break the dependency cycle we disable tests.
@@ -1216,13 +1216,13 @@ use GNU gettext tools for maintenance.")
 (define-public ruby-test-unit
   (package
     (name "ruby-test-unit")
-    (version "3.2.4")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "test-unit" version))
               (sha256
                (base32
-                "09mb34lnffracsqxl4dav4c21p5nr4pj9hm5qy2s83k5hbjya3s7"))))
+                "05bx36fw01iqz0xqhvjfrwjgnj1zx3b2vn6w1fzp19rchd7zqc52"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-power-assert" ,ruby-power-assert)))
@@ -1345,13 +1345,13 @@ knowing anything about the constructor.")
 (define-public ruby-introspection
   (package
     (name "ruby-introspection")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "introspection" version))
               (sha256
                (base32
-                "0g1j71sqfxbqk32wj7d0bkd3dlayfqzprfq3dbr0rq107xbxjcrr"))))
+                "1y2nbijkc0zlfmn9ss6588ilarq2kbn2i7w7pwwsli66dj84zgca"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1386,13 +1386,13 @@ definitions on a Ruby object.")
 (define-public ruby-redcarpet
   (package
     (name "ruby-redcarpet")
-    (version "3.3.3")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "redcarpet" version))
               (sha256
                (base32
-                "14i3wypp97bpk20679d1csy88q4hsgfqbnqw6mryl77m2g0d09pk"))))
+                "0h9qz2hik4s9knpmbwrzb3jcp3vc5vygp9ya8lcpl7f1l9khmcd7"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1499,13 +1499,13 @@ with processes on remote servers, via SSH2.")
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
-    (version "5.10.2")
+    (version "5.10.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "11my86fnihvpndyknn3c14hc82nhsgggnhlxh8h3bdjpmfsvl0my"))))
+                "05521clw19lrksqgvg2kmm025pvdhdaniix52vmbychrn2jm7kz2"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -1563,13 +1563,13 @@ easier to re-run individual failing tests.")
 (define-public ruby-minitest-bacon
   (package
     (name "ruby-minitest-bacon")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "minitest-bacon" version))
               (sha256
                (base32
-                "0cm7r68422743i3b6fm4rrm0r6cnnjmglq5gcmmgl1f0rk5hnf6r"))))
+                "0zhdwcl6bgha61qiyfvr7zs7ywaxc33wmj9xhxl8jdmpdvifvfaj"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -1679,14 +1679,14 @@ MiniTest @code{Object#stub} with a global @code{stub} method.")
 (define-public ruby-minitest-bonus-assertions
   (package
     (name "ruby-minitest-bonus-assertions")
-    (version "2.0")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-bonus-assertions" version))
        (sha256
         (base32
-         "11nrd32kwy61ndg9csk7l1ifya79ghrrv3vsrxj57k50m7na6jkm"))))
+         "1hbq9jk904xkz868yha1bqcm6azm7kmjsll2k4pn2nrcib508h2a"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1739,14 +1739,14 @@ instance, it provides @code{assert_true}, @code{assert_false} and
 (define-public ruby-minitest-hooks
   (package
     (name "ruby-minitest-hooks")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-hooks" version))
        (sha256
         (base32
-         "092fymh0c09v3a585qw3hc15b0zf159s74rxx1ga87drk5jr958z"))))
+         "05bngfyxwq1cflk568nhddgfrmws5ff6kiqax4skklsjnh71ykbi"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -1766,13 +1766,13 @@ for specs that share expensive database setup code.")
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
-    (version "1.2.2")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "daemons" version))
               (sha256
                (base32
-                "121c7vkimg3baxga69xvdkwxiq8wkmxqvdbyqi5i82vhih5d3cn3"))))
+                "1bmb4qrd95b5gl3ym5j3q6mf090209f4vkczggn49n56w6s6zldz"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite
@@ -1785,13 +1785,13 @@ run as a daemon and to be controlled by simple start/stop/restart commands.")
 (define-public ruby-git
   (package
     (name "ruby-git")
-    (version "1.2.9.1")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "git" version))
               (sha256
                (base32
-                "1sqfj8lmhl7c5zamcckkpik4izfph2zkv6krw0i8mzj5pdws5acs"))))
+                "1waikaggw7a1d24nw0sh8fd419gbf7awh000qhsf411valycj6q3"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1820,13 +1820,13 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
 (define-public ruby-slop
   (package
     (name "ruby-slop")
-    (version "4.1.0")
+    (version "4.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "slop" version))
               (sha256
                (base32
-                "0dj0ps6v1mqd02k84mgwd7hp578n2bzl7c51h3grdhxfl3jkfsj5"))))
+                "0bfm8535g0rkn9cbjndkckf0f7a3wj0rg4rqhrpsgxnbfdf2lm0p"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
@@ -1868,13 +1868,13 @@ net/http library.")
 (define-public ruby-arel
   (package
     (name "ruby-arel")
-    (version "7.1.4")
+    (version "8.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "arel" version))
               (sha256
                (base32
-                "0l757dkkaxk5fq3368l79jpyzq9a9driricjamhiwhwvh0h7xcyx"))))
+                "0nw0qbc6ph625p6n3maqq9f527vz3nbl0hk72fbyka8jzsmplxzl"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/rails/arel")
@@ -2111,14 +2111,14 @@ file or directories are modified.")
 (define-public ruby-thread-safe
   (package
     (name "ruby-thread-safe")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "thread_safe" version))
        (sha256
         (base32
-         "1hq46wqsyylx5afkp6jmcihdpv4ynzzq9ygb6z2pb1cbz5js0gcr"))))
+         "0nmhcgq6cgz44srylra07bmaw99f5271l0dpsvl5f75m44l0gmwy"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs simplecov, among others
@@ -2131,14 +2131,14 @@ utilities for Ruby.")
 (define-public ruby-tzinfo
   (package
     (name "ruby-tzinfo")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "tzinfo" version))
        (sha256
         (base32
-         "1c01p3kg6xvy1cgjnzdfq45fggbwish8krd0h864jvbpybyx7cgx"))))
+         "05r81lk7q7275rdq7xipfm0yxgqyd2ggh73xpc98ypngcclqcscl"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-thread-safe" ,ruby-thread-safe)))
@@ -2183,14 +2183,14 @@ IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
 (define-public ruby-rb-inotify
   (package
     (name "ruby-rb-inotify")
-    (version "0.9.5")
+    (version "0.9.10")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rb-inotify" version))
        (sha256
         (base32
-         "0kddx2ia0qylw3r52nhg83irkaclvrncgy2m1ywpbhlhsz1rymb9"))))
+         "0yfsgw5n7pkpyky6a9wkf1g9jafxb0ja7gz0qw0y14fd2jnzfh71"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f ; there are no tests
@@ -2274,13 +2274,13 @@ documentation for Ruby code.")
 (define-public ruby-tins
   (package
     (name "ruby-tins")
-    (version "1.7.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "tins" version))
               (sha256
                (base32
-                "1060h8dgnjl9az0sv1b74yrni8d4mh3x858wq6yfbfdf5dxrfl0a"))))
+                "09whix5a7ics6787zrkwjmp16kqyh6560p9f317syks785805f7s"))))
     (build-system ruby-build-system)
     ;; This gem needs gem-hadar at development time, but gem-hadar needs tins
     ;; at runtime.  To avoid the dependency on gem-hadar we disable rebuilding
@@ -2384,13 +2384,13 @@ Ruby's large and slower test/unit.")
 (define-public ruby-term-ansicolor
   (package
     (name "ruby-term-ansicolor")
-    (version "1.3.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "term-ansicolor" version))
               (sha256
                (base32
-                "0ydbbyjmk5p7fsi55ffnkq79jnfqx65c3nj8d9rpgl6sw85ahyys"))))
+                "1b1wq9ljh7v3qyxkk8vik2fqx2qzwh5lval5f92llmldkw7r7k7b"))))
     (build-system ruby-build-system)
     ;; Rebuilding the gemspec seems to require git, even though this is not a
     ;; git repository, so we just build the gem from the existing gemspec.
@@ -2438,13 +2438,13 @@ process tree data structure for the current host.")
 (define-public ruby-utils
   (package
     (name "ruby-utils")
-    (version "0.2.4")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "utils" version))
               (sha256
                (base32
-                "0vycgscxf3s1xn4yyfsq54zlh082581ga8azybmqgc4pij6iz2cd"))))
+                "196zhgcygrnx09bb9mh22qas03rl9avzx8qs0wnxznpin4pffwcl"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-tins" ,ruby-tins)
@@ -2523,13 +2523,13 @@ a native C extension.")
 (define-public ruby-rb-fsevent
   (package
     (name "ruby-rb-fsevent")
-    (version "0.9.6")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rb-fsevent" version))
               (sha256
                (base32
-                "1hq57by28iv0ijz8pk9ynih0xdg7vnl1010xjcijfklrcv89a1j2"))))
+                "1fbpmjypwxkb8r7y1kmhmyp6gawa4byw0yb3jc3dn9ly4ld9lizf"))))
     (build-system ruby-build-system)
     ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
     ;; "listen", which needs "rb-fsevent" at runtime.
@@ -2543,14 +2543,14 @@ a native C extension.")
 (define-public ruby-listen
   (package
     (name "ruby-listen")
-    (version "3.0.3")
+    (version "3.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "listen" version))
        (sha256
         (base32
-         "10lhshjklxlrkw7999j0xl6sdxd4x32kiy8rp88jwr68kis5vq2b"))))
+         "01v5mrnfqm6sgm8xn2v5swxsn1wlmq7rzh2i48d4jzjsc7qvb6mx"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (propagated-inputs
@@ -2713,14 +2713,14 @@ unacceptable HTML and/or CSS from a string.")
 (define-public ruby-ox
   (package
     (name "ruby-ox")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ox" version))
        (sha256
         (base32
-         "0rar0xr5qn3zac1r2z18kmpapx121c2l3z8jsgh60vsddwzpdh7h"))))
+         "0fmk62b1h2i79dfzjj8wmf8qid1rv5nhwfc17l489ywnga91xl83"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -2736,13 +2736,13 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-redcloth
   (package
     (name "ruby-redcloth")
-    (version "4.2.9")
+    (version "4.3.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "RedCloth" version))
               (sha256
                (base32
-                "06pahxyrckhgb7alsxwhhlx1ib2xsx33793finj01jk8i054bkxl"))))
+                "0m9dv7ya9q93r8x1pg2gi15rxlbck8m178j1fz7r5v6wr1avrrqy"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -2775,14 +2775,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "0.20.0")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "03xcgwjs6faxis81jxf2plnlalg55dhhafqv3kvjxfr8ic7plpw5"))))
+         "00vhasqwc4f98qb4wxqn2h07fjwzhp5lwyi41j2gndi2g02wrdqh"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -2801,14 +2801,14 @@ with PostgreSQL 8.4 and later.")
 (define-public ruby-byebug
   (package
     (name "ruby-byebug")
-    (version "6.0.2")
+    (version "9.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "byebug" version))
        (sha256
         (base32
-         "0537h9qbhr6csahmzyn4lk1g5b2lcligbzd21gfy93nx9lbfdnzc"))))
+         "1kbfcn65rgdhi72n8x9l393b89rvi5z542459k7d1ggchpb0idb0"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -3014,14 +3014,14 @@ Ruby classes.")
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
-    (version "4.0.0")
+    (version "4.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (rubygems-uri "gherkin" version))
         (sha256
           (base32
-            "1ripjv97hg746xszx9isal8z8vrlb98asc2rdxl291b3hr6pj0pr"))))
+            "1d18r8mf2qyd9jbq9xxvca8adyysdzvwdy8v9c2s5hrd6p02kg79"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -3037,14 +3037,14 @@ files.")
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
-    (version "1.5.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "cucumber-core" version))
        (sha256
         (base32
-         "0qj2fsqvp94nggnikbnrfvnmzr1pl6ifmdsxj69kdw1kkab30jjr"))))
+         "136hnvqv444qyxzcgy1k60y4i6cn3sn9lbqr4wan9dzz1yzllqbm"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-gherkin" ,ruby-gherkin)))
@@ -3201,14 +3201,14 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.0.8")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "1frvpk3p73xc64qkn0ymll3flvn4xcycq5yx8a43zd3gyzc1ifjp"))))
+         "075hdw0fgzldgss3xaqm2dk545736khcvv1fmzbf1sgdlkyh1v8z"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; test suite tries to connect to google.com
@@ -3313,14 +3313,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.2")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "1gvw6g4yc96l2pcyvigahyfsjxpdjx21iiwzvf965zippchdh6gk"))))
+         "0ij7n250gk5c1g34rsbwjnpcv64gk4vsas8lkz8fac4wbygvk6z1"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
@@ -3396,14 +3396,14 @@ names.")
 (define-public ruby-shoulda-matchers
   (package
     (name "ruby-shoulda-matchers")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "shoulda-matchers" version))
        (sha256
         (base32
-         "1cf6d2d9br82vylr9p362yk9cfrd14jz8v77n0yb0lbcxdbk7xzq"))))
+         "1zvv94pqk5b5my3w1shdz7h34xf2ldhg5k4qfdpbwi2iy0j9zw2a"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3503,14 +3503,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20161021")
+    (version "0.5.20170404")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "1y5c96gzyh6z4nrnkisljqngfvljdba36dww657ka0x7khzvx7jl"))))
+         "12hs8yijhak7p2hf1xkh98g0mnp5phq3mrrhywzaxpwz1gw5r3kf"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3658,14 +3658,14 @@ subprocess.")
 (define-public ruby-bio-commandeer
   (package
     (name "ruby-bio-commandeer")
-    (version "0.2.0")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "bio-commandeer" version))
        (sha256
         (base32
-         "1xlcnh13r33zybpmqniw0j8q5n0kq9al67ygqpf0xbbwxnnkqqvj"))))
+         "0khpfw1yl5l3d2m8nxpkk32ybc4c3pa5hic3agd160jdfjjjnlni"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4086,14 +4086,14 @@ generation.")
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")
-    (version "4.40.0")
+    (version "4.49.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sequel" version))
        (sha256
         (base32
-         "0r39dv3yprai0cy7hslfxswjr4fg783xwxskmbih8ry24f18lbk0"))))
+         "010p4a60npppvgbyw7pq5xia8aydpgxdlhh3qjm2615kwjsw3fl8"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; Avoid dependency loop with ruby-minitest-hooks.
@@ -4108,14 +4108,14 @@ associated records.")
 (define-public ruby-timecop
   (package
     (name "ruby-timecop")
-    (version "0.8.1")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "timecop" version))
        (sha256
         (base32
-         "0vwbkwqyxhavzvr1820hqwz43ylnfcf6w4x6sag0nghi44sr9kmx"))))
+         "0d7mm786180v4kzvn1f77rhfppsg5n0sq2bdx63x9nv114zm8jrp"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4203,14 +4203,14 @@ patterns.")
 (define-public ruby-pkg-config
   (package
     (name "ruby-pkg-config")
-    (version "1.1.7")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pkg-config" version))
        (sha256
         (base32
-         "0lljiqnm0b4z6iy87lzapwrdfa6ps63x2z5zbs038iig8dqx2g0z"))))
+         "056mzqdh4yjznsg36fi0xiq76f24vxlhzh2n4az919l3x5k318ar"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests require extra files not included in the gem.
@@ -4225,14 +4225,14 @@ libraries for compiling Ruby native extensions.")
 (define-public ruby-net-http-digest-auth
   (package
     (name "ruby-net-http-digest-auth")
-    (version "1.4")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "net-http-digest_auth" version))
        (sha256
         (base32
-         "14801gr34g0rmqz9pv4rkfa3crfdbyfk6r48vpg5a5407v0sixqi"))))
+         "1nq859b0gh2vjhvl1qh1zrk09pc7p54r9i6nnn6sb06iv07db2jb"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -4247,14 +4247,14 @@ of the more insecure basic authentication scheme.")
 (define-public ruby-mail
   (package
     (name "ruby-mail")
-    (version "2.6.4")
+    (version "2.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mail" version))
        (sha256
         (base32
-         "0c9vqfy0na9b5096i5i4qvrvhwamjnmajhgqi3kdsdfl8l6agmkp"))))
+         "0d7lhj2dw52ycls6xigkfz6zvfhc6qggply9iycjmcyj9760yvz9"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-mime-types" ,ruby-mime-types)))

@@ -275,7 +275,16 @@ developers consider to have good quality code and correct functionality.")
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))))
+                            "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-openjpeg-reference
+           (lambda _
+             ;; Remove hard-coded openjpeg-2.1 path. 2.2 is API- and
+             ;; ABI-compatible.
+             (substitute* "ext/openjpeg/gstopenjpeg.h"
+               (("<openjpeg-2\\.1/") "<openjpeg-2.2/"))
+             #t)))))
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)))
     (native-inputs

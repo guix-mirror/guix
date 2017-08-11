@@ -6565,6 +6565,29 @@ connection to each user.")
          ("python2-singledispatch" ,python2-singledispatch)
           ,@(package-propagated-inputs tornado))))))
 
+(define-public python-tornado-http-auth
+  (package
+    (name "python-tornado-http-auth")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tornado-http-auth" version))
+       (sha256
+        (base32
+         "0znrgqd7k2s4ia474xizi6h3061zj4sn5n6cq76bkwl3wwshifn5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tornado" ,python-tornado)))
+    (home-page
+     "https://github.com/gvalkov/tornado-http-auth")
+    (synopsis
+     "Digest and basic authentication module for Tornado")
+    (description
+     "Provides support for adding authentication to services using the Tornado
+web framework, either via the basic or digest authentication schemes.")
+    (license license:asl2.0)))
+
 ;; the python- version can be removed with python-3.5
 (define-public python-backports-abc
   (package

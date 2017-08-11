@@ -481,7 +481,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.1.2")
+    (version "2.2.0")
     (source
       (origin
         (method url-fetch)
@@ -491,9 +491,7 @@ work.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
-        (patches (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"
-                                 "openjpeg-CVE-2016-9572-CVE-2016-9573.patch"))))
+          "0yvfghxwfm3dcqr9krkw63pcd76hzkknc3fh7bh11s8qlvjvrpbg"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.

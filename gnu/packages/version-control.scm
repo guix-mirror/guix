@@ -121,14 +121,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.14.0")
+   (version "2.14.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0xarcp0m7jbncic0g3ahz8l2d6b27h0g9ndgrhy9abkx61m6wgpr"))))
+              "1iic3wiihxp3l3k6d4z886v3869c3dzgddjxnd5124wy1rnlqwkg"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -140,8 +140,9 @@ as well as the classic centralized workflow.")
                 "mirror://kernel.org/software/scm/git/git-manpages-"
                 version ".tar.xz"))
           (sha256
+
            (base32
-            "0kc2n6b1lrbr0wc8lk3xnrljn4fgzgab82icv658gdvyl9l3qrbx"))))))
+            "1whlsiicayalym4hkf01zdiqpw37gdf7c52gw9ki7bv2x3hf3g3y"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -739,14 +740,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.2.1")
+    (version "4.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "182qh6d0srps2n5sydzy8n3gi78la6m0wi3846zpyyd0b8pmgmfp"))))
+               "1b7p3z8lin6hyyzkskskp065qnyfxid2yxnjygni0n4yv33qz404"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -817,14 +818,18 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.18")
+    (version "1.8.19")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://archive.apache.org/dist/subversion/"
-                                 "subversion-" version ".tar.bz2"))
+             (uri
+               (list
+                 (string-append "https://archive.apache.org/dist/subversion/"
+                                "subversion-" version ".tar.bz2")
+                 (string-append "https://www-eu.apache.org/dist/subversion/"
+                                "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "19lpqdrl86mjfdpayhn3f9rkmpb6zs2iny38cnxq6wcj7snh0sz5"))))
+               "1gp6426gkdza6ni2whgifjcmjb4nq34ljy07yxkrhlarvfq6ks2n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
