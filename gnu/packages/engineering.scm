@@ -23,6 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages engineering)
+  #:use-module (srfi srfi-1)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -71,8 +73,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages wxwidgets)
-  #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xorg))
 
 (define-public librecad
   (package
@@ -1078,3 +1079,53 @@ bindings for Python, Java, OCaml and more.")
 
 (define-public python2-capstone
   (package-with-python2 python-capstone))
+
+(define-public radare2
+  (package
+    (name "radare2")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://radare.mikelloc.com/get/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16ggsk40zz6hyvclvqj1r4bh4hb78jf0d6ppry1jk4r0j30wm7cm"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin
+                  (substitute* "libr/asm/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  (substitute* "libr/parse/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  (substitute* "libr/bin/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f; tests require git and network access
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'mklibdir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+             #t)))
+       #:configure-flags
+       (list "--with-sysmagic" "--with-syszip" "--with-openssl"
+             "--without-nonpic" "--with-rpath" "--with-syscapstone")
+       #:make-flags
+       (list "CC=gcc")))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zip" ,zip)
+       ("gmp" ,gmp)
+       ("capstone" ,capstone)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://radare.org/")
+    (synopsis "Portable reversing framework")
+    (description
+      "Radare project started as a forensics tool, a scriptable commandline
+hexadecimal editor able to open disk files, but later support for analyzing
+binaries, disassembling code, debugging programs, attaching to remote gdb
+servers, ...")
+    (license license:lgpl3)))
