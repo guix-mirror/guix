@@ -227,6 +227,7 @@ Services
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
+* Audio Services::              The MPD.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -9035,6 +9036,7 @@ declaration.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
+* Audio Services::              The MPD.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -15635,6 +15637,58 @@ Package object of thermald.
 @end table
 @end deftp
 
+@node Audio Services
+@subsubsection Audio Services
+
+The @code{(gnu services audio)} module provides a service to start MPD
+(the Music Player Daemon).
+
+@cindex mpd
+@subsubheading Music Player Daemon
+
+The Music Player Daemon (MPD) is a service that can play music while
+being controlled from the local machine or over the network by a variety
+of clients.
+
+The following example shows how one might run @code{mpd} as user
+@code{"bob"} on port @code{6666}.  It uses pulseaudio for output.
+
+@example
+(service mpd-service-type
+         (mpd-configuration
+          (user "bob")
+          (port "6666")))
+@end example
+
+@defvr {Scheme Variable} mpd-service-type
+The service type for @command{mpd}
+@end defvr
+
+@deftp {Data Type} mpd-configuration
+Data type representing the configuration of @command{mpd}.
+
+@table @asis
+@item @code{user} (default: @code{"mpd"})
+The user to run mpd as.
+
+@item @code{music-dir} (default: @code{"~/Music"})
+The directory to scan for music files.
+
+@item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
+The directory to store playlists.
+
+@item @code{pid-file} (default: @code{"/var/run/mpd.pid"})
+The file mpd wil store its PID.  This must be an absolute path.
+
+@item @code{port} (default: @code{"6600"})
+The port to run mpd on.
+
+@item @code{address} (default: @code{"any"})
+The address that mpd will bind to.  To use a Unix domain socket,
+an absolute path can be specified here.
+
+@end table
+@end deftp
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services

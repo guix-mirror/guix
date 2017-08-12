@@ -426,6 +426,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\
+  %D%/services/audio.scm                        \
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/configuration.scm		\
@@ -481,6 +482,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/tests.scm					\
   %D%/tests/admin.scm				\
+  %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
   %D%/tests/databases.scm			\
   %D%/tests/dict.scm				\
