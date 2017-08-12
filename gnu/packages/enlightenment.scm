@@ -123,7 +123,7 @@
        ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
-       ("libinput" ,libinput) ; elput.pc
+       ("libinput" ,libinput-minimal) ; elput.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc
