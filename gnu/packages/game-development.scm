@@ -978,3 +978,44 @@ and 3D applications.  The main goals of mygui are: speed, flexibility and ease
 of use.")
     (home-page "http://mygui.info/")
     (license license:expat)))
+
+(define-public openmw
+  (package
+    (name "openmw")
+    (version "0.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/OpenMW/openmw/archive/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pla8016lpbg8cgm9kia318a860f26dmiayc72p3zl35mqrc7g7w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list "-DDESIRED_QT_VERSION=5")))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bullet" ,bullet)
+       ("ffmpeg" ,ffmpeg)
+       ("libxt" ,libxt)
+       ("mygui" ,mygui)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph)
+       ("qtbase" ,qtbase)
+       ("sdl" ,sdl2)
+       ("unshield" ,unshield)))
+    (synopsis "Free software re-implementation of the RPG Morrowind engine")
+    (description
+     "OpenMW is a free, open source and modern engine which reimplements and
+extends the one that runs the 2002 open-world RPG Morrowind.  The engine comes
+with its own editor, called OpenMW-CS which allows the user to edit or create
+their own original games.")
+    (home-page "https://openmw.org")
+    (license license:gpl3)))
