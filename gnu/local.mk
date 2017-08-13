@@ -567,6 +567,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
   %D%/packages/patches/clucene-contribs-lib.patch               \
+  %D%/packages/patches/curl-bounds-check.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dblatex-remove-multirow.patch		\

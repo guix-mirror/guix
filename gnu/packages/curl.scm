@@ -132,6 +132,7 @@ tunneling, and so on.")
         (method url-fetch)
         (uri (string-append "https://curl.haxx.se/download/curl-"
                             version ".tar.xz"))
+        (patches (search-patches "curl-bounds-check.patch"))
         (sha256
          (base32
           "1785vxi0jamiv9d1wr1l45g0fm9ircxdfyfzf7ld8zv0z0i8bmfd"))))
