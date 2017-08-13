@@ -2632,6 +2632,38 @@ features found in other packages it also brings many improvements as
 well as completely new features.")
     (license license:gpl3+)))
 
+(define-public emacs-highlight-symbol
+  (package
+    (name "emacs-highlight-symbol")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nschum/highlight-symbol.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7k1qns0fn0jsyc0hrjac5nzk21xw48yc30vyrhwvc51h0b9g90"))))
+    (build-system emacs-build-system)
+    (home-page "https://nschum.de/src/emacs/highlight-symbol")
+    (synopsis "Automatic and manual symbol highlighting for Emacs")
+    (description
+     "Use @code{highlight-symbol} to toggle highlighting of the symbol at
+point throughout the current buffer.  Use @code{highlight-symbol-mode} to keep
+the symbol at point highlighted.
+
+The functions @code{highlight-symbol-next}, @code{highlight-symbol-prev},
+@code{highlight-symbol-next-in-defun} and
+@code{highlight-symbol-prev-in-defun} allow for cycling through the locations
+of any symbol at point.  Use @code{highlight-symbol-nav-mode} to enable key
+bindings @code{M-p} and @code{M-p} for navigation.  When
+@code{highlight-symbol-on-navigation-p} is set, highlighting is triggered
+regardless of @code{highlight-symbol-idle-delay}.
+
+@code{highlight-symbol-query-replace} can be used to replace the symbol. ")
+    (license license:gpl2+)))
+
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
