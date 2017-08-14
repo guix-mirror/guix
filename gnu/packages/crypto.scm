@@ -465,3 +465,32 @@ distributed, unbiased, and unpredictable unless you know the seed.
 
 This package implements the same interface as @code{Math::Random::ISAAC}.")
     (license license:public-domain)))
+
+(define-public perl-math-random-isaac
+  (package
+    (name "perl-math-random-isaac")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JA/JAWNSY/"
+                           "Math-Random-ISAAC-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z1b3xbb3xz71h25fg6jgsccra7migq7s0vawx2rfzi0pwpz0wr7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (propagated-inputs
+     `(("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)))
+    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC")
+    (synopsis "Perl interface to the ISAAC PRNG algorithm")
+    (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
+fast pseudo-random number generator.  It is suitable for applications where a
+significant amount of random data needs to be produced quickly, such as
+solving using the Monte Carlo method or for games.  The results are uniformly
+distributed, unbiased, and unpredictable unless you know the seed.
+
+This package provides a Perl interface to the ISAAC pseudo random number
+generator.")
+    (license license:public-domain)))
