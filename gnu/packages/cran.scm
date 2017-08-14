@@ -431,3 +431,25 @@ in main memory.")
      "This package extends the out of memory vectors of @code{ff} with
 statistical functions and other utilities to ease their usage.")
     (license license:gpl3)))
+
+(define-public r-prettyunits
+  (package
+    (name "r-prettyunits")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prettyunits" version))
+       (sha256
+        (base32
+         "0p3z42hnk53x7ky4d1dr2brf7p8gv3agxr71i99m01n2hq2ri91m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "https://github.com/gaborcsardi/prettyunits")
+    (synopsis "Pretty, human readable formatting of quantities")
+    (description
+     "This package provides tools for pretty, human readable formatting of
+quantities.")
+    (license license:expat)))
