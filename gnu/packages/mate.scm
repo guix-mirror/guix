@@ -282,6 +282,80 @@ specification, the MATE menu layout configuration files, .directory files and
 assorted menu related utility programs.")
     (license (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public mate-panel
+  (package
+    (name "mate-panel")
+    (version "1.18.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1n565ff1n7jrfx223i3cl3m69wjda506nvbn8gra7m1jwdfzpbw1"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-zoneinfo-dir="
+                            (assoc-ref %build-inputs "tzdata")
+                            "/share/zoneinfo")
+             "--with-in-process-applets=all")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-timezone-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((tzdata (assoc-ref inputs "tzdata")))
+               (substitute* "applets/clock/system-timezone.h"
+                 (("/usr/share/lib/zoneinfo/tab")
+                  (string-append tzdata "/share/zoneinfo/zone.tab"))
+                 (("/usr/share/zoneinfo")
+                  (string-append tzdata "/share/zoneinfo"))))
+             #t))
+         (add-after 'unpack 'fix-introspection-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("configure")
+                 (("`\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0`")
+                  (string-append "\"" out "/share/gir-1.0/\""))
+                 (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
+                  (string-append out "/lib/girepository-1.0/")))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xtrans" ,xtrans)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("dconf" ,dconf)
+       ("cairo" ,cairo)
+       ("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libice" ,libice)
+       ("libmateweather" ,libmateweather)
+       ("librsvg" ,librsvg)
+       ("libsm" ,libsm)
+       ("libx11" ,libx11)
+       ("libxau" ,libxau)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("libwnck" ,libwnck)
+       ("mate-desktop" ,mate-desktop)
+       ("mate-menus" ,mate-menus)
+       ("pango" ,pango)
+       ("tzdata" ,tzdata)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Panel for MATE")
+    (description
+     "Mate-panel contains the MATE panel, the libmate-panel-applet library and
+several applets.  The applets supplied here include the Workspace Switcher,
+the Window List, the Window Selector, the Notification Area, the Clock and the
+infamous 'Wanda the Fish'.")
+    (license (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public caja
   (package
     (name "caja")
