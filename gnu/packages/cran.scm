@@ -194,3 +194,22 @@ is provided.")
      "This is a package for drawing calibrated scales with tick marks
 on (non-orthogonal) variable vectors in scatterplots and biplots.")
     (license license:gpl2)))
+
+(define-public r-shape
+  (package
+    (name "r-shape")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shape" version))
+       (sha256
+        (base32
+         "0yk3cmsa57svcvbnm21pyr0s0qbhnllka8nmsg4yb41frjlqph66"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/shape")
+    (synopsis "Functions for plotting graphical shapes")
+    (description
+     "This package provides functions for plotting graphical shapes such as
+ellipses, circles, cylinders, arrows, ...")
+    (license license:gpl3+)))
