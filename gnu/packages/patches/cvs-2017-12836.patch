@@ -1,0 +1,45 @@
+Fix CVE-2017-12836:
+
+http://cve.mitre.org/cgi-bin/cvename.cgi?name=2017-12836
+https://security-tracker.debian.org/tracker/CVE-2017-12836
+
+Patch adpated from Debian (comments and changelog annotations removed):
+
+https://anonscm.debian.org/cgit/collab-maint/cvs.git/commit/?h=stretch&id=41e077396e35efb6c879951f44c62dd8a1d0f094
+
+From 41e077396e35efb6c879951f44c62dd8a1d0f094 Mon Sep 17 00:00:00 2001
+From: mirabilos <m@mirbsd.org>
+Date: Sat, 12 Aug 2017 03:17:18 +0200
+Subject: Fix CVE-2017-12836 (Closes: #871810) for stretch
+
+---
+ debian/changelog |  6 ++++++
+ src/rsh-client.c | 10 ++++++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/src/rsh-client.c b/src/rsh-client.c
+index fe0cfc4..1fc860d 100644
+--- a/src/rsh-client.c
++++ b/src/rsh-client.c
+@@ -105,6 +106,9 @@ start_rsh_server (cvsroot_t *root, struct buffer **to_server_p,
+ 	rsh_argv[i++] = argvport;
+     }
+ 
++    /* Only non-option arguments from here. (CVE-2017-12836) */
++    rsh_argv[i++] = "--";
++
+     rsh_argv[i++] = root->hostname;
+     rsh_argv[i++] = cvs_server;
+     if (readonlyfs)
+@@ -189,6 +193,8 @@ start_rsh_server (cvsroot_t *root, struct buffer **to_server_p,
+ 		*p++ = argvport;
+ 	}
+ 
++	*p++ = "--";
++
+ 	*p++ = root->hostname;
+ 	*p++ = command;
+ 	*p++ = NULL;
+-- 
+cgit v0.12
+
