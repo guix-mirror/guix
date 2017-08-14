@@ -387,3 +387,24 @@ require repeated look-ups.  It is slightly faster that R's built-in
 @code{match} function on first match against a table, but extremely fast on
 any subsequent lookup as it keeps the hash table in memory.")
     (license license:gpl2)))
+
+(define-public r-ff
+  (package
+    (name "r-ff")
+    (version "2.2-13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ff" version))
+       (sha256
+        (base32
+         "1nvd6kx46xzyc99a44mgynd94pvd2h495m5a7b1g67k5w2phiywb"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-bit" ,r-bit)))
+    (home-page "http://ff.r-forge.r-project.org/")
+    (synopsis "Memory-efficient storage of large data on disk and access functions")
+    (description
+     "This package provides data structures that are stored on disk but
+behave (almost) as if they were in RAM by transparently mapping only a section
+in main memory.")
+    (license license:gpl2)))
