@@ -366,3 +366,24 @@ compare different dendrograms to one another.")
 powerful Perl module @code{Getopt::Long} and with some adaptation for easier
 use in R.  It also provides a simple way for variable interpolation in R.")
     (license license:gpl2+)))
+
+(define-public r-fastmatch
+  (package
+    (name "r-fastmatch")
+    (version "1.1-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastmatch" version))
+       (sha256
+        (base32
+         "0z80jxkygmzn11sq0c2iz357s9bpki548lg926g85gldhfj1md90"))))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/fastmatch")
+    (synopsis "Fast match function")
+    (description
+     "This package provides a fast @code{match} replacement for cases that
+require repeated look-ups.  It is slightly faster that R's built-in
+@code{match} function on first match against a table, but extremely fast on
+any subsequent lookup as it keeps the hash table in memory.")
+    (license license:gpl2)))
