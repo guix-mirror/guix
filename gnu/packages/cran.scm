@@ -233,3 +233,33 @@ ellipses, circles, cylinders, arrows, ...")
      "This package provides more controls on the option values such as
 validation and filtering on the values, making options invisible or private.")
     (license license:gpl2+)))
+
+(define-public r-circlize
+  (package
+    (name "r-circlize")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "circlize" version))
+       (sha256
+        (base32
+         "0p1zx1aawkblz48kzzfn5w1k3lbwv9wrk1k5gcfjrr2b4sz1pp5b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)
+       ("r-globaloptions" ,r-globaloptions)
+       ("r-shape" ,r-shape)))
+    (home-page "https://github.com/jokergoo/circlize")
+    (synopsis "Circular visualization")
+    (description
+     "Circular layout is an efficient way for the visualization of huge
+amounts of information.  This package provides an implementation of circular
+layout generation in R as well as an enhancement of available software.  The
+flexibility of the package is based on the usage of low-level graphics
+functions such that self-defined high-level graphics can be easily implemented
+by users for specific purposes.  Together with the seamless connection between
+the powerful computational and visual environment in R, it gives users more
+convenience and freedom to design figures for better understanding complex
+patterns behind multiple dimensional data.")
+    (license license:gpl2+)))
