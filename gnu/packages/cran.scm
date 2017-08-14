@@ -709,3 +709,28 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
 @code{.Call} calling conventions.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
+
+(define-public r-bbmle
+  (package
+    (name "r-bbmle")
+    (version "1.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bbmle" version))
+       (sha256
+        (base32
+         "014h6mw16gv4acs2p78dy7lla7s428n633aybsb1mbi6250dg0p8"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-numderiv" ,r-numderiv)))
+    (home-page "http://cran.r-project.org/web/packages/bbmle")
+    (synopsis "Tools for General Maximum Likelihood Estimation")
+    (description
+     "Methods and functions for fitting maximum likelihood models in R.  This
+package modifies and extends the @code{mle} classes in the @code{stats4}
+package.")
+    ;; Any version of the GPL
+    (license (list license:gpl2 license:gpl3))))
