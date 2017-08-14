@@ -210,6 +210,37 @@ in a single window (tabs) and supports management of different
 configurations (profiles).")
     (license license:gpl3)))
 
+(define-public mate-session-manager
+  (package
+    (name "mate-session-manager")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0i0xq6041x2qmb26x9bawx0qpfkgjn6x9w3phnm9s7rc4s0z20ll"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("xtrans" ,xtrans)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("dbus-glib" ,dbus-glib)
+       ("libsm" ,libsm)
+       ("mate-desktop" ,mate-desktop)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Session manager for MATE")
+    (description
+     "Mate-session contains the MATE session manager, as well as a
+configuration program to choose applications starting on login.")
+    (license license:gpl2)))
+
 (define-public mate-menus
   (package
     (name "mate-menus")
