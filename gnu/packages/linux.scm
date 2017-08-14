@@ -680,16 +680,17 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.4")
+    (version "1.43.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
                    name "/v" version "/"
                    name "-" version ".tar.xz"))
+             (patches (search-patches "e2fsprogs-32bit-quota-warnings.patch"))
              (sha256
               (base32
-               "092absr4vrlqrkdf9nwh4ykj40ab6hhwrkdr6sjsccd54c8z5csl"))))
+               "05ssjpmy0fpv2ik6ibm1f47wr6794nf0q50r581vygrqvsd3s7r6"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
