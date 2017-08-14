@@ -574,3 +574,24 @@ Utility functions are provided, e.g. for plotting data as maps, spatial
 selection, as well as methods for retrieving coordinates, for subsetting,
 print, summary, etc.")
     (license license:gpl2+)))
+
+(define-public r-rmtstat
+  (package
+    (name "r-rmtstat")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RMTstat" version))
+       (sha256
+        (base32
+         "1nn25q4kmh9kj975sxkrpa97vh5irqrlqhwsfinbck6h6ia4rsw1"))))
+    (properties `((upstream-name . "RMTstat")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/RMTstat")
+    (synopsis "Distributions, statistics and tests derived from random matrix theory")
+    (description
+     "This package provides functions for working with the Tracy-Widom laws
+and other distributions related to the eigenvalues of large Wishart
+matrices.")
+    (license license:bsd-3)))
