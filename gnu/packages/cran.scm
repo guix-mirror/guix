@@ -453,3 +453,25 @@ statistical functions and other utilities to ease their usage.")
      "This package provides tools for pretty, human readable formatting of
 quantities.")
     (license license:expat)))
+
+(define-public r-reshape
+  (package
+    (name "r-reshape")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reshape" version))
+       (sha256
+        (base32
+         "1f1ngalc22knhdm9djv1m6abnjqpv1frdzxfkpakhph2l67bk7fq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://had.co.nz/reshape")
+    (synopsis "Flexibly reshape data")
+    (description
+     "Flexibly restructure and aggregate data using just two functions:
+@code{melt} and @code{cast}.  This package provides them.")
+    (license license:expat)))
