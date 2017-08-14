@@ -263,3 +263,28 @@ the powerful computational and visual environment in R, it gives users more
 convenience and freedom to design figures for better understanding complex
 patterns behind multiple dimensional data.")
     (license license:gpl2+)))
+
+(define-public r-powerlaw
+  (package
+    (name "r-powerlaw")
+    (version "0.70.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "poweRlaw" version))
+       (sha256
+        (base32
+         "1p2la3hslxq2xa8jkwvci6zcpn47cvyr9xqd5agp1riwwp2xw5gh"))))
+    (properties `((upstream-name . "poweRlaw")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-vgam" ,r-vgam)))
+    (home-page "https://github.com/csgillespie/poweRlaw")
+    (synopsis "Tools for the analysis of heavy tailed distributions")
+    (description
+     "This package provides an implementation of maximum likelihood estimators
+for a variety of heavy tailed distributions, including both the discrete and
+continuous power law distributions.  Additionally, a goodness-of-fit based
+approach is used to estimate the lower cut-off for the scaling region.")
+    ;; Any of these GPL versions.
+    (license (list license:gpl2 license:gpl3))))
