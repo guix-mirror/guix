@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -663,3 +664,28 @@ SpatialVx.")
 extreme values of a process of interest; be they block maxima over long blocks
 or excesses over a high threshold.")
     (license license:gpl2+)))
+
+(define-public r-lmtest
+  (package
+    (name "r-lmtest")
+    (version "0.9-35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lmtest" version))
+       (sha256
+        (base32
+         "107br1l7p52wxvazs031f4h5ryply97qywg9dzrkw4ydnvqq4j9g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/lmtest")
+    (synopsis "Testing linear regression models")
+    (description
+     "This package provides a collection of tests, data sets, and examples for
+diagnostic checking in linear regression models.  Furthermore, some generic
+tools for inference in parametric models are provided.")
+    ;; Either version is okay
+    (license (list license:gpl2 license:gpl3))))
