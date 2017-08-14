@@ -9255,6 +9255,40 @@ global-scaling and full-quantile normalization.")
 Shiny-based display methods for Bioconductor objects.")
     (license license:artistic2.0)))
 
+(define-public r-annotationhub
+  (package
+    (name "r-annotationhub")
+    (version "2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationHub" version))
+       (sha256
+        (base32
+         "1nh5si3j1nv37jcg4260582ayjg18851np47cskrm54prnvhwd9r"))))
+    (properties `((upstream-name . "AnnotationHub")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-httr" ,r-httr)
+       ("r-interactivedisplaybase" ,r-interactivedisplaybase)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-yaml" ,r-yaml)))
+    (home-page "http://bioconductor.org/packages/AnnotationHub")
+    (synopsis "Client to access AnnotationHub resources")
+    (description
+     "This package provides a client for the Bioconductor AnnotationHub web
+resource.  The AnnotationHub web resource provides a central location where
+genomic files (e.g. VCF, bed, wig) and other resources from standard
+locations (e.g. UCSC, Ensembl) can be discovered.  The resource includes
+metadata about each resource, e.g., a textual description, tags, and date of
+modification.  The client creates and manages a local cache of files retrieved
+by the user, helping with quick and reproducible access.")
+    (license license:artistic2.0)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
