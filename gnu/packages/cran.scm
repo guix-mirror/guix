@@ -595,3 +595,25 @@ print, summary, etc.")
 and other distributions related to the eigenvalues of large Wishart
 matrices.")
     (license license:bsd-3)))
+
+(define-public r-lmoments
+  (package
+    (name "r-lmoments")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Lmoments" version))
+       (sha256
+        (base32
+         "13p0r4w16jvjnyjmkhkp3dwdfr1gap2l0k4k5jy41m8nc5fvcx79"))))
+    (properties `((upstream-name . "Lmoments")))
+    (build-system r-build-system)
+    (home-page "http://www.tilastotiede.fi/juha_karvanen.html")
+    (synopsis "L-moments and quantile mixtures")
+    (description
+     "This package contains functions to estimate L-moments and trimmed
+L-moments from the data.  It also contains functions to estimate the
+parameters of the normal polynomial quantile mixture and the Cauchy polynomial
+quantile mixture from L-moments and trimmed L-moments.")
+    (license license:gpl2)))
