@@ -4879,3 +4879,27 @@ responsive, and powerful applications with minimal effort.")
 communicate with each other, with Shiny or without (i.e.  static @code{.html}
 files).  It currently supports linked brushing and filtering.")
     (license l:expat)))
+
+(define-public r-rook
+  (package
+    (name "r-rook")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rook" version))
+       (sha256
+        (base32
+         "00s9a0kr9rwxvlq433daxjk4ji8m0w60hjdprf502msw9kxfrx00"))))
+    (properties `((upstream-name . "Rook")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-brew" ,r-brew)))
+    (home-page "http://cran.r-project.org/web/packages/Rook")
+    (synopsis "Web server interface for R")
+    (description
+     "This package contains the Rook specification and convenience software
+for building and running Rook applications.  A Rook application is an R
+reference class object that implements a @code{call} method or an R closure
+that takes exactly one argument, an environment, and returns a list with three
+named elements: the @code{status}, the @code{headers}, and the @code{body}.")
+    (license l:gpl2)))
