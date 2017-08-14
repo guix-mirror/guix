@@ -9231,6 +9231,30 @@ distributional differences between lanes (e.g., sequencing depth):
 global-scaling and full-quantile normalization.")
     (license license:artistic2.0)))
 
+(define-public r-interactivedisplaybase
+  (package
+    (name "r-interactivedisplaybase")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "interactiveDisplayBase" version))
+       (sha256
+        (base32
+         "12f6ap4bl3h2iwwhg8i3r9a7yyd28d8i5lb3fj1vnfvjs762r7r7"))))
+    (properties
+     `((upstream-name . "interactiveDisplayBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-shiny" ,r-shiny)))
+    (home-page "http://bioconductor.org/packages/interactiveDisplayBase")
+    (synopsis "Base package for web displays of Bioconductor objects")
+    (description
+     "This package contains the basic methods needed to generate interactive
+Shiny-based display methods for Bioconductor objects.")
+    (license license:artistic2.0)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
