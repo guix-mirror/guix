@@ -689,3 +689,23 @@ diagnostic checking in linear regression models.  Furthermore, some generic
 tools for inference in parametric models are provided.")
     ;; Either version is okay
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-inline
+  (package
+    (name "r-inline")
+    (version "0.3.14")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "inline" version))
+              (sha256
+               (base32
+                "0cf9vya9h4znwgp6s1nayqqmh6mwyw7jl0isk1nx4j2ijszxcd7x"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/inline")
+    (synopsis "Functions to inline C, C++, Fortran function calls from R")
+    (description
+     "This package provides functionality to dynamically define R functions
+and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
+@code{.Call} calling conventions.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
