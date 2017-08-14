@@ -213,3 +213,23 @@ on (non-orthogonal) variable vectors in scatterplots and biplots.")
      "This package provides functions for plotting graphical shapes such as
 ellipses, circles, cylinders, arrows, ...")
     (license license:gpl3+)))
+
+(define-public r-globaloptions
+  (package
+    (name "r-globaloptions")
+    (version "0.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GlobalOptions" version))
+       (sha256
+        (base32
+         "1abpc03cfvazbwj2sx6qgngs5pgpzysvxkana20hyvb4n7ws77f0"))))
+    (properties `((upstream-name . "GlobalOptions")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jokergoo/GlobalOptions")
+    (synopsis "Generate functions to get or set global options")
+    (description
+     "This package provides more controls on the option values such as
+validation and filtering on the values, making options invisible or private.")
+    (license license:gpl2+)))
