@@ -288,3 +288,24 @@ continuous power law distributions.  Additionally, a goodness-of-fit based
 approach is used to estimate the lower cut-off for the scaling region.")
     ;; Any of these GPL versions.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-compare
+  (package
+    (name "r-compare")
+    (version "0.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "compare" version))
+       (sha256
+        (base32
+         "0k9zms930b5dz9gy8414li21wy0zg9x9vp7301v5cvyfi0g7xzgw"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/compare")
+    (synopsis "Comparing objects for differences")
+    (description
+     "This package provides functions to compare a model object to a
+comparison object.  If the objects are not identical, the functions can be
+instructed to explore various modifications of the objects (e.g., sorting
+rows, dropping names) to see if the modified versions are identical.")
+    (license license:gpl2+)))
