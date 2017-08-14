@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -254,10 +254,11 @@ editor (console only)")
     (inputs (fold alist-delete
                   (package-inputs emacs)
                   '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
-                    "libpng" "librsvg" "libxpm" "libice" "libsm"
+                    "imagemagick" "libpng" "librsvg" "libxpm" "libice"
+                    "libsm"
 
-                    ;; D-Bus depends on libx11, so remove it as well.
-                    "dbus")))))
+                    ;; These depend on libx11, so remove them as well.
+                    "libotf" "m17n-lib" "dbus")))))
 
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
