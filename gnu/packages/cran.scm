@@ -309,3 +309,32 @@ comparison object.  If the objects are not identical, the functions can be
 instructed to explore various modifications of the objects (e.g., sorting
 rows, dropping names) to see if the modified versions are identical.")
     (license license:gpl2+)))
+
+(define-public r-dendextend
+  (package
+    (name "r-dendextend")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dendextend" version))
+       (sha256
+        (base32
+         "04jz58apibfrkjcrdmw2hmsav6qpb5cs6qdai81k1v1iznfcya42"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fpc" ,r-fpc)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-viridis" ,r-viridis)
+       ("r-whisker" ,r-whisker)))
+    (home-page "https://cran.r-project.org/web/packages/dendextend")
+    (synopsis "Extending 'dendrogram' functionality in R")
+    (description
+     "This package offers a set of functions for extending @code{dendrogram}
+objects in R, letting you visualize and compare trees of hierarchical
+clusterings.  You can adjust a tree's graphical parameters (the color, size,
+type, etc of its branches, nodes and labels) and visually and statistically
+compare different dendrograms to one another.")
+    ;; Any of these versions
+    (license (list license:gpl2 license:gpl3))))
