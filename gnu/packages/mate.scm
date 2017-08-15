@@ -28,16 +28,19 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python))
 
@@ -242,6 +245,49 @@ configurations (profiles).")
      "Mate-session contains the MATE session manager, as well as a
 configuration program to choose applications starting on login.")
     (license license:gpl2)))
+
+(define-public mate-settings-daemon
+  (package
+    (name "mate-settings-daemon")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "07b2jkxqv07njdrgkdck93d872p6lch1lrvi7ydnpicspg3rfid6"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("dconf" ,dconf)
+       ("fontconfig" ,fontconfig)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmatekbd" ,libmatekbd)
+       ("libmatemixer" ,libmatemixer)
+       ("libnotify" ,libnotify)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxklavier" ,libxklavier)
+       ("mate-desktop" ,mate-desktop)
+       ("nss" ,nss)
+       ("polkit" ,polkit)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Settings Daemon for MATE")
+    (description
+     "Mate-settings-daemon is a fork of gnome-settings-daemon.")
+    (license (list license:lgpl2.1 license:gpl2))))
 
 (define-public libmatemixer
   (package
