@@ -900,3 +900,31 @@ coefficient, Johnson distributions, normal scores and generalized
 hypergeometric distributions.  In addition two random number generators of
 George Marsaglia are included.")
     (license license:gpl2+)))
+
+(define-public r-ksamples
+  (package
+    (name "r-ksamples")
+    (version "1.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kSamples" version))
+       (sha256
+        (base32
+         "1pbam0zqq44slpxdgl2s2fsfdgl7i0pgm8bzlvnm0fy0na24bgdj"))))
+    (properties `((upstream-name . "kSamples")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-suppdists" ,r-suppdists)))
+    (home-page "http://cran.r-project.org/web/packages/kSamples")
+    (synopsis "K-Sample rank tests and their combinations")
+    (description
+     "This package provides tools to compares k samples using the
+Anderson-Darling test, Kruskal-Wallis type tests with different rank score
+criteria, Steel's multiple comparison test, and the Jonckheere-Terpstra (JT)
+test.  It computes asymptotic, simulated or (limited) exact P-values, all
+valid under randomization, with or without ties, or conditionally under random
+sampling from populations, given the observed tie pattern.  Except for Steel's
+test and the JT test it also combines these tests across several blocks of
+samples.")
+    (license license:gpl2+)))
