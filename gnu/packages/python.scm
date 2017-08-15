@@ -80,6 +80,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -11983,20 +11984,22 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.4.1")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "1k2dcl6mqpn5bljyl6w42rqyd9mb3y9kh2mg7m2x3kfjwvg0rpva"))))
+                "0q1cf0szr0d54am4pypzwdnm74zpladdsinad94c2fz5i06fdpf7"))))
     (build-system python-build-system)
     (native-inputs
      `(;; For testing
        ("python-mock" ,python-mock)
+       ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)
+     `(("python-backpack" ,python-backpack)
+       ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
     (synopsis "Command-line arguments library for Python")
