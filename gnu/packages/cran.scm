@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system r)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -784,3 +785,37 @@ programs.  This implementation supplies a \"wrapper\" function in C and some R
 functions that solve general linear/integer problems, assignment problems, and
 transportation problems.")
     (license license:lgpl2.0)))
+
+(define-public r-limsolve
+  (package
+    (name "r-limsolve")
+    (version "1.5.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "limSolve" version))
+       (sha256
+        (base32
+         "1ll6ir42h3g2fzf0wqai213bm82gpwjj2hfma2np3mz024sc09rg"))))
+    (properties `((upstream-name . "limSolve")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lpsolve" ,r-lpsolve)
+       ("r-mass" ,r-mass)
+       ("r-quadprog" ,r-quadprog)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/limSolve")
+    (synopsis "Solving linear inverse models")
+    (description
+     "This package provides functions that:
+
+@enumerate
+@item find the minimum/maximum of a linear or quadratic function,
+@item sample an underdetermined or overdetermined system,
+@item solve a linear system Ax=B for the unknown x.
+@end enumerate
+
+It includes banded and tridiagonal linear systems.  The package calls Fortran
+functions from LINPACK.")
+    ;; Any GPL version.
+    (license (list license:gpl2+ license:gpl3+))))
