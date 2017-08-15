@@ -527,6 +527,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-completion-directories.patch	\
+  %D%/packages/patches/bcftools-regidx-unsigned-char.patch	\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/binutils-mips-bash-bug.patch		\

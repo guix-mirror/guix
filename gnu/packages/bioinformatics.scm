@@ -311,6 +311,7 @@ BAM files.")
               (sha256
                (base32
                 "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
+              (patches (search-patches "bcftools-regidx-unsigned-char.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
