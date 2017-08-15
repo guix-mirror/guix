@@ -876,3 +876,27 @@ testing for multivariate normality, distance components (disco) for
 non-parametric analysis of structured data, and other energy
 statistics/methods are implemented.")
     (license license:gpl2+)))
+
+(define-public r-suppdists
+  (package
+    (name "r-suppdists")
+    (version "1.1-9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SuppDists" version))
+       (sha256
+        (base32
+         "1ffx8wigqqvz2pnh06jjc0fnf4vq9z2rhwk2y3f9aszn18ap3dgw"))))
+    (properties `((upstream-name . "SuppDists")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/SuppDists")
+    (synopsis "Supplementary distributions")
+    (description
+     "This package provides ten distributions supplementing those built into
+R.  Inverse Gauss, Kruskal-Wallis, Kendall's Tau, Friedman's chi squared,
+Spearman's rho, maximum F ratio, the Pearson product moment correlation
+coefficient, Johnson distributions, normal scores and generalized
+hypergeometric distributions.  In addition two random number generators of
+George Marsaglia are included.")
+    (license license:gpl2+)))
