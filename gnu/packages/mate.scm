@@ -273,6 +273,38 @@ API allowing access to mixer functionality available in the PulseAudio and ALSA
 sound systems.")
     (license license:lgpl2.1)))
 
+(define-public libmatekbd
+  (package
+    (name "libmatekbd")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "030bl18qbjm7l92bp1bhs7v82bp8j3mv7c1j1a4gd89iz4611pq3"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libx11" ,libx11)
+       ("libxklavier" ,libxklavier)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "MATE keyboard configuration library")
+    (description
+     "Libmatekbd is a keyboard configuration library for the
+MATE desktop environment.")
+    (license license:lgpl2.1)))
+
 (define-public mate-menus
   (package
     (name "mate-menus")
