@@ -819,3 +819,31 @@ It includes banded and tridiagonal linear systems.  The package calls Fortran
 functions from LINPACK.")
     ;; Any GPL version.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-fitdistrplus
+  (package
+    (name "r-fitdistrplus")
+    (version "1.0-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fitdistrplus" version))
+       (sha256
+        (base32
+         "18x9454g598d54763k3hvi33iszifk7sxvhd1zg5r8z1vpixx3z6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-survival" ,r-survival)))
+    (home-page "http://riskassessment.r-forge.r-project.org")
+    (synopsis "Fitting a parametric distribution from data")
+    (description
+     "This package extends the @code{fitdistr} function of the MASS package
+with several functions to help the fit of a parametric distribution to
+non-censored or censored data.  Censored data may contain left-censored,
+right-censored and interval-censored values, with several lower and upper
+bounds.  In addition to @dfn{maximum likelihood estimation} (MLE), the package
+provides moment matching (MME), quantile matching (QME) and maximum
+goodness-of-fit estimation (MGE) methods (available only for non-censored
+data).  Weighted versions of MLE, MME and QME are available.")
+    (license license:gpl2+)))
