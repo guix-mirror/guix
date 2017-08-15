@@ -847,3 +847,32 @@ provides moment matching (MME), quantile matching (QME) and maximum
 goodness-of-fit estimation (MGE) methods (available only for non-censored
 data).  Weighted versions of MLE, MME and QME are available.")
     (license license:gpl2+)))
+
+(define-public r-energy
+  (package
+    (name "r-energy")
+    (version "1.7-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "energy" version))
+       (sha256
+        (base32
+         "1g4hqi6mgsnd1w4q7dd2m40ljh2jdmvad91ksbq9fscnrqpvji1x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://cran.r-project.org/web/packages/energy")
+    (synopsis "Multivariate inference via the energy of data")
+    (description
+     "This package provides e-statistics (energy) tests and statistics for
+multivariate and univariate inference, including distance correlation,
+one-sample, two-sample, and multi-sample tests for comparing multivariate
+distributions, are implemented.  Measuring and testing multivariate
+independence based on distance correlation, partial distance correlation,
+multivariate goodness-of-fit tests, clustering based on energy distance,
+testing for multivariate normality, distance components (disco) for
+non-parametric analysis of structured data, and other energy
+statistics/methods are implemented.")
+    (license license:gpl2+)))
