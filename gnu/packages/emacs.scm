@@ -5226,6 +5226,23 @@ multiplexer.")
 editing RPM spec files.")
     (license license:gpl2+)))
 
+(define-public emacs-nix-mode
+  (package
+    (inherit nix)
+    (name "emacs-nix-mode")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "misc/emacs"))))))
+    (synopsis "Emacs major mode for editing Nix expressions")
+    (description "@code{nixos-mode} provides an Emacs major mode for editing
+Nix expressions.  It supports syntax highlighting, indenting and refilling of
+comments.")))
+
 (define-public emacs-git-messenger
   (package
     (name "emacs-git-messenger")

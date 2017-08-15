@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,7 +83,11 @@
                                       "qemu-CVE-2017-8379.patch"
                                       "qemu-CVE-2017-8380.patch"
                                       "qemu-CVE-2017-9524.patch"
-                                      "qemu-CVE-2017-11334.patch"))
+                                      "qemu-CVE-2017-10664.patch"
+                                      "qemu-CVE-2017-10806.patch"
+                                      "qemu-CVE-2017-10911.patch"
+                                      "qemu-CVE-2017-11334.patch"
+                                      "qemu-CVE-2017-11434.patch"))
              (sha256
               (base32
                "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))

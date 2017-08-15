@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -898,17 +899,51 @@ and to return information on pronunciations, meanings and synonyms.")
                  (substitute* "external/libxmlsec/ExternalProject_xmlsec.mk"
                    (("./configure") "$(CONFIG_SHELL) ./configure" ))
                  #t)))
-           (add-after 'install 'bin-install
+           (add-after 'install 'bin-and-desktop-install
              ;; Create 'soffice' and 'libreoffice' symlinks to the executable
              ;; script.
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (soffice (string-append
-                                out "/lib/libreoffice/program/soffice")))
-                 (mkdir bin)
-                 (symlink soffice (string-append bin "/soffice"))
-                 (symlink soffice (string-append bin "/libreoffice")))
+               (let ((out (assoc-ref outputs "out")))
+                 (define (symlink-output src dst)
+                   (mkdir-p (dirname (string-append out dst)))
+                   (symlink (string-append out src) (string-append out dst)))
+                 (define (install src dst)
+                   (let ((dst (string-append out dst)))
+                     (mkdir-p (dirname dst))
+                     (copy-file src dst)))
+                 (define (install-desktop-file app)
+                   (let ((src (string-append "/lib/libreoffice/share/xdg/"
+                                             app ".desktop"))
+                         (dst (string-append "/share/applications/libreoffice-"
+                                             app ".desktop")))
+                     (substitute* (string-append out src)
+                       (("Exec=libreoffice[0-9]+\\.[0-9]+ ")
+                        (string-append "Exec=" out "/bin/libreoffice "))
+                       (("Icon=libreoffice[0-9]+\\.[0-9]+")
+                        "Icon=libreoffice")
+                       (("LibreOffice [0-9]+\\.[0-9]+")
+                        "LibreOffice"))
+                     (symlink-output src dst)
+                     (install-file (string-append
+                                    "sysui/desktop/appstream-appdata/"
+                                    "libreoffice-" app ".appdata.xml")
+                                   (string-append out "/share/appdata"))))
+                 (symlink-output "/lib/libreoffice/program/soffice"
+                                 "/bin/soffice")
+                 (symlink-output "/lib/libreoffice/program/soffice"
+                                 "/bin/libreoffice")
+                 (install "workdir/CustomTarget/sysui/share/libreoffice/openoffice.keys"
+                          "/share/mime-info/libreoffice.keys")
+                 (install "workdir/CustomTarget/sysui/share/libreoffice/openoffice.mime"
+                          "/share/mime-info/libreoffice.mime")
+                 (install
+                  "workdir/CustomTarget/sysui/share/libreoffice/openoffice.org.xml"
+                  "/share/mime/packages/libreoffice.xml")
+                 (for-each install-desktop-file
+                           '("base" "calc" "draw" "impress" "writer"))
+                 (mkdir-p (string-append out "/share/icons"))
+                 (copy-recursively "sysui/desktop/icons/hicolor"
+                                   (string-append out "/share/icons/")))
                #t)))
        #:configure-flags
         (list

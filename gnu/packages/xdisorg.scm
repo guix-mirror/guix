@@ -93,6 +93,14 @@
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "screenlayout/xrandr.py"
+               (("\"xrandr\"") (string-append "\"" (assoc-ref inputs "xrandr")
+                                              "/bin/xrandr\"")))
+             #t)))
        #:tests? #f)) ;no tests
     (inputs `(("pygtk" ,python2-pygtk)
               ("xrandr" ,xrandr)))

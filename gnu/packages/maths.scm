@@ -2159,7 +2159,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "17.05.0")
+    (version "17.05.1")
     (source
      (origin
        (method url-fetch)
@@ -2168,7 +2168,7 @@ point numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bsyd7r12xm2crpizb9iyyki3j0mbazzzwbsh871m06dv2wk97gq"))))
+         "0dv0cy0cf46v0cbw32izscpkdmpxg1qhwq1f4cz46kkqd8k4yfbj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2182,31 +2182,30 @@ point numbers.")
        ("gtk+" ,gtk+)
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
-                   (lambda _
-                     (zero? (system* "./bootstrap"))))
-                  (add-after
-                   'install 'wrap-program
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (wrap-program (string-append (assoc-ref outputs "out")
-                                                  "/bin/wxmaxima")
-                       `("PATH" ":" prefix
-                         (,(string-append (assoc-ref inputs "maxima")
-                                          "/bin")))
-                       ;; For GtkFileChooserDialog.
-                       `("GSETTINGS_SCHEMA_DIR" =
-                         (,(string-append (assoc-ref inputs "gtk+")
-                                          "/share/glib-2.0/schemas")))
-                       `("XDG_DATA_DIRS" ":" prefix
-                         (;; Needed by gdk-pixbuf to know supported icon formats.
-                          ,(string-append
-                            (assoc-ref inputs "shared-mime-info") "/share")
-                          ;; The default icon theme of GTK+.
-                          ,(string-append
-                            (assoc-ref inputs "adwaita-icon-theme") "/share"))))
-                     #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "sh" "bootstrap"))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/wxmaxima")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "maxima")
+                                  "/bin")))
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))
+               `("XDG_DATA_DIRS" ":" prefix
+                 (;; Needed by gdk-pixbuf to know supported icon formats.
+                  ,(string-append
+                    (assoc-ref inputs "shared-mime-info") "/share")
+                  ;; The default icon theme of GTK+.
+                  ,(string-append
+                    (assoc-ref inputs "adwaita-icon-theme") "/share"))))
+             #t)))))
     (home-page "https://andrejv.github.io/wxmaxima/")
     (synopsis "Graphical user interface for the Maxima computer algebra system")
     (description

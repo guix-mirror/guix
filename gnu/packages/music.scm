@@ -2264,15 +2264,16 @@ of tools for manipulating and accessing your music.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "1.0.0")
+    (version "1.01.00")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/milkytracker/"
-                                  "MilkyTracker/archive/v" version ".tar.gz"))
+                                  "MilkyTracker/archive/v"
+                                  version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1jd4h274jvcvl05l01v9bj19zhq4sjag92v1zawyi93ib85abz"))
+                "1dvnddsnn9c83lz4dlm0cfjpc0m524amfkbalxbswdy0qc8cj1wv"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet

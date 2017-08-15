@@ -449,38 +449,41 @@ operating system.")
       (license bsd-3))))
 
 (define-public linenoise
-  (package
-    (name "linenoise")
-    (version "1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/antirez/linenoise/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "05006hd56xcvxjdpll4x720bpfan7vwqmxbw8a2kvm10w57ll1gm"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ;No tests are included
-       #:make-flags (list "CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; At the moment there is no 'make install' in upstream.
-             (let* ((out (assoc-ref outputs "out")))
-               (install-file "linenoise.h"
-                             (string-append out "/include/linenoise"))
-               (install-file "linenoise.c"
-                             (string-append out "/include/linenoise"))
-               #t))))))
-    (home-page "https://github.com/antirez/linenoise")
-    (synopsis "Minimal zero-config readline replacement")
-    (description
-     "Linenoise is a minimal, zero-config, readline replacement.
+  (let ((commit "2105ce445821381cf1bca87b6d386d4ea88ee20d")
+        (revision "1"))
+    (package
+      (name "linenoise")
+      (version (string-append "1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/antirez/linenoise")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1z16qwix8z6a40fskdgxsibkqgdrp4q6ncp4n6hnv4r9iihy2d8r"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ;No tests are included
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; At the moment there is no 'make install' in upstream.
+               (let* ((out (assoc-ref outputs "out")))
+                 (install-file "linenoise.h"
+                               (string-append out "/include/linenoise"))
+                 (install-file "linenoise.c"
+                               (string-append out "/include/linenoise"))
+                 #t))))))
+      (home-page "https://github.com/antirez/linenoise")
+      (synopsis "Minimal zero-config readline replacement")
+      (description
+       "Linenoise is a minimal, zero-config, readline replacement.
 Its features include:
 
 @enumerate
@@ -490,7 +493,7 @@ Its features include:
 @item Hints (suggestions at the right of the prompt as you type)
 @item A subset of VT100 escapes, ANSI.SYS compatible
 @end enumerate\n")
-    (license bsd-2)))
+      (license bsd-2))))
 
 (define-public s-shell
   (let ((commit "6604341edb3a775ff94415762af3ee9bd86bfb3c")

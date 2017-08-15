@@ -5796,6 +5796,49 @@ differential expression based on a model using the negative binomial
 distribution.")
     (license license:lgpl3+)))
 
+(define-public r-dexseq
+  (package
+    (name "r-dexseq")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DEXSeq" version))
+       (sha256
+        (base32
+         "085aqk1wlzzqcqcqhvz74y099kr2ln5dwdxd3rl6zan806mgwahg"))))
+    (properties `((upstream-name . "DEXSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biomart" ,r-biomart)
+       ("r-deseq2" ,r-deseq2)
+       ("r-genefilter" ,r-genefilter)
+       ("r-geneplotter" ,r-geneplotter)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-hwriter" ,r-hwriter)
+       ("r-iranges" ,r-iranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-statmod" ,r-statmod)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "http://bioconductor.org/packages/DEXSeq")
+    (synopsis "Inference of differential exon usage in RNA-Seq")
+    (description
+     "This package is focused on finding differential exon usage using RNA-seq
+exon counts between samples with different experimental designs.  It provides
+functions that allows the user to make the necessary statistical tests based
+on a model that uses the negative binomial distribution to estimate the
+variance between biological replicates and generalized linear models for
+testing.  The package also provides functions for the visualization and
+exploration of the results.")
+    (license license:gpl3+)))
+
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
@@ -9759,3 +9802,66 @@ such as transcription factor binding sites (ChIP-seq) or regions of open
 chromatin (DNase-seq).  Output can be displayed directly in the UCSC Genome
 Browser.")
       (license license:gpl3+))))
+
+(define-public bismark
+  (package
+    (name "bismark")
+    (version "0.16.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/FelixKrueger/Bismark/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1204i0pa02ll2jn5pnxypkclnskvv7a2nwh5nxhagmhxk9wfv9sq"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin"))
+                   (docdir  (string-append (assoc-ref outputs "out")
+                                           "/share/doc/bismark"))
+                   (docs    '("Bismark_User_Guide.pdf"
+                              "RELEASE_NOTES.txt"))
+                   (scripts '("bismark"
+                              "bismark_genome_preparation"
+                              "bismark_methylation_extractor"
+                              "bismark2bedGraph"
+                              "bismark2report"
+                              "coverage2cytosine"
+                              "deduplicate_bismark"
+                              "bismark_sitrep.tpl"
+                              "bam2nuc"
+                              "bismark2summary")))
+               (mkdir-p docdir)
+               (mkdir-p bin)
+               (for-each (lambda (file) (install-file file bin))
+                         scripts)
+               (for-each (lambda (file) (install-file file docdir))
+                         docs)
+               #t))))))
+    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/bismark/")
+    (synopsis "Map bisulfite treated sequence reads and analyze methylation")
+    (description "Bismark is a program to map bisulfite treated sequencing
+reads to a genome of interest and perform methylation calls in a single step.
+The output can be easily imported into a genome viewer, such as SeqMonk, and
+enables a researcher to analyse the methylation levels of their samples
+straight away.  Its main features are:
+
+@itemize
+@item Bisulfite mapping and methylation calling in one single step
+@item Supports single-end and paired-end read alignments
+@item Supports ungapped and gapped alignments
+@item Alignment seed length, number of mismatches etc are adjustable
+@item Output discriminates between cytosine methylation in CpG, CHG
+  and CHH context
+@end itemize\n")
+    (license license:gpl3+)))

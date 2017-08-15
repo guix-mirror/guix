@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
@@ -3419,6 +3419,30 @@ objects, which execute a given code block when destroyed, and scoped guards,
 which are tied to the scope exit.")
     (license (package-license perl))))
 
+(define-public perl-hash-fieldhash
+  (package
+    (name "perl-hash-fieldhash")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                           "Hash-FieldHash-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wg8nzczfxif55j2nbymbhyd25pjy7dqs4bvd6jrcds3ll3mflaw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/Hash-FieldHash")
+    (synopsis "Lightweight field hash for inside-out objects")
+    (description "@code{Hash::FieldHash} provides the field hash mechanism
+which supports the inside-out technique.  It is an alternative to
+@code{Hash::Util::FieldHash} with a simpler interface, higher performance, and
+relic support.")
+    (license (package-license perl))))
+
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
@@ -5742,6 +5766,27 @@ can also be useful as a development and debugging tool for catching updates to
 variables that should not be changed.")
     (license (package-license perl))))
 
+(define-public perl-ref-util-xs
+  (package
+    (name "perl-ref-util-xs")
+    (version "0.116")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Ref-Util-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l5dzbd71iclv8fdjk7685rq6pbfiiydh0n70br6g9l9iy2smr6f"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Ref-Util-XS")
+    (synopsis "XS implementation for Ref::Util")
+    (description "@code{Ref::Util::XS} is the XS implementation of
+@code{Ref::Util}, which provides several functions to help identify references
+in a more convenient way than the usual approach of examining the return value
+of @code{ref}.")
+    (license x11)))
+
 (define-public perl-regexp-common
   (package
     (name "perl-regexp-common")
@@ -5766,6 +5811,27 @@ codes.")
                               "Regexp-Common-" version))
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
+
+(define-public perl-regexp-util
+  (package
+    (name "perl-regexp-util")
+    (version "0.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Regexp-Util-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01n1cggiflsnp9f6adkcxzkc0qpgssz60cwnyyd8mzavh2ximr5a"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Regexp-Util")
+    (synopsis "Selection of general-utility regexp subroutines")
+    (description "This package provides a selection of regular expression
+subroutines including @code{is_regexp}, @code{regexp_seen_evals},
+@code{regexp_is_foreign}, @code{regexp_is_anchored}, @code{serialize_regexp},
+and @code{deserialize_regexp}.")
+    (license (package-license perl))))
 
 (define-public perl-role-tiny
   (package
@@ -7954,6 +8020,68 @@ Tree::Simple::Visitor::* objects.")
 that are designed to minimize common mistakes with eval blocks, and nothing
 else.")
     (license x11)))
+
+(define-public perl-type-tie
+  (package
+    (name "perl-type-tie")
+    (version "0.009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Type-Tie-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv32kd7gx4kfyvzs13y029f49qbbji991wawvarac7rlz09wpan"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-hash-fieldhash" ,perl-hash-fieldhash)))
+    (home-page "http://search.cpan.org/dist/Type-Tie")
+    (synopsis "Tie a variable to a type constraint")
+    (description "This module exports a single function: @code{ttie}.  It ties
+a variable to a type constraint, ensuring that whatever values stored in the
+variable will conform to the type constraint.  If the type constraint has
+coercions, these will be used if necessary to ensure values assigned to the
+variable conform.")
+    (license (package-license perl))))
+
+(define-public perl-type-tiny
+  (package
+    (name "perl-type-tiny")
+    (version "1.002001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Type-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p8krim8kvw123nady96fagi8sk2pj1z8jkr4r8n45ihyamfxjck"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-devel-lexalias" ,perl-devel-lexalias)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-moo" ,perl-moo)
+       ("perl-moose" ,perl-moose)
+       ("perl-mouse" ,perl-mouse)
+       ("perl-ref-util-xs" ,perl-ref-util-xs)
+       ("perl-regexp-util" ,perl-regexp-util)
+       ("perl-type-tie" ,perl-type-tie)))
+    (home-page "http://search.cpan.org/dist/Type-Tiny")
+    (synopsis "Tiny, yet Moo(se)-compatible type constraint")
+    (description "@code{Type::Tiny} is a small class for writing type
+constraints, inspired by Moose's type constraint API.  It has only one
+non-core dependency (and even that is simply a module that was previously
+distributed as part of @code{Type::Tiny} but has since been spun off), and can
+be used with Moose, Mouse and Moo (or none of the above).")
+    (license (package-license perl))))
 
 (define-public perl-types-serialiser
   (package

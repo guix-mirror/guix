@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -52,6 +52,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public libsodium
@@ -437,3 +438,128 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 
 (define-public python2-asn1crypto
   (package-with-python2 python-asn1crypto))
+
+(define-public perl-math-random-isaac-xs
+  (package
+    (name "perl-math-random-isaac-xs")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JA/JAWNSY/"
+                           "Math-Random-ISAAC-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yxqqcqvj51fn7b7j5xqhz65v74arzgainn66c6k7inijbmr1xws"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC-XS")
+    (synopsis "C implementation of the ISAAC PRNG algorithm")
+    (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
+fast pseudo-random number generator.  It is suitable for applications where a
+significant amount of random data needs to be produced quickly, such as
+solving using the Monte Carlo method or for games.  The results are uniformly
+distributed, unbiased, and unpredictable unless you know the seed.
+
+This package implements the same interface as @code{Math::Random::ISAAC}.")
+    (license license:public-domain)))
+
+(define-public perl-math-random-isaac
+  (package
+    (name "perl-math-random-isaac")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JA/JAWNSY/"
+                           "Math-Random-ISAAC-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z1b3xbb3xz71h25fg6jgsccra7migq7s0vawx2rfzi0pwpz0wr7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (propagated-inputs
+     `(("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)))
+    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC")
+    (synopsis "Perl interface to the ISAAC PRNG algorithm")
+    (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
+fast pseudo-random number generator.  It is suitable for applications where a
+significant amount of random data needs to be produced quickly, such as
+solving using the Monte Carlo method or for games.  The results are uniformly
+distributed, unbiased, and unpredictable unless you know the seed.
+
+This package provides a Perl interface to the ISAAC pseudo random number
+generator.")
+    (license license:public-domain)))
+
+(define-public perl-crypt-random-source
+  (package
+    (name "perl-crypt-random-source")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Crypt-Random-Source-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00mw5m52sbz9nqp3f6axyrgcrihqxn7k8gv0vi1kvm1j1nc9g29h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-module-find" ,perl-module-find)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-type-tiny" ,perl-type-tiny)))
+    (home-page "http://search.cpan.org/dist/Crypt-Random-Source")
+    (synopsis "Get weak or strong random data from pluggable sources")
+    (description "This module provides implementations for a number of
+byte-oriented sources of random data.")
+    (license (package-license perl))))
+
+(define-public perl-math-random-secure
+  (package
+    (name "perl-math-random-secure")
+    (version "0.080001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                           "Math-Random-Secure-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dgbf4ncll4kmgkyb9fsaxn0vf2smc9dmwqzgh3259zc2zla995z"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)
+       ("perl-test-sharedfork" ,perl-test-sharedfork)
+       ("perl-test-warn" ,perl-test-warn)))
+    (inputs
+     `(("perl-crypt-random-source" ,perl-crypt-random-source)
+       ("perl-math-random-isaac" ,perl-math-random-isaac)
+       ("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)
+       ("perl-moo" ,perl-moo)))
+    (home-page "http://search.cpan.org/dist/Math-Random-Secure")
+    (synopsis "Cryptographically secure replacement for rand()")
+    (description "This module is intended to provide a
+cryptographically-secure replacement for Perl's built-in @code{rand} function.
+\"Crytographically secure\", in this case, means:
+
+@enumerate
+@item No matter how many numbers you see generated by the random number
+generator, you cannot guess the future numbers, and you cannot guess the seed.
+@item There are so many possible seeds that it would take decades, centuries,
+or millenia for an attacker to try them all.
+@item The seed comes from a source that generates relatively strong random
+data on your platform, so the seed itself will be as random as possible.
+@end enumerate\n")
+    (license license:artistic2.0)))

@@ -350,18 +350,21 @@ everything from small to very large projects with speed and efficiency.")
    (home-page "https://git-scm.com/")))
 
 ;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.12
+;; have changed in 2.12. TODO: Remove this for cgit > 1.1.
 (define-public git@2.10
   (package
     (inherit git)
-    (version "2.10.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://kernel.org/software/scm/git/git-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "02mb7yi49algsya3hnkcxdslwb6p1bi7c732z1g8kzq4hs838m7z"))))))
+    (version "2.10.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/scm/git/git-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments git)))))
 
 (define-public libgit2
   (package
@@ -921,6 +924,7 @@ machine.")
              (uri (string-append
                    "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
+             (patches (search-patches "cvs-2017-12836.patch"))
              (sha256
               (base32
                "0pjir8cwn0087mxszzbsi1gyfc6373vif96cw4q3m1x6p49kd1bq"))))

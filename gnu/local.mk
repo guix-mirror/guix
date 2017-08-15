@@ -426,6 +426,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\
+  %D%/services/audio.scm                        \
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/configuration.scm		\
@@ -481,6 +482,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/tests.scm					\
   %D%/tests/admin.scm				\
+  %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
   %D%/tests/databases.scm			\
   %D%/tests/dict.scm				\
@@ -533,6 +535,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-drop-unrar.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
+  %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
@@ -562,7 +565,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/csound-header-ordering.patch		\
   %D%/packages/patches/clucene-contribs-lib.patch               \
+  %D%/packages/patches/curl-bounds-check.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
+  %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dblatex-remove-multirow.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
@@ -573,6 +578,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/e2fsprogs-32bit-quota-warnings.patch	\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
@@ -964,7 +970,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-8379.patch			\
   %D%/packages/patches/qemu-CVE-2017-8380.patch			\
   %D%/packages/patches/qemu-CVE-2017-9524.patch			\
+  %D%/packages/patches/qemu-CVE-2017-10664.patch		\
+  %D%/packages/patches/qemu-CVE-2017-10806.patch		\
+  %D%/packages/patches/qemu-CVE-2017-10911.patch		\
   %D%/packages/patches/qemu-CVE-2017-11334.patch		\
+  %D%/packages/patches/qemu-CVE-2017-11434.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \

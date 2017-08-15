@@ -366,8 +366,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12.5")
-(define %linux-libre-hash "0kybil1h07fwl9rb0rvmp0w356hi2v1azw603r18vh9x93i8b8xi")
+(define %linux-libre-version "4.12.7")
+(define %linux-libre-hash "1sjkxkcikdgl2w5h7c5pfyqwi29g69dxp4s2z2yavw7aicc91xfq")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -376,14 +376,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.41"
-                    "1mkx7rvcny8b0yjkzd8zc53d15h1w8y75m0x6jx0dz3r9y3k0nql"
+  (make-linux-libre "4.9.43"
+                    "0fxid4xmnrcq966vz2wsb6spw3i02pvqp2hv8xfrx7dr3hfs9nrr"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.80"
-                    "1s0d7lsapghgk6jh6igx2fhzj1f6nwmvhqrl2hdwf3dx14z93mp2"
+  (make-linux-libre "4.4.82"
+                    "01bn0vn6i22hhwiqfh29m1cir1jrvz643lz13war8k9l6h0dmmwy"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -682,16 +682,17 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.4")
+    (version "1.43.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
                    name "/v" version "/"
                    name "-" version ".tar.xz"))
+             (patches (search-patches "e2fsprogs-32bit-quota-warnings.patch"))
              (sha256
               (base32
-               "092absr4vrlqrkdf9nwh4ykj40ab6hhwrkdr6sjsccd54c8z5csl"))))
+               "05ssjpmy0fpv2ik6ibm1f47wr6794nf0q50r581vygrqvsd3s7r6"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)

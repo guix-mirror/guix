@@ -59,7 +59,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.20.1")
+    (version "1.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1d1wmmwgc8pf6lk9g6lflpdxvg85wxxq650d6m30zgr85cb6d27q"))))
+                "0zll6k4xbbdsxqg53g8jddgv889g5m1xh20i03iz5a52y2bcnh55"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -123,7 +123,7 @@
        ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
-       ("libinput" ,libinput) ; elput.pc
+       ("libinput" ,libinput-minimal) ; elput.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc

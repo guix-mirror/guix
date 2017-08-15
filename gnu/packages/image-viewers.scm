@@ -54,7 +54,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.19.1")
+    (version "2.19.2")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -62,7 +62,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1d4ycmai3dpajl0bdr9i56646g4h5j1lb95jjn0nckwcddcj927c"))))
+                "0v2nwc6sk4vs855a1ncz9vxpzxvs1d5wcjz87rfbypxx7nap2al2"))))
     (build-system gnu-build-system)
     (arguments
       '(#:phases (alist-delete 'configure %standard-phases)
