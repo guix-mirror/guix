@@ -195,3 +195,24 @@ ebooks for convenient reading.")
                    license:public-domain
                    license:silofl1.1
                    license:cc-by-sa3.0))))
+
+(define-public liblinebreak
+  (package
+    (name "liblinebreak")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/vimgadgets"
+                                  "/liblinebreak/" version
+                                  "/liblinebreak-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f36dbq7nc77lln1by2n1yl050g9dc63viawhs3gc3169mavm36x"))))
+    (build-system gnu-build-system)
+    (home-page "http://vimgadgets.sourceforge.net/liblinebreak/")
+    (synopsis "Library for detecting where linebreaks are allowed in text")
+    (description "@code{liblinebreak} is an implementation of the line
+breaking algorithm as described in Unicode 6.0.0 Standard Annex 14,
+Revision 26.  It breaks lines that contain Unicode characters.  It is
+designed to be used in a generic text renderer.")
+    (license license:zlib)))
