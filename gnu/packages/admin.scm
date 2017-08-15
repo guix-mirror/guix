@@ -1793,14 +1793,14 @@ highly portable.  Great for heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0xzz1faqgm57bwlkw6sjdfbckf5hck81879zbfk18p7xn9vhvixv"))
+                "1rxlrwd817f2zl4fsc5ha43wjzfidq3yyagq4lgyi150qg36svv3"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
