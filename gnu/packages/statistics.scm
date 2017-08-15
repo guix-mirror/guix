@@ -4724,7 +4724,8 @@ multivariate analysis.")
      "The trimmed k-means clustering method by Cuesta-Albertos, Gordaliza and
 Matran (1997).  This optimizes the k-means criterion under trimming a portion
 of the points.")
-    (license license:gpl2+)))
+    ;; Any GPL version
+    (license (list license:gpl2+ license:gpl3+))))
 
 (define-public r-fpc
   (package
