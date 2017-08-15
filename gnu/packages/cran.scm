@@ -762,3 +762,25 @@ Models and Data\", a book presenting maximum likelihood estimation and related
 topics for ecologists (ISBN 978-0-691-12522-0).")
     ;; Any GPL version
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-lpsolve
+  (package
+    (name "r-lpsolve")
+    (version "5.6.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lpSolve" version))
+       (sha256
+        (base32
+         "13a9ry8xf5j1f2j6imqrxdgxqz3nqp9sj9b4ivyx9sid459irm6m"))))
+    (properties `((upstream-name . "lpSolve")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/lpSolve")
+    (synopsis "R interface to Lp_solve to solve linear/integer programs")
+    (description
+     "Lp_solve is software for solving linear, integer and mixed integer
+programs.  This implementation supplies a \"wrapper\" function in C and some R
+functions that solve general linear/integer problems, assignment problems, and
+transportation problems.")
+    (license license:lgpl2.0)))
