@@ -9319,6 +9319,35 @@ formats can be used as input to fastseg like expression set objects for
 microarrays or GRanges for sequencing data.")
     (license license:lgpl2.0+)))
 
+(define-public r-qvalue
+  (package
+    (name "r-qvalue")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "qvalue" version))
+       (sha256
+        (base32
+         "1dxdwa767a9r8n61r272ypi09qblcdfpzzwkmri74y5mbp1r3y4i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://github.com/jdstorey/qvalue")
+    (synopsis "Q-value estimation for false discovery rate control")
+    (description
+     "This package takes a list of p-values resulting from the simultaneous
+testing of many hypotheses and estimates their q-values and local @dfn{false
+discovery rate} (FDR) values.  The q-value of a test measures the proportion
+of false positives incurred when that particular test is called significant.
+The local FDR measures the posterior probability the null hypothesis is true
+given the test's p-value.  Various plots are automatically generated, allowing
+one to make sensible significance cut-offs.  The software can be applied to
+problems in genomics, brain imaging, astrophysics, and data mining.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
