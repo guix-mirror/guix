@@ -29,6 +29,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python))
 
 (define-public mate-icon-theme
@@ -240,6 +242,36 @@ configurations (profiles).")
      "Mate-session contains the MATE session manager, as well as a
 configuration program to choose applications starting on login.")
     (license license:gpl2)))
+
+(define-public libmatemixer
+  (package
+    (name "libmatemixer")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "09vyxnlnalws318gsafdfi5c6jwpp92pbafn1ddlqqds23ihk4mr"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)
+       ("pulseaudio" ,pulseaudio)
+       ("alsa-lib" ,alsa-lib)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Mixer library for the MATE desktop")
+    (description
+     "Libmatemixer is a mixer library for MATE desktop.  It provides an abstract
+API allowing access to mixer functionality available in the PulseAudio and ALSA
+sound systems.")
+    (license license:lgpl2.1)))
 
 (define-public mate-menus
   (package
