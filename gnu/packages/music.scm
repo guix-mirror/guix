@@ -3171,3 +3171,37 @@ MuseScore can also play back scores through the built-in sequencer and SoundFont
 sample library.")
     (home-page "https://musescore.org")
     (license license:gpl2)))
+
+(define-public dssi
+  (package
+    (name "dssi")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/dssi/dssi/" version
+                    "/dssi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kl1hzhb7cykzkrqcqgq1dk4xcgrcxv0jja251aq4z4l783jpj7j"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack-2" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("liblo" ,liblo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Audio plugin API for soft synths and effects")
+    (description "DSSI is a plugin API for software instruments with user
+interfaces, permitting them to be hosted in-process by audio applications.
+It is intended to be simple, GUI-toolkit-agnostic, and slightly biased
+towards familiarity with MIDI.  The DSSI distribution package contains
+a JACK/ALSA-sequencer reference host and some plugins as well as the
+specification and header.")
+    (home-page "http://dssi.sourceforge.net/")
+    ;; The DSSI interface is LGPL2.1+, some tests and examples are GPL2+.
+    ;; The vast majority of examples are in the public domain.
+    (license (list license:lgpl2.1+ license:gpl2+))))
