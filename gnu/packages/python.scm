@@ -7708,14 +7708,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1aq6ilnf2zdqshwqai4w8gmb5y6p7ip34qrjp1yb7sz77rkb501p"))))
+         "0fnck37zyvbzmccbp7w3jy27jgmij1992j5wyy3gxhw6a11b4jyh"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
