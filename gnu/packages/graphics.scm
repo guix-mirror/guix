@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -654,3 +656,33 @@ and understanding different BRDFs (and other component functions).")
 It supports sub-pixel resolutions and anti-aliasing.  It is also library for
 rendering SVG graphics.")
     (license license:gpl2+)))
+
+(define-public python-pastel
+  (package
+    (name "python-pastel")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pastel" version))
+       (sha256
+        (base32
+         "1hqbm934n5yjwn31aq8h7shrr0rcy326wrqfc856vyn0gr0sy21i"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sdispater/pastel")
+    (synopsis "Library to colorize strings in your terminal")
+    (description "Pastel is a simple library to help you colorize strings in
+your terminal.  It comes bundled with predefined styles:
+@enumerate
+@item info: green
+@item comment: yellow
+@item question: black on cyan
+@item error: white on red
+@end enumerate
+")
+    (license license:expat)))
+
+(define-public python2-pastel
+  (package-with-python2 python-pastel))
