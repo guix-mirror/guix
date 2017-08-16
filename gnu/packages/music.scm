@@ -3198,3 +3198,97 @@ specification and header.")
     ;; The DSSI interface is LGPL2.1+, some tests and examples are GPL2+.
     ;; The vast majority of examples are in the public domain.
     (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public rosegarden
+  (package
+    (name "rosegarden")
+    (version "17.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/rosegarden/rosegarden/"
+                    version "/rosegarden-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1khfcj22asdhjh0jvhkqsz200wgmigkhsrcz09ffia5hqm0n32lq"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DUSE_QT5=1") ; "-DCMAKE_BUILD_TYPE=Release"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("BUILD_TESTING OFF") "BUILD_TESTING ON")
+               ;; Make tests work.
+               ((" -fvisibility=hidden") ""))
+             #t))
+         (add-after 'unpack 'fix-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/gui/general/ProjectPackager.cpp"
+               (("\"flac\\>")
+                (string-append "\"" (assoc-ref inputs "flac") "/bin/flac"))
+               (("\"wavpack\\>")
+                (string-append "\"" (assoc-ref inputs "wavpack") "/bin/wavpack"))
+               (("\"wvunpack\\>")
+                (string-append "\"" (assoc-ref inputs "wavpack") "/bin/wvunpack"))
+               (("\"bash\\>")
+                (string-append "\"" (assoc-ref inputs "bash") "/bin/bash"))
+               (("\"tar\\>")
+                (string-append "\"" (assoc-ref inputs "tar") "/bin/tar")))
+             (substitute* "src/gui/general/LilyPondProcessor.cpp"
+               (("\"convert-ly\\>")
+                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/convert-ly"))
+               (("\"lilypond\\>")
+                (string-append "\"" (assoc-ref inputs "lilypond") "/bin/lilypond")))
+             #t))
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; Prevent Last-Modified from being written.
+             ;; The "*.qm" files that are used in locale.qrc would have a new
+             ;; mtime otherwise that is written into qrc_locale.cpp in the
+             ;; end - except when we disable it.
+             (substitute* "src/CMakeLists.txt"
+               (("COMMAND [$][{]QT_RCC_EXECUTABLE[}]")
+                "COMMAND ${QT_RCC_EXECUTABLE} --format-version 1")
+               ;; Extraneous.
+               ;(("qt5_add_resources[(]rg_SOURCES ../data/data.qrc[)]")
+               ; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
+                )
+             ;; Make hashtable traversal order predicable.
+             (setenv "QT_RCC_TEST" "1") ; important
+             #t))
+         (add-before 'check 'prepare-check
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             ;; Tests create files in $HOME/.local/share/rosegarden .
+             (mkdir-p "/tmp/foo")
+             (setenv "HOME" "/tmp/foo")
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("bash" ,bash)
+       ("dssi" ,dssi)
+       ("flac" ,flac)
+       ("fftwf" ,fftwf)
+       ("jack-2" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("libsamplerate" ,libsamplerate)
+       ("lilypond" ,lilypond)
+       ("lrdf" ,lrdf)
+       ("qtbase" ,qtbase)
+       ("tar" ,tar)
+       ("lirc" ,lirc)
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
+    (synopsis "Music composition and editing environment based around a MIDI
+sequencer")
+    (description "Rosegarden is a music composition and editing environment
+based around a MIDI sequencer that features a rich understanding of music
+notation and includes basic support for digital audio.")
+    (home-page "http://www.rosegardenmusic.com/")
+    (license license:gpl2)))
