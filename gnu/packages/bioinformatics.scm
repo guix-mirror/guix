@@ -8812,7 +8812,8 @@ proteomics packages.")
     (properties `((upstream-name . "mzR")))
     (build-system r-build-system)
     (inputs
-     `(("netcdf" ,netcdf)))
+     `(("boost" ,boost)
+       ("netcdf" ,netcdf)))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
