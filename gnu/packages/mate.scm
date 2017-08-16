@@ -25,10 +25,12 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
@@ -36,6 +38,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages documentation)
@@ -749,4 +752,60 @@ window frames.  It is aimed at non-technical users and is designed to integrate
 well with the MATE desktop.  It lacks some features that may be expected by
 some users; these users may want to investigate other available window managers
 for use with MATE or as a standalone window manager.")
+    (license license:gpl2+)))
+
+(define-public mate
+  (package
+    (name "mate")
+    (version (package-version mate-desktop))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . directories) ...)
+            (union-build (assoc-ref %outputs "out")
+                         directories))))))
+    (inputs
+     ;; TODO: Add more packages
+     `(("at-spi2-core"              ,at-spi2-core)
+       ("caja"                      ,caja)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("desktop-file-utils"        ,desktop-file-utils)
+       ("font-cantarell"            ,font-cantarell)
+       ("glib-networking"           ,glib-networking)
+       ("gnome-keyring"             ,gnome-keyring)
+       ("gvfs"                      ,gvfs)
+       ("libmatekbd"                ,libmatekbd)
+       ("libmateweather"            ,libmateweather)
+       ("libmatemixer"              ,libmatemixer)
+       ("marco"                     ,marco)
+       ("mate-session-manager"      ,mate-session-manager)
+       ("mate-settings-daemon"      ,mate-settings-daemon)
+       ("mate-desktop"              ,mate-desktop)
+       ("mate-terminal"             ,mate-terminal)
+       ("mate-themes"               ,mate-themes)
+       ("mate-icon-theme"           ,mate-icon-theme)
+       ("mate-menu"                 ,mate-menus)
+       ("mate-panel"                ,mate-panel)
+       ("mate-control-center"       ,mate-control-center)
+       ("mate-media"                ,mate-media)
+       ("mate-applets"              ,mate-applets)
+       ("pinentry-gnome3"           ,pinentry-gnome3)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
+    (synopsis "The MATE desktop environment")
+    (home-page "https://mate-desktop.org/")
+    (description
+     "The MATE Desktop Environment is the continuation of GNOME 2.  It provides
+an intuitive and attractive desktop environment using traditional metaphors for
+GNU/Linux systems.  MATE is under active development to add support for new
+technologies while preserving a traditional desktop experience.")
     (license license:gpl2+)))
