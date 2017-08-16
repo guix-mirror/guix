@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@
     (version "1.18.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
@@ -52,7 +53,7 @@
        ("intltool" ,intltool)
        ("gtk+" ,gtk+)
        ("icon-naming-utils" ,icon-naming-utils)))
-    (home-page "http://mate-desktop.org/")
+    (home-page "https://mate-desktop.org/")
     (synopsis "The MATE desktop environment icon theme")
     (description
      "This package contains the default icon theme used by the MATE desktop.")
@@ -64,7 +65,7 @@
     (version "3.22.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/themes/"
+              (uri (string-append "https://pub.mate-desktop.org/releases/themes/"
                                   (version-major+minor version) "/mate-themes-"
                                   version ".tar.xz"))
               (sha256
@@ -79,7 +80,7 @@
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk-engines" ,gtk-engines)
        ("murrine" ,murrine)))
-    (home-page "http://mate-desktop.org/")
+    (home-page "https://mate-desktop.org/")
     (synopsis
      "Official themes for the MATE desktop")
     (description
@@ -95,7 +96,7 @@ themes for both gtk+-2 and gtk+-3.")
     (version "1.18.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
@@ -115,7 +116,7 @@ themes for both gtk+-2 and gtk+-3.")
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
      `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
-    (home-page "http://mate-desktop.org/")
+    (home-page "https://mate-desktop.org/")
     (synopsis "Library with common API for various MATE modules")
     (description
      "This package contains a public API shared by several applications on the
@@ -128,7 +129,7 @@ desktop and the mate-about program.")
     (version "1.18.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
@@ -163,7 +164,7 @@ desktop and the mate-about program.")
       ;; both of these are requires.private in mateweather.pc
      `(("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
-    (home-page "http://mate-desktop.org/")
+    (home-page "https://mate-desktop.org/")
     (synopsis "MATE library for weather information from the Internet")
     (description
      "This library provides access to weather information from the internet for
@@ -176,7 +177,7 @@ the MATE desktop environment.")
     (version "1.18.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://pub.mate-desktop.org/releases/"
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
@@ -203,7 +204,7 @@ the MATE desktop environment.")
     (inputs
      `(("glib" ,glib)
        ("python" ,python-2)))
-    (home-page "http://mate-desktop.org/")
+    (home-page "https://mate-desktop.org/")
     (synopsis "Freedesktop menu specification implementation for MATE")
     (description
      "The package contains an implementation of the freedesktop menu
