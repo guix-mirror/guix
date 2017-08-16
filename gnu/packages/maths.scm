@@ -585,6 +585,14 @@ computations.")
        #:configure-flags '("--enable-shared")
        #:phases
        (modify-phases %standard-phases
+         ;; This is inspired by two of Debian's patches.
+         (add-before 'configure 'add-more-aarch64-support
+           (lambda _
+             (substitute* '("mfhdf/ncgen/ncgen.l"
+                            "mfhdf/ncgen/ncgenyy.c"
+                            "mfhdf/libsrc/netcdf.h.in")
+               (("AIX5L64") "__aarch64__"))
+             #t))
          (add-before 'configure 'patchbuild
            (lambda _
              (substitute*
@@ -596,7 +604,8 @@ computations.")
 -R\\$\\(abs_top_builddir\\)/mfhdf/xdr/\\.libs") "")
                (("@HDF_BUILD_SHARED_TRUE@AM_LDFLAGS = \
 -R\\$\\(abs_top_builddir\\)/mfhdf/libsrc/\\.libs \
--R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") "")))))))
+-R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") ""))
+             #t)))))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
