@@ -55,6 +55,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libidn)
