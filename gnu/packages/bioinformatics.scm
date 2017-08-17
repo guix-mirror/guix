@@ -8668,6 +8668,52 @@ CopywriteR constitutes a widely applicable alternative to available copy
 number detection tools.")
     (license license:gpl2)))
 
+(define-public r-methylkit
+  (package
+    (name "r-methylkit")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "methylKit" version))
+              (sha256
+               (base32
+                "02acdjf6jl0c1glymin84pdna4farn4vv0gb6107d9iqz3y3gkmm"))))
+    (properties `((upstream-name . "methylKit")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-emdbook" ,r-emdbook)
+       ("r-fastseg" ,r-fastseg)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-limma" ,r-limma)
+       ("r-mclust" ,r-mclust)
+       ("r-qvalue" ,r-qvalue)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://code.google.com/p/methylkit/")
+    (synopsis
+     "DNA methylation analysis from high-throughput bisulfite sequencing results")
+    (description
+     "MethylKit is an R package for DNA methylation analysis and annotation
+from high-throughput bisulfite sequencing.  The package is designed to deal
+with sequencing data from @dfn{Reduced representation bisulfite
+sequencing} (RRBS) and its variants, but also target-capture methods and whole
+genome bisulfite sequencing.  It also has functions to analyze base-pair
+resolution 5hmC data from experimental protocols such as oxBS-Seq and
+TAB-Seq.")
+    (license license:artistic2.0)))
+
 (define-public r-sva
   (package
     (name "r-sva")
