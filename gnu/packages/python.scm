@@ -3607,15 +3607,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.25.2")
+    (version "0.26")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
-       (patches (search-patches "python-cython-fix-tests-32bit.patch"))
        (sha256
         (base32
-         "01h3lrf6d98j07iakifi81qjszh6faa37ibx7ylva1vsqbwx2hgi"))))
+         "0riciynnr0r68cvg6r3gbhi9x7h44pdwb7926m6n5vfs5p1f492c"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3626,7 +3625,7 @@ is designed to have a low barrier to entry.")
        (modify-phases %standard-phases
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
-           (lambda _ (setenv "HOME" "/tmp")))
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'check
            (lambda _ (zero? (system* "python" "runtests.py" "-vv")))))))
     (home-page "http://cython.org/")
