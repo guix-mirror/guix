@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -396,7 +397,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.25")
+    (version "10.1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -404,7 +405,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mm0n8sl6grajk5rbrx55333laz5dg2abyl8mlsn7h8vdymfq1bj"))))
+                "0ggpdcal0if9y6h9hp1yv2q65cbkjfl4p8rqk68a5pk7k75v325s"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
