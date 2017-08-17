@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "870e8d6ad3415ac61c52e57095fcc6164023a0fc")
-        (revision "6"))
+  (let ((commit "6f85bc04f31ae5853ceaa0bb3e1dedfe8412a189")
+        (revision "7"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -199,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0lp5a5p42k7lml15lbmmd7az9i0gw5kips3sh3awd2z79h0w2knw"))))
+                  "1dglsa23z21m1s70420ar73qmg39fvdvwlz9xjz6lfp5s9mgzx15"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -223,7 +224,8 @@ their dependencies.")
                (let* ((out    (assoc-ref outputs "out"))
                       (json   (assoc-ref inputs "guile-json"))
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
-                      (git    (assoc-ref inputs "git"))
+                      (git    (assoc-ref inputs "guile-git"))
+                      (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (guix   (assoc-ref inputs "guix"))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
@@ -232,15 +234,18 @@ their dependencies.")
                                               "-c" "(display (effective-version))")))
                       (mods   (string-append json "/share/guile/site/"
                                              effective ":"
+                                             git "/share/guile/site/"
+                                             effective ":"
+                                             bytes "/share/guile/site/"
+                                             effective ":"
                                              sqlite "/share/guile/site/"
                                              effective ":"
                                              guix "/share/guile/site/"
                                              effective)))
-                 ;; Make sure 'cuirass' can find the 'git' and 'evaluate'
-                 ;; commands, as well as the relevant Guile modules.
+                 ;; Make sure 'cuirass' can find the 'evaluate' command, as
+                 ;; well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
-                   `("PATH" ":" prefix (,(string-append out "/bin")
-                                        ,(string-append git "/bin")))
+                   `("PATH" ":" prefix (,(string-append out "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
                  #t))))))
@@ -248,8 +253,11 @@ their dependencies.")
        `(("guile" ,guile-2.2)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
-         ("guix" ,guix)
-         ("git" ,git)))
+         ("guile-git" ,guile-git)
+         ;; FIXME: this is propagated by "guile-git", but it needs to be among
+         ;; the inputs to add it to GUILE_LOAD_PATH.
+         ("guile-bytestructures" ,guile-bytestructures)
+         ("guix" ,guix)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
