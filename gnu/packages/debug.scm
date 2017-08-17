@@ -175,7 +175,7 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.15b")             ;It seems all releases have the 'b' suffix
+      (version "2.49b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method url-fetch)
@@ -183,7 +183,7 @@ tools that process C/C++ code.")
                              "afl-" version ".tgz"))
          (sha256
           (base32
-           "04n2jfkchpz6a07w694b0im1vcmc3220ryqcaasa7vix7784wzs2"))))
+           "1lc8mpwlbyb1iil9961yfysp8l2l4nw0s07781m1haiz4jq2rigp"))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
