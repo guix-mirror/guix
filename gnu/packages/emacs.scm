@@ -5447,3 +5447,47 @@ key.  Optionally, a mouse pop-up can be added by binding
 version of Idris, and some features may rely on the latest Git version of
 Idris.")
     (license license:gpl3+)))
+
+(define-public emacs-browse-at-remote
+  (let ((commit "b5cff7971ca8bbb966e3acd9b7e5c4c007f94215")
+        (revision "1"))
+    (package
+      (name "emacs-browse-at-remote")
+      (version (string-append "0.9.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rmuslimov/browse-at-remote.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "16ms9703m15dfxg6ap4mdw7msf8z5rzsdhba51dwivfpjxg7n52c"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'check
+             (lambda* (#:key inputs #:allow-other-keys)
+               (zero? (system* "emacs" "--batch" "-L" "."
+                               "-L" (string-append
+                                     (assoc-ref inputs "emacs-f")
+                                     "/share/emacs/site-lisp/guix.d/f-"
+                                     ,(package-version emacs-f))
+                               "-L" (string-append
+                                     (assoc-ref inputs "emacs-s")
+                                     "/share/emacs/site-lisp/guix.d/s-"
+                                     ,(package-version emacs-s))
+                               "-l" "test/api-basic-test.el"
+                               "-f" "ert-run-tests-batch-and-exit")))))))
+      (home-page "https://github.com/rmuslimov/browse-at-remote")
+      (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
+      (description
+       "This Emacs package allows you to open a target page on
+github/gitlab (or bitbucket) by calling @code{browse-at-remote} command.
+It supports dired buffers and opens them in tree mode at destination.")
+      (license license:gpl3+))))
