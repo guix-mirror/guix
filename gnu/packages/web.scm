@@ -4697,7 +4697,7 @@ command-line arguments or read from stdin.")
 (define-public python-internetarchive
   (package
     (name "python-internetarchive")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
@@ -4706,7 +4706,7 @@ command-line arguments or read from stdin.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00v1489rv1ydcihwbdl7sqpcpmm98b9kqqlfggr32k0ndmv7ivas"))))
+         "1lj4r0y67mwjns2gcjvw0y7m5x0vqir2iv7s4q2y93492azli1qh"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; 11 tests of 105 fail to mock "requests".
