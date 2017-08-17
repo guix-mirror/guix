@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -66,7 +66,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -480,30 +482,31 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.7")
-    (synopsis "Network traffic analyzer")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
-                           version ".tar.bz2"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "1dfvhra5v6xhzbp097qsxi0zvirw0srbasl4v1wjf58v49idz7b8"))))
-    (build-system glib-or-gtk-build-system)
-    (inputs `(("bison" ,bison)
-              ("c-ares" ,c-ares)
-              ("flex" ,flex)
+         "011vvrj76z1azkpvyy2j40b1x1z56ymld508zfc4xw3gh8dv82w9"))))
+    (build-system gnu-build-system)
+    (inputs `(("c-ares" ,c-ares)
+              ("glib" ,glib)
               ("gnutls" ,gnutls)
-              ("gtk+" ,gtk+)
               ("libcap" ,libcap)
               ("libgcrypt" ,libgcrypt)
               ("libnl" ,libnl)
               ("libpcap" ,libpcap)
-              ("lua" ,lua-5.2)
+              ("libssh" ,libssh)
+              ("libxml2" ,libxml2)
+              ("lua" ,lua-5.2)          ;Lua 5.3 unsupported
               ("krb5" ,mit-krb5)
               ("openssl" ,openssl)
               ("portaudio" ,portaudio)
+              ("qtbase" ,qtbase)
+              ("qttools" ,qttools)
               ("sbc" ,sbc)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
@@ -514,19 +517,21 @@ which can be used to encrypt a password with @code{crypt(3)}.")
        (list (string-append "--with-c-ares=" (assoc-ref %build-inputs "c-ares"))
              (string-append "--with-krb5=" (assoc-ref %build-inputs "krb5"))
              (string-append "--with-libcap=" (assoc-ref %build-inputs "libcap"))
+             (string-append "--with-libssh=" (assoc-ref %build-inputs "libssh"))
              (string-append "--with-lua=" (assoc-ref %build-inputs "lua"))
              (string-append "--with-pcap=" (assoc-ref %build-inputs "libpcap"))
              (string-append "--with-portaudio="
-                             (assoc-ref %build-inputs "portaudio"))
+                            (assoc-ref %build-inputs "portaudio"))
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
              (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib"))
-             "--without-qt")))
+             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
+    (home-page "https://www.wireshark.org/")
+    (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
 network frames.")
-    (license license:gpl2+)
-    (home-page "https://www.wireshark.org/")))
+    (home-page "https://www.wireshark.org/")
+    (license license:gpl2+)))
 
 (define-public fping
   (package
