@@ -83,6 +83,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
@@ -2960,6 +2961,64 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
     ;; - icarus/icarus.cpp
     ;; - higan/emulator/emulator.hpp
     (license license:gpl3)))
+
+(define-public mgba
+  (package
+    (name "mgba")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01zy2w5pihlkrmbm51icgyff6iqyqa5ha6qrm4aj8ibzznz03kyq"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(for-each
+                 (lambda (subdir)
+                   (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                     (delete-file-recursively lib-subdir)))
+                 '("libpng" "lzma" "sqlite3" "zlib")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no "test" target
+       #:configure-flags
+       (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
+             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
+             ;; Validate RUNPATH phase fails ("error: depends on
+             ;; 'libmgba.so.0.6', which cannot be found in RUNPATH") without
+             ;; the following S-exp.
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out")
+                            "/lib"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ffmpeg" ,ffmpeg)
+              ("imagemagick" ,imagemagick)
+              ("libedit" ,libedit)
+              ("libepoxy" ,libepoxy)
+              ("libpng" ,libpng)
+              ("mesa" ,mesa)
+              ("minizip" ,minizip)
+              ("ncurses" ,ncurses)
+              ("qtbase" ,qtbase)
+              ("qtmultimedia" ,qtmultimedia)
+              ("qttools" ,qttools)
+              ("sdl2" ,sdl2)
+              ("sqlite" ,sqlite)
+              ("zlib" ,zlib)))
+    (home-page "https://mgba.io")
+    (synopsis "Game Boy Advance emulator")
+    (description
+     "mGBA is an emulator for running Game Boy Advance games.  It aims to be
+faster and more accurate than many existing Game Boy Advance emulators, as
+well as adding features that other emulators lack.  It also supports Game Boy
+and Game Boy Color games.")
+    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
+    ;; BSD-3.
+    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
 
 (define-public grue-hunter
   (package
