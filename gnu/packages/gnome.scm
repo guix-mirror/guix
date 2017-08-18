@@ -3375,7 +3375,7 @@ GNOME Games, but it may be used by others.")
   (package
     (inherit libgames-support)
     (name "libgnome-games-support")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3383,7 +3383,7 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rsyf5hbjim7zpk1yar3gv65g1nmw6zbbc0smrmxsfk0f9n3j9m6"))))))
+                "04qbgcgmc01sinhbqdljiny8q868l01nkdawj8wrnqnd1i8czvsg"))))))
 
 (define-public gnome-klotski
   (package
