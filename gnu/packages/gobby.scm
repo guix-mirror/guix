@@ -101,7 +101,7 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
 (define-public gobby
   (package
     (name "gobby")
-    (version "0.4.13")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.0x539.de/gobby/gobby-"
@@ -109,21 +109,28 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w8q01lf6bcdz537b29m7rwlbc7k87b12vnpm1h6219ypvzqkgcc"))))
+                "165x0r668ma5blziisvbr8qig3jw9hf7i6w8r7wwvz3wsac3bswc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
-     `(("libxml++-2" ,libxml++-2)
-       ("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls)
+       ("gsasl" ,gsasl)
        ("gtkmm-2" ,gtkmm-2)
        ("gtksourceview-2" ,gtksourceview-2)
-       ("libnet6" ,libnet6)
-       ("obby" ,obby)))
+       ("libinfinity" ,libinfinity)
+       ("libxml++-2" ,libxml++-2)))
     (arguments
      ;; Required by libsigc++.
-     `(#:configure-flags '("CXXFLAGS=-std=c++11")))
+     `(#:configure-flags '("CXXFLAGS=-std=c++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion (assoc-ref outputs "out")
+               (rename-file "bin/gobby-0.5" "bin/gobby"))
+             #t)))))
     (home-page "https://gobby.github.io/")
     (synopsis "Collaborative editor")
     (description
