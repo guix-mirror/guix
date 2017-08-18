@@ -697,7 +697,7 @@ OpenSSL libraries).")
 (define-public perl-crypt-openssl-bignum
  (package
   (name "perl-crypt-openssl-bignum")
-  (version "0.06")
+  (version "0.08")
   (source
     (origin
       (method url-fetch)
@@ -707,7 +707,7 @@ OpenSSL libraries).")
              ".tar.gz"))
       (sha256
         (base32
-          "05yzrdglrrzp191krf77zrwfkmzrfwrsrx1vyskbj94522lszk67"))))
+          "0gamn4dff1bz77nswacy1dlpn9fkwahzw7yvvik4nbwwy2s63hc8"))))
   (build-system perl-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
