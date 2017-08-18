@@ -26,7 +26,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -86,6 +88,9 @@ to remotely control a user's Windows desktop.")
       (build-system cmake-build-system)
       (native-inputs
        `(("pkg-config" ,pkg-config)
+         ("libxslt" ,libxslt)
+         ("libxml2" ,libxml2)
+         ("docbook-xsl" ,docbook-xsl)
          ("xmlto" ,xmlto)))
       (inputs
        `(("libx11" ,libx11)
@@ -98,21 +103,29 @@ to remotely control a user's Windows desktop.")
          ("libxrender" ,libxrender)
          ("libxinerama" ,libxinerama)
          ("libxshmfence" ,libxshmfence)
-         ("libxml2" ,libxml2)
-         ("libxslt" ,libxslt)
          ("cups" ,cups)
          ("ffmpeg" ,ffmpeg-2.8)
+         ("libjpeg" ,libjpeg)
          ("pulseaudio" ,pulseaudio)
          ("alsa-lib" ,alsa-lib)
-         ("gstreamer" ,gstreamer)
-         ("gst-plugins-base" ,gst-plugins-base)
          ("zlib" ,zlib)
          ("openssl" ,openssl)))
       (arguments
        `(#:configure-flags
-         '("-DCMAKE_INSTALL_LIBDIR=lib"
-           "-DWITH_PULSE=ON"
-           "-DWITH_CUPS=ON")
+         (list "-DCMAKE_INSTALL_LIBDIR=lib"
+               "-DCMAKE_BUILD_TYPE=RELEASE"
+               "-DWITH_JPEG=ON"
+               ,@(if (string-prefix? "x86_64"
+                                     (or (%current-target-system)
+                                         (%current-system)))
+                     '("-DWITH_SSE2=ON")
+                     '())
+               (string-append "-DDOCBOOKXSL_DIR="
+                              (assoc-ref %build-inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl))
+               "-DWITH_PULSE=ON"
+               "-DWITH_CUPS=ON")
          #:tests? #f))                              ; no 'test' target
       (home-page "https://www.freerdp.com")
       (synopsis "Remote Desktop Protocol implementation")
