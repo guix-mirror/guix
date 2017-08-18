@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -129,3 +131,35 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
 a multi-user chat.  Gobby allows multiple users to edit the same document
 together over the internet in real-time.")
     (license license:gpl2+)))
+
+(define-public libinfinity
+  (package
+    (name "libinfinity")
+    (version "0.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.0x539.de/libinfinity/libinfinity-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0nylsb6qz9pjw3agjp27c4za205i6zg6i5g1vgs5vbdnbh77wkhc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gsasl" ,gsasl)
+       ("gtk+" ,gtk+-2)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags (list "--with-inftextgtk"
+                               "--with-infgtk")))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Infininote protocol implementation")
+    (description "libinfinity is a library to build collaborative text
+editors.  Changes to the text buffers are synced to all other clients over a
+central server.  Even though a central server is involved, the local user sees
+his changes applied instantly and the merging is done on the individual
+clients.")
+    (license license:lgpl2.1+)))
