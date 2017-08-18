@@ -3198,7 +3198,8 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1g2r6gxqrmjdff95d42msxdw6vmkg2zn5sqv0rxd420iwy8wdwyh"))))
+           "1g2r6gxqrmjdff95d42msxdw6vmkg2zn5sqv0rxd420iwy8wdwyh"))
+        (patches (search-patches "xf86-video-siliconmotion-fix-ftbfs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
