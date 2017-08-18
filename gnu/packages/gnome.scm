@@ -5289,7 +5289,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5297,7 +5297,7 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xp2ccmdrvzlczsrcplykwqwx2v4lbmkr0rxyylb06danlw9mivh"))))
+                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
