@@ -2906,3 +2906,29 @@ code, used in @code{libtoxcore}.")
 06.10 RPE-LTP lossy speech compression algorithm.")
     (home-page "http://quut.com/gsm/")
     (license (license:non-copyleft "file://COPYRIGHT"))))
+
+(define-public python-pyalsaaudio
+  (package
+    (name "python-pyalsaaudio")
+    (version "0.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyalsaaudio" version))
+              (sha256
+               (base32
+                "1180ypn9596rq4b7y7dyv627j1q0fqilmkkrckclnzsdakdgis44"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                   ; tests require access to ALSA devices.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (home-page "http://larsimmisch.github.io/pyalsaaudio/")
+    (synopsis "ALSA wrappers for Python")
+    (description
+     "This package contains wrappers for accessing the ALSA API from Python.
+It is currently fairly complete for PCM devices, and has some support for
+mixers.")
+    (license license:psfl)))
+
+(define-public python2-pyalsaaudio
+  (package-with-python2 python-pyalsaaudio))
