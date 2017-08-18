@@ -3335,45 +3335,8 @@ write applications that need to store structured data as well as make complex
 queries upon that data.")
     (license license:lgpl2.1+)))
 
-(define-public libgames-support
-  (package
-    (name "libgames-support")
-    (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0rms2ksiv7j9944km7r87q22nh05si1fisn5xm3z4zy5vpcfi5mh"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; tests require a writable HOME.
-             (setenv "HOME" (getcwd))
-             #t)))))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
-    (propagated-inputs
-     ;; Required by libgames-support-1.0.pc
-     `(("gtk+" ,gtk+)
-       ("libgee" ,libgee)))
-    (home-page "https://www.gnome.org/")
-    (synopsis "Useful functionality shared among GNOME games")
-    (description
-     "libgames-support is a small library intended for internal use by
-GNOME Games, but it may be used by others.")
-    (license license:lgpl3+)))
-
 (define-public libgnome-games-support
   (package
-    (inherit libgames-support)
     (name "libgnome-games-support")
     (version "1.2.2")
     (source (origin
@@ -3383,7 +3346,30 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04qbgcgmc01sinhbqdljiny8q868l01nkdawj8wrnqnd1i8czvsg"))))))
+                "04qbgcgmc01sinhbqdljiny8q868l01nkdawj8wrnqnd1i8czvsg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a writable HOME.
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     ;; Required by libgnome-games-support-1.0.pc
+     `(("gtk+" ,gtk+)
+       ("libgee" ,libgee)))
+    (home-page "https://www.gnome.org/")
+    (synopsis "Useful functionality shared among GNOME games")
+    (description
+     "libgnome-games-support is a small library intended for internal use by
+GNOME Games, but it may be used by others.")
+    (license license:lgpl3+)))
 
 (define-public gnome-klotski
   (package
