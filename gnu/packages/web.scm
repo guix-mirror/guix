@@ -2806,7 +2806,7 @@ HTTP/1.1.")
 (define-public perl-net-server
   (package
     (name "perl-net-server")
-    (version "2.008")
+    (version "2.009")
     (source
      (origin
        (method url-fetch)
@@ -2814,7 +2814,7 @@ HTTP/1.1.")
                            "Net-Server-" version ".tar.gz"))
        (sha256
         (base32
-         "182gfikn7r40kmm3d35m2qc6r8g0y1j8gxbn9ffaawf8xmm0a889"))))
+         "0gw1k9gcw7habbkxvsfa2gz34brlbwcidk6khgsf1qjm0dbccrw2"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Net-Server")
     (synopsis "Extensible Perl server engine")
