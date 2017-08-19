@@ -679,6 +679,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-12935.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
