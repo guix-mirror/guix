@@ -2976,6 +2976,8 @@ required.")
         (base32
          "1zmsccdy6wr5hxzj07r1nsmaymyibk87p95z0wzknjw10lwmqs9f"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
     (home-page "http://search.cpan.org/dist/Plack-Middleware-ReverseProxy")
