@@ -3276,7 +3276,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.73")
+    (version "1.86")
     (source
      (origin
        (method url-fetch)
@@ -3284,13 +3284,18 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1zrw8aadhwy48q51x2z2rqlkwf17bya4j4h3hy89mw783j96rmg9"))))
+         "0sfl6b7mx8nannnh3ys5jk44d1s1b2d1mffrnrphkzzykaw6hm0f"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
-     `(("perl-cgi" ,perl-cgi)))
+     `(("perl-cgi" ,perl-cgi)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-output" ,perl-test-output)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-html-form" ,perl-html-form)
        ("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tree" ,perl-html-tree)
        ("perl-http-message" ,perl-http-message)
        ("perl-http-server-simple" ,perl-http-server-simple)
        ("perl-libwww" ,perl-libwww)
