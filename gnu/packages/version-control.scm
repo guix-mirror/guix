@@ -552,6 +552,44 @@ collaboration using typical untrusted file hosts or services.")
 a built-in cache to decrease server I/O pressure.")
     (license license:gpl2)))
 
+(define-public python-ghp-import
+  (package
+    (name "python-ghp-import")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/davisp/ghp-import/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x887v690xsac2hzjkpbvp3a6crh3m08mqbk3nb4xwc9dnk869q7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-documentation
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (doc (string-append out "/share/doc"))
+                             (licenses (string-append out "/share/licenses")))
+                        (install-file "README.md" doc)
+                        (install-file "LICENSE" licenses)))))))
+    (home-page "https://github.com/davisp/ghp-import")
+    (synopsis "Copy directory to the gh-pages branch")
+    (description "Script that copies a directory to the gh-pages branch (by
+default) of the repository.")
+
+    ;; See <https://bugs.gnu.org/27913>.
+    (license (license:non-copyleft
+              "https://raw.githubusercontent.com/davisp/ghp-import/master/LICENSE"
+              "Tumbolia Public License"))))
+
+(define-public python2-ghp-import
+  (package-with-python2
+   (strip-python2-variant python-ghp-import)))
+
 (define-public shflags
   (package
     (name "shflags")
