@@ -4972,7 +4972,7 @@ prevent name clashes between packages.")
 (define-public perl-moosex-types-datetime
   (package
     (name "perl-moosex-types-datetime")
-    (version "0.10")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -4980,7 +4980,7 @@ prevent name clashes between packages.")
                            "MooseX-Types-DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "03p66rx0qj2p23n2i2rj7c7x41621jzzaxscrpg95mb3mqmravc0"))))
+         "1iir3mdvz892kbbs2q91vjxnhas7811m3d3872m7x8gn6rka57xq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
