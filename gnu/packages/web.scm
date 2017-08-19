@@ -3280,7 +3280,7 @@ library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
