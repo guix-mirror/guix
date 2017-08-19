@@ -143,12 +143,15 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
            (arg   (or (assq-ref opts 'argument)
                       (leave (G_ "no download URI was specified~%"))))
            (uri   (or (string->uri arg)
+                      (false-if-exception
+                       (string->uri
+                        (string-append "file://" (canonicalize-path arg))))
                       (leave (G_ "~a: failed to parse URI~%")
                              arg)))
            (fetch (assq-ref opts 'download-proc))
            (path  (parameterize ((current-terminal-columns
                                   (terminal-columns)))
-                    (fetch arg
+                    (fetch (uri->string uri)
                            #:verify-certificate?
                            (assq-ref opts 'verify-certificate?))))
            (hash  (call-with-input-file

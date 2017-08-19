@@ -29,11 +29,14 @@ then false; else true; fi
 if guix download unknown://some/where;
 then false; else true; fi
 
-if guix download not/a/uri;
+if guix download /does-not-exist
 then false; else true; fi
 
 # This one should succeed.
 guix download "file://$abs_top_srcdir/README"
+
+# And this one, without the URI scheme.
+guix download "$abs_top_srcdir/README"
 
 # This one too, even if it cannot talk to the daemon.
 output="t-download-$$"
