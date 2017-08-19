@@ -8311,6 +8311,30 @@ package, and for letting R applications work on datasets that are larger than
 the available RAM.")
     (license license:artistic2.0)))
 
+(define-public r-annotationfilter
+  (package
+    (name "r-annotationfilter")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationFilter" version))
+              (sha256
+               (base32
+                "0pxvswjzwibdfmrkdragxmzcl844z73pmkn82z92wahwa6gjfyi7"))))
+    (properties
+     `((upstream-name . "AnnotationFilter")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-lazyeval" ,r-lazyeval)))
+    (home-page "https://github.com/Bioconductor/AnnotationFilter")
+    (synopsis "Facilities for filtering Bioconductor annotation resources")
+    (description
+     "This package provides classes and other infrastructure to implement
+filters for manipulating Bioconductor annotation resources.  The filters are
+used by @code{ensembldb}, @code{Organism.dplyr}, and other packages.")
+    (license license:artistic2.0)))
+
 (define-public emboss
   (package
     (name "emboss")
