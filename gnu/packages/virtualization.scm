@@ -361,7 +361,16 @@ manage system or application containers.")
            (lambda _
              (zero? (system* "make" "install"
                              "sysconfdir=/tmp/etc"
-                             "localstatedir=/tmp/var")))))))
+                             "localstatedir=/tmp/var"))))
+         (add-after 'install 'wrap-libvirtd
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/sbin/libvirtd")
+                 `("PATH" = (,(string-append (assoc-ref inputs "iproute")
+                                             "/sbin")
+                             ,(string-append (assoc-ref inputs "qemu")
+                                             "/bin"))))
+               #t))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("gnutls" ,gnutls)
