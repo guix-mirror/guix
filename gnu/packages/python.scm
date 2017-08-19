@@ -7290,7 +7290,7 @@ reading and writing MessagePack data.")
 (define-public python-netaddr
   (package
     (name "python-netaddr")
-    (version "0.7.18")
+    (version "0.7.19")
     (source
      (origin
        (method url-fetch)
@@ -7300,7 +7300,7 @@ reading and writing MessagePack data.")
              ".tar.gz"))
        (sha256
          (base32
-          "06dxjlbcicq7q3vqy8agq11ra01kvvd47j4mk6dmghjsyzyckxd1"))))
+          "1zdfadvpq4lmcqzr383gywxn4xyn355kj1n3lk9q2l03vmyfrbiq"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ;; No tests.
     (home-page "https://github.com/drkjam/netaddr/")
