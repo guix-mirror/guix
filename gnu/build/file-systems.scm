@@ -28,6 +28,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
@@ -42,7 +43,9 @@
             canonicalize-device-spec
 
             uuid->string
+            dce-uuid->string
             string->uuid
+            string->dce-uuid
             string->iso9660-uuid
             string->ext2-uuid
             string->ext3-uuid
@@ -516,7 +519,7 @@ were found."
 (define-syntax %network-byte-order
   (identifier-syntax (endianness big)))
 
-(define (uuid->string uuid)
+(define (dce-uuid->string uuid)
   "Convert UUID, a 16-byte bytevector, to its string representation, something
 like \"6b700d61-5550-48a1-874c-a3d86998990e\"."
   ;; See <https://tools.ietf.org/html/rfc4122>.
@@ -532,7 +535,7 @@ like \"6b700d61-5550-48a1-874c-a3d86998990e\"."
   ;; The regexp of a UUID.
   (make-regexp "^([[:xdigit:]]{8})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{12})$"))
 
-(define (string->uuid str)
+(define (string->dce-uuid str)
   "Parse STR as a DCE UUID (see <https://tools.ietf.org/html/rfc4122>) and
 return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
 UUID representation."
@@ -562,10 +565,44 @@ UUID representation."
                      (time-low 4) (time-mid 2) (time-hi 2)
                      (clock-seq 2) (node 6)))))))
 
-(define string->ext2-uuid string->uuid)
-(define string->ext3-uuid string->uuid)
-(define string->ext4-uuid string->uuid)
-(define string->btrfs-uuid string->uuid)
+(define string->ext2-uuid string->dce-uuid)
+(define string->ext3-uuid string->dce-uuid)
+(define string->ext4-uuid string->dce-uuid)
+(define string->btrfs-uuid string->dce-uuid)
+
+(define-syntax vhashq
+  (syntax-rules (=>)
+    ((_)
+     vlist-null)
+    ((_ (key others ... => value) rest ...)
+     (vhash-consq key value
+                  (vhashq (others ... => value) rest ...)))
+    ((_ (=> value) rest ...)
+     (vhashq rest ...))))
+
+(define %uuid-parsers
+  (vhashq
+   ('dce 'ext2 'ext3 'ext4 'btrfs 'luks => string->dce-uuid)
+   ('iso9660 => string->iso9660-uuid)))
+
+(define %uuid-printers
+  (vhashq
+   ('dce 'ext2 'ext3 'ext4 'btrfs 'luks => dce-uuid->string)
+   ('iso9660 => iso9660-uuid->string)
+   ('fat32 'fat => fat32-uuid->string)))
+
+(define* (string->uuid str #:key (type 'dce))
+  "Parse STR as a UUID of the given TYPE.  On success, return the
+corresponding bytevector; otherwise return #f."
+  (match (vhash-assq type %uuid-parsers)
+    (#f #f)
+    ((_ . (? procedure? parse)) (parse str))))
+
+(define* (uuid->string bv #:key (type 'dce))
+  "Convert BV, a bytevector, to the UUID string representation for TYPE."
+  (match (vhash-assq type %uuid-printers)
+    (#f #f)
+    ((_ . (? procedure? unparse)) (unparse bv))))
 
 
 (define* (canonicalize-device-spec spec #:optional (title 'any))
