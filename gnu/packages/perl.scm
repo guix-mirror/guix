@@ -3432,6 +3432,16 @@ which are tied to the scope exit.")
         (base32
          "1wg8nzczfxif55j2nbymbhyd25pjy7dqs4bvd6jrcds3ll3mflaw"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-leaktrace" ,perl-test-leaktrace)))
@@ -6087,6 +6097,16 @@ run from within a source-controlled directory.")
         (base32
          "17kh8nap2z5g5rqcvw0m7mvbai7wr7h0al39w8l827zhqad8ss42"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (home-page "http://search.cpan.org/dist/String-CamelCase")
     (synopsis "Camelcase and de-camelcase")
     (description "This module may be used to convert from under_score text to
