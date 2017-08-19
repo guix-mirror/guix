@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,19 +51,20 @@
   (compressor name extension command)
   compressor?
   (name       compressor-name)      ;string (e.g., "gzip")
-  (extension  compressor-extension) ;string (e.g., "lz")
+  (extension  compressor-extension) ;string (e.g., ".lz")
   (command    compressor-command))  ;gexp (e.g., #~("/gnu/store/…/gzip" "-9n"))
 
 (define %compressors
   ;; Available compression tools.
-  (list (compressor "gzip"  "gz"
+  (list (compressor "gzip"  ".gz"
                     #~(#+(file-append gzip "/bin/gzip") "-9n"))
-        (compressor "lzip"  "lz"
+        (compressor "lzip"  ".lz"
                     #~(#+(file-append lzip "/bin/lzip") "-9"))
-        (compressor "xz"    "xz"
+        (compressor "xz"    ".xz"
                     #~(#+(file-append xz "/bin/xz") "-e -T0"))
-        (compressor "bzip2" "bz2"
-                    #~(#+(file-append bzip2 "/bin/bzip2") "-9"))))
+        (compressor "bzip2" ".bz2"
+                    #~(#+(file-append bzip2 "/bin/bzip2") "-9"))
+        (compressor "none" "" #f)))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -180,7 +182,7 @@ added to the pack."
                                           (_ #f))
                                         directives)))))))))
 
-  (gexp->derivation (string-append name ".tar."
+  (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
                     #:references-graphs `(("profile" ,profile))))
@@ -245,7 +247,7 @@ the image."
                               #:compressor '#$(compressor-command compressor)
                               #:creation-time (make-time time-utc 0 1)))))
 
-  (gexp->derivation (string-append name ".tar."
+  (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
                     #:references-graphs `(("profile" ,profile))))
