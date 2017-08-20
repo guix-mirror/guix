@@ -7361,15 +7361,15 @@ a minimum of effort.")
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
-    (version "v0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EB/EBHANSSEN/"
-                           "Test-Trap-" version ".tar.gz"))
+                           "Test-Trap-v" version ".tar.gz"))
        (sha256
         (base32
-         "05b4zc4087imwphls4yksg4chzx9yavbri301gaxas9kv1yhx13w"))))
+         "0jq54pkm4s61gk8gzxglix1ff9s0m9vi6bpfv7f63lb9qq4r76rr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
