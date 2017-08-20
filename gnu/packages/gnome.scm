@@ -5663,6 +5663,37 @@ configuration system for GNOME.  It allows users to configure desktop
 software that do not provide their own configuration interface.")
     (license license:lgpl2.1+)))
 
+(define-public gnome-default-applications
+  (package
+    (name "gnome-default-applications")
+    (version "0")
+    (build-system trivial-build-system)
+    (source #f)
+    (propagated-inputs
+     `(("nautilus" ,nautilus)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (apps (string-append out "/share/applications")))
+           (mkdir-p apps)
+           (call-with-output-file (string-append apps "/defaults.list")
+             (lambda (port)
+               (format port "[Default Applications]\n")
+               (format port "inode/directory=org.gnome.Nautilus.desktop\n")))
+           #t))))
+    (synopsis "Default MIME type associations for the GNOME desktop")
+    (description
+     "Given many installed packages which might handle a given MIME type, a
+user running the GNOME desktop probably has some preferences: for example,
+that folders be opened by default by the Nautilus file manager, not the Baobab
+disk usage analyzer.  This package establishes that set of default MIME type
+associations for GNOME.")
+    (license license:gpl3+)
+    (home-page #f)))
+
 (define-public gnome
   (package
     (name "gnome")
@@ -5692,6 +5723,7 @@ software that do not provide their own configuration interface.")
        ("gnome-calculator"          ,gnome-calculator)
        ("gnome-control-center"      ,gnome-control-center)
        ("gnome-disk-utility"        ,gnome-disk-utility)
+       ("gnome-default-applications" ,gnome-default-applications)
        ("gnome-keyring"             ,gnome-keyring)
        ("gnome-online-accounts"     ,gnome-online-accounts)
        ("gnome-session"             ,gnome-session)
