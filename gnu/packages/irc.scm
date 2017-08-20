@@ -301,14 +301,14 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public limnoria
   (package
     (name "limnoria")
-    (version "2017.08.03")
+    (version "2017.08.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "limnoria" version))
        (sha256
         (base32
-         "1513a01ckzdn5qjjs2jrp3lyryx92h3j5mzc3si0vd7ayqmxhrjz"))))
+         "1hij444l45mjli8i67iyd3syf263ijj1l0cm3irqjjxv5r3f9zjj"))))
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)
