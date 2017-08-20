@@ -15987,3 +15987,25 @@ version of @code{SocksiPy} with bug fixes and extra features.")
 
 (define-public python2-pysocks
   (package-with-python2 python-pysocks))
+
+(define-public python-pyaes
+  (package
+    (name "python-pyaes")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyaes" version))
+       (sha256
+        (base32
+         "0bp9bjqy1n6ij1zb86wz9lqa1dhla8qr1d7w2kxyn7jbj56sbmcw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ricmoo/pyaes")
+    (synopsis "Implementation of AES in Python")
+    (description "This package contains a pure-Python implementation of the
+AES block cipher algorithm and the common modes of operation (CBC, CFB, CTR,
+ECB and OFB).")
+    (license license:expat)))
+
+(define-public python2-pyaes
+  (package-with-python2 python-pyaes))
