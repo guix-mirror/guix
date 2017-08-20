@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2016, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -96,6 +96,46 @@
     (description
      "Library that provides synced document buffers.  It supports multiple
 documents in one session.  Obby is used by the Gobby collaborative editor.")
+    (license license:gpl2+)))
+
+;; Although there is a newer version of Gobby defined below, the protocols are
+;; incompatible; you need Gobby 0.4 if you want to connect to servers running
+;; the 0.4 protocol.
+(define-public gobby-0.4
+  (package
+    (name "gobby")
+    (version "0.4.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://releases.0x539.de/gobby/gobby-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w8q01lf6bcdz537b29m7rwlbc7k87b12vnpm1h6219ypvzqkgcc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libxml++-2" ,libxml++-2)
+       ("gnutls" ,gnutls)
+       ("gtkmm-2" ,gtkmm-2)
+       ("gtksourceview-2" ,gtksourceview-2)
+       ("libnet6" ,libnet6)
+       ("obby" ,obby)))
+    (arguments
+     ;; Required by libsigc++.
+     `(#:configure-flags '("CXXFLAGS=-std=c++11")))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Collaborative editor")
+    (description
+     "Collaborative editor that supports multiple documents in one session and
+a multi-user chat.  Gobby allows multiple users to edit the same document
+together over the internet in real-time.
+
+This is the older 0.4 version of Gobby.  Use this version only if you need to
+connect to a server running the old 0.4 protocol.")
     (license license:gpl2+)))
 
 (define-public gobby
