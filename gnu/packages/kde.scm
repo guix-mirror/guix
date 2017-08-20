@@ -300,9 +300,14 @@ used in KDE development tools Kompare and KDevelop.")
              ;; KF5AuthConfig.cmake.in contains this already.
              (substitute* "processcore/CMakeLists.txt"
                (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")))
          (replace 'check
-           (lambda _         ;other tests require a display and therefore fail
-             (zero? (system* "ctest" "-R" "chronotest")))))))
+           (lambda _
+             ;; TODO: Fix this failing test-case
+             (zero? (system* "ctest" "-E" "processtest")))))))
     (home-page "https://www.kde.org/info/plasma-5.10.4.php")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
