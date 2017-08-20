@@ -6,7 +6,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
-;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
@@ -5687,13 +5687,19 @@ software that do not provide their own configuration interface.")
        ("gedit"                     ,gedit)
        ("glib-networking"           ,glib-networking)
        ("gnome-backgrounds"         ,gnome-backgrounds)
+       ("gnome-bluetooth"           ,gnome-bluetooth)
+       ("gnome-calculator"          ,gnome-calculator)
        ("gnome-control-center"      ,gnome-control-center)
+       ("gnome-disk-utility"        ,gnome-disk-utility)
        ("gnome-keyring"             ,gnome-keyring)
+       ("gnome-online-accounts"     ,gnome-online-accounts)
        ("gnome-session"             ,gnome-session)
        ("gnome-settings-daemon"     ,gnome-settings-daemon)
        ("gnome-shell"               ,gnome-shell)
+       ("gnome-system-monitor"      ,gnome-system-monitor)
        ("gnome-terminal"            ,gnome-terminal)
        ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gucharmap"                 ,gucharmap)
        ("gvfs"                      ,gvfs)
        ("hicolor-icon-theme"        ,hicolor-icon-theme)
        ("nautilus"                  ,nautilus)
