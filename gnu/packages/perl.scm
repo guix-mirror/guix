@@ -7372,7 +7372,8 @@ a minimum of effort.")
          "05b4zc4087imwphls4yksg4chzx9yavbri301gaxas9kv1yhx13w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-simple" ,perl-test-simple)))
     (propagated-inputs
      `(("perl-test-tester" ,perl-test-tester)
        ("perl-data-dump" ,perl-data-dump)))
