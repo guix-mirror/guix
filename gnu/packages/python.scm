@@ -15965,3 +15965,25 @@ authentication for Flask routes.")
 
 (define-public python2-flask-httpauth
   (package-with-python2 python-flask-httpauth))
+
+(define-public python-pysocks
+  (package
+    (name "python-pysocks")
+    (version "1.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PySocks" version))
+       (sha256
+        (base32
+         "1krkiss578zqwcg4c8iqz1hwscwhsvy2djp3xyvps5gsgvr2j0yh"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/Anorov/PySocks")
+    (synopsis "SOCKS client module")
+    (description "@code{pysocks} is an updated and semi-actively maintained
+version of @code{SocksiPy} with bug fixes and extra features.")
+    (license license:bsd-3)))
+
+(define-public python2-pysocks
+  (package-with-python2 python-pysocks))
