@@ -334,8 +334,7 @@ developers consider to have good quality code and correct functionality.")
        ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
        ("x265" ,x265)
-       ;("wayland" ,wayland) ; needs gtk+ built with wayland support
-       ))
+       ("wayland" ,wayland)))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
     (description
