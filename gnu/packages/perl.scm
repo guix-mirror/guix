@@ -2331,6 +2331,30 @@ whether a compiler is available.  It can test for a C99 compiler, or
 you can tell it to compile a C source file with optional linker flags.")
   (license (package-license perl))))
 
+(define-public perl-devel-cycle
+  (package
+    (name "perl-devel-cycle")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LD/LDS/Devel-Cycle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1hhb77kz3dys8yaik452j22cm3510zald2mpvfyv5clqv326aczx"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Devel-Cycle")
+    (synopsis "Find memory cycles in objects")
+    (description
+     "@code{Devel::Cycle} This is a tool for finding circular references in
+objects and other types of references.  Because of Perl's reference-count
+based memory management, circular references will cause memory leaks.")
+    (license perl-license)))
+
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
