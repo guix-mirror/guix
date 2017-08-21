@@ -8836,6 +8836,30 @@ neither visible nor modifiable from Perl space).")
 on the YAML 1.0 specification.")
     (license (package-license perl))))
 
+(define-public perl-yaml-libyaml
+  (package
+    (name "perl-yaml-libyaml")
+    (version "0.65")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0izhvz8f29x1f50hhwfgm0iq1lz7apjjvg77lmky949jr07hnwfv"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/YAML-LibYAML")
+    (synopsis
+     "Perl YAML Serialization using XS and libyaml")
+    (description
+     "@code{YAML::XS} is a Perl XS binding to libyaml which offers Perl the
+best YAML support to date.")
+    (license perl-license)))
+
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
