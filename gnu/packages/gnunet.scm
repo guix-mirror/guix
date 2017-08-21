@@ -197,7 +197,7 @@ and support for SSL3 and TLS.")
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
-   (inputs `(("gnutls" ,gnutls)
+   (inputs `(("gnutls" ,gnutls/dane)
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
    (native-inputs
