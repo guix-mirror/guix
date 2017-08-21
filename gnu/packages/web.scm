@@ -2185,6 +2185,37 @@ composed of HTML::Element style components.")
 <form> ... </form> instance.")
     (license l:perl-license)))
 
+(define-public perl-html-scrubber
+  (package
+    (name "perl-html-scrubber")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NI/NIGELM/HTML-Scrubber-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m1f8gm2jry42zxja05dxp2ck7y66m7i8vc38nj6hccnwlby6cvi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-cpan-meta" ,perl-test-cpan-meta)
+       ("perl-test-eol" ,perl-test-eol)
+       ("perl-test-memory-cycle" ,perl-test-memory-cycle)
+       ("perl-test-notabs" ,perl-test-notabs)))
+    (inputs
+     `(("perl-html-parser" ,perl-html-parser)))
+    (home-page
+     "http://search.cpan.org/dist/HTML-Scrubber")
+    (synopsis
+     "Perl extension for scrubbing/sanitizing html")
+    (description
+     "@code{HTML::Scrubber} Perl extension for scrubbing/sanitizing HTML.")
+    (license l:perl-license)))
+
 (define-public perl-html-lint
   (package
     (name "perl-html-lint")
