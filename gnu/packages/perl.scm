@@ -7397,6 +7397,42 @@ file to find out which tests you want to run and the order in which you want to 
 It constructs the right value for the build system to do the right thing.")
     (license (package-license perl))))
 
+(define-public perl-test-memory-cycle
+  (package
+    (name "perl-test-memory-cycle")
+    (version "1.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PE/PETDANCE/Test-Memory-Cycle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "00ijmgx1r3cxrcs1qa9rb2s4gbm3nsawd90drda89kb4r7yxslwx"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-padwalker" ,perl-padwalker)))
+    (propagated-inputs
+     `(("perl-devel-cycle" ,perl-devel-cycle)))
+    (home-page
+     "http://search.cpan.org/dist/Test-Memory-Cycle")
+    (synopsis
+     "Verifies code hasn't left circular references")
+    (description
+     "@code{Test::Memory::Cycle} is built on top of @code{Devel::Cycle} to
+give you an easy way to check for these circular references.
+
+@example
+use Test::Memory::Cycle;
+
+my $object = new MyObject;
+# Do stuff with the object.
+memory_cycle_ok( $object );
+@end example")
+    (license artistic2.0)))
+
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
