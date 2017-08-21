@@ -7538,6 +7538,30 @@ with an error rather than skip.
 If used in a subtest, the remainder of the subtest will be skipped.")
     (license (package-license perl))))
 
+(define-public perl-test-notabs
+  (package
+    (name "perl-test-notabs")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Test-NoTabs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "127kpl1va267qar2ia4c22xb96jby2jqnda3sj5pjgmxg8si26cg"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Test-NoTabs")
+    (synopsis
+     "Check the presence of tabs in your project")
+    (description
+     "@code{Test::NoTabs} lets you check the presence of tabs in your perl
+code.")
+    (license perl-license)))
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
