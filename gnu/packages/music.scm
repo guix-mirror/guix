@@ -2180,13 +2180,13 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.6.0")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "0bml11gfkxqd3i2jxkn5k2xllc4rvxjcyhs8an05gcyy1zp2bwvb"))))
+                "190c6sicc80v21wbbwbq771nqmxw4r6aqmxs22ndj177rc2l275f"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Requires unpackaged python-flaky.
