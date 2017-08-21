@@ -15564,14 +15564,14 @@ address is valid and really exists.")
 (define-public python-marshmallow
   (package
     (name "python-marshmallow")
-    (version "3.0.0b2")
+    (version "3.0.0b3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "marshmallow" version))
       (sha256
        (base32
-        "11bnpvfdbczr74177p295zbkdrax2cahvbj5bqhhlprgz2xxi5d9"))))
+        "07mcrij1yvk85lvgx44wwr9pc80xryghvlgayb057g1cazcypysd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
