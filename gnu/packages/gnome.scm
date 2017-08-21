@@ -6561,7 +6561,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.240")
+    (version "0.9.244")
     (source
      (origin
        (method url-fetch)
@@ -6570,7 +6570,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0n1ycmg6dgz1pajs80fwlcbxw3rx1hff1xw6ja67zngm85ydbjvq"))))
+         "0y9nmwrplz4mlvc2badfbyjj97ksn6qqis3rgm8lvp5llsk1583w"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
