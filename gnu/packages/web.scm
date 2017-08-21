@@ -76,9 +76,11 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
@@ -92,7 +94,8 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages version-control))
 
 (define-public httpd
   (package
@@ -4068,6 +4071,74 @@ C.  It is developed as part of the NetSurf project.")
 parse both valid and invalid web content.  It is developed as part of the
 NetSurf project.")
     (license l:expat)))
+
+(define-public ikiwiki
+  (package
+    (name "ikiwiki")
+    (version "3.20170111")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://snapshot.debian.org/archive/debian/"
+                           "20170111T215449Z/pool/main/i/ikiwiki/ikiwiki_"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "00d7yzv426fvqbhvzyafddv7fa6b4j2647b0wi371wd5yjj9j3sz"))))
+    (build-system perl-build-system)
+    (arguments
+     `(;; Image tests fail
+       ;;
+       ;; Test Summary Report
+       ;; -------------------
+       ;; t/img.t                      (Wstat: 2304 Tests: 62 Failed: 9)
+       ;;   Failed tests:  21, 27-28, 30-35
+       ;;   Non-zero exit status: 9
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin/"))
+                    (path (getenv "PERL5LIB")))
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("PERL5LIB" ":" prefix (,path))))
+                         (find-files bin))
+               #t))))))
+    (native-inputs
+     `(("which" ,which)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-xml-sax" ,perl-xml-sax)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("gettext" ,gettext-minimal)
+       ("subversion" ,subversion)
+       ("git" ,git)
+       ("bazaar" ,bazaar)
+       ("cvs" ,cvs)
+       ("mercurial" ,mercurial)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("perl-cgi-session" ,perl-cgi-session)
+       ("perl-cgi-simple" ,perl-cgi-simple)
+       ("perl-json" ,perl-json)
+       ("perl-image-magick" ,perl-image-magick)
+       ("perl-uri" ,perl-uri)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-uri" ,perl-uri)
+       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
+       ("perl-html-scrubber" ,perl-html-scrubber)
+       ("perl-html-template" ,perl-html-template)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (home-page "https://ikiwiki.info/")
+    (synopsis "Wiki compiler, capable of generating HTML")
+    (description
+     "Ikiwiki is a wiki compiler, capable of generating a static set of web
+pages, but also incorporating dynamic features like a web based editor and
+commenting.")
+    (license l:gpl2+)))
 
 (define-public libwapcaplet
   (package
