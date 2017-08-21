@@ -155,7 +155,7 @@ tool to extract metadata from a file and print the results.")
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
-      ("gnutls" ,gnutls)
+      ("gnutls" ,gnutls/dane)
       ("libgcrypt" ,libgcrypt)
       ("openssl" ,openssl)
       ("zlib" ,zlib)))
