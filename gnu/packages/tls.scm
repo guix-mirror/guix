@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -37,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
@@ -228,6 +229,17 @@ required structures.")
     (name "guile2.0-gnutls")
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
+
+(define-public gnutls/dane
+  ;; GnuTLS with build libgnutls-dane, implementing DNS-based
+  ;; Authentication of Named Entities.  This is required for GNS functionality
+  ;; by GNUnet and gnURL.  This is done in an extra package definition
+  ;; to have the choice between GnuTLS with Dane and without Dane.
+  (package
+    (inherit gnutls)
+    (name "gnutls-dane")
+    (inputs `(("unbound" ,unbound)
+              ,@(package-inputs gnutls)))))
 
 (define-public openssl
   (package
