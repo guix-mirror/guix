@@ -7208,6 +7208,30 @@ modified or tested with this API, making it simple to test both individual
 files, as well as to verify that there are no missing or unknown files.")
     (license (package-license perl))))
 
+(define-public perl-test-eol
+  (package
+    (name "perl-test-eol")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Test-EOL-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l3bxpsw0x7j9nclizcp53mnf9wny25dmg2iglfhzgnk0xfpwzwf"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Test-EOL")
+    (synopsis
+     "Check the correct line endings in your project")
+    (description
+     "@code{Test::EOL} lets you check for the presence of trailing whitespace
+and/or windows line endings in your perl code.")
+    (license perl-license)))
+
 (define-public perl-test-exception
   (package
     (name "perl-test-exception")
