@@ -1,0 +1,16 @@
+Description: Fix test-regidx argument parsing on archs with unsigned char
+ On architectures where char is unsigned "c >= 0" was always true.
+Author: Adrian Bunk <bunk@debian.org>
+Bug-Debian: https://bugs.debian.org/865060
+
+--- a/test/test-regidx.c
++++ b/test/test-regidx.c
+@@ -336,7 +336,7 @@
+         {"seed",1,0,'s'},
+         {0,0,0,0}
+     };
+-    char c;
++    int c;
+     int seed = (int)time(NULL);
+     while ((c = getopt_long(argc, argv, "hvs:",loptions,NULL)) >= 0) 
+     {

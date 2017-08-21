@@ -175,7 +175,11 @@ script.")
                                  "/GraphicsMagick-" version ".tar.xz")))
               (sha256
                (base32
-                "122zgs96dqrys62mnh8x5yvfff6km4d3yrnvaxzg3mg5sprib87v"))))
+                "122zgs96dqrys62mnh8x5yvfff6km4d3yrnvaxzg3mg5sprib87v"))
+              (patches
+               (search-patches "graphicsmagick-CVE-2017-12935.patch"
+                               "graphicsmagick-CVE-2017-12936.patch"
+                               "graphicsmagick-CVE-2017-12937.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -411,15 +411,15 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.12.0.1")
+    (version "4.13.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://rpm.org/releases/rpm-4.12.x/rpm-"
+              (uri (string-append "http://ftp.rpm.org/releases/rpm-"
+                                  (version-major+minor version) ".x/rpm-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0a82ym8phx7g0f3k6smvxnvzh7yv857l42xafk49689kzhld5pbp"))
-              (patches (search-patches "rpm-CVE-2014-8118.patch"))))
+                "03cvbwbfrhm0fa02j7828k1qp05hf2m0fradwcf2nqhrsjkppz17"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb

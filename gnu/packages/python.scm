@@ -3611,15 +3611,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.25.2")
+    (version "0.26")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
-       (patches (search-patches "python-cython-fix-tests-32bit.patch"))
        (sha256
         (base32
-         "01h3lrf6d98j07iakifi81qjszh6faa37ibx7ylva1vsqbwx2hgi"))))
+         "0riciynnr0r68cvg6r3gbhi9x7h44pdwb7926m6n5vfs5p1f492c"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3630,7 +3629,7 @@ is designed to have a low barrier to entry.")
        (modify-phases %standard-phases
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
-           (lambda _ (setenv "HOME" "/tmp")))
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'check
            (lambda _ (zero? (system* "python" "runtests.py" "-vv")))))))
     (home-page "http://cython.org/")
@@ -3915,14 +3914,14 @@ association studies (GWAS) on extremely large data sets.")
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.25.0")
+    (version "0.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "0wf5rp0fvrw7j3j18dvwjq6xqlbm611wd55aphrfpps0v1gxh3ny"))
+         "1cbc488ra3kg7r3qky17ms0szi3cda2d96qfkv1l9djsy9hnvw57"))
        (patches
         (search-patches "python-pygit2-disable-network-tests.patch"))))
     (build-system python-build-system)
@@ -7296,7 +7295,7 @@ reading and writing MessagePack data.")
 (define-public python-netaddr
   (package
     (name "python-netaddr")
-    (version "0.7.18")
+    (version "0.7.19")
     (source
      (origin
        (method url-fetch)
@@ -7306,7 +7305,7 @@ reading and writing MessagePack data.")
              ".tar.gz"))
        (sha256
          (base32
-          "06dxjlbcicq7q3vqy8agq11ra01kvvd47j4mk6dmghjsyzyckxd1"))))
+          "1zdfadvpq4lmcqzr383gywxn4xyn355kj1n3lk9q2l03vmyfrbiq"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ;; No tests.
     (home-page "https://github.com/drkjam/netaddr/")
@@ -7691,14 +7690,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0yvi2cp23rg20bq3hd47ixbvjh0zgxnxrriqx5v17d7vkmliwbsi"))))
+         "1qa117fs1yd50zn2cfxh7d9l999ds0z4h83m9m7j4fk6ffm33f5y"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -7713,14 +7712,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1aq6ilnf2zdqshwqai4w8gmb5y6p7ip34qrjp1yb7sz77rkb501p"))))
+         "0fnck37zyvbzmccbp7w3jy27jgmij1992j5wyy3gxhw6a11b4jyh"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))

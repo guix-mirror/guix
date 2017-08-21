@@ -311,6 +311,7 @@ BAM files.")
               (sha256
                (base32
                 "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
+              (patches (search-patches "bcftools-regidx-unsigned-char.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
@@ -2114,7 +2115,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.9")
+    (version "0.9.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2123,7 +2124,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04i03046g3l2vk9722z47r1p7j415g97vvz6d76ywmbawyiihcb1"))))
+                "13qqzwg54n5dqh8pm5n3v8x6gqbczzakphwwjix63qv60hcd5bqd"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -8315,6 +8316,30 @@ package, and for letting R applications work on datasets that are larger than
 the available RAM.")
     (license license:artistic2.0)))
 
+(define-public r-annotationfilter
+  (package
+    (name "r-annotationfilter")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationFilter" version))
+              (sha256
+               (base32
+                "0pxvswjzwibdfmrkdragxmzcl844z73pmkn82z92wahwa6gjfyi7"))))
+    (properties
+     `((upstream-name . "AnnotationFilter")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-lazyeval" ,r-lazyeval)))
+    (home-page "https://github.com/Bioconductor/AnnotationFilter")
+    (synopsis "Facilities for filtering Bioconductor annotation resources")
+    (description
+     "This package provides classes and other infrastructure to implement
+filters for manipulating Bioconductor annotation resources.  The filters are
+used by @code{ensembldb}, @code{Organism.dplyr}, and other packages.")
+    (license license:artistic2.0)))
+
 (define-public emboss
   (package
     (name "emboss")
@@ -8672,6 +8697,52 @@ CopywriteR constitutes a widely applicable alternative to available copy
 number detection tools.")
     (license license:gpl2)))
 
+(define-public r-methylkit
+  (package
+    (name "r-methylkit")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "methylKit" version))
+              (sha256
+               (base32
+                "02acdjf6jl0c1glymin84pdna4farn4vv0gb6107d9iqz3y3gkmm"))))
+    (properties `((upstream-name . "methylKit")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-emdbook" ,r-emdbook)
+       ("r-fastseg" ,r-fastseg)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-limma" ,r-limma)
+       ("r-mclust" ,r-mclust)
+       ("r-qvalue" ,r-qvalue)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://code.google.com/p/methylkit/")
+    (synopsis
+     "DNA methylation analysis from high-throughput bisulfite sequencing results")
+    (description
+     "MethylKit is an R package for DNA methylation analysis and annotation
+from high-throughput bisulfite sequencing.  The package is designed to deal
+with sequencing data from @dfn{Reduced representation bisulfite
+sequencing} (RRBS) and its variants, but also target-capture methods and whole
+genome bisulfite sequencing.  It also has functions to analyze base-pair
+resolution 5hmC data from experimental protocols such as oxBS-Seq and
+TAB-Seq.")
+    (license license:artistic2.0)))
+
 (define-public r-sva
   (package
     (name "r-sva")
@@ -8816,7 +8887,8 @@ proteomics packages.")
     (properties `((upstream-name . "mzR")))
     (build-system r-build-system)
     (inputs
-     `(("netcdf" ,netcdf)))
+     `(("boost" ,boost)
+       ("netcdf" ,netcdf)))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
@@ -9233,6 +9305,123 @@ normalization.  Between-lane normalization procedures to adjust for
 distributional differences between lanes (e.g., sequencing depth):
 global-scaling and full-quantile normalization.")
     (license license:artistic2.0)))
+
+(define-public r-interactivedisplaybase
+  (package
+    (name "r-interactivedisplaybase")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "interactiveDisplayBase" version))
+       (sha256
+        (base32
+         "12f6ap4bl3h2iwwhg8i3r9a7yyd28d8i5lb3fj1vnfvjs762r7r7"))))
+    (properties
+     `((upstream-name . "interactiveDisplayBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-shiny" ,r-shiny)))
+    (home-page "http://bioconductor.org/packages/interactiveDisplayBase")
+    (synopsis "Base package for web displays of Bioconductor objects")
+    (description
+     "This package contains the basic methods needed to generate interactive
+Shiny-based display methods for Bioconductor objects.")
+    (license license:artistic2.0)))
+
+(define-public r-annotationhub
+  (package
+    (name "r-annotationhub")
+    (version "2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationHub" version))
+       (sha256
+        (base32
+         "1nh5si3j1nv37jcg4260582ayjg18851np47cskrm54prnvhwd9r"))))
+    (properties `((upstream-name . "AnnotationHub")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-httr" ,r-httr)
+       ("r-interactivedisplaybase" ,r-interactivedisplaybase)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-yaml" ,r-yaml)))
+    (home-page "http://bioconductor.org/packages/AnnotationHub")
+    (synopsis "Client to access AnnotationHub resources")
+    (description
+     "This package provides a client for the Bioconductor AnnotationHub web
+resource.  The AnnotationHub web resource provides a central location where
+genomic files (e.g. VCF, bed, wig) and other resources from standard
+locations (e.g. UCSC, Ensembl) can be discovered.  The resource includes
+metadata about each resource, e.g., a textual description, tags, and date of
+modification.  The client creates and manages a local cache of files retrieved
+by the user, helping with quick and reproducible access.")
+    (license license:artistic2.0)))
+
+(define-public r-fastseg
+  (package
+    (name "r-fastseg")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "fastseg" version))
+       (sha256
+        (base32
+         "083wiz03q9mynwchs9frlpp6c84dncri5ncibx6h82p228cpja6h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://www.bioinf.jku.at/software/fastseg/index.html")
+    (synopsis "Fast segmentation algorithm for genetic sequencing data")
+    (description
+     "Fastseg implements a very fast and efficient segmentation algorithm.
+It can segment data from DNA microarrays and data from next generation
+sequencing for example to detect copy number segments.  Further it can segment
+data from RNA microarrays like tiling arrays to identify transcripts.  Most
+generally, it can segment data given as a matrix or as a vector.  Various data
+formats can be used as input to fastseg like expression set objects for
+microarrays or GRanges for sequencing data.")
+    (license license:lgpl2.0+)))
+
+(define-public r-qvalue
+  (package
+    (name "r-qvalue")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "qvalue" version))
+       (sha256
+        (base32
+         "1dxdwa767a9r8n61r272ypi09qblcdfpzzwkmri74y5mbp1r3y4i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://github.com/jdstorey/qvalue")
+    (synopsis "Q-value estimation for false discovery rate control")
+    (description
+     "This package takes a list of p-values resulting from the simultaneous
+testing of many hypotheses and estimates their q-values and local @dfn{false
+discovery rate} (FDR) values.  The q-value of a test measures the proportion
+of false positives incurred when that particular test is called significant.
+The local FDR measures the posterior probability the null hypothesis is true
+given the test's p-value.  Various plots are automatically generated, allowing
+one to make sensible significance cut-offs.  The software can be applied to
+problems in genomics, brain imaging, astrophysics, and data mining.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
 
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))

@@ -126,6 +126,8 @@ bind processes, and much more.")
     (inputs
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
+       ("libfabric" ,libfabric)
+       ("rdma-core" ,rdma-core)
        ("valgrind" ,valgrind)))
     (native-inputs
      `(("pkg-config" ,pkg-config)

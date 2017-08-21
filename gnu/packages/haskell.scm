@@ -10,6 +10,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1324,7 +1325,7 @@ various Haskell streaming data libraries, such as @code{conduit} and
 (define-public cpphs
   (package
     (name "cpphs")
-    (version "1.19.3")
+    (version "1.20.8")
     (source
      (origin
        (method url-fetch)
@@ -1333,7 +1334,7 @@ various Haskell streaming data libraries, such as @code{conduit} and
              name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1njpmxgpah5pcqppcl1cxb5xicf6xlqrd162qm12khp9hainlm72"))))
+         "1bh524asqhk9v1s0wvipl0hgn7l63iy3js867yv0z3h5v2kn8vg5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-polyparse" ,ghc-polyparse)
@@ -1807,6 +1808,26 @@ capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
     (license license:bsd-3)))
 
+(define-public ghc-strict
+  (package
+    (name "ghc-strict")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/strict/strict-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "08cjajqz9h47fkq98mlf3rc8n5ghbmnmgn8pfsl3bdldjdkmmlrc"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/strict")
+    (synopsis "Strict data types and String IO")
+    (description
+     "This package provides strict versions of some standard Haskell data
+types, such as pairs, @code{Maybe} and @code{Either}.  It also contains strict
+IO operations.")
+    (license license:bsd-3)))
+
 (define-public ghc-hashable
   (package
     (name "ghc-hashable")
@@ -1835,6 +1856,51 @@ in terms of large data quantities and high speed.")
 converted to a hash value.  This class exists for the benefit of hashing-based
 data structures.  The package provides instances for basic types and a way to
 combine hash values.")
+    (license license:bsd-3)))
+
+(define-public ghc-data-hash
+  (package
+    (name "ghc-data-hash")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/data-hash"
+                           "/data-hash-" version ".tar.gz"))
+       (sha256
+        (base32 "1ghbqvc48gf9p8wiy71hdpaj7by3b9cw6wgwi3qqz8iw054xs5wi"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://hackage.haskell.org/package/data-hash")
+    (synopsis "Combinators for building fast hashing functions")
+    (description
+     "This package provides combinators for building fast hashing functions.
+It includes hashing functions for all basic Haskell98 types.")
+    (license license:bsd-3)))
+
+(define-public ghc-murmur-hash
+  (package
+    (name "ghc-murmur-hash")
+    (version "0.1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/murmur-hash"
+                           "/murmur-hash-" version ".tar.gz"))
+       (sha256
+        (base32 "1bb58kfnzvx3mpc0rc0dhqc1fk36nm8prd6gvf20gk6lxaadpfc9"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/nominolo/murmur-hash")
+    (synopsis "MurmurHash2 implementation for Haskell")
+    (description
+     "This package provides an implementation of MurmurHash2, a good, fast,
+general-purpose, non-cryptographic hashing function.  See
+@url{https://sites.google.com/site/murmurhash/} for details.  This
+implementation is pure Haskell, so it might be a bit slower than a C FFI
+binding.")
     (license license:bsd-3)))
 
 (define-public ghc-hunit
@@ -3806,6 +3872,55 @@ different keys; hence the name.  Also provided is a @code{locker} type,
 representing a store for a single element.")
     (license license:bsd-3)))
 
+(define-public ghc-edisonapi
+  (package
+    (name "ghc-edisonapi")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/EdisonAPI"
+                           "/EdisonAPI-" version ".tar.gz"))
+       (sha256
+        (base32 "0vmmlsj8ggbpwx6fkf5fvb6jp0zpx6iba6b28m80lllr2p8bi8wm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://rwd.rdockins.name/edison/home/")
+    (synopsis "Library of efficient, purely-functional data structures (API)")
+    (description
+     "Edison is a library of purely functional data structures written by
+Chris Okasaki.  It is named after Thomas Alva Edison and for the mnemonic
+value EDiSon (Efficient Data Structures).  Edison provides several families of
+abstractions, each with multiple implementations.  The main abstractions
+provided by Edison are: Sequences such as stacks, queues, and dequeues;
+Collections such as sets, bags and heaps; and Associative Collections such as
+finite maps and priority queues where the priority and element are distinct.")
+    (license license:expat)))
+
+(define-public ghc-edisoncore
+  (package
+    (name "ghc-edisoncore")
+    (version "1.3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/EdisonCore"
+                           "/EdisonCore-" version ".tar.gz"))
+       (sha256
+        (base32 "06shxmcqxcahcn6zgl64vlqix4fnq53d97drcgsh94qp7gp201ry"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-edisonapi" ,ghc-edisonapi)))
+    (home-page "http://rwd.rdockins.name/edison/home/")
+    (synopsis "Library of efficent, purely-functional data structures")
+    (description
+     "This package provides the core Edison data structure implementations,
+including multiple sequence, set, bag, and finite map concrete implementations
+with various performance characteristics.")
+    (license license:expat)))
+
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
@@ -3853,6 +3968,50 @@ catching")
     (description "This package defines the type class @code{MonadBaseControl},
 a subset of @code{MonadBase} into which generic control operations such as
 @code{catch} can be lifted from @code{IO} or any other base monad.")
+    (license license:bsd-3)))
+
+(define-public ghc-fail
+  (package
+    (name "ghc-fail")
+    (version "4.9.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/fail/fail-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "18nlj6xvnggy61gwbyrpmvbdkq928wv0wx2zcsljb52kbhddnp3d"))))
+    (build-system haskell-build-system)
+    (home-page "https://prime.haskell.org/wiki/Libraries/Proposals/MonadFail")
+    (synopsis "Forward-compatible MonadFail class")
+    (description
+     "This package contains the @code{Control.Monad.Fail} module providing the
+@uref{https://prime.haskell.org/wiki/Libraries/Proposals/MonadFail, MonadFail}
+class that became available in
+@uref{https://hackage.haskell.org/package/base-4.9.0.0, base-4.9.0.0} for
+older @code{base} package versions.  This package turns into an empty package
+when used with GHC versions which already provide the
+@code{Control.Monad.Fail} module.")
+    (license license:bsd-3)))
+
+(define-public ghc-monadplus
+  (package
+    (name "ghc-monadplus")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/monadplus"
+                           "/monadplus-" version ".tar.gz"))
+       (sha256
+        (base32 "15b5320wdpmdp5slpphnc1x4rhjch3igw245dp2jxbqyvchdavin"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/monadplus")
+    (synopsis "Filtering and folding over arbitrary MonadPlus instances")
+    (description
+     "This package generalizes many common stream operations such as
+@code{filter}, @code{catMaybes} etc, enabling filtering and folding over
+arbitrary @code{MonadPlus} instances.")
     (license license:bsd-3)))
 
 (define-public ghc-byteorder
@@ -4694,6 +4853,35 @@ definition of @code{Monad}.")
 for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-equivalence
+  (package
+    (name "ghc-equivalence")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/equivalence"
+                           "/equivalence-" version ".tar.gz"))
+       (sha256
+        (base32 "0a85bdyyvjqs5z4kfhhf758210k9gi9dv42ik66a3jl0z7aix8kx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-stmonadtrans" ,ghc-stmonadtrans)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/pa-ba/equivalence")
+    (synopsis "Maintaining an equivalence relation implemented as union-find")
+    (description
+     "This is an implementation of Tarjan's Union-Find algorithm (Robert E.@:
+Tarjan.  \"Efficiency of a Good But Not Linear Set Union Algorithm\",JACM
+22(2), 1975) in order to maintain an equivalence relation.  This
+implementation is a port of the @code{union-find} package using the @code{ST}
+monad transformer (instead of the IO monad).")
+    (license license:bsd-3)))
+
 (define-public ghc-fast-logger
   (package
     (name "ghc-fast-logger")
@@ -5079,6 +5267,28 @@ replacement for aeson's @code{encode} function, producing JSON-ByteStrings for
 human readers.  The command-line tool reads JSON from stdin and writes
 prettified JSON to stdout.  It also offers a complementary \"compact\"-mode,
 essentially the opposite of pretty-printing.")
+    (license license:bsd-3)))
+
+(define-public ghc-boxes
+  (package
+    (name "ghc-boxes")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/boxes/boxes-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1n7xiplzd3s1a39nizwjcgsh3wi2348mp21c3fk19v98ialfjgjf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-split" ,ghc-split)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/boxes")
+    (synopsis "2D text pretty-printing library")
+    (description
+     "Boxes is a pretty-printing library for laying out text in two dimensions,
+using a simple box model.")
     (license license:bsd-3)))
 
 (define-public ghc-wai
@@ -5563,6 +5773,50 @@ function which generates instances.")
 instances for @code{Ord} and @code{Lift}, as well as a few missing @code{Show}
 and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
+    (license license:bsd-3)))
+
+(define-public ghc-geniplate-mirror
+  (package
+    (name "ghc-geniplate-mirror")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package"
+                           "/geniplate-mirror"
+                           "/geniplate-mirror-" version ".tar.gz"))
+       (sha256
+        (base32 "17vjps2118s5z3k39ij00lkmkxv3mqf8h59wv6qdamlgmhyr36si"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://github.com/danr/geniplate")
+    (synopsis "Use Template Haskell to generate Uniplate-like functions")
+    (description
+     "Use Template Haskell to generate Uniplate-like functions.  This is a
+maintained mirror of the @uref{https://hackage.haskell.org/package/geniplate,
+geniplate} package, written by Lennart Augustsson.")
+    (license license:bsd-3)))
+
+(define-public ghc-gitrev
+  (package
+    (name "ghc-gitrev")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/gitrev/gitrev-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0cl3lfm6k1h8fxp2vxa6ihfp4v8igkz9h35iwyq2frzm4kdn96d8"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-base-compat" ,ghc-base-compat)))
+    (home-page "https://github.com/acfoltzer/gitrev")
+    (synopsis "Compile git revision info into Haskell projects")
+    (description
+     "This package provides some handy Template Haskell splices for including
+the current git hash and branch in the code of your project.  This is useful
+for including in panic messages, @command{--version} output, or diagnostic
+info for more informative bug reports.")
     (license license:bsd-3)))
 
 (define-public ghc-haskell-src-meta
@@ -6076,6 +6330,31 @@ supports for high level forms of ASN1 (BER, and DER).")
     (description
      "This package provides a simple monadic parser for ASN1 stream types,
 when ASN1 pattern matching is not convenient.")
+    (license license:bsd-3)))
+
+(define-public ghc-edit-distance
+  (package
+    (name "ghc-edit-distance")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/edit-distance"
+                           "/edit-distance-" version ".tar.gz"))
+       (sha256
+        (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/phadej/edit-distance")
+    (synopsis "Levenshtein and restricted Damerau-Levenshtein edit distances")
+    (description
+     "This package provides optimized functions to determine the edit
+distances for fuzzy matching, including Levenshtein and restricted
+Damerau-Levenshtein algorithms.")
     (license license:bsd-3)))
 
 (define-public ghc-tasty-kat
@@ -7055,6 +7334,27 @@ other transformers.")
               (sha256
                (base32
                 "0a364zfcm17mhpy0c4ms2j88sys4yvgd6071qsgk93la2wjm8mkr"))))))
+
+(define-public ghc-stmonadtrans
+  (package
+    (name "ghc-stmonadtrans")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/STMonadTrans"
+                           "/STMonadTrans-" version ".tar.gz"))
+       (sha256
+        (base32 "1nr26fnmi5fdjc6d00w13kjhmfyvb5b837d0006w4dj0yxndaksp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://hackage.haskell.org/package/STMonadTrans")
+    (synopsis "Monad transformer version of the ST monad")
+    (description
+     "This package provides a monad transformer version of the @code{ST} monad
+for strict state threads.")
+    (license license:bsd-3)))
 
 (define-public ghc-findbin
   (package

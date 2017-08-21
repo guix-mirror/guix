@@ -464,13 +464,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.15.3")
+    (version "1.15.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "125amldnpzzrfw76mmr7mlx002k1k6xdyrqf5bdnzl5hajvn0s5f"))))
+                "0wl4r7wbwdq68xidfv4hhzfb1spb6lmhbspwlzrg4pf1l6ipxlgs"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles

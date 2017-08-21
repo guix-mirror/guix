@@ -9,7 +9,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
@@ -121,6 +121,8 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
+   ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
+   ;; to be updated as well.
    (version "2.14.1")
    (source (origin
             (method url-fetch)
@@ -349,23 +351,6 @@ everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
    (home-page "https://git-scm.com/")))
 
-;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.12. TODO: Remove this for cgit > 1.1.
-(define-public git@2.10
-  (package
-    (inherit git)
-    (version "2.10.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://kernel.org/software/scm/git/git-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
-    (arguments
-     `(#:tests? #f
-       ,@(package-arguments git)))))
-
 (define-public libgit2
   (package
     (name "libgit2")
@@ -502,6 +487,8 @@ collaboration using typical untrusted file hosts or services.")
 (define-public cgit
   (package
     (name "cgit")
+    ;; XXX When updating cgit, try removing the special 'git:src' input and
+    ;; using the source of the git package.
     (version "1.1")
     (source (origin
               (method url-fetch)
@@ -546,7 +533,16 @@ collaboration using typical untrusted file hosts or services.")
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)))
     (inputs
-     `(("git:src" ,(package-source git@2.10))
+     `(;; Cgit directly accesses some internal Git interfaces that changed in
+       ;; Git 2.12.  Try removing this special input and using the source of the
+       ;; Git package for cgit > 1.1.
+       ("git:src"
+        ,(origin
+           (method url-fetch)
+           (uri "mirror://kernel.org/software/scm/git/git-2.10.4.tar.xz")
+           (sha256
+            (base32
+             "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -1341,16 +1337,21 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "1.35")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.fossil-scm.org/index.html/uv/download/"
-             "fossil-src-" version ".tar.gz"))
+       ;; Older downloads are moved to another URL.
+       (uri (list
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/download/"
+              "fossil-src-" version ".tar.gz")
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/"
+              "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "07ds6rhq69bhydpm9a01mgdhxf88p9b6y5hdnhn8gjc7ba92zyf1"))))
+         "0wfgacfg29dkl0c3l1rp5ji0kraa64gcbg5lh8p4m7mqdqcq53wv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1379,9 +1380,6 @@ repository\" with git-annex.")
                     (lambda _
                       (setenv "USER" "guix")
                       (setenv "TZ" "UTC")
-                      ;; Fixing the th1 test would require many backports, so
-                      ;; just disable for now.
-                      (delete-file "test/th1.test")
                       #t)))))
     (home-page "https://fossil-scm.org")
     (synopsis "Software configuration management system")

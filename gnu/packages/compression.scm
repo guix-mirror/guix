@@ -606,14 +606,14 @@ sfArk file format to the uncompressed sf2 format.")
 (define-public libmspack
   (package
     (name "libmspack")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://www.cabextract.org.uk/libmspack/libmspack-"
                           version "alpha.tar.gz"))
       (sha256
-       (base32 "04413hynb7zizxnkgy9riik3612dwirkpr6fcjrnfl2za9sz4rw9"))))
+       (base32 "08gr2pcinas6bdqz3k0286g5cnksmcx813skmdwyca6bmj1fxnqy"))))
     (build-system gnu-build-system)
     (home-page "http://www.cabextract.org.uk/libmspack/")
     (synopsis "Compression tools for some formats used by Microsoft")
@@ -702,16 +702,15 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.7.5")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lz4/lz4/archive/"
                            "v" version ".tar.gz"))
-       (patches (search-patches "lz4-fix-test-failures.patch"))
        (sha256
         (base32
-         "0zkykqqjfa1q3ji0qmb1ml3l9063qqfh99agyj3cnb02cg6wm401"))
+         "1xnckwwah74gl98gylf1b00vk4km1d8sgd8865h07ccvgbm8591c"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
@@ -722,14 +721,14 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
-    (home-page "https://github.com/lz4/lz4")
+    (home-page "http://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
 compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an
 extremely fast decoder, with speed in multiple GB/s per core (0.71 Bytes/cycle).
 A high compression derivative, called LZ4_HC, is also provided.  It trades CPU
 time for compression ratio.")
-    ;; The libraries (lz4, lz4hc, and xxhash are BSD licenced. The command
+    ;; The libraries (lz4, lz4hc, and xxhash) are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
 

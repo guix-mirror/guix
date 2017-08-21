@@ -577,7 +577,7 @@ GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
 GUIXSD_VM_SYSTEMS ?= x86_64-linux
 
 # Prefix of the GuixSD installation image file name.
-GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
+GUIXSD_IMAGE_BASE = guixsd-install-$(PACKAGE_VERSION)
 
 # Prefix of the GuixSD VM image file name.
 GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
@@ -628,6 +628,7 @@ release: dist
 	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
+	    --file-system-type=iso9660							\
             --system=$$system								\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\

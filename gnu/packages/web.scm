@@ -933,7 +933,7 @@ minimum to provide high performance operation.")
 (define-public sassc
   ;; libsass must be statically linked and it isn't included in the sassc
   ;; release tarballs, hence this odd package recipe.
-  (let* ((version "3.2.5")
+  (let* ((version "3.4.5")
          (libsass
           (origin
             (method url-fetch)
@@ -943,7 +943,7 @@ minimum to provide high performance operation.")
             (file-name (string-append "libsass-" version ".tar.gz"))
             (sha256
              (base32
-              "1x25k6p1s1yzsdpzb7bzh8japilmi1mk3z96q66pycbinj9z9is4")))))
+              "1j22138l5ymqjfj5zan9d2hipa3ahjmifgpjahqy1smlg5sb837x")))))
     (package
       (name "sassc")
       (version version)
@@ -954,11 +954,16 @@ minimum to provide high performance operation.")
                 (file-name (string-append "sassc-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1xf3w75w840rj0nx375rxi7mcv1ngqqq8p3zrzjlyx8jfpnldmv5"))))
+                  "1xk4kmmvziz9sal3swpqa10q0s289xjpcz8aggmly8mvxvmngsi9"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags '("CC=gcc")
+       `(#:make-flags
+         (list "CC=gcc"
+               (string-append "PREFIX=" (assoc-ref %outputs "out")))
          #:test-target "test"
+         ;; FIXME: "make test" rebuilds the application and gets lost in a
+         ;; non-existing directory.
+         #:tests? #f
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
@@ -968,13 +973,7 @@ minimum to provide high performance operation.")
                     (begin
                       (setenv "SASS_LIBSASS_PATH"
                               (string-append (getcwd) "/libsass-" ,version))
-                      #t))))
-           (replace 'install ; no install target
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (mkdir-p bin)
-                 (copy-file "bin/sassc" (string-append bin "/sassc"))
-                 #t))))))
+                      #t)))))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
@@ -4920,3 +4919,67 @@ responsive, and powerful applications with minimal effort.")
 communicate with each other, with Shiny or without (i.e.  static @code{.html}
 files).  It currently supports linked brushing and filtering.")
     (license l:expat)))
+
+(define-public r-rook
+  (package
+    (name "r-rook")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rook" version))
+       (sha256
+        (base32
+         "00s9a0kr9rwxvlq433daxjk4ji8m0w60hjdprf502msw9kxfrx00"))))
+    (properties `((upstream-name . "Rook")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-brew" ,r-brew)))
+    (home-page "http://cran.r-project.org/web/packages/Rook")
+    (synopsis "Web server interface for R")
+    (description
+     "This package contains the Rook specification and convenience software
+for building and running Rook applications.  A Rook application is an R
+reference class object that implements a @code{call} method or an R closure
+that takes exactly one argument, an environment, and returns a list with three
+named elements: the @code{status}, the @code{headers}, and the @code{body}.")
+    (license l:gpl2)))
+
+(define-public rss-bridge
+  (package
+    (name "rss-bridge")
+    (version "2017-08-03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/RSS-Bridge/rss-bridge/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05s16y552hbyj91s7bnlkx1bi64s6aw0fjy29az8via3i3b21yhl"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share-rss-bridge (string-append out "/share/rss-bridge")))
+           (set-path-environment-variable
+            "PATH" '("bin") (map (match-lambda ((_ . input) input))
+                                 %build-inputs))
+           (mkdir-p share-rss-bridge)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source")
+                    "--strip-components" "1" "-C" share-rss-bridge)
+           #t))))
+    (home-page "https://github.com/RSS-Bridge/rss-bridge")
+    (synopsis "Generate Atom feeds for social networking websites")
+    (description "rss-bridge generates Atom feeds for social networking
+websites lacking feeds.  Supported websites include Facebook, Twitter,
+Instagram and YouTube.")
+    (license (list l:public-domain
+                   l:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php

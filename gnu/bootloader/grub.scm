@@ -389,7 +389,20 @@ submenu \"GNU system, old configurations...\" {~%")
         (unless (zero? (system* grub "--no-floppy"
                                 "--boot-directory" install-dir
                                 device))
-          (error "failed to install GRUB")))))
+          (error "failed to install GRUB (BIOS)")))))
+
+(define install-grub-efi
+  #~(lambda (bootloader efi-dir mount-point)
+      ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
+      ;; system whose root is mounted at MOUNT-POINT.
+      (let ((grub-install (string-append bootloader "/sbin/grub-install"))
+            (install-dir (string-append mount-point "/boot")))
+        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
+        ;; root partition.
+        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+        (unless (zero? (system* grub-install "--boot-directory" install-dir
+                                "--efi-directory" efi-dir))
+          (error "failed to install GRUB (EFI)")))))
 
 
 
@@ -408,6 +421,7 @@ submenu \"GNU system, old configurations...\" {~%")
 (define* grub-efi-bootloader
   (bootloader
    (inherit grub-bootloader)
+   (installer install-grub-efi)
    (name 'grub-efi)
    (package grub-efi)))
 

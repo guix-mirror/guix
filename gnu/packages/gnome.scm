@@ -6,7 +6,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
-;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
@@ -627,7 +627,7 @@ GNOME Desktop.")
 (define-public gnome-keyring
   (package
     (name "gnome-keyring")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -635,7 +635,7 @@ GNOME Desktop.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "16gcwwcg91ipxjmiyi4c4njvnxixmv1i278p0bilc3lafk6ww5xw"))))
+               "134ci3mn6jjap59z3lrvyiip7zf2nlw5xvanr44yajs57xr4x5lp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
@@ -2134,6 +2134,9 @@ selection and URL hints.")))
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches ; We have to revert 2 commits to build against freerdp 1.1.
+               (search-patches "vinagre-revert-1.patch"
+                               "vinagre-revert-2.patch"))
               (sha256
                (base32
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
@@ -3039,7 +3042,7 @@ settings, themes, mouse settings, and startup of other daemons.")
 (define-public totem-pl-parser
  (package
    (name "totem-pl-parser")
-   (version "3.10.7")
+   (version "3.10.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/totem-pl-parser/"
@@ -3047,7 +3050,7 @@ settings, themes, mouse settings, and startup of other daemons.")
                                 "totem-pl-parser-" version ".tar.xz"))
             (sha256
              (base32
-              "17089sqyh6w6zr8ci865ihmvqshnslcsk9fbsl4s7yii66y8b0lw"))))
+              "0ayxg0gfs5h5jhr811ja5hxlhryklzp6jlal2ach9wym2c3hmigz"))))
    (build-system gnu-build-system)
    (arguments
     ;; FIXME: Tests require gvfs.
@@ -3391,10 +3394,10 @@ write applications that need to store structured data as well as make complex
 queries upon that data.")
     (license license:lgpl2.1+)))
 
-(define-public libgames-support
+(define-public libgnome-games-support
   (package
-    (name "libgames-support")
-    (version "1.0.2")
+    (name "libgnome-games-support")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3402,14 +3405,14 @@ queries upon that data.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rms2ksiv7j9944km7r87q22nh05si1fisn5xm3z4zy5vpcfi5mh"))))
+                "04qbgcgmc01sinhbqdljiny8q868l01nkdawj8wrnqnd1i8czvsg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda _
-             ;; tests require a writable HOME.
+             ;; Tests require a writable HOME.
              (setenv "HOME" (getcwd))
              #t)))))
     (native-inputs
@@ -3417,29 +3420,15 @@ queries upon that data.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
-     ;; Required by libgames-support-1.0.pc
+     ;; Required by libgnome-games-support-1.0.pc
      `(("gtk+" ,gtk+)
        ("libgee" ,libgee)))
     (home-page "https://www.gnome.org/")
     (synopsis "Useful functionality shared among GNOME games")
     (description
-     "libgames-support is a small library intended for internal use by
+     "libgnome-games-support is a small library intended for internal use by
 GNOME Games, but it may be used by others.")
     (license license:lgpl3+)))
-
-(define-public libgnome-games-support
-  (package
-    (inherit libgames-support)
-    (name "libgnome-games-support")
-    (version "1.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1rsyf5hbjim7zpk1yar3gv65g1nmw6zbbc0smrmxsfk0f9n3j9m6"))))))
 
 (define-public gnome-klotski
   (package
@@ -4357,7 +4346,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.26.2")
+    (version "0.26.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4365,7 +4354,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0frjqa6nmh025clwnb74z2rzbdq65wjcp2lf9csgcbkpahyjhrag"))))
+                "1r8fd63r7c5n99hwrkzv9jlrk84z4sa15q3h70pydzfjnfqf90zv"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4525,7 +4514,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.48.3")
+    (version "1.48.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4533,7 +4522,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cqgv460wfhwkw6j1h46v6bg29bycg6dfl7c5rv0lfcqmmw7v6v6"))))
+                "04nkig077r7xq55dxg9v46w8i7p8zkkdyja92yv81grq9fx6apz8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -5274,7 +5263,7 @@ devices using the GNOME desktop.")
 (define-public gnome-control-center
   (package
     (name "gnome-control-center")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5282,7 +5271,7 @@ devices using the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0awga40jh6gvn335mn6kyl6yg79frap1znrsz3sw2m27yldlnaiq"))))
+                "18ncjqjj93a39sla2zjr9i6pw59yh87p4jla899lmvi2qajd5923"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5345,7 +5334,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5353,7 +5342,7 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xp2ccmdrvzlczsrcplykwqwx2v4lbmkr0rxyylb06danlw9mivh"))))
+                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5733,6 +5722,37 @@ configuration system for GNOME.  It allows users to configure desktop
 software that do not provide their own configuration interface.")
     (license license:lgpl2.1+)))
 
+(define-public gnome-default-applications
+  (package
+    (name "gnome-default-applications")
+    (version "0")
+    (build-system trivial-build-system)
+    (source #f)
+    (propagated-inputs
+     `(("nautilus" ,nautilus)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (apps (string-append out "/share/applications")))
+           (mkdir-p apps)
+           (call-with-output-file (string-append apps "/defaults.list")
+             (lambda (port)
+               (format port "[Default Applications]\n")
+               (format port "inode/directory=org.gnome.Nautilus.desktop\n")))
+           #t))))
+    (synopsis "Default MIME type associations for the GNOME desktop")
+    (description
+     "Given many installed packages which might handle a given MIME type, a
+user running the GNOME desktop probably has some preferences: for example,
+that folders be opened by default by the Nautilus file manager, not the Baobab
+disk usage analyzer.  This package establishes that set of default MIME type
+associations for GNOME.")
+    (license license:gpl3+)
+    (home-page #f)))
+
 (define-public gnome
   (package
     (name "gnome")
@@ -5746,6 +5766,7 @@ software that do not provide their own configuration interface.")
      `(("adwaita-icon-theme"        ,adwaita-icon-theme)
        ("baobab"                    ,baobab)
        ("font-cantarell"            ,font-cantarell)
+       ("font-dejavu"               ,font-dejavu)
        ("at-spi2-core"              ,at-spi2-core)
        ("dbus"                      ,dbus)
        ("dconf"                     ,dconf)
@@ -5757,13 +5778,20 @@ software that do not provide their own configuration interface.")
        ("gedit"                     ,gedit)
        ("glib-networking"           ,glib-networking)
        ("gnome-backgrounds"         ,gnome-backgrounds)
+       ("gnome-bluetooth"           ,gnome-bluetooth)
+       ("gnome-calculator"          ,gnome-calculator)
        ("gnome-control-center"      ,gnome-control-center)
+       ("gnome-disk-utility"        ,gnome-disk-utility)
+       ("gnome-default-applications" ,gnome-default-applications)
        ("gnome-keyring"             ,gnome-keyring)
+       ("gnome-online-accounts"     ,gnome-online-accounts)
        ("gnome-session"             ,gnome-session)
        ("gnome-settings-daemon"     ,gnome-settings-daemon)
        ("gnome-shell"               ,gnome-shell)
+       ("gnome-system-monitor"      ,gnome-system-monitor)
        ("gnome-terminal"            ,gnome-terminal)
        ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gucharmap"                 ,gucharmap)
        ("gvfs"                      ,gvfs)
        ("hicolor-icon-theme"        ,hicolor-icon-theme)
        ("nautilus"                  ,nautilus)

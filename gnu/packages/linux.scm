@@ -101,6 +101,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -366,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12.7")
-(define %linux-libre-hash "1sjkxkcikdgl2w5h7c5pfyqwi29g69dxp4s2z2yavw7aicc91xfq")
+(define %linux-libre-version "4.12.8")
+(define %linux-libre-hash "1p4ah15qs94id2yj6lhp6abdycvgp7lvn3ccsfs7f6n34hdij0cm")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -376,14 +377,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.43"
-                    "0fxid4xmnrcq966vz2wsb6spw3i02pvqp2hv8xfrx7dr3hfs9nrr"
+  (make-linux-libre "4.9.44"
+                    "0a92bsb5d0pyhyn5ypc8ashwxixhivdadvikcpv31376j842fmj2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.82"
-                    "01bn0vn6i22hhwiqfh29m1cir1jrvz643lz13war8k9l6h0dmmwy"
+  (make-linux-libre "4.4.83"
+                    "1fv3j0w0v82aa9s9n4a4qyrxc5bpq2ag9riawlabx57a380x1n62"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1466,7 +1467,52 @@ transparently through a bridge.")
                (base32
                 "1r3lw3hjvqxi5zqyq2w1qadm3gisd9nlf71dkl4yplacmssnhm3h"))))
     (build-system gnu-build-system)
-    (native-inputs `(("flex" ,flex) ("bison" ,bison)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("libnl3-doc"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/thom311/libnl/releases/download/libnl"
+                 (string-join (string-split version #\.) "_")
+                 "/libnl-doc-" version ".tar.gz"))
+           (sha256
+            (base32 "0srab805yj8wb13l64qjyp3mdbqapxg5vk46v3zlhhzpmxqw8j7r"))))))
+    (inputs
+     `(("python-2" ,python-2)
+       ("python-3" ,python-3)))
+    (outputs '("out" "doc" "python2" "python3"))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-python
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (python-inst python)
+               (let ((ldflags (format #f "LDFLAGS=-Wl,-rpath=~a/lib"
+                                      (assoc-ref %outputs "out")))
+                     (pyout (assoc-ref %outputs python)))
+                 (and
+                  (zero? (system (format #f "~a ~a setup.py build"
+                                         ldflags python pyout)))
+                  (zero?
+                   (system (format #f "~a ~a setup.py install --prefix=~a"
+                                   ldflags python pyout)))
+                  (zero? (system* python "setup.py" "clean")))))
+             (with-directory-excursion "./python"
+               (every python-inst '("python2" "python3")))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((dest (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/libnl")))
+               (mkdir-p dest)
+               (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
+                               "--strip-components=1" "-C" dest))))))))
     (home-page "http://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description
@@ -4263,3 +4309,34 @@ tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
    (home-page "http://github.com/jamesodhunt/procenv/")
    (license license:gpl3+)))
+
+(define-public libfabric
+  (package
+    (name "libfabric")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ofiwg/libfabric/releases/download/v"
+                       version "/libfabric-" version ".tar.bz2"))
+       (sha256
+        (base32 "19l2m1frna1l765z4j7wl8hp4rb9wrh0hy5496685hd183hmy5pv"))))
+    (build-system gnu-build-system)
+    (inputs `(("rdma-core" ,rdma-core)
+              ;; TODO: add psm, psm(2).
+              ("libnl" ,libnl)))
+    (home-page "https://ofiwg.github.io/libfabric/")
+    (synopsis "Open Fabric Interfaces")
+    (description
+     "OpenFabrics Interfaces (OFI) is a framework focused on exporting fabric
+communication services to applications.  OFI is best described as a collection
+of libraries and applications used to export fabric services.  The key
+components of OFI are: application interfaces, provider libraries, kernel
+services, daemons, and test applications.
+
+Libfabric is a core component of OFI.  It is the library that defines and
+exports the user-space API of OFI, and is typically the only software that
+applications deal with directly.  It works in conjunction with provider
+libraries, which are often integrated directly into libfabric.")
+    (license (list license:bsd-2 license:gpl2)))) ;dual

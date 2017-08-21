@@ -65,7 +65,7 @@
 (define-public pspp
   (package
     (name "pspp")
-    (version "0.10.2")
+    (version "1.0.0")
     (source
      (origin
       (method url-fetch)
@@ -73,7 +73,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1afsq0a3iij64qacczvwhk81qg0q5rfqm055y5h9ls28d6paqz7p"))))
+        "10yb8nknh33c1y2ji3gww5dcnx9n3nqgsj6yfb4wibdjypa1m68v"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
@@ -126,6 +126,12 @@ be output in text, PostScript, PDF or HTML.")
              "PKG_BUILT_STAMP=1970-01-01")
        #:phases
        (modify-phases %standard-phases
+         ;; FIXME: see bug #28157.
+         (add-before 'configure 'patch-which
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/library/base/R/unix/system.unix.R"
+               (("@WHICH@") "which"))
+             #t))
          (add-before 'configure 'patch-uname
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((uname-bin (string-append (assoc-ref inputs "coreutils")
@@ -227,7 +233,6 @@ be output in text, PostScript, PDF or HTML.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
-       ("which" ,which) ; for tests/Examples/base-Ex.R
        ("tzdata" ,tzdata-2017a)
        ("xz" ,xz)))
     (inputs
@@ -246,6 +251,9 @@ be output in text, PostScript, PDF or HTML.")
        ("pcre" ,pcre)
        ("readline" ,readline)
        ("zlib" ,zlib)))
+    ;; FIXME: By default Sys.which embeds a reference to "which", but this
+    ;; reference is not detected by Guix (see bug #28157).
+    (propagated-inputs `(("which" ,which)))
     (native-search-paths
      (list (search-path-specification
             (variable "R_LIBS_SITE")
@@ -4724,7 +4732,8 @@ multivariate analysis.")
      "The trimmed k-means clustering method by Cuesta-Albertos, Gordaliza and
 Matran (1997).  This optimizes the k-means criterion under trimming a portion
 of the points.")
-    (license license:gpl2+)))
+    ;; Any GPL version
+    (license (list license:gpl2+ license:gpl3+))))
 
 (define-public r-fpc
   (package

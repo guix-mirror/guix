@@ -148,7 +148,7 @@ highlighting.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dist.pragmatique.xyz/fish-guix/"
+       (uri (string-append "https://dist.infotropique.org/fish-guix/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32

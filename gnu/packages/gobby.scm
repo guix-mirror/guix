@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2016, 2017 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -96,7 +98,10 @@
 documents in one session.  Obby is used by the Gobby collaborative editor.")
     (license license:gpl2+)))
 
-(define-public gobby
+;; Although there is a newer version of Gobby defined below, the protocols are
+;; incompatible; you need Gobby 0.4 if you want to connect to servers running
+;; the 0.4 protocol.
+(define-public gobby-0.4
   (package
     (name "gobby")
     (version "0.4.13")
@@ -127,5 +132,81 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
     (description
      "Collaborative editor that supports multiple documents in one session and
 a multi-user chat.  Gobby allows multiple users to edit the same document
+together over the internet in real-time.
+
+This is the older 0.4 version of Gobby.  Use this version only if you need to
+connect to a server running the old 0.4 protocol.")
+    (license license:gpl2+)))
+
+(define-public gobby
+  (package
+    (name "gobby")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://releases.0x539.de/gobby/gobby-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "165x0r668ma5blziisvbr8qig3jw9hf7i6w8r7wwvz3wsac3bswc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("gsasl" ,gsasl)
+       ("gtkmm-2" ,gtkmm-2)
+       ("gtksourceview-2" ,gtksourceview-2)
+       ("libinfinity" ,libinfinity)
+       ("libxml++-2" ,libxml++-2)))
+    (arguments
+     ;; Required by libsigc++.
+     `(#:configure-flags '("CXXFLAGS=-std=c++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion (assoc-ref outputs "out")
+               (rename-file "bin/gobby-0.5" "bin/gobby"))
+             #t)))))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Collaborative editor")
+    (description
+     "Collaborative editor that supports multiple documents in one session and
+a multi-user chat.  Gobby allows multiple users to edit the same document
 together over the internet in real-time.")
     (license license:gpl2+)))
+
+(define-public libinfinity
+  (package
+    (name "libinfinity")
+    (version "0.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://releases.0x539.de/libinfinity/libinfinity-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0nylsb6qz9pjw3agjp27c4za205i6zg6i5g1vgs5vbdnbh77wkhc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gsasl" ,gsasl)
+       ("gtk+" ,gtk+-2)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags (list "--with-inftextgtk"
+                               "--with-infgtk")))
+    (home-page "https://gobby.github.io/")
+    (synopsis "Infininote protocol implementation")
+    (description "libinfinity is a library to build collaborative text
+editors.  Changes to the text buffers are synced to all other clients over a
+central server.  Even though a central server is involved, the local user sees
+his changes applied instantly and the merging is done on the individual
+clients.")
+    (license license:lgpl2.1+)))

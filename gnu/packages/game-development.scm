@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,11 +41,14 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
+  #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -934,3 +938,84 @@ Joysticks, etc) and feedback devices (e.g. force feedback).  Meant to be very
 robust and compatible with many systems and operating systems.")
     (home-page "https://github.com/wgois/OIS")
     (license license:zlib)))
+
+(define-public mygui
+  (package
+    (name "mygui")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/MyGUI/" name
+                       "/archive/MyGUI" version ".tar.gz"))
+       (sha256
+        (base32
+         "13x7cydmj7gjmsg702sqjbfi53z265iv6j7binv3r6a7ibndfa0a"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list "-DMYGUI_INSTALL_DOCS=TRUE"
+             (string-append "-DOGRE_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "ogre")
+                            "/include/OGRE"))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("freetype" ,freetype)
+       ("graphviz" ,graphviz)
+       ("libx11" ,libx11)
+       ("ogre" ,ogre)
+       ("ois" ,ois)))
+    (synopsis "Fast, flexible and simple GUI")
+    (description
+     "MyGUI is a library for creating Graphical User Interfaces (GUIs) for games
+and 3D applications.  The main goals of mygui are: speed, flexibility and ease
+of use.")
+    (home-page "http://mygui.info/")
+    (license license:expat)))
+
+(define-public openmw
+  (package
+    (name "openmw")
+    (version "0.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/OpenMW/openmw/archive/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pla8016lpbg8cgm9kia318a860f26dmiayc72p3zl35mqrc7g7w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list "-DDESIRED_QT_VERSION=5")))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bullet" ,bullet)
+       ("ffmpeg" ,ffmpeg)
+       ("libxt" ,libxt)
+       ("mygui" ,mygui)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph)
+       ("qtbase" ,qtbase)
+       ("sdl" ,sdl2)
+       ("unshield" ,unshield)))
+    (synopsis "Free software re-implementation of the RPG Morrowind engine")
+    (description
+     "OpenMW is a free, open source and modern engine which reimplements and
+extends the one that runs the 2002 open-world RPG Morrowind.  The engine comes
+with its own editor, called OpenMW-CS which allows the user to edit or create
+their own original games.")
+    (home-page "https://openmw.org")
+    (license license:gpl3)))

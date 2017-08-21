@@ -83,6 +83,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
@@ -432,6 +433,47 @@ scriptable with Guile.")
     (description  "GNU Shogi is a program that plays the game Shogi (Japanese
 Chess).  It is similar to standard chess but this variant is far more complicated.")
     (license license:gpl3+)))
+
+(define-public ltris
+  (package
+    (name "ltris")
+    (version "1.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; The code in LTris uses traditional GNU semantics for inline functions
+       #:configure-flags '("CFLAGS=-fgnu89-inline")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL"))
+             #t)))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://lgames.sourceforge.net/LTris/")
+    (synopsis "Tetris clone based on the SDL library")
+    (description
+     "LTris is a tetris clone: differently shaped blocks are falling down the
+rectangular playing field and can be moved sideways or rotated by 90 degree
+units with the aim of building lines without gaps which then disappear (causing
+any block above the deleted line to fall down).  LTris has three game modes: In
+Classic you play until the stack of blocks reaches the top of the playing field
+and no new blocks can enter.  In Figures the playing field is reset to a new
+figure each level and later on tiles and lines suddenly appear.  In Multiplayer
+up to three players (either human or CPU) compete with each other sending
+removed lines to all opponents.  There is also a Demo mode in which you can
+watch your CPU playing while enjoying a cup of tea!")
+    (license license:gpl2+)))
 
 (define-public prboom-plus
   (package
@@ -2919,6 +2961,64 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
     ;; - icarus/icarus.cpp
     ;; - higan/emulator/emulator.hpp
     (license license:gpl3)))
+
+(define-public mgba
+  (package
+    (name "mgba")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01zy2w5pihlkrmbm51icgyff6iqyqa5ha6qrm4aj8ibzznz03kyq"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(for-each
+                 (lambda (subdir)
+                   (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                     (delete-file-recursively lib-subdir)))
+                 '("libpng" "lzma" "sqlite3" "zlib")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no "test" target
+       #:configure-flags
+       (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
+             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
+             ;; Validate RUNPATH phase fails ("error: depends on
+             ;; 'libmgba.so.0.6', which cannot be found in RUNPATH") without
+             ;; the following S-exp.
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out")
+                            "/lib"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ffmpeg" ,ffmpeg)
+              ("imagemagick" ,imagemagick)
+              ("libedit" ,libedit)
+              ("libepoxy" ,libepoxy)
+              ("libpng" ,libpng)
+              ("mesa" ,mesa)
+              ("minizip" ,minizip)
+              ("ncurses" ,ncurses)
+              ("qtbase" ,qtbase)
+              ("qtmultimedia" ,qtmultimedia)
+              ("qttools" ,qttools)
+              ("sdl2" ,sdl2)
+              ("sqlite" ,sqlite)
+              ("zlib" ,zlib)))
+    (home-page "https://mgba.io")
+    (synopsis "Game Boy Advance emulator")
+    (description
+     "mGBA is an emulator for running Game Boy Advance games.  It aims to be
+faster and more accurate than many existing Game Boy Advance emulators, as
+well as adding features that other emulators lack.  It also supports Game Boy
+and Game Boy Color games.")
+    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
+    ;; BSD-3.
+    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
 
 (define-public grue-hunter
   (package

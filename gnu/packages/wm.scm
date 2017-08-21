@@ -73,7 +73,7 @@
 (define-public libconfuse
   (package
     (name "libconfuse")
-    (version "3.2")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinh/libconfuse/"
@@ -81,7 +81,7 @@
                                   "/confuse-" version ".tar.xz"))
               (sha256
                (base32
-                "0j2fg93w22apjfqnkak8k8m395n2l7hhm9xnjx0k2v82js3bnsm4"))))
+                "0pnjmlj9i0alp407qd7c0vq83sz7gpsjrbdgpcn4xvzjp9r35ii3"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/martinh/libconfuse")
     (synopsis "Configuration file parser library")

@@ -63,13 +63,15 @@
           (test-begin "memcached")
 
           ;; Wait for memcached to be up and running.
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'memcached)
-                'running!)
+                (match (start-service 'memcached)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
              marionette))
 
           (let* ((ai (car (getaddrinfo "localhost"

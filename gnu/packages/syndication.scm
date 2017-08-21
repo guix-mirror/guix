@@ -18,6 +18,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gettext)
@@ -37,6 +38,7 @@
         (method url-fetch)
         (uri (string-append "https://newsbeuter.org/downloads/newsbeuter-"
                             version ".tar.gz"))
+        (patches (search-patches "newsbeuter-CVE-2017-12904.patch"))
         (sha256
          (base32
           "1j1x0hgwxz11dckk81ncalgylj5y5fgw5bcmp9qb5hq9kc0vza3l"))))

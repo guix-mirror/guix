@@ -16,6 +16,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
@@ -61,6 +64,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -176,6 +181,29 @@ APNG patch provides APNG support to libpng.")
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+
+(define-public r-png
+  (package
+    (name "r-png")
+    (version "0.1-7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "png" version))
+              (sha256
+               (base32
+                "0g2mcp55lvvpx4kd3mn225mpbxqcq73wy5qx8b4lyf04iybgysg2"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (home-page "http://www.rforge.net/png/")
+    (synopsis "Read and write PNG images")
+    (description
+     "This package provides an easy and simple way to read, write and display
+bitmap images stored in the PNG format.  It can read and write both files and
+in-memory raw vectors.")
+    ;; Any of these GPL versions.
+    (license (list license:gpl2 license:gpl3))))
 
 (define-public pngcrunch
   (package
@@ -1157,3 +1185,46 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (fMRI) brain images.")
     (home-page "http://niftilib.sourceforge.net")
     (license license:public-domain)))
+
+(define-public gpick
+  (package
+    (name "gpick")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/thezbyg/gpick/archive/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("boost" ,boost)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("scons" ,scons)))
+    (inputs
+     `(("expat" ,expat)
+       ("gtk2" ,gtk+-2)
+       ("lua" ,lua-5.2)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-lua-reference
+           (lambda _
+             (substitute* "SConscript"
+               (("lua5.2") "lua-5.2"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "scons"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dest (assoc-ref outputs "out")))
+               (zero? (system* "scons" "install"
+                               (string-append "DESTDIR=" dest)))))))))
+    (home-page "http://www.gpick.org/")
+    (synopsis "Color picker")
+    (description "Gpick is an advanced color picker and palette editing tool.")
+    (license license:bsd-3)))
