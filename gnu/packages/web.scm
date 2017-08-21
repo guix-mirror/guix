@@ -1913,6 +1913,33 @@ string generation and manipulation, and processing and preparing HTTP
 headers.")
     (license l:perl-license)))
 
+(define-public perl-cgi-session
+  (package
+    (name "perl-cgi-session")
+    (version "4.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MARKSTOS/CGI-Session-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xsl2pz1jrh127pq0b01yffnj4mnp9nvkp88h5mndrscq9hn8xa6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page
+     "http://search.cpan.org/dist/CGI-Session")
+    (synopsis
+     "Persistent session data in CGI applications")
+    (description
+     "@code{CGI::Session} provides modular session management system across
+HTTP requests.")
+    (license l:perl-license)))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
