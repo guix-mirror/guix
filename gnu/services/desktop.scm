@@ -73,6 +73,9 @@
             elogind-service
             elogind-service-type
 
+            accountsservice-service-type
+            accountsservice-service
+
             gnome-desktop-configuration
             gnome-desktop-configuration?
             gnome-desktop-service
@@ -705,6 +708,33 @@ when they log out."
 
 
 ;;;
+;;; AccountsService service.
+;;;
+
+(define %accountsservice-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/AccountsService")))
+
+(define accountsservice-service-type
+  (service-type (name 'accountsservice)
+                (extensions
+                 (list (service-extension activation-service-type
+                                          (const %accountsservice-activation))
+                       (service-extension dbus-root-service-type list)
+                       (service-extension polkit-service-type list)))))
+
+(define* (accountsservice-service #:key (accountsservice accountsservice))
+  "Return a service that runs AccountsService, a system service that
+can list available accounts, change their passwords, and so on.
+AccountsService integrates with PolicyKit to enable unprivileged users to
+acquire the capability to modify their system configuration.
+@uref{https://www.freedesktop.org/wiki/Software/AccountsService/, the
+accountsservice web site} for more information."
+  (service accountsservice-service-type accountsservice))
+
+
+;;;
 ;;; GNOME desktop service.
 ;;;
 
@@ -783,6 +813,7 @@ with the administrator's password."
          (wicd-service)
          (udisks-service)
          (upower-service)
+         (accountsservice-service)
          (colord-service)
          (geoclue-service)
          (polkit-service)

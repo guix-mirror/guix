@@ -11572,14 +11572,14 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), screen lockers,
-a network management tool (@pxref{Networking
-Services, @code{wicd-service}}), energy and color management services,
-the @code{elogind} login and seat manager, the Polkit privilege service,
-the GeoClue location service, an NTP client (@pxref{Networking
-Services}), the Avahi daemon, and has the name service switch service
-configured to be able to use @code{nss-mdns} (@pxref{Name Service
-Switch, mDNS}).
+@code{slim-service}}), screen lockers, a network management tool
+(@pxref{Networking Services, @code{wicd-service}}), energy and color
+management services, the @code{elogind} login and seat manager, the
+Polkit privilege service, the GeoClue location service, the
+AccountsService daemon that allows authorized users change system
+passwords, an NTP client (@pxref{Networking Services}), the Avahi
+daemon, and has the name service switch service configured to be able to
+use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
 @end defvr
 
 The @var{%desktop-services} variable can be used as the @code{services}
@@ -11720,6 +11720,19 @@ their default values are:
 @item hybrid-sleep-mode
 @code{("suspend" "platform" "shutdown")}
 @end table
+@end deffn
+
+@deffn {Scheme Procedure} accountsservice-service @
+       [#:accountsservice @var{accountsservice}]
+Return a service that runs AccountsService, a system service that can
+list available accounts, change their passwords, and so on.
+AccountsService integrates with PolicyKit to enable unprivileged users
+to acquire the capability to modify their system configuration.
+@uref{https://www.freedesktop.org/wiki/Software/AccountsService/, the
+accountsservice web site} for more information.
+
+The @var{accountsservice} keyword argument is the @code{accountsservice}
+package to expose as a service.
 @end deffn
 
 @deffn {Scheme Procedure} polkit-service @
