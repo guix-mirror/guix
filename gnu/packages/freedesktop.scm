@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
+;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
@@ -645,10 +645,17 @@ message bus.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda _
-            ;; Don't try to create /var/lib/AccoutsService.
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Don't try to create /var/lib/AccountsService.
             (substitute* "src/Makefile.in"
               (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true"))
+            (let ((shadow (assoc-ref inputs "shadow")))
+              (substitute* '("src/user.c" "src/daemon.c")
+                (("/usr/sbin/usermod") (string-append shadow "/sbin/usermod"))
+                (("/usr/sbin/useradd") (string-append shadow "/sbin/useradd"))
+                (("/usr/sbin/userdel") (string-append shadow "/sbin/userdel"))
+                (("/usr/bin/passwd")   (string-append shadow "/bin/passwd"))
+                (("/usr/bin/chage")    (string-append shadow "/bin/chage"))))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -656,7 +663,8 @@ message bus.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("polkit" ,polkit)))
+     `(("shadow" ,shadow)
+       ("polkit" ,polkit)))
     (home-page "http://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
