@@ -126,11 +126,12 @@ be output in text, PostScript, PDF or HTML.")
              "PKG_BUILT_STAMP=1970-01-01")
        #:phases
        (modify-phases %standard-phases
-         ;; FIXME: see bug #28157.
-         (add-before 'configure 'patch-which
+         (add-before 'configure 'do-not-compress-serialized-files
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/library/base/R/unix/system.unix.R"
-               (("@WHICH@") "which"))
+             ;; This ensures that Guix can detect embedded store references;
+             ;; see bug #28157 for details.
+             (substitute* "src/library/base/makebasedb.R"
+               (("compress = TRUE") "compress = FALSE"))
              #t))
          (add-before 'configure 'patch-uname
            (lambda* (#:key inputs #:allow-other-keys)
@@ -250,10 +251,8 @@ be output in text, PostScript, PDF or HTML.")
        ("libxt" ,libxt)
        ("pcre" ,pcre)
        ("readline" ,readline)
+       ("which" ,which)
        ("zlib" ,zlib)))
-    ;; FIXME: By default Sys.which embeds a reference to "which", but this
-    ;; reference is not detected by Guix (see bug #28157).
-    (propagated-inputs `(("which" ,which)))
     (native-search-paths
      (list (search-path-specification
             (variable "R_LIBS_SITE")
