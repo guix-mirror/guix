@@ -5095,16 +5095,20 @@ libxml2.")
               (sha256
                (base32
                 "1s2xzrwcjhfb4ra8jrxqfycs1jpv97id0f6idb2h6vjkspxbjy23"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
        `("--without-plymouth"
+         "--disable-systemd-journal"
          "--localstatedir=/var"
          ,(string-append "--with-default-path="
                          (string-join '("/run/setuid-programs"
                                         "/run/current-system/profile/bin"
                                         "/run/current-system/profile/sbin")
-                                      ":")))
+                                      ":"))
+         ;; Put GDM in bindir so that glib-or-gtk-build-system wraps the
+         ;; XDG_DATA_DIRS so that it finds its schemas.
+         "--sbindir" ,(string-append (assoc-ref %outputs "out") "/bin"))
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -5122,9 +5126,10 @@ libxml2.")
                            "libgdm/gdm-user-switching.c")
               (("#include <systemd/sd-login\\.h>")
                "#include <elogind/sd-login.h>"))
-            ;; Avoid checking SYSTEMD using pkg-config.
-            (setenv "SYSTEMD_CFLAGS" " ")
-            (setenv "SYSTEMD_LIBS" "-lelogind")
+            ;; Check for elogind.
+            (substitute* '("configure")
+              (("libsystemd")
+               "libelogind"))
             ;; Look for system-installed sessions in
             ;; /run/current-system/profile/share.
             (substitute* '("libgdm/gdm-sessions.c"
