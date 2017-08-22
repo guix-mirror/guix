@@ -165,7 +165,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -173,7 +173,23 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1x4j2q4qqj10ckbka0zaq2r2zm66ff1x791kp8slv1ff7fw45vdz"))))
+                "13rl1k22yf8qrpzdm5nh6ij641fibadr2ww1r7rnz7mbhzj3d4gb"))
+              (modules '((guix build utils)))
+              ;; Remove the bundled fonts.
+              ;; TODO: Remove bundled lz4.
+              (snippet
+               '(begin
+                  (delete-file-recursively "data/fonts")
+                  (substitute* '("data/Makefile.in" "data/Makefile.am")
+                    (("fonts") ""))
+                  (substitute* "configure"
+                    (("data/fonts/Makefile") "")
+                    (("\\\"data/fonts/Makefile") "# \"data/fonts/Makefile"))
+                  (substitute* '("data/themes/Makefile.in"
+                                 "data/themes/Makefile.am"
+                                 "data/themes/nyanology/Makefile.in"
+                                 "data/themes/nyanology/Makefile.am")
+                    (("-fd \\$\\(top_srcdir\\)/data/fonts") ""))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -182,7 +198,8 @@ removable devices or support for multimedia.")
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org/about-terminology")
