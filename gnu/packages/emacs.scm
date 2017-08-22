@@ -3568,6 +3568,27 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (home-page "http://web-mode.org/")
     (license license:gpl3+)))
 
+(define-public emacs-wgrep
+  (package
+    (name "emacs-wgrep")
+    (version "2.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mhayashi1120/Emacs-wgrep/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r2bpypar70xg6dsx12x1k74f39ww930rday7rgqpyknzsx1k4l1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+    (synopsis "Edit a grep buffer and apply those changes to the files")
+    (description
+     "Emacs wgrep allows you to edit a grep buffer and apply those changes to
+the file buffer.")
+    (license license:gpl3+)))
+
 (define-public emacs-helm
   (package
     (name "emacs-helm")
