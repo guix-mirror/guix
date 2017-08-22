@@ -2018,6 +2018,31 @@ tables.")
 mode-line.")
     (license license:gpl2+)))
 
+(define-public emacs-rspec
+  (package
+    (name "emacs-rspec")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pezra/rspec-mode/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j0a7ms5516nlg60qfyn730pfxys6acm0rgyxh5xfkpi6jafgpvw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/pezra/rspec-mode")
+    (synopsis "Provides a rspec mode for working with RSpec")
+    (description
+     "The Emacs RSpec mode provides keybindings for Ruby source files, e.g. to
+verify the spec associated with the current buffer, or entire project, as well
+as moving between the spec files, and coresponding code files.
+
+Also included are keybindings for spec files and Dired buffers, as well as
+snippets for yasnippet.")
+    (license license:gpl3+)))
+
 (define-public emacs-smart-mode-line
   (package
     (name "emacs-smart-mode-line")
