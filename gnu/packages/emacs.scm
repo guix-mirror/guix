@@ -1629,6 +1629,36 @@ display and behaviour is easily customisable.")
 of files under Git version control from within Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-minitest
+  (package
+    (name "emacs-minitest")
+    (version "0.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/arthurnn/minitest-emacs/archive/v"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1dsb7kzvs1x6g4sgqmq73jqacb7wzm0wfkiq5m9dqdzq8mppgiqs"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^snippets\\/minitest-mode\\/" %default-include)
+       #:exclude (delete "^[^/]*tests?\\.el$" %default-exclude)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)))
+    (home-page "https://github.com/arthurnn/minitest-emacs")
+    (synopsis "Emacs minitest mode")
+    (description
+     "The minitest mode provides commands to run the tests for the current
+file or line, as well as rerunning the previous tests, or all the tests for a
+project.
+
+This package also includes relevant snippets for yasnippet.")
+    (license license:expat)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
