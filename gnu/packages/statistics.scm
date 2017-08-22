@@ -269,6 +269,18 @@ publication-quality data plots.  A large amount of 3rd-party packages are
 available, greatly increasing its breadth and scope.")
     (license license:gpl3+)))
 
+(define-public rmath-standalone
+  (package (inherit r-minimal)
+    (name "rmath-standalone")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'chdir
+           (lambda _ (chdir "src/nmath/standalone/") #t)))))
+    (synopsis "Standalone R math library")
+    (description
+     "This package provides the R math library as an independent package.")))
+
 (define-public r-boot
   (package
     (name "r-boot")
