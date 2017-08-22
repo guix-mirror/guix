@@ -5098,7 +5098,13 @@ libxml2.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       '("--without-plymouth")
+       `("--without-plymouth"
+         "--localstatedir=/var"
+         ,(string-append "--with-default-path="
+                         (string-join '("/run/setuid-programs"
+                                        "/run/current-system/profile/bin"
+                                        "/run/current-system/profile/sbin")
+                                      ":")))
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -5119,6 +5125,18 @@ libxml2.")
             ;; Avoid checking SYSTEMD using pkg-config.
             (setenv "SYSTEMD_CFLAGS" " ")
             (setenv "SYSTEMD_LIBS" "-lelogind")
+            ;; Look for system-installed sessions in
+            ;; /run/current-system/profile/share.
+            (substitute* '("libgdm/gdm-sessions.c"
+                           "daemon/gdm-session.c"
+                           "daemon/gdm-display.c"
+                           "daemon/gdm-launch-environment.c")
+              (("DATADIR \"/x")
+               "\"/run/current-system/profile/share/x")
+              (("DATADIR \"/wayland")
+               "\"/run/current-system/profile/share/wayland")
+              (("DATADIR \"/gnome")
+               "\"/run/current-system/profile/share/gnome"))
             #t)))))
     (native-inputs
      `(("dconf" ,dconf)
