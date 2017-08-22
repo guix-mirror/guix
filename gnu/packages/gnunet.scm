@@ -186,14 +186,14 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.55.1")
+   (version "7.55.1-3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/"
                                 name "-" version ".tar.bz2"))
             (sha256
              (base32
-              "118vb2mc5ivsbrkqzg40w56raf5jdnx00cfmkh735w0mjfy6wccv"))))
+              "1p2qdh44hgsxjlzh4d3n51xr66cg2z517vpr818flvcrmpq2vxpq"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
