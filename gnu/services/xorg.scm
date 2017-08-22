@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (ice-9 match)
   #:export (xorg-configuration-file
             %default-xorg-modules
+            xorg-wrapper
             xorg-start-command
             xinitrc
 
@@ -184,36 +186,51 @@ in @var{modules}."
                                  files)
                        #t))))
 
-(define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
-                             (configuration-file (xorg-configuration-file))
-                             (modules %default-xorg-modules)
-                             (xorg-server xorg-server))
+(define* (xorg-wrapper #:key
+                       (guile (canonical-package guile-2.0))
+                       (configuration-file (xorg-configuration-file))
+                       (modules %default-xorg-modules)
+                       (xorg-server xorg-server))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
 file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.
-
-Usually the X server is started by a login manager."
+@code{xorg-configuration-file} is used.  The resulting script should be used
+in place of @code{/usr/bin/X}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(begin
         (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
         (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-        (apply execl (string-append #$xorg-server "/bin/X")
-               (string-append #$xorg-server "/bin/X") ;argv[0]
-               "-logverbose" "-verbose"
-               "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
-               "-config" #$configuration-file
-               "-configdir" #$(xorg-configuration-directory modules)
-               "-nolisten" "tcp" "-terminate"
+        (let ((X (string-append #$xorg-server "/bin/X")))
+          (apply execl X X
+                 "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
+                 "-config" #$configuration-file
+                 "-configdir" #$(xorg-configuration-directory modules)
+                 (cdr (command-line))))))
 
-               ;; Note: SLiM and other display managers add the
-               ;; '-auth' flag by themselves.
-               (cdr (command-line)))))
+  (program-file "X-wrapper" exp))
 
-  (program-file "start-xorg" exp))
+(define* (xorg-start-command #:key
+                             (guile (canonical-package guile-2.0))
+                             (configuration-file (xorg-configuration-file))
+                             (modules %default-xorg-modules)
+                             (xorg-server xorg-server))
+  "Return a derivation that builds a @code{startx} script in which a number of
+X modules are available.  See @code{xorg-wrapper} for more details on the
+arguments.  The result should be used in place of @code{startx}."
+  (define X
+    (xorg-wrapper #:guile guile
+                  #:configuration-file configuration-file
+                  #:modules modules
+                  #:xorg-server xorg-server))
+  (define exp
+    ;; Write a small wrapper around the X server.
+    #~(apply execl #$X #$X ;; Second #$X is for argv[0].
+             "-logverbose" "-verbose" "-nolisten" "tcp" "-terminate"
+             (cdr (command-line))))
+
+  (program-file "startx" exp))
 
 (define* (xinitrc #:key
                   (guile (canonical-package guile-2.0))
