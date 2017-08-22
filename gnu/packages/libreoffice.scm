@@ -837,6 +837,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libetonyek" ,libetonyek)
        ("libexttextcat" ,libexttextcat)
        ("libfreehand" ,libfreehand)
+       ("liblangtag" ,liblangtag)
        ("libmspub" ,libmspub)
        ("libmwaw" ,libmwaw)
        ("libodfgen" ,libodfgen)
@@ -919,15 +920,16 @@ and to return information on pronunciations, meanings and synonyms.")
                      (substitute* (string-append out src)
                        (("Exec=libreoffice[0-9]+\\.[0-9]+ ")
                         (string-append "Exec=" out "/bin/libreoffice "))
-                       (("Icon=libreoffice[0-9]+\\.[0-9]+")
-                        "Icon=libreoffice")
+                       (("Icon=libreoffice.*")
+                        (string-append "Icon=" app "\n"))
                        (("LibreOffice [0-9]+\\.[0-9]+")
                         "LibreOffice"))
-                     (symlink-output src dst)
-                     (install-file (string-append
+                     (symlink-output src dst)))
+                 (define (install-appdata app)
+                   (install-file (string-append
                                     "sysui/desktop/appstream-appdata/"
                                     "libreoffice-" app ".appdata.xml")
-                                   (string-append out "/share/appdata"))))
+                                   (string-append out "/share/appdata")))
                  (symlink-output "/lib/libreoffice/program/soffice"
                                  "/bin/soffice")
                  (symlink-output "/lib/libreoffice/program/soffice"
@@ -940,16 +942,18 @@ and to return information on pronunciations, meanings and synonyms.")
                   "workdir/CustomTarget/sysui/share/libreoffice/openoffice.org.xml"
                   "/share/mime/packages/libreoffice.xml")
                  (for-each install-desktop-file
+                           '("base" "calc" "draw" "impress" "writer"
+                             "math" "startcenter"))
+                 (for-each install-appdata
                            '("base" "calc" "draw" "impress" "writer"))
-                 (mkdir-p (string-append out "/share/icons"))
+                 (mkdir-p (string-append out "/share/icons/hicolor"))
                  (copy-recursively "sysui/desktop/icons/hicolor"
-                                   (string-append out "/share/icons/")))
+                                   (string-append out "/share/icons/hicolor")))
                #t)))
        #:configure-flags
         (list
           "--enable-release-build"
           "--enable-verbose"
-          "--without-parallelism" ; otherwise the build fails
           "--disable-fetch-external" ; disable downloads
           "--with-system-libs" ; enable all --with-system-* flags
           (string-append "--with-boost-libdir="
@@ -969,8 +973,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "--disable-firebird-sdbc" ; embedded firebird
           "--disable-gltf"
           "--without-doxygen"
-          "--disable-gtk3"
-          "--disable-liblangtag")))
+          "--disable-gtk3")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
     (description "LibreOffice is a comprehensive office suite.  It contains
