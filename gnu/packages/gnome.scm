@@ -5142,6 +5142,38 @@ libxml2.")
                "\"/run/current-system/profile/share/wayland")
               (("DATADIR \"/gnome")
                "\"/run/current-system/profile/share/gnome"))
+            (substitute* '("daemon/gdm-session.c")
+              (("set_up_session_environment \\(self\\);")
+               (string-append
+                "set_up_session_environment (self);\n"
+                ;; Propagate GDM_X_SERVER environment variable (which is set
+                ;; by the GDM service, as it's a function of what X modules
+                ;; the user decides to have available) down to worker
+                ;; processes.
+                "gdm_session_set_environment_variable (self, \"GDM_X_SERVER\",\n"
+                "    g_getenv (\"GDM_X_SERVER\"));\n"
+                ;; FIXME: Really glib should be declaring XDG_CONFIG_DIRS as a
+                ;; variable, but it doesn't do that right now.  Anyway
+                ;; /run/current-system/profile/share/gnome-session/sessions/gnome.desktop
+                ;; requires that a number of .desktop files be present, and
+                ;; these special .desktop files are in $XDG_CONFIG_DIRS (which
+                ;; defaults to /etc/xdg if it's not set).  Here we need to
+                ;; provide a value such that the GNOME session's requirements
+                ;; are met (provided GNOME is installed of course).
+                "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
+                "    \"/run/current-system/profile/etc/xdg\");\n"
+                )))
+            ;; Look for custom GDM conf in /run/current-system.
+            (substitute* '("common/gdm-settings-backend.c")
+              (("GDM_CUSTOM_CONF")
+               "/run/current-system/etc/gdm/custom.conf"))
+            ;; Use service-supplied path to X.
+            (substitute* '("daemon/gdm-server.c")
+              (("\\(X_SERVER X_SERVER_ARG_FORMAT")
+               "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
+            (substitute* '("daemon/gdm-x-session.c")
+              (("X_SERVER")
+               "g_getenv (\"GDM_X_SERVER\")"))
             #t)))))
     (native-inputs
      `(("dconf" ,dconf)
