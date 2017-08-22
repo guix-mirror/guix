@@ -249,6 +249,8 @@ that implements both the msgpack and msgpack-rpc specifications.")
                (base32
                 "1vk6pjh0f5k6jwk2sszb9z5169whmiha9ainbdpa1arxlkq7v3b6"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (inputs
      `(("boost" ,boost)))
     (native-inputs
