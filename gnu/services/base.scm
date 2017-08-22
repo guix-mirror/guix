@@ -1220,6 +1220,9 @@ Service Switch}, for an example."
      # Don't log private authentication messages!
      *.info;mail.none;authpriv.none          /var/log/messages
 
+     # Like /var/log/messages, but also including \"debug\"-level logs.
+     *.debug;mail.none;authpriv.none         /var/log/debug
+
      # Same, in a different place.
      *.info;mail.none;authpriv.none          /dev/tty12
 
