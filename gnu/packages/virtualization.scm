@@ -87,7 +87,8 @@
                                       "qemu-CVE-2017-10806.patch"
                                       "qemu-CVE-2017-10911.patch"
                                       "qemu-CVE-2017-11334.patch"
-                                      "qemu-CVE-2017-11434.patch"))
+                                      "qemu-CVE-2017-11434.patch"
+                                      "qemu-CVE-2017-12809.patch"))
              (sha256
               (base32
                "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))
