@@ -33,9 +33,12 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
@@ -391,6 +394,80 @@ MATE desktop environment.")
 specification, the MATE menu layout configuration files, .directory files and
 assorted menu related utility programs.")
     (license (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public mate-applets
+  (package
+    (name "mate-applets")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1nplr8i1mxbxd7pqhcy8j69v25nsp5dk9fq7ffrmjmp39lrf3fh5"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("libxslt" ,libxslt)
+       ("yelp-tools" ,yelp-tools)
+       ("scrollkeeper" ,scrollkeeper)
+       ("gettext" ,gettext-minimal)
+       ("docbook-xml" ,docbook-xml)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("atk" ,atk)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)
+       ("gucharmap" ,gucharmap)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libgtop" ,libgtop)
+       ("libmateweather" ,libmateweather)
+       ("libnotify" ,libnotify)
+       ("libx11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libwnck" ,libwnck)
+       ("mate-panel" ,mate-panel)
+       ("pango" ,pango)
+       ("polkit" ,polkit) ; either polkit or setuid
+       ("python" ,python-2)
+       ("upower" ,upower)
+       ("wireless-tools" ,wireless-tools)))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Various applets for the MATE Panel")
+    (description
+     "Mate-applets includes various small applications for Mate-panel:
+
+@enumerate
+@item accessx-status: indicates keyboard accessibility settings,
+including the current state of the keyboard, if those features are in use.
+@item Battstat: monitors the power subsystem on a laptop.
+@item Character palette: provides a convenient way to access
+non-standard characters, such as accented characters,
+mathematical symbols, special symbols, and punctuation marks.
+@item MATE CPUFreq Applet: CPU frequency scaling monitor
+@item Drivemount: lets you mount and unmount drives and file systems.
+@item Geyes: pair of eyes which follow the mouse pointer around the screen.
+@item Keyboard layout switcher: lets you assign different keyboard
+layouts for different locales.
+@item Modem Monitor: monitors the modem.
+@item Invest: downloads current stock quotes from the Internet and
+displays the quotes in a scrolling display in the applet. The
+applet downloads the stock information from Yahoo! Finance.
+@item System monitor: CPU, memory, network, swap file and resource.
+@item Trash: lets you drag items to the trash folder.
+@item Weather report: downloads weather information from the
+U.S National Weather Service (NWS) servers, including the
+Interactive Weather Information Network (IWIN).
+@end enumerate\n")
+    (license (list license:gpl2+ license:lgpl2.0+ license:gpl3+))))
 
 (define-public mate-panel
   (package
