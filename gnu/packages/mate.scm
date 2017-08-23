@@ -469,6 +469,43 @@ Interactive Weather Information Network (IWIN).
 @end enumerate\n")
     (license (list license:gpl2+ license:lgpl2.0+ license:gpl3+))))
 
+(define-public mate-media
+  (package
+    (name "mate-media")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1l0j71d07898wb6ily09sj1xczwrmcw13wyhxwns7sxw592nwi04"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmatemixer" ,libmatemixer)
+       ("libxml2" ,libxml2)
+       ("mate-applets" ,mate-applets)
+       ("mate-desktop" ,mate-desktop)
+       ("mate-panel" ,mate-panel)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Multimedia related programs for the MATE desktop")
+    (description
+     "Mate-media includes the MATE media tools for MATE, including
+mate-volume-control, a MATE volume control application and applet.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.1+))))
+
 (define-public mate-panel
   (package
     (name "mate-panel")
