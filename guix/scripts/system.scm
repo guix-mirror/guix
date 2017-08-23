@@ -150,7 +150,7 @@ TARGET, and register them."
 (define* (install-bootloader installer-drv
                              #:key
                              bootcfg bootcfg-file
-                             device target)
+                             target)
   "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
   (with-monad %store-monad
     (let* ((gc-root      (string-append target %gc-roots-directory
@@ -169,7 +169,7 @@ TARGET, and register them."
                  (when install
                    (save-load-path-excursion (primitive-load install)))))
         (delete-file temp-gc-root)
-        (leave (G_ "failed to install bootloader on device ~a '~a'~%") install device))
+        (leave (G_ "failed to install bootloader ~a~%") install))
 
       ;; Register bootloader config file as a GC root so that its dependencies
       ;; (background image, font, etc.) are not reclaimed.
@@ -179,13 +179,12 @@ TARGET, and register them."
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   bootloader-installer install-bootloader?
-                  bootcfg bootcfg-file
-                  device)
+                  bootcfg bootcfg-file)
   "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'guix-register' expects.
 
-When INSTALL-BOOTLOADER? is true, install bootloader on DEVICE, using BOOTCFG."
+When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
   (define (maybe-copy to-copy)
     (with-monad %store-monad
       (if (string=? target "/")
@@ -227,7 +226,6 @@ the ownership of '~a' may be incorrect!~%")
         (install-bootloader bootloader-installer
                             #:bootcfg bootcfg
                             #:bootcfg-file bootcfg-file
-                            #:device device
                             #:target target)))))
 
 
@@ -457,12 +455,11 @@ STORE is an open connection to the store."
         (mbegin %store-monad
           (show-what-to-build* drvs)
           (built-derivations drvs)
-          ;; Only install bootloader configuration file. Thus, no installer
-          ;; nor device is provided here.
+          ;; Only install bootloader configuration file. Thus, no installer is
+          ;; provided here.
           (install-bootloader #f
                               #:bootcfg bootcfg
                               #:bootcfg-file bootcfg-file
-                              #:device #f
                               #:target target))))))
 
 
@@ -697,7 +694,6 @@ output when building a system derivation, such as a disk image."
                  (install-bootloader bootloader-installer
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
-                                     #:device device
                                      #:target "/"))))
             ((init)
              (newline)
@@ -707,8 +703,7 @@ output when building a system derivation, such as a disk image."
                       #:install-bootloader? install-bootloader?
                       #:bootcfg bootcfg
                       #:bootcfg-file bootcfg-file
-                      #:bootloader-installer bootloader-installer
-                      #:device device))
+                      #:bootloader-installer bootloader-installer))
             (else
              ;; All we had to do was to build SYS and maybe register an
              ;; indirect GC root.
