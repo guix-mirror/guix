@@ -45,9 +45,7 @@
   (port         mpd-configuration-port
                 (default "6600"))
   (address      mpd-configuration-address
-                (default "any"))
-  (pid-file     mpd-configuration-pid-file
-                (default "/var/run/mpd.pid")))
+                (default "any")))
 
 (define (mpd-config->file config)
   (apply
@@ -56,6 +54,7 @@
    "  type \"pulse\"\n"
    "  name \"MPD\"\n"
    "}\n"
+   "pid_file \"" (mpd-file-name config "pid") "\"\n"
    (map (match-lambda
           ((config-name config-val)
            (string-append config-name " \"" (config-val config) "\"\n")))
@@ -63,10 +62,16 @@
           ("music_directory" ,mpd-configuration-music-dir)
           ("playlist_directory" ,mpd-configuration-playlist-dir)
           ("port" ,mpd-configuration-port)
-          ("bind_to_address" ,mpd-configuration-address)
-          ("pid_file" ,mpd-configuration-pid-file)))))
+          ("bind_to_address" ,mpd-configuration-address)))))
 
-(define (mpd-service config)
+(define (mpd-file-name config file)
+  "Return a path in /var/run/mpd/ that is writable
+   by @code{user} from @code{config}."
+  (string-append "/var/run/mpd/"
+                 (mpd-configuration-user config)
+                 "/" file))
+
+(define (mpd-shepherd-service config)
   (shepherd-service
    (documentation "Run the MPD (Music Player Daemon)")
    (provision '(mpd))
@@ -74,13 +79,27 @@
              (list #$(file-append mpd "/bin/mpd")
                    "--no-daemon"
                    #$(mpd-config->file config))
-             #:pid-file #$(mpd-configuration-pid-file config)))
+             #:pid-file #$(mpd-file-name config "pid")
+             #:log-file #$(mpd-file-name config "log")))
    (stop  #~(make-kill-destructor))))
+
+(define (mpd-service-activation config)
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+        (define %user
+          (getpw #$(mpd-configuration-user config)))
+
+        (let ((directory #$(mpd-file-name config "")))
+          (mkdir-p directory)
+          (chown directory (passwd:uid %user) (passwd:gid %user))))))
 
 (define mpd-service-type
   (service-type
    (name 'mpd)
    (extensions
     (list (service-extension shepherd-root-service-type
-                             (compose list mpd-service))))
+                             (compose list mpd-shepherd-service))
+          (service-extension activation-service-type
+                             mpd-service-activation)))
    (default-value (mpd-configuration))))
