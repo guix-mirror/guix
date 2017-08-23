@@ -15,7 +15,7 @@
   ;; is the label of the target root file system.
   (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (device "/dev/sdX")))
+                (target "/dev/sdX")))
 
   ;; Specify a mapped device for the encrypted root partition.
   ;; The UUID is that returned by 'cryptsetup luksUUID'.

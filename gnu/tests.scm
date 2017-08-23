@@ -206,7 +206,7 @@ the system under test."
     (timezone "Europe/Berlin")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/sdX")))
+    (bootloader (grub-configuration (target "/dev/sdX")))
     (file-systems (cons (file-system
                           (device "my-root")
                           (title 'label)

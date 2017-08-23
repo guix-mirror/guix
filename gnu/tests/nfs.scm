@@ -41,7 +41,7 @@
     (timezone "Europe/Berlin")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/sdX")))
+    (bootloader (grub-configuration (target "/dev/sdX")))
     (file-systems %base-file-systems)
     (users %base-user-accounts)
     (packages (cons*

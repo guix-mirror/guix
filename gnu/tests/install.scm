@@ -59,7 +59,7 @@
     (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device "my-root")
@@ -98,7 +98,7 @@
 
     (bootloader (bootloader-configuration
                  (bootloader extlinux-bootloader-gpt)
-                 (device "/dev/vdb")))
+                 (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device "my-root")
@@ -326,7 +326,7 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device "my-root")
@@ -384,7 +384,7 @@ partition.  In particular, home directories must be correctly created (see
     (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons* (file-system
                            (device "root-fs")
@@ -460,7 +460,7 @@ where /gnu lives on a separate partition.")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (initrd (lambda (file-systems . rest)
               ;; Add a kernel module for RAID-0 (aka. "stripe").
@@ -543,7 +543,7 @@ by 'mdadm'.")
     (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
 
     ;; Note: Do not pass "console=ttyS0" so we can use our passphrase prompt
     ;; detection logic in 'enter-luks-passphrase'.
@@ -670,7 +670,7 @@ build (current-guix) and then store a couple of full system images.")
     (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (device "/dev/vdb")))
+    (bootloader (grub-configuration (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
     (file-systems (cons (file-system
                           (device "my-root")

@@ -15,7 +15,7 @@
   ;; Partition mounted on /boot/efi.
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
-                (device "/boot/efi")))
+                (target "/boot/efi")))
 
   ;; Assume the target root file system is labelled "my-root".
   (file-systems (cons* (file-system

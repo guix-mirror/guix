@@ -612,17 +612,16 @@ and TARGET arguments."
 (define* (perform-action action os
                          #:key install-bootloader?
                          dry-run? derivations-only?
-                         use-substitutes? device target
+                         use-substitutes? bootloader-target target
                          image-size file-system-type full-boot?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
-bootloader; DEVICE is the target devices for bootloader; TARGET is the target
-root directory; IMAGE-SIZE is the size of the image to be built, for the
-'vm-image' and 'disk-image' actions.
-The root filesystem is created as a FILE-SYSTEM-TYPE filesystem.
-FULL-BOOT? is used for the 'vm' action;
-it determines whether to boot directly to the kernel or to the bootloader.
+bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
+target root directory; IMAGE-SIZE is the size of the image to be built, for
+the 'vm-image' and 'disk-image' actions.  The root filesystem is created as a
+FILE-SYSTEM-TYPE filesystem.  FULL-BOOT? is used for the 'vm' action; it
+determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
@@ -662,7 +661,7 @@ output when building a system derivation, such as a disk image."
               (target    (or target "/")))
           (bootloader-installer-derivation installer
                                            bootloader-package
-                                           device target)))
+                                           bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
@@ -895,8 +894,9 @@ resulting from command-line parsing."
          (target      (match args
                         ((first second) second)
                         (_ #f)))
-         (device      (and bootloader?
-                           (bootloader-configuration-device
+         (bootloader-target
+                      (and bootloader?
+                           (bootloader-configuration-target
                             (operating-system-bootloader os)))))
 
     (with-store store
@@ -929,7 +929,8 @@ resulting from command-line parsing."
                                                       (_ #f))
                                                     opts)
                              #:install-bootloader? bootloader?
-                             #:target target #:device device
+                             #:target target
+                             #:bootloader-target bootloader-target
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
 

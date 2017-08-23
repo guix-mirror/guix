@@ -14,7 +14,7 @@
   ;; the label of the target root file system.
   (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (device "/dev/sdX")))
+                (target "/dev/sdX")))
   (file-systems (cons (file-system
                         (device "my-root")
                         (title 'label)
