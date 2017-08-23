@@ -5226,6 +5226,53 @@ cluster without needing to write any wrapper code yourself.")
 (define-public python2-gridmap
   (package-with-python2 python-gridmap))
 
+(define-public python-honcho
+  (package
+    (name "python-honcho")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/nickstenning/honcho/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest-3.0)
+       ("python-mock" ,python-mock)
+       ("python-tox" ,python-tox)
+       ("which" ,which))) ;for tests
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; fix honcho path in testsuite
+             (substitute* "tests/conftest.py"
+               (("'honcho'") (string-append "'" (assoc-ref outputs "out")
+                                            "/bin/honcho" "'")))
+             ;; It's easier to run tests after install.
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "py.test" "-v")))))))
+    (home-page "https://github.com/nickstenning/honcho")
+    (synopsis "Manage Procfile-based applications")
+    (description
+      "A Procfile is a file which describes how to run an application
+consisting of serveral processes. honcho starts all listed processes.
+The output of all running processes is collected by honcho and
+displayed.")
+    (license license:expat)))
+
+(define-public python2-honcho
+  (package-with-python2 python-honcho))
+
 (define-public python-pexpect
   (package
     (name "python-pexpect")
