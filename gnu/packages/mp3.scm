@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,8 +115,12 @@ versions of ID3v2.")
             (sha256
              (base32
               "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))
+            (modules '((guix build utils)))
+            ;; Don't use bundled zlib
+            (snippet '(delete-file-recursively "zlib"))
             (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
    (build-system gnu-build-system)
+   (inputs `(("zlib" ,zlib)))
    (arguments
     `(#:phases
        (alist-cons-before
