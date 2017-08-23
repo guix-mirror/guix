@@ -635,6 +635,71 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
     ;; for us.
     (license license:gpl2+)))
 
+(define-public mate-control-center
+  (package
+    (name "mate-control-center")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0flnn0h8f5aqyccwrlv7qxchvr3kqmlfdga6wq28d55zkpv5m7dl"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("yelp-tools" ,yelp-tools)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("kbproto" ,kbproto)
+       ("randrproto" ,randrproto)
+       ("renderproto" ,renderproto)
+       ("scrnsaverproto" ,scrnsaverproto)
+       ("xextpro" ,xextproto)
+       ("xproto" ,xproto)
+       ("xmodmap" ,xmodmap)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("caja" ,caja)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmatekbd" ,libmatekbd)
+       ("libx11" ,libx11)
+       ("libxcursor" ,libxcursor)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxklavier" ,libxklavier)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("marco" ,marco)
+       ("mate-desktop" ,mate-desktop)
+       ("mate-menus" ,mate-menus)
+       ("mate-settings-daemon" ,mate-settings-daemon)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)))
+    (propagated-inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf+svg) ; mate-slab.pc
+       ("librsvg" ,librsvg))) ; mate-slab.pc
+    (home-page "https://mate-desktop.org/")
+    (synopsis "MATE Desktop configuration tool")
+    (description
+     "MATE control center is MATE's main interface for configuration
+of various aspects of your desktop.")
+    (license license:gpl2+)))
+
 (define-public marco
   (package
     (name "marco")
