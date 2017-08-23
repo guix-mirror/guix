@@ -104,8 +104,8 @@ themes for both gtk+-2 and gtk+-3.")
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("yelp-tools" ,yelp-tools)))
-       ;;("gtk-doc" ,gtk-doc))) ; add back in when gtk-doc builds
+       ("yelp-tools" ,yelp-tools)
+       ("gtk-doc" ,gtk-doc)))
     (inputs
      `(("gtk+" ,gtk+)
        ("libxrandr" ,libxrandr)
