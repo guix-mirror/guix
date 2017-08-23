@@ -3473,7 +3473,7 @@ and is very extensible.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.18.1")
+    (version "0.19.0")
     (source
      (origin
        (method url-fetch)
@@ -3483,7 +3483,7 @@ and is very extensible.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1hwswckdmd27f7k1jvwdc0m4mqrgxl2s245yq1scq34v124bjqgq"))))
+         "0g7q4ri75mj93wpa9bp83a3jmrf3dm5va9h7k4zkbcxr6bgqka15"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
