@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +69,8 @@ dependencies.")
     (synopsis "X11 window manager toolkit in Scheme")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.markwitmer.com/dist/guile-wm-"
+              (uri (string-append "http://web.archive.org/web/20161005084324/"
+                                  "http://www.markwitmer.com/dist/guile-wm-"
                                   version ".tar.gz"))
               (sha256
                (base32
