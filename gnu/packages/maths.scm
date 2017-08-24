@@ -149,14 +149,14 @@ interactive dialogs to guide them.")
 (define-public coda
   (package
     (name "coda")
-    (version "2.18")
+    (version "2.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/stcorp/coda/releases/download/"
                            version "/coda-" version ".tar.gz"))
        (sha256
-        (base32 "11asla1ap8vd73farqjlpb179sfiy0biydcwxjfcakrp9sf8v9bs"))
+        (base32 "01fnqcby9jijvf3jxr1fk4bny059lvvq5wbqm7ns60ilykfdnm6a"))
        (patches (search-patches "coda-use-system-libs.patch"))
        (modules '((guix build utils)))
        (snippet
