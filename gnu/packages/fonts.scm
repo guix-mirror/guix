@@ -1013,45 +1013,6 @@ have been optimized for beautiful display on all common platforms and display
 resolutions.")
     (license license:asl2.0)))
 
-(define-public font-mathjax
-  (package
-    (name "font-mathjax")
-    (version "2.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mathjax/MathJax/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0sbib5lk0jrvbq6s72ag6ss3wjlz5wnk07ddxij1kp96yg3c1d1b"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (set-path-environment-variable
-          "PATH" '("bin") (map (match-lambda
-                                 ((_ . input)
-                                  input))
-                               %build-inputs))
-         (let ((install-directory (string-append %output "/share/fonts/mathjax")))
-           (mkdir-p install-directory)
-           (zero? (system* "tar" "-C" install-directory "-xvf"
-                           (assoc-ref %build-inputs "source")
-                           "MathJax-2.7.1/fonts" "--strip" "2"))))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
-    (home-page "https://www.mathjax.org/")
-    (synopsis "Fonts for MathJax")
-    (description "This package contains the fonts required for MathJax.")
-    (license license:asl2.0)))
-
 (define-public font-open-dyslexic
   (package
     (name "font-open-dyslexic")
