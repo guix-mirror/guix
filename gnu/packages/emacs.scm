@@ -28,6 +28,7 @@
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5364,4 +5365,36 @@ the nick color and the background color
 enables you to easily define search engines, bind them to keybindings, and
 query them from the comfort of your editor.")
     (home-page "https://github.com/hrs/engine-mode")
+    (license license:gpl3+)))
+
+(define-public emacs-prop-menu
+  (package
+    (name "emacs-prop-menu")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://stable.melpa.org/packages/prop-menu-"
+             version ".el"))
+       (sha256
+        (base32
+         "01bk4sjafzz7gqrkv9jg0pa85qr34vbk3q8ga2b0m61bndywzgpr"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/david-christiansen/prop-menu-el")
+    (synopsis
+     "Create and display a context menu based on text and overlay properties")
+    (description
+     "This is a library for computing context menus based on text
+properties and overlays.  The intended use is to have tools that
+annotate source code and others that use these annotations, without
+requiring a direct coupling between them, but maintaining
+discoverability.
+
+Major modes that wish to use this library should first define an
+appropriate value for @code{prop-menu-item-functions}.  Then, they should
+bind @code{prop-menu-by-completing-read} to an appropriate
+key.  Optionally, a mouse pop-up can be added by binding
+@code{prop-menu-show-menu} to a mouse event.")
     (license license:gpl3+)))
