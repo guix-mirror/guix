@@ -13930,7 +13930,7 @@ parse many formal languages.")
 (define-public python2-cliapp
   (package
     (name "python2-cliapp")
-    (version "1.20160724")
+    (version "1.20170823")
     (source
      (origin
        (method url-fetch)
@@ -13939,7 +13939,7 @@ parse many formal languages.")
              version ".tar.gz"))
        (sha256
         (base32
-         "025cyi75vxyghbm4hav8dz4fzwksshddavy9g9fwr440awcvw74f"))))
+         "1i9gik0xrj6jmi95s5w988jl1y265baz5xm5pbqdyvsh8h9ln6yq"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
