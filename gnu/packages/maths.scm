@@ -1946,6 +1946,55 @@ bio-chemistry.")
     ;; See LICENSE_en.txt
     (license license:cecill-c)))
 
+(define-public scotch32
+  ;; This is the 'INTSIZE32' variant, which uses 32-bit integers, as needed by
+  ;; some applications.
+  (package (inherit scotch)
+    (name "scotch32")
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-phases)
+        `(modify-phases ,scotch-phases
+          (replace
+           'configure
+           (lambda _
+             (call-with-output-file "Makefile.inc"
+               (lambda (port)
+                 (format port "
+EXE =
+LIB = .a
+OBJ = .o
+MAKE = make
+AR = ar
+ARFLAGS = -ruv
+CAT = cat
+CCS = gcc
+CCP = mpicc
+CCD = gcc
+CPPFLAGS =~{ -D~a~}
+CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
+LDFLAGS = -lz -lm -lrt -lpthread
+CP = cp
+LEX = flex -Pscotchyy -olex.yy.c
+LN = ln
+MKDIR = mkdir
+MV = mv
+RANLIB = ranlib
+YACC = bison -pscotchyy -y -b y
+"
+                        '("COMMON_FILE_COMPRESS_GZ"
+                          "COMMON_PTHREAD"
+                          "COMMON_RANDOM_FIXED_SEED"
+                          "INTSIZE32"   ;use 32-bit integers.  See INSTALL.txt
+                          ;; Prevents symbolc clashes with libesmumps
+                          "SCOTCH_RENAME"
+                          ;; XXX: Causes invalid frees in superlu-dist tests
+                          ;; "SCOTCH_PTHREAD"
+                          ;; "SCOTCH_PTHREAD_NUMBER=2"
+                          "restrict=__restrict"))))))))))
+    (synopsis
+     "Programs and libraries for graph algorithms (32-bit integers)")))
+
 (define-public pt-scotch
   (package (inherit scotch)
     (name "pt-scotch")
