@@ -49,7 +49,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages golang)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -987,7 +986,7 @@ programming.  Iosevka is completely generated from its source code.")
 Holmes type foundry, released under the same license as the Go programming
 language.  It includes a set of proportional, sans-serif fonts, and a set of
 monospace, slab-serif fonts.")
-      (license (package-license go-1.4)))))
+      (license license:bsd-3))))
 
 (define-public font-google-material-design-icons
   (package
