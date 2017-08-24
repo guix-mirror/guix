@@ -14133,8 +14133,20 @@ iterating over input files.")
         (base32
          "0vivqbw7ddhsq1zj3g9cvvv4f0phl0pis2smsnwcr2szz2fk3hl6"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
+       ("python2-pep8" ,python2-pep8)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             (zero? (system* "make" "check")))))))
     (home-page "https://liw.fi/ttystatus/")
     (synopsis "Python library for showing progress reporting and
 status updates on terminals")
