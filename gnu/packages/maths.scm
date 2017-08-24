@@ -648,16 +648,30 @@ incompatible with HDF5.")
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (outputs '("out"       ; core library
+               "fortran")) ; fortran interface
     (arguments
      `(;; Some of the users, notably Flann, need the C++ interface.
-       #:configure-flags '("--enable-cxx")
+       #:configure-flags '("--enable-cxx"
+                           "--enable-fortran"
+                           "--enable-fortran2003")
 
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "configure"
                (("/bin/mv") "mv"))
+             (substitute* "fortran/src/Makefile.in"
+               (("libhdf5_fortran_la_LDFLAGS =")
+                (string-append "libhdf5_fortran_la_LDFLAGS = -Wl-rpath="
+                               (assoc-ref outputs "fortran") "/lib")))
+             (substitute* "hl/fortran/src/Makefile.in"
+               (("libhdf5hl_fortran_la_LDFLAGS =")
+                (string-append "libhdf5hl_fortran_la_LDFLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "fortran") "/lib")))
              #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -666,7 +680,40 @@ incompatible with HDF5.")
                (substitute* (find-files bin "h5p?cc")
                  (("-lz" lib)
                   (string-append "-L" zlib "/lib " lib)))
-               #t))))))
+               #t)))
+         (add-after 'install 'split
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; Move all fortran-related files
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (lib (string-append out "/lib"))
+                     (inc (string-append out "/include"))
+                     (ex (string-append out "/share/hdf5_examples/fortran"))
+                     (fort (assoc-ref outputs "fortran"))
+                     (fbin (string-append fort "/bin"))
+                     (flib (string-append fort "/lib"))
+                     (finc (string-append fort "/include"))
+                     (fex (string-append fort "/share/hdf5_examples/fortran")))
+                (mkdir-p fbin)
+                (mkdir-p flib)
+                (mkdir-p finc)
+                (mkdir-p fex)
+                (rename-file (string-append bin "/h5fc")
+                             (string-append fbin "/h5fc"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append flib "/" (basename file))))
+                          (find-files lib ".*fortran.*"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append finc "/" (basename file))))
+                          (find-files inc ".*mod"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append fex "/" (basename file))))
+                          (find-files ex ".*"))
+                (delete-file-recursively ex))
+              #t)))))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
