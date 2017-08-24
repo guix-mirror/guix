@@ -918,6 +918,29 @@ similar to MATLAB, GNU Octave or SciPy.")
        ("libjpeg" ,libjpeg)))
     (arguments
      `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
+
+       #:phases (modify-phases %standard-phases
+         (add-before 'configure 'fix-source-date
+           (lambda _
+             ;; As we ${SOURCE_DATE_EPOCH} evaluates to "1" in the build
+             ;; environment, `date -u -d ${SOURCE_DATE_EPOCH}` will evaluate
+             ;; to '1st hour of the current day', and therefore makes the
+             ;; package not reproducible.
+             (substitute* "./configure"
+               (("date -u -d \"\\$\\{SOURCE_DATE_EPOCH\\}\"")
+                "date --date='@0'"))
+             #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libnetcdf.settings contains the full filename of the compilers
+             ;; used to build the library.  We truncate the hashes of those
+             ;; filenames to avoid unnecessary references to the corresponding
+             ;; store items.
+             (substitute* "libnetcdf.settings"
+               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+                (string-append prefix (string-take hash 10) "...")))
+             #t)))
+
        #:parallel-tests? #f))           ;various race conditions
     (home-page "http://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
