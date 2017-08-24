@@ -13956,7 +13956,7 @@ iterating over input files.")
 (define-public python2-ttystatus
   (package
     (name "python2-ttystatus")
-    (version "0.32")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
@@ -13965,7 +13965,7 @@ iterating over input files.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0b5g889jj23r2w1hi300cdldx6jvspanp0ybf5n1qvdvl150aamf"))))
+         "0vivqbw7ddhsq1zj3g9cvvv4f0phl0pis2smsnwcr2szz2fk3hl6"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
