@@ -34,7 +34,8 @@
     (version "1.3")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.markwitmer.com/dist/guile-xcb-"
+             (uri (string-append "http://web.archive.org/web/20150803094848/"
+                                 "http://www.markwitmer.com/dist/guile-xcb-"
                                  version ".tar.gz"))
              (sha256
               (base32
