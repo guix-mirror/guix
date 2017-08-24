@@ -14093,7 +14093,22 @@ parse many formal languages.")
          "1i9gik0xrj6jmi95s5w988jl1y265baz5xm5pbqdyvsh8h9ln6yq"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             ;; Disable python3 tests
+             (substitute* "check"
+               (("python3") "# python3"))
+             (zero? (system* "./check")))))))
+    (native-inputs
+     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
+       ("python2-pep8" ,python2-pep8)))
     (propagated-inputs
      `(("python2-pyaml" ,python2-pyaml)))
     (home-page "https://liw.fi/cliapp/")
