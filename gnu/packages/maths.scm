@@ -605,7 +605,18 @@ computations.")
                (("@HDF_BUILD_SHARED_TRUE@AM_LDFLAGS = \
 -R\\$\\(abs_top_builddir\\)/mfhdf/libsrc/\\.libs \
 -R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") ""))
-             #t)))))
+             #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libhdf4.settings contains the full path of the
+             ;; compilers used, and its contents are included in
+             ;; .so-files.  We truncate the hashes to avoid
+             ;; unnecessary store references to those compilers:
+             (substitute* "libhdf4.settings"
+               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+                (string-append prefix (string-take hash 10) "...")))
+             #t))
+         )))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
