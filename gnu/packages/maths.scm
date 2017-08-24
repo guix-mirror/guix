@@ -2018,6 +2018,29 @@ YACC = bison -pscotchyy -y -b y
             (lambda _ (zero? (system* "make" "ptcheck"))))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
+(define-public pt-scotch32
+  (package (inherit scotch32)
+    (name "pt-scotch32")
+    (propagated-inputs
+     `(("openmpi" ,openmpi)))                     ;headers include MPI headers
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-phases)
+        `(modify-phases ,scotch-phases
+           (replace 'build
+             (lambda _
+               (and
+                (zero? (system* "make"
+                                (format #f "-j~a" (parallel-job-count))
+                                "ptscotch" "ptesmumps"))
+                ;; Install the serial metis compatibility library
+                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+           (replace 'check
+             (lambda _
+               (zero? (system* "make" "ptcheck"))))))))
+    (synopsis
+     "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
+
 (define-public metis
   (package
     (name "metis")
