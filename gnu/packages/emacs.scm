@@ -5398,3 +5398,28 @@ bind @code{prop-menu-by-completing-read} to an appropriate
 key.  Optionally, a mouse pop-up can be added by binding
 @code{prop-menu-show-menu} to a mouse event.")
     (license license:gpl3+)))
+
+(define-public emacs-idris-mode
+  (package
+    (name "emacs-idris-mode")
+    (version "0.9.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://stable.melpa.org/packages/idris-mode-"
+             version ".tar"))
+       (sha256
+        (base32
+         "0ld4kfwnyyhlsnj5f6cbn4is4mpxdqalk2aifkw02r00mbr9n294"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-prop-menu" ,emacs-prop-menu)))
+    (home-page
+     "https://github.com/idris-hackers/idris-mode")
+    (synopsis "Major mode for editing Idris code")
+    (description
+     "This is an Emacs mode for editing Idris code.  It requires the latest
+version of Idris, and some features may rely on the latest Git version of
+Idris.")
+    (license license:gpl3+)))
