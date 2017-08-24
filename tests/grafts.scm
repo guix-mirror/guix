@@ -28,7 +28,9 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
-  #:use-module (rnrs io ports))
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
+  #:use-module (ice-9 vlist))
 
 (define %store
   (open-connection-for-tests))
@@ -441,5 +443,35 @@
            ;; P2->P2R graft, which is not what we want.
            (and (file-exists? (string-append out "/p2/replacement"))
                 (file-exists? (string-append out "/p2/p1/replacement")))))))
+
+(define buffer-size
+  ;; Must be equal to REQUEST-SIZE in 'replace-store-references'.
+  (expt 2 20))
+
+(test-equal "replace-store-references, <http://bugs.gnu.org/28212>"
+  (string-append (make-string (- buffer-size 47) #\a)
+                 "/gnu/store/" (make-string 32 #\8)
+                 "-SoMeTHiNG"
+                 (list->string (map integer->char (iota 77 33))))
+
+  ;; Create input data where the right-hand-size of the dash ("-something"
+  ;; here) goes beyond the end of the internal buffer of
+  ;; 'replace-store-references'.
+  (let* ((content     (string-append (make-string (- buffer-size 47) #\a)
+                                     "/gnu/store/" (make-string 32 #\7)
+                                     "-something"
+                                     (list->string
+                                      (map integer->char (iota 77 33)))))
+         (replacement (alist->vhash
+                       `((,(make-string 32 #\7)
+                          . ,(string->utf8 (string-append
+                                            (make-string 32 #\8)
+                                            "-SoMeTHiNG")))))))
+    (call-with-output-string
+      (lambda (output)
+        ((@@ (guix build graft) replace-store-references)
+         (open-input-string content) output
+         replacement
+         "/gnu/store")))))
 
 (test-end)
