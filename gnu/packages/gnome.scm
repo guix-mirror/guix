@@ -59,6 +59,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -99,6 +100,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages music)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -6571,30 +6573,47 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        (sha256
         (base32
          "0y9nmwrplz4mlvc2badfbyjj97ksn6qqis3rgm8lvp5llsk1583w"))))
+    ;; TODO: Use meson-build-system
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
                            ,@%glib-or-gtk-build-system-modules)
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'wrap-program
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out               (assoc-ref outputs "out"))
-                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-                        (wrap-program (string-append out "/bin/lollypop")
-                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-                      #t))
-                  (add-after 'install 'wrap
-                    (@@ (guix build python-build-system) wrap)))))
+       #:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; remove post-install script, we update the caches later
+               (substitute* "meson.build"
+                 (("meson.add_install_script\\('meson_post_install.py'\\)") ""))
+               (zero?
+                 (system* "meson" "builddir" (string-append "--prefix=" out))))))
+         (replace 'install
+           (lambda _ (zero? (system* "ninja" "-C" "builddir" "install"))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/lollypop")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t))
+         (add-after 'install 'wrap
+           (@@ (guix build python-build-system) wrap)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("ninja" ,ninja)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
+       ("meson" ,meson)
        ("python" ,python)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-gst" ,python-gst)
@@ -6606,7 +6625,6 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
     (propagated-inputs
      `(;; gst-plugins-base is required to start Lollypop,
        ;; the others are required to play streaming.
-       ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)))
     (home-page "https://gnumdk.github.io/lollypop-web")
