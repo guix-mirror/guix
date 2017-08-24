@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,4 +122,38 @@ file.
 Before each prompt, direnv checks for the existence of a .envrc file in the
 current and parent directories.  This file is then used to alter the
 environmental variables of the current shell.")
+    (license expat)))
+
+(define-public fzy
+  (package
+    (name "fzy")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jhawthorn/fzy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xfgxqbkcpi2n4381kj3fq4026qs6by7xhl5gn0fgp3dh232c63j"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/jhawthorn/fzy")
+    (synopsis "Fast fuzzy text selector for the terminal with an advanced
+scoring algorithm")
+    (description
+     "Most other fuzzy matchers sort based on the length of a match.  fzy tries
+to find the result the user intended.  It does this by favouring matches on
+consecutive letters and starts of words.  This allows matching using acronyms
+or different parts of the path.
+
+fzy is designed to be used both as an editor plugin and on the command
+line.  Rather than clearing the screen, fzy displays its interface directly
+below the current cursor position, scrolling the screen if necessary.")
     (license expat)))
