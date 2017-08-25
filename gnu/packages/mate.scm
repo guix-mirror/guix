@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -73,12 +73,9 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk-engines" ,gtk-engines)
-       ("murrine" ,murrine)))
+       ("intltool" ,intltool)
+       ("gdk-pixbuf" ,gdk-pixbuf) ; gdk-pixbuf+svg isn't needed
+       ("gtk" ,gtk+-2)))
     (home-page "https://mate-desktop.org/")
     (synopsis
      "Official themes for the MATE desktop")
