@@ -5780,6 +5780,7 @@ programs that cannot use the window system directly.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs

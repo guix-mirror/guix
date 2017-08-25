@@ -861,6 +861,7 @@ extremely small.")
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-file-temp" ,perl-file-temp)
+       ("perl-module-install" ,perl-module-install)
        ("perl-package-stash" ,perl-package-stash)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
@@ -914,7 +915,8 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cache-cache" ,perl-cache-cache)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
@@ -937,6 +939,8 @@ built-in caching support.")
         (base32
          "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
     (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
@@ -967,6 +971,7 @@ introspected and examined.")
        ("perl-config-general" ,perl-config-general)
        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
+       ("perl-module-install" ,perl-module-install)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
        ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)

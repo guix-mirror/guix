@@ -1054,7 +1054,8 @@ to perl-code, for faster generation of access_log lines.")
          "0j1rrld13cjk7ks92b5hv3xw4rfm2lvmksb4rlzd8mx0a0wj0rc5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-http-request-ascgi" ,perl-http-request-ascgi)))
+     `(("perl-http-request-ascgi" ,perl-http-request-ascgi)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-data-visitor" ,perl-data-visitor)
@@ -1078,7 +1079,8 @@ action, which will forward to the first available view.")
                 "1mpa64p61f3dp24xnhdraswch4sqj5vyv1iivcvvh5h0xi0haiy0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     `(("perl-test-requires" ,perl-test-requires)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-class-inspector" ,perl-class-inspector)
@@ -1120,6 +1122,7 @@ regular method.")
        ("perl-catalyst-plugin-session-state-cookie"
         ,perl-catalyst-plugin-session-state-cookie)
        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
@@ -1149,6 +1152,8 @@ DBIx::Class.")
         (base32
          "0wfj4vnn2cvk6jh62amwlg050p37fcwdgrn9amcz24z6w4qgjqvz"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-moose" ,perl-moose)))
@@ -1247,6 +1252,7 @@ when the dispatch type is first seen in your application.")
   (build-system perl-build-system)
   (native-inputs
    `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+     ("perl-module-install" ,perl-module-install)
      ("perl-test-exception" ,perl-test-exception)
      ("perl-test-requires" ,perl-test-requires)))
   (propagated-inputs
@@ -1315,6 +1321,8 @@ for you.  It will work even with Catalyst debug logging turned off.")
         (base32
          "0v6hb4r1wv3djrnqvnjcn3xx1scgqzx8nyjdg9lfc1ybvamrl0rn"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
        ("perl-catalyst-runtime" ,perl-catalyst-runtime)
@@ -1350,7 +1358,8 @@ system authorises them to do).")
          "0l83lkwmq0lngwh8b1rv3r719pn8w1gdbyhjqm74rnd0wbjl8h7f"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-catalyst-plugin-authentication"
         ,perl-catalyst-plugin-authentication)
@@ -1403,7 +1412,8 @@ Catalyst.")
          "19j7p4v7mbx6wrmpvmrnd974apx7hdl2s095ga3b9zcbdrl77h5q"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-path-class" ,perl-path-class)))
+     `(("perl-path-class" ,perl-path-class)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-config-any" ,perl-config-any)
@@ -1430,7 +1440,8 @@ formats.")
          "171vi9xcl775scjaw4fcfdmqvz0rb1nr0xxg2gb3ng6bjzpslhgv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
@@ -1461,6 +1472,8 @@ management in web applications together: the state, and the store.")
         (base32
          "1rvxbfnpf9x2pc2zgpazlcgdlr2dijmxgmcs0m5nazs0w6xikssb"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
        ("perl-catalyst-runtime" ,perl-catalyst-runtime)
@@ -1519,6 +1532,8 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
         (base32
          "1b2ksz74cpigxqzf63rddar3vfmnbpwpdcbs11v0ml89pb8ar79j"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-devel-stacktrace" ,perl-devel-stacktrace)
@@ -1544,6 +1559,8 @@ number, file name, and code context surrounding the line number.")
         (base32
          "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-mime-types" ,perl-mime-types)
@@ -1644,7 +1661,8 @@ run an application on the web, either by doing them itself, or by letting you
     (native-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-catalystx-roleapplicator" ,perl-catalystx-roleapplicator)
-       ("perl-http-message" ,perl-http-message)))
+       ("perl-http-message" ,perl-http-message)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
@@ -1673,6 +1691,7 @@ replaced with the contents of the X-Request-Base header.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-simple" ,perl-test-simple)
        ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
        ("perl-text-csv" ,perl-text-csv)
@@ -1698,7 +1717,8 @@ table based report in a variety of formats (CSV, HTML, etc.).")
          "0x943j1n2r0zqanyzdrs1xsnn8ayn2wqskn7h144xcqa6v6gcisl"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-yaml" ,perl-yaml)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-yaml" ,perl-yaml)))
     (inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-json-maybexs" ,perl-json-maybexs)
@@ -1807,7 +1827,8 @@ application classes.")
          "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
     (propagated-inputs
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-moose" ,perl-moose)
@@ -3045,6 +3066,8 @@ either mocked HTTP or a locally spawned server.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
        ("perl-html-form" ,perl-html-form)
@@ -3077,6 +3100,7 @@ WWW::Mechanize that incorporates features for web application testing.")
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
        ("perl-catalyst-plugin-session-state-cookie"
         ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-test-pod" ,perl-test-pod)
        ("perl-test-utf8" ,perl-test-utf8)))
