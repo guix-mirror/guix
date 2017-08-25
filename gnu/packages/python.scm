@@ -6225,14 +6225,14 @@ translate the complete SQLite API into Python.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "3.6.0")
+    (version "3.8.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
          (base32
-          "1pvbmiy2m7jwv493kilbghhj2pkh8wy1na3ji350vhzhlwlclx4w"))))
+          "15nvf6n285n282682qyw3wihsncb0x5amdhyi4b83bfa2nz74vvk"))))
     (build-system python-build-system)
     (inputs
       `(("libxml2" ,libxml2)
