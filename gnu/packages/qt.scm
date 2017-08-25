@@ -473,6 +473,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                        "./configure"
                        "-verbose"
                        "-prefix" out
+                       "-docdir" (string-append out "/share/doc/qt5")
+                       "-headerdir" (string-append out "/include/qt5")
+                       "-archdatadir" (string-append out "/lib/qt5")
+                       "-datadir" (string-append out "/share/qt5")
+                       "-examplesdir" (string-append
+                                       out "/share/doc/qt5/examples")
                        "-opensource"
                        "-confirm-license"
                        ;; Do not build examples; if desired, these could go
@@ -502,38 +508,31 @@ developers using C++ or QML, a CSS & JavaScript like language.")
          (add-after 'install 'patch-qt_config.prf
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (mkspecs (string-append out "/lib/qt5/mkspecs"))
                     (qt_config.prf (string-append
-                                    out "/mkspecs/features/qt_config.prf")))
+                                    mkspecs "/features/qt_config.prf")))
                ;; For each Qt module, let `qmake' uses search paths in the
                ;; module directory instead of all in QT_INSTALL_PREFIX.
                (substitute* qt_config.prf
                  (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
-                  "$$replace(dir, mkspecs/modules, include)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../include/qt5))")
                  (("\\$\\$\\[QT_INSTALL_LIBS\\]")
-                  "$$replace(dir, mkspecs/modules, lib)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
                  (("\\$\\$\\[QT_HOST_LIBS\\]")
-                  "$$replace(dir, mkspecs/modules, lib)")
-                 (("\\$\\$\\[QT_INSTALL_PLUGINS\\]")
-                  "$$replace(dir, mkspecs/modules, plugins)")
-                 (("\\$\\$\\[QT_INSTALL_LIBEXECS\\]")
-                  "$$replace(dir, mkspecs/modules, libexec)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
                  (("\\$\\$\\[QT_INSTALL_BINS\\]")
-                  "$$replace(dir, mkspecs/modules, bin)")
-                 (("\\$\\$\\[QT_INSTALL_IMPORTS\\]")
-                  "$$replace(dir, mkspecs/modules, imports)")
-                 (("\\$\\$\\[QT_INSTALL_QML\\]")
-                  "$$replace(dir, mkspecs/modules, qml)"))
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
                #t))))))
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")
-            (files '("")))
+            (files '("lib/qt5")))
            (search-path-specification
             (variable "QML2_IMPORT_PATH")
-            (files '("qml")))
+            (files '("lib/qt5/qml")))
            (search-path-specification
             (variable "QT_PLUGIN_PATH")
-            (files '("plugins")))
+            (files '("lib/qt5/plugins")))
            (search-path-specification
             (variable "XDG_DATA_DIRS")
             (files '("share")))
@@ -866,6 +865,18 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
              (snippet
                ;; The examples try to build and cause the build to fail
               '(delete-file-recursively "examples"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-ld-library-path
+             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-09/msg00019.html>
+             ;;
+             ;; Make the uninstalled libQt5WaylandClient.so.5 available to the
+             ;; wayland platform plugin.
+             (lambda _
+               (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/lib"))
+               #t))))))
     (native-inputs
      `(("glib" ,glib)
        ("perl" ,perl)
