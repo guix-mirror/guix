@@ -1564,7 +1564,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90082")
+    (version "5.90115")
     (source
      (origin
        (method url-fetch)
@@ -1572,10 +1572,11 @@ MIME type directly to the browser, without being processed through Catalyst.")
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "1gs70nq4rikpq6siwds9disb1z03vwjzf979xi9kf7saa1drfncs"))))
+         "0kh3ng6pjpxmndq9vrn515f70x7h44ish5bsgjwj4pjvchcyivzm"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-cgi-struct" ,perl-cgi-struct)
