@@ -51,7 +51,6 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("gtk+" ,gtk+)
        ("icon-naming-utils" ,icon-naming-utils)))
     (home-page "https://mate-desktop.org/")
     (synopsis "The MATE desktop environment icon theme")
