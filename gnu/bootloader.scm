@@ -132,9 +132,9 @@
   (or (%bootloader-configuration-target config)
       (let ((device (bootloader-configuration-device config)))
         (when device
-          (issue-deprecation-warning
-           "The 'device' field of bootloader configurations is deprecated."
-           "Use 'target' instead."))
+          (warning
+           (G_ "The 'device' field of bootloader configurations is deprecated.~%"))
+          (warning (G_ "Use 'target' instead.~%")))
         device)))
 
 
