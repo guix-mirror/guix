@@ -1,0 +1,22 @@
+This patch makes emission of /CreationDate and /ModDate headers optional.
+
+If the environment variable GS_GENERATE_UUIDS is set to "0" or "no", it will
+not write out the "/ID" field (if that's permissible).
+
+Upstream does not want to do this.
+
+See: https://bugs.ghostscript.com/show_bug.cgi?id=698208
+diff --git a/orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c b/bb/gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c
+index 0fb067e..b342e2c 100644
+--- orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c
++++ gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c
+@@ -305,6 +305,9 @@ pdf_initialize_ids(gx_device_pdf * pdev)
+      * date and time, rather than (for example) %%CreationDate from the
+      * PostScript file.  We think this is wrong, but we do the same.
+      */
++    if (!getenv("GS_GENERATE_UUIDS") ||
++        (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 &&
++         strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))
+     {
+         struct tm tms;
+         time_t t;

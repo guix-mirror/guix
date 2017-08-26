@@ -3486,7 +3486,8 @@ form of assemblies or reads.")
         (base32
          "0rws9r1ziv6way8cf49jg8bzj7x2131kfqkhj8byf0z5hnrq3bwv"))
        (patches (search-patches "metabat-remove-compilation-date.patch"
-                                "metabat-fix-compilation.patch"))))
+                                "metabat-fix-compilation.patch"
+                                "metabat-fix-boost-issue.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4685,6 +4686,10 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
         'configure
         (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
+            ;; Allow 'konfigure.perl' to find 'package.prl'.
+            (setenv "PERL5LIB"
+                    (string-append ".:" (getenv "PERL5LIB")))
+
             ;; The 'configure' script doesn't recognize things like
             ;; '--enable-fast-install'.
             (zero? (system* "./configure"

@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,29 +67,28 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-extra.tar.xz")
     (sha256 (base32
-              "0q4a92zmwhn4ry6xgrp4k8wq11ax2sg9rg9yrsrdkr719y0x887a"))))
+              "0zvd2zskk78ig114mfj24g15qys41hzqv59fmqpirdbgq9c9gr5g"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-texmf.tar.xz")
-    (patches (search-patches "texlive-texmf-CVE-2016-10243.patch"))
-    (patch-flags '("-p2"))
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-texmf.tar.xz")
     (sha256 (base32
-              "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
+              "1v69y3kgkbk24f7s4dfkknwd317mqmck5jgpyb35wqgqfy5p0qrz"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "2016")
+   (version "20170524")
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-source.tar.xz")
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
+                          "texlive-" version "-source.tar.xz"))
       (sha256 (base32
-               "1v91vahxlxkdra0qz3f132vvx5d9cx2jy84yl1hkch0agyj2rcx8"))))
+               "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -3808,7 +3808,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2016")
+   (version "2017")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -3880,7 +3880,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2016")
+   (version "2017")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
@@ -3939,81 +3939,6 @@ This package contains the complete TeX Live distribution.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
 
-
-;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
-;; in particular dropping documentation and fonts.  It weighs in at 470 MiB
-;; instead of 4 GiB.
-(define texlive-texmf-minimal
-  (package (inherit texlive-texmf)
-   (name "texlive-texmf-minimal")
-   (arguments
-    (substitute-keyword-arguments
-     (package-arguments texlive-texmf)
-     ((#:modules modules)
-      `((ice-9 ftw)
-        (srfi srfi-1)
-        ,@modules))
-     ((#:phases phases)
-      `(modify-phases ,phases
-         (add-after 'unpack 'prune
-           (lambda _
-             (define (delete subdir exclude)
-               "Delete all files and directories in SUBDIR except for those
-given in the list EXCLUDE."
-               (with-directory-excursion subdir
-                 (for-each delete-file-recursively
-                           (lset-difference equal?
-                                            (scandir ".")
-                                            (append '("." "..")
-                                                    exclude)))))
-             (with-directory-excursion "texmf-dist"
-               (for-each delete-file-recursively
-                         '("doc" "source" "tex4ht"))
-               ;; Delete all subdirectories of "fonts", except for "tfm" and
-               ;; any directories named "cm".
-               (delete "fonts" '("afm" "map" "pk" "source" "tfm" "type1"))
-               (delete "fonts/afm" '("public"))
-               (delete "fonts/afm/public" '("amsfonts"))
-               (delete "fonts/afm/public/amsfonts" '("cm"))
-               (delete "fonts/map" '("dvips"))
-               (delete "fonts/map/dvips" '("cm"))
-               (delete "fonts/source" '("public"))
-               (delete "fonts/source/public" '("cm"))
-               (delete "fonts/tfm" '("public"))
-               (delete "fonts/type1" '("public"))
-               (delete "fonts/type1/public" '("amsfonts"))
-               (delete "fonts/type1/public/amsfonts" '("cm")))
-             #t))))))
-   (description
-    "TeX Live provides a comprehensive TeX document production system.
-It includes all the major TeX-related programs, macro packages, and fonts
-that are free software, including support for many languages around the
-world.
-
-This package contains a small subset of the texmf-dist data.")))
-
-
-;; texlive-minimal is the same as texlive, but using texlive-texmf-minimal
-;; instead of the full texlive-texmf. It can be used, for instance, as a
-;; native input to packages that need texlive to build their documentation.
-(define-public texlive-minimal
-  (package (inherit texlive)
-   (name "texlive-minimal")
-   (inputs
-    `(("texlive-texmf" ,texlive-texmf-minimal)
-      ,@(alist-delete "texlive-texmf" (package-inputs texlive))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "TEXMFLOCAL")
-           (files '("share/texmf-local")))))
-   (description
-    "TeX Live provides a comprehensive TeX document production system.
-It includes all the major TeX-related programs, macro packages, and fonts
-that are free software, including support for many languages around the
-world.
-
-This package contains a small working part of the TeX Live distribution.")))
-
 (define-public perl-text-bibtex
   (package
     (name "perl-text-bibtex")
@@ -4058,8 +3983,8 @@ values (strings, macros, or numbers) pasted together.")
 
 (define-public biber
   (package
-    (name "biber-next")
-    (version "2.6")
+    (name "biber")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/plk/biber/archive/v"
@@ -4067,7 +3992,7 @@ values (strings, macros, or numbers) pasted together.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "158smzgjhjvyabdv97si5q88zjj5l8j1zbfnddvzy6fkpfhskgkp"))))
+                "17wd80jg98qyddhvz4cin8779ycvppaf2va77r1lyvymjz6w9bx0"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4135,33 +4060,6 @@ values (strings, macros, or numbers) pasted together.")
     (description "Biber is a BibTeX replacement for users of biblatex.  Among
 other things it comes with full Unicode support.")
     (license license:artistic2.0)))
-
-;; Our version of texlive comes with biblatex 3.4, which is only compatible
-;; with biber 2.5 according to the compatibility matrix in the biber
-;; documentation.
-(define-public biber-2.5
-  (package (inherit biber)
-    (name "biber")
-    (version "2.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/plk/biber/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "163sd343wkrzwnvj2003m2j0kz517jmjr4savw6f8bjxhj8fdrqv"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments biber)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'check 'delete-failing-test
-             (lambda _
-               (delete-file "t/sort-order.t")
-               #t))))))
-    (inputs
-     `(("perl-date-simple" ,perl-date-simple)
-       ,@(package-inputs biber)))))
 
 (define-public rubber
   (package

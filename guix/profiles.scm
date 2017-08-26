@@ -1095,9 +1095,11 @@ files for the fonts of the @var{manifest} entries."
                                 (unless (and (zero? (system* mkfontscale))
                                              (zero? (system* mkfontdir)))
                                   (exit #f))
-                                (when (empty-file? fonts-scale-file)
+                                (when (and (file-exists? fonts-scale-file)
+                                           (empty-file? fonts-scale-file))
                                   (delete-file fonts-scale-file))
-                                (when (empty-file? fonts-dir-file)
+                                (when (and (file-exists? fonts-dir-file)
+                                           (empty-file? fonts-dir-file))
                                   (delete-file fonts-dir-file))))
                             directories)))))))
 

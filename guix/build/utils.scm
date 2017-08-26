@@ -32,7 +32,12 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:re-export (alist-cons
-               alist-delete)
+               alist-delete
+
+               ;; Note: Re-export 'delete' to allow for proper syntax matching
+               ;; in 'modify-phases' forms.  See
+               ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26805#16>.
+               delete)
   #:export (%store-directory
             store-file-name?
             strip-store-file-name
@@ -79,6 +84,7 @@
             fold-port-matches
             remove-store-references
             wrap-program
+            invoke
 
             locale-category->string))
 
@@ -573,6 +579,15 @@ Where every <*-phase-name> is an expression evaluating to a symbol, and
      (alist-cons-before old-phase-name new-phase-name new-phase phases))
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
      (alist-cons-after old-phase-name new-phase-name new-phase phases))))
+
+(define (invoke program . args)
+  "Invoke PROGRAM with the given ARGS.  Raise an error if the exit
+code is non-zero; otherwise return #t."
+  (let ((status (apply system* program args)))
+    (unless (zero? status)
+      (error (format #f "program ~s exited with non-zero code" program)
+             status))
+    #t))
 
 
 ;;;

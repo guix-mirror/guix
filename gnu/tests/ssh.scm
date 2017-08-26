@@ -52,7 +52,7 @@ When SFTP? is true, run an SFTP server test."
           (eval-when (expand load eval)
             ;; Prepare to use Guile-SSH.
             (set! %load-path
-              (cons (string-append #+guile2.0-ssh "/share/guile/site/"
+              (cons (string-append #+guile-ssh "/share/guile/site/"
                                    (effective-version))
                     %load-path)))
 

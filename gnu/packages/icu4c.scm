@@ -33,7 +33,6 @@
   (package
    (name "icu4c")
    (version "58.2")
-   (replacement icu4c/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -42,6 +41,9 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
+            (patches
+             (search-patches "icu4c-CVE-2017-7867-CVE-2017-7868.patch"
+                             "icu4c-reset-keyword-list-iterator.patch"))
             (sha256
              (base32 "036shcb3f8bm1lynhlsb4kpjm9s9c2vdiir01vg216rs2l8482ib"))))
    (build-system gnu-build-system)
@@ -67,15 +69,6 @@ globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
-
-(define icu4c/fixed
-  (package
-    (inherit icu4c)
-    (source (origin
-              (inherit (package-source icu4c))
-              (patches
-               (search-patches "icu4c-CVE-2017-7867-CVE-2017-7868.patch"
-                               "icu4c-reset-keyword-list-iterator.patch"))))))
 
 (define-public java-icu4j
   (package

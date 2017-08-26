@@ -1602,7 +1602,7 @@ IcedTea build harness.")
                                          (string-append "lib" name ".so")))))
                    (for-each
                     (lambda (file)
-                      (catch 'encoding-error
+                      (catch 'decoding-error
                         (lambda ()
                           (substitute* file
                             (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"

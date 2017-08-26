@@ -32,7 +32,7 @@
 (define-public flex
   (package
     (name "flex")
-    (version "2.6.3")
+    (version "2.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +41,7 @@
                     "flex-" version ".tar.gz"))
               (sha256
                (base32
-                "1an2cn2z85mkpgqcinh1fhhcd7993qm2lil1yxic8iz76ci79ck8"))))
+                "15g9bv236nzi665p9ggqjlfn4dwck5835vf0bbw2cz7h5c1swyp8"))))
     (build-system gnu-build-system)
     (inputs
      (let ((bison-for-tests
@@ -86,10 +86,6 @@ executes the corresponding C code.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
 
-;;; Many packages fail to build with flex > 2.6.1, due to this bug in flex:
-;;; <https://github.com/westes/flex/issues/162>
-;;; We must not use a flex before 2.6.1, due to CVE-2016-6354.
-;;; TODO Try using flex > 2.6.3.
 (define-public flex-2.6.1
   (package
     (inherit flex)

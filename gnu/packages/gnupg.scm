@@ -58,7 +58,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.26")
+    (version "1.27")
     (source
      (origin
       (method url-fetch)
@@ -66,7 +66,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0sgfia0syq78k1c9h10rkhc1nfv5v097icrprlx2x4qn074wnjsc"))))
+        "1li95ni122fzinzlmxbln63nmgij63irxfvi52ws4zfbzv3am4sg"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -82,15 +82,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (replacement libgcrypt-1.7.8)
-    (version "1.7.6")
+    (version "1.7.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1g05prhgqw4ryd0w433q8nhds0h93kf47hfjagi2r7dghkpaysk2"))))
+               "16f1rsv4y4w2pk1il2jbcqggsb6mrlfva5vayd205fp68zm7d0ll"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -115,30 +114,6 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
-
-(define libgcrypt-1.7.8
-  (package
-    (inherit libgcrypt)
-    (version "1.7.8")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "16f1rsv4y4w2pk1il2jbcqggsb6mrlfva5vayd205fp68zm7d0ll"))))))
-
-(define-public libgcrypt-1.5
-  (package (inherit libgcrypt)
-    (version "1.5.6")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "0ydy7bgra5jbq9mxl5x031nif3m6y3balc6ndw2ngj11wnsjc61h"))))))
 
 (define-public libassuan
   (package

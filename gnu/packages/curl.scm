@@ -43,14 +43,14 @@
   (package
    (name "curl")
    (replacement curl-7.55.0)
-   (version "7.53.0")
+   (version "7.54.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1k0i31xygb804c61llhin5wbpcscg4gfqmbxcfkpdr1alwh7igrq"))))
+              "0vnv3cz0s1l5cjby86hm0x6pgzqijmdm97qa9q5px200956z6yib"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages

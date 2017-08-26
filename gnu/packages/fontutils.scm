@@ -34,6 +34,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
@@ -48,14 +49,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (replacement freetype/fixed)
-   (version "2.7.1")
+   (version "2.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "121gm15ayfg3rglby8ifh8384mcjb9dhmx9j40zl7yszw72b4frs"))))
+                     "02xlj611alpvl3h33hvfw1jyxc1vp9mzwcckkiglkhn3hknh7im3"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -73,15 +73,6 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
-
-(define freetype/fixed
-  (package
-    (inherit freetype)
-    (source
-      (origin
-        (inherit (package-source freetype))
-        (patches (search-patches "freetype-CVE-2017-8105.patch"
-                                 "freetype-CVE-2017-8287.patch"))))))
 
 (define-public ttfautohint
   (package
@@ -235,22 +226,21 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.12.1")
+   (version "2.12.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
-            (patches (search-patches "fontconfig-charwidth-symbol-conflict.patch"
-                                     "fontconfig-path-max.patch"))
             (sha256 (base32
-                     "1wy7svvp7df6bjpg1m5vizb3ngd7rhb20vpclv3x3qa71khs6jdl"))))
+                     "1ggq6jmz3mlzk4xjs615aqw9h3hq33chjn82bhli26kk09kby95x"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
-      `(("pkg-config" ,pkg-config)))
+    `(("gperf" ,gperf) ; Try dropping this for > 2.12.3.
+      ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags
       (list "--with-cache-dir=/var/cache/fontconfig"
@@ -268,10 +258,12 @@ fonts to/from the WOFF2 format.")
             "PYTHON=false")
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'fix-tests-for-freetype-2.7.1
+        (add-before 'configure 'regenerate-fcobjshash
+          ;; XXX The pre-generated gperf files are broken.
+          ;; See <https://bugs.freedesktop.org/show_bug.cgi?id=101280>.
           (lambda _
-            (substitute* "test/run-test.sh"
-              (("\\\| sort") "| cut -d' ' -f2 | sort"))
+            (delete-file "src/fcobjshash.h")
+            (delete-file "src/fcobjshash.gperf")
             #t))
         (replace 'install
                  (lambda _
@@ -385,8 +377,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.9")
-   (replacement graphite2/fixed)
+   (version "1.3.10")
    (source
      (origin
        (method url-fetch)
@@ -395,7 +386,7 @@ applications should be.")
        (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
-         "0rs5h7m340z75kygx8d72cps0q6yvvqa9i788vym7585cfv8a0gc"))))
+         "1bm1rl2ww0m8rvmknh8fpajyz9xqv43qs9qrzf7xd5gaz6rf7zch"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -410,21 +401,6 @@ process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
    (home-page "https://github.com/silnrsi/graphite")))
-
-(define graphite2/fixed
-  (package
-    (inherit graphite2)
-    (name "graphite2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (let ((version "1.3.10"))
-              (string-append "https://github.com/silnrsi/graphite/releases/"
-                             "download/" version "/" name "-" version ".tgz")))
-       (patches (search-patches "graphite2-ffloat-store.patch"))
-       (sha256
-        (base32
-         "1bm1rl2ww0m8rvmknh8fpajyz9xqv43qs9qrzf7xd5gaz6rf7zch"))))))
 
 (define-public potrace
   (package

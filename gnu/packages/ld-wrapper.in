@@ -15,7 +15,7 @@ main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +35,7 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 (define-module (gnu build-support ld-wrapper)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 rdelim) (read-string)
   #:export (ld-wrapper))
 
 ;;; Commentary:
@@ -222,9 +223,44 @@ impure library ~s~%"
               '()
               library-files))
 
+(define (expand-arguments args)
+  ;; Expand ARGS such that "response file" arguments, such as "@args.txt", are
+  ;; expanded (info "(gcc) Overall Options").
+  (define (response-file-arguments file)
+    (when %debug?
+      (format (current-error-port)
+              "ld-wrapper: attempting to read arguments from '~a'~%" file))
+
+    ;; FIXME: Options can contain whitespace if they are protected by single
+    ;; or double quotes; this is not implemented here.
+    (string-tokenize (call-with-input-file file read-string)))
+
+  (define result
+    (fold-right (lambda (arg result)
+                  (if (string-prefix? "@" arg)
+                      (let ((file (string-drop arg 1)))
+                        (append (catch 'system-error
+                                  (lambda ()
+                                    (response-file-arguments file))
+                                  (lambda args
+                                    ;; FILE doesn't exist or cannot be read so
+                                    ;; leave ARG as is.
+                                    (list arg)))
+                                result))
+                      (cons arg result)))
+                '()
+                args))
+
+  ;; If there are "@" arguments in RESULT *and* we can expand them (they don't
+  ;; refer to nonexistent files), then recurse.
+  (if (equal? result args)
+      result
+      (expand-arguments result)))
+
 (define (ld-wrapper . args)
   ;; Invoke the real `ld' with ARGS, augmented with `-rpath' switches.
-  (let* ((path (library-search-path args))
+  (let* ((args (expand-arguments args))
+         (path (library-search-path args))
          (libs (library-files-linked args path))
          (args (append args (rpath-arguments libs))))
     (when %debug?

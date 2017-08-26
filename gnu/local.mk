@@ -2,7 +2,7 @@
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -533,7 +533,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/bcftools-regidx-unsigned-char.patch	\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
-  %D%/packages/patches/binutils-mips-bash-bug.patch		\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
@@ -561,7 +560,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
   %D%/packages/patches/cool-retro-term-remove-non-free-fonts.patch	\
   %D%/packages/patches/coreutils-cut-huge-range-test.patch	\
-  %D%/packages/patches/coreutils-fix-cross-compilation.patch    \
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
@@ -594,9 +592,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
-  %D%/packages/patches/eudev-conflicting-declaration.patch	\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
-  %D%/packages/patches/expat-CVE-2016-0718-fix-regression.patch	\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
@@ -608,22 +604,20 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-gcc44-fixes.patch		\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
+  %D%/packages/patches/findutils-gnulib-multi-core.patch	\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
-  %D%/packages/patches/fontconfig-charwidth-symbol-conflict.patch	\
-  %D%/packages/patches/fontconfig-path-max.patch		\
   %D%/packages/patches/fontforge-svg-modtime.patch		\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
-  %D%/packages/patches/freetype-CVE-2017-8105.patch		\
-  %D%/packages/patches/freetype-CVE-2017-8287.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
+  %D%/packages/patches/gcc-asan-powerpc-missing-include.patch	\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
@@ -645,14 +639,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/gettext-multi-core.patch          	\
+  %D%/packages/patches/gettext-gnulib-multi-core.patch          \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
-  %D%/packages/patches/ghostscript-CVE-2013-5653.patch		\
-  %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
-  %D%/packages/patches/ghostscript-CVE-2016-7976.patch		\
-  %D%/packages/patches/ghostscript-CVE-2016-7978.patch		\
-  %D%/packages/patches/ghostscript-CVE-2016-7979.patch		\
-  %D%/packages/patches/ghostscript-CVE-2016-8602.patch		\
   %D%/packages/patches/ghostscript-CVE-2017-8291.patch		\
+  %D%/packages/patches/ghostscript-no-header-id.patch		\
+  %D%/packages/patches/ghostscript-no-header-uuid.patch		\
+  %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
@@ -685,10 +678,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
+  %D%/packages/patches/grep-gnulib-lock.patch                   \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
+  %D%/packages/patches/groff-source-date-epoch.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
+  %D%/packages/patches/guile-2.2-default-utf8.patch		\
   %D%/packages/patches/guile-bytestructures-name-clash.patch	\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
@@ -725,6 +721,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
+  %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
@@ -773,6 +770,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
+  %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
@@ -789,27 +787,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
-  %D%/packages/patches/libtasn1-CVE-2017-6891.patch 		\
-  %D%/packages/patches/libtasn1-CVE-2017-10790.patch 		\
+  %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10092.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10093.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10094.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10688.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-5225.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9936.patch		\
-  %D%/packages/patches/libtiff-assertion-failure.patch		\
-  %D%/packages/patches/libtiff-divide-by-zero-ojpeg.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero-tiffcp.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero-tiffcrop.patch	\
-  %D%/packages/patches/libtiff-divide-by-zero.patch		\
-  %D%/packages/patches/libtiff-heap-overflow-pixarlog-luv.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tif-dirread.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tiffcp.patch	\
-  %D%/packages/patches/libtiff-heap-overflow-tiffcrop.patch	\
-  %D%/packages/patches/libtiff-invalid-read.patch		\
-  %D%/packages/patches/libtiff-null-dereference.patch		\
-  %D%/packages/patches/libtiff-tiffcp-underflow.patch		\
   %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
   %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
   %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
@@ -817,6 +798,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
+  %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
@@ -855,11 +837,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
-  %D%/packages/patches/mesa-fix-32bit-test-failures.patch	\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/metabat-fix-compilation.patch		\
+  %D%/packages/patches/metabat-fix-boost-issue.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
@@ -916,6 +898,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
+  %D%/packages/patches/pcre-CVE-2017-7186.patch			\
   %D%/packages/patches/pcre2-CVE-2017-7186.patch		\
   %D%/packages/patches/pcre2-CVE-2017-8786.patch		\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
@@ -926,7 +909,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
-  %D%/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   %D%/packages/patches/perl-net-dns-resolver-programmable-fix.patch	\
   %D%/packages/patches/perl-no-sys-dirs.patch			\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
@@ -945,8 +927,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/polkit-drop-test.patch			\
   %D%/packages/patches/policycoreutils-make-sepolicy-use-python3.patch	\
-  %D%/packages/patches/poppler-CVE-2017-9776.patch		\
-  %D%/packages/patches/poppler-fix-crash-with-broken-documents.patch	\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
@@ -970,7 +950,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.5-fix-tests.patch		\
   %D%/packages/patches/python-3.5-getentropy-on-old-kernels.patch	\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
-  %D%/packages/patches/python-file-double-encoding-bug.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
   %D%/packages/patches/python-genshi-buildable-on-python-2.7.patch	\
@@ -1029,6 +1008,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
+  %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-sigusr1.patch			\
@@ -1057,7 +1037,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tcsh-fix-out-of-bounds-read.patch	\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
-  %D%/packages/patches/texlive-texmf-CVE-2016-10243.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/thefuck-test-environ.patch		\
@@ -1101,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wget-CVE-2017-6508.patch			\
   %D%/packages/patches/wget-fix-504-test-timeout.patch			\
+  %D%/packages/patches/wget-perl-5.26.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\

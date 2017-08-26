@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -479,7 +480,6 @@ binary.")
               (base32
                "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
     (native-inputs
      `(("ed" ,ed)
        ("flex" ,flex)

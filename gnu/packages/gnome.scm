@@ -1163,7 +1163,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.16")
+    (version "2.40.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1171,7 +1171,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bpz6gsq8xi1pb5k9ax6vinph460v14znch3y5yz167s0dmwz2yl"))))
+                "1k39gyf7f5m9x0jvpcxvfcqswdb04xhm1lbwbjabn1f4xk5wbxp6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1375,6 +1375,17 @@ is intended for user preferences; not arbitrary data storage.")
     (native-inputs
      `(("perl" ,perl)
        ("intltool" ,intltool)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'configure 'use-our-intltool
+                    (lambda _
+                      ;; Do not use the bundled intltool commands, which lack
+                      ;; the "dotless @INC" fixes of our 'intltool' package.
+                      (substitute* (find-files "." "^Makefile$")
+                        (("^INTLTOOL_(EXTRACT|UPDATE|MERGE) = .*$" _ tool)
+                         (string-append "INTLTOOL_" tool " = intltool-"
+                                        (string-downcase tool) "\n")))
+                      #t)))))
     (home-page "https://www.gnome.org")
     (synopsis "Base MIME and Application database for GNOME")
     (description  "GNOME Mime Data is a module which contains the base MIME
@@ -2407,7 +2418,11 @@ libxml to ease remote use of the RESTful API.")
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:configure-flags
+     `(#:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (ice-9 popen))
+
+       #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
@@ -2417,34 +2432,77 @@ libxml to ease remote use of the RESTful API.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
-                     ;; This test fails due to missing /etc/nsswitch.conf
-                     ;; in the build environment.
-                     (lambda _
-                       (substitute* "tests/socket-test.c"
-                         ((".*/sockets/unconnected.*") ""))
-                       #t))
+           ;; This test fails due to missing /etc/nsswitch.conf
+           ;; in the build environment.
+           (lambda _
+             (substitute* "tests/socket-test.c"
+               ((".*/sockets/unconnected.*") ""))
+             #t))
          (add-before 'check 'pre-check
-                     (lambda _
-                       ;; The 'check-local' target runs 'env LANG=C sort -u',
-                       ;; unset 'LC_ALL' to make 'LANG' working.
-                       (unsetenv "LC_ALL")
-                       ;; The ca-certificates.crt is not available in the build
-                       ;; environment.
-                       (setenv "SSL_CERT_FILE" "/dev/null")
-                       ;; HTTPD in Guix uses mod_event and does not build prefork.
-                       (substitute* "tests/httpd.conf"
-                         (("^LoadModule mpm_prefork_module.*$") "\n"))
-                       #t))
+           (lambda _
+             ;; The 'check-local' target runs 'env LANG=C sort -u',
+             ;; unset 'LC_ALL' to make 'LANG' working.
+             (unsetenv "LC_ALL")
+             ;; The ca-certificates.crt is not available in the build
+             ;; environment.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             ;; HTTPD in Guix uses mod_event and does not build prefork.
+             (substitute* "tests/httpd.conf"
+               (("^LoadModule mpm_prefork_module.*$") "\n"))
+
+             ;; Generate a self-signed certificate that has "localhost" as its
+             ;; 'dnsName'.  Failing to do that, and starting with GnuTLS
+             ;; 3.5.12, tests such as "ssl-tests" fail:
+             ;;
+             ;; ERROR:ssl-test.c:406:do_tls_interaction_test: Unexpected status 6 Unacceptable TLS certificate (expected 200 OK)
+             ;;
+             ;; 'certtool' is interactive so we have to pipe it the answers.
+             ;; Reported at <https://bugzilla.gnome.org/show_bug.cgi?id=784696>.
+             (let ((pipe (open-output-pipe "certtool --generate-self-signed \
+ --load-privkey tests/test-key.pem --outfile tests/test-cert.pem")))
+               (for-each (lambda (line)
+                           (display line pipe)
+                           (newline pipe))
+                         '(""               ;Common name
+                           ""               ;UID
+                           "Guix"           ;Organizational unit name
+                           "GNU"            ;Organization name
+                           ""               ;Locality name
+                           ""               ;State or province
+                           ""               ;Country
+                           ""               ;subject's domain component (DC)
+                           ""               ;E-mail
+                           ""               ;serial number
+                           "-1"             ;expiration time
+                           "N"              ;belong to authority?
+                           "N"              ;web client certificate?
+                           "N"              ;IPsec IKE?
+                           "Y"              ;web server certificate?
+                           "localhost"      ;dnsName of subject
+                           ""               ;dnsName of subject (end)
+                           ""               ;URI of subject
+                           "127.0.0.1"      ;IP address of subject
+                           ""               ;signing?
+                           ""               ;encryption?
+                           ""               ;sign OCSP requests?
+                           ""               ;sign code?
+                           ""               ;time stamping?
+                           ""               ;email protection?
+                           ""               ;URI of the CRL distribution point
+                           "y"              ;above info OK?
+                           ))
+               (close-pipe pipe))
+             #t))
          (replace 'install
-                  (lambda _
-                    (zero?
-                     (system* "make"
-                              ;; Install vala bindings into $out.
-                              (string-append "vapidir=" %output
-                                             "/share/vala/vapi")
-                              "install")))))))
+           (lambda _
+             (zero?
+              (system* "make"
+                       ;; Install vala bindings into $out.
+                       (string-append "vapidir=" %output
+                                      "/share/vala/vapi")
+                       "install")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+     `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
@@ -2453,6 +2511,7 @@ libxml to ease remote use of the RESTful API.")
        ;; These are needed for the tests.
        ;; FIXME: Add PHP once available.
        ("curl" ,curl)
+       ("gnutls" ,gnutls)                         ;for 'certtool'
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all these.

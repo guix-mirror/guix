@@ -38,12 +38,12 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (replacement ncurses/fixed)
     (version "6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
+              (patches (search-patches "ncurses-CVE-2017-10684-10685.patch"))
               (sha256
                (base32
                 "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
@@ -189,17 +189,6 @@ implement user interfaces for command-line applications.  The accompanying
 ncursesw library provides wide character support.")
     (license x11)
     (home-page "https://www.gnu.org/software/ncurses/")))
-
-(define ncurses/fixed
-  (package
-    (inherit ncurses)
-    (source
-      (origin
-        (inherit (package-source ncurses))
-        (patches
-          (append
-            (origin-patches (package-source ncurses))
-            (search-patches "ncurses-CVE-2017-10684-10685.patch")))))))
 
 (define-public ncurses/gpm
   (package/inherit ncurses

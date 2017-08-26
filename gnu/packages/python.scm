@@ -344,8 +344,11 @@ data types.")
                (base32
                 "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
               (snippet
-               '(delete-file
-                  "Lib/ctypes/test/test_win32.py")))) ; fails on aarch64
+               '(begin
+                  (for-each delete-file
+                            '("Lib/ctypes/test/test_win32.py" ; fails on aarch64
+                              "Lib/test/test_fcntl.py"))
+                  #t))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
@@ -1900,7 +1903,9 @@ code introspection, and logging.")
     (propagated-inputs
      `(("python-py" ,python-py)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
+       ("bash" ,bash)
+       ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (home-page "http://pytest.org")
     (synopsis "Python testing library")
@@ -1937,9 +1942,8 @@ and many external plugins.")
                                line)))
              #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-hypothesis" ,python-hypothesis)))
+     `(("python-hypothesis" ,python-hypothesis)
+       ,@(package-native-inputs python-pytest)))
     (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
 
 (define-public python2-pytest-3.0
@@ -5306,7 +5310,8 @@ displayed.")
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest-3.0)
        ("man-db" ,man-db)
-       ("which" ,which)))
+       ("which" ,which)
+       ("bash-full" ,bash)))                 ;full Bash for 'test_replwrap.py'
     (propagated-inputs
      `(("python-ptyprocess" ,python-ptyprocess)))
     (home-page "http://pexpect.readthedocs.org/")
@@ -7979,10 +7984,6 @@ Python's @code{ctypes} foreign function interface (FFI).")
   (package
     (inherit file)
     (name "python-file")
-    (source (origin
-              (inherit (package-source file))
-              ;; This patch should not be applied to python2-file.
-              (patches (search-patches "python-file-double-encoding-bug.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f                                ;no tests
@@ -13596,7 +13597,8 @@ specs from your Flask-Restful projects.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pexpect" ,python-pexpect)
-       ("tcsh" ,tcsh)))
+       ("tcsh" ,tcsh)
+       ("bash-full" ,bash)))             ;full Bash for 'test_file_completion'
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion

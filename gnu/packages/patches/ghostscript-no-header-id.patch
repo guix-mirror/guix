@@ -1,0 +1,57 @@
+This patch makes the "/ID" field optional.
+
+If the environment variable GS_GENERATE_UUIDS is set to "0" or "no", it will
+not write out the "/ID" field (if that's permissible).
+
+Upstream does not want to do this.
+
+See: https://bugs.ghostscript.com/show_bug.cgi?id=698208
+diff -ur orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c
+--- orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c	2017-07-09 23:30:28.960479189 +0200
++++ gnu-ghostscript-9.14.0/devices/vector/gdevpdf.c	2017-07-09 23:34:34.306524488 +0200
+@@ -1580,8 +1580,11 @@
+      * +1 for the linearisation dict and +1 for the primary hint stream.
+      */
+     linear_params->FirsttrailerOffset = gp_ftell_64(linear_params->Lin_File.file);
+-    gs_sprintf(LDict, "\ntrailer\n<</Size %ld/Info %d 0 R/Root %d 0 R/ID[%s%s]/Prev %d>>\nstartxref\r\n0\n%%%%EOF\n        \n",
+-        linear_params->LastResource + 3, pdev->ResourceUsage[linear_params->Info_id].NewObjectNumber, pdev->ResourceUsage[linear_params->Catalog_id].NewObjectNumber, fileID, fileID, 0);
++    gs_sprintf(LDict, "\ntrailer\n<</Size %ld/Info %d 0 R/Root %d 0 R",
++        linear_params->LastResource + 3, pdev->ResourceUsage[linear_params->Info_id].NewObjectNumber, pdev->ResourceUsage[linear_params->Catalog_id].NewObjectNumber);
++    if (pdev->OwnerPassword.size > 0 || !(!getenv("GS_GENERATE_UUIDS") || (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 && strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))) /* ID is mandatory when encrypting */
++        gs_sprintf(LDict, "/ID[%s%s]", fileID, fileID);
++    gs_sprintf(LDict, "/Prev %d>>\nstartxref\r\n0\n%%%%EOF\n        \n", 0);
+     fwrite(LDict, strlen(LDict), 1, linear_params->Lin_File.file);
+ 
+     /* Write document catalog (Part 4) */
+@@ -2102,8 +2105,11 @@
+      * in the missing values.
+      */
+     code = gp_fseek_64(linear_params->sfile, linear_params->FirsttrailerOffset, SEEK_SET);
+-    gs_sprintf(LDict, "\ntrailer\n<</Size %ld/Info %d 0 R/Root %d 0 R/ID[%s%s]/Prev %"PRId64">>\nstartxref\r\n0\n%%%%EOF\n",
+-        linear_params->LastResource + 3, pdev->ResourceUsage[linear_params->Info_id].NewObjectNumber, pdev->ResourceUsage[linear_params->Catalog_id].NewObjectNumber, fileID, fileID, mainxref);
++    gs_sprintf(LDict, "\ntrailer\n<</Size %ld/Info %d 0 R/Root %d 0 R",
++        linear_params->LastResource + 3, pdev->ResourceUsage[linear_params->Info_id].NewObjectNumber, pdev->ResourceUsage[linear_params->Catalog_id].NewObjectNumber);
++    if (pdev->OwnerPassword.size > 0 || !(!getenv("GS_GENERATE_UUIDS") || (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 || strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))) /* ID is mandatory when encrypting */
++        gs_sprintf(LDict, "/ID[%s%s]", fileID, fileID);
++    gs_sprintf(LDict, "/Prev %"PRId64">>\nstartxref\r\n0\n%%%%EOF\n", mainxref);
+     fwrite(LDict, strlen(LDict), 1, linear_params->sfile);
+ 
+     code = gp_fseek_64(linear_params->sfile, pdev->ResourceUsage[HintStreamObj].LinearisedOffset, SEEK_SET);
+@@ -2674,10 +2680,12 @@
+             stream_puts(s, "trailer\n");
+             pprintld3(s, "<< /Size %ld /Root %ld 0 R /Info %ld 0 R\n",
+                   pdev->next_id, Catalog_id, Info_id);
+-            stream_puts(s, "/ID [");
+-            psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
+-            psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
+-            stream_puts(s, "]\n");
++            if (pdev->OwnerPassword.size > 0 || !(!getenv("GS_GENERATE_UUIDS") || (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 || strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))) { /* ID is mandatory when encrypting */
++                stream_puts(s, "/ID [");
++                psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
++                psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
++                stream_puts(s, "]\n");
++            }
+             if (pdev->OwnerPassword.size > 0) {
+                 pprintld1(s, "/Encrypt %ld 0 R ", Encrypt_id);
+             }
+Nur in gnu-ghostscript-9.14.0/devices/vector: gdevpdf.c.orig.

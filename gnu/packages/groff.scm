@@ -40,12 +40,18 @@
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))))
+                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))
+            (patches (search-patches "groff-source-date-epoch.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                    ;12MiB of PS, PDF, HTML, and examples
-   (inputs `(("ghostscript" ,ghostscript)
-             ("netpbm" ,netpbm)))
+
+   ;; Note: groff's HTML backend uses executables from netpbm when they are in
+   ;; $PATH.  In practice, not having them doesn't prevent it from install its
+   ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
+   ;; from 'inputs'.
+
+   (inputs `(("ghostscript" ,ghostscript)))
    (native-inputs `(("bison" ,bison)
                     ("perl" ,perl)
                     ("psutils" ,psutils)

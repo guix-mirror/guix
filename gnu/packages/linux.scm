@@ -125,6 +125,7 @@
           ((string-prefix? "arm" arch) "arm")
           ((string-prefix? "aarch64" arch) "arm64")
           ((string-prefix? "alpha" arch) "alpha")
+          ((string-prefix? "powerpc" arch) "powerpc") ;including "powerpc64le"
           (else arch))))
 
 (define-public (system->defconfig system)
@@ -132,6 +133,7 @@
 defconfig.  Return the appropiate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
+        ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
         (else "defconfig")))
 
 (define (linux-libre-urls version)
@@ -499,7 +501,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.29.2")
+    (version "2.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -507,7 +509,7 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qz81w8vzrmy8xn9yx7ls4amkbgwx6vr62pl6kv9g7r0g3ba9kmc"))
+                "13d0ax8bcapga8phj2nclx86w57ddqxbr98ajibpzjq6d7zs8262"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -668,7 +670,7 @@ slabtop, and skill.")
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
-       ("eudev" ,eudev-with-hwdb)))
+       ("eudev" ,eudev)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
@@ -911,7 +913,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.3")
+    (version "1.1.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -919,7 +921,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "174n2psp0328xcy2f1ayls67598bxli6q9cf00d2qnac3012aa3i"))))
+               "0xjvi381105gldhv0z872a0x58sghznyx19j45lw5iyi2h68gfwi"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -2042,7 +2044,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2050,10 +2052,18 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "06gyyl90n85x8i7lfhns514y1kg1ians13l467admyzy3kjxkqsp"))
-              (patches (search-patches "eudev-rules-directory.patch"
-                                       "eudev-conflicting-declaration.patch"))))
+                "0qqgbgpm5wdllk0s04pf80nwc8pr93xazwri1bylm1f15zn5ck1y"))
+              (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'build-hwdb
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+                      ;; similar tools to display product names.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* (string-append out "/bin/udevadm")
+                                        "hwdb" "--update"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -2072,19 +2082,7 @@ time.")
     (license license:gpl2+)))
 
 (define-public eudev-with-hwdb
-  ;; TODO: Merge with 'eudev'.
-  (package
-    (inherit eudev)
-    (name "eudev-with-hwdb")
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'install 'build-hwdb
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
-                      ;; similar tools to display product names.
-                      (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* (string-append out "/bin/udevadm")
-                                        "hwdb" "--update"))))))))))
+  (deprecated-package "eudev-with-hwdb" eudev))
 
 (define-public lvm2
   (package
@@ -3024,7 +3022,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                 "1sb4aflgyrl7apricjipa8wx95qm69yja0lmn2f19g560c3v1b2c"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let ((out (assoc-ref %outputs "out")))
          (list "--sysconfdir=/etc"
                "--localstatedir=/var"
@@ -3053,7 +3051,12 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                   (string-append out "/lib/udev/hid2hci --method"))
                  (("/sbin/udevadm")
                   (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
-               #t))))))
+               #t))))
+
+       ;; FIXME: Skip one test that segfaults on ARM.
+       ,@(if (string=? (%current-system) "armhf-linux")
+             '(#:make-flags '("XFAIL_TESTS=unit/test-gatt"))
+             '())))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))

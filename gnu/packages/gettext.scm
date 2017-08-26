@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,13 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))))
+               "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))
+             ;; test-lock has performance issues on multi-core machines,
+             ;; it hangs or takes a long time to complete.
+             ;; There is one commit in gettext and one commit
+             ;; in gettext's embedded gnulib to fix this issue.
+             (patches (search-patches "gettext-multi-core.patch"
+                                      "gettext-gnulib-multi-core.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of HTML
@@ -137,6 +144,13 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t))
          ;; FIXME: One test fails as we don't have SGMLS.pm
          (add-before 'check 'disable-sgml-test
           (lambda _

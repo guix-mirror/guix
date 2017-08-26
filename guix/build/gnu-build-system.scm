@@ -39,6 +39,13 @@
 ;;
 ;; Code:
 
+(cond-expand
+  (guile-2.2
+   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
+   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
+   (define time-monotonic time-tai))
+  (else #t))
+
 (define* (set-SOURCE-DATE-EPOCH #:rest _)
   "Set the 'SOURCE_DATE_EPOCH' environment variable.  This is used by tools
 that incorporate timestamps as a way to tell them to use a fixed timestamp.
@@ -521,6 +528,25 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
     ;; Return #t if FILE has hard links.
     (> (stat:nlink (lstat file)) 1))
 
+  (define (points-to-symlink? symlink)
+    ;; Return #t if SYMLINK points to another symbolic link.
+    (let* ((target (readlink symlink))
+           (target-absolute (if (string-prefix? "/" target)
+                                target
+                                (string-append (dirname symlink)
+                                               "/" target))))
+      (catch 'system-error
+        (lambda ()
+          (symbolic-link? target-absolute))
+        (lambda args
+          (if (= ENOENT (system-error-errno args))
+              (begin
+                (format (current-error-port)
+                        "The symbolic link '~a' target is missing: '~a'\n"
+                        symlink target-absolute)
+                #f)
+              (apply throw args))))))
+
   (define (maybe-compress-directory directory regexp)
     (or (not (directory-exists? directory))
         (match (find-files directory regexp)
@@ -538,12 +564,17 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
                ;; Compress the non-symlink files, and adjust symlinks to refer
                ;; to the compressed files.  Leave files that have hard links
                ;; unchanged ('gzip' would refuse to compress them anyway.)
-               (and (zero? (apply system* documentation-compressor
-                                  (append documentation-compressor-flags
-                                          (remove has-links? regular-files))))
-                    (every retarget-symlink
-                           (filter (cut string-match regexp <>)
-                                   symlinks)))))))))
+               ;; Also, do not retarget symbolic links pointing to other
+               ;; symbolic links, since these are not compressed.
+               (and (every retarget-symlink
+                           (filter (lambda (symlink)
+                                     (and (not (points-to-symlink? symlink))
+                                          (string-match regexp symlink)))
+                                   symlinks))
+                    (zero?
+                     (apply system* documentation-compressor
+                            (append documentation-compressor-flags
+                                    (remove has-links? regular-files)))))))))))
 
   (define (maybe-compress output)
     (and (maybe-compress-directory (string-append output "/share/man")

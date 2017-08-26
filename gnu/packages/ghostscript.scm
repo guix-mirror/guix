@@ -2,9 +2,10 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,85 +130,129 @@ printing, and psresize, for adjusting page sizes.")
 
 (define-public ghostscript
   (package
-   (name "ghostscript")
-   (replacement ghostscript/fixed)
-   (version "9.14.0")
-   ;; XXX Try removing the bundled copy of jbig2dec.
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
-            (patches (search-patches "ghostscript-CVE-2013-5653.patch"
-                                     "ghostscript-CVE-2015-3228.patch"
-                                     "ghostscript-CVE-2016-7976.patch"
-                                     "ghostscript-CVE-2016-7978.patch"
-                                     "ghostscript-CVE-2016-7979.patch"
-                                     "ghostscript-CVE-2016-8602.patch"
-                                     "ghostscript-runpath.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             ;; Honor --docdir.
-             '(substitute* "Makefile.in"
-                (("^docdir=.*$") "docdir = @docdir@\n")
-                (("^exdir=.*$") "exdir = $(docdir)/examples\n")))))
-   (build-system gnu-build-system)
-   (outputs '("out" "doc"))                  ;16 MiB of HTML/PS doc + examples
-   (inputs `(("freetype" ,freetype)
-             ("lcms" ,lcms)
-             ("libjpeg-8" ,libjpeg-8)
-             ("libpng" ,libpng)
-             ("libpaper" ,libpaper)
-             ("libtiff" ,libtiff)
-             ("zlib" ,zlib)))
-   (native-inputs
-      `(("perl" ,perl)
-        ("pkg-config" ,pkg-config) ; needed to find libtiff
-        ("python" ,python-wrapper)
-        ("tcl" ,tcl)))
-   (arguments
-    `(#:disallowed-references ("doc")
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'configure 'patch-config-files
-                   (lambda _
-                     (substitute* "base/all-arch.mak"
-                       (("/bin/sh") (which "sh")))
-                     (substitute* "base/unixhead.mak"
-                       (("/bin/sh") (which "sh")))))
+    (name "ghostscript")
+    (version "9.21")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ArtifexSoftware/"
+                            "ghostpdl-downloads/releases/download/gs"
+                            (string-delete #\. version)
+                            "/ghostscript-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0lyhjcrkmd5fcmh8h56bs4xr9k4jasmikv5vsix1hd4ai0ad1q9b"))
+        (patches (search-patches "ghostscript-runpath.patch"
+                                 "ghostscript-CVE-2017-8291.patch"
+                                 "ghostscript-no-header-creationdate.patch"
+                                 "ghostscript-no-header-id.patch"
+                                 "ghostscript-no-header-uuid.patch"))
+        (modules '((guix build utils)))
+        (snippet
+          ;; Remove bundled libraries. The bundled OpenJPEG is a patched fork so
+          ;; we leave it, at least for now.
+          ;; TODO Try unbundling ijs, which is developed alongside Ghostscript.
+         '(begin
+            (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
+                                                "lcms2" "libpng"
+                                                "tiff" "zlib"))))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
+    (arguments
+     `(#:disallowed-references ("doc")
+       #:configure-flags
+       (list "--with-system-libtiff"
+             "LIBS=-lz"
+             (string-append "ZLIBDIR="
+                            (assoc-ref %build-inputs "zlib") "/include")
+             "--enable-dynamic"
+
+             ,@(if (%current-target-system)
+                   '(;; Specify the native compiler, which is used to build 'echogs'
+                     ;; and other intermediary tools when cross-compiling; see
+                     ;; <https://ghostscript.com/FAQ.html>.
+                     "CCAUX=gcc"
+
+                     ;; Save 'config.log' etc. of the native build under
+                     ;; auxtmp/, useful for debugging.
+                     "--enable-save_confaux")
+                   '()))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-doc-dir
+          (lambda _
+            ;; Honor --docdir.
+            (substitute* "Makefile.in"
+              (("^docdir=.*$") "docdir = @docdir@\n")
+              (("^exdir=.*$") "exdir = $(docdir)/examples\n"))
+            #t))
         (add-after 'configure 'remove-doc-reference
+          (lambda _
+            ;; Don't retain a reference to the 'doc' output in 'gs'.
+            ;; The only use of this definition is in the output of
+            ;; 'gs --help', so this change is fine.
+            (substitute* "base/gscdef.c"
+              (("GS_DOCDIR")
+               "\"~/.guix-profile/share/doc/ghostscript\""))
+            #t))
+         (add-after 'configure 'patch-config-files
+           (lambda _
+             (substitute* "base/unixhead.mak"
+               (("/bin/sh") (which "sh")))
+             #t))
+         ,@(if (%current-target-system)
+               `((add-after 'configure 'add-native-lz
                    (lambda _
-                     ;; Don't retain a reference to the 'doc' output in 'gs'.
-                     ;; The only use of this definition is in the output of
-                     ;; 'gs --help', so this change is fine.
-                     (substitute* "base/gscdef.c"
-                       (("GS_DOCDIR")
-                        "\"~/.guix-profile/share/doc/ghostscript\""))))
-        (replace 'build
-          (lambda _
-            ;; Build 'libgs.so', but don't build the statically-linked 'gs'
-            ;; binary (saves 18 MiB).
-            (zero? (system* "make" "so" "-j"
-                            (number->string (parallel-job-count))))))
-        (replace 'install
-          (lambda _
-            (zero? (system* "make" "soinstall"))))
-        (add-after 'install 'create-gs-symlink
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; some programs depend on having a 'gs' binary available
-              (symlink "gsc" (string-append out "/bin/gs"))))))))
-   (synopsis "PostScript and PDF interpreter")
-   (description
-    "Ghostscript is an interpreter for the PostScript language and the PDF
+                     ;; Add missing '-lz' for native tools such as 'mkromfs'.
+                     (substitute* "Makefile"
+                       (("^AUXEXTRALIBS=(.*)$" _ value)
+                        (string-append "AUXEXTRALIBS = -lz " value "\n")))
+                     #t)))
+               '())
+         (replace 'build
+           (lambda _
+             ;; Build 'libgs.so', but don't build the statically-linked 'gs'
+             ;; binary (saves 22 MiB).
+             (zero? (system* "make" "so" "-j"
+                             (number->string (parallel-job-count))))))
+         (replace 'install
+           (lambda _
+             (zero? (system* "make" "soinstall"))))
+         (add-after 'install 'create-gs-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Some programs depend on having a 'gs' binary available.
+               (symlink "gsc" (string-append out "/bin/gs"))
+               #t))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("tcl" ,tcl)
+
+       ;; When cross-compiling, some of the natively-built tools require all
+       ;; these libraries.
+       ,@(if (%current-target-system)
+             `(("zlib/native" ,zlib)
+               ("libjpeg/native" ,libjpeg)
+               ("lcms2/native" ,lcms))
+             '())))
+    (inputs
+     `(("freetype" ,freetype)
+       ("jbig2dec" ,jbig2dec)
+       ("lcms2" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpaper" ,libpaper)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (synopsis "PostScript and PDF interpreter")
+    (description
+     "Ghostscript is an interpreter for the PostScript language and the PDF
 file format.  It also includes a C library that implements the graphics
 capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
-   (license license:agpl3+)
-   (home-page "https://www.gnu.org/software/ghostscript/")
-   (properties '((upstream-name . "gnu-ghostscript")))))
+    (home-page "https://www.ghostscript.com/")
+    (license license:agpl3+)))
 
 (define-public ghostscript/x
   (package/inherit ghostscript
@@ -216,27 +261,11 @@ output file formats and printers.")
               ("libxt" ,libxt)
               ,@(package-inputs ghostscript)))))
 
-(define ghostscript/fixed
-  (package
-    (inherit ghostscript)
-    (source
-      (origin
-        (inherit (package-source ghostscript))
-        (patches
-          (append
-            (origin-patches (package-source ghostscript))
-            (search-patches "ghostscript-CVE-2017-8291.patch")))))))
-
 (define-public ijs
   (package
    (name "ijs")
-   (version "9.14.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
-                                version ".tar.xz"))
-            (sha256 (base32
-                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
+   (version (package-version ghostscript))
+   (source (package-source ghostscript))
    (build-system gnu-build-system)
    (native-inputs
     `(("libtool"    ,libtool)
@@ -244,31 +273,29 @@ output file formats and printers.")
       ("autoconf"   ,autoconf)))
    (arguments
     `(#:phases
-      (alist-cons-after
-       'unpack 'autogen
-       (lambda _
-         ;; need to regenerate macros
-         (system* "autoreconf" "-if")
-         ;; do not run configure
-         (substitute* "autogen.sh"
-           (("^.*\\$srcdir/configure.*") ""))
-         (system* "bash" "autogen.sh")
-
-         ;; create configure script in ./ijs/
-         (chdir "ijs")
-         ;; do not run configure
-         (substitute* "autogen.sh"
-           (("^.*\\$srcdir/configure.*") "")
-           (("^ + && echo Now type.*$")  ""))
-         (zero? (system* "bash" "autogen.sh")))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+          (lambda _
+            ;; need to regenerate macros
+            (system* "autoreconf" "-if")
+            ;; do not run configure
+            (substitute* "autogen.sh"
+              (("^.*\\$srcdir/configure.*") ""))
+            (system* "bash" "autogen.sh")
+            ;; create configure script in ./ijs/
+            (chdir "ijs")
+            ;; do not run configure
+            (substitute* "autogen.sh"
+              (("^.*\\$srcdir/configure.*") "")
+              (("^ + && echo Now type.*$")  ""))
+            (zero? (system* "bash" "autogen.sh")))))))
    (synopsis "IJS driver framework for inkjet and other raster devices")
    (description
     "IJS is a protocol for transmission of raster page images.  This package
 provides the reference implementation of the raster printer driver
 architecture.")
    (license license:expat)
-   (home-page "https://www.gnu.org/software/ghostscript/")))
+   (home-page (package-home-page ghostscript))))
 
 (define-public gs-fonts
   (package
@@ -286,6 +313,10 @@ architecture.")
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; nothing to check, just files to copy
+
+      #:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (srfi srfi-1))
       #:phases
       (modify-phases %standard-phases
         (delete 'configure)
@@ -309,13 +340,13 @@ Ghostscript.  It currently includes the 35 standard PostScript fonts.")
 (define-public libspectre
   (package
    (name "libspectre")
-   (version "0.2.7")
+   (version "0.2.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://libspectre.freedesktop.org/releases/libspectre-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1v63lqc6bhhxwkpa43qmz8phqs8ci4dhzizyy16d3vkb20m846z8"))))
+                     "1a67iglsc3r05mzngyg9kb1gy8whq4fgsnyjwi7bqfw2i7rnl9b5"))))
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)))
    (native-inputs `(("pkg-config" ,pkg-config)))

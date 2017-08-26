@@ -1,0 +1,32 @@
+This patch fix error on 'gnulib' library required to build
+'grep' package on GNU/Hurd.
+The patch was adapted from upstream source repository:
+'<http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=commit;h=4084b3a1094372b960ce4a97634e08f4538c8bdd>'
+
+Commit: 4084b3a1094372b960ce4a97634e08f4538c8bdd
+
+diff --git a/lib/glthread/lock.c b/lib/glthread/lock.c
+index 061562b..afc86f4 100644
+--- a/lib/glthread/lock.c
++++ b/lib/glthread/lock.c
+@@ -30,7 +30,7 @@
+ 
+ /* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
+-# if HAVE_PTHREAD_RWLOCK && (HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER || (__GNU_LIBRARY__ > 1))
++# if HAVE_PTHREAD_RWLOCK && (HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER || (defined PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP && (__GNU_LIBRARY__ > 1)))
+ 
+ #  ifdef PTHREAD_RWLOCK_INITIALIZER
+ 
+diff --git a/lib/glthread/lock.h b/lib/glthread/lock.h
+index ec16d39..67932aa 100644
+--- a/lib/glthread/lock.h
++++ b/lib/glthread/lock.h
+@@ -179,7 +179,7 @@ typedef pthread_mutex_t gl_lock_t;
+ 
+ /* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
+-# if HAVE_PTHREAD_RWLOCK && (HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER || (__GNU_LIBRARY__ > 1))
++# if HAVE_PTHREAD_RWLOCK && (HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER || (defined PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP && (__GNU_LIBRARY__ > 1)))
+ 
+ #  ifdef PTHREAD_RWLOCK_INITIALIZER

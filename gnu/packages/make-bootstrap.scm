@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -502,23 +502,23 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
   (let* ((patches (cons* (search-patch "guile-relocatable.patch")
-                         (search-patch "guile-default-utf8.patch")
+                         (search-patch "guile-2.2-default-utf8.patch")
                          (search-patch "guile-linux-syscalls.patch")
-                         (origin-patches (package-source guile-2.0))))
-         (source  (origin (inherit (package-source guile-2.0))
+                         (origin-patches (package-source guile-2.2))))
+         (source  (origin (inherit (package-source guile-2.2))
                     (patches patches)))
-         (guile (package (inherit guile-2.0)
-                  (name (string-append (package-name guile-2.0) "-static"))
+         (guile (package (inherit guile-2.2)
+                  (name (string-append (package-name guile-2.2) "-static"))
                   (source source)
                   (synopsis "Statically-linked and relocatable Guile")
 
                   ;; Remove the 'debug' output (see above for the reason.)
-                  (outputs (delete "debug" (package-outputs guile-2.0)))
+                  (outputs (delete "debug" (package-outputs guile-2.2)))
 
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
                      ,@(alist-delete "bdw-gc"
-                                     (package-propagated-inputs guile-2.0))))
+                                     (package-propagated-inputs guile-2.2))))
                   (arguments
                    `(;; When `configure' checks for ltdl availability, it
                      ;; doesn't try to link using libtool, and thus fails
@@ -534,7 +534,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                    (("^guile_LDFLAGS =")
                                     "guile_LDFLAGS = -all-static")
 
-                                   ;; Add `-ldl' *after* libguile-2.0.la.
+                                   ;; Add `-ldl' *after* libguile-2.2.la.
                                    (("^guile_LDADD =(.*)$" _ ldadd)
                                     (string-append "guile_LDADD = "
                                                    (string-trim-right ldadd)
@@ -561,13 +561,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                 (out    (assoc-ref %outputs "out"))
                 (guile1 (string-append in "/bin/guile"))
                 (guile2 (string-append out "/bin/guile")))
-           (mkdir-p (string-append out "/share/guile/2.0"))
-           (copy-recursively (string-append in "/share/guile/2.0")
-                             (string-append out "/share/guile/2.0"))
+           (mkdir-p (string-append out "/share/guile/2.2"))
+           (copy-recursively (string-append in "/share/guile/2.2")
+                             (string-append out "/share/guile/2.2"))
 
-           (mkdir-p (string-append out "/lib/guile/2.0/ccache"))
-           (copy-recursively (string-append in "/lib/guile/2.0/ccache")
-                             (string-append out "/lib/guile/2.0/ccache"))
+           (mkdir-p (string-append out "/lib/guile/2.2/ccache"))
+           (copy-recursively (string-append in "/lib/guile/2.2/ccache")
+                             (string-append out "/lib/guile/2.2/ccache"))
 
            (mkdir (string-append out "/bin"))
            (copy-file guile1 guile2)

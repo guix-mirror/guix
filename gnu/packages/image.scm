@@ -71,7 +71,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.28")
+   (version "1.6.29")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -83,7 +83,8 @@
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+             (base32
+              "0fgjqp7x6jynacmqh6dj72cn6nnf6yxjfqqqfsxrx0pyx22bcia2"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
@@ -383,31 +384,21 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff-4.0.8)
-   (version "4.0.7")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                                version ".tar.gz"))
-            (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
-                                     "libtiff-null-dereference.patch"
-                                     "libtiff-heap-overflow-tif-dirread.patch"
-                                     "libtiff-heap-overflow-pixarlog-luv.patch"
-                                     "libtiff-divide-by-zero.patch"
-                                     "libtiff-divide-by-zero-ojpeg.patch"
-                                     "libtiff-tiffcp-underflow.patch"
-                                     "libtiff-invalid-read.patch"
-                                     "libtiff-CVE-2016-10092.patch"
-                                     "libtiff-heap-overflow-tiffcrop.patch"
-                                     "libtiff-divide-by-zero-tiffcrop.patch"
-                                     "libtiff-CVE-2016-10093.patch"
-                                     "libtiff-divide-by-zero-tiffcp.patch"
-                                     "libtiff-assertion-failure.patch"
-                                     "libtiff-CVE-2016-10094.patch"
-                                     "libtiff-CVE-2017-5225.patch"))
-            (sha256
-             (base32
-              "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
+   (version "4.0.8")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.gz"))
+       (patches
+         (search-patches "libtiff-tiffgetfield-bugs.patch"
+                         "libtiff-CVE-2016-10688.patch"
+                         "libtiff-CVE-2017-9936.patch"
+                         "libtiff-tiffycbcrtorgb-integer-overflow.patch"
+                         "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
+       (sha256
+        (base32
+         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -417,9 +408,6 @@ extracting icontainer icon files.")
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
                                              ,name "-" ,version))))
-   ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
-   (native-inputs
-    `(("gcc@5" ,gcc-5)))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
@@ -431,24 +419,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff-4.0.8
-  (package
-    (inherit libtiff)
-    (version "4.0.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                           version ".tar.gz"))
-       (patches (search-patches "libtiff-tiffgetfield-bugs.patch"
-                                "libtiff-CVE-2016-10688.patch"
-                                "libtiff-CVE-2017-9936.patch"
-                                "libtiff-tiffycbcrtorgb-integer-overflow.patch"
-                                "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
-       (sha256
-        (base32
-         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))))
 
 (define-public leptonica
   (package
@@ -1065,7 +1035,16 @@ differences in file encoding, image quality, and other small variations.")
        ("libjpeg" ,libjpeg)
        ("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CXXFLAGS=-fpermissive"))) ;required for MHashPP.cc
+     `(#:make-flags '("CXXFLAGS=-fpermissive")    ;required for MHashPP.cc
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-perl-search-path
+                    (lambda _
+                      ;; Work around "dotless @INC" build failure.
+                      (setenv "PERL5LIB"
+                              (string-append (getcwd) "/tests:"
+                                             (getenv "PERL5LIB")))
+                      #t)))))
     (home-page "http://steghide.sourceforge.net")
     (synopsis "Image and audio steganography")
     (description

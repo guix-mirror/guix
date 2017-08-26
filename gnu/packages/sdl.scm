@@ -120,8 +120,13 @@ joystick, and graphics hardware.")
     (version "3.3.10")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/mikmod/libmikmod/"
-                                 version "/libmikmod-" version ".tar.gz"))
+             (uri (list
+                   (string-append "mirror://sourceforge/mikmod/libmikmod/"
+                                  version "/libmikmod-" version ".tar.gz")
+                   ;; Older versions are sometimes moved to:
+                   (string-append "mirror://sourceforge/mikmod/"
+                                  "outdated_versions/libmikmod/"
+                                  version "/libmikmod-" version ".tar.gz")))
              (sha256
               (base32
                "0j7g4jpa2zgzw7x6s3rldypa7zlwjvn97rwx0sylx1iihhlzbcq0"))))

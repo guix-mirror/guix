@@ -213,7 +213,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
                                          "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ ]*).*$"
+                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ \t]*).*$"
                     _ gnu-user suffix)
                    (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
                            gnu-user suffix
@@ -385,6 +385,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-strmov-store-file-names.patch"
+                                       "gcc-asan-powerpc-missing-include.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"))))))

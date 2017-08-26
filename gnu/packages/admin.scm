@@ -167,10 +167,10 @@ and provides a \"top-like\" mode (monitoring).")
      `(("pkg-config" ,pkg-config)
 
        ;; This is the Guile we use as a cross-compiler...
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises

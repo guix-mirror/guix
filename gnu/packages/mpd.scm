@@ -195,22 +195,23 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.7.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://ncmpcpp.rybczak.net/stable/ncmpcpp-"
+               (string-append "https://ncmpcpp.rybczak.net/stable/ncmpcpp-"
                               version ".tar.bz2"))
               (sha256
                (base32
-                "1vq19m36608pvw1g8nbcaqqb89wsw05v35pi45xwr20z7g4bxg5p"))))
+                "0nj6ky805a55acj0w57sbn3vfmmkbqp97rhbi0q9848n10f2l3rg"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
               ("readline" ,readline)
               ("ncurses" ,ncurses)
               ("taglib" ,taglib)
-              ("icu4c" ,icu4c)))
+              ("icu4c" ,icu4c)
+              ("curl" ,curl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
@@ -221,7 +222,7 @@ terminal using ncurses.")
 but it provides new useful features such as support for regular expressions
 for library searches, extended song format, items filtering, the ability to
 sort playlists, and a local file system browser.")
-    (home-page "http://ncmpcpp.rybczak.net/")
+    (home-page "https://ncmpcpp.rybczak.net/")
     (license license:gpl2+)))
 
 (define-public mpdscribble

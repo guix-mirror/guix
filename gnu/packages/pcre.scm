@@ -43,6 +43,7 @@
                                  "pcre-" version ".tar.bz2")
                   (string-append "mirror://sourceforge/pcre/pcre/"
                                  version "/pcre-" version ".tar.bz2")))
+            (patches (search-patches "pcre-CVE-2017-7186.patch"))
             (sha256
              (base32
               "1x7lpjn7jhk0n3sdvggxrlrhab8kkfjwl7qix0ypw9nlx8lpmqh0"))))

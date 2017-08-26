@@ -726,15 +726,19 @@ mounted at FILE."
 (cond-expand
   (guile-2.2
    (define %set-automatic-finalization-enabled?!
-     (let ((proc (pointer->procedure int
-                                     (dynamic-func
-                                      "scm_set_automatic_finalization_enabled"
-                                      (dynamic-link))
-                                     (list int))))
+     ;; When using a statically-linked Guile, for instance in the initrd, we
+     ;; cannot resolve this symbol, but most of the time we don't need it
+     ;; anyway.  Thus, delay it.
+     (let ((proc (delay
+                   (pointer->procedure int
+                                       (dynamic-func
+                                        "scm_set_automatic_finalization_enabled"
+                                        (dynamic-link))
+                                       (list int)))))
        (lambda (enabled?)
          "Switch on or off automatic finalization in a separate thread.
 Turning finalization off shuts down the finalization thread as a side effect."
-         (->bool (proc (if enabled? 1 0))))))
+         (->bool ((force proc) (if enabled? 1 0))))))
 
    (define-syntax-rule (without-automatic-finalization exp)
      "Turn off automatic finalization within the dynamic extent of EXP."

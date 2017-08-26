@@ -1,6 +1,7 @@
 Don't look for headers and libraries in "traditional" locations.
 
-Patch from Nixpkgs by Eelco Dolstra <eelco.dolstra@logicblox.com>.
+Patch adapted from Nixpkgs, originally by Eelco Dolstra
+<eelco.dolstra@logicblox.com>.
 
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
 --- perl-5.20.0-orig/Configure	2014-05-26 15:34:18.000000000 +0200
@@ -185,39 +186,6 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
  case "$plibpth" in
  '') plibpth=`LANG=C LC_ALL=C $gcc $ccflags $ldflags -print-search-dirs | grep libraries |
  	cut -f2- -d= | tr ':' $trnl | grep -v 'gcc' | sed -e 's:/$::'`
-@@ -178,32 +159,6 @@
-     ;;
- esac
- 
--case "$libc" in
--'')
--# If you have glibc, then report the version for ./myconfig bug reporting.
--# (Configure doesn't need to know the specific version since it just uses
--# gcc to load the library for all tests.)
--# We don't use __GLIBC__ and  __GLIBC_MINOR__ because they
--# are insufficiently precise to distinguish things like
--# libc-2.0.6 and libc-2.0.7.
--    for p in $plibpth
--    do
--        for trylib in libc.so.6 libc.so
--        do
--            if $test -e $p/$trylib; then
--                libc=`ls -l $p/$trylib | awk '{print $NF}'`
--                if $test "X$libc" != X; then
--                    break
--                fi
--            fi
--        done
--        if $test "X$libc" != X; then
--            break
--        fi
--    done
--    ;;
--esac
--
- # Are we using ELF?  Thanks to Kenneth Albanowski <kjahds@kjahds.com>
- # for this test.
- cat >try.c <<'EOM'
 @@ -367,33 +322,6 @@
  	;;
  esac
@@ -252,3 +220,40 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
  # Linux on Synology.
  if [ -f /etc/synoinfo.conf -a -d /usr/syno ]; then
      # Tested on Synology DS213 and DS413
+diff --git a/hints/linux.sh b/hints/linux.sh
+index 3f38ea0..97aed11 100644
+--- a/hints/linux.sh
++++ b/hints/linux.sh
+@@ -195,32 +195,6 @@ case "$usequadmath" in
+   ;;
+ esac
+ 
+-case "$libc" in
+-'')
+-# If you have glibc, then report the version for ./myconfig bug reporting.
+-# (Configure doesn't need to know the specific version since it just uses
+-# gcc to load the library for all tests.)
+-# We don't use __GLIBC__ and  __GLIBC_MINOR__ because they
+-# are insufficiently precise to distinguish things like
+-# libc-2.0.6 and libc-2.0.7.
+-    for p in $plibpth
+-    do
+-        for trylib in libc.so.6 libc.so
+-        do
+-            if $test -e $p/$trylib; then
+-                libc=`ls -l $p/$trylib | awk '{print $NF}'`
+-                if $test "X$libc" != X; then
+-                    break
+-                fi
+-            fi
+-        done
+-        if $test "X$libc" != X; then
+-            break
+-        fi
+-    done
+-    ;;
+-esac
+-
+ if ${sh:-/bin/sh} -c exit; then
+   echo ''
+   echo 'You appear to have a working bash.  Good.'

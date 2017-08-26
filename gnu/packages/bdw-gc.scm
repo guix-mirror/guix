@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages hurd))
 
 (define-public libgc
   (package
@@ -38,8 +40,20 @@
               "143x7g0d0k6250ai6m2x3l4y352mzizi4wbgrmahxscv2aqjhjm1"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:configure-flags '(;; Install gc_cpp.h et al.
-                          "--enable-cplusplus")))
+    `(#:configure-flags
+      (list
+       ;; Install gc_cpp.h et al.
+       "--enable-cplusplus"
+       ;; In GNU/Hurd systems during the 'Check' phase,
+       ;; there is a deadlock caused by the 'gctest' test.
+       ;; To disable the error set "--disable-gcj-support"
+       ;; to configure script. See bug report and discussion:
+       ;; <https://lists.opendylan.org/pipermail/bdwgc/2017-April/006275.html>
+       ;; <https://lists.gnu.org/archive/html/bug-hurd/2017-01/msg00008.html>
+       ,@(if (hurd-triplet? (or (%current-system)
+                                (%current-target-system)))
+             '("--disable-gcj-support")
+             '()))))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("libatomic-ops" ,libatomic-ops)))
    (outputs '("out" "debug"))

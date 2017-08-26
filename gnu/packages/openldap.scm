@@ -40,8 +40,7 @@
 (define-public openldap
   (package
    (name "openldap")
-   (replacement openldap/fixed)
-   (version "2.4.44")
+   (version "2.4.45")
    (source (origin
             (method url-fetch)
 
@@ -51,14 +50,14 @@
                         "ftp://mirror.switch.ch/mirror/OpenLDAP/"
                         "openldap-release/openldap-" version ".tgz")
                        (string-append
-                        "ftp://ftp.OpenLDAP.org/pub/OpenLDAP/"
+                        "https://www.openldap.org/software/download/OpenLDAP/"
                         "openldap-release/openldap-" version ".tgz")
                        (string-append
                         "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp"))))
+              "091qvwk5dkcpp17ziabcnh3rg3m7qwzw2pihfcd1d5fdxgywzmnd"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
@@ -71,23 +70,25 @@
    (arguments
     `(#:tests? #f
       #:phases
-       (alist-cons-after
-        'configure 'provide-libtool
-        (lambda _ (copy-file (which "libtool") "libtool"))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-after 'configure 'provide-libtool
+          (lambda _ (copy-file (which "libtool") "libtool")
+            #t))
+        (add-after 'install 'patch-sasl-path
+          ;; Give -L arguments for cyrus-sasl to avoid propagation.
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (sasl (assoc-ref inputs "cyrus-sasl")))
+              (substitute* (map (lambda (f) (string-append out "/" f))
+                                '("lib/libldap.la" "lib/libldap_r.la"))
+                (("-lsasl2" lib)
+                 (string-append "-L" sasl "/lib " lib)))
+              #t))))))
    (synopsis "Implementation of the Lightweight Directory Access Protocol")
    (description
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
-   (home-page "http://www.openldap.org/")))
-
-(define openldap/fixed
-  (package
-    (inherit openldap)
-    (source
-      (origin
-        (inherit (package-source openldap))
-        (patches (search-patches "openldap-CVE-2017-9287.patch"))))))
+   (home-page "https://www.openldap.org/")))
 
 (define-public nss-pam-ldapd
   (package

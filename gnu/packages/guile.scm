@@ -154,7 +154,11 @@ without requiring the source code to be rewritten.")
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)
              ,@(libiconv-if-needed)
-             ,@(if (target-mingw?) '() `(("bash" ,bash)))))
+
+             ;; We need Bash when cross-compiling because some of the scripts
+             ;; in bin/ refer to it.  Use 'bash-minimal' because we don't need
+             ;; an interactive Bash with Readline and all.
+             ,@(if (target-mingw?) '() `(("bash" ,bash-minimal)))))
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
        ;; reads `-lltdl -lunistring', adding them here will add the needed
@@ -213,24 +217,20 @@ without requiring the source code to be rewritten.")
    (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
-(define-public guile-2.0/fixed
-  ;; A package of Guile 2.0 that's rarely changed.  It is the one used
-  ;; in the `base' module, and thus changing it entails a full rebuild.
-  (package
-    (inherit guile-2.0)
-    (properties '((hidden? . #t)))))        ;people should install 'guile-2.0'
-
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
     (version "2.2.2")
     (source (origin
               (method url-fetch)
+
+              ;; Note: we are limited to one of the compression formats
+              ;; supported by the bootstrap binaries, so no lzip here.
               (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.lz"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "1dnh75h4rkx1zflpsngznkwcd6afn6zrc5x3xq7n946pm5bnx5bq"))
+                "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -249,6 +249,17 @@ without requiring the source code to be rewritten.")
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
+
+(define-public guile-2.2/fixed
+  ;; A package of Guile 2.2 that's rarely changed.  It is the one used
+  ;; in the `base' module, and thus changing it entails a full rebuild.
+  (package
+    (inherit guile-2.2)
+    (properties '((hidden? . #t)            ;people should install 'guile-2.2'
+                  (timeout . 72000)            ;20 hours
+                  (max-silent-time . 36000)))  ;10 hours (needed on ARM
+                                               ;  when heavily loaded)
+    (replacement #f)))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
@@ -1742,7 +1753,11 @@ dictionary and suggesting spelling corrections.")
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
-                       ("gettext" ,gettext-minimal)))
+                       ("gettext" ,gettext-minimal)
+
+                       ;; Bash with loadable module support, for the test
+                       ;; suite.
+                       ("bash-full" ,bash)))
       (inputs `(("guile" ,guile-2.0)
                 ("bash:include" ,bash "include")))
       (synopsis "Extend Bash using Guile")

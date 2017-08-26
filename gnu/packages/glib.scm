@@ -347,6 +347,7 @@ bindings to call into the C library.")
              (uri (string-append "https://launchpad.net/intltool/trunk/"
                                  version "/+download/intltool-"
                                  version ".tar.gz"))
+             (patches (search-patches "intltool-perl-compatibility.patch"))
              (sha256
               (base32
                "1karx4sb7bnm2j67q0q74hspkfn6lqprpy5r99vkn5bb36a4viv7"))))

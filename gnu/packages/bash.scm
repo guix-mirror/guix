@@ -211,33 +211,33 @@ without modification.")
     (outputs (delete "include" (package-outputs bash)))
 
     (arguments
-     (let ((args `(#:modules ((guix build gnu-build-system)
-                              (guix build utils)
-                              (srfi srfi-1)
-                              (srfi srfi-26))
-                   ,@(package-arguments bash))))
-       (substitute-keyword-arguments args
-         ((#:configure-flags flags)
-          `(list "--without-bash-malloc"
-                 "--disable-readline"
-                 "--disable-history"
-                 "--disable-help-builtin"
-                 "--disable-progcomp"
-                 "--disable-net-redirections"
-                 "--disable-nls"
+     (substitute-keyword-arguments (package-arguments bash)
+       ((#:modules _ '())
+        '((guix build gnu-build-system)
+          (guix build utils)
+          (srfi srfi-1)
+          (srfi srfi-26)))
+       ((#:configure-flags flags '())
+        `(list "--without-bash-malloc"
+               "--disable-readline"
+               "--disable-history"
+               "--disable-help-builtin"
+               "--disable-progcomp"
+               "--disable-net-redirections"
+               "--disable-nls"
 
-                 ;; Pretend 'dlopen' is missing so we don't build loadable
-                 ;; modules and related code.
-                 "ac_cv_func_dlopen=no"
+               ;; Pretend 'dlopen' is missing so we don't build loadable
+               ;; modules and related code.
+               "ac_cv_func_dlopen=no"
 
-                 ,@(if (%current-target-system)
-                       '("bash_cv_job_control_missing=no"
-                         "bash_cv_getcwd_malloc=yes")
-                       '())))
-         ((#:phases phases)
-          `(modify-phases ,phases
-             ;; No loadable modules.
-             (delete 'move-development-files))))))))
+               ,@(if (%current-target-system)
+                     '("bash_cv_job_control_missing=no"
+                       "bash_cv_getcwd_malloc=yes")
+                     '())))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; No loadable modules.
+           (delete 'move-development-files)))))))
 
 (define-public static-bash
   ;; Statically-linked Bash that contains nothing but the 'bash' binary and

@@ -57,6 +57,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1112,8 +1113,29 @@ themselves.")
           (base32
             "16dr80rdw5bzdyhahvilfjrflj7scs2yl2mmghsb84f3nglm8b3m"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; Make sure libpciaccess can read compressed 'pci.ids' files as
+       ;; provided by pciutils.
+       #:configure-flags
+       (list "--with-zlib"
+             (string-append "--with-pciids-path="
+                            (assoc-ref %build-inputs "pciutils")
+                            "/share/hwdata"))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'add-L-zlib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Provide '-LZLIB/lib' next to '-lz' in the .la file.
+             (let ((zlib (assoc-ref inputs "zlib"))
+                   (out  (assoc-ref outputs "out")))
+               (substitute* (string-append out "/lib/libpciaccess.la")
+                 (("-lz")
+                  (string-append "-L" zlib "/lib -lz")))
+               #t))))))
     (inputs
-      `(("zlib" ,zlib)))
+     `(("zlib" ,zlib)
+       ("pciutils" ,pciutils)))                   ;for 'pci.ids.gz'
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1125,7 +1147,7 @@ themselves.")
 (define-public libpthread-stubs
   (package
     (name "libpthread-stubs")
-    (version "0.3")
+    (version "0.4")
     (source
       (origin
         (method url-fetch)
@@ -1135,7 +1157,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
+            "0cz7s9w8lqgzinicd4g36rjg08zhsbyngh0w68c3np8nlc8mkl74"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1558,7 +1580,7 @@ by the legacy X11 font system.")
 (define-public presentproto
   (package
     (name "presentproto")
-    (version "1.0")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
@@ -1568,7 +1590,7 @@ by the legacy X11 font system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
+            "1f96dlgfwhsd0834z8ydjzjnb0cwha5r6lxgia4say4zhsl276zn"))))
     (build-system gnu-build-system)
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PresentProto protocol headers")
@@ -1819,7 +1841,7 @@ management to participate in an X11R6 session.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.19.0")
+    (version "1.19.1")
     (source
       (origin
         (method url-fetch)
@@ -1829,7 +1851,7 @@ management to participate in an X11R6 session.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1fnhpryf55l0yqajxn0cxan3kvsjzi67nlanz8clwqzf54cb2d98"))))
+            "19h6wflpmh7xxqr6lk5z8pds6r9r0dn7ijbvaacymx2q0m05km0q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -3793,7 +3815,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.20")
+    (version "2.21")
     (source
       (origin
         (method url-fetch)
@@ -3803,7 +3825,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "0d619g4r0w1f6q5qmaqjnsc0956gi02fqgpisqffzqy4acjwggyi"))))
+            "1iffxpchy6dfgbby23nfsqqk17h9lfddlmjnhwagqag1z94p1h9h"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -5758,6 +5780,7 @@ programs that cannot use the window system directly.")
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
+       ("perl-module-install" ,perl-module-install)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs

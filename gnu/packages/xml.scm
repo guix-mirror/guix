@@ -55,17 +55,15 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.0")
+    (version "2.2.1")
     (replacement expat-2.2.2)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
-             (patches
-               (search-patches "expat-CVE-2016-0718-fix-regression.patch"))
              (sha256
               (base32
-               "1zq4lnwjlw8s9mmachwfvfjf2x3lk24jm41746ykhdcvs7r0zrfr"))))
+               "11c8jy1wvllvlk7xdc5cm8hdhg0hvs8j0aqy6s702an8wkdcls0q"))))
     (build-system gnu-build-system)
     (home-page "http://www.libexpat.org/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -241,6 +239,7 @@ the @code{Graph} class and write it out in a specific file format.")
     (native-inputs
      `(("perl-datetime" ,perl-datetime)
        ;; TODO package: perl-datetime-format-atom
+       ("perl-module-install" ,perl-module-install)
        ("perl-xml-xpath" ,perl-xml-xpath)))
     (inputs
      `(("perl-class-data-inheritable" ,perl-class-data-inheritable)
@@ -436,7 +435,7 @@ libxslt library.")
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -444,7 +443,7 @@ libxslt library.")
                            "XML-NamespaceSupport-" version ".tar.gz"))
        (sha256
         (base32
-         "1sklgcldl3w6gn706vx1cgz6pm4y5lfgsjxnfqyk20pilgq530bd"))))
+         "1vz5pbi4lm5fhq2slrs2hlp6bnk29863abgjlcx43l4dky2rbsa7"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/XML-NamespaceSupport")
     (synopsis "XML namespace support class")

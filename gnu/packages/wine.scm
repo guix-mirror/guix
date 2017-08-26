@@ -66,8 +66,7 @@
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
-                     ; A bug in flex prevents building with flex-2.6.3.
-                     ("flex" ,flex-2.6.1)
+                     ("flex" ,flex)
                      ("bison" ,bison)
                      ("perl" ,perl)))
     (inputs

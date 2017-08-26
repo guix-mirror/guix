@@ -154,6 +154,11 @@ you can create PNG images on the fly or modify existing files.")
         (base32
          "1kaxs67rfd4w46lxgcg3pa05a596l0h1k8n4zk2gwrrar4022wpx"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs

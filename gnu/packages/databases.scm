@@ -128,14 +128,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1smwz4x5qa4js0zf1w3asq6z7mh20zlgwbh2bk5dczw6xrk22yyr"))))
+                "0lx201q20dvc70f8a3c9s7s18z15inlxvbffph97ngvrgnyjq9cx"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
@@ -754,7 +754,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.17.0")
+   (version "3.19.3")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -770,7 +770,7 @@ for example from a shell script.")
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0k472gq0p706jq4529p60znvw02hdf172qxgbdv59q0n7anqbr54"))))
+              "00b3l2qglpl1inx21fckiwxnfq5xf6441flc79rqg7zdvh1rq4h6"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -861,6 +861,7 @@ extremely small.")
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-file-temp" ,perl-file-temp)
+       ("perl-module-install" ,perl-module-install)
        ("perl-package-stash" ,perl-package-stash)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
@@ -914,7 +915,8 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cache-cache" ,perl-cache-cache)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
@@ -937,6 +939,8 @@ built-in caching support.")
         (base32
          "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
     (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
@@ -967,6 +971,7 @@ introspected and examined.")
        ("perl-config-general" ,perl-config-general)
        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
+       ("perl-module-install" ,perl-module-install)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
        ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
@@ -1090,7 +1095,8 @@ module, and nothing else.")
          "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs

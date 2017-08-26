@@ -31,7 +31,7 @@
 (define-public swig
   (package
     (name "swig")
-    (version "3.0.10")
+    (version "3.0.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -39,8 +39,16 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0k7ljh07rla6223lhvljgg881b2qr7hmrfgic9a0j1pckpislf99"))))
+               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           ;; Required since Perl 5.26.0's removal of the current
+           ;; working directory from @INC.
+           ;; TODO Try removing this for later versions of SWIG.
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(;; Provide these to run the corresponding tests.

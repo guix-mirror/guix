@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -53,8 +54,8 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
+    (version "4.12")
     (replacement libtasn1/fixed)
-    (version "4.10")
     (source
      (origin
       (method url-fetch)
@@ -62,7 +63,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "00jsix5hny0g768zv4hk78dib7w0qmk5fbizf4jj37r51nd4s6k8"))))
+        "0ls7jdq3y5fnrwg0pzhq11m21r8pshac2705bczz6mqjc8pdllv7"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
@@ -77,12 +78,9 @@ specifications.")
 (define libtasn1/fixed
   (package
     (inherit libtasn1)
-    (source
-      (origin
-        (inherit (package-source libtasn1))
-        (patches
-          (search-patches "libtasn1-CVE-2017-6891.patch"
-                          "libtasn1-CVE-2017-10790.patch"))))))
+    (source (origin
+              (inherit (package-source libtasn1))
+              (patches (search-patches "libtasn1-CVE-2017-10790.patch"))))))
 
 (define-public asn1c
   (package
@@ -147,8 +145,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (replacement gnutls-3.5.13)
-    (version "3.5.9")
+    (version "3.5.13")
     (source (origin
              (method url-fetch)
              (uri
@@ -157,15 +154,16 @@ living in the same process.")
               (string-append "mirror://gnupg/gnutls/v"
                              (version-major+minor version)
                              "/gnutls-" version ".tar.xz"))
+             (patches
+              (search-patches "gnutls-skip-trust-store-test.patch"
+                              "gnutls-skip-pkgconfig-test.patch"))
              (sha256
               (base32
-               "0l9971841jsfdcvcyhas17sk5rsby6x5vvwcmmj4x3zi9q60zcc2"))))
+               "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-guile-site-dir="
-                            (assoc-ref %outputs "out")
-                            "/share/guile/site/2.0")
+       (list
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
              ;; configure-time option.  Unless specified, its configure script
@@ -202,7 +200,7 @@ living in the same process.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
@@ -220,43 +218,21 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define gnutls-3.5.13               ;GNUTLS-SA-2017-{3,4}
-  (package
-    (inherit gnutls)
-    ;; We use 'D' instead of '13' here to keep the store file name at
-    ;; the same length. See <https://bugs.gnu.org/27308>.
-    (version "3.5.D")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "mirror://gnupg/gnutls/v"
-                              (version-major+minor version)
-                              "/gnutls-3.5.13.tar.xz"))
-              (patches
-               (search-patches "gnutls-skip-trust-store-test.patch"
-                               "gnutls-skip-pkgconfig-test.patch"))
-              (sha256
-               (base32
-                "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))))
-
 (define-public gnutls/guile-2.2
-  ;; GnuTLS for Guile 2.2.  This is supported by GnuTLS >= 3.5.5.
+  (deprecated-package "guile2.2-gnutls" gnutls))
+
+(define-public gnutls/guile-2.0
+  ;; GnuTLS for Guile 2.0.
   (package
     (inherit gnutls)
-    (source (package-source gnutls-3.5.13))
-    (name "guile2.2-gnutls")
-    (arguments
-     ;; Remove '--with-guile-site-dir=…/2.0'.
-     (substitute-keyword-arguments (package-arguments gnutls)
-       ((#:configure-flags flags)
-        `(cdr ,flags))))
-    (inputs `(("guile" ,guile-2.2)
+    (name "guile2.0-gnutls")
+    (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
 
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2k")
+   (version "1.0.2l")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -266,7 +242,14 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1h6qi35w6hv6rd73p4cdgdzg732pdrfgpp37cgwz1v9a3z37ffbb"))
+               "037kvpisc6qh5dkppcwbm5bg2q800xh2hma3vghz8xcycmdij1yf"))
+             (snippet
+              '(begin
+                 ;; Remove ELF files.  'substitute*' can't read them.
+                 (delete-file "test/ssltest_old")
+                 (delete-file "test/v3ext")
+                 (delete-file "test/x509aux")
+                 #t))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -615,32 +598,19 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.68")
+    (version "1.81")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
+                "0z8vya34g88bc41kx955sv7y4niwbbywji8liqbl52v29qbvdjq0"))))
     (build-system perl-build-system)
-    (native-inputs
-     `(("patch" ,patch)
-       ("patch/disable-ede-test"
-        ,(search-patch "perl-net-ssleay-disable-ede-test.patch"))))
     (inputs `(("openssl" ,openssl)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'apply-patch
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; XXX We apply this patch here instead of in the 'origin' because
-            ;; this package's build system fails badly when the source file
-            ;; times are zeroed.
-            ;; XXX Try removing this patch for perl-net-ssleay > 1.68
-            (zero? (system* "patch" "--force" "-p1" "-i"
-                            (assoc-ref inputs "patch/disable-ede-test")))))
          (add-before
           'configure 'set-ssl-prefix
           (lambda* (#:key inputs #:allow-other-keys)
