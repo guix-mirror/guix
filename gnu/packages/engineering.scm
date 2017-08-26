@@ -23,7 +23,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages engineering)
-  #:use-module (srfi srfi-1)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
