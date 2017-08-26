@@ -1008,3 +1008,47 @@ desktop-file-install: installs a desktop file to the applications directory,
 update-desktop-database: updates the database containing a cache of MIME types
                          handled by desktop files.")
     (license license:gpl2+)))
+
+(define-public xdg-user-dirs
+  (package
+    (name "xdg-user-dirs")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://user-dirs.freedesktop.org/releases/"
+                                    name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1rp3c94hxjlfsryvwajklynfnrcvxplhwnjqc7395l89i0nb83vp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("xsltproc" ,libxslt)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'locate-catalog-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("http://.*/docbookx\\.dtd")
+                              (string-append xmldoc "/docbookx.dtd"))))
+                         (find-files "man" "\\.xml$"))
+               (substitute* "man/Makefile"
+                 (("http://.*/docbook\\.xsl")
+                  (string-append xsldoc "/manpages/docbook.xsl")))
+               #t))))))
+    (home-page "https://www.freedesktop.org/wiki/Software/xdg-user-dirs/")
+    (synopsis "Tool to help manage \"well known\" user directories")
+    (description "xdg-user-dirs is a tool to help manage \"well known\" user
+directories, such as the desktop folder or the music folder. It also handles
+localization (i.e. translation) of the file names.  Designed to be
+automatically run when a user logs in, xdg-user-dirs can also be run
+manually by a user.")
+    (license license:gpl2)))
