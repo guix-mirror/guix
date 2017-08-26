@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +24,10 @@
 
 (define-module (gnu packages kerberos)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -32,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -42,7 +46,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.14.4")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
@@ -50,20 +54,13 @@
                                   "/krb5-" version ".tar.gz"))
               (sha256
                (base32
-                "158bgq9xcg5ljgzia1880ak7m9g6vf2r009rzdqif5n9h111m9h3"))))
+                "0igbi5d095c2hgpn2cixpc4q2ij8vgg2bx7yjfly5zfmvlqqhz23"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
     (arguments
-     `(;; Work around "No rule to make target '../../include/gssapi/gssapi.h',
-       ;; needed by 'authgss_prot.so'."
-       #:parallel-build? #f
-
-       ;; Likewise with tests.
-       #:parallel-tests? #f
-
-       ;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
+     `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
        ;; while running the tests in 'src/tests'.
        #:tests? ,(string=? (%current-system) "x86_64-linux")
 
@@ -105,25 +102,23 @@ cryptography.")
       (method url-fetch)
       (uri (string-append "mirror://gnu/shishi/shishi-"
                           version ".tar.gz"))
+      (patches (search-patches "shishi-fix-libgcrypt-detection.patch"))
       (sha256
        (base32
         "032qf72cpjdfffq1yq54gz3ahgqf2ijca4vl31sfabmjzq9q370d"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; This is required since we patch some of the build scripts.
+       ;; Remove for the next Shishi release after 1.0.2 or when
+       ;; removing 'shishi-fix-libgcrypt-detection.patch'.
+       #:configure-flags '("ac_cv_libgcrypt=yes")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)
        ("linux-pam" ,linux-pam-1.2)
        ("zlib" ,zlib)
-       ;; libgcrypt 1.6 fails because of the following test:
-       ;;  #include <gcrypt.h>
-       ;; /* GCRY_MODULE_ID_USER was added in 1.4.4 and gc-libgcrypt.c
-       ;;    will fail on startup if we don't have 1.4.4 or later, so
-       ;;    test for it early. */
-       ;; #if !defined GCRY_MODULE_ID_USER
-       ;; error too old libgcrypt
-       ;; #endif
-       ("libgcrypt" ,libgcrypt-1.5)
+       ("libgcrypt" ,libgcrypt)
        ("libtasn1" ,libtasn1)))
     (home-page "https://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
@@ -144,6 +139,8 @@ secure manner through client-server mutual authentication via tickets.")
               (sha256
                (base32
                 "19gypf9vzfrs2bw231qljfl4cqc1riyg0ai0xmm1nd1wngnpphma"))
+              (patches (search-patches "heimdal-CVE-2017-6594.patch"
+                                       "heimdal-CVE-2017-11103.patch"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "configure"

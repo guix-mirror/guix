@@ -14,8 +14,9 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
-;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
@@ -61,12 +64,14 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.28")
+   (version "1.6.29")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -78,7 +83,8 @@
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+             (base32
+              "0fgjqp7x6jynacmqh6dj72cn6nnf6yxjfqqqfsxrx0pyx22bcia2"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
@@ -91,13 +97,32 @@ library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
+;; libpng-apng should be updated when the APNG patch is released:
+;; <https://bugs.gnu.org/27556>
 (define-public libpng-apng
   (package
-    (inherit libpng)
     (name "libpng-apng")
-    (version (package-version libpng))
+    (version "1.6.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
+                                 version "/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                   "/libpng16/libpng-" version ".tar.xz")
+                  (string-append
+                   "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                   "/libpng16/libpng-" version ".tar.xz")))
+       (sha256
+        (base32
+         "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-apng
            (lambda* (#:key inputs #:allow-other-keys)
@@ -107,11 +132,10 @@ library.  It supports almost all PNG features and is extensible.")
              (let ((apng.gz (assoc-ref inputs "apng")))
                (format #t "Applying APNG patch '~a'...~%"
                        apng.gz)
-               (system (string-append "gunzip < " apng.gz " > the-patch"))
-               (and (apply-patch "the-patch")
-                    (for-each apply-patch
-                              (find-files "\\.patch"))))
-           #t))
+               (and
+                 (zero?
+                   (system (string-append "gunzip < " apng.gz " > the-patch")))
+                 (apply-patch "the-patch")))))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
@@ -126,15 +150,19 @@ library.  It supports almost all PNG features and is extensible.")
                                   version "/libpng-" version "-apng.patch.gz"))
                   (sha256
                    (base32
-                    "026r0gbkf6d6v54wca02cdxln8sj4m2c1yk62sj2aasv2ki2ffh5"))))))
+                    "0m5nv70n9903x3xzxw9qqc6sgf2rp106ha0x6gix0xf8wcrljaab"))))))
     (native-inputs
      `(("libtool" ,libtool)))
+    ;; libpng.la says "-lz", so propagate it.
+    (propagated-inputs
+     `(("zlib" ,zlib)))
     (synopsis "APNG patch for libpng")
     (description
      "APNG (Animated Portable Network Graphics) is an unofficial
 extension of the APNG (Portable Network Graphics) format.
 APNG patch provides APNG support to libpng.")
-    (home-page "https://sourceforge.net/projects/libpng-apng/")))
+    (home-page "https://sourceforge.net/projects/libpng-apng/")
+    (license license:zlib)))
 
 (define-public libpng-1.2
   (package
@@ -153,6 +181,29 @@ APNG patch provides APNG support to libpng.")
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
         (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+
+(define-public r-png
+  (package
+    (name "r-png")
+    (version "0.1-7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "png" version))
+              (sha256
+               (base32
+                "0g2mcp55lvvpx4kd3mn225mpbxqcq73wy5qx8b4lyf04iybgysg2"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (home-page "http://www.rforge.net/png/")
+    (synopsis "Read and write PNG images")
+    (description
+     "This package provides an easy and simple way to read, write and display
+bitmap images stored in the PNG format.  It can read and write both files and
+in-memory raw vectors.")
+    ;; Any of these GPL versions.
+    (license (list license:gpl2 license:gpl3))))
 
 (define-public pngcrunch
   (package
@@ -333,31 +384,21 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff-4.0.8)
-   (version "4.0.7")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                                version ".tar.gz"))
-            (patches (search-patches "libtiff-heap-overflow-tiffcp.patch"
-                                     "libtiff-null-dereference.patch"
-                                     "libtiff-heap-overflow-tif-dirread.patch"
-                                     "libtiff-heap-overflow-pixarlog-luv.patch"
-                                     "libtiff-divide-by-zero.patch"
-                                     "libtiff-divide-by-zero-ojpeg.patch"
-                                     "libtiff-tiffcp-underflow.patch"
-                                     "libtiff-invalid-read.patch"
-                                     "libtiff-CVE-2016-10092.patch"
-                                     "libtiff-heap-overflow-tiffcrop.patch"
-                                     "libtiff-divide-by-zero-tiffcrop.patch"
-                                     "libtiff-CVE-2016-10093.patch"
-                                     "libtiff-divide-by-zero-tiffcp.patch"
-                                     "libtiff-assertion-failure.patch"
-                                     "libtiff-CVE-2016-10094.patch"
-                                     "libtiff-CVE-2017-5225.patch"))
-            (sha256
-             (base32
-              "06ghqhr4db1ssq0acyyz49gr8k41gzw6pqb6mbn5r7jqp77s4hwz"))))
+   (version "4.0.8")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.gz"))
+       (patches
+         (search-patches "libtiff-tiffgetfield-bugs.patch"
+                         "libtiff-CVE-2016-10688.patch"
+                         "libtiff-CVE-2017-9936.patch"
+                         "libtiff-tiffycbcrtorgb-integer-overflow.patch"
+                         "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
+       (sha256
+        (base32
+         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -367,9 +408,6 @@ extracting icontainer icon files.")
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
                                              ,name "-" ,version))))
-   ;; Build with a patched GCC to work around <http://bugs.gnu.org/24703>.
-   (native-inputs
-    `(("gcc@5" ,gcc-5)))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
@@ -381,24 +419,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff-4.0.8
-  (package
-    (inherit libtiff)
-    (version "4.0.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
-                           version ".tar.gz"))
-       (patches (search-patches "libtiff-tiffgetfield-bugs.patch"
-                                "libtiff-CVE-2016-10688.patch"
-                                "libtiff-CVE-2017-9936.patch"
-                                "libtiff-tiffycbcrtorgb-integer-overflow.patch"
-                                "libtiff-tiffycbcrtorgbinit-integer-overflow.patch"))
-       (sha256
-        (base32
-         "0419mh6kkhz5fkyl77gv0in8x4d2jpdpfs147y8mj86rrjlabmsr"))))))
 
 (define-public leptonica
   (package
@@ -489,7 +509,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.1.2")
+    (version "2.2.0")
     (source
       (origin
         (method url-fetch)
@@ -499,9 +519,8 @@ work.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "19yz4g0c45sm8y1z01j9djsrl1mkz3pmw7fykc6hkvrqymp7prsc"))
-        (patches (search-patches "openjpeg-CVE-2016-9850-CVE-2016-9851.patch"
-                                 "openjpeg-CVE-2016-9572-CVE-2016-9573.patch"))))
+          "0yvfghxwfm3dcqr9krkw63pcd76hzkknc3fh7bh11s8qlvjvrpbg"))
+        (patches (search-patches "openjpeg-CVE-2017-12982.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -1016,7 +1035,16 @@ differences in file encoding, image quality, and other small variations.")
        ("libjpeg" ,libjpeg)
        ("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CXXFLAGS=-fpermissive"))) ;required for MHashPP.cc
+     `(#:make-flags '("CXXFLAGS=-fpermissive")    ;required for MHashPP.cc
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-perl-search-path
+                    (lambda _
+                      ;; Work around "dotless @INC" build failure.
+                      (setenv "PERL5LIB"
+                              (string-append (getcwd) "/tests:"
+                                             (getenv "PERL5LIB")))
+                      #t)))))
     (home-page "http://steghide.sourceforge.net")
     (synopsis "Image and audio steganography")
     (description
@@ -1100,7 +1128,8 @@ PNG, and performs PNG integrity checks and corrections.")
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:test-target "test"))
+     '(#:test-target "test"
+       #:configure-flags (list "--with-build-date=1970-01-01")))
     (home-page "http://www.libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
@@ -1158,3 +1187,46 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (fMRI) brain images.")
     (home-page "http://niftilib.sourceforge.net")
     (license license:public-domain)))
+
+(define-public gpick
+  (package
+    (name "gpick")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/thezbyg/gpick/archive/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("boost" ,boost)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("scons" ,scons)))
+    (inputs
+     `(("expat" ,expat)
+       ("gtk2" ,gtk+-2)
+       ("lua" ,lua-5.2)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-lua-reference
+           (lambda _
+             (substitute* "SConscript"
+               (("lua5.2") "lua-5.2"))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "scons"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dest (assoc-ref outputs "out")))
+               (zero? (system* "scons" "install"
+                               (string-append "DESTDIR=" dest)))))))))
+    (home-page "http://www.gpick.org/")
+    (synopsis "Color picker")
+    (description "Gpick is an advanced color picker and palette editing tool.")
+    (license license:bsd-3)))

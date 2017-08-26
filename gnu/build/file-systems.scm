@@ -373,15 +373,16 @@ not valid header was found."
 
 (define (disk-partitions)
   "Return the list of device names corresponding to valid disk partitions."
-  (define (last-character str)
-    (string-ref str (- (string-length str) 1)))
-
   (define (partition? name major minor)
-    ;; Select device names that end in a digit, like libblkid's 'probe_all'
-    ;; function does.  Checking for "/sys/dev/block/MAJOR:MINOR/partition"
-    ;; doesn't work for partitions coming from mapped devices.
-    (and (char-set-contains? char-set:digit (last-character name))
-         (> major 2)))                      ;ignore RAM disks and floppy disks
+    ;; grub-mkrescue does some funny things for EFI support which
+    ;; makes it a lot more difficult than one would expect to support
+    ;; booting an ISO-9660 image from an USB flash drive.
+    ;; For example there's a buggy (too small) hidden partition in it
+    ;; which Linux mounts and then proceeds to fail while trying to
+    ;; fall off the edge.
+    ;; In any case, partition tables are supposed to be optional so
+    ;; here we allow checking entire disks for file systems, too.
+    (> major 2))                      ;ignore RAM disks and floppy disks
 
   (call-with-input-file "/proc/partitions"
     (lambda (port)

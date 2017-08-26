@@ -385,6 +385,24 @@ at a time."
                     (string-suffix? ".narinfo" file)))
       '()))
 
+(define (nar-expiration-time ttl)
+  "Return the narinfo expiration time (in seconds since the Epoch).  The
+expiration time is +inf.0 when passed an item that is still in the store; in
+other cases, it is the last-access time of the item plus TTL.
+
+This policy allows us to keep cached nars that correspond to valid store
+items.  Failing that, we could eventually have to recompute them and return
+404 in the meantime."
+  (let ((expiration-time (file-expiration-time ttl)))
+    (lambda (file)
+      (let ((item (string-append (%store-prefix) "/"
+                                 (basename file ".narinfo"))))
+        ;; Note: We don't need to use 'valid-path?' here because FILE would
+        ;; not exist if ITEM were not valid in the first place.
+        (if (file-exists? item)
+            +inf.0
+            (expiration-time file))))))
+
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compression %no-compression)
                                 (nar-path "nar")
@@ -417,7 +435,8 @@ requested using POOL."
                      (display (call-with-input-file cached
                                 read-string)
                               port))))
-          ((valid-path? store item)
+          ((and (file-exists? item)        ;cheaper than the 'valid-path?' RPC
+                (valid-path? store item))
            ;; Nothing in cache: bake the narinfo and nar in the background and
            ;; return 404.
            (eventually pool
@@ -435,7 +454,7 @@ requested using POOL."
                  (maybe-remove-expired-cache-entries cache
                                                      narinfo-files
                                                      #:entry-expiration
-                                                     (file-expiration-time ttl)
+                                                     (nar-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
            (not-found request
@@ -565,13 +584,13 @@ has the given HASH of type ALGO."
                                " speaking.  Welcome!")))
                          port)))))
 
-(define extract-narinfo-hash
-  (let ((regexp (make-regexp "^([a-df-np-sv-z0-9]{32}).narinfo$")))
-    (lambda (str)
-      "Return the hash within the narinfo resource string STR, or false if STR
+(define (extract-narinfo-hash str)
+  "Return the hash within the narinfo resource string STR, or false if STR
 is invalid."
-      (and=> (regexp-exec regexp str)
-             (cut match:substring <> 1)))))
+  (and (string-suffix? ".narinfo" str)
+       (let ((base (string-drop-right str 8)))
+         (and (string-every %nix-base32-charset base)
+              base))))
 
 (define (get-request? request)
   "Return #t if REQUEST uses the GET method."

@@ -12,7 +12,9 @@
 
   ;; Assuming /dev/sdX is the target hard disk, and "my-root" is
   ;; the label of the target root file system.
-  (bootloader (grub-configuration (device "/dev/sdX")))
+  (bootloader (bootloader-configuration
+                (bootloader grub-bootloader)
+                (target "/dev/sdX")))
   (file-systems (cons (file-system
                         (device "my-root")
                         (title 'label)

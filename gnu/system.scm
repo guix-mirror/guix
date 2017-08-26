@@ -112,7 +112,7 @@
             boot-parameters-initrd
             read-boot-parameters
             read-boot-parameters-file
-            menu-entry->boot-parameters
+            boot-parameters->menu-entry
 
             local-host-aliases
             %setuid-programs
@@ -301,17 +301,15 @@ The object has its kernel-arguments extended in order to make it bootable."
                                                      root-device)))
       #f)))
 
-(define (menu-entry->boot-parameters menu-entry)
-  "Convert a <menu-entry> instance to a corresponding <boot-parameters>."
-  (boot-parameters
-   (label (menu-entry-label menu-entry))
-   (root-device #f)
-   (bootloader-name 'custom)
-   (store-device #f)
-   (store-mount-point #f)
-   (kernel (menu-entry-linux menu-entry))
-   (kernel-arguments (menu-entry-linux-arguments menu-entry))
-   (initrd (menu-entry-initrd menu-entry))))
+(define (boot-parameters->menu-entry conf)
+  (menu-entry
+   (label (boot-parameters-label conf))
+   (device (boot-parameters-store-device conf))
+   (device-mount-point (boot-parameters-store-mount-point conf))
+   (linux (boot-parameters-kernel conf))
+   (linux-arguments (boot-parameters-kernel-arguments conf))
+   (initrd (boot-parameters-initrd conf))))
+
 
 
 ;;;
@@ -392,6 +390,7 @@ from the initrd."
   (cond
    ((string-prefix? "arm" (%current-system)) "zImage")
    ((string-prefix? "mips" (%current-system)) "vmlinuz")
+   ((string-prefix? "aarch64" (%current-system)) "Image")
    (else "bzImage")))
 
 (define (operating-system-kernel-file os)
@@ -403,17 +402,18 @@ OS."
 (define* (operating-system-directory-base-entries os #:key container?)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
-  (mlet %store-monad ((locale (operating-system-locale-directory os)))
-    (if container?
-        (return `(("locale" ,locale)))
-        (mlet %store-monad
-            ((kernel  ->  (operating-system-kernel os))
-             (initrd      (operating-system-initrd-file os))
-             (params      (operating-system-boot-parameters-file os)))
-          (return `(("kernel" ,kernel)
-                    ("parameters" ,params)
-                    ("initrd" ,initrd)
-                    ("locale" ,locale)))))))      ;used by libc
+  (let ((locale (operating-system-locale-directory os)))
+    (with-monad %store-monad
+      (if container?
+          (return `(("locale" ,locale)))
+          (mlet %store-monad
+              ((kernel  ->  (operating-system-kernel os))
+               (initrd      (operating-system-initrd-file os))
+               (params      (operating-system-boot-parameters-file os)))
+            (return `(("kernel" ,kernel)
+                      ("parameters" ,params)
+                      ("initrd" ,initrd)
+                      ("locale" ,locale))))))))   ;used by libc
 
 (define* (essential-services os #:key container?)
   "Return the list of essential services for OS.  These are special services
@@ -514,10 +514,16 @@ explicitly appear in OS."
 
          bash-completion
 
+         ;; XXX: We don't use (canonical-package guile-2.2) here because that
+         ;; would create a collision in the global profile between the GMP
+         ;; variant propagated by 'guile-final' and the GMP variant propagated
+         ;; by 'gnutls', itself propagated by 'guix'.
+         guile-2.2
+
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.2 bash coreutils-8.27 findutils grep sed
+              (list bash coreutils findutils grep sed
                     diffutils patch gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
@@ -717,6 +723,8 @@ use 'plain-file' instead~%")
   (let ((shadow (@ (gnu packages admin) shadow)))
     (list (file-append shadow "/bin/passwd")
           (file-append shadow "/bin/su")
+          (file-append shadow "/bin/newuidmap")
+          (file-append shadow "/bin/newgidmap")
           (file-append inetutils "/bin/ping")
           (file-append inetutils "/bin/ping6")
           (file-append sudo "/bin/sudo")
@@ -862,15 +870,16 @@ listed in OS.  The C library expects to find it under
   (store-file-system (operating-system-file-systems os)))
 
 (define* (operating-system-bootcfg os #:optional (old-entries '()))
-  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES to
-populate the \"old entries\" menu."
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES
+(which is a list of <menu-entry>) to populate the \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
                            (file-system-device root-fs)))
-       (entry (operating-system-boot-parameters os system root-device))
+       (params (operating-system-boot-parameters os system root-device))
+       (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
     ((bootloader-configuration-file-generator
       (bootloader-configuration-bootloader bootloader-conf))

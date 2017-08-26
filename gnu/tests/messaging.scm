@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,108 +27,109 @@
   #:use-module (gnu packages messaging)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:export (%test-prosody))
 
 (define (run-xmpp-test name xmpp-service pid-file create-account)
   "Run a test of an OS running XMPP-SERVICE, which writes its PID to PID-FILE."
-  (mlet* %store-monad ((os -> (marionette-operating-system
-                               (simple-operating-system (dhcp-client-service)
-                                                        xmpp-service)
-                               #:imported-modules '((gnu services herd))))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f))
-                       (username -> "alice")
-                       (server -> "localhost")
-                       (jid -> (string-append username "@" server))
-                       (password -> "correct horse battery staple")
-                       (port -> 15222)
-                       (message -> "hello world")
-                       (witness -> "/tmp/freetalk-witness"))
+  (define os
+    (marionette-operating-system
+     (simple-operating-system (dhcp-client-service)
+                              xmpp-service)
+     #:imported-modules '((gnu services herd))))
 
-    (define script.ft
-      (scheme-file
-       "script.ft"
-       #~(begin
-           (define (handle-received-message time from nickname message)
-             (define (touch file-name)
-               (call-with-output-file file-name (const #t)))
-             (when (equal? message #$message)
-               (touch #$witness)))
-           (add-hook! ft-message-receive-hook handle-received-message)
+  (define port 15222)
 
-           (ft-set-jid! #$jid)
-           (ft-set-password! #$password)
-           (ft-set-server! #$server)
-           (ft-set-port! #$port)
-           (ft-set-sslconn! #f)
-           (ft-connect-blocking)
-           (ft-send-message #$jid #$message)
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((,port . 5222)))))
 
-           (ft-set-daemon)
-           (ft-main-loop))))
+  (define username "alice")
+  (define server "localhost")
+  (define jid (string-append username "@" server))
+  (define password "correct horse battery staple")
+  (define message "hello world")
+  (define witness "/tmp/freetalk-witness")
 
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (gnu build marionette)
-                         (srfi srfi-64))
+  (define script.ft
+    (scheme-file
+     "script.ft"
+     #~(begin
+         (define (handle-received-message time from nickname message)
+           (define (touch file-name)
+             (call-with-output-file file-name (const #t)))
+           (when (equal? message #$message)
+             (touch #$witness)))
+         (add-hook! ft-message-receive-hook handle-received-message)
 
-            (define marionette
-              ;; Enable TCP forwarding of the guest's port 5222.
-              (make-marionette (list #$command "-net"
-                                     (string-append "user,hostfwd=tcp::"
-                                                    (number->string #$port)
-                                                    "-:5222"))))
+         (ft-set-jid! #$jid)
+         (ft-set-password! #$password)
+         (ft-set-server! #$server)
+         (ft-set-port! #$port)
+         (ft-set-sslconn! #f)
+         (ft-connect-blocking)
+         (ft-send-message #$jid #$message)
 
-            (define (host-wait-for-file file)
-              ;; Wait until FILE exists in the host.
-              (let loop ((i 60))
-                (cond ((file-exists? file)
-                       #t)
-                      ((> i 0)
-                       (begin
-                         (sleep 1))
-                       (loop (- i 1)))
-                      (else
-                       (error "file didn't show up" file)))))
+         (ft-set-daemon)
+         (ft-main-loop))))
 
-            (mkdir #$output)
-            (chdir #$output)
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64))
 
-            (test-begin "xmpp")
+          (define marionette
+            (make-marionette (list #$vm)))
 
-            ;; Wait for XMPP service to be up and running.
-            (test-eq "service running"
-              'running!
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'xmpp-daemon)
-                  'running!)
-               marionette))
+          (define (host-wait-for-file file)
+            ;; Wait until FILE exists in the host.
+            (let loop ((i 60))
+              (cond ((file-exists? file)
+                     #t)
+                    ((> i 0)
+                     (begin
+                       (sleep 1))
+                     (loop (- i 1)))
+                    (else
+                     (error "file didn't show up" file)))))
 
-            ;; Check XMPP service's PID.
-            (test-assert "service process id"
-              (let ((pid (number->string (wait-for-file #$pid-file
-                                                        marionette))))
-                (marionette-eval `(file-exists? (string-append "/proc/" ,pid))
-                                 marionette)))
+          (mkdir #$output)
+          (chdir #$output)
 
-            ;; Alice sends an XMPP message to herself, with Freetalk.
-            (test-assert "client-to-server communication"
-              (let ((freetalk-bin (string-append #$freetalk "/bin/freetalk")))
-                (marionette-eval '(system* #$create-account #$jid #$password)
-                                 marionette)
-                ;; Freetalk requires write access to $HOME.
-                (setenv "HOME" "/tmp")
-                (system* freetalk-bin "-s" #$script.ft)
-                (host-wait-for-file #$witness)))
+          (test-begin "xmpp")
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          ;; Wait for XMPP service to be up and running.
+          (test-eq "service running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'xmpp-daemon)
+                'running!)
+             marionette))
 
-    (gexp->derivation name test)))
+          ;; Check XMPP service's PID.
+          (test-assert "service process id"
+            (let ((pid (number->string (wait-for-file #$pid-file
+                                                      marionette))))
+              (marionette-eval `(file-exists? (string-append "/proc/" ,pid))
+                               marionette)))
+
+          ;; Alice sends an XMPP message to herself, with Freetalk.
+          (test-assert "client-to-server communication"
+            (let ((freetalk-bin (string-append #$freetalk "/bin/freetalk")))
+              (marionette-eval '(system* #$create-account #$jid #$password)
+                               marionette)
+              ;; Freetalk requires write access to $HOME.
+              (setenv "HOME" "/tmp")
+              (system* freetalk-bin "-s" #$script.ft)
+              (host-wait-for-file #$witness)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation name test))
 
 (define %create-prosody-account
   (program-file

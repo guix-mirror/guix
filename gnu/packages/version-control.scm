@@ -9,12 +9,13 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,14 +121,16 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.13.3")
+   ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
+   ;; to be updated as well.
+   (version "2.14.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0qiy696pwqhbxcrvm3zhyjnfjrym541glhvgc4cynrwg8az27ali"))))
+              "1iic3wiihxp3l3k6d4z886v3869c3dzgddjxnd5124wy1rnlqwkg"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -139,8 +142,9 @@ as well as the classic centralized workflow.")
                 "mirror://kernel.org/software/scm/git/git-manpages-"
                 version ".tar.xz"))
           (sha256
+
            (base32
-            "1hl1fhbr3jn4y9pkj26kk9frj6wjlxiphl7x5c9ma6x4081xna0i"))))))
+            "1whlsiicayalym4hkf01zdiqpw37gdf7c52gw9ki7bv2x3hf3g3y"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -176,7 +180,6 @@ as well as the classic centralized workflow.")
                      ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
-      #:tests? #f ; FIXME: Many tests are failing
 
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.
@@ -202,6 +205,37 @@ as well as the classic centralized workflow.")
           (lambda _
             ;; Add the "PM.stamp" to avoid "no rule to make target".
             (call-with-output-file "perl/PM.stamp" (const #t))
+            #t))
+        (add-before 'check 'patch-tests
+          (lambda _
+            ;; These files contain some funny bytes that Guile is unable
+            ;; to decode for shebang patching. Just delete them.
+            (for-each delete-file '("t/t4201-shortlog.sh"
+                                    "t/t7813-grep-icase-iso.sh"))
+            ;; Many tests contain inline shell scripts (hooks etc).
+            (substitute* (find-files "t" "\\.sh$")
+              (("#!/bin/sh") (string-append "#!" (which "sh"))))
+            ;; Un-do shebang patching here to prevent checksum mismatch.
+            (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
+              (("^#!.*/bin/perl") "#!/usr/bin/perl"))
+            (substitute* "t/t5003-archive-zip.sh"
+              (("cp /bin/sh") (string-append "cp " (which "sh"))))
+            (substitute* "t/t6030-bisect-porcelain.sh"
+              (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
+            ;; FIXME: This test runs `git commit` with a bogus EDITOR
+            ;; and empty commit message, but does not fail the way it's
+            ;; expected to. The test passes when invoked interactively.
+            (substitute* "t/t7508-status.sh"
+              (("\tcommit_template_commented") "\ttrue"))
+            ;; More checksum mismatches due to odd shebangs.
+            (substitute* "t/t9100-git-svn-basic.sh"
+              (("\"#!/gnu.*/bin/sh") "\"#!/bin/sh"))
+            (substitute* "t/t9300-fast-import.sh"
+              (("\t#!/gnu.*/bin/sh") "\t#!/bin/sh")
+              (("'#!/gnu.*/bin/sh") "'#!/bin/sh"))
+            ;; FIXME: Some hooks fail with "basename: command not found".
+            ;; See 't/trash directory.t9164.../svn-hook.log'.
+            (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
             #t))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
@@ -317,24 +351,10 @@ everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
    (home-page "https://git-scm.com/")))
 
-;; Some dependent packages directly access internal interfaces which
-;; have changed in 2.12
-(define-public git@2.10
-  (package
-    (inherit git)
-    (version "2.10.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://kernel.org/software/scm/git/git-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "02mb7yi49algsya3hnkcxdslwb6p1bi7c732z1g8kzq4hs838m7z"))))))
-
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.25.1")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -342,12 +362,13 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cdwcw38frc1wf28x5ppddazv9hywc718j92f3xa3ybzzycyds3s"))
-              (patches (search-patches "libgit2-use-after-free.patch"
-                                       "libgit2-0.25.1-mtime-0.patch"))))
+                "1fdk9yhwvl1w1z71ykzcvgh4nsf8scxcbclz5anh98zpplmhmisa"))
+              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
@@ -466,6 +487,8 @@ collaboration using typical untrusted file hosts or services.")
 (define-public cgit
   (package
     (name "cgit")
+    ;; XXX When updating cgit, try removing the special 'git:src' input and
+    ;; using the source of the git package.
     (version "1.1")
     (source (origin
               (method url-fetch)
@@ -510,7 +533,16 @@ collaboration using typical untrusted file hosts or services.")
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)))
     (inputs
-     `(("git:src" ,(package-source git@2.10))
+     `(;; Cgit directly accesses some internal Git interfaces that changed in
+       ;; Git 2.12.  Try removing this special input and using the source of the
+       ;; Git package for cgit > 1.1.
+       ("git:src"
+        ,(origin
+           (method url-fetch)
+           (uri "mirror://kernel.org/software/scm/git/git-2.10.4.tar.xz")
+           (sha256
+            (base32
+             "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -707,14 +739,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.2.1")
+    (version "4.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "182qh6d0srps2n5sydzy8n3gi78la6m0wi3846zpyyd0b8pmgmfp"))))
+               "1b7p3z8lin6hyyzkskskp065qnyfxid2yxnjygni0n4yv33qz404"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -785,14 +817,18 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.17")
+    (version "1.8.19")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://archive.apache.org/dist/subversion/"
-                                 "subversion-" version ".tar.bz2"))
+             (uri
+               (list
+                 (string-append "https://archive.apache.org/dist/subversion/"
+                                "subversion-" version ".tar.bz2")
+                 (string-append "https://www-eu.apache.org/dist/subversion/"
+                                "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "1450fkj1jmxyphqn6cd95z1ykwsabajm9jw4i412qpwss8w9a4fy"))))
+               "1gp6426gkdza6ni2whgifjcmjb4nq34ljy07yxkrhlarvfq6ks2n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -884,6 +920,7 @@ machine.")
              (uri (string-append
                    "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
+             (patches (search-patches "cvs-2017-12836.patch"))
              (sha256
               (base32
                "0pjir8cwn0087mxszzbsi1gyfc6373vif96cw4q3m1x6p49kd1bq"))))
@@ -1300,16 +1337,21 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "1.35")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.fossil-scm.org/index.html/uv/download/"
-             "fossil-src-" version ".tar.gz"))
+       ;; Older downloads are moved to another URL.
+       (uri (list
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/download/"
+              "fossil-src-" version ".tar.gz")
+             (string-append
+              "https://www.fossil-scm.org/index.html/uv/"
+              "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "07ds6rhq69bhydpm9a01mgdhxf88p9b6y5hdnhn8gjc7ba92zyf1"))))
+         "0wfgacfg29dkl0c3l1rp5ji0kraa64gcbg5lh8p4m7mqdqcq53wv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1338,9 +1380,6 @@ repository\" with git-annex.")
                     (lambda _
                       (setenv "USER" "guix")
                       (setenv "TZ" "UTC")
-                      ;; Fixing the th1 test would require many backports, so
-                      ;; just disable for now.
-                      (delete-file "test/th1.test")
                       #t)))))
     (home-page "https://fossil-scm.org")
     (synopsis "Software configuration management system")

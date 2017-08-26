@@ -162,6 +162,7 @@ successful, or false to signal an error."
                                         gnu-triplet->nix-system)
                                  (%current-system))))
   "Return the name of Glibc's dynamic linker for SYSTEM."
+  ;; See the 'SYSDEP_KNOWN_INTERPRETER_NAMES' cpp macro in libc.
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
         ((string=? system "armhf-linux") "/lib/ld-linux-armhf.so.3")
@@ -170,6 +171,7 @@ successful, or false to signal an error."
         ((string=? system "i686-gnu") "/lib/ld.so.1")
         ((string=? system "aarch64-linux") "/lib/ld-linux-aarch64.so.1")
         ((string=? system "powerpc-linux") "/lib/ld.so.1")
+        ((string=? system "powerpc64le-linux") "/lib/ld64.so.2")
         ((string=? system "alpha-linux") "/lib/ld-linux.so.2")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case

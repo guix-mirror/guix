@@ -12,9 +12,10 @@
   (locale "en_US.utf8")
 
   ;; Use the UEFI variant of GRUB with the EFI System
-  ;; Partition on /dev/sda1.
-  (bootloader (grub-configuration (grub grub-efi)
-                                  (device "/dev/sda1")))
+  ;; Partition mounted on /boot/efi.
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (target "/boot/efi")))
 
   ;; Assume the target root file system is labelled "my-root".
   (file-systems (cons* (file-system

@@ -23,6 +23,7 @@
   #:use-module (guix records)
   #:use-module (gnu packages admin)
   #:autoload   (gnu packages ci) (cuirass)
+  #:autoload   (gnu packages version-control) (git)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
@@ -66,6 +67,8 @@
                     (default #f))
   (one-shot?        cuirass-configuration-one-shot? ;boolean
                     (default #f))
+  (fallback?        cuirass-configuration-fallback? ;boolean
+                    (default #f))
   (load-path        cuirass-configuration-load-path
                     (default '())))
 
@@ -84,6 +87,7 @@
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
          (one-shot?        (cuirass-configuration-one-shot? config))
+         (fallback?        (cuirass-configuration-fallback? config))
          (load-path        (cuirass-configuration-load-path config)))
      (list (shepherd-service
             (documentation "Run Cuirass.")
@@ -99,8 +103,15 @@
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
                             #$@(if one-shot? '("--one-shot") '())
+                            #$@(if fallback? '("--fallback") '())
                             #$@(if (null? load-path) '()
                                  `("--load-path" ,(string-join load-path ":"))))
+
+                      #:environment-variables
+                      (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
+                            (string-append "GIT_EXEC_PATH=" #$git
+                                           "/libexec/git-core"))
+
                       #:user #$user
                       #:group #$group
                       #:log-file #$log-file))

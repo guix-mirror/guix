@@ -641,30 +641,6 @@ process, passing on the arguments as command line arguments.")
 programs.")
     (license license:gpl3+)))
 
-(define-public let-alist
-  (package
-    (name "emacs-let-alist")
-    (version "1.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/let-alist-"
-                                  version ".el"))
-              (sha256
-               (base32
-                "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/let-alist.html")
-    (synopsis "Easily let-bind values of an assoc-list by their names")
-    (description
-     "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
-macro takes a first argument, whose value must be an alist (association list),
-and a body.
-
-The macro expands to a let form containing the body, where each dotted symbol
-inside body is let-bound to their cdrs in the alist.  Only those present in
-the body are let-bound and this search is done at compile time.")
-    (license license:gpl3+)))
-
 (define-public flycheck
   (package
     (name "emacs-flycheck")
@@ -679,9 +655,7 @@ the body are let-bound and this search is done at compile time.")
                 "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-let-alist" ,let-alist)
-       ("emacs-seq" ,emacs-seq)))
+     `(("emacs-dash" ,emacs-dash)))
     (home-page "https://www.flycheck.org")
     (synopsis "On-the-fly syntax checking")
     (description
@@ -1113,7 +1087,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "11.90.0")
+    (version "11.91.0")
     (source
      (origin
        (method url-fetch)
@@ -1123,7 +1097,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "04nsndwcf0dimgc2p1yzzrymc36amzdnjg0158nxplmjkzdp28gy"))))
+         "1yh182mxgngjmwpkyv2n9km3vyq95bqfq8mnly3dbv78nwk7f2l3"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -1326,8 +1300,6 @@ single buffer.")
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-minimal)))
-    (propagated-inputs
-     `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
               ("cairo" ,cairo)
               ("glib" ,glib)
@@ -1579,8 +1551,7 @@ strings.")
                 "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-markdown-mode" ,emacs-markdown-mode)
-       ("let-alist" ,let-alist)))
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)))
     (home-page "https://github.com/vermiculus/sx.el/")
     (synopsis "Emacs StackExchange client")
     (description
@@ -2514,6 +2485,35 @@ number.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-pomodoro
+  (package
+    (name "emacs-org-pomodoro")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lolownia/org-pomodoro/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jalsggw3q5kvj353f84x4nl04a5vmq07h75ggppy1627lb31zm4"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-alert" ,emacs-alert)))
+    (home-page "https://github.com/lolownia/org-pomodoro")
+    (synopsis "Pomodoro technique for org-mode")
+    (description "@code{emacs-org-pomodoro} adds very basic support for
+Pomodoro technique in Emacs org-mode.
+
+Run @code{M-x org-pomodoro} for the task at point or select one of the
+last tasks that you clocked time for.  Each clocked-in pomodoro starts
+a timer of 25 minutes and after each pomodoro a break timer of 5
+minutes is started automatically.  Every 4 breaks a long break is
+started with 20 minutes.  All values are customizable.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
@@ -2586,14 +2586,14 @@ package provides a light and a dark variant.")
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
-               "1p2zaq0s4bbl5cx6wyab24wamw7m0mysb0v47dqjmnvfc25z84rq"))))
+               "1n8k12mfn01f20j0pyd7ycj77x0y3a008xc94frklaaqjc0v26s4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ahungry/color-theme-ahungry")
     (synopsis "Ahungry color theme for Emacs")
@@ -2631,6 +2631,38 @@ wrap-region, electric-pair-mode, paredit and others.  With the basic
 features found in other packages it also brings many improvements as
 well as completely new features.")
     (license license:gpl3+)))
+
+(define-public emacs-highlight-symbol
+  (package
+    (name "emacs-highlight-symbol")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nschum/highlight-symbol.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7k1qns0fn0jsyc0hrjac5nzk21xw48yc30vyrhwvc51h0b9g90"))))
+    (build-system emacs-build-system)
+    (home-page "https://nschum.de/src/emacs/highlight-symbol")
+    (synopsis "Automatic and manual symbol highlighting for Emacs")
+    (description
+     "Use @code{highlight-symbol} to toggle highlighting of the symbol at
+point throughout the current buffer.  Use @code{highlight-symbol-mode} to keep
+the symbol at point highlighted.
+
+The functions @code{highlight-symbol-next}, @code{highlight-symbol-prev},
+@code{highlight-symbol-next-in-defun} and
+@code{highlight-symbol-prev-in-defun} allow for cycling through the locations
+of any symbol at point.  Use @code{highlight-symbol-nav-mode} to enable key
+bindings @code{M-p} and @code{M-p} for navigation.  When
+@code{highlight-symbol-on-navigation-p} is set, highlighting is triggered
+regardless of @code{highlight-symbol-idle-delay}.
+
+@code{highlight-symbol-query-replace} can be used to replace the symbol. ")
+    (license license:gpl2+)))
 
 (define-public emacs-hl-todo
   (package
@@ -3006,26 +3038,6 @@ be removed from the front.  This type of data structure is sometimes called an
 ongoing operations.")
     (license license:gpl3+)))
 
-(define-public emacs-seq
-  (package
-    (name "emacs-seq")
-    (version "2.19")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/seq-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "11hb7is6a4h1lscjcfrzh576j0g3m5yjydn16s6x5bxp5gsr6zha"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/seq.html")
-    (synopsis "Sequence manipulation functions for Emacs")
-    (description
-     "This Emacs library provides sequence-manipulation functions that
-complement basic functions provided by @code{subr.el}.  All provided functions
-work on lists, strings and vectors.")
-    (license license:gpl3+)))
-
 (define-public emacs-sparql-mode
   (package
     (name "emacs-sparql-mode")
@@ -3105,7 +3117,9 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There is no test suite.
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "LISPDIR=" %output
+                                         "/share/emacs/site-lisp/guix.d/ess"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -3301,14 +3315,14 @@ of its name.")
 (define-public emacs-rainbow-mode
   (package
     (name "emacs-rainbow-mode")
-    (version "0.12")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
               (sha256
                (base32
-                "10a7qs7fvw4qi4vxj9n56j26gjk61bl79dgz4md1d26slb2j1c04"))))
+                "1d3aamx6qgqqpqijwsr02ggwrh67gfink1bir0692alfkm3zdddl"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/rainbow-mode.html")
     (synopsis "Colorize color names in buffers")
@@ -3529,8 +3543,7 @@ for search-based navigation of buffers.")
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-pkg-info" ,emacs-pkg-info)
-       ("emacs-queue" ,emacs-queue)
-       ("emacs-seq" ,emacs-seq)))
+       ("emacs-queue" ,emacs-queue)))
     (home-page "https://cider.readthedocs.org/")
     (synopsis "Clojure development environment for Emacs")
     (description
@@ -4131,7 +4144,7 @@ mode-line.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/joaotavora/yasnippet/"
@@ -4139,7 +4152,18 @@ mode-line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15di6mkkf09b7qddpsrm0qln02hji3sx8blya5jxssi9wxxx9iq5"))))
+                "1yqiprighgqz1hsslph50cy09xxqabc06jffrnjcsdf6nj70xlkc"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; YASnippet expects a "snippets" subdirectory in the same
+                  ;; directory as yasnippet.el, but we don't install it
+                  ;; because it's a git submodule pointing to an external
+                  ;; repository.  Adjust `yas-snippet-dirs' to prevent
+                  ;; warnings about a missing directory.
+                  (substitute* "yasnippet.el"
+                    (("^ +'yas-installed-snippets-dir\\)\\)\n")
+                     "))\n"))))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
@@ -4147,6 +4171,51 @@ mode-line.")
      "YASnippet is a template system for Emacs.  It allows you to type an
 abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
+
+(define-public emacs-yasnippet-snippets
+  (let ((commit "885050d34737e2fb36a3e7759d60c09347bd4ce0")
+        (revision "1"))
+    (package
+      (name "emacs-yasnippet-snippets")
+      (version (string-append "1-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AndreaCrotti/yasnippet-snippets")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((ice-9 ftw)
+                    (ice-9 regex)
+                    (guix build utils))
+         #:builder
+         (begin
+           (use-modules (ice-9 ftw)
+                        (ice-9 regex)
+                        (guix build utils))
+           (with-directory-excursion (assoc-ref %build-inputs "source")
+             (for-each (lambda (dir)
+                         (copy-recursively
+                          dir
+                          (string-append %output
+                                         "/share/emacs/yasnippet-snippets/"
+                                         dir)))
+                       (scandir "." (lambda (fname)
+                                      (and (string-match "-mode$" fname)
+                                           (directory-exists? fname)))))))))
+      (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
+      (synopsis "Collection of YASnippet snippets for many languages")
+      (description
+       "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
+the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
+To make YASnippet aware of these snippets, add the above directory to
+@code{yas-snippet-dirs}.")
+      (license license:expat))))
 
 (define-public emacs-memoize
   (package
@@ -4594,7 +4663,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.14")
+    (version "0.15")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -4602,7 +4671,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "14hjjpbasm84p54fxy73fg7g1fdwqkvisdw8dwwgzkflmd647mkx"))))
+                "1y7nqry9y0a99bsdqkk9f554vczfw4sz6raadw3138835qy697jg"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -4636,12 +4705,9 @@ It should enable you to implement low-level X11 applications.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
-               ;; Set DISPLAY variable to work around
-               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
-                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
@@ -4733,12 +4799,9 @@ other operations.")
                      TryExec=~@*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
-               ;; Set DISPLAY variable to work around
-               ;; https://github.com/ch11ng/exwm/issues/213
                (with-output-to-file exwm-executable
                  (lambda _
                    (format #t "#!~a ~@
-                     export DISPLAY=:0 ~@
                      ~a +SI:localuser:$USER ~@
                      exec ~a --exit-with-session ~a \"$@\" --eval '~s' ~%"
                            (string-append (assoc-ref inputs "bash") "/bin/sh")
@@ -5170,4 +5233,150 @@ src block.")
     (description
      "@code{emacs-emamux} lets Emacs interact with the @code{tmux} terminal
 multiplexer.")
+    (license license:gpl3+)))
+
+(define-public emacs-rpm-spec-mode
+  (package
+    (name "emacs-rpm-spec-mode")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       ;; URI has the Fedora release number instead of the version
+       ;; number. This will have to updated manually every new release.
+       (uri (string-append
+             "https://src.fedoraproject.org/cgit/rpms"
+             "/emacs-rpm-spec-mode.git/snapshot"
+             "/emacs-rpm-spec-mode-f26.tar.gz"))
+       (sha256
+        (base32
+         "17dz80lhjrc89fj17pysl8slahzrqdkxgcjdk55zls6jizkr6kz3"))))
+    (build-system emacs-build-system)
+    (home-page "http://pkgs.fedoraproject.org/cgit/rpms/emacs-rpm-spec-mode.git")
+    (synopsis "Emacs major mode for editing RPM spec files")
+    (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
+editing RPM spec files.")
+    (license license:gpl2+)))
+
+(define-public emacs-nix-mode
+  (package
+    (inherit nix)
+    (name "emacs-nix-mode")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "misc/emacs"))))))
+    (synopsis "Emacs major mode for editing Nix expressions")
+    (description "@code{nixos-mode} provides an Emacs major mode for editing
+Nix expressions.  It supports syntax highlighting, indenting and refilling of
+comments.")))
+
+(define-public emacs-git-messenger
+  (package
+    (name "emacs-git-messenger")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-git-messenger/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17mqki6g0wx46fn7dcbcc2pjxik7vvrcb1j9jzxim8b9psbsbnp9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-popup" ,emacs-popup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-popup")
+                                   "/share/emacs/site-lisp/guix.d/popup-"
+                                   ,(package-version emacs-popup))
+                             "-l" "test/test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (home-page "https://github.com/syohex/emacs-git-messenger")
+    (synopsis "Popup commit message at current line")
+    (description "@code{emacs-git-messenger} provides
+@code{git-messenger:popup-message}, a function that when called, will popup
+the last git commit message for the current line.  This uses git-blame
+internally.")
+    (license license:gpl3+)))
+
+(define-public emacs-gitpatch
+  (package
+    (name "emacs-gitpatch")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tumashu/gitpatch/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yj6pmic541lcnscjin300k380qp9xdfprs55xg1q57jrkq6f6k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/gitpatch")
+    (synopsis "Mail git patch from Emacs")
+    (description "@code{emacs-gitpatch} lets users easily send git patches,
+created by @code{git format-patch}, from @code{magit}, @code{dired} and
+@code{ibuffer} buffers.")
+    (license license:gpl3+)))
+
+(define-public emacs-erc-hl-nicks
+  (package
+    (name "emacs-erc-hl-nicks")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/leathekd/erc-hl-nicks"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01svpl9bps5kx4y1wnymakxya2cznqmlynvqv2r500wpnbxczrbs"))))
+    (build-system emacs-build-system)
+    (synopsis "Nickname highlighting for Emacs ERC")
+    (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
+client for Emacs.  The main features are:
+@itemize
+@item Auto-colorizes nicknames without having to specify colors
+@item Ignores certain characters that IRC clients add to nicknames to avoid
+duplicates (nickname, nickname’, nickname\", etc.)
+@item Attempts to produce colors with a sufficient amount of contrast between
+the nick color and the background color
+@end itemize\n")
+    (home-page "https://github.com/leathekd/erc-hl-nicks")
+    (license license:gpl3+)))
+
+(define-public emacs-engine-mode
+  (package
+    (name "emacs-engine-mode")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hrs/engine-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vm4p7pcp1vnwwxvps1bhm7i7hkabqqxl898knxf2hqvxys76684"))))
+    (build-system emacs-build-system)
+    (synopsis "Minor mode for defining and querying search engines")
+    (description "@code{engine-mode} is a global minor mode for Emacs.  It
+enables you to easily define search engines, bind them to keybindings, and
+query them from the comfort of your editor.")
+    (home-page "https://github.com/hrs/engine-mode")
     (license license:gpl3+)))

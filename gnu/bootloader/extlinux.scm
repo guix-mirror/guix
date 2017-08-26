@@ -38,14 +38,13 @@
 corresponding to old generations of the system."
 
   (define all-entries
-    (append entries (map menu-entry->boot-parameters
-                         (bootloader-configuration-menu-entries config))))
+    (append entries (bootloader-configuration-menu-entries config)))
 
-  (define (boot-parameters->gexp params)
-    (let ((label (boot-parameters-label params))
-          (kernel (boot-parameters-kernel params))
-          (kernel-arguments (boot-parameters-kernel-arguments params))
-          (initrd (boot-parameters-initrd params)))
+  (define (menu-entry->gexp entry)
+    (let ((label (menu-entry-label entry))
+          (kernel (menu-entry-linux entry))
+          (kernel-arguments (menu-entry-linux-arguments entry))
+          (initrd (menu-entry-initrd entry)))
       #~(format port "LABEL ~a
   MENU LABEL ~a
   KERNEL ~a
@@ -69,11 +68,11 @@ TIMEOUT ~a~%"
                     (if (> timeout 0) 1 0)
                     ;; timeout is expressed in 1/10s of seconds.
                     (* 10 timeout))
-            #$@(map boot-parameters->gexp all-entries)
+            #$@(map menu-entry->gexp all-entries)
 
             #$@(if (pair? old-entries)
                    #~((format port "~%")
-                      #$@(map boot-parameters->gexp old-entries)
+                      #$@(map menu-entry->gexp old-entries)
                       (format port "~%"))
                    #~())))))
 

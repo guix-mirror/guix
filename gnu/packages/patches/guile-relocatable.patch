@@ -35,11 +35,11 @@ location of the `guile' binary, allowing it to be relocated.
 +
 +  module_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
 +  strcpy (module_dir, prefix);
-+  strcat (module_dir, "/share/guile/2.0");
++  strcat (module_dir, "/share/guile/" SCM_EFFECTIVE_VERSION);
 +
 +  ccache_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
 +  strcpy (ccache_dir, prefix);
-+  strcat (ccache_dir, "/lib/guile/2.0/ccache");
++  strcat (ccache_dir, "/lib/guile/" SCM_EFFECTIVE_VERSION "/ccache");
 +
    env = scm_i_mirror_backslashes (getenv ("GUILE_SYSTEM_PATH"));
    if (env && strcmp (env, "") == 0)

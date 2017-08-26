@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -206,7 +207,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.3-51")
+    (version "1.2.3-57")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -218,7 +219,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1w7d4sdjbvqiibnfkhrqy9np3smsysilfba9pry3q1qn5g5y6nrp"))))
+                "0a7c1r2rgsin671qy98yvwgkg6a81d0pp0p4p7sydhrfi1k9xpr1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -479,7 +480,6 @@ binary.")
               (base32
                "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
     (native-inputs
      `(("ed" ,ed)
        ("flex" ,flex)

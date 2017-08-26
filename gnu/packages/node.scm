@@ -134,6 +134,10 @@
        ("procps" ,procps)
        ("util-linux" ,util-linux)
        ("which" ,which)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "NODE_PATH")
+            (files '("lib/node_modules")))))
     (inputs
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)

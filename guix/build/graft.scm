@@ -164,15 +164,19 @@ bytevectors to the same value."
                ;; not to unget bytes that have already been written, because
                ;; that would cause them to be written again from the next
                ;; buffer.  In practice, this case occurs when a replacement is
-               ;; made near the end of the buffer.
-               (let* ((unwritten   (- end written))
-                      (unget-size  (if (= end request-size)
-                                       (min hash-length unwritten)
-                                       0))
-                      (write-size  (- unwritten unget-size)))
-                 (put-bytevector output buffer written write-size)
-                 (unget-bytevector input buffer (+ written write-size)
-                                   unget-size)
+               ;; made near or beyond the end of the buffer.  When REPLACEMENT
+               ;; went beyond END, we consume the extra bytes from INPUT.
+               (begin
+                 (if (> written end)
+                     (get-bytevector-n! input buffer 0 (- written end))
+                     (let* ((unwritten  (- end written))
+                            (unget-size (if (= end request-size)
+                                            (min hash-length unwritten)
+                                            0))
+                            (write-size (- unwritten unget-size)))
+                       (put-bytevector output buffer written write-size)
+                       (unget-bytevector input buffer (+ written write-size)
+                                         unget-size)))
                  (loop)))))))))
 
 (define (rename-matching-files directory mapping)

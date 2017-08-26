@@ -258,7 +258,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.8.2")
+    (version "5.10.4")
     (source
      (origin
        (method url-fetch)
@@ -266,7 +266,7 @@ used in KDE development tools Kompare and KDevelop.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "158n30wbpsgbw3axhhsc58hnwhwdd02j3zc9hhcybmnbkfl5c96l"))))
+         "01w0laywva0p0ar2lvr1k5000bhjikjfxsb4f6p30qswrchrmrh3"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -300,10 +300,15 @@ used in KDE development tools Kompare and KDevelop.")
              ;; KF5AuthConfig.cmake.in contains this already.
              (substitute* "processcore/CMakeLists.txt"
                (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")))
          (replace 'check
-           (lambda _         ;other tests require a display and therefore fail
-             (zero? (system* "ctest" "-R" "chronotest")))))))
-    (home-page "https://www.kde.org/info/plasma-5.8.2.php")
+           (lambda _
+             ;; TODO: Fix this failing test-case
+             (zero? (system* "ctest" "-E" "processtest")))))))
+    (home-page "https://www.kde.org/info/plasma-5.10.4.php")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
 manage running processes.  It obtains this information by interacting

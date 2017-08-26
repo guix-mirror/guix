@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.10.3")
+    (version "1.10.7")
     (source
      (origin
       (method url-fetch)
@@ -119,29 +120,45 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "0k95ri9f8kzx5vhzrdbzn59rn2324fs4a96w5v8jy20j8dkbp13l"))))
+        "142s1vny9gllkq336yafxayjgcirj2jv0ddabj879jgya7hyr2d0"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
+       ("libfabric" ,libfabric)
+       ("rdma-core" ,rdma-core)
        ("valgrind" ,valgrind)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (arguments
-     `(#:configure-flags `("--enable-static"
+     `(#:configure-flags `("--enable-builtin-atomics"
 
-                           "--enable-mpi-thread-multiple"
-                           "--enable-builtin-atomics"
-
-                           "--enable-mpi-ext=all"
-                           "--with-devel-headers"
+                           "--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
+                           "--with-sge"
+
+                           ;; VampirTrace is obsoleted by scorep and disabling
+                           ;; it reduces the closure size considerably.
+                           "--disable-vt"
+
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
                                            (assoc-ref %build-inputs "hwloc")))
        #:phases (modify-phases %standard-phases
+                  (add-before 'build 'remove-absolute
+                    ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
+                    ;; etc.) to reduce the closure size.  See
+                    ;; <https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00388.html>
+                    ;; and
+                    ;; <https://www.mail-archive.com/users@lists.open-mpi.org//msg31397.html>.
+                    (lambda _
+                      (substitute* '("orte/tools/orte-info/param.c"
+                                     "oshmem/tools/oshmem_info/param.c"
+                                     "ompi/tools/ompi_info/param.c")
+                        (("_ABSOLUTE") ""))
+                      #t))
                   (add-before 'build 'scrub-timestamps ;reproducibility
                     (lambda _
                       (substitute* '("ompi/tools/ompi_info/param.c"
@@ -155,9 +172,9 @@ bind processes, and much more.")
                         (for-each delete-file (find-files out "config.log"))
                         #t))))))
     (home-page "http://www.open-mpi.org")
-    (synopsis "MPI-2 implementation")
+    (synopsis "MPI-3 implementation")
     (description
-     "The Open MPI Project is an MPI-2 implementation that is developed and
+     "The Open MPI Project is an MPI-3 implementation that is developed and
 maintained by a consortium of academic, research, and industry partners.  Open
 MPI is therefore able to combine the expertise, technologies, and resources
 from all across the High Performance Computing community in order to build the
@@ -165,3 +182,17 @@ best MPI library available.  Open MPI offers advantages for system and
 software vendors, application developers and computer science researchers.")
     ;; See file://LICENSE
     (license bsd-2)))
+
+(define-public openmpi-thread-multiple
+  (package
+    (inherit openmpi)
+    (name "openmpi-thread-multiple")
+    (arguments
+     (substitute-keyword-arguments (package-arguments openmpi)
+       ((#:configure-flags flags)
+        `(cons "--enable-mpi-thread-multiple" ,flags))))
+    (description " This version of Open@tie{}MPI has an implementation of
+@code{MPI_Init_thread} that provides @code{MPI_THREAD_MULTIPLE}.  This won't
+work correctly with all transports (such as @code{openib}), and the
+performance is generally worse than the vanilla @code{openmpi} package, which
+only provides @code{MPI_THREAD_FUNNELED}.")))

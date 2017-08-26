@@ -1064,7 +1064,7 @@ bootstrapping purposes.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.10")
+  (let* ((version "2.6.11")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1082,7 +1082,7 @@ bootstrapping purposes.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0am945k2zqrka2xn7lb5grmkad4lwncnhnwk8iq6f269birzsj8w"))
+                  "1ibp6ybqnf8g7mbs45bkbv44dwz4h2w9gr4rh15yvr1m8lqkq1i0"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -1475,25 +1475,25 @@ bootstrapping purposes.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "02klsxp9hlf5sial6mxpiq53hmrhlrg6x774j7bjjfhb7hpdvadh"))
+                 "1zhr4l9kxnbzghcsgjk3vmih9qpg1wrr9qry7fx04l97svp1ylhd"))
          ("corba-drop"
           ,(drop "corba"
-                 "1vbly6khri241xda05gnwkpf2fk41d96ls96ximi084mx0a3w5rd"))
+                 "108v15ncb2rnsyzgzncjlm1f57d1sv60zd9qbpas8kqmvpp8r0gz"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0s8zln64vdwdxwlw1vpfzm8xbpyhgsv3nqjmnv7y36qpsszg27a5"))
+                 "0zcpcmm3g1s7m31glrbw3ys7azi97ixcvbyxd40y9xzdja3jyr52"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "0myd66bv8ib8krzgqv754bc564rd8xwpwabvf7my1apyb86vap3n"))
+                 "1gkqm0p3sr8d0xpki3fhf7cvmgqxx8ambgl5f3jx2plfnhsg96d2"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "10b4lfv10vba07zblw0wii7mhrfhf32pf7410x5nz2q0smgszl2h"))
+                 "1d9fjnzdx4m6gwkvmj2n097ag0mvkhm3lldaxjki8x8c6a5clknf"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0lvncxb5qzrlqkflrnd0l8vwy155cwj1jb07rkq10z2vx0bq7lq2"))
+                 "0zscdp9arcq7gr8j7jq4m75gq0w1i3ryxpdnrc8fl0msh4w2s2k5"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0q6mdgbbd3681y3n0z1v783irdjhhi73z6sn5csczpyhjm318axb"))
+                 "1y6vnssn5y50x27g4ypdb5wwpmi7zf7jdi8gqbymkwf6n8p5y1d6"))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
@@ -1543,7 +1543,7 @@ IcedTea build harness.")
       (license license:gpl2+))))
 
 (define-public icedtea-8
-  (let* ((version "3.4.0")
+  (let* ((version "3.5.1")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1552,7 +1552,7 @@ IcedTea build harness.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea-7)
-      (version "3.4.0")
+      (version "3.5.1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -1560,7 +1560,7 @@ IcedTea build harness.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "16if055973y6yw7n5gczp8iksvc31cy4p5by9lkbniadqj4z665m"))
+                  "1j8iv0cdk9fkh3yb5is7z29m9k3s89w6y9090538j6aa7p4nmalf"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -1602,7 +1602,7 @@ IcedTea build harness.")
                                          (string-append "lib" name ".so")))))
                    (for-each
                     (lambda (file)
-                      (catch 'encoding-error
+                      (catch 'decoding-error
                         (lambda ()
                           (substitute* file
                             (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
@@ -1632,34 +1632,34 @@ IcedTea build harness.")
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
           ,(drop "openjdk"
-                 "0va5i3zr8y8ncv914rz914jda9d88gq0viww3smdqnln8n78rszi"))
+                 "0a6yrq8y1zkzc7hm2l28rm3vzy5izfxhmmhhhvc91lhfclnqcd2q"))
          ("aarch32-drop"
           ,(drop "aarch32"
                  "0cway5a5hcfyh4pzl9zz5xr7lil4gsliy6r5iqbaasd2d9alvqiq"))
          ("corba-drop"
           ,(drop "corba"
-                 "1l9zr97a3kq00bj4i8wcdsjlz3xlfldxd8zhkcxikinwd5n0n8a7"))
+                 "031sc6byd8lqvz3cd07phm13pqrxalxk9f3a2q8pim5n4sbsy0qb"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0lqxrsr3xlpwm2na6f2rpl7znrz34dkb9dg3zjmympyjy4kqljn7"))
+                 "1815jaj0k0w1s0g0jr1ahkajp1jx2qlb08i6l9ha4wyqqyp49a4n"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "1b3chckk10dzrpa7cswmcf1jvryaiwkj8lihfqjr5j7l668jwr4h"))
+                 "0vh4f85cxhqvabzg86ycpz02519cdzgsn5dr75k22rkmbbxnbbl6"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "15lq0k2jv2x26x6vqkbljdcxk35i3b60pcsw3j1sdfmlk1xy6wgc"))
+                 "196ycqz4d9kknc6b219q4ib83l1kkl6w6l1cznw9bzaafyynqa35"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "17xkb8ahkg04ri0bp5wblcp1a2lp8j7c83ic5zdbggvgm339k5s8"))
+                 "0ssnadlr5cxhmj06nmni34kdynix1sjhcvjzahm5yzfd7dfllmgy"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0xpx8ykaq0ki6r0dl3dzca2xgp1p82z8mvsxcs2931ib667ncgcp"))
+                 "0f7fxf0s9kadvs80hm5ga72pyp9r0fvl8zm1wmd1wrks8kl79sd6"))
          ("nashorn-drop"
           ,(drop "nashorn"
-                 "1bnn4731lhlvg8axy4mjxgvh646yl22hp52wipx8cfca4vkn2f1z"))
+                 "0m95qgnd4z6p0xp9m06ihss7skx2yrm7xw69jsjsrxpriy1shiwy"))
          ("shenandoah-drop"
           ,(drop "shenandoah"
-                 "0fpxl8zlii1hpm777r875ys2cr5ih3gb6p1nm9jfa6krjrccrxv1"))
+                 "0yjlcgp6mldp30hmkfl68mdwlbg3gb0m6xd5y7srczni7cln5f3i"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
@@ -4672,3 +4672,28 @@ generate classes, directly in binary form.  The provided common
 transformations and analysis algorithms allow to easily assemble custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
+
+(define-public java-commons-cli-1.2
+  ;; This is a bootstrap dependency for Maven2.
+  (package
+    (inherit java-commons-cli)
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/cli/source/"
+                                  "commons-cli-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0rvfgzgv2pc1m091dfj3ih9ddsjjppr1f1wf0qmc3bk6b1kwv2dm"))))
+    (arguments
+     `(#:jar-name "commons-cli.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-build-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("dir=\"\\$\\{test.home\\}/java\"")
+                "dir=\"${test.home}\""))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))))

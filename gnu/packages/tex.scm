@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,29 +67,28 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-extra.tar.xz")
     (sha256 (base32
-              "0q4a92zmwhn4ry6xgrp4k8wq11ax2sg9rg9yrsrdkr719y0x887a"))))
+              "0zvd2zskk78ig114mfj24g15qys41hzqv59fmqpirdbgq9c9gr5g"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-texmf.tar.xz")
-    (patches (search-patches "texlive-texmf-CVE-2016-10243.patch"))
-    (patch-flags '("-p2"))
+    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-texmf.tar.xz")
     (sha256 (base32
-              "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
+              "1v69y3kgkbk24f7s4dfkknwd317mqmck5jgpyb35wqgqfy5p0qrz"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "2016")
+   (version "20170524")
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-source.tar.xz")
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
+                          "texlive-" version "-source.tar.xz"))
       (sha256 (base32
-               "1v91vahxlxkdra0qz3f132vvx5d9cx2jy84yl1hkch0agyj2rcx8"))))
+               "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -201,11 +201,41 @@ This package contains the binaries.")
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/dvips")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
+         (let* ((root (string-append (assoc-ref %outputs "out")
+                                     "/share/texmf-dist"))
+                (dvips (string-append root "/dvips"))
+                (maps  (string-append root "/fonts/map/dvips/tetex"))
+                (encs  (string-append root "/fonts/enc/dvips/base")))
+           (mkdir-p dvips)
+           (copy-recursively (assoc-ref %build-inputs "source") dvips)
+           (mkdir-p maps)
+           (copy-recursively (assoc-ref %build-inputs "dvips-font-maps") maps)
+           (mkdir-p encs)
+           (copy-recursively (assoc-ref %build-inputs "dvips-base-enc") encs)
            #t))))
+    (native-inputs
+     `(("dvips-font-maps"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/tetex"))
+                 (revision %texlive-revision)))
+           (sha256
+            (base32
+             "100208pg7q6lj7swiq9p9287nn6b64bl62bnlaxpjni9y2kdrqy5"))))
+       ("dvips-base-enc"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/enc/dvips/base"))
+                 (revision %texlive-revision)))
+           (sha256
+            (base32
+             "1xnf6ms0h87r55kxik4vicwr1907scj789lhqflqns8svvsli5iy"))))))
     (home-page "http://www.ctan.org/pkg/dvips")
     (synopsis "DVI to PostScript drivers")
     (description "This package provides files needed for converting DVI files
@@ -428,6 +458,40 @@ converters, will completely supplant the older patterns.")
     (description "This package provides the Metafont base files needed to
 build fonts using the Metafont system.")
     (license license:knuth)))
+
+(define-public texlive-fontname
+  (package
+    (name "texlive-fontname")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/map/fontname"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cssbzcx15221dynp5sii72qh4l18mwkr14n8w1xb19j8pbaqasz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/fonts/map/fontname")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/fontname")
+    (synopsis "Scheme for naming fonts in TeX")
+    (description "This is Fontname, a naming scheme for (the base part of)
+external TeX font filenames.  This makes at most eight-character names
+from (almost) arbitrarily complex font names, thus helping portability of TeX
+documents.")
+    (license license:public-domain)))
 
 (define-public texlive-fonts-cm
   (package
@@ -1442,7 +1506,7 @@ distribution.")
                 "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
     (build-system texlive-build-system)
     (arguments
-     '(#:tex-directory "latex/babel"
+     '(#:tex-directory "generic/babel"
        #:phases
        (modify-phases %standard-phases
          ;; This package tries to produce babel.aux twice but refuses to
@@ -1462,6 +1526,28 @@ case the document may switch from one language to another in a variety of
 ways.  Babel uses contributed configuration files that provide the detail of
 what has to be done for each language.  Users of XeTeX are advised to use the
 polyglossia package rather than Babel.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-generic-babel-english
+  (package
+    (name "texlive-generic-babel-english")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "generic" "babel-english"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1s404wbx91z5w65hm024kyl4h56zsa096irx18vsx8jvlmwsr5wc"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "generic/babel-english"))
+    (home-page "http://www.ctan.org/pkg/babel-english")
+    (synopsis "Babel support for English")
+    (description
+     "This package provides the language definition file for support of
+English in @code{babel}.  Care is taken to select British hyphenation patterns
+for British English and Australian text, and default (\"american\") patterns
+for Canadian and USA text.")
     (license license:lppl1.3+)))
 
 (define-public texlive-latex-cyrillic
@@ -1517,6 +1603,7 @@ standard LaTeX packages."
     (let ((default-packages
             (list texlive-bin
                   texlive-dvips
+                  texlive-fontname
                   texlive-fonts-cm
                   texlive-fonts-latex
                   texlive-metafont-base
@@ -1525,6 +1612,7 @@ standard LaTeX packages."
                   texlive-latex-amsmath
                   texlive-latex-amscls
                   texlive-latex-babel
+                  texlive-generic-babel-english
                   texlive-latex-cyrillic
                   texlive-latex-graphics
                   texlive-latex-psnfss
@@ -1558,7 +1646,8 @@ standard LaTeX packages."
                  (((names . directories) ...)
                   (union-build (assoc-ref %outputs "out")
                                directories
-                               #:create-all-directories? #t)))
+                               #:create-all-directories? #t
+                               #:log-port (%make-void-port "w"))))
 
                ;; The configuration file "texmf.cnf" is provided by the
                ;; "texlive-bin" package.  We take it and override only the
@@ -1602,6 +1691,289 @@ distribution.")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
 
+(define-public texlive-latex-amsrefs
+  (package
+    (name "texlive-latex-amsrefs")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "amsrefs"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "15i4k479dwrpr0kspmm70g1yn4p3dkh0whyzmr93hph9bggnh1i1"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/amsrefs"))
+    (home-page "http://www.ctan.org/pkg/amsrefs")
+    (synopsis "LaTeX-based replacement for BibTeX")
+    (description
+     "Amsrefs is a LaTeX package for bibliographies that provides an archival
+data format similar to the format of BibTeX database files, but adapted to
+make direct processing by LaTeX easier.  The package can be used either in
+conjunction with BibTeX or as a replacement for BibTeX.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-bigfoot
+  (package
+    (name "texlive-latex-bigfoot")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "bigfoot"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "092g8alnsdwlgl1isdnqrr32l161994295kadr1n05d81xgj5wnv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/bigfoot"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (for-each delete-file (find-files "." "\\.drv$"))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/bigfoot")
+    (synopsis "Footnotes for critical editions")
+    (description
+     "This package aims to provide a one-stop solution to requirements for
+footnotes.  It offers: Multiple footnote apparatus superior to that of
+@code{manyfoot}.  Footnotes can be formatted in separate paragraphs, or be run
+into a single paragraph (this choice may be selected per footnote series);
+Things you might have expected (such as @code{\\verb}-like material in
+footnotes, and color selections over page breaks) now work.  Note that the
+majority of the bigfoot package's interface is identical to that of
+@code{manyfoot}; users should seek information from that package's
+documentation.  The bigfoot bundle also provides the @code{perpage} and
+@code{suffix} packages.")
+    (license license:gpl2+)))
+
+(define-public texlive-latex-blindtext
+  (package
+    (name "texlive-latex-blindtext")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "blindtext"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1jrja9b1pzdh9zgv1jh807w4xijqja58n2mqny6dkwicv8qfgbfg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/blindtext"))
+    (home-page "http://www.ctan.org/pkg/blindtext")
+    (synopsis "Producing 'blind' text for testing")
+    (description
+     "The package provides the commands @code{\\blindtext} and
+@code{\\Blindtext} for creating \"blind\" text useful in testing new classes
+and packages, and @code{\\blinddocument}, @code{\\Blinddocument} for creating
+an entire random document with sections, lists, mathematics, etc.  The package
+supports three languages, @code{english}, @code{(n)german} and @code{latin};
+the @code{latin} option provides a short \"lorem ipsum\" (for a fuller \"lorem
+ipsum\" text, see the @code{lipsum} package).")
+    (license license:lppl)))
+
+(define-public texlive-latex-dinbrief
+  (package
+    (name "texlive-latex-dinbrief")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "dinbrief"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0lb0kiy8fxzl6cnhcw1sggy6jrjvcd6kj1kkw3k9lkimm388yjz6"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/dinbrief"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "dinbrief.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/dinbrief")
+    (synopsis "German letter DIN style")
+    (description
+     "This package implements a document layout for writing letters according
+to the rules of DIN (Deutsches Institut für Normung, German standardisation
+institute).  A style file for LaTeX 2.09 (with limited support of the
+features) is part of the package.  Since the letter layout is based on a
+German standard, the user guide is written in German, but most macros have
+English names from which the user can recognize what they are used for.  In
+addition there are example files showing how letters may be created with the
+package.")
+    (license license:lppl)))
+
+(define-public texlive-latex-draftwatermark
+  (package
+    (name "texlive-latex-draftwatermark")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "draftwatermark"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1zyl2pcz2x529gzj5m93a1s4ipymdabf7qdjl3l1673pizd4hfyv"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/draftwatermark"))
+    (home-page "http://www.ctan.org/pkg/draftwatermark")
+    (synopsis "Put a grey textual watermark on document pages")
+    (description
+     "This package provides a means to add a textual, light grey watermark on
+every page or on the first page of a document.  Typical usage may consist in
+writing words such as DRAFT or CONFIDENTIAL across document pages.  The
+package performs a similar function to that of @code{draftcopy}, but its
+implementation is output device independent, and made very simple by relying
+on everypage.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-environ
+  (package
+    (name "texlive-latex-environ")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "environ"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "06h28b26dyjkj9shksphgqfv4130jfkwhbw737hxn7d3yvdfffyd"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/environ"))
+    (home-page "http://www.ctan.org/pkg/environ")
+    (synopsis "New interface for environments in LaTeX")
+    (description
+     "This package provides the @code{\\collect@@body} command (as in
+@code{amsmath}), as well as a @code{\\long} version @code{\\Collect@@Body},
+for collecting the body text of an environment.  These commands are used to
+define a new author interface to creating new environments.")
+    (license license:lppl)))
+
+(define-public texlive-latex-eqparbox
+  (package
+    (name "texlive-latex-eqparbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "eqparbox"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0pvmhsd4xmpil0m3c7qcgwilbk266mlkzv03g0jr8r3zd8jxlyzq"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/eqparbox"))
+    (home-page "http://www.ctan.org/pkg/eqparbox")
+    (synopsis "Create equal-widthed parboxes")
+    (description
+     "LaTeX users sometimes need to ensure that two or more blocks of text
+occupy the same amount of horizontal space on the page.  To that end, the
+@code{eqparbox} package defines a new command, @code{\\eqparbox}, which works
+just like @code{\\parbox}, except that instead of specifying a width, one
+specifies a tag.  All @code{eqparbox}es with the same tag---regardless of
+where they are in the document---will stretch to fit the widest
+@code{eqparbox} with that tag.  This simple, equal-width mechanism can be used
+for a variety of alignment purposes, as is evidenced by the examples in
+@code{eqparbox}'s documentation.  Various derivatives of @code{\\eqparbox} are
+also provided.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-expdlist
+  (package
+    (name "texlive-latex-expdlist")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "expdlist"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1x7byk6x10njir3y9rm56glhdzrxwqag7gsnw2sqn1czlq525w7r"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/expdlist"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (for-each delete-file
+                       (find-files "." "\\.drv$"))
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/expdlist")
+    (synopsis "Expanded description environments")
+    (description
+     "The package provides additional features for the LaTeX
+@code{description} environment, including adjustable left margin.  The package
+also allows the user to \"break\" a list (for example, to interpose a comment)
+without affecting the structure of the list (this works for @code{itemize} and
+@code{enumerate} lists, and numbered lists remain in sequence).")
+    (license license:lppl)))
+
+(define-public texlive-latex-filemod
+  (package
+    (name "texlive-latex-filemod")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/filemod"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0vpxilfw69xv78f03g0j0zw0bw4qcn36whqp8phcq48qk1ax2kr2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/filemod")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/filemod")
+    (synopsis "Provide file modification times, and compare them")
+    (description
+     "This package provides macros to read and compare the modification dates
+of files.  The files may be @code{.tex} files, images or other files (as long
+as they can be found by LaTeX).  It uses the @code{\\pdffilemoddate} primitive
+of pdfLaTeX to find the file modification date as PDF date string, parses the
+string and returns the value to the user.  The package will also work for DVI
+output with recent versions of the LaTeX compiler which uses pdfLaTeX in DVI
+mode.  The functionality is provided by purely expandable macros or by faster
+but non-expandable ones.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-ifplatform
+  (package
+    (name "texlive-latex-ifplatform")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "ifplatform"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "11gvvjvmdfs9b7mm19yf80zwkx49jqcbq6g8qb9y5ns1r1qvnixp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/ifplatform"))
+    (home-page "http://www.ctan.org/pkg/ifplatform")
+    (synopsis "Conditionals to test which platform is being used")
+    (description
+     "This package uses the (La)TeX extension @code{-shell-escape} to
+establish whether the document is being processed on a Windows or on a
+Unix-like system, or on Cygwin (Unix environment over a Windows system).
+Booleans provided are: @code{\\ifwindows}, @code{\\iflinux}, @code{\\ifmacosx}
+and @code{\\ifcygwin}.  The package also preserves the output of @code{uname}
+on a Unix-like system, which may be used to distinguish between various
+classes of systems.")
+    (license license:lppl)))
+
 (define-public texlive-latex-natbib
   (package
     (name "texlive-latex-natbib")
@@ -1623,6 +1995,66 @@ bibliography use.  Also provided are versions of the standard BibTeX styles
 that are compatible with @code{natbib}: @code{plainnat}, @code{unsrtnat},
 @code{abbrnat}.  The bibliography styles produced by @code{custom-bib} are
 designed from the start to be compatible with @code{natbib}.")
+    (license license:lppl)))
+
+(define-public texlive-latex-psfrag
+  (package
+    (name "texlive-latex-psfrag")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "psfrag"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1dxbl5il7wbbsp0v45vk884xi1192wxw03849pb1g5q4x808n352"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/psfrag"))
+    (home-page "http://www.ctan.org/pkg/psfrag")
+    (synopsis "Replace strings in encapsulated PostScript figures")
+    (description
+     "This package allows LaTeX constructions (equations, picture
+environments, etc.) to be precisely superimposed over Encapsulated PostScript
+figures, using your own favorite drawing tool to create an EPS figure and
+placing simple text \"tags\" where each replacement is to be placed, with
+PSfrag automatically removing these tags from the figure and replacing them
+with a user specified LaTeX construction, properly aligned, scaled, and/or
+rotated.")
+    (license (license:fsf-free "file://psfrag.dtx"))))
+
+(define-public texlive-latex-pstool
+  (package
+    (name "texlive-latex-pstool")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "pstool"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1kwlk1x67lad4xb7gpkxqgdlxwpi6nvq1r9wika7m92abmyf18h3"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/pstool"
+       #:tex-format "latex"))
+    (inputs
+     `(("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (propagated-inputs
+     `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot)
+       ("texlive-latex-filemod" ,texlive-latex-filemod)
+       ("texlive-latex-graphics" ,texlive-latex-graphics)
+       ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
+       ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
+       ("texlive-latex-psfrag" ,texlive-latex-psfrag)
+       ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)))
+    (home-page "http://www.ctan.org/pkg/pstool")
+    (synopsis "Process PostScript graphisc within pdfLaTeX documents")
+    (description
+     "This is a package for processing PostScript graphics with @code{psfrag}
+labels within pdfLaTeX documents.  Every graphic is compiled individually,
+drastically speeding up compilation time when only a single figure needs
+re-processing.")
     (license license:lppl)))
 
 (define-public texlive-latex-seminar
@@ -1651,6 +2083,283 @@ reckoned a good basis for a presentation — users are advised to use more
 recent classes such as powerdot or beamer, both of which are tuned to
 21st-century presentation styles.")
     (license license:lppl1.2+)))
+
+(define-public texlive-latex-trimspaces
+  (package
+    (name "texlive-latex-trimspaces")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "trimspaces"))
+              (sha256
+               (base32
+                "0da00lb32am4g63mn96625wg48p3pj3spx79lajrk17d549apwqa"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/trimspaces"
+       #:tex-format "latex"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-bug
+           (lambda _
+             ;; The "ins" file refers to the wrong source file.
+             (substitute* "trimspaces.ins"
+               (("pstool.tex") "trimspaces.tex"))
+             #t)))))
+    (inputs
+     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (home-page "http://www.ctan.org/pkg/trimspaces")
+    (synopsis "Trim spaces around an argument or within a macro")
+    (description
+     "This very short package allows you to expandably remove spaces around a
+token list (commands are provided to remove spaces before, spaces after, or
+both); or to remove surrounding spaces within a macro definition, or to define
+space-stripped macros.")
+    (license license:lppl)))
+
+(define-public texlive-latex-capt-of
+  (package
+    (name "texlive-latex-capt-of")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/capt-of"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1y2s50f6lz0jx2748lj3iy56hrpcczgnbzmvphxv7aqndyyamd4x"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/capt-of")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/capt-of")
+    (synopsis "Captions on more than floats")
+    (description
+     "This package defines a command @code{\\captionof} for putting a caption
+to something that's not a float.")
+    (license license:lppl)))
+
+(define-public texlive-latex-etoolbox
+  (package
+    (name "texlive-latex-etoolbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/etoolbox"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0016bscnpima9krrg2569mva78xzwnygzlvg87dznsm6gf8g589v"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/etoolbox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/etoolbox")
+    (synopsis "e-TeX tools for LaTeX")
+    (description
+     "This package is a toolbox of programming facilities geared primarily
+towards LaTeX class and package authors.  It provides LaTeX frontends to some
+of the new primitives provided by e-TeX as well as some generic tools which
+are not strictly related to e-TeX but match the profile of this package.  The
+package provides functions that seem to offer alternative ways of implementing
+some LaTeX kernel commands; nevertheless, the package will not modify any part
+of the LaTeX kernel.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-fncychap
+  (package
+    (name "texlive-latex-fncychap")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/fncychap"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0fdk84dbicfjfprkz6vk15x36mvlhaw9isjmgkc56jp2khwjswwq"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/fncychap")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/fncychap")
+    (synopsis "Seven predefined chapter heading styles")
+    (description
+     "This package provides seven predefined chapter heading styles.  Each
+style can be modified using a set of simple commands.  Optionally one can
+modify the formatting routines in order to create additional chapter
+headings.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-framed
+  (package
+    (name "texlive-latex-framed")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/framed"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14a4ydqsvp3vcfavl21jrv0ybiqypaaqzg2q2cs3rzkandg7w98x"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/framed")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/framed")
+    (synopsis "Framed or shaded regions that can break across pages")
+    (description
+     "The package creates three environments: @code{framed}, which puts an
+ordinary frame box around the region, @code{shaded}, which shades the region,
+and @code{leftbar}, which places a line at the left side.  The environments
+allow a break at their start (the @code{\\FrameCommand} enables creation of a
+title that is “attached” to the environment); breaks are also allowed in the
+course of the framed/shaded matter.  There is also a command
+@code{\\MakeFramed} to make your own framed-style environments.")
+    ;; The header states: "These macros may be freely transmitted, reproduced,
+    ;; or modified for any purpose provided that this notice is left intact."
+    (license (license:fsf-free "file://framed.sty"))))
+
+(define-public texlive-latex-g-brief
+  (package
+    (name "texlive-latex-g-brief")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "g-brief"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0sikazkg0dpkcpzlbqw8qzxr81paf2f443vsrh14jnw7s4gswvc5"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/g-brief"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "g-brief.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/g-brief")
+    (synopsis "Letter document class")
+    (description
+     "This package is designed for formatting formless letters in German; it
+can also be used for English (by those who can read the documentation).  There
+are LaTeX 2.09 @code{documentstyle} and LaTeX 2e class files for both an
+\"old\" and a \"new\" version of g-brief.")
+    (license license:lppl)))
+
+(define-public texlive-latex-galois
+  (package
+    (name "texlive-latex-galois")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "galois"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0d4l0msk8j5pi95xnmm9wygv1vbpkwkv5amx9l0km86cs79jpp1h"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/galois"))
+    (home-page "http://www.ctan.org/pkg/galois")
+    (synopsis "Typeset Galois connections")
+    (description
+     "The package deals with connections in two-dimensional style, optionally
+in colour.")
+    (license license:lppl)))
+
+(define-public texlive-latex-gcite
+  (package
+    (name "texlive-latex-gcite")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "gcite"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "03g9by54yrypn599y98r1xh7qw0bbbmpzq0bfwpj6j5q5rkl1mfa"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/gcite"))
+    (home-page "http://www.ctan.org/pkg/gcite")
+    (synopsis "Citations in a reader-friendly style")
+    (description
+     "The package allows citations in the German style, which is considered by
+many to be particularly reader-friendly.  The citation provides a small amount
+of bibliographic information in a footnote on the page where each citation is
+made.  It combines a desire to eliminate unnecessary page-turning with the
+look-up efficiency afforded by numeric citations.  The package makes use of
+BibLaTeX, and is considered experimental.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-geometry
+  (package
+    (name "texlive-latex-geometry")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "geometry"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1r2kfcwclg33yk5z8mvlagwxj7nr1mc3w4bdpmhrwv6dn8mrbvw8"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/geometry"))
+    (home-page "http://www.ctan.org/pkg/geometry")
+    (synopsis "Flexible and complete interface to document dimensions")
+    (description
+     "This package provides an easy and flexible user interface to customize
+page layout, implementing auto-centering and auto-balancing mechanisms so that
+the users have only to give the least description for the page layout.  The
+package knows about all the standard paper sizes, so that the user need not
+know what the nominal \"real\" dimensions of the paper are, just its standard
+name (such as a4, letter, etc.).  An important feature is the package's
+ability to communicate the paper size it's set up to the output.")
+    (license license:lppl)))
 
 (define-public texlive-latex-hyperref
   (package
@@ -1692,6 +2401,72 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
+(define-public texlive-latex-mdwtools
+  (package
+    (name "texlive-latex-mdwtools")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "mdwtools"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0caxs74hla28hc67csf5i5ahadx97w8vxh3mdmsprxbpd1mr7ssg"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/mdwtools"))
+    (home-page "http://www.ctan.org/pkg/mdwtools")
+    (synopsis "Miscellaneous tools by Mark Wooding")
+    (description
+     "This collection of tools includes: @code{atsupport} for short commands
+starting with @code{@@}, macros to sanitize the OT1 encoding of the
+@code{cmtt} fonts; a @code{doafter} command; improved @code{footnote} support;
+@code{mathenv} for various alignment in maths; list handling; @code{mdwmath}
+which adds some minor changes to LaTeX maths; a rewrite of LaTeX's tabular and
+array environments; verbatim handling; and syntax diagrams.")
+    (license license:gpl3+)))
+
+(define-public texlive-latex-polyglossia
+  (package
+    (name "texlive-latex-polyglossia")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "polyglossia"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "09mvszd5qgqg4cfglpj5qxyzjz190ppb9p8gnsnjydwp1akvhayf"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/polyglossia"))
+    (home-page "http://www.ctan.org/pkg/polyglossia")
+    (synopsis "Alternative to babel for XeLaTeX and LuaLaTeX")
+    (description
+     "This package provides a complete Babel replacement for users of LuaLaTeX
+and XeLaTeX; it relies on the @code{fontspec} package, version 2.0 at least.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-supertabular
+  (package
+    (name "texlive-latex-supertabular")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "supertabular"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14b2bc7cqz4ckxxycim9sw6jkrr1pahivm1rdbpz5k6hl967w1s3"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/supertabular"))
+    (home-page "http://www.ctan.org/pkg/supertabular")
+    (synopsis "Multi-page tables package")
+    (description
+     "This package was a predecessor of @code{longtable}; the newer
+package (designed on quite different principles) is easier to use and more
+flexible, in many cases, but supertabular retains its usefulness in a few
+situations where longtable has problems.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-tex-texinfo
   (package
     (name "texlive-tex-texinfo")
@@ -1726,6 +2501,34 @@ source.  The Texinfo macros may be used to produce printable output using TeX;
 other programs in the distribution offer online interactive use (with
 hypertext linkages in some cases).")
     (license license:gpl3+)))
+
+(define-public texlive-latex-upquote
+  (package
+    (name "texlive-latex-upquote")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "upquote"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0d1050i973wnxigy0xpky5l7vn4ff7ldhkjpdqsw5s653gagwixp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/upquote"))
+    (home-page "http://www.ctan.org/pkg/upquote")
+    (synopsis "Show \"realistic\" quotes in verbatim")
+    (description
+     "Typewriter-style fonts are best for program listings, but Computer
+Modern Typewriter prints @code{`} and @code{'} as bent opening and closing
+single quotes.  Other fonts, and most programming languages, print @code{`} as
+a grave accent and @code{'} upright; @code{'} is used both to open and to
+close quoted strings.  The package switches the typewriter font to Computer
+Modern Typewriter in OT1 encoding, and modifies the behaviour of
+@code{verbatim}, @code{verbatim*}, @code{\\verb}, and @code{\\verb*} to print
+in the expected way.  It does this regardless of other fonts or encodings in
+use, so long as the package is loaded after the other fonts were.  The package
+does not affect @code{\\tt}, @code{\\texttt}, etc.")
+    (license license:lppl1.2+)))
 
 (define-public texlive-latex-anysize
   (package
@@ -1802,6 +2605,40 @@ command.")
 package uses 'drivers' to place the bars; the available drivers can work with
 @code{dvitoln03}, @code{dvitops}, @code{dvips}, the emTeX and TeXtures DVI
 drivers, and VTeX and pdfTeX.")
+    (license license:lppl)))
+
+(define-public texlive-latex-cmap
+  (package
+    (name "texlive-latex-cmap")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/cmap"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1s1rv6zgw105w2j6ffhnk914qrix87y1ndzri1q72g2kbr91zlbg"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/cmap")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.tug.org/svn/texlive/tags/texlive-2017.1/\
+Master/texmf-dist/tex/latex/cmap/")
+    (synopsis "CMap support for PDF files")
+    (description
+     "This package embeds CMap tables into PDF files to make search and
+copy-and-paste functions work properly.")
     (license license:lppl)))
 
 (define-public texlive-latex-colortbl
@@ -2232,6 +3069,42 @@ splines, and filled circles and ellipses.  The package uses @code{tpic}
 @code{\\special} commands.")
     (license license:public-domain)))
 
+(define-public texlive-latex-enumitem
+  (package
+    (name "texlive-latex-enumitem")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/enumitem"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0q24b1bkdi9l6bw787bpggww83jh2vj8955aw2m5yccqbx4vgr5r"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/enumitem")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/enumitem")
+    (synopsis "Customize basic list environments")
+    (description
+     "This package is intended to ease customizing the three basic list
+environments: @code{enumerate}, @code{itemize} and @code{description}.  It
+extends their syntax to allow an optional argument where a set of parameters
+in the form @code{key=value} are available, for example:
+@code{\\begin{itemize}[itemsep=1ex,leftmargin=1cm]}.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-multirow
   (package
     (name "texlive-latex-multirow")
@@ -2286,6 +3159,40 @@ entry at the \"natural\" width of its text.")
 the included graphic.  LaTeX commands can be placed on the graphic at defined
 positions; a grid for orientation is available.")
     (license license:lppl1.0+)))
+
+(define-public texlive-latex-parskip
+  (package
+    (name "texlive-latex-parskip")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/parskip"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "14r6h9hqb0qgccxj5l1208694fx8sb8avmgzps36lsbbpszl7i7m"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/parskip")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/parskip")
+    (synopsis "Layout with zero \\parindent, non-zero \\parskip")
+    (description
+     "Simply changing @code{\\parskip} and @code{\\parindent} leaves a layout
+that is untidy; this package (though it is no substitute for a properly
+designed class) helps alleviate this untidiness.")
+    (license license:lppl)))
 
 (define-public texlive-latex-pdfpages
   (package
@@ -2368,6 +3275,197 @@ considered obsolete: it was superseded by @code{subfig}, but users may find
 the more recent @code{subcaption} package more satisfactory.")
     (license license:lppl)))
 
+(define-public texlive-latex-tabulary
+  (package
+    (name "texlive-latex-tabulary")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "tabulary"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1adkdx2zkk42g82nqf57lv1nc1z7kwl13jmy8vpcsizsa0xdnx9n"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/tabulary"))
+    (home-page "http://www.ctan.org/pkg/tabulary")
+    (synopsis "Tabular with variable width columns balanced")
+    (description
+     "The package defines a @code{tabular*}-like environment, @code{tabulary},
+taking a \"total width\" argument as well as the column specifications.  The
+environment uses column types @code{L}, @code{C}, @code{R} and @code{J} for
+variable width columns (@code{\\raggedright}, @code{\\centering},
+@code{\\raggedleft}, and normally justified).  In contrast to
+@code{tabularx}'s @code{X} columns, the width of each column is weighted
+according to the natural width of the widest cell in the column.")
+    (license license:lppl)))
+
+(define-public texlive-latex-threeparttable
+  (package
+    (name "texlive-latex-threeparttable")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/threeparttable"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "10vy9k150w2lviw8h22s2mcykff38xci653m5823s2vv44pwbmzq"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/threeparttable")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/threeparttable")
+    (synopsis "Tables with captions and notes all the same width")
+    (description
+     "This package facilitates tables with titles (captions) and notes.  The
+title and notes are given a width equal to the body of the table (a
+@code{tabular} environment).  By itself, a @code{threeparttable} does not
+float, but you can put it in a @code{table} or a @code{table*} or some other
+environment.")
+    (license (license:fsf-free "file://threeparttable.sty"))))
+
+(define-public texlive-fonts-txfonts
+  (package
+    (name "texlive-fonts-txfonts")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/txfonts"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0jl921qdphg8i7bkfprackn3xd4gmvxckc526nmzqsmahqkavgg2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"        . "tex/latex/txfonts")
+                       ("txfonts-vf"    . "fonts/tfm/public/txfonts")
+                       ("txfonts-afm"   . "fonts/afm/public/txfonts")
+                       ("txfonts-tfm"   . "fonts/tfm/public/txfonts")
+                       ("txfonts-type1" . "fonts/type1/public/txfonts")
+                       ("txfonts-enc"   . "fonts/enc/dvips/txfonts")
+                       ("txfonts-map"   . "fonts/map/dvips/txfonts"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("txfonts-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/public/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "12ffmbrp48ap35qa3b4mi6ckif9q2vf7972jxh5dc1yzykhla2xv"))))
+       ("txfonts-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/public/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "04acyfdwvxpfx4l2xh2bpzdmpvwdf2pzbs7a236b0xckz2jvc1ci"))))
+       ("txfonts-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/public/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "1705klz51pnqzcs89s3521b84b6c89wlczflsh0vci66nl155yis"))))
+       ("txfonts-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "0ajwr7zb6ch3gxd0g8p2i4llhy2wr9a9saz6jq6hm6fxf4pgl5h3"))))
+       ("txfonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-map-" version "-checkout"))
+           (sha256
+            (base32
+             "0kamr8a9x24jakas3v09dgv7kkpybj3i7qv4vz1iyypqr6kk1raj"))))
+       ("txfonts-enc"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/enc/dvips/txfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-enc-" version "-checkout"))
+           (sha256
+            (base32
+             "1bal5fhw0xlhl37ayv8vlnqnsn1y82kadzfjhbgr223blspp4zsj"))))))
+    (home-page "http://www.ctan.org/pkg/threeparttable")
+    (synopsis "Times-like fonts in support of mathematics")
+    (description
+     "Txfonts supplies virtual text roman fonts using Adobe Times (or URW
+NimbusRomNo9L) with some modified and additional text symbols in the OT1, T1,
+and TS1 encodings; maths alphabets using Times/URW Nimbus; maths fonts
+providing all the symbols of the Computer Modern and AMS fonts, including all
+the Greek capital letters from CMR; and additional maths fonts of various
+other symbols.
+
+The set is complemented by a sans-serif set of text fonts, based on
+Helvetica/NimbusSanL, and a monospace set.
+
+All the fonts are in Type 1 format (AFM and PFB files), and are supported by
+TeX metrics (VF and TFM files) and macros for use with LaTeX.")
+    ;; Any version of the GPL with font exception.
+    (license license:gpl3+)))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")
@@ -2401,6 +3499,35 @@ from various title styles, e.g. for marginal titles and to change the font of
 all headings with a single command, also providing simple one-step page
 styles.  It also includes a package to change the page styles when there are
 floats in a page.  You may assign headers/footers to individual floats, too.")
+    (license license:lppl)))
+
+(define-public texlive-latex-type1cm
+  (package
+    (name "texlive-latex-type1cm")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "type1cm"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1lvxrqfwcwa4p31zyfm80gr05v8c28xybv5ri79zi2ngz6834z12"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/type1cm"))
+    (home-page "http://www.ctan.org/pkg/type1cm")
+    (synopsis "Arbitrary size font selection in LaTeX")
+    (description
+     "LaTeX, by default, restricts the sizes at which you can use its default
+computer modern fonts, to a fixed set of discrete sizes (effectively, a set
+specified by Knuth).  The @code{type1cm} package removes this restriction;
+this is particularly useful when using scalable versions of the CM
+fonts (Bakoma, or the versions from BSR/Y&Y, or True Type versions from Kinch,
+PCTeX, etc.).  In fact, since modern distributions will automatically generate
+any bitmap font you might need, @code{type1cm} has wider application than just
+those using scaleable versions of the fonts.  Note that the LaTeX distribution
+now contains a package @code{fix-cm},f which performs the task of
+@code{type1cm}, as well as doing the same job for T1- and TS1-encoded
+@code{ec} fonts.")
     (license license:lppl)))
 
 (define-public texlive-latex-lh
@@ -2462,6 +3589,40 @@ technical illustrations.  Its output is scalable PostScript or SVG, rather
 than the bitmaps Metafont creates.")
     (license license:lppl)))
 
+(define-public texlive-latex-varwidth
+  (package
+    (name "texlive-latex-varwidth")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/varwidth"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bmz9ap0ffyg7qry2xi7lki06qx4809w028xvk88cl66h7p46g52"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/varwidth")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/varwidth")
+    (synopsis "Variable-width minipage")
+    (description
+     "The @code{varwidth} environment is superficially similar to
+@code{minipage}, but the specified width is just a maximum value — the box may
+get a narrower “natural” width.")
+    (license license:lppl)))
+
 (define-public texlive-latex-wasysym
   (package
     (name "texlive-latex-wasysym")
@@ -2483,10 +3644,171 @@ lasy font set and other odds and ends.  The wasysym package implements an easy
 to use interface for these symbols.")
     (license license:lppl)))
 
+(define-public texlive-latex-wrapfig
+  (package
+    (name "texlive-latex-wrapfig")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/wrapfig"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "16xpyl0csmmwndz1xhzqfg9l0zcsnqxslsixsqkwd4zsvfj30sv4"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/wrapfig")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/wrapfig")
+    (synopsis "Produces figures which text can flow around")
+    (description
+     "This package allows figures or tables to have text wrapped around them.
+It does not work in combination with list environments, but can be used in a
+@code{parbox} or @code{minipage}, and in two-column format.")
+    (license license:lppl)))
+
+(define-public texlive-latex-ucs
+  (package
+    (name "texlive-latex-ucs")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/ucs"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0rrxwi60wmz5dfjifl4fwk66plf7wix85qnhfv4ylvmj6qi6hw37"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/ucs")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/ucs")
+    (synopsis "Extended UTF-8 input encoding support for LaTeX")
+    (description
+     "The bundle provides the @code{ucs} package, and @code{utf8x.def},
+together with a large number of support files.  The @code{utf8x.def}
+definition file for use with @code{inputenc} covers a wider range of Unicode
+characters than does @code{utf8.def} in the LaTeX distribution.  The package
+provides facilities for efficient use of its large sets of Unicode characters.
+Glyph production may be controlled by various options, which permits use of
+non-ASCII characters when coding mathematical formulae.  Note that the bundle
+previously had an alias “unicode”; that alias has now been withdrawn, and no
+package of that name now exists.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-preview
+  (package
+    (name "texlive-latex-preview")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "preview"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0j6fff6q0ca96nwfdgay2jm55792z4q9aa0rczmiw2qccyg5n2dv"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/preview"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-generated-file
+           (lambda _
+             (delete-file "preview.drv")
+             #t)))))
+    (home-page "http://www.ctan.org/pkg/preview")
+    (synopsis "Extract bits of a LaTeX source for output")
+    (description
+     "The main purpose of the preview package is the extraction of selected
+elements from a LaTeX source, like formulas or graphics, into separate
+pages of a DVI file.  A flexible and convenient interface allows it to
+specify what commands and constructs should be extracted.  This works
+with DVI files postprocessed by either Dvips and Ghostscript or
+dvipng, but it also works when you are using PDFTeX for generating PDF
+files.")
+    (license license:gpl3+)))
+
+(define-public texlive-latex-acronym
+  (package
+    (name "texlive-latex-acronym")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "acronym"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0jmasg40bk53zdd2jc8nc18jvdai3p2wmamy7hwli8gls4nf25qp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/acronym"))
+    (home-page "http://www.ctan.org/pkg/acronym")
+    (synopsis "Expand acronyms at least once")
+    (description
+     "This package ensures that all acronyms used in the text are spelled out
+in full at least once.  It also provides an environment to build a list of
+acronyms used.  The package is compatible with PDF bookmarks.  The package
+requires the suffix package, which in turn requires that it runs under
+e-TeX.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-generic-pdftex
+  (package
+    (name "texlive-generic-pdftex")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/pdftex"))
+                    (revision %texlive-revision)))
+              (sha256
+               (base32
+                "0k68zmqzs4qvrqxdwsrawbjb14hxqjfamq649azvai0jjxdpkljd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/pdftex")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "http://www.ctan.org/pkg/pdftex")
+    (synopsis "TeX extension for direct creation of PDF")
+    (description
+     "This package provides an extension of TeX which can be configured to
+directly generate PDF documents instead of DVI.")
+    (license license:gpl2+)))
+
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2016")
+   (version "2017")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -2558,7 +3880,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2016")
+   (version "2017")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
@@ -2617,81 +3939,6 @@ This package contains the complete TeX Live distribution.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
 
-
-;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
-;; in particular dropping documentation and fonts.  It weighs in at 470 MiB
-;; instead of 4 GiB.
-(define texlive-texmf-minimal
-  (package (inherit texlive-texmf)
-   (name "texlive-texmf-minimal")
-   (arguments
-    (substitute-keyword-arguments
-     (package-arguments texlive-texmf)
-     ((#:modules modules)
-      `((ice-9 ftw)
-        (srfi srfi-1)
-        ,@modules))
-     ((#:phases phases)
-      `(modify-phases ,phases
-         (add-after 'unpack 'prune
-           (lambda _
-             (define (delete subdir exclude)
-               "Delete all files and directories in SUBDIR except for those
-given in the list EXCLUDE."
-               (with-directory-excursion subdir
-                 (for-each delete-file-recursively
-                           (lset-difference equal?
-                                            (scandir ".")
-                                            (append '("." "..")
-                                                    exclude)))))
-             (with-directory-excursion "texmf-dist"
-               (for-each delete-file-recursively
-                         '("doc" "source" "tex4ht"))
-               ;; Delete all subdirectories of "fonts", except for "tfm" and
-               ;; any directories named "cm".
-               (delete "fonts" '("afm" "map" "pk" "source" "tfm" "type1"))
-               (delete "fonts/afm" '("public"))
-               (delete "fonts/afm/public" '("amsfonts"))
-               (delete "fonts/afm/public/amsfonts" '("cm"))
-               (delete "fonts/map" '("dvips"))
-               (delete "fonts/map/dvips" '("cm"))
-               (delete "fonts/source" '("public"))
-               (delete "fonts/source/public" '("cm"))
-               (delete "fonts/tfm" '("public"))
-               (delete "fonts/type1" '("public"))
-               (delete "fonts/type1/public" '("amsfonts"))
-               (delete "fonts/type1/public/amsfonts" '("cm")))
-             #t))))))
-   (description
-    "TeX Live provides a comprehensive TeX document production system.
-It includes all the major TeX-related programs, macro packages, and fonts
-that are free software, including support for many languages around the
-world.
-
-This package contains a small subset of the texmf-dist data.")))
-
-
-;; texlive-minimal is the same as texlive, but using texlive-texmf-minimal
-;; instead of the full texlive-texmf. It can be used, for instance, as a
-;; native input to packages that need texlive to build their documentation.
-(define-public texlive-minimal
-  (package (inherit texlive)
-   (name "texlive-minimal")
-   (inputs
-    `(("texlive-texmf" ,texlive-texmf-minimal)
-      ,@(alist-delete "texlive-texmf" (package-inputs texlive))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "TEXMFLOCAL")
-           (files '("share/texmf-local")))))
-   (description
-    "TeX Live provides a comprehensive TeX document production system.
-It includes all the major TeX-related programs, macro packages, and fonts
-that are free software, including support for many languages around the
-world.
-
-This package contains a small working part of the TeX Live distribution.")))
-
 (define-public perl-text-bibtex
   (package
     (name "perl-text-bibtex")
@@ -2736,8 +3983,8 @@ values (strings, macros, or numbers) pasted together.")
 
 (define-public biber
   (package
-    (name "biber-next")
-    (version "2.6")
+    (name "biber")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/plk/biber/archive/v"
@@ -2745,7 +3992,7 @@ values (strings, macros, or numbers) pasted together.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "158smzgjhjvyabdv97si5q88zjj5l8j1zbfnddvzy6fkpfhskgkp"))))
+                "17wd80jg98qyddhvz4cin8779ycvppaf2va77r1lyvymjz6w9bx0"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -2813,33 +4060,6 @@ values (strings, macros, or numbers) pasted together.")
     (description "Biber is a BibTeX replacement for users of biblatex.  Among
 other things it comes with full Unicode support.")
     (license license:artistic2.0)))
-
-;; Our version of texlive comes with biblatex 3.4, which is only compatible
-;; with biber 2.5 according to the compatibility matrix in the biber
-;; documentation.
-(define-public biber-2.5
-  (package (inherit biber)
-    (name "biber")
-    (version "2.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/plk/biber/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "163sd343wkrzwnvj2003m2j0kz517jmjr4savw6f8bjxhj8fdrqv"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments biber)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'check 'delete-failing-test
-             (lambda _
-               (delete-file "t/sort-order.t")
-               #t))))))
-    (inputs
-     `(("perl-date-simple" ,perl-date-simple)
-       ,@(package-inputs biber)))))
 
 (define-public rubber
   (package

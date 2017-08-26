@@ -65,16 +65,16 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.17.2")
+    (version "0.18.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libraw.org/data/LibRaw-"
+              (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p6imxpsfn82i0i9w27fnzq6q6gwzvb9f7sygqqakv36fqnc9c4j"))))
+                "1imby9x88pjx4ad1frdi3bfb8dw90ccyj5pb6w3i6i0iijrnndnf"))))
     (build-system gnu-build-system)
-    (home-page "http://www.libraw.org")
+    (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
     (description
      "LibRaw is a library for reading RAW files obtained from digital photo
@@ -255,7 +255,7 @@ overlapping images, as well as some command line tools.")
        ("help2man" ,help2man)
        ("imagemagick" ,imagemagick)
        ("libxml2" ,libxml2)
-       ("texlive-minimal" ,texlive-minimal)
+       ("texlive-minimal" ,texlive-tiny)
        ("tidy" ,tidy)
        ("transfig" ,transfig)))
     (inputs

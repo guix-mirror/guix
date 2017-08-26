@@ -33,7 +33,7 @@
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
-  #:use-module ((guix build utils) #:select (dump-port))
+  #:use-module ((guix build utils) #:select (dump-port mkdir-p))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -81,7 +81,10 @@
             call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
+
+            config-directory
             cache-directory
+
             readlink*
             edit-expression
 
@@ -598,13 +601,26 @@ output port, and PROC's result is returned."
         (false-if-exception (delete-file template))
         (close-port out)))))
 
-(define (cache-directory)
-  "Return the cache directory for Guix, by default ~/.cache/guix."
-  (string-append (or (getenv "XDG_CACHE_HOME")
-                     (and=> (or (getenv "HOME")
-                                (passwd:dir (getpwuid (getuid))))
-                            (cut string-append <> "/.cache")))
-                 "/guix"))
+(define* (xdg-directory variable suffix #:key (ensure? #t))
+  "Return the name of the XDG directory that matches VARIABLE and SUFFIX,
+after making sure that it exists if ENSURE? is true.  VARIABLE is an
+environment variable name like \"XDG_CONFIG_HOME\"; SUFFIX is a suffix like
+\"/.config\".  Honor the XDG specs,
+<http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>."
+  (let ((dir (and=> (or (getenv variable)
+                        (and=> (or (getenv "HOME")
+                                   (passwd:dir (getpwuid (getuid))))
+                               (cut string-append <> suffix)))
+                    (cut string-append <> "/guix"))))
+    (when ensure?
+      (mkdir-p dir))
+    dir))
+
+(define config-directory
+  (cut xdg-directory "XDG_CONFIG_HOME" "/.config" <...>))
+
+(define cache-directory
+  (cut xdg-directory "XDG_CACHE_HOME" "/.cache" <...>))
 
 (define (readlink* file)
   "Call 'readlink' until the result is not a symlink."

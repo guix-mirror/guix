@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,11 +200,11 @@ garbage collection, various safety features and in the style of communicating
 sequential processes (CSP) concurrent programming features added.")
     (license license:bsd-3)))
 
-(define-public go-1.8
+(define-public go-1.9
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.8.3")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -211,7 +212,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "19lzv4lqixj3v2gjaff0fdbbmgsq5r8lrfd61z2zvp778wjflpaz"))))
+         "14z9azh8pk5cwyl2qdk893j68lk0cca7a9b8k2hpn5pd52825ax4"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -242,7 +243,7 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"
                    (("!rpath.set") "true"))
-                 (substitute* "cmd/go/build.go"
+                 (substitute* "cmd/go/internal/work/build.go"
                    (("cgoldflags := \\[\\]string\\{\\}")
                     (string-append "cgoldflags := []string{"
                                    "\"-rpath=" gcclib "\""
@@ -295,6 +296,13 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; note the target script is generated at build time.
                  (substitute* "../misc/cgo/testcarchive/carchive_test.go"
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 ;; Escape braces in test data to workaround test failure. For
+                 ;; more information:
+                 ;; https://github.com/golang/go/issues/20007
+                 ;; FIXME: remove this once we upgrade to 1.9
+                 (substitute* "cmd/vet/testdata/copylock_func.go"
+                   (("struct\\{lock sync.Mutex\\}") "struct\\{lock sync.Mutex\\}"))
 
                  (substitute* "net/lookup_unix.go"
                    (("/etc/protocols") (string-append net-base "/etc/protocols")))
@@ -366,4 +374,4 @@ sequential processes (CSP) concurrent programming features added.")
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))))
 
-(define-public go go-1.8)
+(define-public go go-1.9)

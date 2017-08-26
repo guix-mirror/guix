@@ -345,7 +345,8 @@ mashups, office (web agendas, mail clients, ...), etc.")
                (base32
                 "12b9gaa9lqh39lj1v4wm48f6z8ww3jdkvc5bh9gqqvn6kd2wwnk0"))
               (patches
-               (search-patches "chicken-CVE-2017-6949.patch"))))
+               (search-patches "chicken-CVE-2017-6949.patch"
+                               "chicken-CVE-2017-11343.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)

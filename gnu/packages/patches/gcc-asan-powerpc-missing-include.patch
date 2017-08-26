@@ -1,0 +1,20 @@
+Add missing include that triggers a build failure on PowerPC:
+
+  ../../../../gcc-5.4.0/libsanitizer/asan/asan_linux.cc: In function ‘bool __asan::AsanInterceptsSignal(int)’:
+  ../../../../gcc-5.4.0/libsanitizer/asan/asan_linux.cc:222:20: error: ‘SIGSEGV’ was not declared in this scope
+     return signum == SIGSEGV && common_flags()->handle_segv;
+		      ^
+From <https://patchwork.ozlabs.org/patch/725596/>.
+
+diff --git a/libsanitizer/asan/asan_linux.cc b/libsanitizer/asan/asan_linux.cc
+index c504168..59087b9 100644
+--- a/libsanitizer/asan/asan_linux.cc
++++ b/libsanitizer/asan/asan_linux.cc
+@@ -29,6 +29,7 @@
+ #include <dlfcn.h>
+ #include <fcntl.h>
+ #include <pthread.h>
++#include <signal.h>
+ #include <stdio.h>
+ #include <unistd.h>
+ #include <unwind.h>

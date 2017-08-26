@@ -118,7 +118,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -126,7 +126,7 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsrca7903g08zrifv4102gkxrhmzvgwd1sb6vw9pa00qhzsfkzs"))))
+                "0dqwarc2aw5clgpf24d9dxh43b0k0z3l6kksn30arx9bdlmrk5rx"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
@@ -136,10 +136,15 @@ spying and/or modification by the server.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    (synopsis "File verification and repair tool")
-    (description "Par2cmdline is a tool for generating RAID-like PAR2 recovery
-files using Reed-Solomon coding.  PAR2 files can be stored along side backups
-or distributed files for recovering from bitrot.")
+    (synopsis "File verification and repair tools")
+    (description "Par2cmdline uses Reed-Solomon error-correcting codes to
+generate and verify PAR2 recovery files.  These files can be distributed
+alongside the source files or stored together with back-ups to protect against
+transmission errors or @dfn{bit rot}, the degradation of storage media over
+time.
+Unlike a simple checksum, PAR2 doesn't merely detect errors: as long as the
+damage isn't too extensive (and smaller than the size of the recovery file), it
+can even repair them.")
     (home-page "https://github.com/Parchive/par2cmdline")
     (license license:gpl3+)))
 
@@ -179,8 +184,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive-3.3.1)
-    (version "3.2.2")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -188,7 +192,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "03q6y428rg723c9fj1vidzjw46w1vf8z0h95lkvz1l9jw571j739"))))
+         "1rr40hxlm9vy5z2zb5w7pyfkgd1a4s061qapm83s19accb8mpji9"))))
     (build-system gnu-build-system)
     ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
@@ -457,13 +461,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.10")
+    (version "1.0.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "1sarmpzwr8dhbg0hsvaclcsjfax36ssb32d9klhhah4j8kqji3wp"))
+                "14fjk5dfwmjkn7nmkbhhbrk3g1wfrn8arvqd5r9jaij534nzsvpw"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -601,14 +605,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mbz03smlc054i2m9q2sbqymml9m897kfs84q7g81i26y811p6wq"))))
+                "0ks6hq7vwq13ljkzxp3a490bf8dnracgl2azf57rg49ad2fzab45"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

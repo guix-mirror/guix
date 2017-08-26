@@ -32,6 +32,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cran)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)

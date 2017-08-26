@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -49,7 +49,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages golang)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -140,7 +139,7 @@ provide serif, sans and monospaced variants.")
               (base32
                "1p3qs51x5327gnk71yq8cvmxc6wgx79sqxfvxcv80cdvgggjfnyv"))))
     (build-system font-build-system)
-    (home-page "http://www.gnome.org/fonts/")
+    (home-page "https://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
 package provides the TrueType (TTF) files.")
@@ -472,24 +471,7 @@ variants.")
               (sha256
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi/")))
-           (setenv "PATH" PATH)
-           (mkdir-p font-dir)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (chdir "wqy-zenhei")
-           (install-file "wqy-zenhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
@@ -516,23 +498,7 @@ ko (Korean) locales for @code{fontconfig}.")
               (sha256
                (base32
                 "0gi1yxqph8xx869ichpzzxvx6y50wda5hi77lrpacdma4f0aq0i8"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
-                                    (assoc-ref %build-inputs "gzip") "/bin"))
-               (font-dir (string-append (assoc-ref %outputs "out")
-                                        "/share/fonts/wenquanyi")))
-           (mkdir-p font-dir)
-           (setenv "PATH" PATH)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-           (install-file "wqy-microhei/wqy-microhei.ttc" font-dir)))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+    (build-system font-build-system)
     (home-page "http://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
@@ -594,7 +560,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.04")
+    (version "10.0.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -602,7 +568,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "150p79rq4rzb4pbg2dwcz93k1chzzvm0l0nwh60spw19nfyrxj0p"))))
+                "07sajc32l2knnz6gmd81zxjhcxq8xr6r2kf42wig56vj05s3d1cb"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
@@ -655,35 +621,14 @@ utilities to ease adding new glyphs to the font.")
     (name "font-google-noto")
     (version "20170403")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append "https://noto-website.storage.googleapis.com/"
                                   "pkgs/Noto-hinted.zip"))
+              (file-name (string-append name "-" version ".zip"))
               (sha256
                (base32
                 "1p92a6dvs7wqwjfpp1ahr9z1wz35am0l8r78521383spd77bmrfm"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (otf)
-                                 (install-file otf font-dir))
-                               (find-files "." "\\.otf$"))))))
-    (native-inputs `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "https://www.google.com/get/noto/")
     (synopsis "Fonts to cover all languages")
     (description "Google Noto Fonts is a family of fonts designed to support
@@ -1041,7 +986,7 @@ programming.  Iosevka is completely generated from its source code.")
 Holmes type foundry, released under the same license as the Go programming
 language.  It includes a set of proportional, sans-serif fonts, and a set of
 monospace, slab-serif fonts.")
-      (license (package-license go-1.4)))))
+      (license license:bsd-3))))
 
 (define-public font-google-material-design-icons
   (package
@@ -1068,41 +1013,32 @@ have been optimized for beautiful display on all common platforms and display
 resolutions.")
     (license license:asl2.0)))
 
-(define-public font-mathjax
+(define-public font-open-dyslexic
   (package
-    (name "font-mathjax")
-    (version "2.7.1")
+    (name "font-open-dyslexic")
+    (version "20160623")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/mathjax/MathJax/archive/"
-             version ".tar.gz"))
+       (uri (string-append "https://github.com/antijingoist/open-dyslexic/"
+                           "archive/" version "-Stable.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0sbib5lk0jrvbq6s72ag6ss3wjlz5wnk07ddxij1kp96yg3c1d1b"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (set-path-environment-variable
-          "PATH" '("bin") (map (match-lambda
-                                 ((_ . input)
-                                  input))
-                               %build-inputs))
-         (let ((install-directory (string-append %output "/share/fonts/mathjax")))
-           (mkdir-p install-directory)
-           (zero? (system* "tar" "-C" install-directory "-xvf"
-                           (assoc-ref %build-inputs "source")
-                           "MathJax-2.7.1/fonts" "--strip" "2"))))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
-    (home-page "https://www.mathjax.org/")
-    (synopsis "Fonts for MathJax")
-    (description "This package contains the fonts required for MathJax.")
-    (license license:asl2.0)))
+         "0al0j9kb32kfavcpq1kigsd36yzvf5yhzqhds0jkh7ngbxyxwkx4"))))
+    (build-system font-build-system)
+    (home-page "https://opendyslexic.org")
+    (synopsis "Font for dyslexics and high readability")
+    (description "OpenDyslexic is a font designed to help readability for some
+of the symptoms of dyslexia.  Letters have heavy weighted bottoms to provide
+an indication of orientation to make it more difficult to confuse with other
+similar letters.  Consistently weighted bottoms can also help reinforce the
+line of text.  The unique shapes of each letter can help prevent flipping and
+swapping.  The italic style for OpenDyslexic has been crafted to be used for
+emphasis while still being readable.")
+    (license
+     (license:fsdg-compatible
+      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
+      "The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself."))))

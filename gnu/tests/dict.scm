@@ -27,7 +27,6 @@
   #:use-module (gnu packages wordnet)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix modules)
   #:export (%test-dicod))
@@ -54,86 +53,90 @@
 
 (define* (run-dicod-test)
   "Run tests of 'dicod-service-type'."
-  (mlet* %store-monad ((os -> (marionette-operating-system
-                               %dicod-os
-                               #:imported-modules
-                               (source-module-closure '((gnu services herd)))))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (ice-9 rdelim)
-                         (ice-9 regex)
-                         (srfi srfi-64)
-                         (gnu build marionette))
-            (define marionette
-              ;; Forward the guest's DICT port to local port 8000.
-              (make-marionette (list #$command "-net"
-                                     "user,hostfwd=tcp::8000-:2628")))
+  (define os
+    (marionette-operating-system
+     %dicod-os
+     #:imported-modules
+     (source-module-closure '((gnu services herd)))))
 
-            (define %dico-socket
-              (socket PF_INET SOCK_STREAM 0))
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings '((8000 . 2628)))))
 
-            (mkdir #$output)
-            (chdir #$output)
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (ice-9 rdelim)
+                       (ice-9 regex)
+                       (srfi srfi-64)
+                       (gnu build marionette))
+          (define marionette
+            ;; Forward the guest's DICT port to local port 8000.
+            (make-marionette (list #$vm)))
 
-            (test-begin "dicod")
+          (define %dico-socket
+            (socket PF_INET SOCK_STREAM 0))
 
-            ;; Wait for the service to be started.
-            (test-eq "service is running"
-              'running!
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'dicod)
-                  'running!)
-               marionette))
+          (mkdir #$output)
+          (chdir #$output)
 
-            ;; Wait until dicod is actually listening.
-            ;; TODO: Use a PID file instead.
-            (test-assert "connect inside"
-              (marionette-eval
-               '(begin
-                  (use-modules (ice-9 rdelim))
-                  (let ((sock (socket PF_INET SOCK_STREAM 0)))
-                    (let loop ((i 0))
-                      (pk 'try i)
-                      (catch 'system-error
-                        (lambda ()
-                          (connect sock AF_INET INADDR_LOOPBACK 2628))
-                        (lambda args
-                          (pk 'connection-error args)
-                          (when (< i 20)
-                            (sleep 1)
-                            (loop (+ 1 i))))))
-                    (read-line sock 'concat)))
-               marionette))
+          (test-begin "dicod")
 
-            (test-assert "connect"
-              (let ((addr (make-socket-address AF_INET INADDR_LOOPBACK 8000)))
-                (connect %dico-socket addr)
-                (read-line %dico-socket 'concat)))
+          ;; Wait for the service to be started.
+          (test-eq "service is running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'dicod)
+                'running!)
+             marionette))
 
-            (test-equal "CLIENT"
-              "250 ok\r\n"
-              (begin
-                (display "CLIENT \"GNU Guile\"\r\n" %dico-socket)
-                (read-line %dico-socket 'concat)))
+          ;; Wait until dicod is actually listening.
+          ;; TODO: Use a PID file instead.
+          (test-assert "connect inside"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 rdelim))
+                (let ((sock (socket PF_INET SOCK_STREAM 0)))
+                  (let loop ((i 0))
+                    (pk 'try i)
+                    (catch 'system-error
+                      (lambda ()
+                        (connect sock AF_INET INADDR_LOOPBACK 2628))
+                      (lambda args
+                        (pk 'connection-error args)
+                        (when (< i 20)
+                          (sleep 1)
+                          (loop (+ 1 i))))))
+                  (read-line sock 'concat)))
+             marionette))
 
-            (test-assert "DEFINE"
-              (begin
-                (display "DEFINE ! hello\r\n" %dico-socket)
-                (display "QUIT\r\n" %dico-socket)
-                (let ((result (read-string %dico-socket)))
-                  (and (string-contains result "gcide")
-                       (string-contains result "hello")
-                       result))))
+          (test-assert "connect"
+            (let ((addr (make-socket-address AF_INET INADDR_LOOPBACK 8000)))
+              (connect %dico-socket addr)
+              (read-line %dico-socket 'concat)))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-equal "CLIENT"
+            "250 ok\r\n"
+            (begin
+              (display "CLIENT \"GNU Guile\"\r\n" %dico-socket)
+              (read-line %dico-socket 'concat)))
 
-    (gexp->derivation "dicod" test)))
+          (test-assert "DEFINE"
+            (begin
+              (display "DEFINE ! hello\r\n" %dico-socket)
+              (display "QUIT\r\n" %dico-socket)
+              (let ((result (read-string %dico-socket)))
+                (and (string-contains result "gcide")
+                     (string-contains result "hello")
+                     result))))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "dicod" test))
 
 (define %test-dicod
   (system-test

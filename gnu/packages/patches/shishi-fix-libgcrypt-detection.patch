@@ -1,0 +1,32 @@
+Fix building of Shishi with libgcrypt 1.6 and later.
+
+Patch copied from Debian:
+
+https://anonscm.debian.org/cgit/collab-maint/shishi.git/tree/debian/patches/fix_gcrypt_detection.diff?id=948301ae648a542a408da250755aeed58a6e3542
+
+Description: Fix autoconf gnutls detection to also accept gcrypt 1.6.
+Author: Andreas Metzler <ametzler@debian.org>
+Bug-Debian: http://bugs.debian.org/753150
+Origin: vendor
+Forwarded: no
+Last-Update: 2014-07-18
+
+--- shishi-1.0.2.orig/gl/m4/gc.m4
++++ shishi-1.0.2/gl/m4/gc.m4
+@@ -12,10 +12,12 @@ AC_DEFUN([gl_GC],
+   if test "$libgcrypt" != no; then
+     AC_LIB_HAVE_LINKFLAGS([gcrypt], [gpg-error], [
+ #include <gcrypt.h>
+-/* GCRY_MODULE_ID_USER was added in 1.4.4 and gc-libgcrypt.c
+-   will fail on startup if we don't have 1.4.4 or later, so
+-   test for it early. */
+-#if !defined GCRY_MODULE_ID_USER
++/* gc-libgcrypt.c will fail on startup if we don't have libgcrypt 1.4.4 or
++   later, test for it early. by checking for either
++   - GCRY_MODULE_ID_USER which was added in 1.4.4 and dropped in 1.6 or
++   - GCRYPT_VERSION_NUMBER which was added in 1.6.
++   */
++#if !defined GCRY_MODULE_ID_USER && !defined GCRYPT_VERSION_NUMBER
+ error too old libgcrypt
+ #endif
+ ])

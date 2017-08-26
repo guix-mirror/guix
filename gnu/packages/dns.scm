@@ -99,7 +99,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.11.1-P2")
+    (version "9.11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -107,7 +107,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "19gyh7yij6cpvk5b199ghhns5wmsz67d2rpgvl91dbkm2m1wclxz"))))
+                "0yn7wgi2y8mpmvbjbkl4va7p0xsnn48m4yjx6ynb1hzp423asikz"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -443,17 +443,17 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.4")
+    (version "2.2.5")
     (source
-     (let ((revision "6924"))
+     (let ((build "6937"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                         name "-" version "-" revision ".tar.gz"))
+                         name "-" version "-" build ".tar.gz"))
          (sha256
           (base32
-           "060ydcfn9876bs6p5xi3p1k20ca547f4jck25r5x1hnxjlv7ss03")))))
+           "146fs52izf6dfwsxal3srpwin2yyl41g31cy4pyvbi5mqy2craj7")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -470,10 +470,7 @@ served by AS112.  Stub and forward zones are supported.")
                                "--enable-shared"        "--disable-static"
                                "--enable-messages"      "--enable-ctrl"
                                "--enable-nsec"          "--enable-nsec3"
-                               "--enable-tsig"          "--enable-caching"
-                               ;; NSID is a rarely-used debugging aid, that also
-                               ;; causes the build to fail. Just disable it.
-                               "--disable-nsid")))
+                               "--enable-tsig"          "--enable-caching")))
     (home-page "http://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
@@ -486,14 +483,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.5.2")
+    (version "2.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sgmw8k9qccc7bgxbwrvahdinj1bjq90iza55rxj199mxsj72ri8"))
+                "13lxxnnw0v7s0q648grz87bwlfwjh5sfbj1qax7jdklalqqy52np"))
               (modules '((guix build utils)))
               (snippet
                '(begin

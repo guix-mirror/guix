@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,11 +41,27 @@
       (uri (string-append "mirror://gnu/wget/wget-"
                           version ".tar.xz"))
       (patches (search-patches "wget-CVE-2017-6508.patch"
-                               "wget-fix-504-test-timeout.patch"))
+                               "wget-fix-504-test-timeout.patch"
+                               "wget-perl-5.26.patch"))
       (sha256
        (base32
         "1ljcfhbkdsd0zjfm520rbl1ai62fc34i7c45sfj244l8f6b0p58c"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-https-tests
+                    (lambda _
+                      ;; XXX: Skip TLS tests, which fail with "The
+                      ;; certificate's owner does not match hostname" as
+                      ;; reported at:
+                      ;; <https://lists.gnu.org/archive/html/bug-wget/2017-07/msg00012.html>.
+                      ;; The problem appears to be due to a change in GnuTLS
+                      ;; 3.5.12, whereby 'gnutls_x509_crt_check_hostname2' no
+                      ;; longer matches IP address against the 'CN' or
+                      ;; 'DNSname' fields of certificates.
+                      (substitute* "testenv/Makefile"
+                        (("SSL_TESTS=1") ""))
+                      #t)))))
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn2" ,libidn2)

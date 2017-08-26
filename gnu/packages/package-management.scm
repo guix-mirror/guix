@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0 bsd-3))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages serialization)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -74,8 +76,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "b547349d505c57fd679b6e48c472d8ab65469c96")
-        (revision 3))
+        (commit "228a3982df157847554abc9d0831d687264d8ebd")
+        (revision 5))
     (package
       (name "guix")
 
@@ -91,7 +93,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0q6qr9hvrac1wj2ygn4jj4w89h1m35zkcjjd741sibc3l46pa93l"))
+                  "1gnc1w9kby7db9jih4xwrhrv0j57zy09lmr85gbmcqna6bx3wypw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -119,6 +121,7 @@
 
          #:modules ((guix build gnu-build-system)
                     (guix build utils)
+                    (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
 
@@ -185,21 +188,31 @@
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
+                               (git    (assoc-ref inputs "guile-git"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (deps   (list json gnutls git ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
                                              (string-append guile "/bin/guile")
                                              "-c" "(display (effective-version))")))
-                               (path   (string-append
-                                        json "/share/guile/site/" effective ":"
-                                        ssh "/share/guile/site/" effective ":"
-                                        gnutls "/share/guile/site/" effective)))
+                               (path   (string-join
+                                        (map (cut string-append <>
+                                                  "/share/guile/site/"
+                                                  effective)
+                                             deps)
+                                        ":"))
+                               (gopath (string-join
+                                        (map (cut string-append <>
+                                                  "/lib/guile/" effective
+                                                  "/site-ccache")
+                                             deps)
+                                        ":")))
 
                           (wrap-program (string-append out "/bin/guix")
                             `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
@@ -248,9 +261,10 @@
                          (base32
                           "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))))))
       (propagated-inputs
-       `(("gnutls" ,gnutls/guile-2.2)             ;for 'guix download' & co.
+       `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
-         ("guile-ssh" ,guile-ssh)))
+         ("guile-ssh" ,guile-ssh)
+         ("guile-git" ,guile-git)))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -274,9 +288,10 @@ the Nix package manager.")
      `(("guile" ,guile-2.0)
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
-     `(("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls/guile-2.0)
        ("guile-json" ,guile2.0-json)
-       ("guile-ssh" ,guile2.0-ssh)))))
+       ("guile-ssh" ,guile2.0-ssh)
+       ("guile-git" ,guile2.0-git)))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -396,15 +411,15 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.12.0.1")
+    (version "4.13.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://rpm.org/releases/rpm-4.12.x/rpm-"
+              (uri (string-append "http://ftp.rpm.org/releases/rpm-"
+                                  (version-major+minor version) ".x/rpm-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0a82ym8phx7g0f3k6smvxnvzh7yv857l42xafk49689kzhld5pbp"))
-              (patches (search-patches "rpm-CVE-2014-8118.patch"))))
+                "03cvbwbfrhm0fa02j7828k1qp05hf2m0fradwcf2nqhrsjkppz17"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -508,7 +523,7 @@ transactions from C or Python.")
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)
               ("python-chardet" ,python-chardet)))
-    (home-page "http://diffoscope.org/")
+    (home-page "https://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
      "Diffoscope tries to get to the bottom of what makes files or directories
@@ -516,3 +531,188 @@ different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
     (license gpl3+)))
+
+(define-public python-anaconda-client
+  (package
+    (name "python-anaconda-client")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Anaconda-Platform/"
+                           "anaconda-client/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv4wi6k5jz7rlwfgvgfdizv77x3cr1wa2aj0k1595g7fbhkjhz2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-clyent" ,python-clyent)))
+    (native-inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil)
+       ("python-mock" ,python-mock)
+       ("python-coverage" ,python-coverage)
+       ("python-pillow" ,python-pillow)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for some tests.
+         (add-before 'check 'set-up-home
+           (lambda* _ (setenv "HOME" "/tmp") #t))
+         (add-before 'check 'remove-network-tests
+           (lambda* _
+             ;; Remove tests requiring a network connection
+             (let ((network-tests '("tests/test_upload.py"
+                                    "tests/test_authorizations.py"
+                                    "tests/test_login.py"
+                                    "tests/test_whoami.py"
+                                    "utils/notebook/tests/test_data_uri.py"
+                                    "utils/notebook/tests/test_base.py"
+                                    "utils/notebook/tests/test_downloader.py"
+                                    "inspect_package/tests/test_conda.py")))
+               (with-directory-excursion "binstar_client"
+                 (for-each delete-file network-tests)))
+             #t)))))
+    (home-page "https://github.com/Anaconda-Platform/anaconda-client")
+    (synopsis "Anaconda Cloud command line client library")
+    (description
+     "Anaconda Cloud command line client library provides an interface to
+Anaconda Cloud.  Anaconda Cloud is useful for sharing packages, notebooks and
+environments.")
+    (license bsd-3)))
+
+(define-public python2-anaconda-client
+  (package-with-python2 python-anaconda-client))
+
+(define-public python-conda
+  (package
+    (name "python-conda")
+    (version "4.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/conda/conda/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jq8hyrc5npb5sf4vw6s6by4602yj8f79vzpbwdfgpkn02nfk1dv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'create-version-file
+           (lambda _
+             (with-output-to-file "conda/.version"
+               (lambda () (display ,version)))
+             #t))
+         (add-before 'check 'remove-failing-tests
+           (lambda _
+             ;; These tests require internet/network access
+             (let ((network-tests '("test_cli.py"
+                                    "test_create.py"
+                                    "test_export.py"
+                                    "test_fetch.py"
+                                    "test_history.py"
+                                    "test_info.py"
+                                    "test_install.py"
+                                    "test_priority.py"
+                                    "conda_env/test_cli.py"
+                                    "conda_env/test_create.py"
+                                    "conda_env/specs/test_notebook.py"
+                                    "conda_env/utils/test_notebooks.py"
+                                    "core/test_index.py"
+                                    "core/test_repodata.py")))
+               (with-directory-excursion "tests"
+                 (for-each delete-file network-tests)
+
+                 ;; FIXME: This test creates a file, then deletes it and tests
+                 ;; that the file was deleted.  For some reason it fails when
+                 ;; building with guix, but does not when you run it in the
+                 ;; directory left when you build with the --keep-failed
+                 ;; option
+                 (delete-file "gateways/disk/test_delete.py")
+                 #t))))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-pycosat" ,python-pycosat)
+       ("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-anaconda-client" ,python-anaconda-client)))
+    (home-page "https://github.com/conda/conda")
+    (synopsis "Cross-platform, OS-agnostic, system-level binary package manager")
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.
+
+This package provides Conda as a library.")
+    (license bsd-3)))
+
+(define-public python2-conda
+  (let ((base (package-with-python2
+               (strip-python2-variant python-conda))))
+    (package (inherit base)
+             (native-inputs
+              `(("python2-enum34" ,python2-enum34)
+                ,@(package-native-inputs base))))))
+
+(define-public conda
+  (package (inherit python-conda)
+    (name "conda")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-conda)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; This test fails when run before installation.
+               (delete-file "tests/test_activate.py")
+
+               ;; Fix broken defaults
+               (substitute* "conda/base/context.py"
+                 (("return sys.prefix")
+                  (string-append "return \"" (assoc-ref outputs "out") "\""))
+                 (("return (prefix_is_writable\\(self.root_prefix\\))" _ match)
+                  (string-append "return False if self.root_prefix == self.conda_prefix else "
+                                 match)))
+
+               ;; The util/setup-testing.py is used to build conda in
+               ;; application form, rather than the default, library form.
+               ;; With this, we are able to run commands like `conda --help`
+               ;; directly on the command line
+               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (target (string-append out "/lib/python"
+                                             ((@@ (guix build python-build-system)
+                                                  get-python-version)
+                                              (assoc-ref inputs "python"))
+                                             "/site-packages/")))
+                 ;; The installer aborts if the target directory is not on
+                 ;; PYTHONPATH.
+                 (setenv "PYTHONPATH"
+                         (string-append target ":" (getenv "PYTHONPATH")))
+
+                 ;; And it aborts if the directory doesn't exist.
+                 (mkdir-p target)
+                 (zero? (system* "python" "utils/setup-testing.py" "install"
+                                 (string-append "--prefix=" out))))))))))
+    (description
+     "Conda is a cross-platform, Python-agnostic binary package manager.  It
+is the package manager used by Anaconda installations, but it may be used for
+other systems as well.  Conda makes environments first-class citizens, making
+it easy to create independent environments even for C libraries.  Conda is
+written entirely in Python.")))

@@ -7,8 +7,9 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,16 +36,21 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
+  #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
@@ -101,39 +107,17 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "4.4.902")
+   (version "5.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/" name
-                                "/archive/v" version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+                                "/releases/download/v" version "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0rwz1yzgd539x4h25kzhar4q02xyxjwfrcpz4m8ixi312a82p7cn"))))
+              "1jvffcpq64hk3jysz4q6zi9hqkksy151ci9553h8q7wrrkbw0i9z"))))
    (build-system gnu-build-system)
-   (arguments
-    '(#:tests? #f ; no check target
-      #:phases
-      (modify-phases %standard-phases
-        ;; The provided configure script takes a restricted number of arguments.
-        (replace 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (zero? (system* "./configure" "--prefix"
-                                   (assoc-ref %outputs "out")))))
-        ;; "make install" is broken for this package.
-        ;; Notably, the binaries overrwrite one another upon installation as
-        ;; they are all installed to the "bin" file in the output directory,
-        ;; and the manual page fails to install because the directory for the
-        ;; manual page is not created.
-        (replace 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (share (string-append out "/share")))
-                     (install-file "deusf" bin)
-                     (install-file "deutex" bin)
-                     (install-file "deutex.6" (string-append share "/man/man6")))
-                   #t)))))
+   (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description
@@ -209,26 +193,15 @@ necessary.
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.10.1")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "166rawdal45kvanhvi0bkzy1d2pwf1p0lzslb287lcnm9vdw97yy"))))
+                "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'remove-Werror
-                              (lambda _
-                                ;; We can't build with '-Werror', notably
-                                ;; because deprecated functions of
-                                ;; libmicrohttpd are being used.
-                                (substitute* (find-files "." "^Makefile\\.in$")
-                                  (("-Werror")
-                                   ""))
-                                #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
@@ -380,7 +353,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -388,7 +361,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y75jmpcf2lv8s3g9v3ghnrwvs2fc4ni7nx74csaylg1g04cwlq7"))))
+                "134xi74xajh38rj1qhmc4x1zmncfdmqb01axnkxh6zs3qz0rxp93"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -926,3 +899,123 @@ suitable for pixel art, game graphics, and generally any detailed graphics
 painted with a mouse.")
     (home-page "http://pulkomandy.tk/projects/GrafX2")
     (license license:gpl2))) ; GPLv2 only
+
+(define-public ois
+  (package
+    (name "ois")
+    (version "1.3")
+    (source
+     (origin
+       ;; Development has moved to github and there are no recent tarball
+       ;; releases.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wgois/OIS.git")
+             (commit "bb75ccc1aabc1c547195579963601ff6080ca2f2")))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0w0pamjc3vj0jr718hysrw8x076fq6n9rd6wcb36sn2jd0lqvi98"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _ (zero? (system* "sh" "bootstrap")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxaw" ,libxaw)))
+    (synopsis "Object Oriented Input System")
+    (description
+     "Cross Platform Object Oriented Input Lib System is a cross platform,
+simple solution for using all kinds of Input Devices (Keyboards, Mice,
+Joysticks, etc) and feedback devices (e.g. force feedback).  Meant to be very
+robust and compatible with many systems and operating systems.")
+    (home-page "https://github.com/wgois/OIS")
+    (license license:zlib)))
+
+(define-public mygui
+  (package
+    (name "mygui")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/MyGUI/" name
+                       "/archive/MyGUI" version ".tar.gz"))
+       (sha256
+        (base32
+         "13x7cydmj7gjmsg702sqjbfi53z265iv6j7binv3r6a7ibndfa0a"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list "-DMYGUI_INSTALL_DOCS=TRUE"
+             (string-append "-DOGRE_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "ogre")
+                            "/include/OGRE"))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("freetype" ,freetype)
+       ("graphviz" ,graphviz)
+       ("libx11" ,libx11)
+       ("ogre" ,ogre)
+       ("ois" ,ois)))
+    (synopsis "Fast, flexible and simple GUI")
+    (description
+     "MyGUI is a library for creating Graphical User Interfaces (GUIs) for games
+and 3D applications.  The main goals of mygui are: speed, flexibility and ease
+of use.")
+    (home-page "http://mygui.info/")
+    (license license:expat)))
+
+(define-public openmw
+  (package
+    (name "openmw")
+    (version "0.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/OpenMW/openmw/archive/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pla8016lpbg8cgm9kia318a860f26dmiayc72p3zl35mqrc7g7w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list "-DDESIRED_QT_VERSION=5")))
+    (native-inputs
+     `(("boost" ,boost)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bullet" ,bullet)
+       ("ffmpeg" ,ffmpeg)
+       ("libxt" ,libxt)
+       ("mygui" ,mygui)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph)
+       ("qtbase" ,qtbase)
+       ("sdl" ,sdl2)
+       ("unshield" ,unshield)))
+    (synopsis "Free software re-implementation of the RPG Morrowind engine")
+    (description
+     "OpenMW is a free, open source and modern engine which reimplements and
+extends the one that runs the 2002 open-world RPG Morrowind.  The engine comes
+with its own editor, called OpenMW-CS which allows the user to edit or create
+their own original games.")
+    (home-page "https://openmw.org")
+    (license license:gpl3)))

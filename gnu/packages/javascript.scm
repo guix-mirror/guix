@@ -22,11 +22,51 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages fonts)
   #:use-module (gnu packages lisp)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix git-download)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix build-system minify))
+
+(define-public font-mathjax
+  (package
+    (name "font-mathjax")
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mathjax/MathJax/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sbib5lk0jrvbq6s72ag6ss3wjlz5wnk07ddxij1kp96yg3c1d1b"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (set-path-environment-variable
+          "PATH" '("bin") (map (match-lambda
+                                 ((_ . input)
+                                  input))
+                               %build-inputs))
+         (let ((install-directory (string-append %output "/share/fonts/mathjax")))
+           (mkdir-p install-directory)
+           (zero? (system* "tar" "-C" install-directory "-xvf"
+                           (assoc-ref %build-inputs "source")
+                           "MathJax-2.7.1/fonts" "--strip" "2"))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "https://www.mathjax.org/")
+    (synopsis "Fonts for MathJax")
+    (description "This package contains the fonts required for MathJax.")
+    (license license:asl2.0)))
 
 (define-public js-mathjax
   (package
@@ -133,4 +173,191 @@ be able to view it naturally and easily.")))
     (description "The goal of this script is to provide a fast and lightweight
 script to enable responsive web designs in browsers that don't support CSS3
 Media Queries.")
+    (license license:expat)))
+
+(define-public js-html5shiv
+  (package
+    (name "js-html5shiv")
+    (version "3.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/aFarkas/html5shiv/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0inlbpxpqzdyi24lqagzf7l24zxg0y02xcpqs2h4npjscazzw7hg"))))
+    (build-system minify-build-system)
+    (home-page "https://github.com/aFarkas/html5shiv")
+    (synopsis "Enable HTML5 sectioning elements in legacy browsers")
+    (description "The HTML5 Shiv enables use of HTML5 sectioning elements in
+legacy Internet Explorer and provides basic HTML5 styling for Internet
+Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.")
+    ;; From the file "MIT and GPL2 licenses.md":
+    ;;
+    ;;   This software is licensed under a dual license system (MIT or GPL
+    ;;   version 2). This means you are free to choose with which of both
+    ;;   licenses (MIT or GPL version 2) you want to use this library.
+    (license (list license:expat license:gpl2))))
+
+(define-public js-json2
+  (let ((commit "031b1d9e6971bd4c433ca85e216cc853f5a867bd")
+        (revision "1"))
+    (package
+      (name "js-json2")
+      (version (string-append "2016-10-28." revision "-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/douglascrockford/JSON-js.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1fvb6b2y5sd3sqdgcj683sdxcbxdii34q0ysc9wg0dq1sy81l11v"))))
+      (build-system minify-build-system)
+      (arguments
+       `(#:javascript-files '("json2.js"
+                              "json_parse.js"
+                              "json_parse_state.js"
+                              "cycle.js")))
+      (home-page "https://github.com/douglascrockford/JSON-js")
+      (synopsis "JSON encoders and decoders")
+      (description "The files in this collection implement JSON
+encoders/decoders in JavaScript.
+
+@code{json2.js}: This file creates a JSON property in the global object, if
+there isn't already one, setting its value to an object containing a stringify
+method and a parse method.  The @code{parse} method uses the @code{eval}
+method to do the parsing, guarding it with several regular expressions to
+defend against accidental code execution hazards.  On current browsers, this
+file does nothing, preferring the built-in JSON object.
+
+@code{json_parse.js}: This file contains an alternative JSON @code{parse}
+function that uses recursive descent instead of @code{eval}.
+
+@code{json_parse_state.js}: This files contains an alternative JSON
+@code{parse} function that uses a state machine instead of @code{eval}.
+
+@code{cycle.js}: This file contains two functions, @code{JSON.decycle} and
+@code{JSON.retrocycle}, which make it possible to encode cyclical structures
+and DAGs in JSON, and to then recover them.  This is a capability that is not
+provided by ES5.  @code{JSONPath} is used to represent the links.")
+      (license license:public-domain))))
+
+(define-public js-strftime
+  (package
+    (name "js-strftime")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samsonjs/strftime/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1iya43w7y26y2dp9l4d40bhjc4scb5a9mng5ng5c8hsqr82f1375"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("strftime.js")))
+    (home-page "https://github.com/samsonjs/strftime")
+    (synopsis "Implementation of strftime to JavaScript")
+    (description "This is an implementation of the @code{strftime} procedure
+for JavaScript.  It works in (at least) node.js and browsers.  It supports
+localization and timezones.  Most standard specifiers from C are supported as
+well as some other extensions from Ruby.")
+    (license license:expat)))
+
+(define-public js-highlight
+  (package
+    (name "js-highlight")
+    (version "9.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/isagalaev/highlight.js/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jjn9mj7fwq4zpr6is438bscf03b3q8jkj0k5c3fc6pkmjnhw939"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("src/highlight.js")))
+    (home-page "https://github.com/isagalaev/highlight.js")
+    (synopsis "Syntax highlighting for JavaScript")
+    (description "Highlight.js is a syntax highlighter written in JavaScript.
+It works in the browser as well as on the server.  It works with pretty much
+any markup, doesn’t depend on any framework and has automatic language
+detection.")
+    (license license:bsd-3)))
+
+(define-public js-datatables
+  (package
+    (name "js-datatables")
+    (version "1.10.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://datatables.net/releases/DataTables-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "1y9xqyqyz7x1ls3ska71pshl2hpiy3qnw1f7wygyslbhy4ssgf57"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:javascript-files '("media/js/dataTables.bootstrap.js"
+                            "media/js/jquery.dataTables.js")))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://datatables.net")
+    (synopsis "DataTables plug-in for jQuery")
+    (description "DataTables is a table enhancing plug-in for the jQuery
+Javascript library, adding sorting, paging and filtering abilities to plain
+HTML tables with minimal effort.")
+    (license license:expat)))
+
+(define-public js-selectize
+  (package
+    (name "js-selectize")
+    (version "0.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/selectize/selectize.js/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0756p49aaz34mw2dx8k1gxf210mngfrri25vkba0j7wihd2af8gn"))))
+    (build-system minify-build-system)
+    (arguments `(#:javascript-files '("src/selectize.js")))
+    (home-page "http://selectize.github.io/selectize.js/")
+    (synopsis "Hybrid widget between a textbox and <select> box")
+    (description "Selectize is the hybrid of a textbox and @code{<select>}
+box.  It's jQuery based and it has autocomplete and native-feeling keyboard
+navigation; it is useful for tagging, contact lists, etc.")
+    (license license:asl2.0)))
+
+(define-public js-es5-shim
+  (package
+    (name "js-es5-shim")
+    (version "4.5.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/es-shims/es5-shim/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yfndyijz0ykddzprpvfjb2453gzpn528klmwycwbqc1bqd3m1hl"))))
+    (build-system minify-build-system)
+    (arguments `(#:javascript-files
+                 '("es5-sham.js"
+                   "es5-shim.js")))
+    (home-page "https://github.com/es-shims/es5-shim")
+    (synopsis "ECMAScript 5 compatibility shims for legacy JavaScript engines")
+    (description "@code{es5-shim.js} patches a JavaScript context to contain
+all ECMAScript 5 methods that can be faithfully emulated with a legacy
+JavaScript engine.  @code{es5-sham.js} patches other ES5 methods as closely as
+possible.  Many of these shams are intended only to allow code to be written
+to ES5 without causing run-time errors in older engines.  In many cases, this
+means that these shams cause many ES5 methods to silently fail.")
     (license license:expat)))

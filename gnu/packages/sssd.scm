@@ -80,14 +80,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.15.2")
+    (version "1.15.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "0r6j28f7vjb1aw65gkw4nz2l3jy605h7wsr1k815hynp2jrzrmac"))))
+                "0d36dmzqdjfpspm9fw4zx0kh0qcx60p9vchxvcajn4qf3k3qsl3f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -161,7 +161,8 @@ fundamental object types for C.")
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)
        ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)))     ; for uuid.h, reqired for KCM
     (home-page "https://pagure.io/SSSD/sssd/")
     (synopsis "System security services daemon")
     (description "SSSD is a system daemon.  Its primary function is to provide

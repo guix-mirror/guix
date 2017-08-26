@@ -90,7 +90,7 @@ tables.  It includes a library and command-line utility.")
 (define-public fdisk
   (package
     (name "fdisk")
-    (version "2.0.0a")
+    (version "2.0.0a1")
     (source
      (origin
       (method url-fetch)
@@ -98,13 +98,27 @@ tables.  It includes a library and command-line utility.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "04nd7civ561x2lwcmxhsqbprml3178jfc58fy1v7hzqg5k4nbhy3"))))
+        "1d8za79kw8ihnp2br084rgyjv9whkwp7957rzw815i0izx6xhqy9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
        ("guile" ,guile-1.8)
        ("util-linux" ,util-linux)
        ("parted" ,parted)))
+    ;; The build neglects to look for its own headers in its own tree.  A next
+    ;; release should fix this, but may never come: GNU fdisk looks abandoned.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-broken-header-probes
+           (lambda _
+             (substitute* "backend/configure"
+               (("gnufdisk-common.h .*") "\n"))
+             #t)))
+       #:make-flags (list (string-append "CPPFLAGS="
+                                         " -I../common/include "
+                                         " -I../debug/include "
+                                         " -I../exception/include"))))
     (home-page "https://www.gnu.org/software/fdisk/")
     (synopsis "Low-level disk partitioning and formatting")
     (description
@@ -116,7 +130,7 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.1")
+    (version "1.0.3")
     (source
      (origin
       (method url-fetch)
@@ -124,7 +138,7 @@ tables, and it understands a variety of different formats.")
                           version "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1izazbyv5n2d81qdym77i8mg9m870hiydmq4d0s51npx5vp8lk46"))))
+        "0p0vr67lnqdsgdv2y144xmjqa1a2nijrrd3clc8dc2f46pn5mzc9"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -154,9 +168,9 @@ tables, and it understands a variety of different formats.")
     (home-page "http://www.rodsbooks.com/gdisk/")
     (synopsis "Low-level GPT disk partitioning and formatting")
     (description "GPT fdisk (aka gdisk) is a text-mode partitioning tool that
-works on Globally Unique Identifier (GUID) Partition Table (GPT) disks, rather
-than on the more common (through 2009) Master Boot Record (MBR) partition
-tables.")
+works on Globally Unique Identifier (@dfn{GUID}) Partition Table (@dfn{GPT})
+disks, rather than on the older Master Boot Record (@dfn{MBR}) partition
+scheme.")
     (license license:gpl2)))
 
 (define-public ddrescue
@@ -245,7 +259,7 @@ and a @command{fsck.vfat} compatibility symlink for use in an initrd.")
 (define-public sdparm
   (package
     (name "sdparm")
-    (version "1.09")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -253,7 +267,7 @@ and a @command{fsck.vfat} compatibility symlink for use in an initrd.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0jakqyjwi72zqjzss04bally0xl0lc4710mx8da08vpmir1hfphg"))))
+         "1jjq3lzgfy4r76rc26q02lv4wm5cb4dx5nh913h489zjrr4f3jbx"))))
     (build-system gnu-build-system)
     (home-page "http://sg.danny.cz/sg/sdparm.html")
     (synopsis "Provide access to SCSI device parameters")

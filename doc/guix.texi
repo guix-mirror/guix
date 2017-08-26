@@ -158,6 +158,7 @@ Utilities
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
+* Invoking guix weather::       Assessing substitute availability.
 
 Invoking @command{guix build}
 
@@ -215,9 +216,10 @@ Services
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
-* Database Services::           SQL databases.
+* Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * DNS Services::                DNS daemons.
@@ -225,6 +227,8 @@ Services
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
+* Audio Services::              The MPD.
+* Virtualization Services::     Virtualization services.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -578,6 +582,10 @@ later, including 2.2.x;
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
+@item
+@c FIXME: Specify a version number once a release has been made.
+@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
+2017 or later;
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -2201,6 +2209,9 @@ authenticates substitute information itself, as explained above, which
 is what we care about (whereas X.509 certificates are about
 authenticating bindings between domain names and public keys.)
 
+You can get statistics on the substitutes provided by a server using the
+@command{guix weather} command (@pxref{Invoking guix weather}).
+
 The substitute mechanism can be disabled globally by running
 @code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
 guix-daemon}).  It can also be disabled temporarily by passing the
@@ -2314,6 +2325,22 @@ often useful to remove old generations from user profiles; that way, old
 package builds referenced by those generations can be reclaimed.  This
 is achieved by running @code{guix package --delete-generations}
 (@pxref{Invoking guix package}).
+
+Our recommendation is to run a garbage collection periodically, or when
+you are short on disk space.  For instance, to guarantee that at least
+5@tie{}GB are available on your disk, simply run:
+
+@example
+guix gc -F 5G
+@end example
+
+It is perfectly safe to run as a non-interactive periodic job
+(@pxref{Scheduled Job Execution}, for how to set up such a job on
+GuixSD).  Running @command{guix gc} with no arguments will collect as
+much garbage as it can, but that is often inconvenient: you may find
+yourself having to rebuild or re-download software that is ``dead'' from
+the GC viewpoint but that is necessary to build other pieces of
+software---e.g., the compiler tool chain.
 
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
@@ -2452,7 +2479,8 @@ Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
 pull}: the command downloads the latest Guix source code and package
-descriptions, and deploys it.
+descriptions, and deploys it.  Source code is downloaded from a
+@uref{https://git-scm.com, Git} repository.
 
 On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
@@ -2478,24 +2506,18 @@ but it supports the following options:
 Produce verbose output, writing build logs to the standard error output.
 
 @item --url=@var{url}
-Download the source tarball of Guix from @var{url}.
+Download Guix from the Git repository at @var{url}.
 
-By default, the tarball is taken from its canonical address at
+By default, the source is taken from its canonical Git repository at
 @code{gnu.org}, for the stable branch of Guix.
 
-With some Git servers, this can be used to deploy any version of Guix.
-For example, to download and deploy version 0.12.0 of Guix from the
-canonical Git repo:
+@item --commit=@var{commit}
+Deploy @var{commit}, a valid Git commit ID represented as a hexadecimal
+string.
 
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/v0.12.0.tar.gz
-@end example
-
-It can also be used to deploy arbitrary Git revisions:
-
-@example
-guix pull --url=https://git.savannah.gnu.org/cgit/guix.git/snapshot/74d862e8a.tar.gz
-@end example
+@item --branch=@var{branch}
+Deploy the tip of @var{branch}, the name of a Git branch available on
+the repository at @var{url}.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -2579,7 +2601,7 @@ The available formats are:
 @table @code
 @item tarball
 This is the default format.  It produces a tarball containing all the
-specifies binaries and symlinks.
+specified binaries and symlinks.
 
 @item docker
 This produces a tarball that follows the
@@ -2609,7 +2631,7 @@ configuration triplets,, autoconf, Autoconf}).
 @item --compression=@var{tool}
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
-@code{bzip2}, @code{xz}, or @code{lzip}.
+@code{bzip2}, @code{xz}, @code{lzip}, or @code{none} for no compression.
 
 @item --symlink=@var{spec}
 @itemx -S @var{spec}
@@ -3270,7 +3292,8 @@ used.  For version control checkouts, it is recommended to provide the
 file name explicitly because the default is not very descriptive.
 
 @item @code{patches} (default: @code{'()})
-A list of file names containing patches to be applied to the source.
+A list of file names, origins, or file-like objects (@pxref{G-Expressions,
+file-like objects}) pointing to patches to be applied to the source.
 
 This list of patches must be unconditional.  In particular, it cannot
 depend on the value of @code{%current-system} or
@@ -3553,6 +3576,21 @@ specified with the @code{#:glib} parameter.
 @end table
 
 Both phases are executed after the @code{install} phase.
+@end defvr
+
+@defvr {Scheme Variable} minify-build-system
+This variable is exported by @code{(guix build-system minify)}.  It
+implements a minification procedure for simple JavaScript packages.
+
+It adds @code{uglify-js} to the set of inputs and uses it to compress
+all JavaScript files in the @file{src} directory.  A different minifier
+package can be specified with the @code{#:uglify-js} parameter, but it
+is expected that the package writes the minified code to the standard
+output.
+
+When the input JavaScript files are not all located in the @file{src}
+directory, the parameter @code{#:javascript-files} can be used to
+specify a list of file names to feed to the minifier.
 @end defvr
 
 @defvr {Scheme Variable} ocaml-build-system
@@ -4917,6 +4955,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
+* Invoking guix weather::       Assessing substitute availability.
 @end menu
 
 @node Invoking guix build
@@ -6853,7 +6892,8 @@ serves them.  This ``on-the-fly'' mode is convenient in that it requires
 no setup and is immediately available.  However, when serving lots of
 clients, we recommend using the @option{--cache} option, which enables
 caching of the archives before they are sent to clients---see below for
-details.
+details.  The @command{guix weather} command provides a handy way to
+check what a server provides (@pxref{Invoking guix weather}).
 
 As a bonus, @command{guix publish} also serves as a content-addressed
 mirror for source files referenced in @code{origin} records
@@ -6944,7 +6984,8 @@ guarantee that the store items it provides will indeed remain available
 for as long as @var{ttl}.
 
 Additionally, when @option{--cache} is used, cached entries that have
-not been accessed for @var{ttl} may be deleted.
+not been accessed for @var{ttl} and that no longer have a corresponding
+item in the store, may be deleted.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files
@@ -7252,6 +7293,73 @@ must be PID 1 of the container or one of its child processes.
 
 @end table
 
+@node Invoking guix weather
+@section Invoking @command{guix weather}
+
+Occasionally you're grumpy because substitutes are lacking and you end
+up building packages by yourself (@pxref{Substitutes}).  The
+@command{guix weather} command reports on substitute availability on the
+specified servers so you can have an idea of whether you'll be grumpy
+today.  It can sometimes be useful info as a user, but it is primarily
+useful to people running @command{guix publish} (@pxref{Invoking guix
+publish}).
+
+@cindex statistics, for substitutes
+@cindex availability of substitutes
+@cindex substitute availability
+@cindex weather, substitute availability
+Here's a sample run:
+
+@example
+$ guix weather --substitute-urls=https://guix.example.org
+computing 5,872 package derivations for x86_64-linux...
+looking for 6,128 store items on https://guix.example.org..
+updating list of substitutes from 'https://guix.example.org'... 100.0%
+https://guix.example.org
+  43.4% substitutes available (2,658 out of 6,128)
+  7,032.5 MiB of nars (compressed)
+  19,824.2 MiB on disk (uncompressed)
+  0.030 seconds per request (182.9 seconds in total)
+  33.5 requests per second
+@end example
+
+As you can see, it reports the fraction of all the packages for which
+substitutes are available on the server---regardless of whether
+substitutes are enabled, and regardless of whether this server's signing
+key is authorized.  It also reports the size of the compressed archives
+(``nars'') provided by the server, the size the corresponding store
+items occupy in the store (assuming deduplication is turned off), and
+the server's throughput.
+
+To achieve that, @command{guix weather} queries over HTTP(S) meta-data
+(@dfn{narinfos}) for all the relevant store items.  Like @command{guix
+challenge}, it ignores signatures on those substitutes, which is
+innocuous since the command only gathers statistics and cannot install
+those substitutes.
+
+Among other things, it is possible to query specific system types and
+specific package sets.  The available options are listed below.
+
+@table @code
+@item --substitute-urls=@var{urls}
+@var{urls} is the space-separated list of substitute server URLs to
+query.  When this option is omitted, the default set of substitute
+servers is queried.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Query substitutes for @var{system}---e.g., @code{aarch64-linux}.  This
+option can be repeated, in which case @command{guix weather} will query
+substitutes for several system types.
+
+@item --manifest=@var{file}
+Instead of querying substitutes for all the packages, only ask for those
+specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
+with the @code{-m} option of @command{guix package} (@pxref{Invoking
+guix package}).
+@end table
+
+
 @c *********************************************************************
 @node GNU Distribution
 @chapter GNU Distribution
@@ -7358,6 +7466,7 @@ available.
 * Limitations::                 What you can expect.
 * Hardware Considerations::     Supported hardware.
 * USB Stick Installation::      Preparing the installation medium.
+* DVD Installation::            Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
 * Installing GuixSD in a VM::   GuixSD playground.
@@ -7447,7 +7556,7 @@ about their support in GNU/Linux.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-usb-install-@value{VERSION}.@var{system}.xz},
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
@@ -7463,8 +7572,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-usb-install-@value{VERSION}.@var{system}.xz.sig
-$ gpg --verify guixsd-usb-install-@value{VERSION}.@var{system}.xz.sig
+$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
+$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -7478,9 +7587,8 @@ $ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 and rerun the @code{gpg --verify} command.
 @c end duplication
 
-This image contains a single partition with the tools necessary for an
-installation.  It is meant to be copied @emph{as is} to a large-enough
-USB stick.
+This image contains the tools necessary for an installation.
+It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
 
 To copy the image to a USB stick, follow these steps:
 
@@ -7489,7 +7597,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-usb-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-install-@value{VERSION}.@var{system}.xz
 @end example
 
 @item
@@ -7498,7 +7606,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
+dd if=guixsd-install-@value{VERSION}.x86_64 of=/dev/sdX
 sync
 @end example
 
@@ -7512,12 +7620,79 @@ UEFI boot menu, where you can choose to boot from the USB stick.
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
 GuixSD in a virtual machine (VM).
 
+@node DVD Installation
+@subsection DVD Installation
+
+An installation image for DVDs can be downloaded from
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
+where @var{system} is one of:
+
+@table @code
+@item x86_64-linux
+for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
+
+@item i686-linux
+for a 32-bit GNU/Linux system on Intel-compatible CPUs.
+@end table
+
+@c start duplication of authentication part from ``Binary Installation''
+Make sure to download the associated @file{.sig} file and to verify the
+authenticity of the image against it, along these lines:
+
+@example
+$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
+$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
+@end example
+
+If that command fails because you do not have the required public key,
+then run this command to import it:
+
+@example
+$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+@end example
+
+@noindent
+and rerun the @code{gpg --verify} command.
+@c end duplication
+
+This image contains the tools necessary for an installation.
+It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+
+To copy the image to a DVD, follow these steps:
+
+@enumerate
+@item
+Decompress the image using the @command{xz} command:
+
+@example
+xz -d guixsd-install-@value{VERSION}.@var{system}.xz
+@end example
+
+@item
+Insert a blank DVD into your machine, and determine
+its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
+copy the image with:
+
+@example
+growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64
+@end example
+
+Access to @file{/dev/srX} usually requires root privileges.
+@end enumerate
+
+Once this is done, you should be able to reboot the system and boot from
+the DVD.  The latter usually requires you to get in the BIOS or
+UEFI boot menu, where you can choose to boot from the DVD.
+
+@xref{Installing GuixSD in a VM}, if, instead, you would like to install
+GuixSD in a virtual machine (VM).
+
 @node Preparing for Installation
 @subsection Preparing for Installation
 
-Once you have successfully booted the image on the USB stick, you should
-end up with a root prompt.  Several console TTYs are configured and can
-be used to run commands as root.  TTY2 shows this documentation,
+Once you have successfully booted your computer using the installation medium,
+you should end up with a root prompt.  Several console TTYs are configured
+and can be used to run commands as root.  TTY2 shows this documentation,
 browsable using the Info reader commands (@pxref{Top,,, info-stnd,
 Stand-alone GNU Info}).  The installation system runs the GPM mouse
 daemon, which allows you to select text with the left mouse button and
@@ -7789,9 +7964,13 @@ in particular:
 
 @itemize
 @item
-Make sure the @code{grub-configuration} form refers to the device you
-want to install GRUB on.  You also need to specify the @code{grub-efi}
-package if you wish to use native UEFI boot.
+Make sure the @code{grub-configuration} form refers to the target you
+want to install GRUB on.  It should mention @code{grub-bootloader} if
+you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
+for newer UEFI systems.  For legacy systems, the @code{target} field
+names a device, like @code{/dev/sda}; for UEFI systems it names a path
+to a mounted EFI partition, like @code{/boot/efi}, and do make sure the
+path is actually mounted.
 
 @item
 Be sure that your partition labels match the value of their respective
@@ -7872,7 +8051,7 @@ Boot the USB installation image in an VM:
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
   -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd-usb-install-@value{VERSION}.@var{system} \
+  -drive file=guixsd-install-@value{VERSION}.@var{system} \
   -drive file=guixsd.img
 @end example
 
@@ -8918,9 +9097,10 @@ declaration.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
-* Database Services::           SQL databases.
+* Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
 * DNS Services::                DNS daemons.
@@ -8928,6 +9108,8 @@ declaration.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
 * Power management Services::   The TLP tool.
+* Audio Services::              The MPD.
+* Virtualization Services::     Virtualization services.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -10111,10 +10293,22 @@ shell daemon, @command{sshd}.  Its value must be an
 (service openssh-service-type
          (openssh-configuration
            (x11-forwarding? #t)
-           (permit-root-login 'without-password)))
+           (permit-root-login 'without-password)
+           (authorized-keys
+             `(("alice" ,(local-file "alice.pub"))
+               ("bob" ,(local-file "bob.pub"))))))
 @end example
 
 See below for details about @code{openssh-configuration}.
+
+This service can be extended with extra authorized keys, as in this
+example:
+
+@example
+(service-extension openssh-service-type
+                   (const `(("charlie"
+                             ,(local-file "charlie.pub")))))
+@end example
 @end deffn
 
 @deftp {Data Type} openssh-configuration
@@ -10186,8 +10380,33 @@ server.  Alternately, one can specify the @command{sftp-server} command:
 (service openssh-service-type
          (openssh-configuration
           (subsystems
-           '(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
+           `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
 @end example
+
+@item @code{authorized-keys} (default: @code{'()})
+@cindex authorized keys, SSH
+@cindex SSH authorized keys
+This is the list of authorized keys.  Each element of the list is a user
+name followed by one or more file-like objects that represent SSH public
+keys.  For example:
+
+@example
+(openssh-configuration
+  (authorized-keys
+    `(("rekado" ,(local-file "rekado.pub"))
+      ("chris" ,(local-file "chris.pub"))
+      ("root" ,(local-file "rekado.pub") ,(local-file "chris.pub")))))
+@end example
+
+@noindent
+registers the specified public keys for user accounts @code{rekado},
+@code{chris}, and @code{root}.
+
+Additional authorized keys can be specified @i{via}
+@code{service-extension}.
+
+Note that this does @emph{not} interfere with the use of
+@file{~/.ssh/authorized_keys}.
 @end table
 @end deftp
 
@@ -11353,14 +11572,14 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), screen lockers,
-a network management tool (@pxref{Networking
-Services, @code{wicd-service}}), energy and color management services,
-the @code{elogind} login and seat manager, the Polkit privilege service,
-the GeoClue location service, an NTP client (@pxref{Networking
-Services}), the Avahi daemon, and has the name service switch service
-configured to be able to use @code{nss-mdns} (@pxref{Name Service
-Switch, mDNS}).
+@code{slim-service}}), screen lockers, a network management tool
+(@pxref{Networking Services, @code{wicd-service}}), energy and color
+management services, the @code{elogind} login and seat manager, the
+Polkit privilege service, the GeoClue location service, the
+AccountsService daemon that allows authorized users change system
+passwords, an NTP client (@pxref{Networking Services}), the Avahi
+daemon, and has the name service switch service configured to be able to
+use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
 @end defvr
 
 The @var{%desktop-services} variable can be used as the @code{services}
@@ -11503,6 +11722,19 @@ their default values are:
 @end table
 @end deffn
 
+@deffn {Scheme Procedure} accountsservice-service @
+       [#:accountsservice @var{accountsservice}]
+Return a service that runs AccountsService, a system service that can
+list available accounts, change their passwords, and so on.
+AccountsService integrates with PolicyKit to enable unprivileged users
+to acquire the capability to modify their system configuration.
+@uref{https://www.freedesktop.org/wiki/Software/AccountsService/, the
+accountsservice web site} for more information.
+
+The @var{accountsservice} keyword argument is the @code{accountsservice}
+package to expose as a service.
+@end deffn
+
 @deffn {Scheme Procedure} polkit-service @
                          [#:polkit @var{polkit}]
 Return a service that runs the
@@ -11629,6 +11861,38 @@ For MariaDB, the root password is empty.
 
 @item @code{port} (default: @code{3306})
 TCP port on which the database server listens for incoming connections.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} memcached-service-type
+This is the service type for the @uref{https://memcached.org/,
+Memcached} service, which provides a distributed in memory cache.  The
+value for the service type is a @code{memcached-configuration} object.
+@end defvr
+
+@example
+(service memcached-service-type)
+@end example
+
+@deftp {Data Type} memcached-configuration
+Data type representing the configuration of memcached.
+
+@table @asis
+@item @code{memcached} (default: @code{memcached})
+The Memcached package to use.
+
+@item @code{interfaces} (default: @code{'("0.0.0.0")})
+Network interfaces on which to listen.
+
+@item @code{tcp-port} (default: @code{11211})
+Port on which to accept connections on,
+
+@item @code{udp-port} (default: @code{11211})
+Port on which to accept UDP connections on, a value of 0 will disable
+listening on a UDP socket.
+
+@item @code{additional-options} (default: @code{'()})
+Additional command line options to pass to @code{memcached}.
 @end table
 @end deftp
 
@@ -13509,6 +13773,117 @@ string, you could instantiate a prosody service like this:
           (prosody.cfg.lua "")))
 @end example
 
+@node Monitoring Services
+@subsubsection Monitoring Services
+
+@subsubheading Tailon Service
+
+@uref{https://tailon.readthedocs.io/, Tailon} is a web application for
+viewing and searching log files.
+
+The following example will configure the service with default values.
+By default, Tailon can be accessed on port 8080 (@code{http://localhost:8080}).
+
+@example
+(service tailon-service-type)
+@end example
+
+The following example customises more of the Tailon configuration,
+adding @command{sed} to the list of allowed commands.
+
+@example
+(service tailon-service-type
+         (tailon-configuration
+           (config-file
+             (tailon-configuration-file
+               (allowed-commands '("tail" "grep" "awk" "sed"))))))
+@end example
+
+
+@deftp {Data Type} tailon-configuration
+Data type representing the configuration of Tailon.
+This type has the following parameters:
+
+@table @asis
+@item @code{config-file} (default: @code{(tailon-configuration-file)})
+The configuration file to use for Tailon. This can be set to a
+@dfn{tailon-configuration-file} record value, or any gexp
+(@pxref{G-Expressions}).
+
+For example, to instead use a local file, the @code{local-file} function
+can be used:
+
+@example
+(service tailon-service-type
+         (tailon-configuration
+           (config-file (local-file "./my-tailon.conf"))))
+@end example
+
+@item @code{package} (default: @code{tailon})
+The tailon package to use.
+
+@end table
+@end deftp
+
+@deftp {Data Type} tailon-configuration-file
+Data type representing the configuration options for Tailon.
+This type has the following parameters:
+
+@table @asis
+@item @code{files} (default: @code{(list "/var/log")})
+List of files to display. The list can include strings for a single file
+or directory, or a list, where the first item is the name of a
+subsection, and the remaining items are the files or directories in that
+subsection.
+
+@item @code{bind} (default: @code{"localhost:8080"})
+Address and port to which Tailon should bind on.
+
+@item @code{relative-root} (default: @code{#f})
+URL path to use for Tailon, set to @code{#f} to not use a path.
+
+@item @code{allow-transfers?} (default: @code{#t})
+Allow downloading the log files in the web interface.
+
+@item @code{follow-names?} (default: @code{#t})
+Allow tailing of not-yet existent files.
+
+@item @code{tail-lines} (default: @code{200})
+Number of lines to read initially from each file.
+
+@item @code{allowed-commands} (default: @code{(list "tail" "grep" "awk")})
+Commands to allow running. By default, @code{sed} is disabled.
+
+@item @code{debug?} (default: @code{#f})
+Set @code{debug?} to @code{#t} to show debug messages.
+
+@item @code{wrap-lines} (default: @code{#t})
+Initial line wrapping state in the web interface. Set to @code{#t} to
+initially wrap lines (the default), or to @code{#f} to initially not
+wrap lines.
+
+@item @code{http-auth} (default: @code{#f})
+HTTP authentication type to use. Set to @code{#f} to disable
+authentication (the default). Supported values are @code{"digest"} or
+@code{"basic"}.
+
+@item @code{users} (default: @code{#f})
+If HTTP authentication is enabled (see @code{http-auth}), access will be
+restricted to the credentials provided here. To configure users, use a
+list of pairs, where the first element of the pair is the username, and
+the 2nd element of the pair is the password.
+
+@example
+(tailon-configuration-file
+  (http-auth "basic")
+  (users     '(("user1" . "password1")
+               ("user2" . "password2"))))
+@end example
+
+@end table
+@end deftp
+
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
@@ -13641,52 +14016,134 @@ Local accounts with lower values will silently fail to authenticate.
 @cindex web
 @cindex www
 @cindex HTTP
-The @code{(gnu services web)} module provides the following service:
-
-@deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
-       [#:log-directory ``/var/log/nginx''] @
-       [#:run-directory ``/var/run/nginx''] @
-       [#:server-list '()] @
-       [#:upstream-list '()] @
-       [#:config-file @code{#f}]
-
-Return a service that runs @var{nginx}, the nginx web server.
-
-The nginx daemon loads its runtime configuration from @var{config-file}.
-Log files are written to @var{log-directory} and temporary runtime data
-files are written to @var{run-directory}.  For proper operation, these
-arguments should match what is in @var{config-file} to ensure that the
-directories are created when the service is activated.
-
-As an alternative to using a @var{config-file}, @var{server-list} can be
-used to specify the list of @dfn{server blocks} required on the host and
-@var{upstream-list} can be used to specify a list of @dfn{upstream
-blocks} to configure.  For this to work, use the default value for
-@var{config-file}.
-
-At startup, @command{nginx} has not yet read its configuration file, so it
-uses a default file to log error messages.  If it fails to load its
-configuration file, that is where error messages are logged.  After the
-configuration file is loaded, the default error log file changes as per
-configuration.  In our case, startup error messages can be found in
-@file{/var/run/nginx/logs/error.log}, and after configuration in
-@file{/var/log/nginx/error.log}.  The second location can be changed with the
-@var{log-directory} configuration option.
-
-@end deffn
+The @code{(gnu services web)} module provides the nginx web server and
+also a fastcgi wrapper daemon.
 
 @deffn {Scheme Variable} nginx-service-type
-This is type for the nginx web server.
+Service type for the @uref{https://nginx.org/,NGinx} web server.  The
+value for this service type is a @code{<nginx-configuration>} record.
 
-This service can be extended to add server blocks in addition to the
-default one, as in this example:
+A simple example configuration is given below.
+
+@example
+(service nginx-service-type
+         (nginx-configuration
+           (server-list
+             (list (nginx-server-configuration
+                     (server-name '("www.example.com"))
+                     (root "/srv/http/www.example.com")
+                     (https-port #f)
+                     (ssl-certificate #f)
+                     (ssl-certificate-key #f))))))
+@end example
+
+In addition to adding server blocks to the service configuration
+directly, this service can be extended by other services to add server
+blocks, as in this example:
 
 @example
 (simple-service 'my-extra-server nginx-service-type
                 (list (nginx-server-configuration
                         (https-port #f)
+                        (ssl-certificate #f)
+                        (ssl-certificate-key #f)
                         (root "/srv/http/extra-website"))))
 @end example
+@end deffn
+
+At startup, @command{nginx} has not yet read its configuration file, so
+it uses a default file to log error messages.  If it fails to load its
+configuration file, that is where error messages are logged.  After the
+configuration file is loaded, the default error log file changes as per
+configuration.  In our case, startup error messages can be found in
+@file{/var/run/nginx/logs/error.log}, and after configuration in
+@file{/var/log/nginx/error.log}.  The second location can be changed
+with the @var{log-directory} configuration option.
+
+@deffn {Data Type} nginx-configuration
+This data type represents the configuration for NGinx. Some
+configuration can be done through this and the other provided record
+types, or alternatively, a config file can be provided.
+
+@table @asis
+@item @code{nginx} (default: @code{nginx})
+The nginx package to use.
+
+@item @code{log-directory} (default: @code{"/var/log/nginx"})
+The directory to which NGinx will write log files.
+
+@item @code{run-directory} (default: @code{"/var/run/nginx"})
+The directory in which NGinx will create a pid file, and write temporary
+files.
+
+@item @code{server-list} (default: @code{'()})
+A list of @dfn{server blocks} to create in the generated configuration
+file, the elements should be of type
+@code{<nginx-server-configuration>}.
+
+The following example would setup NGinx to serve @code{www.example.com}
+from the @code{/srv/http/www.example.com} directory, without using
+HTTPS.
+@example
+(service nginx-service-type
+         (nginx-configuration
+           (server-list
+             (list (nginx-server-configuration
+                     (server-name '("www.example.com"))
+                     (root "/srv/http/www.example.com")
+                     (https-port #f)
+                     (ssl-certificate #f)
+                     (ssl-certificate-key #f))))))
+@end example
+
+@item @code{upstream-list} (default: @code{'()})
+A list of @dfn{upstream blocks} to create in the generated configuration
+file, the elements should be of type
+@code{<nginx-upstream-configuration>}.
+
+Configuring upstreams through the @code{upstream-list} can be useful
+when combined with @code{locations} in the
+@code{<nginx-server-configuration>} records.  The following example
+creates a server configuration with one location configuration, that
+will proxy requests to a upstream configuration, which will handle
+requests with two servers.
+
+@example
+(service
+  nginx-service-type
+  (nginx-configuration
+    (server-list
+      (list (nginx-server-configuration
+              (server-name '("www.example.com"))
+              (root "/srv/http/www.example.com")
+              (https-port #f)
+              (ssl-certificate #f)
+              (ssl-certificate-key #f)
+              (locations
+                (list
+                  (nginx-location-configuration
+                  (uri "/path1")
+                  (body '("proxy_pass http://server-proxy;"))))))))
+    (upstream-list
+      (list (nginx-upstream-configuration
+              (name "server-proxy")
+              (servers (list "server1.example.com"
+                             "server2.example.com")))))))
+@end example
+
+@item @code{config-file} (default: @code{#f})
+If the @var{config-file} is provided, this will be used, rather than
+generating a configuration file from the provided @code{log-directory},
+@code{run-directory}, @code{server-list} and @code{upstream-list}.  For
+proper operation, these arguments should match what is in
+@var{config-file} to ensure that the directories are created when the
+service is activated.
+
+This can be useful if you have an existing configuration file, or it's
+not possible to do what is required through the other parts of the
+nginx-configuration record.
+
+@end table
 @end deffn
 
 @deftp {Data Type} nginx-server-configuration
@@ -13790,6 +14247,56 @@ blocks can be used in a similar way to the
 @code{nginx-location-configuration body}.  One restriction is that the
 body of a named location block cannot contain location blocks.
 
+@end table
+@end deftp
+
+@cindex fastcgi
+@cindex fcgiwrap
+FastCGI is an interface between the front-end and the back-end of a web
+service.  It is a somewhat legacy facility; new web services should
+generally just talk HTTP between the front-end and the back-end.
+However there are a number of back-end services such as PHP or the
+optimized HTTP Git repository access that use FastCGI, so we have
+support for it in Guix.
+
+To use FastCGI, you configure the front-end web server (e.g., nginx) to
+dispatch some subset of its requests to the fastcgi backend, which
+listens on a local TCP or UNIX socket.  There is an intermediary
+@code{fcgiwrap} program that sits between the actual backend process and
+the web server.  The front-end indicates which backend program to run,
+passing that information to the @code{fcgiwrap} process.
+
+@defvr {Scheme Variable} fcgiwrap-service-type
+A service type for the @code{fcgiwrap} FastCGI proxy.
+@end defvr
+
+@deftp {Data Type} fcgiwrap-configuration
+Data type representing the configuration of the @code{fcgiwrap} serice.
+This type has the following parameters:
+@table @asis
+@item @code{package} (default: @code{fcgiwrap})
+The fcgiwrap package to use.
+
+@item @code{socket} (default: @code{tcp:127.0.0.1:9000})
+The socket on which the @code{fcgiwrap} process should listen, as a
+string.  Valid @var{socket} values include
+@code{unix:@var{/path/to/unix/socket}},
+@code{tcp:@var{dot.ted.qu.ad}:@var{port}} and
+@code{tcp6:[@var{ipv6_addr}]:port}.
+
+@item @code{user} (default: @code{fcgiwrap})
+@itemx @code{group} (default: @code{fcgiwrap})
+The user and group names, as strings, under which to run the
+@code{fcgiwrap} process.  The @code{fastcgi} service will ensure that if
+the user asks for the specific user or group names @code{fcgiwrap} that
+the corresponding user and/or group is present on the system.
+
+It is possible to configure a FastCGI-backed web service to pass HTTP
+authentication information from the front-end to the back-end, and to
+allow @code{fcgiwrap} to run the back-end process as a corresponding
+local user.  To enable this capability on the back-end., run
+@code{fcgiwrap} as the @code{root} user and group.  Note that this
+capability also has to be configured on the front-end as well.
 @end table
 @end deftp
 
@@ -14756,6 +15263,10 @@ from source.
 @item @code{one-shot?} (default: @code{#f})
 Only evaluate specifications and build derivations once.
 
+@item @code{fallback?} (default: @code{#f})
+When substituting a pre-built binary fails, fall back to building
+packages locally.
+
 @item @code{load-path} (default: @code{'()})
 This allows users to define their own packages and make them visible to
 cuirass as in @command{guix build} command.
@@ -15292,6 +15803,765 @@ Package object of thermald.
 
 @end table
 @end deftp
+
+@node Audio Services
+@subsubsection Audio Services
+
+The @code{(gnu services audio)} module provides a service to start MPD
+(the Music Player Daemon).
+
+@cindex mpd
+@subsubheading Music Player Daemon
+
+The Music Player Daemon (MPD) is a service that can play music while
+being controlled from the local machine or over the network by a variety
+of clients.
+
+The following example shows how one might run @code{mpd} as user
+@code{"bob"} on port @code{6666}.  It uses pulseaudio for output.
+
+@example
+(service mpd-service-type
+         (mpd-configuration
+          (user "bob")
+          (port "6666")))
+@end example
+
+@defvr {Scheme Variable} mpd-service-type
+The service type for @command{mpd}
+@end defvr
+
+@deftp {Data Type} mpd-configuration
+Data type representing the configuration of @command{mpd}.
+
+@table @asis
+@item @code{user} (default: @code{"mpd"})
+The user to run mpd as.
+
+@item @code{music-dir} (default: @code{"~/Music"})
+The directory to scan for music files.
+
+@item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
+The directory to store playlists.
+
+@item @code{pid-file} (default: @code{"/var/run/mpd.pid"})
+The file mpd wil store its PID.  This must be an absolute path.
+
+@item @code{port} (default: @code{"6600"})
+The port to run mpd on.
+
+@item @code{address} (default: @code{"any"})
+The address that mpd will bind to.  To use a Unix domain socket,
+an absolute path can be specified here.
+
+@end table
+@end deftp
+
+@node Virtualization Services
+@subsubsection Virtualization services
+The @code{(gnu services virtualization)} module provides services for
+the libvirt and virtlog daemons.
+
+@subsubheading Libvirt daemon
+@code{libvirtd} is the server side daemon component of the libvirt
+virtualization management system. This daemon runs on host servers
+and performs required management tasks for virtualized guests.
+
+@deffn {Scheme Variable} libvirt-service-type
+This is the type of the @uref{https://libvirt.org, libvirt daemon}.
+Its value must be a @code{libvirt-configuration}.
+
+@example
+(service libvirt-service-type
+         (libvirt-configuration
+          (unix-sock-group "libvirt")
+          (tls-port "16555")))
+@end example
+@end deffn
+
+@c Auto-generated with (generate-libvirt-documentation)
+Available @code{libvirt-configuration} fields are:
+
+@deftypevr {@code{libvirt-configuration} parameter} package libvirt
+Libvirt package.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean listen-tls?
+Flag listening for secure TLS connections on the public TCP/IP port.
+must set @code{listen} for this to have any effect.
+
+It is necessary to setup a CA and issue server certificates before using
+this capability.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean listen-tcp?
+Listen for unencrypted TCP connections on the public TCP/IP port.  must
+set @code{listen} for this to have any effect.
+
+Using the TCP socket requires SASL authentication by default.  Only SASL
+mechanisms which support data encryption are allowed.  This is
+DIGEST_MD5 and GSSAPI (Kerberos5)
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tls-port
+Port for accepting secure TLS connections This can be a port number, or
+service name
+
+Defaults to @samp{"16514"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tcp-port
+Port for accepting insecure TCP connections This can be a port number,
+or service name
+
+Defaults to @samp{"16509"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string listen-addr
+IP address or hostname used for client connections.
+
+Defaults to @samp{"0.0.0.0"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean mdns-adv?
+Flag toggling mDNS advertisement of the libvirt service.
+
+Alternatively can disable for all services on a host by stopping the
+Avahi daemon.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string mdns-name
+Default mDNS advertisement name.  This must be unique on the immediate
+broadcast network.
+
+Defaults to @samp{"Virtualization Host <hostname>"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-group
+UNIX domain socket group ownership.  This can be used to allow a
+'trusted' set of users access to management capabilities without
+becoming root.
+
+Defaults to @samp{"root"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-ro-perms
+UNIX socket permissions for the R/O socket.  This is used for monitoring
+VM status only.
+
+Defaults to @samp{"0777"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-rw-perms
+UNIX socket permissions for the R/W socket.  Default allows only root.
+If PolicyKit is enabled on the socket, the default will change to allow
+everyone (eg, 0777)
+
+Defaults to @samp{"0770"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-admin-perms
+UNIX socket permissions for the admin socket.  Default allows only owner
+(root), do not change it unless you are sure to whom you are exposing
+the access to.
+
+Defaults to @samp{"0777"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string unix-sock-dir
+The directory in which sockets will be found/created.
+
+Defaults to @samp{"/var/run/libvirt"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-unix-ro
+Authentication scheme for UNIX read-only sockets.  By default socket
+permissions allow anyone to connect
+
+Defaults to @samp{"polkit"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-unix-rw
+Authentication scheme for UNIX read-write sockets.  By default socket
+permissions only allow root.  If PolicyKit support was compiled into
+libvirt, the default will be to use 'polkit' auth.
+
+Defaults to @samp{"polkit"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-tcp
+Authentication scheme for TCP sockets.  If you don't enable SASL, then
+all TCP traffic is cleartext.  Don't do this outside of a dev/test
+scenario.
+
+Defaults to @samp{"sasl"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string auth-tls
+Authentication scheme for TLS sockets.  TLS sockets already have
+encryption provided by the TLS layer, and limited authentication is done
+by certificates.
+
+It is possible to make use of any SASL authentication mechanism as well,
+by using 'sasl' for this option
+
+Defaults to @samp{"none"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list access-drivers
+API access control scheme.
+
+By default an authenticated user is allowed access to all APIs.  Access
+drivers can place restrictions on this.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string key-file
+Server key file path.  If set to an empty string, then no private key is
+loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string cert-file
+Server key file path.  If set to an empty string, then no certificate is
+loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string ca-file
+Server key file path.  If set to an empty string, then no CA certificate
+is loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string crl-file
+Certificate revocation list path.  If set to an empty string, then no
+CRL is loaded.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean tls-no-sanity-cert
+Disable verification of our own server certificates.
+
+When libvirtd starts it performs some sanity checks against its own
+certificates.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean tls-no-verify-cert
+Disable verification of client certificates.
+
+Client certificate verification is the primary authentication mechanism.
+Any client which does not present a certificate signed by the CA will be
+rejected.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list tls-allowed-dn-list
+Whitelist of allowed x509 Distinguished Name.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-list sasl-allowed-usernames
+Whitelist of allowed SASL usernames.  The format for username depends on
+the SASL authentication mechanism.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string tls-priority
+Override the compile time default TLS priority string.  The default is
+usually "NORMAL" unless overridden at build time.  Only set this is it
+is desired for libvirt to deviate from the global default settings.
+
+Defaults to @samp{"NORMAL"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-clients
+Maximum number of concurrent client connections to allow over all
+sockets combined.
+
+Defaults to @samp{5000}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-queued-clients
+Maximum length of queue of connections waiting to be accepted by the
+daemon.  Note, that some protocols supporting retransmission may obey
+this so that a later reattempt at connection succeeds.
+
+Defaults to @samp{1000}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-anonymous-clients
+Maximum length of queue of accepted but not yet authenticated clients.
+Set this to zero to turn this feature off
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer min-workers
+Number of workers to start up initially.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-workers
+Maximum number of worker threads.
+
+If the number of active clients exceeds @code{min-workers}, then more
+threads are spawned, up to max_workers limit.  Typically you'd want
+max_workers to equal maximum number of clients allowed.
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer prio-workers
+Number of priority workers.  If all workers from above pool are stuck,
+some calls marked as high priority (notably domainDestroy) can be
+executed in this pool.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-requests
+Total global limit on concurrent RPC calls.
+
+Defaults to @samp{20}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer max-client-requests
+Limit on concurrent requests from a single client connection.  To avoid
+one client monopolizing the server this should be a small fraction of
+the global max_requests and max_workers parameter.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-min-workers
+Same as @code{min-workers} but for the admin interface.
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-workers
+Same as @code{max-workers} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-clients
+Same as @code{max-clients} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-queued-clients
+Same as @code{max-queued-clients} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-max-client-requests
+Same as @code{max-client-requests} but for the admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer log-level
+Logging level.  4 errors, 3 warnings, 2 information, 1 debug.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string log-filters
+Logging filters.
+
+A filter allows to select a different logging level for a given category
+of logs The format for a filter is one of:
+
+@itemize @bullet
+@item
+x:name
+
+@item
+x:+name
+
+@end itemize
+
+where @code{name} is a string which is matched against the category
+given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
+file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
+be a substring of the full category name, in order to match multiple
+similar categories), the optional "+" prefix tells libvirt to log stack
+trace for each message matching name, and @code{x} is the minimal level
+where matching messages should be logged:
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple filters can be defined in a single filters statement, they just
+need to be separated by spaces.
+
+Defaults to @samp{"3:remote 4:event"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string log-outputs
+Logging outputs.
+
+An output is one of the places to save logging information The format
+for an output can be:
+
+@table @code
+@item x:stderr
+output goes to stderr
+
+@item x:syslog:name
+use syslog for the output and use the given name as the ident
+
+@item x:file:file_path
+output to a file, with the given filepath
+
+@item x:journald
+output to journald logging system
+
+@end table
+
+In all case the x prefix is the minimal level, acting as a filter
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple outputs can be defined, they just need to be separated by
+spaces.
+
+Defaults to @samp{"3:stderr"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer audit-level
+Allows usage of the auditing subsystem to be altered
+
+@itemize @bullet
+@item
+0: disable all auditing
+
+@item
+1: enable auditing, only if enabled on host
+
+@item
+2: enable auditing, and exit if disabled on host.
+
+@end itemize
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} boolean audit-logging
+Send audit messages via libvirt logging infrastructure.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} optional-string host-uuid
+Host UUID.  UUID must not have all digits be the same.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} string host-uuid-source
+Source to read host UUID.
+
+@itemize @bullet
+@item
+@code{smbios}: fetch the UUID from @code{dmidecode -s system-uuid}
+
+@item
+@code{machine-id}: fetch the UUID from @code{/etc/machine-id}
+
+@end itemize
+
+If @code{dmidecode} does not provide a valid UUID a temporary UUID will
+be generated.
+
+Defaults to @samp{"smbios"}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer keepalive-interval
+A keepalive message is sent to a client after @code{keepalive_interval}
+seconds of inactivity to check if the client is still responding.  If
+set to -1, libvirtd will never send keepalive requests; however clients
+can still send them and the daemon will send responses.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer keepalive-count
+Maximum number of keepalive messages that are allowed to be sent to the
+client without getting any response before the connection is considered
+broken.
+
+In other words, the connection is automatically closed approximately
+after @code{keepalive_interval * (keepalive_count + 1)} seconds since
+the last message received from the client.  When @code{keepalive-count}
+is set to 0, connections will be automatically closed after
+@code{keepalive-interval} seconds of inactivity without sending any
+keepalive messages.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-keepalive-interval
+Same as above but for admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer admin-keepalive-count
+Same as above but for admin interface.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{libvirt-configuration} parameter} integer ovs-timeout
+Timeout for Open vSwitch calls.
+
+The @code{ovs-vsctl} utility is used for the configuration and its
+timeout option is set by default to 5 seconds to avoid potential
+infinite waits blocking libvirt.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@c %end of autogenerated docs
+
+@subsubheading Virtlog daemon
+The virtlogd service is a server side daemon component of libvirt that is
+used to manage logs from virtual machine consoles.
+
+This daemon is not used directly by libvirt client applications, rather it
+is called on their behalf by @code{libvirtd}. By maintaining the logs in a
+standalone daemon, the main @code{libvirtd} daemon can be restarted without
+risk of losing logs. The @code{virtlogd} daemon has the ability to re-exec()
+itself upon receiving @code{SIGUSR1}, to allow live upgrades without downtime.
+
+@deffn {Scheme Variable} virtlog-service-type
+This is the type of the virtlog daemon.
+Its value must be a @code{virtlog-configuration}.
+
+@example
+(service virtlog-service-type
+         (virtlog-configuration
+          (max-clients 1000)))
+@end example
+@end deffn
+
+@deftypevr {@code{virtlog-configuration} parameter} integer log-level
+Logging level.  4 errors, 3 warnings, 2 information, 1 debug.
+
+Defaults to @samp{3}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} string log-filters
+Logging filters.
+
+A filter allows to select a different logging level for a given category
+of logs The format for a filter is one of:
+
+@itemize @bullet
+@item
+x:name
+
+@item
+x:+name
+
+@end itemize
+
+where @code{name} is a string which is matched against the category
+given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
+file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
+be a substring of the full category name, in order to match multiple
+similar categories), the optional "+" prefix tells libvirt to log stack
+trace for each message matching name, and @code{x} is the minimal level
+where matching messages should be logged:
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple filters can be defined in a single filters statement, they just
+need to be separated by spaces.
+
+Defaults to @samp{"3:remote 4:event"}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} string log-outputs
+Logging outputs.
+
+An output is one of the places to save logging information The format
+for an output can be:
+
+@table @code
+@item x:stderr
+output goes to stderr
+
+@item x:syslog:name
+use syslog for the output and use the given name as the ident
+
+@item x:file:file_path
+output to a file, with the given filepath
+
+@item x:journald
+output to journald logging system
+
+@end table
+
+In all case the x prefix is the minimal level, acting as a filter
+
+@itemize @bullet
+@item
+1: DEBUG
+
+@item
+2: INFO
+
+@item
+3: WARNING
+
+@item
+4: ERROR
+
+@end itemize
+
+Multiple outputs can be defined, they just need to be separated by
+spaces.
+
+Defaults to @samp{"3:stderr"}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-clients
+Maximum number of concurrent client connections to allow over all
+sockets combined.
+
+Defaults to @samp{1024}.
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-size
+Maximum file size before rolling over.
+
+Defaults to @samp{2MB}
+
+@end deftypevr
+
+@deftypevr {@code{virtlog-configuration} parameter} integer max-backups
+Maximum number of backup files to keep.
+
+Defaults to @samp{3}
+
+@end deftypevr
 
 
 @node Miscellaneous Services
@@ -15931,19 +17201,23 @@ The type of a bootloader configuration declaration.
 @cindex UEFI, bootloader
 @cindex BIOS, bootloader
 The bootloader to use, as a @code{bootloader} object. For now
-@code{grub-bootloader}, @code{grub-efi-bootloader} and
-@code{extlinux-bootloader} are supported.  @code{grub-efi-bootloader},
-allows to boot on modern systems using the @dfn{Unified Extensible
-Firmware Interface} (UEFI).
+@code{grub-bootloader}, @code{grub-efi-bootloader},
+@code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
+@code{grub-efi-bootloader} allows to boot on modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).
 
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
 modules.
 
-@item @code{device}
-This is a string denoting the boot device.  It must be a device name
-understood by the bootloader @command{installer} command, such as
-@code{/dev/sda} or @code{(hd0)} (for GRUB, @pxref{Invoking grub-install,,, grub,
-GNU GRUB Manual}).
+@item @code{target}
+This is a string denoting the target onto which to install the
+bootloader.  The exact interpretation depends on the bootloader in
+question; for @code{grub-bootloader}, for example, it should be a device
+name understood by the bootloader @command{installer} command, such as
+@code{/dev/sda} or @code{(hd0)} (for GRUB, @pxref{Invoking
+grub-install,,, grub, GNU GRUB Manual}).  For
+@code{grub-efi-bootloader}, it should be the path to a mounted EFI file
+system.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -16195,7 +17469,7 @@ files, packages, and so on.  It also creates other essential files
 needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
-This command also installs bootloader on the device specified in
+This command also installs bootloader on the target specified in
 @file{my-os-config}, unless the @option{--no-bootloader} option was
 passed.
 
@@ -16205,7 +17479,13 @@ passed.
 @anchor{guix system vm}
 Build a virtual machine that contains the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
-Arguments given to the script are passed to QEMU.
+Arguments given to the script are passed to QEMU as in the example
+below, which enables networking and requests 1@tie{}GiB of RAM for the
+emulated machine:
+
+@example
+$ /gnu/store/@dots{}-run-vm.sh -m 1024 -net user
+@end example
 
 The VM shares its store with the host system.
 

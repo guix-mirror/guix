@@ -1,0 +1,50 @@
+This patch makes the UUIDs in the XMP header optional, depending on the
+setting of the environment variable GS_GENERATE_UUIDS.
+
+If the environment variable GS_GENERATE_UUIDS is set to "0" or "no", it will
+not write out the Document UUID field and also will write the Instance ID
+field value as "".
+
+Upstream does not want to do this.
+
+See: https://bugs.ghostscript.com/show_bug.cgi?id=698208
+diff -ur orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c aa/gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c
+--- orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c	2017-07-09 23:30:28.960479189 +0200
++++ gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c	2017-07-10 01:04:12.252478276 +0200
+@@ -617,7 +617,7 @@
+         return code;
+ 
+     /* PDF/A XMP reference recommends setting UUID to empty. If not empty must be a URI */
+-    if (pdev->PDFA != 0)
++    if (pdev->PDFA != 0 || (getenv("GS_GENERATE_UUIDS") && (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") == 0 || strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") == 0)))
+         instance_uuid[0] = 0x00;
+ 
+     cre_date_time_len = pdf_get_docinfo_item(pdev, "/CreationDate", cre_date_time, sizeof(cre_date_time));
+@@ -719,15 +719,18 @@
+             pdf_xml_tag_close(s, "rdf:Description");
+             pdf_xml_newline(s);
+ 
+-            pdf_xml_tag_open_beg(s, "rdf:Description");
+-            pdf_xml_attribute_name(s, "rdf:about");
+-            pdf_xml_attribute_value(s, instance_uuid);
+-            pdf_xml_attribute_name(s, "xmlns:xapMM");
+-            pdf_xml_attribute_value(s, "http://ns.adobe.com/xap/1.0/mm/");
+-            pdf_xml_attribute_name(s, "xapMM:DocumentID");
+-            pdf_xml_attribute_value(s, document_uuid);
+-            pdf_xml_tag_end_empty(s);
+-            pdf_xml_newline(s);
++            if (!getenv("GS_GENERATE_UUIDS") || (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 && strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))
++            {
++                pdf_xml_tag_open_beg(s, "rdf:Description");
++                pdf_xml_attribute_name(s, "rdf:about");
++                pdf_xml_attribute_value(s, instance_uuid);
++                pdf_xml_attribute_name(s, "xmlns:xapMM");
++                pdf_xml_attribute_value(s, "http://ns.adobe.com/xap/1.0/mm/");
++                pdf_xml_attribute_name(s, "xapMM:DocumentID");
++                pdf_xml_attribute_value(s, document_uuid);
++                pdf_xml_tag_end_empty(s);
++                pdf_xml_newline(s);
++            }
+ 
+             pdf_xml_tag_open_beg(s, "rdf:Description");
+             pdf_xml_attribute_name(s, "rdf:about");

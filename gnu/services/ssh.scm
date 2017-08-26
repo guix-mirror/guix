@@ -28,6 +28,8 @@
   #:use-module (gnu system shadow)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix modules)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (lsh-configuration
@@ -295,7 +297,11 @@ The other options should be self-descriptive."
                          (default #t))
   ;; list of two-element lists
   (subsystems            openssh-configuration-subsystems
-                         (default '(("sftp" "internal-sftp")))))
+                         (default '(("sftp" "internal-sftp"))))
+
+  ;; list of user-name/file-like tuples
+  (authorized-keys       openssh-authorized-keys
+                         (default '())))
 
 (define %openssh-accounts
   (list (user-group (name "sshd") (system? #t))
@@ -309,22 +315,64 @@ The other options should be self-descriptive."
 
 (define (openssh-activation config)
   "Return the activation GEXP for CONFIG."
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/etc/ssh")
-      (mkdir-p (dirname #$(openssh-configuration-pid-file config)))
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
 
-      (define (touch file-name)
-        (call-with-output-file file-name (const #t)))
+        (define (touch file-name)
+          (call-with-output-file file-name (const #t)))
 
-      (let ((lastlog "/var/log/lastlog"))
-        (when #$(openssh-configuration-print-last-log? config)
-          (unless (file-exists? lastlog)
-            (touch lastlog))))
+        ;; Make sure /etc/ssh can be read by the 'sshd' user.
+        (mkdir-p "/etc/ssh")
+        (chmod "/etc/ssh" #o755)
+        (mkdir-p (dirname #$(openssh-configuration-pid-file config)))
 
-      ;; Generate missing host keys.
-      (system* (string-append #$(openssh-configuration-openssh config)
-                              "/bin/ssh-keygen") "-A")))
+        ;; 'sshd' complains if the authorized-key directory and its parents
+        ;; are group-writable, which rules out /gnu/store.  Thus we copy the
+        ;; authorized-key directory to /etc.
+        (catch 'system-error
+          (lambda ()
+            (delete-file-recursively "/etc/authorized_keys.d"))
+          (lambda args
+            (unless (= ENOENT (system-error-errno args))
+              (apply throw args))))
+        (copy-recursively #$(authorized-key-directory
+                             (openssh-authorized-keys config))
+                          "/etc/ssh/authorized_keys.d")
+
+        (chmod "/etc/ssh/authorized_keys.d" #o555)
+
+        (let ((lastlog "/var/log/lastlog"))
+          (when #$(openssh-configuration-print-last-log? config)
+            (unless (file-exists? lastlog)
+              (touch lastlog))))
+
+        ;; Generate missing host keys.
+        (system* (string-append #$(openssh-configuration-openssh config)
+                                "/bin/ssh-keygen") "-A"))))
+
+(define (authorized-key-directory keys)
+  "Return a directory containing the authorized keys specified in KEYS, a list
+of user-name/file-like tuples."
+  (define build
+    (with-imported-modules (source-module-closure '((guix build utils)))
+      #~(begin
+          (use-modules (ice-9 match) (srfi srfi-26)
+                       (guix build utils))
+
+          (mkdir #$output)
+          (for-each (match-lambda
+                      ((user keys ...)
+                       (let ((file (string-append #$output "/" user)))
+                         (call-with-output-file file
+                           (lambda (port)
+                             (for-each (lambda (key)
+                                         (call-with-input-file key
+                                           (cut dump-port <> port)))
+                                       keys))))))
+                    '#$keys))))
+
+  (computed-file "openssh-authorized-keys" build))
 
 (define (openssh-config-file config)
   "Return the sshd configuration file corresponding to CONFIG."
@@ -367,6 +415,11 @@ The other options should be self-descriptive."
            (format port "PrintLastLog ~a\n"
                    #$(if (openssh-configuration-print-last-log? config)
                          "yes" "no"))
+
+           ;; Add '/etc/authorized_keys.d/%u', which we populate.
+           (format port "AuthorizedKeysFile \
+ .ssh/authorized_keys .ssh/authorized_keys2 /etc/ssh/authorized_keys.d/%u\n")
+
            (for-each
             (match-lambda
               ((name command) (format port "Subsystem\t~a\t~a\n" name command)))
@@ -398,6 +451,13 @@ The other options should be self-descriptive."
          #:allow-empty-passwords?
          (openssh-configuration-allow-empty-passwords? config))))
 
+(define (extend-openssh-authorized-keys config keys)
+  "Extend CONFIG with the extra authorized keys listed in KEYS."
+  (openssh-configuration
+   (inherit config)
+   (authorized-keys
+    (append (openssh-authorized-keys config) keys))))
+
 (define openssh-service-type
   (service-type (name 'openssh)
                 (extensions
@@ -409,6 +469,8 @@ The other options should be self-descriptive."
                                           openssh-activation)
                        (service-extension account-service-type
                                           (const %openssh-accounts))))
+                (compose concatenate)
+                (extend extend-openssh-authorized-keys)
                 (default-value (openssh-configuration))))
 
 

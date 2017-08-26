@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170609")
+    (version "20170714")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1kdhnhdlv84v6brhqgh8g0h6cpcbwfc59b4g09zkkgqc4fnggapy"))))
+         "10x3sxai773n0gfqpi904ci1qvngymcbc2didswrm92wz4h8km20"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -667,14 +667,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.24.2")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma"))))
+                "02z6d87ip1hkipz8d7w0sfklg8dd5fd5vlgp768640ixg0gqvlk5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -805,7 +805,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "4.52.0")
+    (version "5.1")
     (source
      (origin
        (method url-fetch)
@@ -813,7 +813,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pzplrlxwbxydvfw4kkwn60l40hk1h5sxawaa6pi0k75c220k4ni"))))
+         "0zh220vx10wi6x61qi0mjayjxgvllk9f6vd4hjrgzha1xbjj0vix"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -930,6 +930,11 @@ compresses it.")
     (arguments
       '(#:configure-flags
         '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        #:make-flags
+        ;; Disable updating icon cache since it's done by the profile hook.
+        ;; Conflict with other packages in the profile would be inevitable
+        ;; otherwise.
+        '("gtk_update_icon_cache=true")
         #:phases (modify-phases %standard-phases
                    (add-before 'build 'patch-mime
                      (lambda* (#:key inputs #:allow-other-keys)
@@ -1085,7 +1090,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.31")
+    (version "2.2.32")
     (source
      (origin
        (method url-fetch)
@@ -1093,7 +1098,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "18bnwgn6hshbmr79g21sngkrmydji6bzb948a3b2i0bl0w4y8jq3"))))
+                "0bmwyvi1crmrca2knvknsf517x53w7gxrclwyrvrhddgw98j22qn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

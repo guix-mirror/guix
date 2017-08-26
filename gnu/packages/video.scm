@@ -580,14 +580,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.3.2")
+    (version "3.3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "11974vcfsy8w0i6f4lfwqmg80xkfybqw7vw6zzrcn5i6ncddx60r"))))
+               "07is8msrhxr1dk6vgwa192k2pl2a0in1h9w8f9cknlvbvhn01afj"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -980,7 +980,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.25.0")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -988,7 +988,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1khb7c4fdj1aak46lwyb3lq14w5jpxzws0zp6bdc87ljsvx3yhh7"))
+                "0ihvnwrp24jjf43k1hvy8n8w4ipl4z7apjppd4i0y9jzilsyzwys"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1055,7 +1055,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
@@ -1064,7 +1064,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "1hn3mpsxbrwf2m0nz4vzji4i6i896y8kqjb9kijqpk04cnrs3fgz"))))
+         "0dcnz9vlf791v8d15j7hpymv87h6nb15alww6xjq0zpal5hi44kc"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1121,7 +1121,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.07.09")
+    (version "2017.08.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1129,7 +1129,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0phrfby2nk5y5x5173bbg3jcr2ajk849al3zji5y39z39dj36ba2"))))
+                "1vq0r37ynnj2hx0ssh3hycg4wzhwch5pphq76swfz76r1klnrich"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1238,7 +1238,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.775")
+    (version "0.4.803")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1247,7 +1247,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pjjv42c9bysnj8s3c6v0g6b00lr7b21y8ypibnzd6z0jxlsq7sz"))))
+                "1rjy809x67dadzvj3midkhcda2kp6rqmbj6rbhjd5f16rvqgn7jp"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
@@ -1615,7 +1615,8 @@ manipulation.  It aims to be a modern rewrite of Avisynth, supporting
 multithreading, generalized colorspaces, per frame properties, and videos with
 format changes.")
     ;; src/core/cpufeatures only allows x86, ARM or PPC
-    (supported-systems (delete "mips64el-linux" %supported-systems))
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "aarch64-linux")))
     ;; As seen from the source files.
     (license license:lgpl2.1+)))
 
@@ -2146,7 +2147,7 @@ of modern, widely supported codecs.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cisco/"
@@ -2154,7 +2155,7 @@ of modern, widely supported codecs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ix2fhk62i4q4kbnkl0gfk4x53vxqavsn0pck1pashr566zhglv5"))))
+                "0gv571bqkxk7ic64dmavs1q8nr7p59mcf4ibqp4lc070gn6w61ww"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)

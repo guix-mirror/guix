@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,8 @@
             bytevector->nix-base32-string
             base32-string->bytevector
             nix-base32-string->bytevector
+            %nix-base32-charset
+            %rfc4648-base32-charset
             &invalid-base32-character
             invalid-base32-character?
             invalid-base32-character-value
@@ -152,10 +154,16 @@ the previous application or INIT."
     #\a #\b #\c #\d #\f #\g #\h #\i #\j #\k #\l #\m #\n
     #\p #\q #\r #\s #\v #\w #\x #\y #\z))
 
+(define %nix-base32-charset
+  (list->char-set (vector->list %nix-base32-chars)))
+
 (define %rfc4648-base32-chars
   #(#\a #\b #\c #\d #\e #\f #\g #\h #\i #\j #\k #\l #\m
     #\n #\o #\p #\q #\r #\s #\t #\u #\v #\w #\x #\y #\z
     #\2 #\3 #\4 #\5 #\6 #\7))
+
+(define %rfc4648-base32-charset
+  (list->char-set (vector->list %rfc4648-base32-chars)))
 
 (define bytevector->base32-string
   (make-bytevector->base32-string bytevector-quintet-fold

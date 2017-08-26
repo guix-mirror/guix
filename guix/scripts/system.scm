@@ -150,7 +150,7 @@ TARGET, and register them."
 (define* (install-bootloader installer-drv
                              #:key
                              bootcfg bootcfg-file
-                             device target)
+                             target)
   "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
   (with-monad %store-monad
     (let* ((gc-root      (string-append target %gc-roots-directory
@@ -169,7 +169,7 @@ TARGET, and register them."
                  (when install
                    (save-load-path-excursion (primitive-load install)))))
         (delete-file temp-gc-root)
-        (leave (G_ "failed to install bootloader on device ~a '~a'~%") install device))
+        (leave (G_ "failed to install bootloader ~a~%") install))
 
       ;; Register bootloader config file as a GC root so that its dependencies
       ;; (background image, font, etc.) are not reclaimed.
@@ -179,13 +179,12 @@ TARGET, and register them."
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   bootloader-installer install-bootloader?
-                  bootcfg bootcfg-file
-                  device)
+                  bootcfg bootcfg-file)
   "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'guix-register' expects.
 
-When INSTALL-BOOTLOADER? is true, install bootloader on DEVICE, using BOOTCFG."
+When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
   (define (maybe-copy to-copy)
     (with-monad %store-monad
       (if (string=? target "/")
@@ -227,7 +226,6 @@ the ownership of '~a' may be incorrect!~%")
         (install-bootloader bootloader-installer
                             #:bootcfg bootcfg
                             #:bootcfg-file bootcfg-file
-                            #:device device
                             #:target target)))))
 
 
@@ -431,8 +429,6 @@ generation as its default entry.  STORE is an open connection to the store."
   "Re-install bootloader for existing system profile generation NUMBER.
 STORE is an open connection to the store."
   (let* ((generation (generation-file-name %system-profile number))
-         (params (unless-file-not-found
-                  (read-boot-parameters-file generation)))
          ;; Detect the bootloader used in %system-profile.
          (bootloader (lookup-bootloader-by-name (system-bootloader-name)))
 
@@ -442,10 +438,12 @@ STORE is an open connection to the store."
                              (bootloader bootloader)))
 
          ;; Make the specified system generation the default entry.
-         (entries (profile-boot-parameters %system-profile (list number)))
+         (params (profile-boot-parameters %system-profile (list number)))
          (old-generations (delv number (generation-numbers %system-profile)))
-         (old-entries (profile-boot-parameters
-                       %system-profile old-generations)))
+         (old-params (profile-boot-parameters
+                       %system-profile old-generations))
+         (entries (map boot-parameters->menu-entry params))
+         (old-entries (map boot-parameters->menu-entry old-params)))
     (run-with-store store
       (mlet* %store-monad
           ((bootcfg ((bootloader-configuration-file-generator bootloader)
@@ -457,12 +455,11 @@ STORE is an open connection to the store."
         (mbegin %store-monad
           (show-what-to-build* drvs)
           (built-derivations drvs)
-          ;; Only install bootloader configuration file. Thus, no installer
-          ;; nor device is provided here.
+          ;; Only install bootloader configuration file. Thus, no installer is
+          ;; provided here.
           (install-bootloader #f
                               #:bootcfg bootcfg
                               #:bootcfg-file bootcfg-file
-                              #:device #f
                               #:target target))))))
 
 
@@ -579,8 +576,12 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
                                                 (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
-     (system-disk-image os #:disk-image-size image-size
-                           #:file-system-type file-system-type))))
+     (system-disk-image os
+                        #:name (match file-system-type
+                                 ("iso9660" "image.iso")
+                                 (_         "disk-image"))
+                        #:disk-image-size image-size
+                        #:file-system-type file-system-type))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -611,17 +612,16 @@ and TARGET arguments."
 (define* (perform-action action os
                          #:key install-bootloader?
                          dry-run? derivations-only?
-                         use-substitutes? device target
+                         use-substitutes? bootloader-target target
                          image-size file-system-type full-boot?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
-bootloader; DEVICE is the target devices for bootloader; TARGET is the target
-root directory; IMAGE-SIZE is the size of the image to be built, for the
-'vm-image' and 'disk-image' actions.
-The root filesystem is created as a FILE-SYSTEM-TYPE filesystem.
-FULL-BOOT? is used for the 'vm' action;
-it determines whether to boot directly to the kernel or to the bootloader.
+bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
+target root directory; IMAGE-SIZE is the size of the image to be built, for
+the 'vm-image' and 'disk-image' actions.  The root filesystem is created as a
+FILE-SYSTEM-TYPE filesystem.  FULL-BOOT? is used for the 'vm' action; it
+determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
@@ -653,14 +653,15 @@ output when building a system derivation, such as a disk image."
                       os
                       (if (eq? 'init action)
                           '()
-                          (profile-boot-parameters)))))
+                          (map boot-parameters->menu-entry
+                               (profile-boot-parameters))))))
        (bootcfg-file -> (bootloader-configuration-file bootloader))
        (bootloader-installer
         (let ((installer (bootloader-installer bootloader))
               (target    (or target "/")))
           (bootloader-installer-derivation installer
                                            bootloader-package
-                                           device target)))
+                                           bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
@@ -692,7 +693,6 @@ output when building a system derivation, such as a disk image."
                  (install-bootloader bootloader-installer
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
-                                     #:device device
                                      #:target "/"))))
             ((init)
              (newline)
@@ -702,8 +702,7 @@ output when building a system derivation, such as a disk image."
                       #:install-bootloader? install-bootloader?
                       #:bootcfg bootcfg
                       #:bootcfg-file bootcfg-file
-                      #:bootloader-installer bootloader-installer
-                      #:device device))
+                      #:bootloader-installer bootloader-installer))
             (else
              ;; All we had to do was to build SYS and maybe register an
              ;; indirect GC root.
@@ -895,8 +894,9 @@ resulting from command-line parsing."
          (target      (match args
                         ((first second) second)
                         (_ #f)))
-         (device      (and bootloader?
-                           (bootloader-configuration-device
+         (bootloader-target
+                      (and bootloader?
+                           (bootloader-configuration-target
                             (operating-system-bootloader os)))))
 
     (with-store store
@@ -929,7 +929,8 @@ resulting from command-line parsing."
                                                       (_ #f))
                                                     opts)
                              #:install-bootloader? bootloader?
-                             #:target target #:device device
+                             #:target target
+                             #:bootloader-target bootloader-target
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
 

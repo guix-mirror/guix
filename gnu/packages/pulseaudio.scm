@@ -45,13 +45,14 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (replacement libsndfile/fixed)
     (version "1.0.28")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
                                  version ".tar.gz"))
-             (patches (search-patches "libsndfile-armhf-type-checks.patch"))
+             (patches (search-patches "libsndfile-armhf-type-checks.patch"
+                                      "libsndfile-CVE-2017-8361-8363-8365.patch"
+                                      "libsndfile-CVE-2017-8362.patch"))
              (sha256
               (base32
                "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
@@ -76,18 +77,6 @@ as big-endian processor systems such as Motorola 68k, Power PC, MIPS and
 SPARC.  Hopefully the design of the library will also make it easy to extend
 for reading and writing new sound file formats.")
     (license l:gpl2+)))
-
-(define libsndfile/fixed
-  (package
-    (inherit libsndfile)
-    (source
-      (origin
-        (inherit (package-source libsndfile))
-        (patches
-          (append
-            (origin-patches (package-source libsndfile))
-            (search-patches "libsndfile-CVE-2017-8361-8363-8365.patch"
-                            "libsndfile-CVE-2017-8362.patch")))))))
 
 (define-public libsamplerate
   (package

@@ -156,7 +156,7 @@ multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmocka.org/files/"
@@ -164,7 +164,7 @@ multi-paradigm automated test framework for C++ and Objective-C.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0c0k8ax16fgh39nsva09q4jsh83g9nxihkwj9d5666763fzx6q79"))))
+                "1283zi9qf5613g8iadm1fxmjh4rzxqd5np2j3lcpgairf25g8bph"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No test target
@@ -180,13 +180,13 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.79")
+    (version "1.80")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/danmar/cppcheck/archive/"
                           version ".tar.gz"))
       (sha256
-       (base32 "1qf7l0hx2k2qsc1rm3gh00bc0hwf9wqkrvrk08141yjj2js2y8lw"))
+       (base32 "007hs15i2pn49l6kycy49h3bj66qh6fxrp6yidj3776n32q3v1i0"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")
@@ -212,6 +212,8 @@ normally do not detect.  The goal is to detect only real errors in the code
         (base32
          "1n5p1m2m3fjrjdj752lf92f9wq3pl5cbsfrb49jqbg52ghkz99jq"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("python-2" ,python-2)))
     (home-page "https://github.com/google/googletest/")

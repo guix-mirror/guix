@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,8 +115,12 @@ versions of ID3v2.")
             (sha256
              (base32
               "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))
+            (modules '((guix build utils)))
+            ;; Don't use bundled zlib
+            (snippet '(delete-file-recursively "zlib"))
             (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
    (build-system gnu-build-system)
+   (inputs `(("zlib" ,zlib)))
    (arguments
     `(#:phases
        (alist-cons-before
@@ -290,7 +295,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.25.2")
+    (version "1.25.4")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
@@ -300,7 +305,7 @@ This package contains the binary.")
                           version ".tar.bz2")))
               (sha256
                (base32
-                "0f7fib7qyd9lah3fqcsjlqcni4bip4hw7iglkz3vz4fjibxv052k"))))
+                "1rxknrnl3ji5hi5rbckpzhbl1k5r8i53kcys4xdgg0xbi8765dfd"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -462,7 +467,7 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.7.10")
+    (version "0.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -470,14 +475,13 @@ compression format (.mpc files).")
                   version ".tar.gz"))
              (sha256
               (base32
-               "0wjicszs64ksj2y5jbk09yjd08znc1qnarlq8ssmx13f2d4x59wq"))))
+               "1dcswb0f6w3b05s1v43pq8fmavkd5g88ysndn9160wlaa1v9n40h"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
-    (native-inputs
-     `(("python2-nose" ,python2-nose)
-       ("python2-sphinx" ,python2-sphinx)
-       ("python2-coverage" ,python2-coverage)))
+     `(#:tests? #f)) ; the required test data contains copyrighted material.
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-grako" ,python-grako)))
     (synopsis "MP3 tag ID3 metadata editor")
     (description "eyeD3 is a Python tool for working with audio files,
 specifically mp3 files containing ID3 metadata (i.e. song info).  It provides a

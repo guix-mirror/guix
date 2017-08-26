@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -22,14 +23,17 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
+  #:use-module (gnu services dbus)
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages display-managers)
   #:use-module (gnu packages gnustep)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
+  #:use-module (gnu system shadow)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix packages)
@@ -41,6 +45,7 @@
   #:use-module (ice-9 match)
   #:export (xorg-configuration-file
             %default-xorg-modules
+            xorg-wrapper
             xorg-start-command
             xinitrc
 
@@ -53,7 +58,11 @@
             screen-locker
             screen-locker?
             screen-locker-service-type
-            screen-locker-service))
+            screen-locker-service
+
+            gdm-configuration
+            gdm-service-type
+            gdm-service))
 
 ;;; Commentary:
 ;;;
@@ -184,36 +193,51 @@ in @var{modules}."
                                  files)
                        #t))))
 
-(define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
-                             (configuration-file (xorg-configuration-file))
-                             (modules %default-xorg-modules)
-                             (xorg-server xorg-server))
+(define* (xorg-wrapper #:key
+                       (guile (canonical-package guile-2.0))
+                       (configuration-file (xorg-configuration-file))
+                       (modules %default-xorg-modules)
+                       (xorg-server xorg-server))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
 file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.
-
-Usually the X server is started by a login manager."
+@code{xorg-configuration-file} is used.  The resulting script should be used
+in place of @code{/usr/bin/X}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(begin
         (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
         (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-        (apply execl (string-append #$xorg-server "/bin/X")
-               (string-append #$xorg-server "/bin/X") ;argv[0]
-               "-logverbose" "-verbose"
-               "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
-               "-config" #$configuration-file
-               "-configdir" #$(xorg-configuration-directory modules)
-               "-nolisten" "tcp" "-terminate"
+        (let ((X (string-append #$xorg-server "/bin/X")))
+          (apply execl X X
+                 "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
+                 "-config" #$configuration-file
+                 "-configdir" #$(xorg-configuration-directory modules)
+                 (cdr (command-line))))))
 
-               ;; Note: SLiM and other display managers add the
-               ;; '-auth' flag by themselves.
-               (cdr (command-line)))))
+  (program-file "X-wrapper" exp))
 
-  (program-file "start-xorg" exp))
+(define* (xorg-start-command #:key
+                             (guile (canonical-package guile-2.0))
+                             (configuration-file (xorg-configuration-file))
+                             (modules %default-xorg-modules)
+                             (xorg-server xorg-server))
+  "Return a derivation that builds a @code{startx} script in which a number of
+X modules are available.  See @code{xorg-wrapper} for more details on the
+arguments.  The result should be used in place of @code{startx}."
+  (define X
+    (xorg-wrapper #:guile guile
+                  #:configuration-file configuration-file
+                  #:modules modules
+                  #:xorg-server xorg-server))
+  (define exp
+    ;; Write a small wrapper around the X server.
+    #~(apply execl #$X #$X ;; Second #$X is for argv[0].
+             "-logverbose" "-verbose" "-nolisten" "tcp" "-terminate"
+             (cdr (command-line))))
+
+  (program-file "startx" exp))
 
 (define* (xinitrc #:key
                   (guile (canonical-package guile-2.0))
@@ -458,5 +482,143 @@ makes the good ol' XlockMore usable."
            (screen-locker program
                           (file-append package "/bin/" program)
                           allow-empty-passwords?)))
+
+(define %gdm-accounts
+  (list (user-group (name "gdm") (system? #t))
+        (user-account
+         (name "gdm")
+         (group "gdm")
+         (system? #t)
+         (comment "GNOME Display Manager user")
+         (home-directory "/var/lib/gdm")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define-record-type* <gdm-configuration>
+  gdm-configuration make-gdm-configuration
+  gdm-configuration?
+  (gdm gdm-configuration-gdm (default gdm))
+  (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
+  (allow-root? gdm-configuration-allow-root? (default #t))
+  (auto-login? gdm-configuration-auto-login? (default #f))
+  (default-user gdm-configuration-default-user (default #f))
+  (x-server gdm-configuration-x-server))
+
+(define (gdm-etc-service config)
+  (define gdm-configuration-file
+    (mixed-text-file "gdm-custom.conf"
+                     "[daemon]\n"
+                     "#User=gdm\n"
+                     "#Group=gdm\n"
+                     (if (gdm-configuration-auto-login? config)
+                         (string-append
+                          "AutomaticLoginEnable=true\n"
+                          "AutomaticLogin="
+                          (or (gdm-configuration-default-user config)
+                              (error "missing default user for auto-login"))
+                          "\n")
+                         (string-append
+                          "AutomaticLoginEnable=false\n"
+                          "#AutomaticLogin=\n"))
+                     "#TimedLoginEnable=false\n"
+                     "#TimedLogin=\n"
+                     "#TimedLoginDelay=0\n"
+                     "#InitialSetupEnable=true\n"
+                     ;; Enable me once X is working.
+                     "WaylandEnable=false\n"
+                     "\n"
+                     "[debug]\n"
+                     "Enable=true\n"
+                     "\n"
+                     "[security]\n"
+                     "#DisallowTCP=true\n"
+                     "#AllowRemoteAutoLogin=false\n"))
+  `(("gdm" ,(file-union
+             "gdm"
+             `(("custom.conf" ,gdm-configuration-file))))))
+
+(define (gdm-pam-service config)
+  "Return a PAM service for @command{gdm}."
+  (list
+   (pam-service
+    (inherit (unix-pam-service "gdm-autologin"))
+    (auth (list (pam-entry
+                 (control "[success=ok default=1]")
+                 (module (file-append (gdm-configuration-gdm config)
+                                      "/lib/security/pam_gdm.so")))
+                (pam-entry
+                 (control "sufficient")
+                 (module "pam_permit.so")))))
+   (pam-service
+    (inherit (unix-pam-service "gdm-launch-environment"))
+    (auth (list (pam-entry
+                 (control "required")
+                 (module "pam_permit.so")))))
+   (unix-pam-service
+    "gdm-password"
+    #:allow-empty-passwords? (gdm-configuration-allow-empty-passwords? config)
+    #:allow-root? (gdm-configuration-allow-root? config))))
+
+(define (gdm-shepherd-service config)
+  (list (shepherd-service
+         (documentation "Xorg display server (GDM)")
+         (provision '(xorg-server))
+         (requirement '(dbus-system user-processes host-name udev))
+         ;; While this service isn't working properly, turn off auto-start.
+         (auto-start? #f)
+         (start #~(lambda ()
+                    (fork+exec-command
+                     (list #$(file-append (gdm-configuration-gdm config)
+                                          "/bin/gdm"))
+                     #:environment-variables
+                     (list (string-append
+                            "GDM_X_SERVER="
+                            #$(gdm-configuration-x-server config))))))
+         (stop #~(make-kill-destructor))
+         (respawn? #t))))
+
+(define gdm-service-type
+  (service-type (name 'gdm)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          gdm-shepherd-service)
+                       (service-extension account-service-type
+                                          (const %gdm-accounts))
+                       (service-extension pam-root-service-type
+                                          gdm-pam-service)
+                       (service-extension etc-service-type
+                                          gdm-etc-service)
+                       (service-extension dbus-root-service-type
+                                          (compose list gdm-configuration-gdm))))))
+
+;; This service isn't working yet; it gets as far as starting to run the
+;; greeter from gnome-shell but doesn't get any further.  It is here because
+;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
+(define* (gdm-service #:key (gdm gdm)
+                       (allow-empty-passwords? #t)
+                       (x-server (xorg-wrapper)))
+  "Return a service that spawns the GDM graphical login manager, which in turn
+starts the X display server with @var{X}, a command as returned by
+@code{xorg-wrapper}.
+
+@cindex X session
+
+GDM automatically looks for session types described by the @file{.desktop}
+files in @file{/run/current-system/profile/share/xsessions} and allows users
+to choose a session from the log-in screen using @kbd{F1}.  Packages such as
+@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
+adding them to the system-wide set of packages automatically makes them
+available at the log-in screen.
+
+In addition, @file{~/.xsession} files are honored.  When available,
+@file{~/.xsession} must be an executable that starts a window manager
+and/or other X clients.
+
+When @var{allow-empty-passwords?} is true, allow logins with an empty
+password."
+  (service gdm-service-type
+           (gdm-configuration
+            (gdm gdm)
+            (allow-empty-passwords? allow-empty-passwords?)
+            (x-server x-server))))
 
 ;;; xorg.scm ends here

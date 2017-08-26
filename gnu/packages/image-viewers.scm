@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -54,7 +54,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.19")
+    (version "2.19.3")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -62,11 +62,11 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sfhr6628xpj9p6bqihdq35y139x2gmrpydjlrwsl1rs77c2bgnf"))))
+                "1l3yvv0l0ggwlfyhk84p2g9mrqvzqrg1fgalf88kzppvb9jppjay"))))
     (build-system gnu-build-system)
     (arguments
       '(#:phases (alist-delete 'configure %standard-phases)
-        #:tests? #f
+        #:tests? #f ;FIXME: Requires 'perl-test-command'.
         #:make-flags
           (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (inputs `(("imlib2" ,imlib2)
@@ -214,7 +214,13 @@ it and customize it for your needs.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh"))))
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "data" "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -250,7 +256,7 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.3.2")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -259,7 +265,7 @@ your images.  Among its features are:
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0n78sl8mxyky9zcih2znzcnb9dbfmvmrdwzj73jcxfh531cgcpi9"))))
+         "1rwgbq2imd5l4nql5hrz7rr5f4gz8aad1amlf0j3cxir8slpbd1y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

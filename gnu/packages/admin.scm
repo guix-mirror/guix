@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -167,10 +167,10 @@ and provides a \"top-like\" mode (monitoring).")
      `(("pkg-config" ,pkg-config)
 
        ;; This is the Guile we use as a cross-compiler...
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
@@ -499,7 +499,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "10")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "2")      ; for patch release, e.g. "6"
+         (bind-release-version "3")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -615,7 +615,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "19yl7axphmpm4n2ggb7j5irw4c655yifa1bnlckg6qiyv8dr8n7b"))))
+                      "00yh1d5shrq7y0kfwacax4f8dc0akaa2fha430j92n7mshms65m1"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -661,14 +661,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.0")
+    (version "4.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pjsxsy8l71i813sa934cwf1ryp9xbr7nxwsvnzavjdirchq3sga"))))
+                "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -849,29 +849,29 @@ system administrator.")
        ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
        #:parallel-build? #f
 
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (substitute* "src/sudo_usage.h.in"
-                     ;; Do not capture 'configure' arguments since we would
-                     ;; unduly retain references, and also because the
-                     ;; CPPFLAGS above would close the string literal
-                     ;; prematurely.
-                     (("@CONFIGURE_ARGS@") "\"\""))
-                   (substitute* (find-files "." "Makefile\\.in")
-                     (("-o [[:graph:]]+ -g [[:graph:]]+")
-                      ;; Allow installation as non-root.
-                      "")
-                     (("^install: (.*)install-sudoers(.*)" _ before after)
-                      ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n"))
-                     (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
-                      ;; Don't try to create /run/sudo.
-                      "$(TMPDIR)/dummy")
-                     (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
-                      ;; Don't try to create /var/db/sudo.
-                      "$(TMPDIR)/dummy")))
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (substitute* "src/sudo_usage.h.in"
+               ;; Do not capture 'configure' arguments since we would
+               ;; unduly retain references, and also because the
+               ;; CPPFLAGS above would close the string literal
+               ;; prematurely.
+               (("@CONFIGURE_ARGS@") "\"\""))
+             (substitute* (find-files "." "Makefile\\.in")
+               (("-o [[:graph:]]+ -g [[:graph:]]+")
+                ;; Allow installation as non-root.
+                "")
+               (("^install: (.*)install-sudoers(.*)" _ before after)
+                ;; Don't try to create /etc/sudoers.
+                (string-append "install: " before after "\n"))
+               (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
+                ;; Don't try to create /run/sudo.
+                "$(TMPDIR)/dummy")
+               (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
+                ;; Don't try to create /var/db/sudo.
+                "$(TMPDIR)/dummy")))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
@@ -1599,14 +1599,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.50")
+    (version "7.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1ckl2qxqxkrfa2qxdrqyaa4k1hhj273aqckrc46fijdz0a76mag9"))
+                "08bga42ipymmbxd7wy4x5sl26c0ir1fm3n9rc6nqmhx69z66wyd8"))
               (modules '((guix build utils)))
               (snippet
                '(map delete-file-recursively
@@ -1718,7 +1718,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.18")
+    (version "3.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1726,7 +1726,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xsvkqh89rgxq5w03mnlcfkn9y39nfwhb2pjabjspcc2mi2mq5y6"))
+                "191zbvkyc02h0wwd46xwj4zzg7jhlr8xv0ji6knqkgjnk0nvqq01"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1793,14 +1793,14 @@ highly portable.  Great for heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0xzz1faqgm57bwlkw6sjdfbckf5hck81879zbfk18p7xn9vhvixv"))
+                "1rxlrwd817f2zl4fsc5ha43wjzfidq3yyagq4lgyi150qg36svv3"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
@@ -2105,28 +2105,22 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.13.1")
+    (version "1.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "1z17hw0yiqp1blq217zxkg2jzkv8qd79saqhscgsw14mwlcqpwd0"))
-       (patches (search-patches "fabric-tests.patch"))))
+         "0k944dxr41whw7ib6380q9x15wyskx7fqni656icdn8rzshn9bwq"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))                       ;Python 2 only
+     `(#:python ,python-2))             ; Python 2 only
     (native-inputs
-     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
-       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
-       ("python2-nose" ,python2-nose))) ; Requires < 2.0
+     `(("python2-fudge" ,python2-fudge)
+       ("python2-jinja2" ,python2-jinja2)
+       ("python2-nose" ,python2-nose)))
     (propagated-inputs
-     ;; Required upgrading python-paramiko 1.17.4 to fix an incompatibility
-     ;; between python-paramiko and newer python-pycrypto. Without this, the
-     ;; `fab` command fails with "ValueError: CTR mode needs counter
-     ;; parameter, not IV". See:
-     ;; https://github.com/paramiko/paramiko/pull/714#issuecomment-281191548.
      `(("python2-paramiko" ,python2-paramiko)))
     (home-page "http://fabfile.org")
     (synopsis "Simple Pythonic remote execution and deployment tool")
@@ -2169,7 +2163,7 @@ tool for remote execution and deployment.")
                  (("\"/etc/neofetch")
                   (string-append "\"" out "/etc/neofetch"))
                  (("\"/usr/share/neofetch")
-                  (string-append "\"" out "/usr/share/neofetch"))))
+                  (string-append "\"" out "/share/neofetch"))))
              #t))
          (delete 'configure))))
     (home-page "https://github.com/dylanaraps/neofetch")
@@ -2184,7 +2178,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2192,7 +2186,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08l0wcwwsl5kix9kg3h51s2afzg97y1rjjfi0ijs294kz57g1cfq"))))
+                "0sivgcmg3hihz15v2wgbxnd0icn06pyvvqdqh8x0mwkhvm434fpb"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))

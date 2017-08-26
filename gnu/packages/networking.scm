@@ -6,10 +6,10 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@libertad.pw>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -55,6 +55,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libidn)
@@ -66,10 +67,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
@@ -440,7 +444,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.16")
+    (version "5.2.18")
     (source
      (origin
        (method url-fetch)
@@ -448,7 +452,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0fpwac26ja0rdqsbxyjcsk8gxgixfpxk0baj3rhnpaff3jv0ilp9"))))
+         "1mcpgj18n1xppvlhjqzpj05yr5z48bym9bd88k10fwgkmwk0spf3"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
@@ -479,30 +483,31 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.2.7")
-    (synopsis "Network traffic analyzer")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
-                           version ".tar.bz2"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "1dfvhra5v6xhzbp097qsxi0zvirw0srbasl4v1wjf58v49idz7b8"))))
-    (build-system glib-or-gtk-build-system)
-    (inputs `(("bison" ,bison)
-              ("c-ares" ,c-ares)
-              ("flex" ,flex)
+         "011vvrj76z1azkpvyy2j40b1x1z56ymld508zfc4xw3gh8dv82w9"))))
+    (build-system gnu-build-system)
+    (inputs `(("c-ares" ,c-ares)
+              ("glib" ,glib)
               ("gnutls" ,gnutls)
-              ("gtk+" ,gtk+)
               ("libcap" ,libcap)
               ("libgcrypt" ,libgcrypt)
               ("libnl" ,libnl)
               ("libpcap" ,libpcap)
-              ("lua" ,lua-5.2)
+              ("libssh" ,libssh)
+              ("libxml2" ,libxml2)
+              ("lua" ,lua-5.2)          ;Lua 5.3 unsupported
               ("krb5" ,mit-krb5)
               ("openssl" ,openssl)
               ("portaudio" ,portaudio)
+              ("qtbase" ,qtbase)
+              ("qttools" ,qttools)
               ("sbc" ,sbc)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
@@ -513,19 +518,21 @@ which can be used to encrypt a password with @code{crypt(3)}.")
        (list (string-append "--with-c-ares=" (assoc-ref %build-inputs "c-ares"))
              (string-append "--with-krb5=" (assoc-ref %build-inputs "krb5"))
              (string-append "--with-libcap=" (assoc-ref %build-inputs "libcap"))
+             (string-append "--with-libssh=" (assoc-ref %build-inputs "libssh"))
              (string-append "--with-lua=" (assoc-ref %build-inputs "lua"))
              (string-append "--with-pcap=" (assoc-ref %build-inputs "libpcap"))
              (string-append "--with-portaudio="
-                             (assoc-ref %build-inputs "portaudio"))
+                            (assoc-ref %build-inputs "portaudio"))
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
              (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib"))
-             "--without-qt")))
+             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
+    (home-page "https://www.wireshark.org/")
+    (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
 network frames.")
-    (license license:gpl2+)
-    (home-page "https://www.wireshark.org/")))
+    (home-page "https://www.wireshark.org/")
+    (license license:gpl2+)))
 
 (define-public fping
   (package
@@ -698,7 +705,7 @@ allows for heavy scripting.")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.06")
+  (version "1.12")
   (source
     (origin
       (method url-fetch)
@@ -708,7 +715,7 @@ allows for heavy scripting.")
              ".tar.gz"))
       (sha256
         (base32
-          "07m5331132h9xkh1i6jv9d80f571yva27iqa31aq4sm31iw7nn53"))))
+          "1zy16idzc96n20fm9976qapz89n3f44xpylhs5cvfgyyg7z03zr5"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -1103,7 +1110,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "18.1")
+    (version "19.1")
     (source
      (origin
        (method url-fetch)
@@ -1112,14 +1119,22 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1a8wmbhc1si1n8axzrr8ysmrd3gr643lbh6pvzmr0hnd65fixmx5"))))
+         "0y713g7gd4n5chbhr8lv7k50rxkmzysrg13sscxam3s386mmlb1r"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
+        '(begin
+           (substitute* "daemon/connect/TlsSocket.cpp"
+             (("gnutls_certificate-verification_status_print")
+              "gnutls_certificate_verification_status_print"))
+           #t))))
     (arguments
      `(#:configure-flags
        (list
-        (string-append "--with-libcurses-includes=" (assoc-ref
-%build-inputs "ncurses") "/include")
-        (string-append "--with-libcurses-libraries=" (assoc-ref
-%build-inputs "ncurses") "/lib")
+        (string-append "--with-libcurses-includes="
+                       (assoc-ref %build-inputs "ncurses") "/include")
+        (string-append "--with-libcurses-libraries="
+                       (assoc-ref %build-inputs "ncurses") "/lib")
         (string-append "--with-tlslib=GnuTLS"))))
     (build-system gnu-build-system)
     (inputs `(("gnutls", gnutls)
@@ -1261,6 +1276,32 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     ;; distribution for clarification.
     (license (list license:bsd-3 license:bsd-4))))
 
+(define-public pidentd
+  (package
+    (name "pidentd")
+    (version "3.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ptrrkssn/pidentd/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y3kd1bkydqkpc1qdff24yswysamsqivvadjy0468qri5730izgc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests are included
+    (inputs
+     `(("openssl" ,openssl))) ; For the DES library
+    (home-page "https://www.lysator.liu.se/~pen/pidentd/")
+    (synopsis "Small Ident Daemon")
+    (description
+     "@dfn{Pidentd} (Peter's Ident Daemon) is a identd, which implements a
+identification server.  Pidentd looks up specific TCP/IP connections and
+returns the user name and other information about the connection.")
+    (license license:public-domain)))
+
 (define-public spiped
   (package
     (name "spiped")
@@ -1387,3 +1428,35 @@ newer and only works on Ethernet network interfaces.")
     ;; AGPL 3 with exception for linking with OpenSSL. See the 'LICENSE' file in
     ;; the source distribution for more information.
     (license license:agpl3)))
+
+(define-public bmon
+  (package
+    (name "bmon")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tgraf/bmon/releases/download/v"
+                           version "/bmon-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ylzriv4pwh76344abzl1w219x188gshbycbna35gsyfp09c7z82"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libconfuse" ,libconfuse)
+       ("libnl" ,libnl)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Bandwidth monitor")
+    (description "bmon is a monitoring and debugging tool to capture
+networking-related statistics and prepare them visually in a human-friendly
+way.  It features various output methods including an interactive curses user
+interface and a programmable text output for scripting.")
+    (home-page "https://github.com/tgraf/bmon")
+    ;; README.md mentions both the 2-clause BSD and expat licenses, but all
+    ;; the source files only have expat license headers. Upstream has been
+    ;; contacted for clarification: https://github.com/tgraf/bmon/issues/59
+    ;; Update the license field when upstream responds.
+    (license (list license:bsd-2
+                   license:expat))))

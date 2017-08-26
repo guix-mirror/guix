@@ -9,11 +9,12 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pramatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,7 @@
 (define-public libconfuse
   (package
     (name "libconfuse")
-    (version "3.2")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinh/libconfuse/"
@@ -80,7 +81,7 @@
                                   "/confuse-" version ".tar.xz"))
               (sha256
                (base32
-                "0j2fg93w22apjfqnkak8k8m395n2l7hhm9xnjx0k2v82js3bnsm4"))))
+                "0pnjmlj9i0alp407qd7c0vq83sz7gpsjrbdgpcn4xvzjp9r35ii3"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/martinh/libconfuse")
     (synopsis "Configuration file parser library")
@@ -94,7 +95,7 @@ nested include statements).")
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9")
+    (version "0.9.3")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -104,7 +105,7 @@ nested include statements).")
              version ".tar.gz"))
        (sha256
         (base32
-         "1pig0h2jk8wipyz90j69c4bk37bfyq60asnn0v0bqld2p2vjvyqy"))))
+         "17dwj7w16cdj7g4s2y2f96lgj5msq1s4543dnfa3rijlazzy6mmk"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -224,14 +225,14 @@ developers.")
 (define-public perl-anyevent-i3
   (package
     (name "perl-anyevent-i3")
-    (version "0.16")
+    (version "0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MS/MSTPLBG/"
                                   "AnyEvent-I3-" version ".tar.gz"))
               (sha256
                (base32
-                "1qwva5vmmn929l6k9wzhp4h80ad4qm4m1g2dyv4nlas624003hig"))))
+                "0qvd9bq16jyy7v3ma82qcnvz9j503bw0mh7h55gkjf7ir62ck0jk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-anyevent" ,perl-anyevent)
@@ -380,6 +381,39 @@ Custom layout algorithms, and other extensions, may be written by the user in
 config files.  Layouts are applied dynamically, and different layouts may be
 used on each workspace.  Xinerama is fully supported, allowing windows to be
 tiled on several screens.")
+    (license license:bsd-3)))
+
+(define-public xmobar
+  (package
+    (name "xmobar")
+    (version "0.24.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/xmobar/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sdzfj2wa4wpig1i2i5n9qpwm90jp88qifsmaa7j37yhhs6snfir"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-http" ,ghc-http)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex-compat" ,ghc-regex-compat)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-x11-xft" ,ghc-x11-xft)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("libxpm" ,libxpm)
+       ("wireless-tools" ,wireless-tools)))
+    (arguments
+     `(#:configure-flags
+       '("--flags=with_utf8 with_xft with_xpm with_inotify with_iwlib")))
+    (home-page "http://xmobar.org")
+    (synopsis "Minimalistic text based status bar")
+    (description
+     "@code{xmobar} is a lightweight, text-based, status bar written in
+Haskell.  It was originally designed to be used together with Xmonad, but it
+is also usable with any other window manager.  While xmobar is written in
+Haskell, no knowledge of the language is required to install and use it.")
     (license license:bsd-3)))
 
 (define-public ghc-xmonad-contrib

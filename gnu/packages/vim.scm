@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -60,7 +60,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0600")
+    (version "8.0.0808")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -68,20 +68,13 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1ifaj0lfzqn06snkcd83l58m9r6lg7lk3wspx71k5ycvypyfi67s"))))
+               "0qrn9fhq5wdrrf2qhpygwfm5rynl32l406xhbr7lg69r9wl8cjjn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'make-bit-reproducable
-           (lambda _
-             (substitute* "src/version.c"
-               ((" VIM_VERSION_LONG_DATE") " VIM_VERSION_LONG")
-               ((" __DATE__") "")
-               ((" __TIME__") ""))
-             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
              (substitute* "runtime/tools/mve.awk"
@@ -111,6 +104,9 @@ configuration files.")
 
 (define-public vim-full
   (package
+    ;; This package should share its source with Vim, but it doesn't
+    ;; build reliably, and we want to keep Vim up to date due to the
+    ;; frequency of important bug fixes.
     (inherit vim)
     (name "vim-full")
     (arguments
@@ -132,17 +128,6 @@ configuration files.")
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-after 'build 'drop-failing-tests
-                 (lambda _
-                   ;; These tests fail mysteriously with GUI enabled.
-                   ;; https://github.com/vim/vim/issues/1460
-                   (substitute* "src/testdir/test_cmdline.vim"
-                     (("call assert_equal\\(.+getcmd.+\\(\\)\\)") ""))
-                   ;; FIXME: This test broke after GCC-5 core-updates merge.
-                   ;; "Test_system_exmode line 7: Expected '0' but got '/'"
-                   (substitute* "src/testdir/test_system.vim"
-                     (("call assert_equal\\('0', a\\[0\\]\\)") ""))
-                   #t))
                (add-before 'check 'start-xserver
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; Some tests require an X server, but does not start one.
@@ -663,24 +648,46 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.8.2")
+    (version "0.9")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://sourceforge/vifm/vifm/vifm-"
-                            version ".tar.bz2"))
+        (uri (list
+               (string-append "https://github.com/vifm/vifm/releases/download/v"
+                              version "/vifm-" version ".tar.bz2")
+               (string-append "https://sourceforge.net/projects/vifm/files/vifm/"
+                              "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "07r15kq7kjl3a41sd11ncpsii866xxps4f90zh3lv8jqcrv6silb"))))
+          "1zd72vcgir3g9rhs2iyca13qf5fc0b1f22y20f5gy92c3sfwj45b"))))
     (build-system gnu-build-system)
     (arguments
-    '(#:phases
+    '(#:configure-flags '("--disable-build-timestamp")
+      #:phases
       (modify-phases %standard-phases
         (add-after 'patch-source-shebangs 'patch-test-shebangs
           (lambda _
-            (substitute* (find-files "tests" "\\.c$")
-              (("/bin/sh") (which "sh")))
-            #t)))))
+            (substitute* (cons* "src/background.c"
+                                "src/cfg/config.c"
+                                (find-files "tests" "\\.c$"))
+              (("/bin/sh") (which "sh"))
+              (("/bin/bash") (which "bash")))
+            ;; This test segfaults
+            (substitute* "tests/Makefile"
+              (("misc") ""))
+            #t))
+         (add-after 'install 'install-vim-plugin-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vifm (string-append out "/share/vifm"))
+                    (vimfiles (string-append out "/share/vim/vimfiles")))
+               (copy-recursively (string-append vifm "/colors")
+                                 (string-append vimfiles "/colors"))
+               (copy-recursively (string-append vifm "/vim")
+                                 vimfiles)
+               (delete-file-recursively (string-append vifm "/colors"))
+               (delete-file-recursively (string-append vifm "/vim")))
+             #t)))))
     (native-inputs
      `(("groff" ,groff) ; for the documentation
        ("perl" ,perl)))

@@ -25,7 +25,7 @@
 (define-public acct
   (package
     (name "acct")
-    (version "6.6.3")
+    (version "6.6.4")
     (source
      (origin
       (method url-fetch)
@@ -33,7 +33,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "14x0zklwlg7cc7amlyzffqr8az3fqj1h9dyj0hvl1kpi7cr7kbjy"))))
+        "0gv6m8giazshvgpvwbng98chpas09myyfw1zr2y7hqxib0mvy5ac"))))
     (build-system gnu-build-system)
     (home-page "https://gnu.org/software/acct/")
     (synopsis "Standard login and process accounting utilities")

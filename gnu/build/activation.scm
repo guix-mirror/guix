@@ -313,6 +313,7 @@ they already exist."
     (false-if-exception (delete-file file)))
 
   (format #t "populating /etc from ~a...~%" etc)
+  (mkdir-p "/etc")
 
   ;; Create the /etc/ssl -> /run/current-system/profile/etc/ssl symlink.  This
   ;; symlink, to a target outside of the store, probably doesn't belong in the

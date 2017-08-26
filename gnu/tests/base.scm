@@ -34,7 +34,6 @@
   #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:export (run-basic-test
@@ -393,17 +392,16 @@ info --version")
     "Instrument %SIMPLE-OS, run it in a VM, and run a series of basic
 functionality tests.")
    (value
-    (mlet* %store-monad ((os -> (marionette-operating-system
-                                 %simple-os
-                                 #:imported-modules '((gnu services herd)
-                                                      (guix combinators))))
-                         (run   (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
+    (let* ((os  (marionette-operating-system
+                 %simple-os
+                 #:imported-modules '((gnu services herd)
+                                      (guix combinators))))
+           (vm  (virtual-machine os)))
       ;; XXX: Add call to 'virtualized-operating-system' to get the exact same
       ;; set of services as the OS produced by
       ;; 'system-qemu-image/shared-store-script'.
       (run-basic-test (virtualized-operating-system os '())
-                      #~(list #$run))))))
+                      #~(list #$vm))))))
 
 
 ;;;
@@ -430,60 +428,60 @@ functionality tests.")
      (mcron-service (list job1 job2 job3)))))
 
 (define (run-mcron-test name)
-  (mlet* %store-monad ((os ->   (marionette-operating-system
-                                 %mcron-os
-                                 #:imported-modules '((gnu services herd)
-                                                      (guix combinators))))
-                       (command (system-qemu-image/shared-store-script
-                                 os #:graphic? #f)))
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (gnu build marionette)
-                         (srfi srfi-64)
-                         (ice-9 match))
+  (define os
+    (marionette-operating-system
+     %mcron-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
 
-            (define marionette
-              (make-marionette (list #$command)))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64)
+                       (ice-9 match))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
 
-            (test-begin "mcron")
+          (mkdir #$output)
+          (chdir #$output)
 
-            (test-eq "service running"
-              'running!
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'mcron)
-                  'running!)
-               marionette))
+          (test-begin "mcron")
 
-            ;; Make sure root's mcron job runs, has its cwd set to "/root", and
-            ;; runs with the right UID/GID.
-            (test-equal "root's job"
-              '(0 0)
-              (wait-for-file "/root/witness" marionette))
+          (test-eq "service running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'mcron)
+                'running!)
+             marionette))
 
-            ;; Likewise for Alice's job.  We cannot know what its GID is since
-            ;; it's chosen by 'groupadd', but it's strictly positive.
-            (test-assert "alice's job"
-              (match (wait-for-file "/home/alice/witness" marionette)
-                ((1000 gid)
-                 (>= gid 100))))
+          ;; Make sure root's mcron job runs, has its cwd set to "/root", and
+          ;; runs with the right UID/GID.
+          (test-equal "root's job"
+            '(0 0)
+            (wait-for-file "/root/witness" marionette))
 
-            ;; Last, the job that uses a command; allows us to test whether
-            ;; $PATH is sane.  (Note that 'marionette-eval' stringifies objects
-            ;; that don't have a read syntax, hence the string.)
-            (test-equal "root's job with command"
-              "#<eof>"
-              (wait-for-file "/root/witness-touch" marionette))
+          ;; Likewise for Alice's job.  We cannot know what its GID is since
+          ;; it's chosen by 'groupadd', but it's strictly positive.
+          (test-assert "alice's job"
+            (match (wait-for-file "/home/alice/witness" marionette)
+              ((1000 gid)
+               (>= gid 100))))
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          ;; Last, the job that uses a command; allows us to test whether
+          ;; $PATH is sane.  (Note that 'marionette-eval' stringifies objects
+          ;; that don't have a read syntax, hence the string.)
+          (test-equal "root's job with command"
+            "#<eof>"
+            (wait-for-file "/root/witness-touch" marionette))
 
-    (gexp->derivation name test)))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation name test))
 
 (define %test-mcron
   (system-test
@@ -526,102 +524,102 @@ functionality tests.")
   ;; *after* nscd.  Failing to do that, libc will try to connect to nscd,
   ;; fail, then never try again (see '__nss_not_use_nscd_hosts' in libc),
   ;; leading to '.local' resolution failures.
-  (mlet* %store-monad ((os -> (marionette-operating-system
-                               %avahi-os
-                               #:requirements '(nscd)
-                               #:imported-modules '((gnu services herd)
-                                                    (guix combinators))))
-                       (run   (system-qemu-image/shared-store-script
-                               os #:graphic? #f)))
-    (define mdns-host-name
-      (string-append (operating-system-host-name os)
-                     ".local"))
+  (define os
+    (marionette-operating-system
+     %avahi-os
+     #:requirements '(nscd)
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
 
-    (define test
-      (with-imported-modules '((gnu build marionette))
-        #~(begin
-            (use-modules (gnu build marionette)
-                         (srfi srfi-1)
-                         (srfi srfi-64)
-                         (ice-9 match))
+  (define mdns-host-name
+    (string-append (operating-system-host-name os)
+                   ".local"))
 
-            (define marionette
-              (make-marionette (list #$run)))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-1)
+                       (srfi srfi-64)
+                       (ice-9 match))
 
-            (mkdir #$output)
-            (chdir #$output)
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
 
-            (test-begin "avahi")
+          (mkdir #$output)
+          (chdir #$output)
 
-            (test-assert "wait for services"
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
+          (test-begin "avahi")
 
-                  (start-service 'nscd)
+          (test-assert "wait for services"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
 
-                  ;; XXX: Work around a race condition in nscd: nscd creates its
-                  ;; PID file before it is listening on its socket.
-                  (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
-                    (let try ()
-                      (catch 'system-error
-                        (lambda ()
-                          (connect sock AF_UNIX "/var/run/nscd/socket")
-                          (close-port sock)
-                          (format #t "nscd is ready~%"))
-                        (lambda args
-                          (format #t "waiting for nscd...~%")
-                          (usleep 500000)
-                          (try)))))
+                (start-service 'nscd)
 
-                  ;; Wait for the other useful things.
-                  (start-service 'avahi-daemon)
-                  (start-service 'networking)
+                ;; XXX: Work around a race condition in nscd: nscd creates its
+                ;; PID file before it is listening on its socket.
+                (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                  (let try ()
+                    (catch 'system-error
+                      (lambda ()
+                        (connect sock AF_UNIX "/var/run/nscd/socket")
+                        (close-port sock)
+                        (format #t "nscd is ready~%"))
+                      (lambda args
+                        (format #t "waiting for nscd...~%")
+                        (usleep 500000)
+                        (try)))))
 
-                  #t)
-               marionette))
+                ;; Wait for the other useful things.
+                (start-service 'avahi-daemon)
+                (start-service 'networking)
 
-            (test-equal "avahi-resolve-host-name"
-              0
-              (marionette-eval
-               '(system*
-                 "/run/current-system/profile/bin/avahi-resolve-host-name"
-                 "-v" #$mdns-host-name)
-               marionette))
+                #t)
+             marionette))
 
-            (test-equal "avahi-browse"
-              0
-              (marionette-eval
-               '(system* "avahi-browse" "-avt")
-               marionette))
+          (test-equal "avahi-resolve-host-name"
+            0
+            (marionette-eval
+             '(system*
+               "/run/current-system/profile/bin/avahi-resolve-host-name"
+               "-v" #$mdns-host-name)
+             marionette))
 
-            (test-assert "getaddrinfo .local"
-              ;; Wait for the 'avahi-daemon' service and perform a resolution.
-              (match (marionette-eval
-                      '(getaddrinfo #$mdns-host-name)
-                      marionette)
-                (((? vector? addrinfos) ..1)
-                 (pk 'getaddrinfo addrinfos)
-                 (and (any (lambda (ai)
-                             (= AF_INET (addrinfo:fam ai)))
-                           addrinfos)
-                      (any (lambda (ai)
-                             (= AF_INET6 (addrinfo:fam ai)))
-                           addrinfos)))))
+          (test-equal "avahi-browse"
+            0
+            (marionette-eval
+             '(system* "avahi-browse" "-avt")
+             marionette))
 
-            (test-assert "gethostbyname .local"
-              (match (pk 'gethostbyname
-                         (marionette-eval '(gethostbyname #$mdns-host-name)
-                                          marionette))
-                ((? vector? result)
-                 (and (string=? (hostent:name result) #$mdns-host-name)
-                      (= (hostent:addrtype result) AF_INET)))))
+          (test-assert "getaddrinfo .local"
+            ;; Wait for the 'avahi-daemon' service and perform a resolution.
+            (match (marionette-eval
+                    '(getaddrinfo #$mdns-host-name)
+                    marionette)
+              (((? vector? addrinfos) ..1)
+               (pk 'getaddrinfo addrinfos)
+               (and (any (lambda (ai)
+                           (= AF_INET (addrinfo:fam ai)))
+                         addrinfos)
+                    (any (lambda (ai)
+                           (= AF_INET6 (addrinfo:fam ai)))
+                         addrinfos)))))
+
+          (test-assert "gethostbyname .local"
+            (match (pk 'gethostbyname
+                       (marionette-eval '(gethostbyname #$mdns-host-name)
+                                        marionette))
+              ((? vector? result)
+               (and (string=? (hostent:name result) #$mdns-host-name)
+                    (= (hostent:addrtype result) AF_INET)))))
 
 
-            (test-end)
-            (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
-    (gexp->derivation "nss-mdns" test)))
+  (gexp->derivation "nss-mdns" test))
 
 (define %test-nss-mdns
   (system-test

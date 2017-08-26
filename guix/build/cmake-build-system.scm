@@ -32,7 +32,7 @@
 ;; Code:
 
 (define* (configure #:key outputs (configure-flags '()) (out-of-source? #t)
-                    build-type
+                    build-type target
                     #:allow-other-keys)
   "Configure the given package."
   (let* ((out        (assoc-ref outputs "out"))
@@ -59,6 +59,15 @@
                   ,(string-append "-DCMAKE_INSTALL_RPATH=" out "/lib")
                   ;; enable verbose output from builds
                   "-DCMAKE_VERBOSE_MAKEFILE=ON"
+
+                  ;;  Cross-build
+                  ,@(if target
+                        (list (string-append "-DCMAKE_C_COMPILER="
+                                             target "-gcc")
+                              (if (string-contains target "mingw")
+                                  "-DCMAKE_SYSTEM_NAME=Windows"
+                                  "-DCMAKE_SYSTEM_NAME=Linux"))
+                        '())
                   ,@configure-flags)))
       (format #t "running 'cmake' with arguments ~s~%" args)
       (zero? (apply system* "cmake" args)))))

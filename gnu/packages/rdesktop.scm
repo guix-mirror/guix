@@ -26,7 +26,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -70,61 +72,65 @@ to remotely control a user's Windows desktop.")
     (license license:gpl3+)))
 
 (define-public freerdp
-  (package
-    (name "freerdp")
-    (version "1.2.0-beta1+android9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://github.com/FreeRDP/FreeRDP.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "1m0lzrr7hkxfvc5f9p8snimv0rmin2463zhg25mv36wig8g5k7l3"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xmlto" ,xmlto)))
-    (inputs
-     `(("libx11" ,libx11)
-       ("libxkbfile" ,libxkbfile)
-       ("libxcursor" ,libxcursor)
-       ("libxext" ,libxext)
-       ("libxi" ,libxi)
-       ("libxv" ,libxv)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("libxinerama" ,libxinerama)
-       ("libxshmfence" ,libxshmfence)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("cups" ,cups)
-       ("ffmpeg" ,ffmpeg)
-       ("pulseaudio" ,pulseaudio)
-       ("alsa-lib" ,alsa-lib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("zlib" ,zlib)
-       ("openssl" ,openssl)))
-    (arguments
-     `(#:configure-flags
-       '("-DCMAKE_INSTALL_LIBDIR=lib"
-         "-DWITH_PULSE=ON"
-         "-DWITH_CUPS=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-cmakelists
-           (lambda _
-             ;; CMake would return an error on REMOVE_DUPLICATES because this
-             ;; list is empty.
-             (substitute* "channels/client/CMakeLists.txt"
-               (("list\\(REMOVE_DUPLICATES CHANNEL_STATIC_CLIENT_ENTRIES\\)")
-                "")))))
-       #:tests? #f))                              ; no 'test' target
-    (home-page "https://www.freerdp.com")
-    (synopsis "Remote Desktop Protocol implementation")
-    (description "FreeRDP implements Microsoft's Remote Desktop Protocol.  It
-consists of the @code{xfreerdp} client, libraries for client and server
+  (let ((commit "03ab68318966c3a22935a02838daaea7b7fbe96c"))
+    (package
+      (name "freerdp")
+      (version (git-version "1.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      ;; We need the 1.1 branch for RDP support in vinagre.
+                      (url "git://github.com/FreeRDP/FreeRDP.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "07ish8rmvbk2zd99k91qybmmh5h4afly75l5kbvslhq1r6k8pbmp"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("libxslt" ,libxslt)
+         ("libxml2" ,libxml2)
+         ("docbook-xsl" ,docbook-xsl)
+         ("xmlto" ,xmlto)))
+      (inputs
+       `(("libx11" ,libx11)
+         ("libxkbfile" ,libxkbfile)
+         ("libxcursor" ,libxcursor)
+         ("libxext" ,libxext)
+         ("libxi" ,libxi)
+         ("libxv" ,libxv)
+         ("libxrandr" ,libxrandr)
+         ("libxrender" ,libxrender)
+         ("libxinerama" ,libxinerama)
+         ("libxshmfence" ,libxshmfence)
+         ("cups" ,cups)
+         ("ffmpeg" ,ffmpeg-2.8)
+         ("libjpeg" ,libjpeg)
+         ("pulseaudio" ,pulseaudio)
+         ("alsa-lib" ,alsa-lib)
+         ("zlib" ,zlib)
+         ("openssl" ,openssl)))
+      (arguments
+       `(#:configure-flags
+         (list "-DCMAKE_INSTALL_LIBDIR=lib"
+               "-DCMAKE_BUILD_TYPE=RELEASE"
+               "-DWITH_JPEG=ON"
+               ,@(if (string-prefix? "x86_64"
+                                     (or (%current-target-system)
+                                         (%current-system)))
+                     '("-DWITH_SSE2=ON")
+                     '())
+               (string-append "-DDOCBOOKXSL_DIR="
+                              (assoc-ref %build-inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl))
+               "-DWITH_PULSE=ON"
+               "-DWITH_CUPS=ON")
+         #:tests? #f))                              ; no 'test' target
+      (home-page "https://www.freerdp.com")
+      (synopsis "Remote Desktop Protocol implementation")
+      (description "FreeRDP implements Microsoft's Remote Desktop Protocol.
+It consists of the @code{xfreerdp} client, libraries for client and server
 functionality, and Windows Portable Runtime (WinPR), a portable implementation
 of parts of the Windows API.")
-    (license license:asl2.0)))
+    (license license:asl2.0))))

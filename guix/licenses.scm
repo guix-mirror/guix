@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
             lppl1.3a lppl1.3a+
             lppl1.3b lppl1.3b+
             lppl1.3c lppl1.3c+
+            miros
             mpl1.0 mpl1.1 mpl2.0
             ms-pl
             ncsa
@@ -451,6 +453,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LPPL 1.3c+"
            "https://www.latex-project.org/lppl/lppl-1-3c/"
            "LaTeX Project Public License 1.3c or later"))
+
+(define miros
+  (license "MirOS"
+           "https://www.mirbsd.org/MirOS-Licence.htm"
+           "MirOS License"))
 
 (define mpl1.0
   (license "MPL 1.0"

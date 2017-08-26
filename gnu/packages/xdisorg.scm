@@ -93,16 +93,15 @@
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
-       #:tests? #f ;no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'make-xrandr-available
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/arandr")
-               `("PATH" ":" prefix (,(string-append (assoc-ref inputs "xrandr")
-                                                    "/bin"))))
-             #t)))))
+         (add-before 'build 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "screenlayout/xrandr.py"
+               (("\"xrandr\"") (string-append "\"" (assoc-ref inputs "xrandr")
+                                              "/bin/xrandr\"")))
+             #t)))
+       #:tests? #f)) ;no tests
     (inputs `(("pygtk" ,python2-pygtk)
               ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gettext-minimal)
@@ -288,7 +287,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.80")
+    (version "2.4.81")
     (source
       (origin
         (method url-fetch)
@@ -298,7 +297,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1wa9cnzf60xwx67zq9ay48xr3j3sn1z80q77jpbzmkg906b52am8"))
+          "1bhimr6za2ddisrvrv1qqd7c2a59s7jc954sjycq2w68b8cmrh4c"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -452,7 +451,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "6.3.45")
+    (version "7.3.49")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -461,12 +460,13 @@ of the screen selected by mouse.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lzyjcg6yff1vzlsda45i57khajp56yrmcjfa5faw3i60fnqqiy7"))))
+                "0gxi174vi13ldjaf776s2jcdyy379lnwwml29nk1bkzj5d5gpghm"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("glm" ,glm)
+     `(("glew" ,glew)
+       ("glm" ,glm)
        ("icu4c" ,icu4c)
        ("libxext" ,libxext)
        ("libxrender" ,libxrender)
@@ -484,7 +484,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.4.63")
+    (version "5.4.68")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -493,7 +493,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ncly3mmg9pihda3jfwmvfa4sd3xanrm8hpvfq7lr2rl8rqknx80"))))
+                "0f54s7csrxjd5r9anqqa92diwmzdplpws3llmbr6g3c0l6bp8815"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -1061,7 +1061,7 @@ by name.")
 (define-public tint2
   (package
     (name "tint2")
-    (version "0.12.11")
+    (version "0.14.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/o9000/" name
@@ -1069,7 +1069,7 @@ by name.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dv7zaj2ahnfclnwnwcz9arrvzxn65yy29z7fqdgifdh3jk1kl2h"))))
+                "1kwzwxy4myagybm3rc7dgynfgp75742n348qibn1p2an9ggyivda"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test target

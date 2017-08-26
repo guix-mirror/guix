@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,15 +26,15 @@
 (define-public nim
   (package
     (name "nim")
-    (version "0.16.0")
+    (version "0.17.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://nim-lang.org/download/"
+      (uri (string-append "https://nim-lang.org/download/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0rsibhkc5n548bn9yyb9ycrdgaph5kq84sfxc9gabjs7pqirh6cy"))))
+        "16vsmk4rqnkg9lc9h9jk62ps0x778cdqg6qrs3k6fv2g73cqvq9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
@@ -46,11 +47,21 @@
                  (substitute* "install.sh"
                    (("1/nim") "1"))
                  #t)))
+           (add-after 'patch-source-shebangs 'patch-more-shebangs
+             (lambda _
+               (substitute* (append '("tests/stdlib/tosprocterminate.nim"
+                                      "lib/pure/osproc.nim")
+                                    (find-files "c_code" "stdlib_osproc.c"))
+                 (("/bin/sh") (which "sh")))
+               #t))
+           (replace 'build
+             (lambda _
+               (zero? (system* "sh" "build.sh"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  (zero? (system* "./install.sh" out))))))))
-    (home-page "http://nim-lang.org")
+    (home-page "https://nim-lang.org")
     (synopsis "Statically-typed, imperative programming language")
     (description "Nim (formerly known as Nimrod) is a statically-typed,
 imperative programming language that tries to give the programmer ultimate power

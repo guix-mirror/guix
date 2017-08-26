@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,11 +38,12 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages mtools)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages qemu)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages virtualization)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -120,7 +122,7 @@
        ("bison" ,bison)
        ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
        ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
-       ;; TODO Try building with flex > 2.6.3.
+       ;; TODO Try building with flex > 2.6.4.
        ("flex" ,flex-2.6.1)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
@@ -149,6 +151,7 @@ menu to select one of the installed operating systems.")
     (synopsis "GRand Unified Boot loader (UEFI version)")
     (inputs
      `(("efibootmgr" ,efibootmgr)
+       ("mtools", mtools)
        ,@(package-inputs grub)))
     (arguments
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
@@ -166,7 +169,52 @@ menu to select one of the installed operating systems.")
                      (("efibootmgr")
                       (string-append (assoc-ref inputs "efibootmgr")
                                      "/sbin/efibootmgr")))
-                   #t)))))))))
+                   #t))
+               (add-after 'patch-stuff 'use-absolute-mtools-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((mtools (assoc-ref inputs "mtools")))
+                     (substitute* "util/grub-mkrescue.c"
+                       (("\"mformat\"")
+                        (string-append "\"" mtools
+                                       "/bin/mformat\"")))
+                     (substitute* "util/grub-mkrescue.c"
+                       (("\"mcopy\"")
+                        (string-append "\"" mtools
+                                       "/bin/mcopy\"")))
+                     #t))))))))))
+
+;; Because grub searches hardcoded paths it's easiest to just build grub
+;; again to make it find both grub-pc and grub-efi.  There is a command
+;; line argument which allows you to specify ONE platform - but
+;; grub-mkrescue will use multiple platforms if they are available
+;; in the installation directory (without command line argument).
+(define-public grub-hybrid
+  (package
+    (inherit grub-efi)
+    (name "grub-hybrid")
+    (synopsis "GRand Unified Boot loader (hybrid version)")
+    (inputs
+     `(("grub" ,grub)
+       ,@(package-inputs grub-efi)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments grub-efi)
+       ((#:modules modules `((guix build utils) (guix build gnu-build-system)))
+        `((ice-9 ftw) ,@modules))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-non-efi
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((input-dir (string-append (assoc-ref inputs "grub")
+                                               "/lib/grub"))
+                     (output-dir (string-append (assoc-ref outputs "out")
+                                                "/lib/grub")))
+                 (for-each
+                  (lambda (basename)
+                    (if (not (string-prefix? "." basename))
+                        (symlink (string-append input-dir "/" basename)
+                                 (string-append output-dir "/" basename))))
+                  (scandir input-dir))
+                 #t)))))))))
 
 (define-public syslinux
   (let ((commit "bb41e935cc83c6242de24d2271e067d76af3585c"))
@@ -244,7 +292,7 @@ menu to select one of the installed operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex-2.6.1))) ; A bug in flex prevents building with flex-2.6.3.
+       ("flex" ,flex)))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
@@ -263,7 +311,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2017.03")
+    (version "2017.07")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -271,7 +319,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gqihplap05dlpwdb971wsqyv01nz2vabwq5g5649gr5jczsyjzm"))))
+                "1zzywk0fgngm1mfnhkp8d0v57rs51zr1y6rp4p03i6nbibfbyx2k"))))
     (native-inputs
      `(("bc" ,bc)
        ("dtc" ,dtc)
@@ -285,48 +333,56 @@ also initializes the boards (RAM etc).")
 
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
-  (package
-    (inherit u-boot)
-    (name (string-append "u-boot-" (string-downcase board)))
-    (native-inputs
-     `(("cross-gcc" ,(cross-gcc triplet))
-       ("cross-binutils" ,(cross-binutils triplet))
-       ,@(package-native-inputs u-boot)))
-    (arguments
-     `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
-       #:test-target "test"
-       #:make-flags
-       (list "HOSTCC=gcc" (string-append "CROSS_COMPILE=" ,triplet "-"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (let ((config-name (string-append ,board "_defconfig")))
-               (if (file-exists? (string-append "configs/" config-name))
-                   (zero? (apply system* "make" `(,@make-flags ,config-name)))
-                   (begin
-                     (display "Invalid board name. Valid board names are:")
-                     (let ((suffix-len (string-length "_defconfig")))
-                       (scandir "configs"
-                                (lambda (file-name)
-                                  (when (string-suffix? "_defconfig" file-name)
-                                    (format #t
-                                            "- ~A\n"
-                                            (string-drop-right file-name
-                                                               suffix-len))))))
-                     #f)))))
-         (replace 'install
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (libexec (string-append out "/libexec"))
-                    (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
-               (mkdir-p libexec)
-               (for-each
-                (lambda (file)
-                  (let ((target-file (string-append libexec "/" file)))
-                    (mkdir-p (dirname target-file))
-                    (copy-file file target-file)))
-                uboot-files)))))))))
+  (let ((same-arch? (if (string-prefix? (%current-system) triplet)
+                      `#t
+                      `#f)))
+    (package
+      (inherit u-boot)
+      (name (string-append "u-boot-" (string-downcase board)))
+      (native-inputs
+       `(,@(if (not same-arch?)
+             `(("cross-gcc" ,(cross-gcc triplet))
+               ("cross-binutils" ,(cross-binutils triplet)))
+             '())
+         ,@(package-native-inputs u-boot)))
+      (arguments
+       `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
+         #:test-target "test"
+         #:make-flags
+         (list "HOSTCC=gcc"
+               ,@(if (not same-arch?)
+                   `((string-append "CROSS_COMPILE=" ,triplet "-"))
+                   '()))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs make-flags #:allow-other-keys)
+               (let ((config-name (string-append ,board "_defconfig")))
+                 (if (file-exists? (string-append "configs/" config-name))
+                     (zero? (apply system* "make" `(,@make-flags ,config-name)))
+                     (begin
+                       (display "Invalid board name. Valid board names are:")
+                       (let ((suffix-len (string-length "_defconfig")))
+                         (scandir "configs"
+                                  (lambda (file-name)
+                                    (when (string-suffix? "_defconfig" file-name)
+                                      (format #t
+                                              "- ~A\n"
+                                              (string-drop-right file-name
+                                                                 suffix-len))))))
+                       #f)))))
+           (replace 'install
+             (lambda* (#:key outputs make-flags #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libexec (string-append out "/libexec"))
+                      (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
+                 (mkdir-p libexec)
+                 (for-each
+                  (lambda (file)
+                    (let ((target-file (string-append libexec "/" file)))
+                      (mkdir-p (dirname target-file))
+                      (copy-file file target-file)))
+                  uboot-files))))))))))
 
 (define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
@@ -336,3 +392,6 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
+
+(define-public u-boot-odroid-c2
+  (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))

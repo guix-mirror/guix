@@ -2009,10 +2009,10 @@ void DerivationGoal::startBuilder()
 	char stack[32 * 1024];
 	int flags = CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD;
 	if (!fixedOutput) flags |= CLONE_NEWNET;
-
 	/* Ensure proper alignment on the stack.  On aarch64, it has to be 16
 	   bytes.  */
-	pid = clone(childEntry, (char *)(((uintptr_t)stack + 16) & ~0xf),
+	pid = clone(childEntry,
+		    (char *)(((uintptr_t)stack + sizeof(stack) - 8) & ~(uintptr_t)0xf),
 		    flags, this);
 	if (pid == -1)
 	    throw SysError("cloning builder process");
@@ -2086,12 +2086,8 @@ void DerivationGoal::runChild()
                outside of the namespace.  Making a subtree private is
                local to the namespace, though, so setting MS_PRIVATE
                does not affect the outside world. */
-            Strings mounts = tokenizeString<Strings>(readFile("/proc/self/mountinfo", true), "\n");
-            foreach (Strings::iterator, i, mounts) {
-                vector<string> fields = tokenizeString<vector<string> >(*i, " ");
-                string fs = decodeOctalEscaped(fields.at(4));
-                if (mount(0, fs.c_str(), 0, MS_PRIVATE, 0) == -1)
-                    throw SysError(format("unable to make filesystem `%1%' private") % fs);
+            if (mount(0, "/", 0, MS_REC|MS_PRIVATE, 0) == -1) {
+                throw SysError("unable to make ‘/’ private mount");
             }
 
             /* Bind-mount chroot directory to itself, to treat it as a

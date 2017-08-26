@@ -174,7 +174,8 @@ else
     PS1='\\u@\\h \\w\\$ '
 fi
 alias ls='ls -p --color'
-alias ll='ls -l'\n"))
+alias ll='ls -l'
+alias grep='grep --color'\n"))
         (zlogin    (plain-file "zlogin" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
@@ -189,6 +190,11 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
       (".bashrc" ,bashrc)
       (".zlogin" ,zlogin)
       (".Xdefaults" ,xdefaults)
+      (".guile" ,(plain-file "dot-guile"
+                             (string-append
+                              "(use-modules (ice-9 readline))\n\n"
+                              ";; Enable completion at the REPL.\n"
+                              "(activate-readline)\n")))
       (".guile-wm" ,guile-wm)
       (".gdbinit" ,gdbinit))))
 

@@ -212,84 +212,78 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
    (home-page "https://www.gnu.org/software/gzip/")))
 
 (define-public bzip2
-  (let ((build-shared-lib
-         ;; Build a shared library.
-         '(lambda* (#:key inputs #:allow-other-keys)
-            (patch-makefile-SHELL "Makefile-libbz2_so")
-            (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
-        (install-shared-lib
-         '(lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out    (assoc-ref outputs "out"))
-                   (libdir (string-append out "/lib")))
-              (for-each (lambda (file)
-                          (let ((base (basename file)))
-                            (format #t "installing `~a' to `~a'~%"
-                                    base libdir)
-                            (copy-file file
-                                       (string-append libdir "/" base))))
-                        (find-files "." "^libbz2\\.so")))))
-        (set-cross-environment
-         '(lambda* (#:key target #:allow-other-keys)
-            (substitute* (find-files "." "Makefile")
-              (("CC=.*$")
-               (string-append "CC = " target "-gcc\n"))
-              (("AR=.*$")
-               (string-append "AR = " target "-ar\n"))
-              (("RANLIB=.*$")
-               (string-append "RANLIB = " target "-ranlib\n"))
-              (("^all:(.*)test" _ prerequisites)
-               ;; Remove 'all' -> 'test' dependency.
-               (string-append "all:" prerequisites "\n"))))))
-    (package
-      (name "bzip2")
-      (version "1.0.6")
-      (source (origin
-               (method url-fetch)
-               (uri (string-append "http://www.bzip.org/" version "/bzip2-"
-                                   version ".tar.gz"))
-               (sha256
-                (base32
-                 "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-1))
-         #:phases
-         ,(if (%current-target-system)
+  (package
+    (name "bzip2")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.bzip.org/" version "/bzip2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key target #:allow-other-keys)
+             (if ,(%current-target-system)
+                 ;; Cross-compilation: use the cross tools.
+                 (substitute* (find-files "." "Makefile")
+                   (("CC=.*$")
+                    (string-append "CC = " target "-gcc\n"))
+                   (("AR=.*$")
+                    (string-append "AR = " target "-ar\n"))
+                   (("RANLIB=.*$")
+                    (string-append "RANLIB = " target "-ranlib\n"))
+                   (("^all:(.*)test" _ prerequisites)
+                    ;; Remove 'all' -> 'test' dependency.
+                    (string-append "all:" prerequisites "\n")))
+                 #t)))
+         (add-before 'build 'build-shared-lib
+           (lambda* (#:key inputs #:allow-other-keys)
+             (patch-makefile-SHELL "Makefile-libbz2_so")
+             (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
+         (add-after 'install 'install-shared-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib")))
+               (for-each (lambda (file)
+                           (let ((base (basename file)))
+                             (format #t "installing `~a' to `~a'~%"
+                                     base libdir)
+                             (copy-file file
+                                        (string-append libdir "/" base))))
+                         (find-files "." "^libbz2\\.so")))
+             #t))
+         (add-after 'install-shared-lib 'patch-scripts
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/bin/bzdiff")
+                 (("/bin/rm") "rm")))
+             #t)))
 
-              ;; Cross-compilation: use the cross tools.
-              `(alist-cons-before
-                'build 'build-shared-lib ,build-shared-lib
-                (alist-cons-after
-                 'install 'install-shared-lib ,install-shared-lib
-                 (alist-replace 'configure ,set-cross-environment
-                                %standard-phases)))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
 
-              ;; Native compilation: build the shared library.
-              `(alist-cons-before
-                'build 'build-shared-lib ,build-shared-lib
-                (alist-cons-after
-                 'install 'install-shared-lib ,install-shared-lib
-                 (alist-delete 'configure %standard-phases))))
-
-         #:make-flags (list (string-append "PREFIX="
-                                           (assoc-ref %outputs "out")))
-
-         ;; Don't attempt to run the tests when cross-compiling.
-         ,@(if (%current-target-system)
-               '(#:tests? #f)
-               '())))
-      (synopsis "High-quality data compression program")
-      (description
-       "bzip2 is a freely available, patent free (see below), high-quality data
+       ;; Don't attempt to run the tests when cross-compiling.
+       ,@(if (%current-target-system)
+             '(#:tests? #f)
+             '())))
+    (synopsis "High-quality data compression program")
+    (description
+     "bzip2 is a freely available, patent free (see below), high-quality data
 compressor.  It typically compresses files to within 10% to 15% of the best
 available techniques (the PPM family of statistical compressors), whilst
 being around twice as fast at compression and six times faster at
 decompression.")
-      (license (license:non-copyleft "file://LICENSE"
-                                  "See LICENSE in the distribution."))
-      (home-page "http://www.bzip.org/"))))
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))
+    (home-page "http://www.bzip.org/")))
 
 (define-public lbzip2
   (package
@@ -480,6 +474,36 @@ more than bzip2, which makes it well-suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (license license:gpl3+)))
 
+(define-public lziprecover
+  (package
+    (name "lziprecover")
+    (version "1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/lzip/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z5fbkm0qprypjf7kxkqganniibj0zml13zvfkrchnjafcmmzyld"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.nongnu.org/lzip/lziprecover.html")
+    (synopsis "Recover and decompress data from damaged lzip files")
+    (description
+     "Lziprecover is a data recovery tool and decompressor for files in the lzip
+compressed data format (.lz).  It can test the integrity of lzip files, extract
+data from damaged ones, and repair most files with small errors (up to one
+single-byte error per member) entirely.
+
+Lziprecover is not a replacement for regular backups, but a last line of defence
+when even the backups are corrupt.  It can recover files by merging the good
+parts of two or more damaged copies, such as can be easily produced by running
+@command{ddrescue} on a failing device.
+
+This package also includes @command{unzcrash}, a tool to test the robustness of
+decompressors when faced with corrupted input.")
+    (license (list license:bsd-2        ; arg_parser.{cc,h}
+                   license:gpl2+))))    ; everything else
+
 (define-public sharutils
   (package
     (name "sharutils")
@@ -582,14 +606,14 @@ sfArk file format to the uncompressed sf2 format.")
 (define-public libmspack
   (package
     (name "libmspack")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://www.cabextract.org.uk/libmspack/libmspack-"
                           version "alpha.tar.gz"))
       (sha256
-       (base32 "04413hynb7zizxnkgy9riik3612dwirkpr6fcjrnfl2za9sz4rw9"))))
+       (base32 "08gr2pcinas6bdqz3k0286g5cnksmcx813skmdwyca6bmj1fxnqy"))))
     (build-system gnu-build-system)
     (home-page "http://www.cabextract.org.uk/libmspack/")
     (synopsis "Compression tools for some formats used by Microsoft")
@@ -678,16 +702,15 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.7.5")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lz4/lz4/archive/"
                            "v" version ".tar.gz"))
-       (patches (search-patches "lz4-fix-test-failures.patch"))
        (sha256
         (base32
-         "0zkykqqjfa1q3ji0qmb1ml3l9063qqfh99agyj3cnb02cg6wm401"))
+         "1xnckwwah74gl98gylf1b00vk4km1d8sgd8865h07ccvgbm8591c"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
@@ -698,33 +721,34 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
-    (home-page "https://github.com/lz4/lz4")
+    (home-page "http://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
 compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an
 extremely fast decoder, with speed in multiple GB/s per core (0.71 Bytes/cycle).
 A high compression derivative, called LZ4_HC, is also provided.  It trades CPU
 time for compression ratio.")
-    ;; The libraries (lz4, lz4hc, and xxhash are BSD licenced. The command
+    ;; The libraries (lz4, lz4hc, and xxhash) are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
 
 (define-public python-lz4
   (package
     (name "python-lz4")
-    (version "0.8.2")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lz4" version))
        (sha256
         (base32
-         "1irad4sq4hdr30fr53smvv3zzk4rddcf9b4jx19w8s9xsxhr1x3b"))))
+         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/python-lz4/python-lz4")
-    (synopsis "LZ4 Bindings for Python")
+    (synopsis "LZ4 bindings for Python")
     (description
      "This package provides python bindings for the lz4 compression library
 by Yann Collet.  The project contains bindings for the LZ4 block format and
@@ -1257,7 +1281,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1265,7 +1289,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j5kf0phx4w4b5x7aqwc10lxi9ix7rxhxk0df37cpdrqni1sdnqg"))
+                "1imddqjhczira626nf3nqmjwj3wb37xcfcwgkjydv2k6fpfbjbri"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove non-free source files.

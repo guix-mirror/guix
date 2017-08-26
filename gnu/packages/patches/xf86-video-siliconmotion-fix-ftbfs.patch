@@ -1,0 +1,171 @@
+From eee8fd4c489a693344da0bba14cfa54c54610b89 Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@ubuntu.com>
+Date: Thu, 9 Mar 2017 13:31:34 +0200
+Subject: [PATCH] Fix build against xorg server 1.17 on certain architectures
+
+Fixes at least arm64, likely also hppa, m68k, sh4.
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@ubuntu.com>
+---
+ src/regsmi.h       | 18 ++++++++++++++++++
+ src/smi.h          |  2 ++
+ src/smi_driver.c   | 19 +++++++++----------
+ src/smilynx_crtc.c |  6 +++---
+ src/smilynx_hw.c   |  5 ++---
+ 5 files changed, 34 insertions(+), 16 deletions(-)
+
+diff --git a/src/regsmi.h b/src/regsmi.h
+index 5dd0320..69205ba 100644
+--- a/src/regsmi.h
++++ b/src/regsmi.h
+@@ -64,8 +64,13 @@ VGAIN8_INDEX(SMIPtr pSmi, int indexPort, int dataPort, CARD8 index)
+ 	MMIO_OUT8(pSmi->IOBase, indexPort, index);
+ 	return(MMIO_IN8(pSmi->IOBase, dataPort));
+     } else {
++#ifdef XSERVER_LIBPCIACCESS
++	pci_io_write8(pSmi->io, indexPort, index);
++	return pci_io_read8(pSmi->io, dataPort);
++#else
+ 	outb(pSmi->PIOBase + indexPort, index);
+ 	return(inb(pSmi->PIOBase + dataPort));
++#endif
+     }
+ }
+ 
+@@ -76,8 +81,13 @@ VGAOUT8_INDEX(SMIPtr pSmi, int indexPort, int dataPort, CARD8 index, CARD8 data)
+ 	MMIO_OUT8(pSmi->IOBase, indexPort, index);
+ 	MMIO_OUT8(pSmi->IOBase, dataPort, data);
+     } else {
++#ifdef XSERVER_LIBPCIACCESS
++	pci_io_write8(pSmi->io, indexPort, index);
++	pci_io_write8(pSmi->io, dataPort, data);
++#else
+ 	outb(pSmi->PIOBase + indexPort, index);
+ 	outb(pSmi->PIOBase + dataPort, data);
++#endif
+     }
+ }
+ 
+@@ -87,7 +97,11 @@ VGAIN8(SMIPtr pSmi, int port)
+     if (pSmi->IOBase) {
+ 	return(MMIO_IN8(pSmi->IOBase, port));
+     } else {
++#ifdef XSERVER_LIBPCIACCESS
++	return pci_io_read8(pSmi->io, port);
++#else
+ 	return(inb(pSmi->PIOBase + port));
++#endif
+     }
+ }
+ 
+@@ -97,7 +111,11 @@ VGAOUT8(SMIPtr pSmi, int port, CARD8 data)
+     if (pSmi->IOBase) {
+ 	MMIO_OUT8(pSmi->IOBase, port, data);
+     } else {
++#ifdef XSERVER_LIBPCIACCESS
++	pci_io_write8(pSmi->io, port, data);
++#else
+ 	outb(pSmi->PIOBase + port, data);
++#endif
+     }
+ }
+ 
+diff --git a/src/smi.h b/src/smi.h
+index 2742c8d..1f20a2d 100644
+--- a/src/smi.h
++++ b/src/smi.h
+@@ -171,6 +171,8 @@ typedef struct
+     pciVideoPtr		PciInfo;	/* PCI info vars */
+ #ifndef XSERVER_LIBPCIACCESS
+     PCITAG		PciTag;
++#else
++    struct pci_io_handle *io;
+ #endif
+     int			Chipset;	/* Chip info, set using PCI
+ 					   above */
+diff --git a/src/smi_driver.c b/src/smi_driver.c
+index 8949cae..6bdf64d 100644
+--- a/src/smi_driver.c
++++ b/src/smi_driver.c
+@@ -446,6 +446,9 @@ SMI_PreInit(ScrnInfoPtr pScrn, int flags)
+ 	pSmi->PIOBase = hwp->PIOOffset;
+ #else
+ 	pSmi->PIOBase = 0;
++#ifdef XSERVER_LIBPCIACCESS
++	pSmi->io = hwp->io;
++#endif
+ #endif
+ 
+ 	xf86ErrorFVerb(VERBLEV, "\tSMI_PreInit vgaCRIndex=%x, vgaIOBase=%x, "
+@@ -2022,16 +2025,14 @@ SMI_EnableMmio(ScrnInfoPtr pScrn)
+ 	vgaHWSetStdFuncs(hwp);
+ 
+ 	/* Enable linear mode */
+-	outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x18);
+-	tmp = inb(pSmi->PIOBase + VGA_SEQ_DATA);
++	tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x18);
+ 	pSmi->SR18Value = tmp;					/* PDR#521 */
+-	outb(pSmi->PIOBase + VGA_SEQ_DATA, tmp | 0x11);
++	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x18, tmp | 0x11);
+ 
+ 	/* Enable 2D/3D Engine and Video Processor */
+-	outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x21);
+-	tmp = inb(pSmi->PIOBase + VGA_SEQ_DATA);
++	tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x21);
+ 	pSmi->SR21Value = tmp;					/* PDR#521 */
+-	outb(pSmi->PIOBase + VGA_SEQ_DATA, tmp & ~0x03);
++	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x21, tmp & ~0x03);
+     }
+ 
+     LEAVE();
+@@ -2050,12 +2051,10 @@ SMI_DisableMmio(ScrnInfoPtr pScrn)
+ 	vgaHWSetStdFuncs(hwp);
+ 
+ 	/* Disable 2D/3D Engine and Video Processor */
+-	outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x21);
+-	outb(pSmi->PIOBase + VGA_SEQ_DATA, pSmi->SR21Value);	/* PDR#521 */
++	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x21, pSmi->SR21Value);	/* PDR#521 */
+ 
+ 	/* Disable linear mode */
+-	outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x18);
+-	outb(pSmi->PIOBase + VGA_SEQ_DATA, pSmi->SR18Value);	/* PDR#521 */
++	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x18, pSmi->SR18Value);	/* PDR#521 */
+     }
+ 
+     LEAVE();
+diff --git a/src/smilynx_crtc.c b/src/smilynx_crtc.c
+index fb7183c..f4d8b4e 100644
+--- a/src/smilynx_crtc.c
++++ b/src/smilynx_crtc.c
+@@ -619,9 +619,9 @@ SMILynx_CrtcModeSet_bios(xf86CrtcPtr crtc,
+     xf86ExecX86int10(pSmi->pInt10);
+ 
+     /* Enable linear mode. */
+-    outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x18);
+-    tmp = inb(pSmi->PIOBase + VGA_SEQ_DATA);
+-    outb(pSmi->PIOBase + VGA_SEQ_DATA, tmp | 0x01);
++    VGAOUT8(pSmi, VGA_SEQ_INDEX, 0x18);
++    tmp = VGAIN8(pSmi, VGA_SEQ_DATA);
++    VGAOUT8(pSmi, VGA_SEQ_DATA, tmp | 0x01);
+ 
+     /* Enable DPR/VPR registers. */
+     tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x21);
+diff --git a/src/smilynx_hw.c b/src/smilynx_hw.c
+index b2ee8a5..40aa5a4 100644
+--- a/src/smilynx_hw.c
++++ b/src/smilynx_hw.c
+@@ -365,9 +365,8 @@ SMILynx_WriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr, SMIRegPtr restore)
+ 	xf86ExecX86int10(pSmi->pInt10);
+ 
+ 	/* Enable linear mode. */
+-	outb(pSmi->PIOBase + VGA_SEQ_INDEX, 0x18);
+-	tmp = inb(pSmi->PIOBase + VGA_SEQ_DATA);
+-	outb(pSmi->PIOBase + VGA_SEQ_DATA, tmp | 0x01);
++	tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x18);
++	VGAOUT8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x18, tmp | 0x01);
+ 
+ 	/* Enable DPR/VPR registers. */
+ 	tmp = VGAIN8_INDEX(pSmi, VGA_SEQ_INDEX, VGA_SEQ_DATA, 0x21);
+-- 
+2.7.4
+

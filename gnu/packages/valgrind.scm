@@ -41,6 +41,8 @@
                "18bnrw9b1d55wi1wnl68n25achsp9w48n51n1xw4fwjjnaal7jk7"))
              (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
+    (outputs '("doc"                              ;16 MB
+               "out"))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -53,6 +55,13 @@
                  (("obj:/lib") "obj:*/lib")
                  (("obj:/usr/X11R6/lib") "obj:*/lib")
                  (("obj:/usr/lib") "obj:*/lib"))
+               #t)))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((orig (format #f "~a/share/doc" (assoc-ref outputs "out")))
+                   (dest (format #f "~a/share" (assoc-ref outputs "doc"))))
+               (mkdir-p dest)
+               (rename-file orig dest)
                #t))))))
     (inputs `(;; GDB is needed to provide a sane default for `--db-command'.
               ("gdb" ,gdb)))

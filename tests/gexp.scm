@@ -355,6 +355,14 @@
          (equal? (gexp->sexp* exp)                ;native
                  (gexp->sexp* exp "mips64el-linux")))))
 
+(test-assert "gexp list splicing + ungexp-splicing"
+  (let* ((inner (gexp (ungexp-native glibc)))
+         (exp   (gexp (list (ungexp-splicing (list inner))))))
+    (and (equal? `((,glibc "out")) (gexp-native-inputs exp))
+         (null? (gexp-inputs exp))
+         (equal? (gexp->sexp* exp)                ;native
+                 (gexp->sexp* exp "mips64el-linux")))))
+
 (test-equal "output list"
   2
   (let ((exp (gexp (begin (mkdir (ungexp output))

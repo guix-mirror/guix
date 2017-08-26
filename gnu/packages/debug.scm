@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pretty-print)
-  #:use-module (gnu packages qemu)
+  #:use-module (gnu packages virtualization)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -166,12 +167,15 @@ tools that process C/C++ code.")
                             (%current-system))
                    ("x86_64-linux"   "x86_64")
                    ("i686-linux"     "i386")
+                   ("aarch64-linux"  "aarch64")
+                   ("armhf-linux"    "arm")
+                   ("mips64el-linux" "mips64el")
                    ;; Prevent errors when querying this package on unsupported
                    ;; platforms, e.g. when running "guix package --search="
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.15b")             ;It seems all releases have the 'b' suffix
+      (version "2.49b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method url-fetch)
@@ -179,7 +183,7 @@ tools that process C/C++ code.")
                              "afl-" version ".tgz"))
          (sha256
           (base32
-           "04n2jfkchpz6a07w694b0im1vcmc3220ryqcaasa7vix7784wzs2"))))
+           "1lc8mpwlbyb1iil9961yfysp8l2l4nw0s07781m1haiz4jq2rigp"))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
@@ -234,6 +238,20 @@ tools that process C/C++ code.")
                             "CC=gcc")
          #:phases (modify-phases %standard-phases
                     (delete 'configure)
+                    ,@(if (string=? (%current-system) (or "x86_64-linux"
+                                                          "i686-linux"))
+                        '()
+                        '((add-before 'build 'set-afl-flag
+                            (lambda _ (setenv "AFL_NO_X86" "1") #t))
+                          (add-after 'install 'remove-x86-programs
+                            (lambda* (#:key outputs #:allow-other-keys)
+                              (let* ((out (assoc-ref outputs "out"))
+                                     (bin (string-append out "/bin/")))
+                                (delete-file (string-append bin "afl-gcc"))
+                                (delete-file (string-append bin "afl-g++"))
+                                (delete-file (string-append bin "afl-clang"))
+                                (delete-file (string-append bin "afl-clang++")))
+                              #t))))
                     (add-after
                      ;; TODO: Build and install the afl-llvm tool.
                      'install 'install-qemu
@@ -243,10 +261,7 @@ tools that process C/C++ code.")
                          (symlink (string-append qemu "/bin/qemu-" ,machine)
                                   (string-append out "/bin/afl-qemu-trace"))
                          #t)))
-                    (delete 'check))))
-      (supported-systems (fold delete
-                               %supported-systems
-                               '("armhf-linux" "mips64el-linux")))
+                    (delete 'check)))) ; Tests are run during 'install phase.
       (home-page "http://lcamtuf.coredump.cx/afl")
       (synopsis "Security-oriented fuzzer")
       (description
@@ -287,20 +302,26 @@ down the road.")
        ;; not accept a directory name instead.  To let the gnu-build-system's
        ;; patch-* phases work properly, we unpack the source first, then
        ;; repack before the configure phase.
-       `(#:configure-flags '("--with-make-tar=./make.tar.xz")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-make
-             (lambda* (#:key inputs #:allow-other-keys)
-               (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
-           (add-before 'configure 'repack-make
-             (lambda _
-               (zero? (system* "tar" "cJf" "./make.tar.xz"
-                               (string-append "make-"
-                                              ,(package-version gnu-make))))))
-           (add-before 'configure 'bootstrap
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))))
+       (let ((make-dir (string-append "make-" (package-version gnu-make))))
+         `(#:configure-flags '("--with-make-tar=./make.tar.xz")
+           #:phases
+           (modify-phases %standard-phases
+             (add-after 'unpack 'unpack-make
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
+             (add-after 'unpack-make 'set-default-shell
+               (lambda _
+                 ;; Taken mostly directly from (@ (gnu packages base) gnu-make)
+                 (substitute* (string-append ,make-dir "/job.c")
+                   (("default_shell = .*$")
+                    (format #f "default_shell = \"~a\";\n"
+                            (which "sh"))))))
+             (add-before 'configure 'repack-make
+               (lambda _
+                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))
+             (add-before 'configure 'bootstrap
+               (lambda _
+                 (zero? (system* "autoreconf" "-vfi"))))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description

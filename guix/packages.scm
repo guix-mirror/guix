@@ -414,6 +414,13 @@ derivations."
   (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
 
+(define (guile-2.0)
+  "Return Guile 2.0."
+  ;; FIXME: This is used as a workaround for <https://bugs.gnu.org/28211> when
+  ;; grafting packages.
+  (let ((distro (resolve-interface '(gnu packages guile))))
+    (module-ref distro 'guile-2.0)))
+
 (define* (default-guile-derivation #:optional (system (%current-system)))
   "Return the derivation for SYSTEM of the default Guile package used to run
 the build code of derivation."
@@ -581,7 +588,12 @@ specifies modules in scope when evaluating SNIPPET."
                                                     #:fail-on-error? #t)))))
                         (zero? (apply system*
                                       (string-append #+tar "/bin/tar")
-                                      "cvfa" #$output
+                                      "cvf" #$output
+                                      ;; The bootstrap xz does not support
+                                      ;; threaded compression (introduced in
+                                      ;; 5.2.0), but it ignores the extra flag.
+                                      (string-append "--use-compress-program="
+                                                     #+xz "/bin/xz --threads=0")
                                       ;; avoid non-determinism in the archive
                                       "--mtime=@0"
                                       "--owner=root:0"
@@ -1140,7 +1152,7 @@ This is an internal procedure."
                   (()
                    drv)
                   (grafts
-                   (let ((guile (package-derivation store (default-guile)
+                   (let ((guile (package-derivation store (guile-2.0)
                                                     system #:graft? #f)))
                      ;; TODO: As an optimization, we can simply graft the tip
                      ;; of the derivation graph since 'graft-derivation'
@@ -1166,7 +1178,7 @@ system identifying string)."
                    (graft-derivation store drv grafts
                                      #:system system
                                      #:guile
-                                     (package-derivation store (default-guile)
+                                     (package-derivation store (guile-2.0)
                                                          system #:graft? #f))))
                 drv))))
 

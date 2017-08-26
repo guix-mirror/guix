@@ -1095,9 +1095,11 @@ files for the fonts of the @var{manifest} entries."
                                 (unless (and (zero? (system* mkfontscale))
                                              (zero? (system* mkfontdir)))
                                   (exit #f))
-                                (when (empty-file? fonts-scale-file)
+                                (when (and (file-exists? fonts-scale-file)
+                                           (empty-file? fonts-scale-file))
                                   (delete-file fonts-scale-file))
-                                (when (empty-file? fonts-dir-file)
+                                (when (and (file-exists? fonts-dir-file)
+                                           (empty-file? fonts-dir-file))
                                   (delete-file fonts-dir-file))))
                             directories)))))))
 
@@ -1313,40 +1315,6 @@ are cross-built for TARGET."
 (define (generation-numbers profile)
   "Return the sorted list of generation numbers of PROFILE, or '(0) if no
 former profiles were found."
-  (define* (scandir name #:optional (select? (const #t))
-                    (entry<? (@ (ice-9 i18n) string-locale<?)))
-    ;; XXX: Bug-fix version introduced in Guile v2.0.6-62-g139ce19.
-    (define (enter? dir stat result)
-      (and stat (string=? dir name)))
-
-    (define (visit basename result)
-      (if (select? basename)
-          (cons basename result)
-          result))
-
-    (define (leaf name stat result)
-      (and result
-           (visit (basename name) result)))
-
-    (define (down name stat result)
-      (visit "." '()))
-
-    (define (up name stat result)
-      (visit ".." result))
-
-    (define (skip name stat result)
-      ;; All the sub-directories are skipped.
-      (visit (basename name) result))
-
-    (define (error name* stat errno result)
-      (if (string=? name name*)             ; top-level NAME is unreadable
-          result
-          (visit (basename name*) result)))
-
-    (and=> (file-system-fold enter? leaf down up skip error #f name lstat)
-           (lambda (files)
-             (sort files entry<?))))
-
   (match (scandir (dirname profile)
                   (cute regexp-exec (profile-regexp profile) <>))
     (#f                                         ; no profile directory

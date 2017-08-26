@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
@@ -126,14 +128,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1smwz4x5qa4js0zf1w3asq6z7mh20zlgwbh2bk5dczw6xrk22yyr"))))
+                "0lx201q20dvc70f8a3c9s7s18z15inlxvbffph97ngvrgnyjq9cx"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
@@ -290,10 +292,32 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 mapping from string keys to string values.")
     (license license:bsd-3)))
 
+(define-public memcached
+  (package
+    (name "memcached")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://memcached.org/files/memcached-" version ".tar.gz"))
+       (sha256
+        (base32 "0chwc0g7wfvcad36z8pf2jbgygdnm9nm1l6pwjsn3d2b089gh0f0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevent" ,libevent)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (home-page "https://memcached.org/")
+    (synopsis "In memory caching service")
+    (description "Memcached is a in memory key value store.  It has a small
+and generic API, and was originally intended for use with dynamic web
+applications.")
+    (license license:bsd-3)))
+
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.18")
+    (version "5.7.19")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -305,7 +329,7 @@ mapping from string keys to string values.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "18m1mr55k9zmvnyqs0wr50csqsz3scs09fykh60wsml6c3np2p8b"))))
+               "1c8y54yk756179nx4dgg79dijmjdq5n8l057cnqsg70pjdpyfl9y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -373,7 +397,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.25")
+    (version "10.1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -381,7 +405,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mm0n8sl6grajk5rbrx55333laz5dg2abyl8mlsn7h8vdymfq1bj"))))
+                "0ggpdcal0if9y6h9hp1yv2q65cbkjfl4p8rqk68a5pk7k75v325s"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -450,14 +474,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.6.3")
+    (version "9.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1imrjp4vfslxj5rrvphcrrk21zv8kqw3gacmwradixh1d5rv6i8n"))))
+                "04yffrrmn85k25n3nq389aa9c1j8mkimrf889kayl772h9nv2fib"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -730,7 +754,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.17.0")
+   (version "3.19.3")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -746,7 +770,7 @@ for example from a shell script.")
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0k472gq0p706jq4529p60znvw02hdf172qxgbdv59q0n7anqbr54"))))
+              "00b3l2qglpl1inx21fckiwxnfq5xf6441flc79rqg7zdvh1rq4h6"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -769,14 +793,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.11")
+    (version "1.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0i1l38h0vyck6zkcj4fn2l03spadlmyr1qa1xpdp9dy2ccbm3s1r"))))
+                "1sfbia8xyaywgx9zy7x618vrvyx9gc3cgqf763shsii9javlnz9s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -837,6 +861,7 @@ extremely small.")
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-file-temp" ,perl-file-temp)
+       ("perl-module-install" ,perl-module-install)
        ("perl-package-stash" ,perl-package-stash)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
@@ -890,7 +915,8 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cache-cache" ,perl-cache-cache)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
@@ -913,6 +939,8 @@ built-in caching support.")
         (base32
          "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
     (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
@@ -943,6 +971,7 @@ introspected and examined.")
        ("perl-config-general" ,perl-config-general)
        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
+       ("perl-module-install" ,perl-module-install)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
        ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
@@ -1015,7 +1044,8 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))))
+         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))
+       (patches (search-patches "perl-dbd-mysql-CVE-2017-10788.patch"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))
@@ -1065,7 +1095,8 @@ module, and nothing else.")
          "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs
@@ -1179,14 +1210,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.2.4")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "1wb9jd692a0y52bkkxr6815kk4g039mirjdrvqx24265lv2l5l1a"))))
+                "14bm8lkhylc93r4dgl7kkzzpw2xq7gr6w6h80n3jazqnx5mcsj90"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

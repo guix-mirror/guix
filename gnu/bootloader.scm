@@ -30,6 +30,7 @@
             menu-entry-linux
             menu-entry-linux-arguments
             menu-entry-initrd
+            menu-entry-device-mount-point
 
             bootloader
             bootloader?
@@ -42,7 +43,7 @@
             bootloader-configuration
             bootloader-configuration?
             bootloader-configuration-bootloader
-            bootloader-configuration-device
+            bootloader-configuration-target
             bootloader-configuration-menu-entries
             bootloader-configuration-default-entry
             bootloader-configuration-timeout
@@ -66,6 +67,8 @@
   menu-entry?
   (label           menu-entry-label)
   (device          menu-entry-device       ; file system uuid, label, or #f
+                   (default #f))
+  (device-mount-point menu-entry-device-mount-point
                    (default #f))
   (linux           menu-entry-linux)
   (linux-arguments menu-entry-linux-arguments
@@ -104,6 +107,8 @@
   (bootloader                      bootloader-configuration-bootloader)    ; <bootloader>
   (device                          bootloader-configuration-device         ; string
                                    (default #f))
+  (target                          %bootloader-configuration-target         ; string
+                                   (default #f))
   (menu-entries                    bootloader-configuration-menu-entries   ; list of <boot-parameters>
                                    (default '()))
   (default-entry                   bootloader-configuration-default-entry  ; integer
@@ -122,6 +127,15 @@
                                    (default #f))
   (additional-configuration        bootloader-configuration-additional-configuration ; record
                                    (default #f)))
+
+(define (bootloader-configuration-target config)
+  (or (%bootloader-configuration-target config)
+      (let ((device (bootloader-configuration-device config)))
+        (when device
+          (issue-deprecation-warning
+           "The 'device' field of bootloader configurations is deprecated."
+           "Use 'target' instead."))
+        device)))
 
 
 ;;;

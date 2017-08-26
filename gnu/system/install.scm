@@ -299,14 +299,13 @@ Use Alt-F2 for documentation.
     (host-name "gnu")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
-    (bootloader (grub-configuration
-                 (device "/dev/sda")))
+    (bootloader (grub-configuration (target "/dev/sda")))
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
      (cons* (file-system
               (mount-point "/")
-              (device "GuixSD")
+              (device "GuixSD_image")
               (title 'label)
               (type "ext4"))
 

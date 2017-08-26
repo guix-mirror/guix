@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,21 +30,20 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.60")
+    (version "0.61")
     (source
      (origin
        (method url-fetch)
        (uri (list
              (string-append
-              "mirror://debian/pool/main/m/moreutils/moreutils_"
-              version ".orig.tar.xz")
-             ;; The main Debian mirrors only hold the current packages.
+              "https://git.joeyh.name/index.cgi/moreutils.git/snapshot/"
+              name "-" version ".tar.gz")
              (string-append
-              "http://snapshot.debian.org/archive/debian-debug/20170109T210531Z"
-              "/pool/main/m/moreutils/moreutils_0.60.orig.tar.xz")))
+              "http://drabczyk.org/"
+              name "-" version ".tar.gz")))
        (sha256
         (base32
-         "1i8pphg5i5y4x1s1hz73gqhispgspr13bysmk9vh7l6jrfx1hbg4"))))
+         "12rhzy8hw8vljlf10b7ys9zky0p94fdvd6ihq8w8cnkia4rd6izb"))))
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
@@ -53,10 +52,18 @@
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-time-duration" ,perl-time-duration)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (wrap-program
+                            (string-append out "/bin/ts")
+                          `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))))
          (delete 'configure))           ; no configure script
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))

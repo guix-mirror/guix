@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -83,6 +83,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
@@ -99,6 +100,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -242,10 +244,48 @@ giant insects to killer robots and things far stranger and deadlier, and against
 the others like yourself, that want what you have.")
     (license license:cc-by-sa3.0)))
 
+(define-public cowsay
+  (package
+    (name "cowsay")
+    (version "3.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://web.archive.org/web/20071026043648/"
+                                  "http://www.nog.net:80/~tony/warez/"
+                                  "cowsay-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bxj802na2si2bk5zh7n0b7c33mg8a5n2wnvh0vihl9bmjkp51hb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'install)
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "sh" "install.sh"
+                             (assoc-ref outputs "out")))))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* (string-append (assoc-ref outputs "out")
+                                            "/bin/cowsay")
+                             "We're done!")))))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page (string-append "https://web.archive.org/web/20071026043648/"
+                              "http://www.nog.net:80/~tony/warez/"))
+    (synopsis "Speaking cow text filter")
+    (description "Cowsay is basically a text filter.  Send some text into it,
+and you get a cow saying your text.  If you think a talking cow isn't enough,
+cows can think too.  All you have to do is run @code{cowthink}.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
+
 (define-public freedoom
   (package
    (name "freedoom")
-   (version "0.11.2")
+   (version "0.11.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/" name "/" name
@@ -253,7 +293,7 @@ the others like yourself, that want what you have.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "0b9k61f97spivi75f76zwwg8a3bgc6iil2hidqfj8s50lhqggwbb"))))
+              "1bjijdfqhpazyifx1qda7scj7dry1azhjrnl8h8zn2vqfgdmlh0q"))))
    (build-system gnu-build-system)
    (arguments
     '(#:make-flags `(,(string-append "prefix=" (assoc-ref %outputs "out")))
@@ -261,7 +301,6 @@ the others like yourself, that want what you have.")
       #:tests? #f ; no check target
       #:phases
       (modify-phases %standard-phases
-        (add-before 'unpack 'no (lambda _ #t))
         (replace 'configure
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (let* ((dejavu (assoc-ref inputs "font-dejavu"))
@@ -394,6 +433,47 @@ scriptable with Guile.")
     (description  "GNU Shogi is a program that plays the game Shogi (Japanese
 Chess).  It is similar to standard chess but this variant is far more complicated.")
     (license license:gpl3+)))
+
+(define-public ltris
+  (package
+    (name "ltris")
+    (version "1.0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; The code in LTris uses traditional GNU semantics for inline functions
+       #:configure-flags '("CFLAGS=-fgnu89-inline")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL"))
+             #t)))))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://lgames.sourceforge.net/LTris/")
+    (synopsis "Tetris clone based on the SDL library")
+    (description
+     "LTris is a tetris clone: differently shaped blocks are falling down the
+rectangular playing field and can be moved sideways or rotated by 90 degree
+units with the aim of building lines without gaps which then disappear (causing
+any block above the deleted line to fall down).  LTris has three game modes: In
+Classic you play until the stack of blocks reaches the top of the playing field
+and no new blocks can enter.  In Figures the playing field is reset to a new
+figure each level and later on tiles and lines suddenly appear.  In Multiplayer
+up to three players (either human or CPU) compete with each other sending
+removed lines to all opponents.  There is also a Demo mode in which you can
+watch your CPU playing while enjoying a cup of tea!")
+    (license license:gpl2+)))
 
 (define-public prboom-plus
   (package
@@ -725,7 +805,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.4")
+    (version "6.2.5")
     (source
      (origin
        (method url-fetch)
@@ -733,7 +813,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1vw2w3jwnmn44d5vsw47f8y70xvxcsz9m5msq9fgqlzjch15qhiw"))))
+         "00j8s0npgfdi41a0mr5w9qbdxagdk2v41lcr42rwl1jp6miyk6cs"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
@@ -1263,7 +1343,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.1")
+    (version "1.6.7")
     (source
      (origin
        (method url-fetch)
@@ -1271,7 +1351,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "121h9j57gvjr155vvm4f7ybphfvqrdz2ib059kfi444xcxz19sl0"))))
+        (base32 "13vp5skf95a4fla3dwdk2v48dgnmrvimvp9fgpr1vppb7wfjhbr1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1386,6 +1466,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        (sha256
         (base32
          "10l2ljmd7mv8f9ylarqmxxryicdnph2qkm3g5maxnsm2k2q0n20b"))
+       (patches (search-patches "supertuxkart-angelscript-ftbfs.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -2789,7 +2870,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "103")
+    (version "104")
     (source
      (origin
        (method url-fetch)
@@ -2798,7 +2879,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "013r0lcm0qw8zwavz977mqk2clg80gngkjijr3n0q8snpc1727r7"))
+        (base32 "18by01ir2mvdi9hq571in1hk18gw2bd0ynq4avfs1qj0qra35fqb"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2880,6 +2961,64 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
     ;; - icarus/icarus.cpp
     ;; - higan/emulator/emulator.hpp
     (license license:gpl3)))
+
+(define-public mgba
+  (package
+    (name "mgba")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01zy2w5pihlkrmbm51icgyff6iqyqa5ha6qrm4aj8ibzznz03kyq"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(for-each
+                 (lambda (subdir)
+                   (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                     (delete-file-recursively lib-subdir)))
+                 '("libpng" "lzma" "sqlite3" "zlib")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no "test" target
+       #:configure-flags
+       (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
+             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
+             ;; Validate RUNPATH phase fails ("error: depends on
+             ;; 'libmgba.so.0.6', which cannot be found in RUNPATH") without
+             ;; the following S-exp.
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out")
+                            "/lib"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ffmpeg" ,ffmpeg)
+              ("imagemagick" ,imagemagick)
+              ("libedit" ,libedit)
+              ("libepoxy" ,libepoxy)
+              ("libpng" ,libpng)
+              ("mesa" ,mesa)
+              ("minizip" ,minizip)
+              ("ncurses" ,ncurses)
+              ("qtbase" ,qtbase)
+              ("qtmultimedia" ,qtmultimedia)
+              ("qttools" ,qttools)
+              ("sdl2" ,sdl2)
+              ("sqlite" ,sqlite)
+              ("zlib" ,zlib)))
+    (home-page "https://mgba.io")
+    (synopsis "Game Boy Advance emulator")
+    (description
+     "mGBA is an emulator for running Game Boy Advance games.  It aims to be
+faster and more accurate than many existing Game Boy Advance emulators, as
+well as adding features that other emulators lack.  It also supports Game Boy
+and Game Boy Color games.")
+    ;; Code is mainly MPL 2.0. "blip_buf.c" is LGPL 2.1+ and "inih.c" is
+    ;; BSD-3.
+    (license (list license:mpl2.0 license:lgpl2.1+ license:bsd-3))))
 
 (define-public grue-hunter
   (package
@@ -3493,7 +3632,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "9.4n")
+    (version "10.0e")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3504,7 +3643,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1kf9i9gqadnb0m143c860dcvdn91vp6vnfzma4bcgfgwmcn9sx0r"))))
+                "1p6fam73khhys54098qsgmp52d0rnqc3k5hknjig0znvfb2kwi38"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3526,7 +3665,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
-               (substitute* "graph.cpp"
+               (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* "sound.cpp"
@@ -3579,7 +3718,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1vrk0k0ch3azpa72y7acmmpifvks6c0466fvmz804hici93pglvi"))))
+             "1z9w3nd57ybnf4w7ckhhp5vfws2hwd8x26fx6h496f6160fgcj6m"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -4346,7 +4485,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.21-alpha")
+    (version "0.0.22-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4355,7 +4494,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "15xadyrpvq27lm9p1ny7bcmmv56m16h3xadbkdx69gfkzxc3razk"))
+         "0vknk9ay9h2p34r7mym2g066f3s3c5d5vmap0ckcs5b86h5cscjc"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -4400,7 +4539,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.21-alpha")
+    (version "0.0.22-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4409,7 +4548,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1kw3hqnr737ipx4f03khz3hvsh3ha7r8iy9njppk2faa53j27gln"))
+         "1cgmr4g5g9wv36v7ylbrvqhsjwgcsdgbqwc8zlqmnayk9zgkdpgx"))
        ;; A snippet here would cause a build failure because of timestamps
        ;; reset.  See https://bugs.gnu.org/26734.
        ))
@@ -4526,8 +4665,8 @@ at their peak of economic growth and military prowess.
 
 ;; There have been no official releases.
 (define-public open-adventure
-  (let* ((commit "2483a23690d205f01ecb66165cf4522b541cd991")
-         (revision "1"))
+  (let* ((commit "d43854f0f6bb8e9eea7fbce80348150e7e7fc34d")
+         (revision "2"))
     (package
       (name "open-adventure")
       (version (string-append "2.5-" revision "." (string-take commit 7)))
@@ -4539,14 +4678,23 @@ at their peak of economic growth and military prowess.
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1gkvkwbq5cl3llfc7nl41van8awn4myx782pg33bxpbx5l9scwb4"))))
+                  "08bwrvf4axb1rsfd6ia1fddsky9pc1p350vjskhaakg2czc6dsk0"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list "CC=gcc")
          #:parallel-build? #f ; not supported
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; At this point linenoise is meant to be included,
+               ;; so we have to really copy it into the working directory
+               ;; of s.
+               (let* ((linenoise (assoc-ref inputs "linenoise"))
+                      (noisepath (string-append linenoise "/include/linenoise"))
+                      (out (assoc-ref outputs "out")))
+                 (copy-recursively noisepath "linenoise"))
+               #t))
            (add-before 'build 'use-echo
              (lambda _
                (substitute* "tests/Makefile"
@@ -4556,9 +4704,9 @@ at their peak of economic growth and military prowess.
              (lambda _
                ;; This target is missing a dependency
                (substitute* "Makefile"
-                 ((".asc.6:" line)
-                  (string-append line " advent.txt")))
-               (zero? (system* "make" ".asc.6"))))
+                 ((".adoc.6:" line)
+                  (string-append line " advent.adoc")))
+               (zero? (system* "make" ".adoc.6"))))
            ;; There is no install target
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
@@ -4569,7 +4717,10 @@ at their peak of economic growth and military prowess.
                  (install-file "advent.6" man))
                #t)))))
       (native-inputs
-       `(("asciidoc" ,asciidoc)))
+       `(("asciidoc" ,asciidoc)
+         ("linenoise" ,linenoise)
+         ("python" ,python)
+         ("python-pyyaml" ,python-pyyaml)))
       (home-page "https://gitlab.com/esr/open-adventure")
       (synopsis "Colossal Cave Adventure")
       (description "The original Colossal Cave Adventure from 1976 was the
@@ -4578,3 +4729,121 @@ computer-hosted roleplaying games.  This is the last version released by
 Crowther & Woods, its original authors, in 1995.  It has been known as
 \"adventure 2.5\" and \"430-point adventure\".")
       (license license:bsd-2))))
+
+(define-public tome4
+  (package
+    (name "tome4")
+    (version "1.5.5")
+    (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
+       (modules '((guix build utils)))
+       (snippet
+        '(substitute* '("src/music.h" "src/tSDL.h")
+           (("#elif defined(__FreeBSD__)" line)
+            (string-append
+             line " || defined(__GNUC__)"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("glu" ,glu)
+       ("premake4" ,premake4)
+       ("openal" ,openal)
+       ("vorbis" ,libvorbis)
+       ("luajit" ,luajit)))
+    (arguments
+     `(#:make-flags '("CC=gcc" "config=release")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda _
+                      (zero? (system* "premake4" "gmake"))
+                      #t))
+                  (add-after 'set-paths 'set-sdl-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL2"))
+                      #t))
+                  (delete 'check)
+                  ;; premake doesn't provide install target
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (usr (string-append out "/usr"))
+                             (bin (string-append out "/bin"))
+                             (licenses (string-append out "/share/licenses"))
+                             (documents (string-append out "/share/doc"))
+                             (pixmaps (string-append out "/share/pixmaps"))
+                             (icon "te4-icon.png")
+                             (data (string-append out "/share/" ,name))
+                             (applications (string-append
+                                            out "/share/applications"))
+                             (unzip (string-append
+                                     (assoc-ref inputs "unzip") "/bin/unzip"))
+                             (wrapper (string-append bin "/" ,name)))
+                        ;; icon
+                        (mkdir-p pixmaps)
+                        (system* unzip "-j"
+                                 (string-append
+                                  "game/engines/te4-" ,version ".teae")
+                                 (string-append
+                                  "data/gfx/" icon) "-d" pixmaps)
+                        ;; game executable
+                        (install-file "t-engine" data)
+                        (mkdir-p bin)
+                        (with-output-to-file wrapper
+                          (lambda ()
+                            (display
+                             (string-append
+                              "#!/bin/sh\n"
+                              ;; No bootstrap code found,
+                              ;; defaulting to working directory
+                              ;; for engine code!
+                              "cd " data "\n"
+                              "exec -a tome4 ./t-engine \"$@\"\n"))))
+                        (chmod wrapper #o555)
+                        ;; licenses
+                        (for-each (lambda (file)
+                                    (install-file file licenses))
+                                  '("COPYING" "COPYING-MEDIA"))
+                        ;; documents
+                        (for-each (lambda (file)
+                                    (install-file file documents))
+                                  '("CONTRIBUTING" "CREDITS"))
+                        ;; data
+                        (copy-recursively "bootstrap" (string-append
+                                                       data "/bootstrap"))
+                        (copy-recursively "game" (string-append data "/game"))
+                        ;; launcher
+                        (mkdir-p applications)
+                        (with-output-to-file (string-append applications "/"
+                                                            ,name ".desktop")
+                          (lambda ()
+                            (display
+                             (string-append
+                              "[Desktop Entry]
+Name=ToME4
+Comment=" ,synopsis "\n"
+"Exec=" ,name "\n"
+"Icon=" icon "\n"
+"Terminal=false
+Type=Application
+Categories=Game;RolePlaying;\n")))))
+                      #t)))))
+    (home-page "https://te4.org")
+    (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
+combat and advanced character building.  Play as one of many unique races and
+classes in the lore-filled world of Eyal, exploring random dungeons, facing
+challenging battles, and developing characters with your own tailored mix of
+abilities and powers.  With a modern graphical and customisable interface,
+intuitive mouse control, streamlined mechanics and deep, challenging combat,
+Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
+    (license license:gpl3+)))

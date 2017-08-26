@@ -66,6 +66,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/git.scm					\
   guix/graph.scm				\
   guix/cache.scm				\
   guix/cve.scm					\
@@ -78,6 +79,7 @@ MODULES =					\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
+  guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
@@ -104,6 +106,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
@@ -171,6 +174,7 @@ MODULES =					\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
+  guix/scripts/weather.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
@@ -205,13 +209,6 @@ MODULES +=					\
   guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
-
-if HAVE_GUILE_GIT
-
-MODULES +=					\
-  guix/git.scm
-
-endif HAVE_GUILE_GIT
 
 if BUILD_DAEMON_OFFLOAD
 
@@ -580,7 +577,7 @@ GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
 GUIXSD_VM_SYSTEMS ?= x86_64-linux
 
 # Prefix of the GuixSD installation image file name.
-GUIXSD_IMAGE_BASE = guixsd-usb-install-$(PACKAGE_VERSION)
+GUIXSD_IMAGE_BASE = guixsd-install-$(PACKAGE_VERSION)
 
 # Prefix of the GuixSD VM image file name.
 GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
@@ -631,6 +628,7 @@ release: dist
 	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
+	    --file-system-type=iso9660							\
             --system=$$system								\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\

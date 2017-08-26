@@ -296,7 +296,7 @@ META."
        (upstream-source
         (package (package-name package))
         (version version)
-        (urls url))))))
+        (urls (list url)))))))
 
 (define %cpan-updater
   (upstream-updater

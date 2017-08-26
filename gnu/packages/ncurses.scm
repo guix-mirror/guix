@@ -32,17 +32,18 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages linux)
   #:use-module (guix utils))
 
 (define-public ncurses
   (package
     (name "ncurses")
-    (replacement ncurses/fixed)
     (version "6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
+              (patches (search-patches "ncurses-CVE-2017-10684-10685.patch"))
               (sha256
                (base32
                 "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
@@ -189,21 +190,23 @@ ncursesw library provides wide character support.")
     (license x11)
     (home-page "https://www.gnu.org/software/ncurses/")))
 
-(define ncurses/fixed
-  (package
-    (inherit ncurses)
-    (source
-      (origin
-        (inherit (package-source ncurses))
-        (patches
-          (append
-            (origin-patches (package-source ncurses))
-            (search-patches "ncurses-CVE-2017-10684-10685.patch")))))))
+(define-public ncurses/gpm
+  (package/inherit ncurses
+    (name "ncurses-with-gpm")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ncurses)
+       ((#:configure-flags cf)
+        `(cons (string-append "--with-gpm="
+                              (assoc-ref %build-inputs "gpm")
+                              "/lib/libgpm.so.2")
+               ,cf))))
+    (inputs
+     `(("gpm" ,gpm)))))
 
 (define-public dialog
   (package
     (name "dialog")
-    (version "1.2-20150920")
+    (version "1.3-20170509")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -211,7 +214,7 @@ ncursesw library provides wide character support.")
                     version ".tgz"))
               (sha256
                (base32
-                "01ccd585c241nkj02n0zdbx8jqhylgcfpcmmshynh0c7fv2ixrn4"))))
+                "0mj7rl5psilaj3bxxvjfd44qjknxjli98b0d1lxd3f9jqrsbmw9g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite

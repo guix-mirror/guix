@@ -42,7 +42,7 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.34")
+    (version "1.35")
     (source
       (origin
         (method url-fetch)
@@ -50,7 +50,7 @@
                             name "-" version ".tar.xz"))
     (sha256
      (base32
-      "07n71wcy1c4cc01ca4dl9k1jpdqr5nsyr33dqf7k87wwfa681859"))))
+      "1apj5j25kj7v1bsfv3nh54aiq873nfrsjfbj85p5qm3ihfwxxmv6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

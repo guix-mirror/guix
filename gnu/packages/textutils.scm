@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -409,6 +410,7 @@ runs Word\".")
               (method url-fetch)
               (uri (string-append "http://ftp.wagner.pp.ru/pub/catdoc/"
                                   "catdoc-" version ".tar.gz"))
+              (patches (search-patches "catdoc-CVE-2017-11110.patch"))
               (sha256
                (base32
                 "15h7v3bmwfk4z8r78xs5ih6vd0pskn0rj90xghvbzdjj0cc88jji"))))

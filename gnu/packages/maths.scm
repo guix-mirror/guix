@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -316,7 +317,7 @@ the OCaml language.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.62")
+    (version "4.63")
     (source
      (origin
       (method url-fetch)
@@ -324,7 +325,7 @@ the OCaml language.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0w7s3869ybwyq9a4490dikpib1qp3jnn5nqz1vvwqy1qz3ilnvh9"))))
+        "1xp7nclmp8inp20968bvvfcwmz3mz03sbm0v3yjz8aqwlpqjfkci"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -437,7 +438,7 @@ large scale eigenvalue problems.")
                           version ".tgz"))
       (sha256
        (base32
-        "0yavf6m9l78pwlnk5g61cg8x28mr30j0g8gkai0jrdqfjjmf3whs"))))
+        "1j51r7n5w4k7r3lrvy7710xrpkg40wf4rqnmngfz6ck9ypckzign"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran)
@@ -560,18 +561,17 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.12")
+    (version "4.2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "020jh563sjyxsgml8l809d2i1d4ms9shivwj3gbm7n0ilxbll8id"))
+        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))
-
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -585,6 +585,14 @@ computations.")
        #:configure-flags '("--enable-shared")
        #:phases
        (modify-phases %standard-phases
+         ;; This is inspired by two of Debian's patches.
+         (add-before 'configure 'add-more-aarch64-support
+           (lambda _
+             (substitute* '("mfhdf/ncgen/ncgen.l"
+                            "mfhdf/ncgen/ncgenyy.c"
+                            "mfhdf/libsrc/netcdf.h.in")
+               (("AIX5L64") "__aarch64__"))
+             #t))
          (add-before 'configure 'patchbuild
            (lambda _
              (substitute*
@@ -596,7 +604,8 @@ computations.")
 -R\\$\\(abs_top_builddir\\)/mfhdf/xdr/\\.libs") "")
                (("@HDF_BUILD_SHARED_TRUE@AM_LDFLAGS = \
 -R\\$\\(abs_top_builddir\\)/mfhdf/libsrc/\\.libs \
--R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") "")))))))
+-R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") ""))
+             #t)))))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
@@ -1216,7 +1225,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.7.2")
+    (version "3.7.6")
     (source
      (origin
       (method url-fetch)
@@ -1224,7 +1233,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0jfrq6rd4zagw1iimz05m2w91k0jvz3qbik1lk8pqcxw3rvdqk5d"))))
+       (base32 "1y3f5jjq0v5b62i3sabp4kp5mgfyp3vnk0dxhwkrhpypax77nzxh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
@@ -1247,6 +1256,10 @@ September 2004}")
                          (assoc-ref %build-inputs "superlu") "/include")
          ,(string-append "--with-superlu-lib="
                          (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+       #:make-flags
+       ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
+       ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
+       (list (format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
         (replace 'configure
@@ -1261,13 +1274,17 @@ September 2004}")
               (format #t "configure flags: ~s~%" flags)
               (zero? (apply system* "./configure" flags)))))
         (add-after 'configure 'clean-local-references
-          (lambda* (#:key inputs outputs #:allow-other-keys)
+          (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
                 ;; Prevent build directory from leaking into compiled code
                 (((getcwd)) out)
                 ;; Scrub timestamp for reproducibility
                 ((".*Libraries compiled on.*") ""))
+              (substitute* (find-files "." "petscvariables")
+                ;; Do not expose build machine characteristics, set to defaults.
+                (("MAKE_NP = [:digit:]+") "MAKE_NP = 2")
+                (("NPMAX = [:digit:]+") "NPMAX = 2"))
               #t)))
         (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
@@ -1342,16 +1359,15 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.7.1")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://slepc.upv.es/download/download.php?"
-                           "filename=slepc-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "http://slepc.upv.es/download/distrib/slepc-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1hijlmrvxvfqslnx8yydzw5xqbsn1yy02g32w0hln1z3cgr1c0k7"))))
+         "12pbl8yd6r8k9xjlr1qw25rs0k1acgic7hw1s6l6bhiv9s285drg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1365,6 +1381,8 @@ scientific applications modeled by partial differential equations.")
        #:configure-flags
        `(,(string-append "--with-arpack-dir="
                          (assoc-ref %build-inputs "arpack") "/lib"))
+       #:make-flags                     ;honor (parallel-job-count)
+       `(,(format #f "MAKE_NP=~a" (parallel-job-count)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -1626,12 +1644,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.0.4")
+    (version "2.0.7")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1z3i90mkzwvp9di17caf4934z2xlb2imm3hwxllcrbwvmnmhrwyc"))))
+        (base32 "0hxa0rbbp54j0c05qj7vfwhqfdmiz5ax8vhqxd09g33x7c0hqbc5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
@@ -1850,7 +1868,7 @@ implemented in ANSI C, and MPI for communications.")
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
-       ("flex" ,flex-2.6.1) ; A bug in flex prevents building with flex-2.6.3.
+       ("flex" ,flex)
        ("bison" ,bison)))
     (arguments
      `(#:phases
@@ -2075,8 +2093,7 @@ to BMP, JPEG or PNG image formats.")
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gcc" ,gcc)
-       ("gcl" ,gcl)
+     `(("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
@@ -2100,13 +2117,6 @@ to BMP, JPEG or PNG image formats.")
        #:make-flags (list "TMPDIR=/tmp")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-gcc-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "lisp-utils/defsystem.lisp"
-               (("\\(defparameter \\*c-compiler\\* \"gcc\"\\)")
-                (string-append "(defparameter *c-compiler* \""
-                               (assoc-ref inputs "gcc") "/bin/gcc\")")))
-             #t))
          (add-before 'check 'pre-check
            (lambda _
              (chmod "src/maxima" #o555)
@@ -2118,7 +2128,9 @@ to BMP, JPEG or PNG image formats.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((gnuplot (assoc-ref inputs "gnuplot"))
                     (out (assoc-ref outputs "out"))
-                    (datadir (string-append out "/share/maxima/" ,version)))
+                    (datadir (string-append out "/share/maxima/" ,version))
+                    (binutils (string-append (assoc-ref inputs "binutils")
+                                             "/bin")))
                (with-directory-excursion out
                  (mkdir-p "share/emacs")
                  (mkdir-p "share/doc")
@@ -2134,7 +2146,11 @@ to BMP, JPEG or PNG image formats.")
                     (format out "~a ~s~a~%"
                             "(setf $gnuplot_command "
                             (string-append gnuplot "/bin/gnuplot") ")")
-                    (dump-port in out)))))
+                    (dump-port in out))))
+               ;; Ensure that Maxima will have access to the GNU binutils
+               ;; components at runtime.
+               (wrap-program (string-append out "/bin/maxima")
+                 `("PATH" prefix (,binutils))))
              #t)))))
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")
@@ -2152,7 +2168,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "17.05.0")
+    (version "17.05.1")
     (source
      (origin
        (method url-fetch)
@@ -2161,7 +2177,7 @@ point numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bsyd7r12xm2crpizb9iyyki3j0mbazzzwbsh871m06dv2wk97gq"))))
+         "0dv0cy0cf46v0cbw32izscpkdmpxg1qhwq1f4cz46kkqd8k4yfbj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2175,31 +2191,30 @@ point numbers.")
        ("gtk+" ,gtk+)
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
-                   (lambda _
-                     (zero? (system* "./bootstrap"))))
-                  (add-after
-                   'install 'wrap-program
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (wrap-program (string-append (assoc-ref outputs "out")
-                                                  "/bin/wxmaxima")
-                       `("PATH" ":" prefix
-                         (,(string-append (assoc-ref inputs "maxima")
-                                          "/bin")))
-                       ;; For GtkFileChooserDialog.
-                       `("GSETTINGS_SCHEMA_DIR" =
-                         (,(string-append (assoc-ref inputs "gtk+")
-                                          "/share/glib-2.0/schemas")))
-                       `("XDG_DATA_DIRS" ":" prefix
-                         (;; Needed by gdk-pixbuf to know supported icon formats.
-                          ,(string-append
-                            (assoc-ref inputs "shared-mime-info") "/share")
-                          ;; The default icon theme of GTK+.
-                          ,(string-append
-                            (assoc-ref inputs "adwaita-icon-theme") "/share"))))
-                     #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "sh" "bootstrap"))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/wxmaxima")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "maxima")
+                                  "/bin")))
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))
+               `("XDG_DATA_DIRS" ":" prefix
+                 (;; Needed by gdk-pixbuf to know supported icon formats.
+                  ,(string-append
+                    (assoc-ref inputs "shared-mime-info") "/share")
+                  ;; The default icon theme of GTK+.
+                  ,(string-append
+                    (assoc-ref inputs "adwaita-icon-theme") "/share"))))
+             #t)))))
     (home-page "https://andrejv.github.io/wxmaxima/")
     (synopsis "Graphical user interface for the Maxima computer algebra system")
     (description
@@ -2417,7 +2432,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "4.4.3")
+    (version "4.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2426,33 +2441,31 @@ Fresnel integrals, and similar related functions as well.")
              version ".tar.gz"))
        (sha256
         (base32
-         "100hdzr0mf4mzlwnqpmwpfw4pymgsf9n3g0ywb1yps2nk1zbkdy5"))))
+         "1dnr6pmjzc2qmbkmb4shigx1l74ilf6abn7svyd6brxgvph8vadr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled metis source
+        '(delete-file-recursively "metis-5.1.0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-build? #f ;cholmod build fails otherwise
-       #:tests? #f  ;no "check" target
+     '(#:tests? #f  ;no "check" target
        #:make-flags
        (list "CC=gcc"
              "BLAS=-lblas"
              "TBB=-ltbb"
-             "CHOLMOD_CONFIG=-DNPARTITION" ;required when METIS is not used
+             "MY_METIS_LIB=-lmetis"
              (string-append "INSTALL_LIB="
                             (assoc-ref %outputs "out") "/lib")
              (string-append "INSTALL_INCLUDE="
-                            (assoc-ref %outputs "out") "/include"))
+                            (assoc-ref %outputs "out") "/include")
+             "library")
        #:phases
-       (alist-cons-before
-        'install 'prepare-out
-        ;; README.txt states that the target directories must exist prior to
-        ;; running "make install".
-        (lambda _
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
-          (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))
-        ;; no configure script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure script
     (inputs
      `(("tbb" ,tbb)
-       ("lapack" ,lapack)))
+       ("lapack" ,lapack)
+       ("metis" ,metis)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
     (description
@@ -2688,7 +2701,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.4.1")
+    (version "8.5.0")
     (source
      (origin
        (method url-fetch)
@@ -2696,7 +2709,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "1bdksvvyp1rj37df1ndh8j3x9nzpc3sazw8nd0hzvnlw0qnyk800"))
+         "0yfpy4zh8j7hmqakw17zdlmvfdcmhwgs66wcb716plc4y7v3z4g6"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -2715,21 +2728,10 @@ revised simplex and the branch-and-bound methods.")
        ("suitesparse" ,suitesparse)))   ;for UMFPACK
     (arguments
      `(#:build-type "DebugRelease" ;only supports Release, Debug, or DebugRelease
-       #:configure-flags '("-DCOMPAT_FILES=OFF") ;Follow new directory structure
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'install 'hint-example-prefix
-                   ;; Set Cmake hints in examples so that they can find this
-                   ;; deal.II when configuring.
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref %outputs "out"))
-                            (exmpl (string-append out "/share/doc"
-                                                  "/dealii/examples")))
-                       (substitute* (find-files exmpl "CMakeLists.txt")
-                         (("([[:space:]]*HINTS.*)\n" _ line)
-                          (string-append line " $ENV{HOME}/.guix-profile "
-                                         out "\n")))
-                       #t))))))
+       #:configure-flags
+       ;; Work around a bug in libsuitesparseconfig linking
+       ;; see https://github.com/dealii/dealii/issues/4745
+       '("-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON")))
     (home-page "https://www.dealii.org")
     (synopsis "Finite element library")
     (description
@@ -3069,6 +3071,8 @@ instruction sets.  Thus, an application written with Vc can be compiled for:
 @item NVIDIA GPUs / CUDA (in development)
 @end enumerate\n")
     (home-page "https://github.com/VcDevel/Vc")
+    ;; "No support_???.cpp file exists for this architecture."
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:bsd-3)))
 
 (define-public reducelcs
@@ -3163,3 +3167,92 @@ as equations, scalars, vectors, and matrices.")
     (home-page "https://www.gnu.org/software/jacal/")
     (license license:gpl3+)))
 
+(define-public z3
+  (package
+    (name "z3")
+    (version "4.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Z3Prover/z3/archive/z3-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_PYTHON_BINDINGS=true"
+             "-DINSTALL_PYTHON_BINDINGS=true"
+             (string-append "-DCMAKE_INSTALL_PYTHON_PKG_DIR="
+                            %output
+                            "/lib/python2.7/site-packages")
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            %output
+                            "/lib"))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (zero?
+              (system* "python" "contrib/cmake/bootstrap.py" "create"))))
+         (add-before 'check 'make-test-z3
+           (lambda _
+             ;; Build the test suite executable.
+             (zero? (system* "make" "test-z3" "-j"
+                             (number->string (parallel-job-count))))))
+         (replace 'check
+           (lambda _
+             ;; Run all the tests that don't require arguments.
+             (zero? (system* "./test-z3" "/a")))))))
+    (native-inputs
+     `(("python" ,python-2)))
+    (synopsis "Theorem prover")
+    (description "Z3 is a theorem prover and @dfn{satisfiability modulo
+theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
+    (home-page "https://github.com/Z3Prover/z3")
+    (license license:expat)))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("which" ,(@@ (gnu packages base) which))))
+    (propagated-inputs
+     `(("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("/bin/sh") (which "sh")))))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") "")))))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is an open source model checker for verifying safety
+properties of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by an
+arbitrary number of processes.  Cache coherence protocols and mutual exclusion
+algorithms are typical examples of such systems.")
+    (license license:asl2.0)))

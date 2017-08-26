@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages engineering)
+  #:use-module (srfi srfi-1)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -32,7 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -59,6 +61,7 @@
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -70,8 +73,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages wxwidgets)
-  #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xorg))
 
 (define-public librecad
   (package
@@ -1013,3 +1015,117 @@ specified in high-level description language into ready-to-compile C code for
 the API of spice simulators.  Based on transformations specified in XML
 language, ADMS transforms Verilog-AMS code into other target languages.")
     (license license:gpl3)))
+
+(define-public capstone
+  (package
+    (name "capstone")
+    (version "3.0.5-rc2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/aquynh/capstone/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cqms9r2p43aiwp5spd84zaccp16ih03r7sjhrv16nddahj0jz2q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; cstool's Makefile overrides LDFLAGS, so we cannot pass it as a make flag.
+         (add-before 'build 'fix-cstool-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "cstool/Makefile"
+               (("LDFLAGS =")
+                (string-append "LDFLAGS = -Wl,-rpath=" (assoc-ref outputs "out")
+                               "/lib")))
+             #t)))))
+    (home-page "http://www.capstone-engine.org")
+    (synopsis "Lightweight multi-platform, multi-architecture disassembly framework")
+    (description
+     "Capstone is a lightweight multi-platform, multi-architecture disassembly
+framework.  Capstone can disassemble machine code for many supported architectures
+such as x86, x86_64, arm, arm64, mips, ppc, sparc, sysz and xcore.  It provides
+bindings for Python, Java, OCaml and more.")
+    (license license:bsd-3)))
+
+;; FIXME: This package has a timestamp embedded in
+;; lib/python3.5/site-packages/capstone/__pycache__/__iti__.cpython-35.pyc
+(define-public python-capstone
+  (package
+    (inherit capstone)
+    (name "python-capstone")
+    (propagated-inputs
+     `(("capstone" ,capstone)))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-and-fix-setup-py
+           (lambda _
+             (chdir "bindings/python")
+             ;; Do not build the library again, because we already have it.
+             (substitute* "setup.py" ((".*   build_libraries.*") ""))
+             ;; This substitution tells python-capstone where to find the
+             ;; library.
+             (substitute* "capstone/__init__.py"
+               (("pkg_resources.resource_filename.*")
+                (string-append "'" (assoc-ref %build-inputs "capstone") "/lib',\n")))
+             #t)))))))
+
+(define-public python2-capstone
+  (package-with-python2 python-capstone))
+
+(define-public radare2
+  (package
+    (name "radare2")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://radare.mikelloc.com/get/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16ggsk40zz6hyvclvqj1r4bh4hb78jf0d6ppry1jk4r0j30wm7cm"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin
+                  (substitute* "libr/asm/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  (substitute* "libr/parse/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  (substitute* "libr/bin/p/Makefile"
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f; tests require git and network access
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'mklibdir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+             #t)))
+       #:configure-flags
+       (list "--with-sysmagic" "--with-syszip" "--with-openssl"
+             "--without-nonpic" "--with-rpath" "--with-syscapstone")
+       #:make-flags
+       (list "CC=gcc")))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zip" ,zip)
+       ("gmp" ,gmp)
+       ("capstone" ,capstone)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://radare.org/")
+    (synopsis "Portable reversing framework")
+    (description
+      "Radare project started as a forensics tool, a scriptable commandline
+hexadecimal editor able to open disk files, but later support for analyzing
+binaries, disassembling code, debugging programs, attaching to remote gdb
+servers, ...")
+    (license license:lgpl3)))

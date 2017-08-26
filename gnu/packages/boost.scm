@@ -28,14 +28,15 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages shells)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages shells))
 
 (define-public boost
   (package
     (name "boost")
-    (version "1.63.0")
+    (version "1.64.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -44,9 +45,10 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1c5kzhcqahnic55dxcnw7r80qvwx5sfa2sa97yzv7xjrywljbbmy"))))
+                "0cikd35xfkpg9nnl76yqqnqxnf3hyfjjww8xjd4akflprsm5rk3v"))))
     (build-system gnu-build-system)
-    (inputs `(("zlib" ,zlib)))
+    (inputs `(("icu4c" ,icu4c)
+              ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)

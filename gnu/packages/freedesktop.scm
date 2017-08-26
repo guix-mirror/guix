@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
+;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
@@ -405,7 +405,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public wayland-protocols
   (package
     (name "wayland-protocols")
-    (version "1.7")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -413,7 +413,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "wayland-protocols-" version ".tar.xz"))
               (sha256
                (base32
-                "07qw166s6bm81zfnhf4lmww6wj0il960fm3vp7n1z3rign9jlpv3"))))
+                "0xag2yci0l13brmq2k12vdv0wlnb2j0rxk2cnp170fya63g74sv6"))))
     (build-system gnu-build-system)
     (inputs
      `(("wayland" ,wayland)))
@@ -657,10 +657,17 @@ message bus.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda _
-            ;; Don't try to create /var/lib/AccoutsService.
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Don't try to create /var/lib/AccountsService.
             (substitute* "src/Makefile.in"
               (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true"))
+            (let ((shadow (assoc-ref inputs "shadow")))
+              (substitute* '("src/user.c" "src/daemon.c")
+                (("/usr/sbin/usermod") (string-append shadow "/sbin/usermod"))
+                (("/usr/sbin/useradd") (string-append shadow "/sbin/useradd"))
+                (("/usr/sbin/userdel") (string-append shadow "/sbin/userdel"))
+                (("/usr/bin/passwd")   (string-append shadow "/bin/passwd"))
+                (("/usr/bin/chage")    (string-append shadow "/bin/chage"))))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -668,7 +675,8 @@ message bus.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("polkit" ,polkit)))
+     `(("shadow" ,shadow)
+       ("polkit" ,polkit)))
     (home-page "http://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
@@ -1012,3 +1020,47 @@ desktop-file-install: installs a desktop file to the applications directory,
 update-desktop-database: updates the database containing a cache of MIME types
                          handled by desktop files.")
     (license license:gpl2+)))
+
+(define-public xdg-user-dirs
+  (package
+    (name "xdg-user-dirs")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://user-dirs.freedesktop.org/releases/"
+                                    name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1rp3c94hxjlfsryvwajklynfnrcvxplhwnjqc7395l89i0nb83vp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("xsltproc" ,libxslt)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'locate-catalog-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("http://.*/docbookx\\.dtd")
+                              (string-append xmldoc "/docbookx.dtd"))))
+                         (find-files "man" "\\.xml$"))
+               (substitute* "man/Makefile"
+                 (("http://.*/docbook\\.xsl")
+                  (string-append xsldoc "/manpages/docbook.xsl")))
+               #t))))))
+    (home-page "https://www.freedesktop.org/wiki/Software/xdg-user-dirs/")
+    (synopsis "Tool to help manage \"well known\" user directories")
+    (description "xdg-user-dirs is a tool to help manage \"well known\" user
+directories, such as the desktop folder or the music folder. It also handles
+localization (i.e. translation) of the file names.  Designed to be
+automatically run when a user logs in, xdg-user-dirs can also be run
+manually by a user.")
+    (license license:gpl2)))

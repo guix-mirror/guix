@@ -7,6 +7,8 @@
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -87,7 +89,8 @@ command-line arguments, multiple languages, and so on.")
             (sha256
              (base32
               "1dcasjp3a578nrvzrcn38mpizb8w1q6mvfzhjmcqqgkf0nsivj72"))
-            (patches (search-patches "grep-timing-sensitive-test.patch"))))
+            (patches (search-patches "grep-timing-sensitive-test.patch"
+                                     "grep-gnulib-lock.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (arguments
@@ -228,14 +231,14 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.5")
+   (version "3.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0csmqfz8ks23kdjsq0v2ll1acqiz8lva06dj19mwmymrsp69ilys"))))
+              "1mivg0fy3a6fcn535ln8nkgfj6vxh5hsxxs5h6692wxmsjyyh8fn"))))
    (build-system gnu-build-system)
    (synopsis "Comparing and merging files")
    (description
@@ -258,8 +261,13 @@ interactive means to merge two files.")
             (sha256
              (base32
               "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
-            (patches (search-patches "findutils-localstatedir.patch"
-                                     "findutils-test-xargs.patch"))))
+            (patches (search-patches
+                      "findutils-localstatedir.patch"
+                      "findutils-test-xargs.patch"
+                      ;; test-lock has performance issues on multi-core
+                      ;; machines, it hangs or takes a long time to complete.
+                      ;; This is a commit from gnulib to fix this issue.
+                      "findutils-gnulib-multi-core.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
@@ -285,15 +293,15 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.26")
+   (version "8.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "13lspazc7xkviy93qz7ks9jv4sldvgmwpq36ghrbrqpq93br8phm"))
-            (patches (search-patches "coreutils-fix-cross-compilation.patch"))))
+              "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))
+            (patches (search-patches "coreutils-cut-huge-range-test.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -308,21 +316,12 @@ used to apply commands with arbitrarily long arguments.")
     ;; copy of help2man.  However, don't pass it when cross-compiling since
     ;; that would lead it to try to run programs to get their '--help' output
     ;; for help2man.
-    `(,@(if (%current-target-system)
-            '()
-            `(("perl" ,perl)))
-
-      ;; Apply this patch only on ARM to avoid a full rebuild.
-      ;; TODO: Move to 'patches' in the next update cycle.
-      ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                      (%current-system)))
-            `(("cut-test.patch"
-               ,(search-patch "coreutils-cut-huge-range-test.patch")))
-            '())))
+    (if (%current-target-system)
+        '()
+        `(("perl" ,perl))))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
-      #:parallel-tests? #f            ; race condition fixed after 8.26
       #:phases (alist-cons-before
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -337,22 +336,7 @@ used to apply commands with arbitrarily long arguments.")
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/sh" bash)))))
-
-                ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                                (%current-system)))
-                      '((alist-cons-before
-                         'build 'patch-cut-test
-                         (lambda* (#:key inputs native-inputs
-                                   #:allow-other-keys)
-                           (let ((patch (or (assoc-ref inputs
-                                                       "cut-test.patch")
-                                            (assoc-ref native-inputs
-                                                       "cut-test.patch"))))
-                             (zero?
-                              (system* "patch" "-p1" "--force"
-                                       "--input" patch))))
-                         %standard-phases))
-                      '(%standard-phases)))))
+                %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
@@ -361,29 +345,6 @@ manipulation functions of the GNU system.  Most of these tools offer extended
 functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
-
-;; We add version 8.27 here for use in (gnu system) due to a time
-;; zone bug in `date' versions 8.25 - 8.26.
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=23035
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26238
-(define-public coreutils-8.27
-  (package
-    (inherit coreutils)
-    (version "8.27")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/coreutils/coreutils-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0sv547572iq8ayy8klir4hnngnx92a9nsazmf1wgzfc7xr4x74c8"))))
-    (arguments
-     (if (string-prefix? "arm" (or (%current-target-system)
-                                   (%current-system)))
-         (substitute-keyword-arguments (package-arguments coreutils)
-           ((#:phases phases)
-            `(alist-delete 'patch-cut-test ,phases)))
-         (package-arguments coreutils)))))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
@@ -434,17 +395,16 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.27")
+   (version "2.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "125clslv17xh1sab74343fg6v31msavpmaa1c1394zsqa773g5rn"))
+              "0wiasgns7i8km8nrxas265sh2dfpsw93b3qw195ipc90w4z475v2"))
             (patches (search-patches "binutils-ld-new-dtags.patch"
-                                     "binutils-loongson-workaround.patch"
-                                     "binutils-mips-bash-bug.patch"))))
+                                     "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
@@ -455,10 +415,6 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Don't search under /usr/lib & co.
                           "--with-lib-path=/no-ld-lib-path"
-
-                          ;; Glibc 2.17 has a "comparison of unsigned
-                          ;; expression >= 0 is always true" in wchar.h.
-                          "--disable-werror"
 
                           ;; Install BFD.  It ends up in a hidden directory,
                           ;; but it's here.
@@ -482,7 +438,7 @@ included.")
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
                           binutils
-                          (guile (canonical-package guile-2.0))
+                          (guile (canonical-package guile-2.2))
                           (bash (canonical-package bash))
                           (guile-for-build guile))
   "Return a package called NAME that contains a wrapper for the 'ld' program
@@ -558,7 +514,6 @@ store.")
   (package
    (name "glibc")
    (version "2.25")
-   (replacement glibc-2.25-patched)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -576,7 +531,12 @@ store.")
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
-                                     "glibc-o-largefile.patch"))))
+                                     "glibc-o-largefile.patch"
+                                     "glibc-memchr-overflow-i686.patch"
+                                     "glibc-vectorized-strcspn-guards.patch"
+                                     "glibc-CVE-2017-1000366-pt1.patch"
+                                     "glibc-CVE-2017-1000366-pt2.patch"
+                                     "glibc-CVE-2017-1000366-pt3.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -587,10 +547,6 @@ store.")
 
    (arguments
     `(#:out-of-source? #t
-
-      ;; In version 2.21, there a race in the 'elf' directory, see
-      ;; <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00709.html>.
-      #:parallel-build? #f
 
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
       ;; libraries (libdl-2.24.so, etc.) have ld.so marked as NEEDED.  Since
@@ -667,19 +623,6 @@ store.")
                         ;; 4.7.1.
                         ((" -lgcc_s") ""))
 
-                      ;; Apply patch only on i686.
-                      ;; TODO: Move the patch to 'patches' in the next update cycle.
-                      ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                                       (%current-system)))
-                            `((unless (zero? (system* "patch" "-p1" "--force"
-                                                      "--input"
-                                                      (or (assoc-ref native-inputs
-                                                                     "glibc-memchr-overflow-i686.patch")
-                                                          (assoc-ref inputs
-                                                                     "glibc-memchr-overflow-i686.patch"))))
-                                (error "patch failed for glibc-memchr-overflow-i686.patch")))
-                            '())
-
                       ;; Have `system' use that Bash.
                       (substitute* "sysdeps/posix/system.c"
                         (("#define[[:blank:]]+SHELL_PATH.*$")
@@ -723,15 +666,7 @@ store.")
    ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)
-                    ("gettext" ,gettext-minimal)
-
-                    ;; Apply this patch only on i686 to avoid a full rebuild.
-                    ;; TODO: Move to 'patches' in the next update cycle.
-                    ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                                     (%current-system)))
-                          `(("glibc-memchr-overflow-i686.patch"
-                             ,(search-patch "glibc-memchr-overflow-i686.patch")))
-                          '())))
+                    ("gettext" ,gettext-minimal)))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
@@ -780,71 +715,6 @@ with the Linux kernel.")
         ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
         ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
         `(modify-phases ,original-phases
-           ;; TODO: This is almost an exact copy of the phase of the same name
-           ;; in glibc/linux.  The only difference is that the i686 patch is
-           ;; not applied here.  In the next update cycle the patch moves to
-           ;; the patches field and this overwritten phase won't be needed any
-           ;; more.
-           (replace 'pre-configure
-             (lambda* (#:key inputs native-inputs outputs
-                       #:allow-other-keys)
-               (let* ((out  (assoc-ref outputs "out"))
-                      (bin  (string-append out "/bin"))
-                      ;; FIXME: Normally we would look it up only in INPUTS
-                      ;; but cross-base uses it as a native input.
-                      (bash (or (assoc-ref inputs "static-bash")
-                                (assoc-ref native-inputs "static-bash"))))
-                 ;; Install the rpc data base file under `$out/etc/rpc'.
-                 ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
-                 (substitute* "sunrpc/Makefile"
-                   (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
-                    (string-append out "/etc/rpc" suffix "\n"))
-                   (("^install-others =.*$")
-                    (string-append "install-others = " out "/etc/rpc\n")))
-
-                 (substitute* "Makeconfig"
-                   ;; According to
-                   ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
-                   ;; linking against libgcc_s is not needed with GCC
-                   ;; 4.7.1.
-                   ((" -lgcc_s") ""))
-
-                 ;; Have `system' use that Bash.
-                 (substitute* "sysdeps/posix/system.c"
-                   (("#define[[:blank:]]+SHELL_PATH.*$")
-                    (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
-                            bash)))
-
-                 ;; Same for `popen'.
-                 (substitute* "libio/iopopen.c"
-                   (("/bin/sh")
-                    (string-append bash "/bin/sh")))
-
-                 ;; Same for the shell used by the 'exec' functions for
-                 ;; scripts that lack a shebang.
-                 (substitute* (find-files "." "^paths\\.h$")
-                   (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
-                    (string-append "#define _PATH_BSHELL \""
-                                   bash "/bin/sh\"\n")))
-
-                 ;; Nscd uses __DATE__ and __TIME__ to create a string to
-                 ;; make sure the client and server come from the same
-                 ;; libc.  Use something deterministic instead.
-                 (substitute* "nscd/nscd_stat.c"
-                   (("static const char compilation\\[21\\] =.*$")
-                    (string-append
-                     "static const char compilation[21] = \""
-                     (string-take (basename out) 20) "\";\n")))
-
-                 ;; Make sure we don't retain a reference to the
-                 ;; bootstrap Perl.
-                 (substitute* "malloc/mtrace.pl"
-                   (("^#!.*")
-                    ;; The shebang can be omitted, because there's the
-                    ;; "bilingual" eval/exec magic at the top of the file.
-                    "")
-                   (("exec @PERL@")
-                    "exec perl")))))
            (add-after 'install 'augment-libc.so
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out")))
@@ -902,19 +772,6 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
-(define glibc-2.25-patched
-  (package
-    (inherit glibc)
-    (source (origin
-              (inherit (package-source glibc))
-              (patches (search-patches "glibc-ldd-x86_64.patch"
-                                       "glibc-versioned-locpath.patch"
-                                       "glibc-o-largefile.patch"
-                                       "glibc-vectorized-strcspn-guards.patch"
-                                       "glibc-CVE-2017-1000366-pt1.patch"
-                                       "glibc-CVE-2017-1000366-pt2.patch"
-                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
-
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
@@ -933,6 +790,7 @@ GLIBC/HURD for a Hurd host"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2015-5180.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))
@@ -952,6 +810,10 @@ GLIBC/HURD for a Hurd host"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2015-5180.patch"
+                                       "glibc-CVE-2016-3075.patch"
+                                       "glibc-CVE-2016-3706.patch"
+                                       "glibc-CVE-2016-4429.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))
@@ -969,6 +831,11 @@ GLIBC/HURD for a Hurd host"
                 "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2015-5180.patch"
+                                       "glibc-CVE-2015-7547.patch"
+                                       "glibc-CVE-2016-3075.patch"
+                                       "glibc-CVE-2016-3706.patch"
+                                       "glibc-CVE-2016-4429.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))
@@ -978,22 +845,10 @@ GLIBC/HURD for a Hurd host"
          `(modify-phases ,phases
             (add-before 'configure 'fix-pwd
               (lambda _
-                ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
+                ;; Use `pwd' instead of `/bin/pwd' for glibc-2.22.
                 (substitute* "configure"
                   (("/bin/pwd") "pwd"))
                 #t))))))))
-
-(define-public glibc-2.21
-  (package
-    (inherit glibc-2.22)
-    (version "2.21")
-    (source (origin
-              (inherit (package-source glibc-2.22))
-              (uri (string-append "mirror://gnu/glibc/glibc-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))))))
 
 (define-public glibc-locales
   (package

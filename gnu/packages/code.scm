@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,6 +188,60 @@ code (SLOC) in large software systems.  It can automatically identify and
 measure a wide range of programming languages.  It automatically estimates the
 effort, time, and money it would take to develop the software, using the
 COCOMO model or user-provided parameters.")
+    (license license:gpl2+)))
+
+(define-public cloc
+  (package
+    (name "cloc")
+    (version "1.72")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/AlDanial/cloc/releases/download/v" version
+             "/cloc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gl7bxb4bi6pms0zzl133pzpfypvz57hk2cw7yf6rvs8b48kilnz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("perl" ,perl)
+       ("perl-algorithm-diff" ,perl-algorithm-diff)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-digest-md5" ,perl-digest-md5)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build)
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (zero?
+                         (system* "make" "-C" "Unix"
+                                  (string-append "prefix=" out)
+                                  (string-append "INSTALL="
+                                                 (assoc-ref inputs "coreutils")
+                                                 "/bin/install")
+                                  "install")))))
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (wrap-program (string-append out "/bin/cloc")
+                          `("PERL5LIB" ":" =
+                            ,(string-split (getenv "PERL5LIB") #\:)))
+                        #t))))
+       #:out-of-source? #t
+       ;; Tests require some other packages.
+       #:tests? #f))
+    (home-page "https://github.com/AlDanial/cloc")
+    (synopsis "Count source lines of code (SLOC) and other source code metrics")
+    (description "cloc counts blank lines, comment lines, and physical lines
+of source code in many programming languages.  Given two versions of a code
+base, cloc can compute differences in blank, comment, and source lines.
+
+cloc contains code from David Wheeler's SLOCCount.  Compared to SLOCCount,
+cloc can handle a greater variety of programming langauges.")
     (license license:gpl2+)))
 
 (define-public the-silver-searcher

@@ -213,7 +213,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
                                          "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ ]*).*$"
+                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ \t]*).*$"
                     _ gnu-user suffix)
                    (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
                            gnu-user suffix
@@ -340,6 +340,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and
 Go.  It also includes runtime support libraries for these languages.")
       (license gpl3+)
+      (supported-systems (delete "aarch64-linux" %supported-systems))
       (home-page "https://gcc.gnu.org/"))))
 
 (define-public gcc-4.8
@@ -352,7 +353,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
-              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))))
+              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
+    (supported-systems %supported-systems)))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -366,7 +368,8 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-libvtv-runpath.patch"))))
-    (native-inputs `(("texinfo" ,texinfo)))))
+    (native-inputs `(("texinfo" ,texinfo)))
+    (supported-systems %supported-systems)))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -382,6 +385,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-strmov-store-file-names.patch"
+                                       "gcc-asan-powerpc-missing-include.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"))))))
@@ -402,14 +406,14 @@ Go.  It also includes runtime support libraries for these languages.")
 (define-public gcc-7
   (package
     (inherit gcc-6)
-    (version "7.1.0")
+    (version "7.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.bz2"))
+                                  version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "05xwps0ci7wgxh50askpa2r9p8518qxdgh6ad7pnyk7n6p13d0ca"))
+                "16j7i0888j2f1yp9l0nhji6cq65dy6y4nwy8868a8njbzzwavxqw"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 

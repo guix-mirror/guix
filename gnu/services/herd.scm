@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,7 +49,8 @@
             unload-services
             unload-service
             load-services
-            start-service))
+            start-service
+            stop-service))
 
 ;;; Commentary:
 ;;;
@@ -135,7 +136,8 @@ does not denote an error."
 
 (define* (invoke-action service action arguments cont)
   "Invoke ACTION on SERVICE with ARGUMENTS.  On success, call CONT with the
-result.  Otherwise return #f."
+list of results (one result per instance with the name SERVICE).  Otherwise
+return #f."
   (with-shepherd sock
     (write `(shepherd-command (version 0)
                               (action ,action)
@@ -146,7 +148,7 @@ result.  Otherwise return #f."
     (force-output sock)
 
     (match (read sock)
-      (('reply ('version 0 _ ...) ('result (result)) ('error #f)
+      (('reply ('version 0 _ ...) ('result result) ('error #f)
                ('messages messages))
        (for-each display-message messages)
        (cont result))
@@ -185,30 +187,34 @@ of pairs."
   "Return the list of currently defined Shepherd services, represented as
 <live-service> objects.  Return #f if the list of services could not be
 obtained."
-  (with-shepherd-action 'root ('status) services
-    (match services
-      ((('service ('version 0 _ ...) _ ...) ...)
-       (map (lambda (service)
-              (alist-let* service (provides requires running)
-                (live-service provides requires running)))
-            services))
-      (x
-       #f))))
+  (with-shepherd-action 'root ('status) results
+    ;; We get a list of results, one for each service with the name 'root'.
+    ;; In practice there's only one such service though.
+    (match results
+      ((services _ ...)
+       (match services
+         ((('service ('version 0 _ ...) _ ...) ...)
+          (map (lambda (service)
+                 (alist-let* service (provides requires running)
+                   (live-service provides requires running)))
+               services))
+         (x
+          #f))))))
 
 (define (unload-service service)
   "Unload SERVICE, a symbol name; return #t on success."
   (with-shepherd-action 'root ('unload (symbol->string service)) result
-    result))
+    (first result)))
 
 (define (%load-file file)
   "Load FILE in the Shepherd."
   (with-shepherd-action 'root ('load file) result
-    result))
+    (first result)))
 
 (define (eval-there exp)
   "Eval EXP in the Shepherd."
   (with-shepherd-action 'root ('eval (object->string exp)) result
-    result))
+    (first result)))
 
 (define (load-services files)
   "Load and register the services from FILES, where FILES contain code that
@@ -220,6 +226,10 @@ returns a shepherd <service> object."
 
 (define (start-service name)
   (with-shepherd-action name ('start) result
+    result))
+
+(define (stop-service name)
+  (with-shepherd-action name ('stop) result
     result))
 
 ;; Local Variables:

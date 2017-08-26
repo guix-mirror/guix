@@ -47,6 +47,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 vlist)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -112,7 +113,7 @@
       (or (and=> (getenv "XDG_CACHE_HOME")
                  (cut string-append <> "/guix/substitute"))
           (string-append %state-directory "/substitute/cache"))
-      (string-append (cache-directory) "/substitute")))
+      (string-append (cache-directory #:ensure? #f) "/substitute")))
 
 (define %allow-unauthenticated-substitutes?
   ;; Whether to allow unchecked substitutes.  This is useful for testing
@@ -600,14 +601,26 @@ if file doesn't exist, and the narinfo otherwise."
 (define (fetch-narinfos url paths)
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
-    (let ((done 0))
+    (let ((done 0)
+          (total (length paths)))
       (lambda ()
         (display #\cr (current-error-port))
         (force-output (current-error-port))
         (format (current-error-port)
                 (G_ "updating list of substitutes from '~a'... ~5,1f%")
-                url (* 100. (/ done (length paths))))
+                url (* 100. (/ done total)))
         (set! done (+ 1 done)))))
+
+  (define hash-part->path
+    (let ((mapping (fold (lambda (path result)
+                           (vhash-cons (store-path-hash-part path) path
+                                       result))
+                         vlist-null
+                         paths)))
+      (lambda (hash)
+        (match (vhash-assoc hash mapping)
+          (#f #f)
+          ((_ . path) path)))))
 
   (define (handle-narinfo-response request response port result)
     (let* ((code   (response-code response))
@@ -627,9 +640,7 @@ if file doesn't exist, and the narinfo otherwise."
             (if len
                 (get-bytevector-n port len)
                 (read-to-eof port))
-            (cache-narinfo! url
-                            (find (cut string-contains <> hash-part) paths)
-                            #f
+            (cache-narinfo! url (hash-part->path hash-part) #f
                             (if (= 404 code)
                                 ttl
                                 %narinfo-transient-error-ttl))

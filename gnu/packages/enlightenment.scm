@@ -53,12 +53,13 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public efl
   (package
     (name "efl")
-    (version "1.19.1")
+    (version "1.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -66,7 +67,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0fndwraca9rg0bz3al4isdprvyw56szr88qiyvglb4j8ygsylscc"))))
+                "0zll6k4xbbdsxqg53g8jddgv889g5m1xh20i03iz5a52y2bcnh55"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -101,11 +102,11 @@
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxtst" ,libxtst)
        ("lz4" ,lz4)
-       ("mesa" ,mesa)
        ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
+       ("wayland-protocols" ,wayland-protocols)
        ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
@@ -122,11 +123,15 @@
        ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
        ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
        ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
+       ("libinput" ,libinput-minimal) ; elput.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
        ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
+       ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc
+       ("mesa" ,mesa) ; ecore-drm2.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
        ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; mount: eeze.pc
+       ("wayland" ,wayland) ; ecore-wl2.pc, elementary.pc
        ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
@@ -137,7 +142,11 @@
                            "--enable-multisense"
                            "--with-opengl=es"
                            "--enable-egl"
-                           "--enable-harfbuzz")
+                           "--enable-harfbuzz"
+                           ;; for wayland
+                           "--enable-wayland"
+                           "--enable-elput"
+                           "--enable-drm")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
@@ -156,7 +165,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -164,7 +173,23 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1x4j2q4qqj10ckbka0zaq2r2zm66ff1x791kp8slv1ff7fw45vdz"))))
+                "13rl1k22yf8qrpzdm5nh6ij641fibadr2ww1r7rnz7mbhzj3d4gb"))
+              (modules '((guix build utils)))
+              ;; Remove the bundled fonts.
+              ;; TODO: Remove bundled lz4.
+              (snippet
+               '(begin
+                  (delete-file-recursively "data/fonts")
+                  (substitute* '("data/Makefile.in" "data/Makefile.am")
+                    (("fonts") ""))
+                  (substitute* "configure"
+                    (("data/fonts/Makefile") "")
+                    (("\\\"data/fonts/Makefile") "# \"data/fonts/Makefile"))
+                  (substitute* '("data/themes/Makefile.in"
+                                 "data/themes/Makefile.am"
+                                 "data/themes/nyanology/Makefile.in"
+                                 "data/themes/nyanology/Makefile.am")
+                    (("-fd \\$\\(top_srcdir\\)/data/fonts") ""))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -173,7 +198,8 @@ removable devices or support for multimedia.")
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org/about-terminology")
@@ -277,14 +303,17 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.19.0")
+    (version "1.20.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "python-efl" version))
+        (uri (list
+               (pypi-uri "python-efl" version)
+               (string-append "http://download.enlightenment.org/rel/bindings/"
+                              "python/python-efl-" version ".tar.gz")))
         (sha256
          (base32
-          "0l0f9bv1134qh5376p5asycncidrhp8hdb6qwd8ybr1a61q9zq67"))))
+          "1680pgpf501nhbc9arm0nfj6rpcw17aryh0pgmmmszxlgpifpdzy"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -303,11 +332,7 @@ embedded systems.")
           (lambda _
             ;; Some tests require write access to HOME.
             (setenv "HOME" "/tmp")
-            #t)))
-       ;; FIXME: Some tests require a running D-Bus server or a network
-       ;; connection and should be disabled. Other test failures looks
-       ;; legitimate. Disabled for now, needs work!
-       #:tests? #f))
+            #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
@@ -327,7 +352,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method url-fetch)
@@ -335,7 +360,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
                             "download/v" version "/edi-" version ".tar.bz2"))
         (sha256
          (base32
-          "1l90x1bw82a0df6r11wd55qizhi99gg0qcljwxga606ahy6ycnkn"))))
+          "0k0ymi9ilhkypqb9pniv365kh3jgbl2g2k0ylvsmisn2jhbqk49a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
