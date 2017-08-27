@@ -143,6 +143,7 @@ MODULES =					\
   guix/build/make-bootstrap.scm			\
   guix/search-paths.scm				\
   guix/packages.scm				\
+  guix/import/print.scm				\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\
   guix/import/snix.scm				\
@@ -275,6 +276,7 @@ SCM_TESTS =					\
   tests/hash.scm				\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
+  tests/print.scm				\
   tests/sets.scm				\
   tests/modules.scm				\
   tests/gnu-maintenance.scm			\
