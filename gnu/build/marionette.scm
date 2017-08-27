@@ -168,16 +168,20 @@ QEMU monitor and to the guest's backdoor REPL."
 (define* (wait-for-file file marionette #:key (timeout 10))
   "Wait until FILE exists in MARIONETTE; 'read' its content and return it.  If
 FILE has not shown up after TIMEOUT seconds, raise an error."
-  (marionette-eval
-   `(let loop ((i ,timeout))
-      (cond ((file-exists? ,file)
-             (call-with-input-file ,file read))
-            ((> i 0)
-             (sleep 1)
-             (loop (- i 1)))
-            (else
-             (error "file didn't show up" ,file))))
-   marionette))
+  (match (marionette-eval
+          `(let loop ((i ,timeout))
+             (cond ((file-exists? ,file)
+                    (cons 'success (call-with-input-file ,file read)))
+                   ((> i 0)
+                    (sleep 1)
+                    (loop (- i 1)))
+                   (else
+                    'failure)))
+          marionette)
+    (('success . result)
+     result)
+    ('failure
+     (error "file didn't show up" file))))
 
 (define (marionette-control command marionette)
   "Run COMMAND in the QEMU monitor of MARIONETTE.  COMMAND is a string such as
