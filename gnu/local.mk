@@ -807,6 +807,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
+  %D%/packages/patches/libzip-CVE-2017-12858.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
   %D%/packages/patches/lierolibre-is-free-software.patch	\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\

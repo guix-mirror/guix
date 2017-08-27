@@ -1525,6 +1525,7 @@ manipulate, read, and write Zip archive files.")
               (method url-fetch)
               (uri (string-append
                     "https://nih.at/libzip/libzip-" version ".tar.gz"))
+              (patches (search-patches "libzip-CVE-2017-12858.patch"))
               (sha256
                (base32
                 "17vxj2ffsxwh8lkc6801ppmwj15jp8q58rin76znxfbx88789ybc"))))
