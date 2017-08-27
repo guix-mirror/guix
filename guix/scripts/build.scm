@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,9 +32,11 @@
 
   #:use-module (guix monads)
   #:use-module (guix gexp)
+  #:autoload   (json) (json-string->scm)
   #:autoload   (guix http-client) (http-fetch http-get-error?)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -54,6 +57,10 @@
             guix-build
             register-root
             register-root*))
+
+;; Lazy reference to import utils to avoid cycle
+(define (lazy-util sym)
+  (module-ref (resolve-interface '(guix import utils)) sym))
 
 (define %default-log-urls
   ;; Default base URLs for build logs.
@@ -606,7 +613,16 @@ build---packages, gexps, derivations, and so on."
                        (else
                         (list (specification->package spec)))))
                 (('file . file)
-                 (ensure-list (load* file (make-user-module '()))))
+                 (if (string-suffix? ".json" file)
+                     (begin
+                       ;; Load (json) lazily to avoid hard dependency.
+                       ;; TODO: doesn't work
+                       (let* ((json (json-string->scm
+                                     (with-input-from-file file read-string)))
+                              (pkg ((lazy-util 'data->guix-package)
+                                    ((lazy-util 'hash-table->alist) json))))
+                         (ensure-list pkg)))
+                     (ensure-list (load* file (make-user-module '())))))
                 (('expression . str)
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))
