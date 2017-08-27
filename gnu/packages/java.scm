@@ -653,6 +653,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/git/classpath.git")
                       (commit commit)))
+                (file-name (string-append "classpath-" version "-checkout"))
                 (sha256
                  (base32
                   "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))))
