@@ -417,7 +417,7 @@ and min/max network usage.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/tun.c"
                (("PATH=[^ ]* ")
-                (string-append (assoc-ref inputs "net-tools") "/sbin/")))))
+                (string-append (assoc-ref inputs "net-tools") "/bin/")))))
          (add-before 'check 'delete-failing-tests
            ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105.
            (lambda _
