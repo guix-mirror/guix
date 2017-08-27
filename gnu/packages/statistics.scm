@@ -185,6 +185,14 @@ be output in text, PostScript, PDF or HTML.")
              (substitute* "src/library/tools/Makefile.in"
                (("(install_package_description\\(.*\"')\\)\"" line prefix)
                 (string-append prefix ", builtStamp='1970-01-01')\"")))
+
+             ;; R bundles an older version of help2man, which does not respect
+             ;; SOURCE_DATE_EPOCH.  We cannot just use the latest help2man,
+             ;; because that breaks a test.
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "tools/help2man.pl"
+                 (("my \\$date = strftime \"%B %Y\", localtime" line)
+                  (string-append line " 1"))))
              #t))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
