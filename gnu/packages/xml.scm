@@ -227,18 +227,29 @@ the @code{Graph} class and write it out in a specific file format.")
 (define-public perl-xml-atom
   (package
     (name "perl-xml-atom")
-    (version "0.41")
+    (version "0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                                   "XML-Atom-" version ".tar.gz"))
               (sha256
                (base32
-                "17lnkb9ymrhk2z642bhj5i2bv3q1da3kpp2lvsl0yhqshk3wdjj8"))))
+                "1wa8kfy1w4mg7kzxim4whyprkn48a2il6fap0b947zywknw4c6y6"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-perl-search-path
+           (lambda _
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (native-inputs
      `(("perl-datetime" ,perl-datetime)
        ;; TODO package: perl-datetime-format-atom
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-module-install" ,perl-module-install)
        ("perl-xml-xpath" ,perl-xml-xpath)))
     (inputs
