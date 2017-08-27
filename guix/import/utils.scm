@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,9 +26,17 @@
   #:use-module (guix http-client)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
+  #:use-module (guix packages)
+  #:use-module (guix discovery)
+  #:use-module (guix build-system)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:export (factorize-uri
 
             hash-table->alist
@@ -45,7 +54,9 @@
             license->symbol
 
             snake-case
-            beautify-description))
+            beautify-description
+
+            alist->package))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -241,3 +252,80 @@ package definition."
     (('package ('name (? string? name)) _ ...)
      `(define-public ,(string->symbol name)
         ,guix-package))))
+
+(define (build-system-modules)
+  (all-modules (map (lambda (entry)
+                      `(,entry . "guix/build-system"))
+                    %load-path)))
+
+(define (lookup-build-system-by-name name)
+  "Return a <build-system> value for the symbol NAME, representing the name of
+the build system."
+  (fold-module-public-variables (lambda (obj result)
+                                  (if (and (build-system? obj)
+                                           (eq? name (build-system-name obj)))
+                                      obj result))
+                                #f
+                                (build-system-modules)))
+
+(define (specs->package-lists specs)
+  "Convert each string in the SPECS list to a list of a package label and a
+package value."
+  (map (lambda (spec)
+         (let-values (((pkg out) (specification->package+output spec)))
+           (match out
+             (("out") (list (package-name pkg) pkg))
+             (_ (list (package-name pkg) pkg out)))))
+       specs))
+
+(define (source-spec->object source)
+  "Generate an <origin> object from a SOURCE specification.  The SOURCE can
+either be a simple URL string, #F, or an alist containing entries for each of
+the expected fields of an <origin> object."
+  (match source
+    ((? string? source-url)
+     (let ((tarball (with-store store (download-to-store store source-url))))
+       (origin
+         (method url-fetch)
+         (uri source-url)
+         (sha256 (base32 (guix-hash-url tarball))))))
+    (#f #f)
+    (orig (let ((sha (match (assoc-ref orig "sha256")
+                       ((("base32" . value))
+                        (base32 value))
+                       (_ #f))))
+            (origin
+              (method (match (assoc-ref orig "method")
+                        ("url-fetch" (@ (guix download) url-fetch))
+                        ("git-fetch" (@ (guix git-download) git-fetch))
+                        ("svn-fetch" (@ (guix svn-download) svn-fetch))
+                        ("hg-fetch"  (@ (guix hg-download) hg-fetch))
+                        (_ #f)))
+              (uri (assoc-ref orig "uri"))
+              (sha256 sha))))))
+
+(define (alist->package meta)
+  (package
+    (name (assoc-ref meta "name"))
+    (version (assoc-ref meta "version"))
+    (source (source-spec->object (assoc-ref meta "source")))
+    (build-system
+      (lookup-build-system-by-name
+       (string->symbol (assoc-ref meta "build-system"))))
+    (native-inputs
+     (specs->package-lists (or (assoc-ref meta "native-inputs") '())))
+    (inputs
+     (specs->package-lists (or (assoc-ref meta "inputs") '())))
+    (propagated-inputs
+     (specs->package-lists (or (assoc-ref meta "propagated-inputs") '())))
+    (home-page
+     (assoc-ref meta "home-page"))
+    (synopsis
+     (assoc-ref meta "synopsis"))
+    (description
+     (assoc-ref meta "description"))
+    (license
+     (let ((l (assoc-ref meta "license")))
+       (or (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
+                       (spdx-string->license l))
+           (license:fsdg-compatible l))))))
