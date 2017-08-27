@@ -196,7 +196,7 @@ platform-independent programs.")
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.24.1")
+    (version "3.27.1")
     (source
      (origin
        (method url-fetch)
@@ -205,7 +205,7 @@ platform-independent programs.")
                            "/FileZilla_" version "_src" ".tar.bz2"))
        (sha256
         (base32
-         "0ahcld3g6jj92nakm5i58wgmcv6f4l9yisw3aqbc2ry0gs679pg6"))))
+         "14lsplbp9fy7lk6cpwi3aj6jskz4j82h67x0fik82z1bns0zm2a3"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.
