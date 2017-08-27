@@ -264,6 +264,14 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
     (#\bs . "backspace")
     (#\tab . "tab")))
 
+(define (character->keystroke chr keystrokes)
+  "Return the keystroke for CHR according to the keyboard layout defined by
+KEYSTROKES."
+  (if (char-set-contains? char-set:upper-case chr)
+      (string-append "shift-" (string (char-downcase chr)))
+      (or (assoc-ref keystrokes chr)
+          (string chr))))
+
 (define* (string->keystroke-commands str
                                      #:optional
                                      (keystrokes
@@ -272,9 +280,9 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
 to STR.  KEYSTROKES is an alist specifying a mapping from characters to
 keystrokes."
   (string-fold-right (lambda (chr result)
-                       (cons (string-append "sendkey "
-                                            (or (assoc-ref keystrokes chr)
-                                                (string chr)))
+                       (cons (string-append
+                              "sendkey "
+                              (character->keystroke chr keystrokes))
                              result))
                      '()
                      str))
