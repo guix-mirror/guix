@@ -8165,6 +8165,16 @@ common serialisation formats such as JSON or CBOR.")
         (base32
          "1lq4p3mqqljhhy8wyiyahris33j4m5qfzpi6iacmcqjzw5g4afbm"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (propagated-inputs
      `(("perl-unicode-normalize" ,perl-unicode-normalize)))
     (home-page "http://search.cpan.org/dist/Unicode-Collate")
