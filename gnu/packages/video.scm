@@ -1438,7 +1438,7 @@ device without having to bother about the decryption.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dthompson.us/releases/srt2vtt/srt2vtt-"
+                    "https://files.dthompson.us/srt2vtt/srt2vtt-"
                     version ".tar.gz"))
               (sha256
                (base32
