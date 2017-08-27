@@ -261,6 +261,9 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
     (#\. . "dot")
     (#\, . "comma")
     (#\; . "semicolon")
+    (#\' . "apostrophe")
+    (#\" . "shift-apostrophe")
+    (#\` . "grave_accent")
     (#\bs . "backspace")
     (#\tab . "tab")))
 
