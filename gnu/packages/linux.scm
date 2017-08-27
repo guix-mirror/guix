@@ -1212,14 +1212,14 @@ messages and are accompanied by a set of manpages.")
       (name "net-tools")
       (version (string-append "1.60-" revision "." (string-take commit 7)))
       (source (origin
-               (method git-fetch)
-               (uri (git-reference
-                      (url "https://git.code.sf.net/p/net-tools/code")
-                      (commit commit)))
-               (file-name (string-append name "-" version "-checkout"))
+               (method url-fetch)
+               (uri (string-append "https://sourceforge.net/code-snapshots/git/"
+                                   "n/ne/net-tools/code.git/net-tools-code-"
+                                   commit ".zip"))
+               (file-name (string-append name "-" version ".zip"))
                (sha256
                 (base32
-                 "189mdjfbd7j7j0jysy34nqn5byy9g5f6ylip1sikk7kz08vjml4s"))))
+                 "0hz9fda9d78spp774b6rr5xaxav7cm4h0qcpxf70rvdbrf6qx7vy"))))
       (home-page "http://net-tools.sourceforge.net/")
       (build-system gnu-build-system)
       (arguments
@@ -1266,7 +1266,8 @@ messages and are accompanied by a set of manpages.")
                               (string-append "BASEDIR=" out)
                               (string-append "INSTALLNLSDIR=" out "/share/locale")
                               (string-append "mandir=/share/man")))))
-      (native-inputs `(("gettext" ,gettext-minimal)))
+      (native-inputs `(("gettext" ,gettext-minimal)
+                       ("unzip" ,unzip)))
       (synopsis "Tools for controlling the network subsystem in Linux")
       (description
        "This package includes the important tools for controlling the network
@@ -1354,6 +1355,15 @@ configuration (iptunnel, ipmaddr).")
                             (string-append "BASEDIR=" out)
                             (string-append "INSTALLNLSDIR=" out "/share/locale")
                             (string-append "mandir=/share/man")))))
+
+    ;; We added unzip to the net-tools package's native-inputs when
+    ;; switching its source from a Git checkout to a zip archive.  We
+    ;; need to specify the native-inputs here to keep unzip out of the
+    ;; build of net-tools-for-tests, so that we don't have to rebuild
+    ;; many packages on the master branch.  We can make
+    ;; net-tools-for-tests inherit directly from net-tools in the next
+    ;; core-updates cycle.
+    (native-inputs `(("gettext" ,gettext-minimal)))
 
     ;; Use the big Debian patch set (the thing does not even compile out of
     ;; the box.)
