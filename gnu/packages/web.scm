@@ -3382,6 +3382,8 @@ web browsing, used for automating interaction with websites.")
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f)) ; Tests require further modules to be packaged
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
     (inputs
      `(("perl-data-page" ,perl-data-page)
        ("perl-libwww" ,perl-libwww)
