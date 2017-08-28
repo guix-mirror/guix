@@ -32,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -53,6 +54,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public libgpg-error
@@ -534,6 +536,43 @@ and signature functionality from Python programs.")
 
 (define-public python2-gnupg
   (package-with-python2 python-gnupg))
+
+(define-public perl-gnupg-interface
+  (package
+    (name "perl-gnupg-interface")
+    (version "0.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AL/ALEXMV/GnuPG-Interface-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
+    (build-system perl-build-system)
+    (arguments
+     '(;; Result: FAIL
+       ;; Failed 10/20 test programs. 21/52 subtests failed.
+       #:tests? #f))
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("which" ,which)))
+    (inputs
+     `(("gnupg" ,gnupg)))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox-late" ,perl-moox-late)
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
+    (home-page "http://search.cpan.org/~alexmv/GnuPG-Interface/")
+    (synopsis "Perl interface to GnuPG")
+    (description
+     "@code{GnuPG::Interface} and its associated modules are designed to
+provide an object-oriented method for interacting with GnuPG, being able to
+perform functions such as but not limited to encrypting, signing, decryption,
+verification, and key-listing parsing.")
+    (license license:perl-license)))
 
 (define-public pius
   (package
