@@ -4289,6 +4289,36 @@ the argument to the CACHESIZE parameter, will be cached.")
 MIME messages on Internet.")
     (license (package-license perl))))
 
+(define-public perl-mime-tools
+  (package
+    (name "perl-mime-tools")
+    (version "5.509")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DS/DSKOLL/MIME-tools-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wv9rzx5j1wjm01c3dg48qk9wlbm6iyf91j536idk09xj869ymv4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (inputs
+     `(("perl-convert-binhex" ,perl-convert-binhex)))
+    (propagated-inputs
+     `(("perl-mailtools" ,perl-mailtools)))
+    (home-page
+     "http://search.cpan.org/dist/MIME-tools")
+    (synopsis "Tools to manipulate MIME messages")
+    (description
+     "MIME-tools is a collection of Perl5 MIME:: modules for parsing,
+decoding, and generating single- or multipart (even nested multipart) MIME
+messages.")
+    (license perl-license)))
+
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
