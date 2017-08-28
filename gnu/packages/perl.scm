@@ -5073,6 +5073,32 @@ all coercions and constraints are inherited.")
 constraint with coercion to load the class.")
     (license (package-license perl))))
 
+(define-public perl-moox
+  (package
+    (name "perl-moox")
+    (version "0.101")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/G/GE/GETTY/MooX-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m9jvrqcidiabdih211byadwnnkygafq54r2ljnf1akqdrjimy9g"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-data-optlist" ,perl-data-optlist)
+       ("perl-import-into" ,perl-import-into)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)))
+    (home-page "http://search.cpan.org/dist/MooX")
+    (synopsis
+     "Using Moo and MooX:: packages the most lazy way")
+    (description "Contains the MooX and MooX::Role packages.")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
