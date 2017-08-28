@@ -78,6 +78,37 @@ communication, encryption, decryption, signatures, etc.")
     (license license:isc)
     (home-page "http://libsodium.org")))
 
+(define-public libmd
+  (package
+    (name "libmd")
+    (version "0.0.0")
+    (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://archive.hadrons.org/software/libmd/libmd-"
+                  version
+                  ".tar.xz"))
+            (sha256
+             (base32
+              "121s73pgbqsnmy6xblbrkj9y44c5zzzpf2hcmh6zvcvg4dk26gzx"))))
+    (build-system gnu-build-system)
+    (synopsis "Message Digest functions from BSD systems")
+    (description
+     "The currently provided message digest algorithms are:
+@itemize
+@item MD2
+@item MD4
+@item MD5
+@item RIPEMD-160
+@item SHA-1
+@item SHA-2 (SHA-256, SHA-384 and SHA-512)
+@end itemize")
+    (license (list license:bsd-3
+                   license:bsd-2
+                   license:isc
+                   license:public-domain))
+    (home-page "https://www.hadrons.org/software/libmd/")))
+
 (define-public signify
   (package
     (name "signify")
