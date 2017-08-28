@@ -5501,6 +5501,38 @@ cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
 
+(define-public perl-net-idn-encode
+  (package
+    (name "perl-net-idn-encode")
+    (version "2.400")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/C/CF/CFAERBER/Net-IDN-Encode-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0a9knav5f9kjldrkxx1k47ivd3p23zkmi8aqgyhnxidhgasz1dlq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (home-page
+     "http://search.cpan.org/dist/Net-IDN-Encode")
+    (synopsis
+     "Internationalizing Domain Names in Applications (IDNA)")
+    (description
+     "Internationalized Domain Names (IDNs) use characters drawn from a large
+repertoire (Unicode), but IDNA allows the non-ASCII characters to be
+represented using only the ASCII characters already allowed in so-called host
+names today (letter-digit-hyphen, /[A-Z0-9-]/i).
+
+Use this module if you just want to convert domain names (or email addresses),
+using whatever IDNA standard is the best choice at the moment.")
+    (license perl-license)))
+
 (define-public perl-net-statsd
   (package
    (name "perl-net-statsd")
