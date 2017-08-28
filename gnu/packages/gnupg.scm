@@ -32,8 +32,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
@@ -618,38 +620,48 @@ PGP keysigning parties.")
 (define-public signing-party
   (package
    (name "signing-party")
-   (version "1.1.4")
+   (version "2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://debian/pool/main/s/signing-party/"
                                 "signing-party_" version ".orig.tar.gz"))
             (sha256 (base32
-                     "188gp0prbh8qs29lq3pbf0qibfd6jq4fk7i0pfrybl8aahvm84rx"))))
+                     "1n5bpcfpl9vg1xp6r1jhbyahrgdyxp05b5pria1rh4m0qnv8sifr"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (native-inputs
+    `(("autoconf" ,(autoconf-wrapper))
+      ("automake" ,automake)))
+   (inputs `(("perl" ,perl)
+             ("perl-text-template" ,perl-text-template)
+             ("perl-mime-tools" ,perl-mime-tools)
+             ("perl-gnupg-interface" ,perl-gnupg-interface)
+             ("perl-net-idn-encode" ,perl-net-idn-encode)
+             ("libmd" ,libmd)))
    (arguments
     `(#:tests? #f
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'remove-spurious-links
-          (lambda _ (delete-file "keyanalyze/pgpring/depcomp")))
+        (add-before 'configure 'change-directory
+          (lambda _
+            ;; The build system in the unpack phase changes to a less useful
+            ;; subdirectory, so move up one level
+            (chdir (dirname (getcwd)))))
         (replace 'configure
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* "keyanalyze/Makefile"
                 (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
               (substitute* "keyanalyze/Makefile"
-                (("./configure") (string-append "./configure --prefix=" out)))
-              (substitute* "keyanalyze/pgpring/configure"
-                (("/bin/sh") (which "sh")))
-              (substitute* "gpgwrap/Makefile"
+                (("\\./configure") (string-append "./configure --prefix=" out)))
+              (substitute* "gpgwrap/src/Makefile"
                 (("\\} clean")
                  (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
                                 out "/bin/gpgwrap\n")))
               (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
                              "keylookup/Makefile" "sig2dot/Makefile"
                              "springgraph/Makefile")
-                           (("/usr") out)))))
+                (("/usr") out))
+              (setenv "CONFIG_SHELL" (which "sh")))))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys #:rest args)
             (let ((out (assoc-ref outputs "out"))
@@ -674,7 +686,13 @@ PGP keysigning parties.")
                 '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
                   "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
                   "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                  "process_keys.1" "pgpring.1" "keyanalyze.1"))))))))
+                  "process_keys.1" "pgpring.1" "keyanalyze.1")))))
+        (add-after 'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out")))
+              (wrap-program
+                  (string-append out "/bin/caff")
+                `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))))))))
    (synopsis "Collection of scripts for simplifying gnupg key signing")
    (description
     "Signing-party is a collection for all kinds of PGP/GnuPG related things,
