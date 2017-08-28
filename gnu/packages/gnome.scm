@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>

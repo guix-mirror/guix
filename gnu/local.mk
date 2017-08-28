@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+# Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
