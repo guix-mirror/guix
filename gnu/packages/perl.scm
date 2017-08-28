@@ -5179,6 +5179,46 @@ attribute functionality.  It provides a means of proxying functionality from
 an external class to the given atttribute.")
     (license perl-license)))
 
+(define-public perl-moox-late
+  (package
+    (name "perl-moox-late")
+    (version "0.015")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-late-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1gzvd9zws3v09sh0xx6srmw4jwi22fnrya4zcsc8dykn62pjclqp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox" ,perl-moox)
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
+    (propagated-inputs
+     `(("perl-type-tiny" ,perl-type-tiny)))
+    (home-page
+     "http://search.cpan.org/dist/MooX-late")
+    (synopsis "Easily translate Moose code to Moo")
+    (description
+     "MooX::late does the following:
+@enumerate
+@item Supports isa => $stringytype
+@item Supports does => $rolename
+@item Supports lazy_build => 1
+@item Exports blessed and confess functions to your namespace.
+@item Handles certain attribute traits
+Currently Hash, Array and Code are supported.  This feature requires
+MooX::HandlesVia.
+@end enumerate")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
