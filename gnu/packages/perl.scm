@@ -8013,6 +8013,32 @@ algorism to indicate multiplication by 1000.")
     (description "Text::Table renders plaintext tables.")
     (license x11)))
 
+(define-public perl-text-template
+  (package
+    (name "perl-text-template")
+    (version "1.47")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MS/MSCHOUT/Text-Template-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1z781cgz7wbn80lf3kqr2ad0pg6g1wlnim0822h8liw28k3l5msh"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Text-Template")
+    (synopsis
+     "Expand template text with embedded Perl")
+    (description
+     "This is a library for generating letters, building HTML pages, or
+filling in templates generally.  A template is a piece of text that has little
+Perl programs embedded in it here and there.  When you fill in a template, you
+evaluate the little programs and replace them with their values.")
+    (license perl-license)))
+
 (define-public perl-text-unidecode
   (package
     (name "perl-text-unidecode")
