@@ -1311,6 +1311,34 @@ the context the subroutine would have seen if it were the last statement in
 the caller.")
     (license (package-license perl))))
 
+(define-public perl-convert-binhex
+  (package
+    (name "perl-convert-binhex")
+    (version "1.125")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/S/ST/STEPHEN/Convert-BinHex-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15v3489k179cx0fz3lix79ssjid0nhhpf6c33swpxga6pss92dai"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-slurp" ,perl-file-slurp)
+       ("perl-test-most" ,perl-test-most)))
+    (home-page
+     "http://search.cpan.org/dist/Convert-BinHex")
+    (synopsis "Extract data from Macintosh BinHex files")
+    (description
+     "BinHex is a format for transporting files safely through electronic
+mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
+provides a means of converting those data streams back into into binary
+data.")
+    (license perl-license)))
+
 (define-public perl-cpan-meta-check
   (package
     (name "perl-cpan-meta-check")
