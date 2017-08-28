@@ -5142,6 +5142,43 @@ constraint with coercion to load the class.")
     (description "Contains the MooX and MooX::Role packages.")
     (license perl-license)))
 
+(define-public perl-moox-handlesvia
+  (package
+    (name "perl-moox-handlesvia")
+    (version "0.001008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MATTP/MooX-HandlesVia-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "137yrjn2jmw4cj0fjdajnkjgqr5arnpq72kbm6w66xskncinz55h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moox-types-mooselike"
+        ,perl-moox-types-mooselike)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (inputs
+     `(("perl-class-method-modifiers"
+        ,perl-class-method-modifiers)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-role-tiny" ,perl-role-tiny)))
+    (propagated-inputs
+     `(("perl-data-perl" ,perl-data-perl)))
+    (home-page
+     "http://search.cpan.org/dist/MooX-HandlesVia")
+    (synopsis "NativeTrait-like behavior for Moo")
+    (description
+     "@code{MooX::HandlesVia} is an extension of Moo's @code{handles}
+attribute functionality.  It provides a means of proxying functionality from
+an external class to the given atttribute.")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
