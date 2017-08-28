@@ -1588,6 +1588,49 @@ on one page.  This results in wanting to page through various pages of data.
 The maths behind this is unfortunately fiddly, hence this module.")
     (license (package-license perl))))
 
+(define-public perl-data-perl
+  (package
+    (name "perl-data-perl")
+    (version "0.002009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MATTP/Data-Perl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-output" ,perl-test-output)))
+    (inputs
+     `(("perl-class-method-modifiers"
+        ,perl-class-method-modifiers)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-strictures" ,perl-strictures)))
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page
+     "http://search.cpan.org/dist/Data-Perl")
+    (synopsis "Base classes wrapping fundamental Perl data types")
+    (description
+     "@code{Data::Perl} is a container class for the following classes:
+@itemize
+@item @code{Data::Perl::Collection::Hash}
+@item @code{Data::Perl::Collection::Array}
+@item @code{Data::Perl::String}
+@item @code{Data::Perl::Number}
+@item @code{Data::Perl::Counter}
+@item @code{Data::Perl::Bool}
+@item @code{Data::Perl::Code}
+@end itemize")
+    (license perl-license)))
+
 (define-public perl-data-stag
   (package
     (name "perl-data-stag")
