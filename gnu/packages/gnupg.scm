@@ -203,14 +203,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.23")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0xqd5nm4j3w9lwk35vg57gl2i8bfkmx7d24i44gkbscm2lwpci59"))))
+                "1rj538kp3wsdq7rhl8sy1wpwhlsbxcch0cwk64kgz8gpw05lllfl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -232,7 +232,8 @@ compatible to GNU Pth.")
     `(#:configure-flags '(;; Otherwise, the test suite looks for the `gpg`
                           ;; executable in its installation directory in
                           ;; /gnu/store before it has been installed.
-                          "--enable-gnupg-builddir-envvar")
+                          "--enable-gnupg-builddir-envvar"
+                          "--enable-all-tests")
       #:phases
       (modify-phases %standard-phases
         (add-before 'configure 'patch-paths
