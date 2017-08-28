@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -411,7 +412,11 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                    (close-connection port))))
 
              (case (response-code response)
-               ((301 302 307)
+               ((301                    ; moved permanently
+                 302                    ; found (redirection)
+                 303                    ; see other
+                 307                    ; temporary redirection
+                 308)                   ; permanent redirection
                 (let ((location (response-location response)))
                   (if (or (not location) (member location visited))
                       (values 'http-response response)

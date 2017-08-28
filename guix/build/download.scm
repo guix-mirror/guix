@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -763,7 +764,9 @@ certificates; otherwise simply ignore them."
          file))
       ((301                                       ; moved permanently
         302                                       ; found (redirection)
-        307)                                      ; temporary redirection
+        303                                       ; see other
+        307                                       ; temporary redirection
+        308)                                      ; permanent redirection
        (let ((uri (resolve-uri-reference (response-location resp) uri)))
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))

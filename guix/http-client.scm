@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -259,7 +260,10 @@ Raise an '&http-get-error' condition if downloading fails."
           ((200)
            (values data (response-content-length resp)))
           ((301                                   ; moved permanently
-            302)                                  ; found (redirection)
+            302                                   ; found (redirection)
+            303                                   ; see other
+            307                                   ; temporary redirection
+            308)                                  ; permanent redirection
            (let ((uri (resolve-uri-reference (response-location resp) uri)))
              (close-port port)
              (format #t (G_ "following redirection to `~a'...~%")
