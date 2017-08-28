@@ -65,7 +65,7 @@
 (define-public pspp
   (package
     (name "pspp")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
       (method url-fetch)
@@ -73,7 +73,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "10yb8nknh33c1y2ji3gww5dcnx9n3nqgsj6yfb4wibdjypa1m68v"))))
+        "1r8smr5057993h90nx0mdnff8nxw9x546zzh6qpy4h3xblp1la5s"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
