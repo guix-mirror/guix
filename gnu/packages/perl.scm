@@ -4205,6 +4205,51 @@ implementation of these functions only serves as a fallback in case the C
 portions of this module couldn't be compiled on this machine.")
     (license (package-license perl))))
 
+(define-public perl-mailtools
+  (package
+    (name "perl-mailtools")
+    (version "2.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MARKOV/MailTools-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "06jykkv8mp484vzkmwd6dkicx029rl3ir5ljzrbap3paxw1dfzn1"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-timedate" ,perl-timedate)))
+    (home-page
+     "http://search.cpan.org/dist/MailTools")
+    (synopsis "Bundle of ancient email modules")
+    (description "MailTools contains the following modules:
+@table @asis
+@item Mail::Address
+Parse email address from a header line.
+@item Mail::Cap
+Interpret mailcap files: mappings of file-types to applications as used by
+many command-line email programs.
+@item Mail::Field
+Simplifies access to (some) email header fields.  Used by Mail::Header.
+@item Mail::Filter
+Process Mail::Internet messages.
+@item Mail::Header
+Collection of Mail::Field objects, representing the header of a Mail::Internet
+object.
+@item Mail::Internet
+Represents a single email message, with header and body.
+@item Mail::Mailer
+Send Mail::Internet emails via direct smtp or local MTA's.
+@item Mail::Send
+Build a Mail::Internet object, and then send it out using Mail::Mailer.
+@item Mail::Util
+\"Smart functions\" you should not depend on.
+@end table")
+    (license perl-license)))
+
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
