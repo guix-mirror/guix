@@ -250,26 +250,18 @@ compatible to GNU Pth.")
                (string-append (getcwd) "/tests/gpgscm/gpgscm")))
             #t))
         (add-before 'build 'patch-test-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((coreutils (assoc-ref inputs "coreutils"))
-                   (cat (string-append coreutils "/bin/cat"))
-                   (pwd (string-append coreutils "/bin/pwd"))
-                   (true (string-append coreutils "/bin/true"))
-                   (false (string-append coreutils "/bin/false")))
-              (substitute* '("tests/inittests"
-                             "tests/pkits/inittests"
-                             "tests/Makefile"
-                             "tests/pkits/common.sh"
-                             "tests/pkits/Makefile"
-                            )
-               (("/bin/pwd") pwd))
-              (substitute* "common/t-exectool.c"
-                (("/bin/cat") cat))
-              (substitute* "common/t-exectool.c"
-                (("/bin/true") true))
-              (substitute* "common/t-exectool.c"
-                (("/bin/false") false))
-              #t))))))
+          (lambda _
+            (substitute* '("tests/inittests"
+                           "tests/pkits/inittests"
+                           "tests/Makefile"
+                           "tests/pkits/common.sh"
+                           "tests/pkits/Makefile")
+             (("/bin/pwd") (which "pwd")))
+            (substitute* "common/t-exectool.c"
+              (("/bin/cat") (which "cat"))
+              (("/bin/true") (which "true"))
+              (("/bin/false") (which "false")))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
