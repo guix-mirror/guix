@@ -3561,25 +3561,27 @@ CIDER).")
     (license license:gpl3+)))
 
 (define-public emacs-lua-mode
-  (package
-    (name "emacs-lua-mode")
-    (version "20151025")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/immerrr/lua-mode/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0sbhfny5ib65cnx6xcy6h9bbw27mw034s8m9cca00bhxqaqi6p4v"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/immerrr/lua-mode/")
-    (synopsis "Major mode for lua")
-    (description
-     "This Emacs package provides a mode for @uref{https://www.lua.org/,
+  (let ((commit "652e299cb967fccca827dda381d61a9c144d97de")
+        (revision "1"))
+    (package
+      (name "emacs-lua-mode")
+      (version (string-append "20151025." revision "-" (string-take commit 9)))
+      (home-page "https://github.com/immerrr/lua-mode/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (string-append name "-" version ".checkout"))
+                (sha256
+                 (base32
+                  "053025k930wh0lak6rc1973ynfrmm8zsyzfqhhd39x7abkl41hc9"))))
+      (build-system emacs-build-system)
+      (synopsis "Major mode for lua")
+      (description
+       "This Emacs package provides a mode for @uref{https://www.lua.org/,
 Lua programing language}.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-ebuild-mode
   (package
