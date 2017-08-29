@@ -32,7 +32,7 @@
 (define-public font-mathjax
   (package
     (name "font-mathjax")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
@@ -42,7 +42,7 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0sbib5lk0jrvbq6s72ag6ss3wjlz5wnk07ddxij1kp96yg3c1d1b"))))
+         "1r72di4pg4i6pfhcskkxqmf1158m81ki6a7lbw6nz4zh7xw23hy4"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -59,7 +59,7 @@
            (mkdir-p install-directory)
            (zero? (system* "tar" "-C" install-directory "-xvf"
                            (assoc-ref %build-inputs "source")
-                           "MathJax-2.7.1/fonts" "--strip" "2"))))))
+                           "MathJax-2.7.2/fonts" "--strip" "2"))))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
