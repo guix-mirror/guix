@@ -81,6 +81,7 @@ Daemon and possibly more in the future.")
 
 (define-public libgcrypt
   (package
+    (replacement libgcrypt/fixed)
     (name "libgcrypt")
     (version "1.7.8")
     (source (origin
@@ -114,6 +115,18 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
+
+(define libgcrypt/fixed
+  (package
+    (inherit libgcrypt)
+    (version "1.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1cvqd9jk5qshbh48yh3ixw4zyr4n5k50r3475rrh20xfn7w7aa3s"))))))
 
 (define-public libassuan
   (package
