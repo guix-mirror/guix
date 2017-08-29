@@ -157,6 +157,7 @@ and its related documentation.")
                (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
+           ;; The configure script is hand-written, not from GNU autotools.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
@@ -185,6 +186,12 @@ and its related documentation.")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
                (zero? (apply system* "./configure" flags)))))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (install-file "objs/nginx.8" (string-append man "/man8"))
+               #t)))
          (add-after 'install 'fix-root-dirs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; 'make install' puts things in strange places, so we need to
