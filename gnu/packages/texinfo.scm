@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,14 +33,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "6.3")
+    (version "6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0fpr9kdjjl6nj2pc50k2zr7134hvqz8bi8pfqa7131a9lpzz6v14"))))
+                "0ficyfpknfrsm3xn3svd38fja3s7s1ml5wn6yyd0ycf6hwfydqka"))))
     (build-system gnu-build-system)
     (native-inputs `(("procps" ,procps)))  ;one of the tests needs pgrep
     (inputs `(("ncurses" ,ncurses)
