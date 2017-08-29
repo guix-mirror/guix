@@ -190,7 +190,7 @@ interfaces (GUIs) in the Tcl language.")
 (define-public perl-tk
   (package
     (name "perl-tk")
-    (version "804.033")
+    (version "804.034")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -198,7 +198,7 @@ interfaces (GUIs) in the Tcl language.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1bc8bacsf95598yimrxijymb3advrgan73pqxj75qmd20ydnwxc4"))))
+               "1qiz55dmw7hm1wgpjdzf2jffwcj0hisr3kf80qi8lli3qx2b39py"))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)
