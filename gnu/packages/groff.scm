@@ -56,7 +56,14 @@
                     ("perl" ,perl)
                     ("psutils" ,psutils)
                     ("texinfo" ,texinfo)))
-   (arguments '(#:parallel-build? #f))  ; parallel build fails
+   (arguments
+    `(#:parallel-build? #f   ; parallel build fails
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'setenv
+          (lambda _
+            (setenv "GS_GENERATE_UUIDS" "0")
+            #t)))))
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "Groff is a typesetting package that reads plain text and produces
