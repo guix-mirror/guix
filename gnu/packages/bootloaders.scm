@@ -395,3 +395,72 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-odroid-c2
   (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
+
+(define-public os-prober
+  (package
+    (name "os-prober")
+    (version "1.76")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/o/os-prober/os-prober_"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1vb45i76bqivlghrq7m3n07qfmmq4wxrkplqx8gywj011rhq19fk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 regex)   ; for string-match
+                  (srfi srfi-26)) ; for cut
+       #:make-flags (list "CC=gcc")
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (find-files ".")
+               (("/usr") (assoc-ref outputs "out")))
+             (substitute* (find-files "." "50mounted-tests$")
+               (("mkdir") "mkdir -p"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (find-files-non-recursive directory)
+               (find-files directory
+                           (lambda (file stat)
+                             (string-match (string-append "^" directory "/[^/]*$")
+                                           file))
+                           #:directories? #t))
+
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (share (string-append out "/share")))
+               (for-each (cut install-file <> bin)
+                         (list "linux-boot-prober" "os-prober"))
+               (install-file "newns" (string-append lib "/os-prober"))
+               (install-file "common.sh" (string-append share "/os-prober"))
+               (install-file "os-probes/mounted/powerpc/20macosx"
+                             (string-append lib "/os-probes/mounted"))
+               (for-each
+                (lambda (directory)
+                  (for-each
+                   (lambda (file)
+                     (let ((destination (string-append lib "/" directory
+                                                       "/" (basename file))))
+                       (mkdir-p (dirname destination))
+                       (copy-recursively file destination)))
+                   (append (find-files-non-recursive (string-append directory "/common"))
+                           (find-files-non-recursive (string-append directory "/x86")))))
+                (list "os-probes" "os-probes/mounted" "os-probes/init"
+                      "linux-boot-probes" "linux-boot-probes/mounted"))
+               #t))))))
+    (home-page "https://joeyh.name/code/os-prober")
+    (synopsis "Detect other operating systems")
+    (description "os-prober probes disks on the system for other operating
+systems so that they can be added to the bootloader.  It also works out how to
+boot existing GNU/Linux systems and detects what distribution is installed in
+order to add a suitable bootloader menu entry.")
+    (license license:gpl2+)))
