@@ -68,6 +68,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
@@ -14193,12 +14194,26 @@ happens using the @code{logging} library.")
        (uri (string-append
              "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/larch/snapshot/larch-"
              version ".tar.gz"))
+       (patches (search-patches
+                 "python2-larch-coverage-4.0a6-compatibility.patch"))
        (sha256
         (base32
          "1p4knkkavlqymgciz2wbcnfrdgdbafhg14maplnk4vbw0q8xs663"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             (zero? (system* "make" "check")))))))
+    (native-inputs
+     `(("cmdtest" ,cmdtest)
+       ("python2-coverage-test-runner" ,python2-coverage-test-runner)))
     (propagated-inputs
      `(("python2-tracing" ,python2-tracing)))
     (home-page "https://liw.fi/larch/")
