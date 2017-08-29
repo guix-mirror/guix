@@ -312,10 +312,11 @@ generated file."
      #t)))
 
 (define-public current-guix
-  (let ((select? (delay (or (git-predicate
-                             (string-append (current-source-directory)
-                                            "/../.."))
-                            source-file?))))
+  (let* ((repository-root (canonicalize-path
+                           (string-append (current-source-directory)
+                                          "/../..")))
+         (select? (delay (or (git-predicate repository-root)
+                             source-file?))))
     (lambda ()
       "Return a package representing Guix built from the current source tree.
 This works by adding the current source tree to the store (after filtering it
@@ -323,7 +324,7 @@ out) and returning a package that uses that as its 'source'."
       (package
         (inherit guix)
         (version (string-append (package-version guix) "+"))
-        (source (local-file "../.." "guix-current"
+        (source (local-file repository-root "guix-current"
                             #:recursive? #t
                             #:select? (force select?)))))))
 
