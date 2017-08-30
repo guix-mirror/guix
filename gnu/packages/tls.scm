@@ -763,7 +763,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.5.1")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -773,7 +773,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1yc1rj0izjihj9hbzvskpa4gjzqf4dm2i84nmmm2s9j1i66fp6jm"))))
+         "11wnj34rfqxjggmdgf042i49lr6civgbqwv2p7p8bn6k2919vg4r"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)))
