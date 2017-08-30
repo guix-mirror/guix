@@ -49,17 +49,6 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define gd-for-php
-  (package
-    (inherit gd)
-    (source (origin
-             (inherit (package-source gd))
-             (patches 
-               (append
-                 (origin-patches (package-source gd))
-                 (search-patches "gd-CVE-2017-7890.patch")))))))
-
-
 (define-public php
   (package
     (name "php")
@@ -293,7 +282,7 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd-for-php)
+       ("gd" ,gd-2.2.5)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)
