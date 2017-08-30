@@ -16,6 +16,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,6 +111,7 @@ hierarchical form with variable field lengths.")
   (package
     (name "libxml2")
     (version "2.9.4")
+    (replacement libxml2/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
@@ -137,6 +139,19 @@ hierarchical form with variable field lengths.")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define libxml2/fixed
+  (package
+    (inherit libxml2)
+    (source
+     (origin
+       (inherit (package-source libxml2))
+       (patches
+        (search-patches "libxml2-CVE-2017-0663.patch"
+                        "libxml2-CVE-2017-7375.patch"
+                        "libxml2-CVE-2017-7376.patch"
+                        "libxml2-CVE-2017-9047+CVE-2017-9048.patch"
+                        "libxml2-CVE-2017-9049+CVE-2017-9050.patch"))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
