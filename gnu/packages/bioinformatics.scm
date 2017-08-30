@@ -8575,25 +8575,24 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "0.9")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "12gs1jw2jrxrij529rnl5kaqxfcqn15yzcsggxkfhdx634ml0cny"))
-       (patches (search-patches "multiqc-fix-git-subprocess-error.patch"))))
+         "032svgym67k2ds7wp0cxzv79gi30yrdl45zbqn74lni3dk04qm33"))))
     (build-system python-build-system)
-    (arguments
-     ;; Tests are to be introduced in the next version, see
-     ;; https://github.com/ewels/MultiQC/issues/376
-     `(#:tests? #f))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
+       ("python-spectra" ,python-spectra)
+       ("python-requests" ,python-requests)
+       ("python-markdown" ,python-markdown)
+       ("python-lzstring" ,python-lzstring)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ;; MultQC checks for the presence of nose at runtime.
