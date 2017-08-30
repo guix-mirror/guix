@@ -3030,15 +3030,27 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.8")
+    (version "2.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
+         "1zzrkywhziqffrzks14kzixz7nd4yh2vc0fb04a68vfd2ai03anx"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; These files cannot be built with Python < 3.6.  See
+         ;; https://github.com/pallets/jinja/issues/655
+         ;; FIXME: Remove this when the "python" package is upgraded.
+         (add-after 'unpack 'delete-incompatible-files
+           (lambda _
+             (for-each delete-file
+                       '("jinja2/asyncsupport.py"
+                         "jinja2/asyncfilters.py"))
+             #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
