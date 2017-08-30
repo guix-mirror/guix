@@ -3798,6 +3798,47 @@ objects.")
 (define-public python2-colormath
   (package-with-python2 python-colormath))
 
+(define-public python-spectra
+  (package
+    (name "python-spectra")
+    (version "0.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "spectra" version))
+       (sha256
+        (base32
+         "0n87kzhpkml2s2q91rdkl8wz2kkv5b0bkrgww45lxa5vq34qh6w5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "nosetests" "-v")))))))
+    (propagated-inputs
+     `(("python-colormath" ,python-colormath)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://github.com/jsvine/spectra")
+    (synopsis "Color scales and color conversion")
+    (description
+     "This package provides a Python library intended to make color math,
+color scales, and color space conversion easy.  It has support for:
+
+@enumerate
+@item Color scales
+@item Color ranges
+@item Color blending
+@item Brightening/darkening colors
+@item Saturating/desaturating colors
+@item Conversion to/from multiple color spaces.
+@end enumerate\n")
+    (license license:expat)))
+
+(define-public python2-spectra
+  (package-with-python2 python-spectra))
+
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
