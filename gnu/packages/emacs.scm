@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -2603,6 +2603,27 @@ If you load it from a terminal, you will be able to make use of the
 transparent background.  If you load it from a GUI, it will default to a
 dark background.")
     (license license:gpl3+)))
+
+(define-public emacs-2048-game
+  (package
+    (name "emacs-2048-game")
+    (version "20151026.1233")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://melpa.org/packages/2048-game-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0gy2pvz79whpavp4jmz8h9krzn7brmvv3diixi1d4w51pcdvaldd"))))
+    (build-system emacs-build-system)
+    (home-page "https://bitbucket.org/zck/2048.el")
+    (synopsis "Implementation of the game 2048 in Emacs Lisp")
+    (description
+     "This program is an implementation of 2048 for Emacs.
+The goal of this game is to create a tile with value 2048.  The size of the
+board and goal value can be customized.")
+  (license license:gpl3+)))
 
 (define-public emacs-smartparens
   (package
