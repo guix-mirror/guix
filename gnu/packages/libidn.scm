@@ -54,14 +54,14 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "2.0.2")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
                                   ".tar.lz"))
               (sha256
                (base32
-                "0pqaj8d01aj4i110669fincqs10kgynyqcrmq2q7pss8v9dcd1jq"))))
+                "00f2fyw5kwr9is3cdn5h9arzxp0lnvg0z9bb9zyfs0dq81gaqim4"))))
     (native-inputs
      `(("lzip" ,lzip)))
     (inputs
@@ -73,6 +73,7 @@ the IDNA2008 specifications.   Libidn2 is believed to be a complete IDNA2008
 implementation, but has yet to be as extensively used as the original Libidn
 library.")
     (home-page "https://www.gnu.org/software/libidn/#libidn2")
+    (properties '((ftp-directory . "/gnu/libidn")))
     ;; The command-line tool 'idn2' is GPL3+, while the library is dual-licensed
     ;; GPL2+ or LGPL3+.
     (license (list gpl2+ gpl3+ lgpl3+))))
