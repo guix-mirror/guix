@@ -3774,6 +3774,30 @@ objects.")
 (define-public python2-munch
   (package-with-python2 python-munch))
 
+(define-public python-colormath
+  (package
+    (name "python-colormath")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "colormath" version))
+       (sha256
+        (base32
+         "01wp5xwm0a89wdm1dc9rr1ij90idzdiiipxdj1yslhqzkhnjnfh0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/gtaylor/python-colormath")
+    (synopsis "Color math and conversion library")
+    (description
+     "This is a Python library for color math and conversions.")
+    (license license:bsd-3)))
+
+(define-public python2-colormath
+  (package-with-python2 python-colormath))
+
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
