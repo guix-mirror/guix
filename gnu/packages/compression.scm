@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -757,6 +757,28 @@ the LZ4 frame format.")
 
 (define-public python2-lz4
   (package-with-python2 python-lz4))
+
+(define-public python-lzstring
+  (package
+    (name "python-lzstring")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lzstring" version))
+       (sha256
+        (base32
+         "1d3ck454y41mii0gcjabpmp2skb7n0f9zk232gycqdv8z2jxakfm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/gkovacs/lz-string-python")
+    (synopsis "String compression")
+    (description "Lz-string is a string compressor library for Python.")
+    (license license:expat)))
+
+(define-public python2-lzstring
+  (package-with-python2 python-lzstring))
 
 (define-public squashfs-tools
   (package
