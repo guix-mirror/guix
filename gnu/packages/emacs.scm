@@ -3608,7 +3608,7 @@ Lua programing language}.")
 (define-public emacs-ebuild-mode
   (package
     (name "emacs-ebuild-mode")
-    (version "1.30")
+    (version "1.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3617,7 +3617,7 @@ Lua programing language}.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vp7lq1kvmh1b2bms2x1kf2k76dy9m02d7cirkxpiglwaxa0h9vz"))))
+                "07dzrdjjczkxdfdgi60h4jjkvzi4p0k9rij2wpfp8s03ay3qldpp"))))
     (build-system emacs-build-system)
     (home-page "https://devmanual.gentoo.org")
     (synopsis "Major modes for Gentoo package files")
