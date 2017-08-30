@@ -819,9 +819,8 @@ audio/video codec library.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt) ; FIXME: reenable modular qt after update - requires building
-       ;("qtbase" ,qtbase) with -std=gnu++11.
-       ;("qtx11extras" ,qtx11extras)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
@@ -833,6 +832,7 @@ audio/video codec library.")
          ;; In our case, this led to a test failure:
          ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
          "ac_cv_c_fast_math=no"
+         "CXXFLAGS=-std=gnu++11"
 
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
@@ -855,6 +855,12 @@ audio/video codec library.")
            (lambda _
              (substitute* "test/run_vlc.sh"
                           (("./vlc --ignore-config") "echo"))
+             #t))
+         (add-before 'build 'fix-qt-include
+           (lambda _
+             ;; XXX Likely not needed for >2.2.6.
+             (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
+               (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
              #t))
          (add-after 'install 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
