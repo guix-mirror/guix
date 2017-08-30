@@ -971,18 +971,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
-  %D%/packages/patches/qemu-CVE-2017-7493.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8112.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8309.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8379.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8380.patch			\
-  %D%/packages/patches/qemu-CVE-2017-9524.patch			\
-  %D%/packages/patches/qemu-CVE-2017-10664.patch		\
-  %D%/packages/patches/qemu-CVE-2017-10806.patch		\
-  %D%/packages/patches/qemu-CVE-2017-10911.patch		\
-  %D%/packages/patches/qemu-CVE-2017-11334.patch		\
-  %D%/packages/patches/qemu-CVE-2017-11434.patch		\
-  %D%/packages/patches/qemu-CVE-2017-12809.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
