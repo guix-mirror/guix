@@ -828,20 +828,13 @@ audio/video codec library.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `(;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
-         ;; In our case, this led to a test failure:
-         ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
-         "ac_cv_c_fast_math=no"
-         "CXXFLAGS=-std=gnu++11"
-
+       `("CXXFLAGS=-std=gnu++11"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
 
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap"))))
          (add-before 'bootstrap 'fix-livemedia-utils-prefix
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((livemedia-utils (assoc-ref inputs "livemedia-utils")))
