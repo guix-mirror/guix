@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -67,6 +67,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system scons)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -1205,33 +1206,26 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
               (sha256
                (base32
                 "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
-    (build-system python-build-system)
+    (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
        ("gettext" ,gnu-gettext)
-       ("pkg-config" ,pkg-config)
-       ("scons" ,scons)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("expat" ,expat)
        ("gtk2" ,gtk+-2)
        ("lua" ,lua-5.2)))
     (arguments
      `(#:tests? #f
+       #:scons ,scons-python2
+       #:scons-flags (list (string-append "DESTDIR=" %output))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-lua-reference
            (lambda _
              (substitute* "SConscript"
                (("lua5.2") "lua-5.2"))
-             #t))
-         (replace 'build
-           (lambda _
-             (zero? (system* "scons"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((dest (assoc-ref outputs "out")))
-               (zero? (system* "scons" "install"
-                               (string-append "DESTDIR=" dest)))))))))
+             #t)))))
     (home-page "http://www.gpick.org/")
     (synopsis "Color picker")
     (description "Gpick is an advanced color picker and palette editing tool.")
