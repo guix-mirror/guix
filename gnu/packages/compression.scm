@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -202,7 +202,16 @@ adding and extracting files to/from a tar archive.")
    (synopsis "General file (de)compression (using lzw)")
    (arguments
     ;; FIXME: The test suite wants `less', and optionally Perl.
-    '(#:tests? #f))
+    '(#:tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'use-absolute-name-of-gzip
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "gunzip.in"
+              (("exec gzip")
+               (string-append "exec " (assoc-ref outputs "out")
+                              "/bin/gzip")))
+            #t)))))
    (description
     "GNU Gzip provides data compression and decompression utilities; the
 typical extension is \".gz\".  Unlike the \"zip\" format, it compresses a single
