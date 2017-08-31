@@ -835,7 +835,7 @@ audio/video codec library.")
 
        #:phases
        (modify-phases %standard-phases
-         (add-before 'bootstrap 'fix-livemedia-utils-prefix
+         (add-before 'configure 'fix-livemedia-utils-prefix
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((livemedia-utils (assoc-ref inputs "livemedia-utils")))
                (substitute* "configure.ac"
