@@ -2307,7 +2307,7 @@ parts of it.")
          "1bd03c5xni0bla0wg1wba841b36b0sg13sjja955kn5xzvy4i61a"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ;no "check" target
+     `(#:test-target "test"
        ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled and no
        ;; TARGET is specified, OpenBLAS will tune itself to the build host, so
        ;; we need to disable substitutions.
