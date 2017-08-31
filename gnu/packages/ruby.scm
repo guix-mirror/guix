@@ -155,6 +155,7 @@ a focus on simplicity and productivity.")
        (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.xz"))
+       (patches (search-patches "ruby-2.2.7-rubygems-2613-ruby22.patch"))
        (sha256
         (base32
          "0lyb7gnbbhs3a3v9grsjgbaixm20wxz6x3h0czyrxnj3cpp8lk13"))))))
