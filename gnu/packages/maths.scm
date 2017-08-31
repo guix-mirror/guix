@@ -673,6 +673,16 @@ incompatible with HDF5.")
                 (string-append "libhdf5hl_fortran_la_LDFLAGS = -Wl,-rpath="
                                (assoc-ref outputs "fortran") "/lib")))
              #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libhdf5.settings contains the full path of the
+             ;; compilers used, and its contents are included in
+             ;; libhdf5.so.  We truncate the hashes to avoid
+             ;; unnecessary store references to those compilers:
+             (substitute* "src/libhdf5.settings"
+              (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+               (string-append prefix (string-take hash 10) "...")))
+             #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
