@@ -84,6 +84,8 @@
             lookup-narinfos/diverse
             read-narinfo
             write-narinfo
+
+            substitute-urls
             guix-substitute))
 
 ;;; Comment:
@@ -971,7 +973,7 @@ substitutes may be unavailable\n")))))
 found."
   (assoc-ref (daemon-options) option))
 
-(define %cache-urls
+(define %default-substitute-urls
   (match (and=> (or (find-daemon-option "untrusted-substitute-urls") ;client
                     (find-daemon-option "substitute-urls"))          ;admin
                 string-tokenize)
@@ -981,6 +983,10 @@ found."
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
      '("http://hydra.gnu.org"))))
+
+(define substitute-urls
+  ;; List of substitute URLs.
+  (make-parameter %default-substitute-urls))
 
 (define (client-terminal-columns)
   "Return the number of columns in the client's terminal, if it is known, or a
@@ -1010,15 +1016,15 @@ default value."
   ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
   ;; when we know we cannot substitute, but we must emit a newline on stdout
   ;; when everything is alright.
-  (when (null? %cache-urls)
+  (when (null? (substitute-urls))
     (exit 0))
 
   ;; Say hello (see above.)
   (newline)
   (force-output (current-output-port))
 
-  ;; Sanity-check %CACHE-URLS so we can provide a meaningful error message.
-  (for-each validate-uri %cache-urls)
+  ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error message.
+  (for-each validate-uri (substitute-urls))
 
   ;; Attempt to install the client's locale, mostly so that messages are
   ;; suitably translated.
@@ -1038,7 +1044,7 @@ default value."
             (or (eof-object? command)
                 (begin
                   (process-query command
-                                 #:cache-urls %cache-urls
+                                 #:cache-urls (substitute-urls)
                                  #:acl acl)
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
@@ -1047,7 +1053,7 @@ default value."
         ;; report displays nicely.
         (parameterize ((current-terminal-columns (client-terminal-columns)))
           (process-substitution store-path destination
-                                #:cache-urls %cache-urls
+                                #:cache-urls (substitute-urls)
                                 #:acl (current-acl))))
        (("--version")
         (show-version-and-exit "guix substitute"))
