@@ -4751,6 +4751,13 @@ simultaneously.")
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) "/setup:"
+                                    (getenv "PERL5LIB")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -5056,6 +5063,13 @@ sequence itself can be retrieved from these databases.")
                                  "/lib32")))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) "/setup:"
+                                    (getenv "PERL5LIB")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; The build system expects a directory containing the sources and
