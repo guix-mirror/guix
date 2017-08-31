@@ -140,6 +140,7 @@ a focus on simplicity and productivity.")
         (base32
          "132p5kc1sx97svbx04g40pz5pr7p8f6jlmnq5r2prlcz5q1xj71l"))
        (modules '((guix build utils)))
+       (patches (search-patches "ruby-2.3.4-rubygems-2613-ruby23.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
