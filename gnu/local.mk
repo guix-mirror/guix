@@ -676,6 +676,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphicsmagick-CVE-2017-12935.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-13775.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-gnulib-lock.patch                   \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
