@@ -121,7 +121,10 @@ a focus on simplicity and productivity.")
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
+                   #t))
+       (patches
+        (search-patches "ruby-rubygems-2612-ruby24.patch"
+                        "ruby-rubygems-2613-ruby24.patch"))))))
 
 (define-public ruby-2.3
   (package

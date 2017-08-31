@@ -987,6 +987,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
+  %D%/packages/patches/ruby-rubygems-2612-ruby24.patch		\
+  %D%/packages/patches/ruby-rubygems-2613-ruby24.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
