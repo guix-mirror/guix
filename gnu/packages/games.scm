@@ -522,7 +522,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.4")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -530,7 +530,7 @@ watch your CPU playing while enjoying a cup of tea!")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1wgvh3q96kfgymb2jpd58xsms9hmckhhc4fq7v2k61gh2l11cvdj"))))
+                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
