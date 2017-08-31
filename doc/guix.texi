@@ -42,7 +42,8 @@ Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
-Copyright @copyright{} 2017 Andy Wingo
+Copyright @copyright{} 2017 Andy Wingo@*
+Copyright @copyright{} 2017 Arun Isaac
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -3866,6 +3867,19 @@ script.
 The @code{waf} script is executed by the Python interpreter.  Which
 Python package is used to run the script can be specified with the
 @code{#:python} parameter.
+@end defvr
+
+@defvr {Scheme Variable} scons-build-system
+This variable is exported by @code{(guix build-system scons)}.  It
+implements the build procedure used by the SCons software construction
+tool.  This build system runs @code{scons} to build the package,
+@code{scons test} to run tests, and then @code{scons install} to install
+the package.
+
+Additional flags to be passed to @code{scons} can be specified with the
+@code{#:scons-flags} parameter.  The version of Python used to run SCons
+can be specified by selecting the appropriate SCons package with the
+@code{#:scons} parameter.
 @end defvr
 
 @defvr {Scheme Variable} haskell-build-system

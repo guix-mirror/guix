@@ -8,6 +8,7 @@
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 #
 # This file is part of GNU Guix.
 #
@@ -94,6 +95,7 @@ MODULES =					\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
+  guix/build-system/scons.scm			\
   guix/build-system/texlive.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
@@ -127,6 +129,7 @@ MODULES =					\
   guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
+  guix/build/scons-build-system.scm		\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
