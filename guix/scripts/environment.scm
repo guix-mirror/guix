@@ -179,7 +179,6 @@ COMMAND or an interactive shell in that environment.\n"))
   `((system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
-    (max-silent-time . 3600)
     (verbosity . 0)))
 
 (define (tag-package-arg opts arg)
