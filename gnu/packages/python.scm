@@ -4396,33 +4396,56 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.7.6")
+    (version "2.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "0nhan2qvrw7b7gg5zddwa22kybdv3x1g26vkd7q8lvnkgzrs4dga"))))
+         "0bqihjrdqwj5r1h86shvfb1p5hfr4a6klv1v54bzfr9r144w3rni"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
+         ;; Without this phase the test loader cannot find the directories, in
+         ;; which it is supposed to look for test files.
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "rpy/tests.py"
+               (("loader.discover\\(")
+                "loader.discover(rpy_root + '/' +"))
+             #t))
+         (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; It's easier to run tests after install.
-             ;; Make installed package available for running the tests
-             (add-installed-pythonpath inputs outputs)
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH"))))
              (zero? (system* "python" "-m" "rpy2.tests" "-v")))))))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     `(("python-six" ,python-six)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)))
     (inputs
      `(("readline" ,readline)
        ("icu4c" ,icu4c)
        ("pcre" ,pcre)
        ("r-minimal" ,r-minimal)
-       ("r-survival" ,r-survival)))
+       ("r-survival" ,r-survival)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dbplyr" ,r-dbplyr)
+       ("python-numpy" ,python-numpy)))
     (native-inputs
      `(("zlib" ,zlib)))
     (home-page "http://rpy.sourceforge.net/")
