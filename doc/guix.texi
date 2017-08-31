@@ -2143,6 +2143,8 @@ your system has unpatched security vulnerabilities.
 @cindex security
 @cindex digital signatures
 @cindex substitutes, authorization thereof
+@cindex access control list (ACL), for substitutes
+@cindex ACL (access control list), for substitutes
 To allow Guix to download substitutes from @code{hydra.gnu.org} or a
 mirror thereof, you
 must add its public key to the access control list (ACL) of archive
@@ -2191,9 +2193,29 @@ The following files would be downloaded:
 This indicates that substitutes from @code{hydra.gnu.org} are usable and
 will be downloaded, when possible, for future builds.
 
-Guix ignores substitutes that are not signed, or that are not signed by
-one of the keys listed in the ACL.  It also detects and raises an error
-when attempting to use a substitute that has been tampered with.
+Guix detects and raises an error when attempting to use a substitute
+that has been tampered with.  Likewise, it ignores substitutes that are
+not signed, or that are not signed by one of the keys listed in the ACL.
+
+There is one exception though: if an unauthorized server provides
+substitutes that are @emph{bit-for-bit identical} to those provided by
+an authorized server, then the unauthorized server becomes eligible for
+downloads.  For example, assume we have chosen two substitute servers
+with this option:
+
+@example
+--substitute-urls="https://a.example.org https://b.example.org"
+@end example
+
+@noindent
+@cindex reproducible builds
+If the ACL contains only the key for @code{b.example.org}, and if
+@code{a.example.org} happens to serve the @emph{exact same} substitutes,
+then Guix will download substitutes from @code{a.example.org} because it
+comes first in the list and can be considered a mirror of
+@code{b.example.org}.  In practice, independent build machines usually
+produce the same binaries, thanks to bit-reproducible builds (see
+below).
 
 @vindex http_proxy
 Substitutes are downloaded over HTTP or HTTPS.
