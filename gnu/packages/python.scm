@@ -2835,17 +2835,23 @@ somewhat intelligeble.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "1.4.0")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "1556v2jppd8mjkkj66pxb5rcazm35jq81r233mdl8hfmz9n3icp1"))))
+         "0pvr3iymab7v2qz74ann760z7qahqgqszxz5iqqbaqv4z2zz0y8i"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     (find-files "." "\\.pyc$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest-3.0)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/progrium/pyjwt")
