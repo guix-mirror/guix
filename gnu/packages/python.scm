@@ -4459,13 +4459,6 @@ functions.")
     ;; in "setup.py".
     (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+))))
 
-(define-public python2-rpy2
-  (let ((rpy2 (package-with-python2 python-rpy2)))
-    (package (inherit rpy2)
-      (propagated-inputs
-       `(("python2-singledispatch" ,python2-singledispatch)
-         ,@(package-propagated-inputs rpy2))))))
-
 (define-public python-scipy
   (package
     (name "python-scipy")
