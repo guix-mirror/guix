@@ -1583,6 +1583,36 @@ matter where it is stored, whether in a data frame, a data table or
 database.")
     (license license:expat)))
 
+(define-public r-dbplyr
+  (package
+    (name "r-dbplyr")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dbplyr" version))
+       (sha256
+        (base32
+         "17gn8vr4a6m9ynarjbm9xsrhcvgn5lnxhb2qhiiglmhh5mm4a7kv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-dbi" ,r-dbi)
+       ("r-dplyr" ,r-dplyr)
+       ("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
+       ("r-r6" ,r-r6)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/tidyverse/dbplyr")
+    (synopsis "Dplyr back end for databases")
+    (description
+     "This package provides a dplyr back end for databases that allows you to
+work with remote database tables as if they are in-memory data frames.  Basic
+features works with any database that has a @code{DBI} back end; more advanced
+features require SQL translation to be provided by the package author.")
+    (license license:expat)))
+
 (define-public r-acepack
   (package
     (name "r-acepack")
