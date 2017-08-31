@@ -780,10 +780,7 @@ audio/video codec library.")
                "1a22b913p2227ljz89c4fgjlyln5gcz8z58w32r0wh4srnnd60y4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("git" ,git) ; needed for a test
-       ("libtool" ,libtool)
+     `(("git" ,git) ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
@@ -835,26 +832,20 @@ audio/video codec library.")
 
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-livemedia-utils-prefix
+         (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((livemedia-utils (assoc-ref inputs "livemedia-utils")))
-               (substitute* "configure.ac"
+               (substitute* "configure"
                  (("LIVE555_PREFIX=\\$\\{LIVE555_PREFIX-\"/usr\"\\}")
                   (string-append "LIVE555_PREFIX=" livemedia-utils)))
+               ;; Some of the tests require using the display to test out VLC,
+               ;; which fails in our sandboxed build system
+               (substitute* "test/run_vlc.sh"
+                 (("./vlc --ignore-config") "echo"))
+               ;; XXX Likely not needed for >2.2.6.
+               (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
+                 (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
                #t)))
-         (add-before 'configure 'remove-visual-tests
-           ;; Some of the tests require using the display to test out VLC,
-           ;; which fails in our sandboxed build system
-           (lambda _
-             (substitute* "test/run_vlc.sh"
-                          (("./vlc --ignore-config") "echo"))
-             #t))
-         (add-before 'build 'fix-qt-include
-           (lambda _
-             ;; XXX Likely not needed for >2.2.6.
-             (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
-               (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
-             #t))
          (add-after 'install 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
