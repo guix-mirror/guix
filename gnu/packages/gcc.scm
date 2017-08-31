@@ -408,6 +408,8 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-6-source-date-epoch-1.patch"
+                                       "gcc-6-source-date-epoch-2.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (inputs
      `(("isl" ,isl)
