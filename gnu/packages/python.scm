@@ -4431,7 +4431,10 @@ operators such as union, intersection, and difference.")
 low-level interface to R from Python, a proposed high-level interface,
 including wrappers to graphical libraries, as well as R-like structures and
 functions.")
-    (license license:gpl3+)))
+    ;; Any of these licenses can be picked for the R interface.  The whole
+    ;; project is released under GPLv2+ according to the license declaration
+    ;; in "setup.py".
+    (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+))))
 
 (define-public python2-rpy2
   (let ((rpy2 (package-with-python2 python-rpy2)))
