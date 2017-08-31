@@ -276,7 +276,7 @@ possible, and it also makes the SGE easy to learn.")
 (define-public python-tmx
   (package
     (name "python-tmx")
-    (version "1.9.1")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -285,7 +285,7 @@ possible, and it also makes the SGE easy to learn.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1is107sx3lr09dqjiyn10xqhyv5x54c2ryhys9mb9j3mxjbm227l"))))
+         "073q0prg1nzlkga2b45vhscz374206qh4x68ccg00mxxwagn64z0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
