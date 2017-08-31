@@ -56,6 +56,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system scons)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -1068,10 +1069,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                            version ".tar.bz2"))
        (sha256
         (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)))
+    (build-system scons-build-system)
     (propagated-inputs
      `(("apr" ,apr)
        ("apr-util" ,apr-util)
@@ -1081,13 +1079,15 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
        ;;("gss" ,gss)
        ("zlib" ,zlib)))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "APR=" (assoc-ref %build-inputs "apr"))
+                           (string-append "APU=" (assoc-ref %build-inputs "apr-util"))
+                           (string-append "OPENSSL=" (assoc-ref %build-inputs "openssl"))
+                           ;; (string-append "GSSAPI=" (assoc-ref %build-inputs "gss"))
+                           (string-append "ZLIB=" (assoc-ref %build-inputs "zlib"))
+                           (string-append "PREFIX=" %output))
        #:phases
-       ;; TODO: Add scons-build-system and use it here.
        (modify-phases %standard-phases
-         (delete 'configure)
          (add-after 'unpack 'scons-propagate-environment
                     (lambda _
                       ;; By design, SCons does not, by default, propagate
@@ -1098,21 +1098,6 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                       (substitute* "SConstruct"
                         (("^env = Environment\\(")
                          "env = Environment(ENV=os.environ, "))))
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out      (assoc-ref outputs "out"))
-                          (apr      (assoc-ref inputs "apr"))
-                          (apr-util (assoc-ref inputs "apr-util"))
-                          (openssl  (assoc-ref inputs "openssl"))
-                          ;;(gss      (assoc-ref inputs "gss"))
-                          (zlib     (assoc-ref inputs "zlib")))
-                      (zero? (system* "scons"
-                                      (string-append "APR=" apr)
-                                      (string-append "APU=" apr-util)
-                                      (string-append "OPENSSL=" openssl)
-                                      ;;(string-append "GSSAPI=" gss)
-                                      (string-append "ZLIB=" zlib)
-                                      (string-append "PREFIX=" out))))))
          (add-before 'check 'disable-broken-tests
            (lambda _
              ;; These tests rely on SSL certificates that expired 2017-04-18.
@@ -1139,9 +1124,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                   (substitute* "test/test_context.c"
                     (((string-append "SUITE_ADD_TEST\\(suite, " test "\\);")) "")))
                 broken-tests)
-               #t)))
-         (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+               #t))))))
     (home-page "https://serf.apache.org/")
     (synopsis "High-performance asynchronous HTTP client library")
     (description
