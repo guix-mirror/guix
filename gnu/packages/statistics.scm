@@ -3586,19 +3586,22 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.6.3")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "14s57zrjm2phiy600z9ivq4az71z0ggmp6nj0js7yrybxf0dlah6"))))
+         "1lg0amx5hs37ajwjxz7ya50q4s28jcdj51kzl10s1x4l1akp7xls"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
+       ("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tidyselect" ,r-tidyselect)
        ("r-rcpp" ,r-rcpp)
        ("r-stringi" ,r-stringi)
        ("r-tibble" ,r-tibble)))
