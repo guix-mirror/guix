@@ -8044,7 +8044,7 @@ paired-end data.")
 intuitive reports and publication-ready graphics.  This package provides the R
 library implementing most of the pipeline's features.")
     (home-page "https://github.com/BIMSBbioinfo/RCAS")
-    (license license:expat)))
+    (license license:artistic2.0)))
 
 (define-public rcas-web
   (package
