@@ -455,14 +455,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-10")
+    (version "1.2-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "0r3qjcz92xwgdzrfz444mqzwnja5sv9abaf252fh6k48qbyahahh"))))
+         "1yvd6fx3n99j4gvzrng43ji38pr5h8y03kijccgjdalym2hcp36g"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
