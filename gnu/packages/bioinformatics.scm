@@ -6141,7 +6141,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
        (method url-fetch)
@@ -6151,7 +6151,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hc110ycqpa54nr6x173qg7190hk08qp7yz7zzqxlsypqnpc5zzp"))
+         "1d8a4gjwaqdv57krlr80x18mg5py1bbdiqs5m0jdn38filc9z40k"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
