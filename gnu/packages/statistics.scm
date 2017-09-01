@@ -5231,14 +5231,14 @@ multivariate case.")
 (define-public r-tclust
   (package
     (name "r-tclust")
-    (version "1.2-7")
+    (version "1.3-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tclust" version))
        (sha256
         (base32
-         "1mvqr280c6kwpg98byd0r1y0qf238xn2x15y8npqch6lpcszlb3x"))))
+         "1li62wynv81kb17fx7nk63a26qlb78l8fdf63in8yzcl7fkpji7y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
