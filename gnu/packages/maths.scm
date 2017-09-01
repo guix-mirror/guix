@@ -2115,9 +2115,9 @@ YACC = bison -pscotchyy -y -b y
     (propagated-inputs
      `(("openmpi" ,openmpi)))                     ;headers include MPI headers
     (arguments
-     (substitute-keyword-arguments (package-arguments scotch)
-       ((#:phases scotch-phases)
-        `(modify-phases ,scotch-phases
+     (substitute-keyword-arguments (package-arguments scotch32)
+       ((#:phases scotch32-phases)
+        `(modify-phases ,scotch32-phases
            (replace 'build
              (lambda _
                (and
