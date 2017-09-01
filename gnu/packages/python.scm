@@ -9431,13 +9431,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.6")
+    (version "3.11.7")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "1ny9mbm9zgghl612b8wc4ap52bz3kgl486d7f307gxjmlqgz3i64"))))
+               "0ahf1i98wjizhld2qd7v2vmvzsmdw08mmins82bf3fpbnp2sxbgc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
