@@ -5666,18 +5666,17 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-3")
+    (version "2.4-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "15zcxfix2d854897k1lr0sfmj2n00339nlsppcr3zrb238lb2mi5"))))
+         "1n57dzv2aid6iqd9fkqik401sidqanhzsawyak94qbiyh6dbd1x9"))))
     (build-system r-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)
-       ("r-knitr" ,r-knitr)))
+     `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-lattice" ,r-lattice)
