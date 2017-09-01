@@ -1295,7 +1295,7 @@ and writing of @code{.ini}-style configuration files.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JR/JROCKWAY/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Context-Preserve-" version ".tar.gz"))
        (sha256
         (base32
