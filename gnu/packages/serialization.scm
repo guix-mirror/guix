@@ -359,14 +359,14 @@ However, “Memory efficiency” and “Speed” have not been primary goals.")
 (define-public python-ruamel.yaml
   (package
     (name "python-ruamel.yaml")
-    (version "0.15.19")
+    (version "0.15.33")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ruamel.yaml" version))
        (sha256
         (base32
-         "0qx779avw8d1vsjqyi7z21h1g5ykp8paqavgj0lzbp8h7bw9vpgv"))))
+         "1s4b0zwn9pkk4xxjhx77giyfddc738drd6vgraw6n2syvj03s31d"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
