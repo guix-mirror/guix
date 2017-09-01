@@ -505,14 +505,14 @@ package also provides a C++ API, that works with or without Rcpp.")
 (define-public r-ggally
   (package
     (name "r-ggally")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GGally" version))
        (sha256
         (base32
-         "12ddab0nd0f9c7bb6cx3c22mliyvc8xsxv26aqz3cvfbla8crp3b"))))
+         "02px7j28wzbhcgcwm2m0pxb6g7s5zvphl64ix55pkvag4m2ky57l"))))
     (properties `((upstream-name . "GGally")))
     (build-system r-build-system)
     (propagated-inputs
