@@ -271,14 +271,14 @@ patterns behind multiple dimensional data.")
 (define-public r-powerlaw
   (package
     (name "r-powerlaw")
-    (version "0.70.0")
+    (version "0.70.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "poweRlaw" version))
        (sha256
         (base32
-         "1p2la3hslxq2xa8jkwvci6zcpn47cvyr9xqd5agp1riwwp2xw5gh"))))
+         "04sr0nhdd1v915m0zf5gasznzgi08ykcy20kkwdw0l5mvvdbic8m"))))
     (properties `((upstream-name . "poweRlaw")))
     (build-system r-build-system)
     (propagated-inputs
