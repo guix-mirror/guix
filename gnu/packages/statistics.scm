@@ -1512,13 +1512,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.1.1")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "0grwqy3zkvz96mvpwfbfyqid4jkfrqh3ldy2n6dpv2kjd1fzj0ar"))))
+                "1yc5qyq6h0nrya7m2fqnfv19zh5xwsl28jx6zi2g1zz6ra4cvkwh"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
