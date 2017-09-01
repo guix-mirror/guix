@@ -6445,13 +6445,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-bookdown
   (package
   (name "r-bookdown")
-  (version "0.4")
+  (version "0.5")
   (source (origin
             (method url-fetch)
             (uri (cran-uri "bookdown" version))
             (sha256
              (base32
-              "1fp1k7hivrb7s2dwgrsqy9s7xg6pk9hczhrc149y1dwh901j6qvv"))))
+              "0zm63kr4f4kja4qpwkzl119zzyciqj7ihajfqgfjpgb4dzaiycxp"))))
   (build-system r-build-system)
   (propagated-inputs
    `(("r-htmltools" ,r-htmltools)
