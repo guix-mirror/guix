@@ -371,12 +371,7 @@ applications.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
-                       #t))))
-       ;; On aarch64 the test suite runs out of memory and fails.
-       ,@(if (string-prefix? "aarch64-linux"
-                             (or (%current-target-system) (%current-system)))
-           '(#:tests? #f)
-           '())))
+                       #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
