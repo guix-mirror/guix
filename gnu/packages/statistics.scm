@@ -3943,14 +3943,14 @@ routines.")
 (define-public r-fastcluster
   (package
     (name "r-fastcluster")
-    (version "1.1.22")
+    (version "1.1.24")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastcluster" version))
        (sha256
         (base32
-         "006k9isra5biyavqwci61avladw19mhp6kmkjj3777rl1r4r8b9z"))))
+         "15drhl22wm8whsy6b3vv754skfddiydb068zn1whrw5sknvkkjc2"))))
     (build-system r-build-system)
     (home-page "http://danifold.net/fastcluster.html")
     (synopsis "Fast hierarchical clustering routines")
