@@ -3557,6 +3557,32 @@ perceived by readers with the most common form of color blindness.  This is
 the 'lite' version of the more complete @code{viridis} package.")
     (license license:expat)))
 
+(define-public r-tidyselect
+  (package
+    (name "r-tidyselect")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidyselect" version))
+       (sha256
+        (base32
+         "1h10qc5bxk5v0zhmip3gwnzy50fs2gbdvcg2163is0k9a8rifq9r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
+    (home-page "http://cran.r-project.org/web/packages/tidyselect")
+    (synopsis "Select from a set of strings")
+    (description
+     "This package provides a backend for the selecting functions of the
+tidyverse.  It makes it easy to implement select-like functions in your own
+packages in a way that is consistent with other tidyverse interfaces for
+selection.")
+    (license license:gpl3)))
+
 (define-public r-tidyr
   (package
     (name "r-tidyr")
