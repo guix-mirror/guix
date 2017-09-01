@@ -560,6 +560,41 @@ xedit, for example.  The human factors crowd would agree it should make
 things less distracting.")
     (license license:public-domain)))
 
+(define-public xautomation
+  (package
+    (name "xautomation")
+    (version "1.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.hoopajoo.net/static/projects/"
+                           "xautomation-" version ".tar.gz"))
+
+       (sha256
+        (base32
+         "03azv5wpg65h40ip2kk1kdh58vix4vy1r9bihgsq59jx2rhjr3zf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxi" ,libxi)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("inputproto" ,inputproto)
+       ("xextproto" ,xextproto)
+       ("xproto" ,xproto)))
+    (synopsis "Tools to automate tasks in X such as detecting on screen images")
+    (description
+     "Xautomation can control X from the command line for scripts, and
+do visual scraping to find things on the screen.  The control interface
+allows mouse movement, clicking, button up/down, key up/down, etc, and
+uses the XTest extension so you don't have the annoying problems that
+xse has when apps ignore sent events.  The visgrep program can find
+images inside of images and reports the coordinates, allowing progams
+to find buttons, etc, on the screen to click on.")
+    (home-page "https://www.hoopajoo.net/projects/xautomation.html")
+    (license license:gpl2+)))
+
 (define-public xlockmore
   (package
     (name "xlockmore")
