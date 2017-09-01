@@ -1628,6 +1628,10 @@ IcedTea build harness.")
                    (copy-recursively "openjdk.build/docs" doc)
                    (copy-recursively "openjdk.build/images/j2re-image" jre)
                    (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                   ;; Install the nss.cfg file to JRE to enable SSL/TLS
+                   ;; support via NSS.
+                   (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
+                              (string-append jre "/lib/security/nss.cfg"))
                    #t)))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
