@@ -500,14 +500,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-18")
+   (version "1.8-19")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "011mgcypr56xvm9nizsfsb2285kzql93x0d3lzg849g39vbpp4s2"))))
+       "18zpnqilc2586764j7smwbixxz5gzpkpz2gq8nwgidfkyqwrkc45"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
