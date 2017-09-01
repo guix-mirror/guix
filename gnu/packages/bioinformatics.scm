@@ -3475,19 +3475,17 @@ form of assemblies or reads.")
 (define-public metabat
   (package
     (name "metabat")
-    (version "2.11.3")
+    (version "2.12.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://bitbucket.org/berkeleylab/metabat.git")
-             (commit "d0ad65367ffc8e08d1a9dd1388d6170daa047e5c")))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/berkeleylab/metabat/get/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rlsrkz8iq8xah65222p055kzv5i3szz8bwysnvnh0pv72wvv6ww"))
-       (patches (search-patches "metabat-remove-compilation-date.patch"
-                                "metabat-fix-compilation.patch"))))
+         "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
+       (patches (search-patches "metabat-fix-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
