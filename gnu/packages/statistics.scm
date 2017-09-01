@@ -2237,22 +2237,20 @@ integers.")
 (define-public r-httr
   (package
     (name "r-httr")
-    (version "1.2.1")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httr" version))
               (sha256
                (base32
-                "03kkjlhyvvi5znwaxfm6cmdsg3q7ivwsvkzgabhjdj2jxs80pfg7"))))
+                "0n7jz2digbgv48rbr9vmzv4vmf4rahl9jjy31izs7sxj4rs4s4r2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
-       ("r-digest" ,r-digest)
        ("r-jsonlite" ,r-jsonlite)
        ("r-openssl" ,r-openssl)
        ("r-mime" ,r-mime)
-       ("r-r6" ,r-r6)
-       ("r-stringr" ,r-stringr)))
+       ("r-r6" ,r-r6)))
     (home-page "https://github.com/hadley/httr")
     (synopsis "Tools for working with URLs and HTTP")
     (description
