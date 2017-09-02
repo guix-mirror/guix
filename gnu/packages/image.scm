@@ -868,7 +868,7 @@ channels.")
                                        version ".tar.gz")))
              (sha256
               (base32
-               "1hsdzlzgkipprqh93yj81mrckl2l7c2mn2i84691pallnjz5qqhc"))))
+               "1yza317qxd8yshvqnay164imm0ks7cvij8y8j86p1gqi1153qpn7"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (propagated-inputs
