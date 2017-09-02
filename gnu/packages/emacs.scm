@@ -59,6 +59,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -5624,3 +5625,35 @@ It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
   (license license:gpl3+)))
+
+(define-public emacs-bash-completion
+  (package
+   (name "emacs-bash-completion")
+   (version "2.0.0")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://github.com/szermatt/emacs-bash-completion/archive/v"
+            version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0mkci4a1fy8z4cmry8mx5vsx4f16a8r454slnh7lqzidnhfi63hj"))))
+   (inputs `(("bash" ,bash)))
+   (build-system emacs-build-system)
+   (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               (emacs-substitute-variables "bash-completion.el"
+                 ("bash-completion-prog" (string-append bash "/bin/bash"))))
+             #t)))))
+   (home-page "https://github.com/szermatt/emacs-bash-completion")
+   (synopsis "BASH completion for the shell buffer")
+   (description
+    "@code{bash-completion} defines dynamic completion hooks for shell-mode
+and shell-command prompts that are based on bash completion.")
+   (license license:gpl2+)))
