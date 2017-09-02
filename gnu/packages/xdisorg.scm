@@ -287,7 +287,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.81")
+    (version "2.4.83")
     (source
       (origin
         (method url-fetch)
@@ -297,15 +297,14 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1bhimr6za2ddisrvrv1qqd7c2a59s7jc954sjycq2w68b8cmrh4c"))
+          "1minzvsyz5hgm6ixpj8ysa6jsv7vm8qc8nx390jxdsk0v9ljd983"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libpciaccess" ,libpciaccess)
-        ("libpthread-stubs" ,libpthread-stubs)))
+     `(("libpciaccess" ,libpciaccess)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
-    (home-page "http://dri.freedesktop.org/wiki/")
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://dri.freedesktop.org/wiki/")
     (synopsis "Direct rendering userspace library")
     (description "The Direct Rendering Infrastructure, also known as the DRI,
 is a framework for allowing direct access to graphics hardware under the
