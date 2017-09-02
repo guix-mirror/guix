@@ -217,17 +217,19 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.1.4")
+    (version "17.1.8")
     (source
       (origin
         (method url-fetch)
-        (uri (list (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+        (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                  "mesa-" version ".tar.xz")
+                   (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
                                   "mesa-" version ".tar.xz")
                    (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1bcwxin7nmbnv92xav381b6qxscsx1zzc71ryfvj03cglbkb1wq6"))
+          "1nv9aaz7ay2bs4fc8j3rf6ky3qla8s346a8g2lvdbp96msp2xvbm"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
