@@ -3387,10 +3387,18 @@ web browsing, used for automating interaction with websites.")
                (base32
                 "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f)) ; Tests require further modules to be packaged
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-feed-find" ,perl-feed-find)
+       ("perl-module-install" ,perl-module-install)
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-uri-fetch" ,perl-uri-fetch)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-xml-atom" ,perl-xml-atom)
+       ("perl-xml-rss" ,perl-xml-rss)))
     (inputs
      `(("perl-data-page" ,perl-data-page)
        ("perl-libwww" ,perl-libwww)
