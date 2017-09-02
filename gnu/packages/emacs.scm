@@ -1193,6 +1193,26 @@ Using emacs-direnv means that programs started from Emacs will use the
 environment set through Direnv.")
     (license license:gpl3+)))
 
+(define-public emacs-go-mode
+  (package
+    (name "emacs-go-mode")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dominikh/go-mode.el/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1adngbjyb8qnwg7n6r2y31djw9j6qf3b9fi63zd85035q7x4ljnm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dominikh/go-mode.el")
+    (synopsis "Go mode for Emacs")
+    (description
+     "This package provides go-mode, an Emacs mode for working with software
+written in the Go programming language.")
+    (license license:bsd-3)))
+
 (define-public emacs-google-maps
   (package
     (name "emacs-google-maps")
