@@ -10010,6 +10010,9 @@ This is the service type for the
 @uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
 service. The value for this service type is a
 @code{network-manager-configuration} record.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
 @end defvr
 
 @deftp {Data Type} network-manager-configuration
@@ -11573,7 +11576,7 @@ adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), screen lockers, a network management tool
-(@pxref{Networking Services, @code{wicd-service}}), energy and color
+(@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
 AccountsService daemon that allows authorized users change system

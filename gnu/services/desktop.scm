@@ -809,8 +809,9 @@ with the administrator's password."
          (simple-service 'mtp udev-service-type (list libmtp))
 
          ;; The D-Bus clique.
+         (service network-manager-service-type)
+         (service wpa-supplicant-service-type)    ;needed by NetworkManager
          (avahi-service)
-         (wicd-service)
          (udisks-service)
          (upower-service)
          (accountsservice-service)
