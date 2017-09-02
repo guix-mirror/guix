@@ -1890,6 +1890,15 @@ different kinds of sliders, and much more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-qmlwebkit-plugins-rpath
+           (lambda _
+             (substitute* "Source/WebKit/qt/declarative/experimental/experimental.pri"
+               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
+                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../../lib"))
+             (substitute* "Source/WebKit/qt/declarative/public.pri"
+               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
+                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../lib"))
+             #t))
          (replace 'configure
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "out")))
