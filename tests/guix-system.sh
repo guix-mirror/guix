@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -134,7 +135,9 @@ OS_BASE='
   (timezone "Europe/Paris")
   (locale "en_US.UTF-8")
 
-  (bootloader (grub-configuration (device "/dev/sdX")))
+  (bootloader (bootloader-configuration
+               (bootloader grub-bootloader)
+               (device "/dev/sdX")))
   (file-systems (cons (file-system
                         (device "root")
                         (title (string->symbol "label"))
@@ -205,7 +208,9 @@ make_user_config ()
   (timezone "Europe/Paris")
   (locale "en_US.UTF-8")
 
-  (bootloader (grub-configuration (device "/dev/sdX")))
+  (bootloader (bootloader-configuration
+                (bootloader grub-bootloader)
+                (device "/dev/sdX")))
   (file-systems (cons (file-system
                         (device "root")
                         (title 'label)

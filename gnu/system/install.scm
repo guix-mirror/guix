@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -301,7 +302,9 @@ You have been warned.  Thanks for being so brave.\x1b[0m
     (host-name "gnu")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
-    (bootloader (grub-configuration (target "/dev/sda")))
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/sda")))
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.

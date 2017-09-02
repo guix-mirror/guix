@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,9 @@
     (host-name "komputilo")
     (timezone "Europe/Berlin")
     (locale "en_US.utf8")
-    (bootloader (grub-configuration (target "/dev/sdX")))
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/sdX")))
     (file-systems (cons %root-fs %base-file-systems))
 
     (users %base-user-accounts)))
@@ -51,7 +54,9 @@
     (host-name "komputilo")
     (timezone "Europe/Berlin")
     (locale "en_US.utf8")
-    (bootloader (grub-configuration (target "/dev/sdX")))
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/sdX")))
     (mapped-devices (list %luks-device))
     (file-systems (cons (file-system
                           (inherit %root-fs)

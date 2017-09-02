@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix records)
+  #:use-module (gnu bootloader)
   #:use-module (gnu bootloader grub)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
@@ -206,7 +208,9 @@ the system under test."
     (timezone "Europe/Berlin")
     (locale "en_US.UTF-8")
 
-    (bootloader (grub-configuration (target "/dev/sdX")))
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/sdX")))
     (file-systems (cons (file-system
                           (device "my-root")
                           (title 'label)
