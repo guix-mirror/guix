@@ -3550,7 +3550,7 @@ for search-based navigation of buffers.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.12.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3559,8 +3559,11 @@ for search-based navigation of buffers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00qzbfjy3w6bcnki7gw0clmi0cc5yqjdrcyhgv4ymijjs79h9p5s"))))
+                "0j7qjcslh8mnxrr2m8qrscyq9ry240j5jd9dysbvih126lxisf12"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:exclude                        ; Don't exclude 'cider-test.el'.
+       '("^\\.dir-locals\\.el$" "^test/")))
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-spinner" ,emacs-spinner)
