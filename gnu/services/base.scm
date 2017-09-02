@@ -456,6 +456,19 @@ in KNOWN-MOUNT-POINTS when it is stopped."
                       (delete-file #$%do-not-kill-file)))
 
                 (let wait ()
+                  ;; Reap children, if any, so that we don't end up with
+                  ;; zombies and enter an infinite loop.
+                  (let reap-children ()
+                    (define result
+                      (false-if-exception
+                       (waitpid WAIT_ANY (if (null? omitted-pids)
+                                             0
+                                             WNOHANG))))
+
+                    (when (and (pair? result)
+                               (not (zero? (car result))))
+                      (reap-children)))
+
                   (let ((pids (processes)))
                     (unless (lset= = pids (cons 1 omitted-pids))
                       (format #t "waiting for process termination\

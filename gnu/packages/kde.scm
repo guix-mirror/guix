@@ -39,7 +39,7 @@
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.1.1")
+    (version "5.1.2")
     (source
       (origin
         (method url-fetch)
@@ -48,7 +48,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0m6pnmylp1gij5cr75waz8hjry5894qillj5977h467hnbzs808a"))))
+          "1iqaq0ilijjigqb34v5wq9in6bnjs0p9cmgbygjmy53xhh3yhm5g"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -151,7 +151,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 (define-public kdevplatform
   (package
     (name "kdevplatform")
-    (version "5.1.1")
+    (version "5.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/kdevelop"
@@ -159,7 +159,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09p7lvniw55g6x8v8wl3azlps8c13yx03x1m9cd3qdxi282l8n9i"))))
+                "0jk6g1kiqpyjy8pca0236b9944gxqnymqv8ny6m8nrraannxs8p6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

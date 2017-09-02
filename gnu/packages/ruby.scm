@@ -121,7 +121,10 @@ a focus on simplicity and productivity.")
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
+                   #t))
+       (patches
+        (search-patches "ruby-rubygems-2612-ruby24.patch"
+                        "ruby-rubygems-2613-ruby24.patch"))))))
 
 (define-public ruby-2.3
   (package
@@ -137,6 +140,7 @@ a focus on simplicity and productivity.")
         (base32
          "132p5kc1sx97svbx04g40pz5pr7p8f6jlmnq5r2prlcz5q1xj71l"))
        (modules '((guix build utils)))
+       (patches (search-patches "ruby-2.3.4-rubygems-2613-ruby23.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
@@ -151,6 +155,7 @@ a focus on simplicity and productivity.")
        (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.xz"))
+       (patches (search-patches "ruby-2.2.7-rubygems-2613-ruby22.patch"))
        (sha256
         (base32
          "0lyb7gnbbhs3a3v9grsjgbaixm20wxz6x3h0czyrxnj3cpp8lk13"))))))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darringon <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,3 +70,26 @@ a mobile phone with CCD.  The capacity of QR Code is up to 7000 digits or 4000
 characters, and is highly robust.")
     (license license:lgpl2.1+)
     (home-page "https://fukuchi.org/works/qrencode")))
+
+(define-public libdmtx
+  (package
+    (name "libdmtx")
+    (version "0.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/libdmtx/" name "/" version "/"
+             name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0xnxx075ycy58n92yfda2z9zgd41h3d4ik5d9l197lzsqim5hb5n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://libdmtx.sourceforge.net/")
+    (synopsis "Library for reading and writing Data Matrix 2D barcodes")
+    (description "libdmtx is open source software for reading and writing Data
+Matrix 2D barcodes on Linux and Unix.  At its core libdmtx is a shared
+library, allowing C/C++ programs to use its capabilities without restrictions
+or overhead.")
+    (license license:bsd-3)))

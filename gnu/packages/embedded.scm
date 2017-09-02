@@ -299,7 +299,7 @@ languages are C and C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.zapb.de/libjaylink.git")
+                      (url "https://git.zapb.de/libjaylink.git")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -365,7 +365,7 @@ language.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.code.sf.net/p/openocd/code.git")
+                      (url "https://git.code.sf.net/p/openocd/code.git")
                       (commit commit)))
                 (sha256
                  (base32

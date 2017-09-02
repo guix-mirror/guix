@@ -41,6 +41,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -1979,11 +1980,8 @@ server.")
         ("libxau" ,libxau)
         ("libx11" ,libx11)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
-
-    ;; FIXME: The test suite needs http://liw.fi/cmdtest/
-    (arguments `(#:tests? #f))
-
+     `(("cmdtest" ,cmdtest)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "X authority file utility")
     (description
@@ -2749,7 +2747,8 @@ framebuffer device.")
        `(("libdrm" ,libdrm)
          ("mesa" ,mesa)
          ("udev" ,eudev)
-         ("xorg-server" ,xorg-server)))
+         ("xorg-server" ,xorg-server)
+         ("zlib" ,zlib)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("autoconf" ,autoconf)
@@ -5766,6 +5765,12 @@ programs that cannot use the window system directly.")
        #:parallel-build? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t))
          (add-before 'build 'patch-Makefile
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile"

@@ -110,22 +110,41 @@ store in '.el' files."
 
   (define source (getcwd))
 
-  (define (install-file? file stat)
-    (let ((stripped-file (string-trim (string-drop file (string-length source)) #\/)))
-      (and (any (cut string-match <> stripped-file) include)
-           (not (any (cut string-match <> stripped-file) exclude)))))
+  (define* (install-file? file stat #:key verbose?)
+    (let* ((stripped-file (string-trim
+                           (string-drop file (string-length source)) #\/)))
+      (define (match-stripped-file action regex)
+        (let ((result (string-match regex stripped-file)))
+          (when (and result verbose?)
+                (format #t "info: ~A ~A as it matches \"~A\"\n"
+                        stripped-file action regex))
+          result))
+
+      (when verbose?
+            (format #t "info: considering installing ~A\n" stripped-file))
+
+      (and (any (cut match-stripped-file "included" <>) include)
+           (not (any (cut match-stripped-file "excluded" <>) exclude)))))
 
   (let* ((out (assoc-ref outputs "out"))
          (elpa-name-ver (store-directory->elpa-name-version out))
-         (target-directory (string-append out %install-suffix "/" elpa-name-ver)))
-    (for-each
-     (lambda (file)
-       (let* ((stripped-file (string-drop file (string-length source)))
-              (target-file (string-append target-directory stripped-file)))
-         (format #t "`~a' -> `~a'~%" file target-file)
-         (install-file file (dirname target-file))))
-     (find-files source install-file?)))
-  #t)
+         (target-directory (string-append out %install-suffix "/" elpa-name-ver))
+         (files-to-install (find-files source install-file?)))
+    (cond
+     (files-to-install
+      (for-each
+       (lambda (file)
+         (let* ((stripped-file (string-drop file (string-length source)))
+                (target-file (string-append target-directory stripped-file)))
+           (format #t "`~a' -> `~a'~%" file target-file)
+           (install-file file (dirname target-file))))
+       files-to-install)
+      #t)
+     (else
+      (format #t "error: No files found to install.\n")
+      (find-files source (lambda (file stat)
+                           (install-file? file stat #:verbose? #t)))
+      #f))))
 
 (define* (move-doc #:key outputs #:allow-other-keys)
   "Move info files from the ELPA package directory to the info directory."

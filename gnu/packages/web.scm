@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -157,6 +157,7 @@ and its related documentation.")
                (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
+           ;; The configure script is hand-written, not from GNU autotools.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
@@ -185,6 +186,12 @@ and its related documentation.")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
                (zero? (apply system* "./configure" flags)))))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (install-file "objs/nginx.8" (string-append man "/man8"))
+               #t)))
          (add-after 'install 'fix-root-dirs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; 'make install' puts things in strange places, so we need to
@@ -546,7 +553,7 @@ parser written in ANSI C and a small validating JSON generator.")
               ;; things from Git.
               (method git-fetch)
               (uri (git-reference
-                    (url "git://git.libwebsockets.org/libwebsockets")
+                    (url "https://github.com/warmcat/libwebsockets.git")
                     (commit (string-append "v" version
                                            "-chrome37-firefox30"))))
               (sha256
@@ -2226,7 +2233,7 @@ in tables within an HTML document, either as text or encoded element trees.")
 (define-public perl-html-tree
   (package
     (name "perl-html-tree")
-    (version "5.06")
+    (version "5.07")
     (source
      (origin
        (method url-fetch)
@@ -2234,7 +2241,7 @@ in tables within an HTML document, either as text or encoded element trees.")
                            "HTML-Tree-" version ".tar.gz"))
        (sha256
         (base32
-         "0vjk4xrybjqs511qrh9cymhpbg9m3jjqr52qr035k6nzrccyndlw"))))
+         "1gyvm4qlwm9y6hczkpnrdfl303ggbybr0nqxdjw09hii8yw4sdzh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -3380,8 +3387,18 @@ web browsing, used for automating interaction with websites.")
                (base32
                 "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f)) ; Tests require further modules to be packaged
+    (native-inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-feed-find" ,perl-feed-find)
+       ("perl-module-install" ,perl-module-install)
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-uri-fetch" ,perl-uri-fetch)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-xml-atom" ,perl-xml-atom)
+       ("perl-xml-rss" ,perl-xml-rss)))
     (inputs
      `(("perl-data-page" ,perl-data-page)
        ("perl-libwww" ,perl-libwww)
@@ -3498,13 +3515,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0sqz3wssxa19g9mpmf9s4gx2a5rvzl8nrd11qkgpz5v3iqsc6ysr"))))
+                "0rxh89csqlpyf9wv5wlymya9kbddj79mlmxz2x0xmls12gbrxaaa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -5045,3 +5062,46 @@ websites lacking feeds.  Supported websites include Facebook, Twitter,
 Instagram and YouTube.")
     (license (list l:public-domain
                    l:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
+
+(define-public linkchecker
+  (package
+    (name "linkchecker")
+    (version "9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "LinkChecker" version))
+       (sha256
+        (base32
+         "0v8pavf0bx33xnz1kwflv0r7lxxwj7vg3syxhy2wzza0wh6sc2pf"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-requests" ,python2-requests)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove faulty python-requests version check. This has been fixed
+         ;; upstream, and can be removed in version 9.4.
+         (add-after 'unpack 'remove-python-requests-version
+           (lambda _
+             (substitute* "linkcheck/__init__.py"
+               (("requests.__version__ <= '2.2.0'") "False"))
+             #t)))))
+    (home-page "https://linkcheck.github.io/linkchecker")
+    (synopsis "Check websites for broken links")
+    (description "LinkChecker is a website validator.  It checks for broken
+links in websites.  It is recursive and multithreaded providing output in
+colored or normal text, HTML, SQL, CSV, XML or as a sitemap graph.  It
+supports checking HTTP/1.1, HTTPS, FTP, mailto, news, nntp, telnet and local
+file links.")
+    (license (list l:gpl2+
+                   l:bsd-2 ; linkcheck/better_exchook2.py
+                   l:bsd-3 ; linkcheck/colorama.py
+                   l:psfl  ; linkcheck/gzip2.py
+                   l:expat ; linkcheck/mem.py
+                   ;; FIXME: Unbundle dnspython and miniboa
+                   ;; This issue has been raised upstream
+                   ;; https://github.com/wummel/linkchecker/issues/729
+                   l:isc   ; third_party/dnspython
+                   l:asl2.0)))) ; third_party/miniboa

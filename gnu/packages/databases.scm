@@ -371,12 +371,7 @@ applications.")
                        (for-each delete-file
                                  (find-files (string-append out "/bin")
                                              "_embedded$"))
-                       #t))))
-       ;; On aarch64 the test suite runs out of memory and fails.
-       ,@(if (string-prefix? "aarch64-linux"
-                             (or (%current-target-system) (%current-system)))
-           '(#:tests? #f)
-           '())))
+                       #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
@@ -474,14 +469,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.6.4")
+    (version "9.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "04yffrrmn85k25n3nq389aa9c1j8mkimrf889kayl772h9nv2fib"))))
+                "0k3ls2x182jz6djjiqj9kycddabdl2gk1y1ajq1vipnxwfki5nh6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -793,14 +788,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.14")
+    (version "1.3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sfbia8xyaywgx9zy7x618vrvyx9gc3cgqf763shsii9javlnz9s"))))
+                "0a37jhpij8wr4f4pjqdlwnffy2l6a2vkqdpz1bqxj6v06cwbz8dl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

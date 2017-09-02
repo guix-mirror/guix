@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
@@ -22,12 +22,13 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
+;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2603,6 +2604,27 @@ transparent background.  If you load it from a GUI, it will default to a
 dark background.")
     (license license:gpl3+)))
 
+(define-public emacs-2048-game
+  (package
+    (name "emacs-2048-game")
+    (version "20151026.1233")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://melpa.org/packages/2048-game-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0gy2pvz79whpavp4jmz8h9krzn7brmvv3diixi1d4w51pcdvaldd"))))
+    (build-system emacs-build-system)
+    (home-page "https://bitbucket.org/zck/2048.el")
+    (synopsis "Implementation of the game 2048 in Emacs Lisp")
+    (description
+     "This program is an implementation of 2048 for Emacs.
+The goal of this game is to create a tile with value 2048.  The size of the
+board and goal value can be customized.")
+  (license license:gpl3+)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
@@ -3528,7 +3550,7 @@ for search-based navigation of buffers.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.12.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3537,8 +3559,11 @@ for search-based navigation of buffers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00qzbfjy3w6bcnki7gw0clmi0cc5yqjdrcyhgv4ymijjs79h9p5s"))))
+                "0j7qjcslh8mnxrr2m8qrscyq9ry240j5jd9dysbvih126lxisf12"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:exclude                        ; Don't exclude 'cider-test.el'.
+       '("^\\.dir-locals\\.el$" "^test/")))
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-spinner" ,emacs-spinner)
@@ -3561,30 +3586,32 @@ CIDER).")
     (license license:gpl3+)))
 
 (define-public emacs-lua-mode
-  (package
-    (name "emacs-lua-mode")
-    (version "20151025")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/immerrr/lua-mode/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0sbhfny5ib65cnx6xcy6h9bbw27mw034s8m9cca00bhxqaqi6p4v"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/immerrr/lua-mode/")
-    (synopsis "Major mode for lua")
-    (description
-     "This Emacs package provides a mode for @uref{https://www.lua.org/,
+  (let ((commit "652e299cb967fccca827dda381d61a9c144d97de")
+        (revision "1"))
+    (package
+      (name "emacs-lua-mode")
+      (version (string-append "20151025." revision "-" (string-take commit 9)))
+      (home-page "https://github.com/immerrr/lua-mode/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (string-append name "-" version ".checkout"))
+                (sha256
+                 (base32
+                  "053025k930wh0lak6rc1973ynfrmm8zsyzfqhhd39x7abkl41hc9"))))
+      (build-system emacs-build-system)
+      (synopsis "Major mode for lua")
+      (description
+       "This Emacs package provides a mode for @uref{https://www.lua.org/,
 Lua programing language}.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-ebuild-mode
   (package
     (name "emacs-ebuild-mode")
-    (version "1.30")
+    (version "1.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3593,7 +3620,7 @@ Lua programing language}.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vp7lq1kvmh1b2bms2x1kf2k76dy9m02d7cirkxpiglwaxa0h9vz"))))
+                "07dzrdjjczkxdfdgi60h4jjkvzi4p0k9rij2wpfp8s03ay3qldpp"))))
     (build-system emacs-build-system)
     (home-page "https://devmanual.gentoo.org")
     (synopsis "Major modes for Gentoo package files")
@@ -3716,14 +3743,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170622")
+    (version "20170828")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0922lcbr2r7bkswljqzbm5y3ny1n67qfrmf7h7z9hsw2wy0505dp"))))
+                "0frjwgjyy7rwb7si57h6nd1p35a4gcd1dc0aka19kn8r59hbi08p"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -5258,23 +5285,6 @@ multiplexer.")
 editing RPM spec files.")
     (license license:gpl2+)))
 
-(define-public emacs-nix-mode
-  (package
-    (inherit nix)
-    (name "emacs-nix-mode")
-    (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir-elisp
-           ;; Elisp directory is not in root of the source.
-           (lambda _
-             (chdir "misc/emacs"))))))
-    (synopsis "Emacs major mode for editing Nix expressions")
-    (description "@code{nixos-mode} provides an Emacs major mode for editing
-Nix expressions.  It supports syntax highlighting, indenting and refilling of
-comments.")))
-
 (define-public emacs-git-messenger
   (package
     (name "emacs-git-messenger")
@@ -5379,4 +5389,61 @@ the nick color and the background color
 enables you to easily define search engines, bind them to keybindings, and
 query them from the comfort of your editor.")
     (home-page "https://github.com/hrs/engine-mode")
+    (license license:gpl3+)))
+
+(define-public emacs-prop-menu
+  (package
+    (name "emacs-prop-menu")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://stable.melpa.org/packages/prop-menu-"
+             version ".el"))
+       (sha256
+        (base32
+         "01bk4sjafzz7gqrkv9jg0pa85qr34vbk3q8ga2b0m61bndywzgpr"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/david-christiansen/prop-menu-el")
+    (synopsis
+     "Create and display a context menu based on text and overlay properties")
+    (description
+     "This is a library for computing context menus based on text
+properties and overlays.  The intended use is to have tools that
+annotate source code and others that use these annotations, without
+requiring a direct coupling between them, but maintaining
+discoverability.
+
+Major modes that wish to use this library should first define an
+appropriate value for @code{prop-menu-item-functions}.  Then, they should
+bind @code{prop-menu-by-completing-read} to an appropriate
+key.  Optionally, a mouse pop-up can be added by binding
+@code{prop-menu-show-menu} to a mouse event.")
+    (license license:gpl3+)))
+
+(define-public emacs-idris-mode
+  (package
+    (name "emacs-idris-mode")
+    (version "0.9.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://stable.melpa.org/packages/idris-mode-"
+             version ".tar"))
+       (sha256
+        (base32
+         "0ld4kfwnyyhlsnj5f6cbn4is4mpxdqalk2aifkw02r00mbr9n294"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-prop-menu" ,emacs-prop-menu)))
+    (home-page
+     "https://github.com/idris-hackers/idris-mode")
+    (synopsis "Major mode for editing Idris code")
+    (description
+     "This is an Emacs mode for editing Idris code.  It requires the latest
+version of Idris, and some features may rely on the latest Git version of
+Idris.")
     (license license:gpl3+)))

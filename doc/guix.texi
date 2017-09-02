@@ -15844,9 +15844,6 @@ The directory to scan for music files.
 @item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
 The directory to store playlists.
 
-@item @code{pid-file} (default: @code{"/var/run/mpd.pid"})
-The file mpd wil store its PID.  This must be an absolute path.
-
 @item @code{port} (default: @code{"6600"})
 The port to run mpd on.
 

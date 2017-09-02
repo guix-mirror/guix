@@ -48,7 +48,7 @@
 (define-public wxwidgets
   (package
     (name "wxwidgets")
-    (version "3.0.2")
+    (version "3.0.3")
     (source
      (origin
        (method url-fetch)
@@ -56,9 +56,7 @@
                            "releases/download/v" version
                            "/wxWidgets-" version ".tar.bz2"))
        (sha256
-        (base32 "0paq27brw4lv8kspxh9iklpa415mxi8zc117vbbbhfjgapf7js1l"))
-       (patches (search-patches
-                 "wxwidgets-fix-windowGTK.patch"))))
+        (base32 "0yrhp5cs2g33cpbdwdzicmm5m4mfnlvxwv031x9266zc90zh7j08"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("glu" ,glu)

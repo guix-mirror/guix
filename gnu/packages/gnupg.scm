@@ -81,6 +81,7 @@ Daemon and possibly more in the future.")
 
 (define-public libgcrypt
   (package
+    (replacement libgcrypt/fixed)
     (name "libgcrypt")
     (version "1.7.8")
     (source (origin
@@ -114,6 +115,18 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
+
+(define libgcrypt/fixed
+  (package
+    (inherit libgcrypt)
+    (version "1.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1cvqd9jk5qshbh48yh3ixw4zyr4n5k50r3475rrh20xfn7w7aa3s"))))))
 
 (define-public libassuan
   (package
@@ -203,14 +216,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.23")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0xqd5nm4j3w9lwk35vg57gl2i8bfkmx7d24i44gkbscm2lwpci59"))))
+                "1rj538kp3wsdq7rhl8sy1wpwhlsbxcch0cwk64kgz8gpw05lllfl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -232,7 +245,8 @@ compatible to GNU Pth.")
     `(#:configure-flags '(;; Otherwise, the test suite looks for the `gpg`
                           ;; executable in its installation directory in
                           ;; /gnu/store before it has been installed.
-                          "--enable-gnupg-builddir-envvar")
+                          "--enable-gnupg-builddir-envvar"
+                          "--enable-all-tests")
       #:phases
       (modify-phases %standard-phases
         (add-before 'configure 'patch-paths
@@ -249,26 +263,18 @@ compatible to GNU Pth.")
                (string-append (getcwd) "/tests/gpgscm/gpgscm")))
             #t))
         (add-before 'build 'patch-test-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((coreutils (assoc-ref inputs "coreutils"))
-                   (cat (string-append coreutils "/bin/cat"))
-                   (pwd (string-append coreutils "/bin/pwd"))
-                   (true (string-append coreutils "/bin/true"))
-                   (false (string-append coreutils "/bin/false")))
-              (substitute* '("tests/inittests"
-                             "tests/pkits/inittests"
-                             "tests/Makefile"
-                             "tests/pkits/common.sh"
-                             "tests/pkits/Makefile"
-                            )
-               (("/bin/pwd") pwd))
-              (substitute* "common/t-exectool.c"
-                (("/bin/cat") cat))
-              (substitute* "common/t-exectool.c"
-                (("/bin/true") true))
-              (substitute* "common/t-exectool.c"
-                (("/bin/false") false))
-              #t))))))
+          (lambda _
+            (substitute* '("tests/inittests"
+                           "tests/pkits/inittests"
+                           "tests/Makefile"
+                           "tests/pkits/common.sh"
+                           "tests/pkits/Makefile")
+             (("/bin/pwd") (which "pwd")))
+            (substitute* "common/t-exectool.c"
+              (("/bin/cat") (which "cat"))
+              (("/bin/true") (which "true"))
+              (("/bin/false") (which "false")))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description

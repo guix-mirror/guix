@@ -575,6 +575,46 @@ assistant to write formal mathematical proofs using a variety of theorem
 provers.")
     (license license:gpl2+)))
 
+(define-public emacs-tuareg
+  (package
+    (name "emacs-tuareg")
+    (version "2.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/tuareg/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r2smclcs63n74lcyckbp90j09wyjdngn816cqzfkw54iwh3hd7q"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("emacs" ,emacs-minimal)
+                     ("opam" ,opam)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/emacs/site-lisp")
+                (string-append (assoc-ref %outputs "out")
+                               "/share/emacs/site-lisp/")))
+             #t))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (symlink "tuareg.el"
+                      (string-append (assoc-ref outputs "out")
+                                     "/share/emacs/site-lisp/"
+                                     "tuareg-autoloads.el"))
+             #t)))))
+    (home-page "https://github.com/ocaml/tuareg")
+    (synopsis "OCaml programming mode, REPL, debugger for Emacs")
+    (description "Tuareg helps editing OCaml code, to highlight important
+parts of the code, to run an OCaml REPL, and to run the OCaml debugger within
+Emacs.")
+    (license license:gpl2+)))
+
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")

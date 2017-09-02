@@ -293,6 +293,7 @@ without requiring the source code to be rewritten.")
               (uri (git-reference
                     (url "git://git.hcoop.net/git/bpt/guile.git")
                     (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
@@ -1912,6 +1913,7 @@ manipulate repositories of the Git version control system.")
                 (uri (git-reference
                       (url "git://dthompson.us/guile-syntax-highlight.git")
                       (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))

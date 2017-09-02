@@ -263,7 +263,6 @@ the image."
     (system . ,(%current-system))
     (substitutes? . #t)
     (graft? . #t)
-    (max-silent-time . 3600)
     (verbosity . 0)
     (symlinks . ())
     (compressor . ,(first %compressors))))

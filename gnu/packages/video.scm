@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
@@ -753,14 +753,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.12")
+    (version "2.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1gc32akvdms3rywphnap94lqqici8l5898a09ir1ad5rif5g24v2"))))
+               "0hyqr391pika4vgynv90bacz11wdpqcqfgj5h7g5jrmgvz6hgj68"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -784,10 +784,7 @@ audio/video codec library.")
                "1a22b913p2227ljz89c4fgjlyln5gcz8z58w32r0wh4srnnd60y4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("git" ,git) ; needed for a test
-       ("libtool" ,libtool)
+     `(("git" ,git) ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
@@ -823,9 +820,8 @@ audio/video codec library.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt) ; FIXME: reenable modular qt after update - requires building
-       ;("qtbase" ,qtbase) with -std=gnu++11.
-       ;("qtx11extras" ,qtx11extras)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
@@ -833,33 +829,27 @@ audio/video codec library.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `(;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
-         ;; In our case, this led to a test failure:
-         ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
-         "ac_cv_c_fast_math=no"
-
+       `("CXXFLAGS=-std=gnu++11"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
 
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap"))))
-         (add-before 'bootstrap 'fix-livemedia-utils-prefix
+         (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((livemedia-utils (assoc-ref inputs "livemedia-utils")))
-               (substitute* "configure.ac"
+               (substitute* "configure"
                  (("LIVE555_PREFIX=\\$\\{LIVE555_PREFIX-\"/usr\"\\}")
                   (string-append "LIVE555_PREFIX=" livemedia-utils)))
+               ;; Some of the tests require using the display to test out VLC,
+               ;; which fails in our sandboxed build system
+               (substitute* "test/run_vlc.sh"
+                 (("./vlc --ignore-config") "echo"))
+               ;; XXX Likely not needed for >2.2.6.
+               (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
+                 (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
                #t)))
-         (add-before 'configure 'remove-visual-tests
-           ;; Some of the tests require using the display to test out VLC,
-           ;; which fails in our sandboxed build system
-           (lambda _
-             (substitute* "test/run_vlc.sh"
-                          (("./vlc --ignore-config") "echo"))
-             #t))
          (add-after 'install 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
@@ -1125,7 +1115,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.08.23")
+    (version "2017.09.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1133,7 +1123,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vq0r37ynnj2hx0ssh3hycg4wzhwch5pphq76swfz76r1klnrich"))))
+                "1sfra8rfb7hkbgmw2n2s42fpkh0y7j9lyars7qda3rj34ai7r6k9"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1442,7 +1432,7 @@ device without having to bother about the decryption.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dthompson.us/releases/srt2vtt/srt2vtt-"
+                    "https://files.dthompson.us/srt2vtt/srt2vtt-"
                     version ".tar.gz"))
               (sha256
                (base32

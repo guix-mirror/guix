@@ -41,7 +41,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;;
@@ -68,6 +68,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
@@ -2835,17 +2836,23 @@ somewhat intelligeble.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "1.4.0")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "1556v2jppd8mjkkj66pxb5rcazm35jq81r233mdl8hfmz9n3icp1"))))
+         "0pvr3iymab7v2qz74ann760z7qahqgqszxz5iqqbaqv4z2zz0y8i"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     (find-files "." "\\.pyc$"))
+           #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest-3.0)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/progrium/pyjwt")
@@ -3030,15 +3037,27 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.8")
+    (version "2.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
+         "1zzrkywhziqffrzks14kzixz7nd4yh2vc0fb04a68vfd2ai03anx"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; These files cannot be built with Python < 3.6.  See
+         ;; https://github.com/pallets/jinja/issues/655
+         ;; FIXME: Remove this when the "python" package is upgraded.
+         (add-after 'unpack 'delete-incompatible-files
+           (lambda _
+             (for-each delete-file
+                       '("jinja2/asyncsupport.py"
+                         "jinja2/asyncfilters.py"))
+             #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
@@ -3762,6 +3781,71 @@ objects.")
 (define-public python2-munch
   (package-with-python2 python-munch))
 
+(define-public python-colormath
+  (package
+    (name "python-colormath")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "colormath" version))
+       (sha256
+        (base32
+         "01wp5xwm0a89wdm1dc9rr1ij90idzdiiipxdj1yslhqzkhnjnfh0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/gtaylor/python-colormath")
+    (synopsis "Color math and conversion library")
+    (description
+     "This is a Python library for color math and conversions.")
+    (license license:bsd-3)))
+
+(define-public python2-colormath
+  (package-with-python2 python-colormath))
+
+(define-public python-spectra
+  (package
+    (name "python-spectra")
+    (version "0.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "spectra" version))
+       (sha256
+        (base32
+         "0n87kzhpkml2s2q91rdkl8wz2kkv5b0bkrgww45lxa5vq34qh6w5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "nosetests" "-v")))))))
+    (propagated-inputs
+     `(("python-colormath" ,python-colormath)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://github.com/jsvine/spectra")
+    (synopsis "Color scales and color conversion")
+    (description
+     "This package provides a Python library intended to make color math,
+color scales, and color space conversion easy.  It has support for:
+
+@enumerate
+@item Color scales
+@item Color ranges
+@item Color blending
+@item Brightening/darkening colors
+@item Saturating/desaturating colors
+@item Conversion to/from multiple color spaces.
+@end enumerate\n")
+    (license license:expat)))
+
+(define-public python2-spectra
+  (package-with-python2 python-spectra))
+
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
@@ -4313,33 +4397,56 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.7.6")
+    (version "2.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "0nhan2qvrw7b7gg5zddwa22kybdv3x1g26vkd7q8lvnkgzrs4dga"))))
+         "0bqihjrdqwj5r1h86shvfb1p5hfr4a6klv1v54bzfr9r144w3rni"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
+         ;; Without this phase the test loader cannot find the directories, in
+         ;; which it is supposed to look for test files.
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "rpy/tests.py"
+               (("loader.discover\\(")
+                "loader.discover(rpy_root + '/' +"))
+             #t))
+         (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; It's easier to run tests after install.
-             ;; Make installed package available for running the tests
-             (add-installed-pythonpath inputs outputs)
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH"))))
              (zero? (system* "python" "-m" "rpy2.tests" "-v")))))))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     `(("python-six" ,python-six)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)))
     (inputs
      `(("readline" ,readline)
        ("icu4c" ,icu4c)
        ("pcre" ,pcre)
        ("r-minimal" ,r-minimal)
-       ("r-survival" ,r-survival)))
+       ("r-survival" ,r-survival)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dbplyr" ,r-dbplyr)
+       ("python-numpy" ,python-numpy)))
     (native-inputs
      `(("zlib" ,zlib)))
     (home-page "http://rpy.sourceforge.net/")
@@ -4348,14 +4455,10 @@ operators such as union, intersection, and difference.")
 low-level interface to R from Python, a proposed high-level interface,
 including wrappers to graphical libraries, as well as R-like structures and
 functions.")
-    (license license:gpl3+)))
-
-(define-public python2-rpy2
-  (let ((rpy2 (package-with-python2 python-rpy2)))
-    (package (inherit rpy2)
-      (propagated-inputs
-       `(("python2-singledispatch" ,python2-singledispatch)
-         ,@(package-propagated-inputs rpy2))))))
+    ;; Any of these licenses can be picked for the R interface.  The whole
+    ;; project is released under GPLv2+ according to the license declaration
+    ;; in "setup.py".
+    (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+))))
 
 (define-public python-scipy
   (package
@@ -9095,16 +9198,13 @@ with python-requests.")
 (define-public python-click-threading
   (package
     (name "python-click-threading")
-    (version "0.2.0")
+    (version "0.4.3")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                    "https://pypi.python.org/packages/"
-                    "fe/b7/e7f609d18a2a351cb71616adcf54df1acd82f83cb9b5936935a4d20e2c23/"
-                    "click-threading-" version ".tar.gz"))
+             (uri (pypi-uri "click-threading" version))
              (sha256
               (base32
-               "18bcqikxwb3drb8rf60cclxkxw52521b38ax3byah6j8cn8y9p4j"))))
+               "0xs4bg2ws0zgyiplk312l049hi23c2zqf1g771rjhh5vr2msk4cg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -9117,13 +9217,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.1.8")
+    (version "0.2.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "14ikfjfgnzf21mjniq9lfk2igzykgzfvwwrk85nw2b9fq44109sp"))))
+               "1bjrfxji1yv4fj0g78ri2yfgn2wbivn8g69fxfinxvxpmighhshp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -9328,13 +9428,13 @@ processes across test runs.")
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "3.11.6")
+    (version "3.11.7")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "1ny9mbm9zgghl612b8wc4ap52bz3kgl486d7f307gxjmlqgz3i64"))))
+               "0ahf1i98wjizhld2qd7v2vmvzsmdw08mmins82bf3fpbnp2sxbgc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -13376,7 +13476,7 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://github.com/tgalal/python-axolotl-curve25519")
+             (url "https://github.com/tgalal/python-axolotl-curve25519")
              (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -13991,7 +14091,22 @@ parse many formal languages.")
          "1i9gik0xrj6jmi95s5w988jl1y265baz5xm5pbqdyvsh8h9ln6yq"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             ;; Disable python3 tests
+             (substitute* "check"
+               (("python3") "# python3"))
+             (zero? (system* "./check")))))))
+    (native-inputs
+     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
+       ("python2-pep8" ,python2-pep8)))
     (propagated-inputs
      `(("python2-pyaml" ,python2-pyaml)))
     (home-page "https://liw.fi/cliapp/")
@@ -14016,8 +14131,20 @@ iterating over input files.")
         (base32
          "0vivqbw7ddhsq1zj3g9cvvv4f0phl0pis2smsnwcr2szz2fk3hl6"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
+       ("python2-pep8" ,python2-pep8)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             (zero? (system* "make" "check")))))))
     (home-page "https://liw.fi/ttystatus/")
     (synopsis "Python library for showing progress reporting and
 status updates on terminals")
@@ -14064,12 +14191,26 @@ happens using the @code{logging} library.")
        (uri (string-append
              "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/larch/snapshot/larch-"
              version ".tar.gz"))
+       (patches (search-patches
+                 "python2-larch-coverage-4.0a6-compatibility.patch"))
        (sha256
         (base32
          "1p4knkkavlqymgciz2wbcnfrdgdbafhg14maplnk4vbw0q8xs663"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; check phase needs to be run before the build phase. If not,
+         ;; coverage-test-runner looks for tests for the built source files,
+         ;; and fails.
+         (delete 'check)
+         (add-before 'build 'check
+           (lambda _
+             (zero? (system* "make" "check")))))))
+    (native-inputs
+     `(("cmdtest" ,cmdtest)
+       ("python2-coverage-test-runner" ,python2-coverage-test-runner)))
     (propagated-inputs
      `(("python2-tracing" ,python2-tracing)))
     (home-page "https://liw.fi/larch/")
@@ -15916,6 +16057,51 @@ pure Python module.")
 (define-public python2-rencode
   (package-with-python2 python-rencode))
 
+(define-public python-xenon
+  (package
+    (name "python-xenon")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xenon" version))
+       (sha256
+        (base32
+         "14kby2y48vp3sgwxqlm5d5789yibqwb1qli5fwcmdqg3iayrbklc"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-radon" ,python-radon)
+       ("python-requests" ,python-requests)
+       ("python-flake8" ,python-flake8)
+       ("python-tox" ,python-tox)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-test-requirements
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Update requirements from dependency==version to
+             ;; dependency>=version.
+             (substitute* "requirements.txt"
+               (("==") ">=")
+               ((",<1.5.0") ""))
+             ;; Remove httpretty dependency for tests.
+             (substitute* "setup.py"
+               (("httpretty") ""))
+             #t)))))
+    (home-page "https://xenon.readthedocs.org/")
+    (synopsis "Monitor code metrics for Python on your CI server")
+    (description
+     "Xenon is a monitoring tool based on Radon.  It monitors code complexity.
+Ideally, @code{xenon} is run every time code is committed.  Through command
+line options, various thresholds can be set for the complexity of code.  It
+will fail (i.e.  it will exit with a non-zero exit code) when any of these
+requirements is not met.")
+    (license license:expat)))
+
+(define-public python2-xenon
+  (package-with-python2 python-xenon))
+
 (define-public python-flask-principal
   (package
     (name "python-flask-principal")
@@ -15965,3 +16151,47 @@ authentication for Flask routes.")
 
 (define-public python2-flask-httpauth
   (package-with-python2 python-flask-httpauth))
+
+(define-public python-pysocks
+  (package
+    (name "python-pysocks")
+    (version "1.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PySocks" version))
+       (sha256
+        (base32
+         "1krkiss578zqwcg4c8iqz1hwscwhsvy2djp3xyvps5gsgvr2j0yh"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/Anorov/PySocks")
+    (synopsis "SOCKS client module")
+    (description "@code{pysocks} is an updated and semi-actively maintained
+version of @code{SocksiPy} with bug fixes and extra features.")
+    (license license:bsd-3)))
+
+(define-public python2-pysocks
+  (package-with-python2 python-pysocks))
+
+(define-public python-pyaes
+  (package
+    (name "python-pyaes")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyaes" version))
+       (sha256
+        (base32
+         "0bp9bjqy1n6ij1zb86wz9lqa1dhla8qr1d7w2kxyn7jbj56sbmcw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ricmoo/pyaes")
+    (synopsis "Implementation of AES in Python")
+    (description "This package contains a pure-Python implementation of the
+AES block cipher algorithm and the common modes of operation (CBC, CFB, CTR,
+ECB and OFB).")
+    (license license:expat)))
+
+(define-public python2-pyaes
+  (package-with-python2 python-pyaes))

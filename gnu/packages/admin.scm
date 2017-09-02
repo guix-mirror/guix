@@ -1832,7 +1832,7 @@ the status of your battery in the system tray.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://github.com/TrilbyWhite/interrobang")
+                      (url "https://github.com/TrilbyWhite/interrobang")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256

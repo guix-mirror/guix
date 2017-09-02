@@ -279,7 +279,7 @@ latest DMD frontend and uses LLVM as backend.")
 (define-public dub
   (package
     (name "dub")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dlang/dub/archive/"
@@ -287,7 +287,7 @@ latest DMD frontend and uses LLVM as backend.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hpl5srbrzwzv8abc96j4cgbmvm1zhr109ljbl7hrphzzc39zyan"))))
+                "1p9pmzjsmd7v3jpilv0z0c8ar1ykvri6nn5fv95f8d2vriczj29m"))))
    (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)

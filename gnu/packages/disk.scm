@@ -344,7 +344,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://sourceforge.net/projects/gparted/")
+    (home-page "https://gparted.org/")
     (synopsis "Partition editor to graphically manage disk partitions")
     (description "GParted is a GNOME partition editor for creating,
 reorganizing, and deleting disk partitions.  It uses libparted from the parted

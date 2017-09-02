@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+# Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -631,7 +631,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcr-disable-failing-tests.patch		\
   %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gdk-pixbuf-list-dir.patch		\
-  %D%/packages/patches/gd-CVE-2017-7890.patch		\
   %D%/packages/patches/gd-fix-gd2-read-test.patch		\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
@@ -677,6 +676,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphicsmagick-CVE-2017-12935.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-13775.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-gnulib-lock.patch                   \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
@@ -804,9 +805,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
   %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-0663.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-7375.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-7376.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-9047+CVE-2017-9048.patch	\
+  %D%/packages/patches/libxml2-CVE-2017-9049+CVE-2017-9050.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
+  %D%/packages/patches/libzip-CVE-2017-12858.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
   %D%/packages/patches/lierolibre-is-free-software.patch	\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
@@ -839,9 +846,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
-  %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/metabat-fix-compilation.patch		\
-  %D%/packages/patches/metabat-fix-boost-issue.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
@@ -852,7 +857,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-shell-version.patch		\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
-  %D%/packages/patches/multiqc-fix-git-subprocess-error.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
@@ -957,6 +961,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-genshi-fix-tests-on-python-3.5.patch	\
   %D%/packages/patches/python-genshi-isstring-helper.patch	\
   %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
+  %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
@@ -971,18 +976,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
-  %D%/packages/patches/qemu-CVE-2017-7493.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8112.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8309.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8379.patch			\
-  %D%/packages/patches/qemu-CVE-2017-8380.patch			\
-  %D%/packages/patches/qemu-CVE-2017-9524.patch			\
-  %D%/packages/patches/qemu-CVE-2017-10664.patch		\
-  %D%/packages/patches/qemu-CVE-2017-10806.patch		\
-  %D%/packages/patches/qemu-CVE-2017-10911.patch		\
-  %D%/packages/patches/qemu-CVE-2017-11334.patch		\
-  %D%/packages/patches/qemu-CVE-2017-11434.patch		\
-  %D%/packages/patches/qemu-CVE-2017-12809.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
@@ -1001,6 +994,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
+  %D%/packages/patches/ruby-rubygems-2612-ruby24.patch		\
+  %D%/packages/patches/ruby-rubygems-2613-ruby24.patch		\
+  %D%/packages/patches/ruby-2.2.7-rubygems-2613-ruby22.patch	\
+  %D%/packages/patches/ruby-2.3.4-rubygems-2613-ruby23.patch	\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
@@ -1093,7 +1090,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
-  %D%/packages/patches/wxwidgets-fix-windowGTK.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\

@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -248,14 +248,14 @@ files) into @file{.grf} and/or @file{.nfo} files.")
 (define-public python-sge-pygame
   (package
     (name "python-sge-pygame")
-    (version "1.5")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sge-pygame" version))
        (sha256
         (base32
-         "0g0n722md6nfayiqzadwf0dh821hzqv0alp4by0vjfwr1xzv49mc"))))
+         "1rl3xjzh78sl0sq3xl8rl7cgp9v9v3h7s2pfwn7nj1vrmffzkcpd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygame" ,python-pygame)
@@ -276,7 +276,7 @@ possible, and it also makes the SGE easy to learn.")
 (define-public python-tmx
   (package
     (name "python-tmx")
-    (version "1.9.1")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -285,7 +285,7 @@ possible, and it also makes the SGE easy to learn.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1is107sx3lr09dqjiyn10xqhyv5x54c2ryhys9mb9j3mxjbm227l"))))
+         "073q0prg1nzlkga2b45vhscz374206qh4x68ccg00mxxwagn64z0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -353,7 +353,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -361,7 +361,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "134xi74xajh38rj1qhmc4x1zmncfdmqb01axnkxh6zs3qz0rxp93"))))
+                "1qj7l34y5zv2iazmwbix8wdpp88zv7fswbc4arqpp1wak2yna1ix"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)

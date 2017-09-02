@@ -377,8 +377,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
 
 (define %default-options
   ;; Alist of default option values.
-  `((max-silent-time . 3600)
-    (verbosity . 0)
+  `((verbosity . 0)
     (graft? . #t)
     (substitutes? . #t)))
 

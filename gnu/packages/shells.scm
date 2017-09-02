@@ -174,7 +174,7 @@ highlighting.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "git://github.com/rakitzis/rc.git")
+                    (url "https://github.com/rakitzis/rc.git")
                     ;; commit name 'release: rc-1.7.4'
                     (commit "c884da53a7c885d46ace2b92de78946855b18e92")))
               (sha256

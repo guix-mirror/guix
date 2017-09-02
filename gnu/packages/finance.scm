@@ -246,7 +246,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "2.7.12")
+    (version "2.9.3")
     (source
      (origin
        (method url-fetch)
@@ -255,7 +255,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0vxdfl208if7mdsnva1jg37bnay2dsz3ww157aqwcv1j6512fi1n"))
+         "0d0fzb653g7b8ka3x90nl21md4g3n1fv11czdxpdq3s9yr6js6f2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -264,7 +264,8 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-slowaes" ,python2-slowaes)
+     `(("python-pyaes" ,python2-pyaes)
+       ("python-pysocks" ,python2-pysocks)
        ("python-sip" ,python2-sip)
        ("python-pyqt" ,python2-pyqt-4)
        ("python-ecdsa" ,python2-ecdsa)

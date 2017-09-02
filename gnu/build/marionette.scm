@@ -168,16 +168,20 @@ QEMU monitor and to the guest's backdoor REPL."
 (define* (wait-for-file file marionette #:key (timeout 10))
   "Wait until FILE exists in MARIONETTE; 'read' its content and return it.  If
 FILE has not shown up after TIMEOUT seconds, raise an error."
-  (marionette-eval
-   `(let loop ((i ,timeout))
-      (cond ((file-exists? ,file)
-             (call-with-input-file ,file read))
-            ((> i 0)
-             (sleep 1)
-             (loop (- i 1)))
-            (else
-             (error "file didn't show up" ,file))))
-   marionette))
+  (match (marionette-eval
+          `(let loop ((i ,timeout))
+             (cond ((file-exists? ,file)
+                    (cons 'success (call-with-input-file ,file read)))
+                   ((> i 0)
+                    (sleep 1)
+                    (loop (- i 1)))
+                   (else
+                    'failure)))
+          marionette)
+    (('success . result)
+     result)
+    ('failure
+     (error "file didn't show up" file))))
 
 (define (marionette-control command marionette)
   "Run COMMAND in the QEMU monitor of MARIONETTE.  COMMAND is a string such as
@@ -257,8 +261,19 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
     (#\. . "dot")
     (#\, . "comma")
     (#\; . "semicolon")
+    (#\' . "apostrophe")
+    (#\" . "shift-apostrophe")
+    (#\` . "grave_accent")
     (#\bs . "backspace")
     (#\tab . "tab")))
+
+(define (character->keystroke chr keystrokes)
+  "Return the keystroke for CHR according to the keyboard layout defined by
+KEYSTROKES."
+  (if (char-set-contains? char-set:upper-case chr)
+      (string-append "shift-" (string (char-downcase chr)))
+      (or (assoc-ref keystrokes chr)
+          (string chr))))
 
 (define* (string->keystroke-commands str
                                      #:optional
@@ -268,9 +283,9 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
 to STR.  KEYSTROKES is an alist specifying a mapping from characters to
 keystrokes."
   (string-fold-right (lambda (chr result)
-                       (cons (string-append "sendkey "
-                                            (or (assoc-ref keystrokes chr)
-                                                (string chr)))
+                       (cons (string-append
+                              "sendkey "
+                              (character->keystroke chr keystrokes))
                              result))
                      '()
                      str))

@@ -49,21 +49,10 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define gd-for-php
-  (package
-    (inherit gd)
-    (source (origin
-             (inherit (package-source gd))
-             (patches 
-               (append
-                 (origin-patches (package-source gd))
-                 (search-patches "gd-CVE-2017-7890.patch")))))))
-
-
 (define-public php
   (package
     (name "php")
-    (version "7.1.8")
+    (version "7.1.9")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -71,7 +60,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1aramb6dm57pr2iz61id9vzfy7h5qkb6bf7dxhrwnjk0723qahw9"))
+                "130y50nawipd12nbs10661vzk8gvy7zsqcsxvj29mwaivm4a777c"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -293,7 +282,7 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd-for-php)
+       ("gd" ,gd-2.2.5)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,7 +180,9 @@ script.")
               (patches
                (search-patches "graphicsmagick-CVE-2017-12935.patch"
                                "graphicsmagick-CVE-2017-12936.patch"
-                               "graphicsmagick-CVE-2017-12937.patch"))))
+                               "graphicsmagick-CVE-2017-12937.patch"
+                               "graphicsmagick-CVE-2017-13775.patch"
+                               "graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

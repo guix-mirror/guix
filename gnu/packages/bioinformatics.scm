@@ -3475,7 +3475,7 @@ form of assemblies or reads.")
 (define-public metabat
   (package
     (name "metabat")
-    (version "2.11.2")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
@@ -3484,10 +3484,8 @@ form of assemblies or reads.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rws9r1ziv6way8cf49jg8bzj7x2131kfqkhj8byf0z5hnrq3bwv"))
-       (patches (search-patches "metabat-remove-compilation-date.patch"
-                                "metabat-fix-compilation.patch"
-                                "metabat-fix-boost-issue.patch"))))
+         "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
+       (patches (search-patches "metabat-fix-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4751,6 +4749,13 @@ simultaneously.")
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) "/setup:"
+                                    (getenv "PERL5LIB")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -5056,6 +5061,13 @@ sequence itself can be retrieved from these databases.")
                                  "/lib32")))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) "/setup:"
+                                    (getenv "PERL5LIB")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; The build system expects a directory containing the sources and
@@ -5654,18 +5666,17 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-3")
+    (version "2.4-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "15zcxfix2d854897k1lr0sfmj2n00339nlsppcr3zrb238lb2mi5"))))
+         "1n57dzv2aid6iqd9fkqik401sidqanhzsawyak94qbiyh6dbd1x9"))))
     (build-system r-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)
-       ("r-knitr" ,r-knitr)))
+     `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
        ("r-lattice" ,r-lattice)
@@ -6129,7 +6140,7 @@ track.  The database is exposed as a @code{TxDb} object.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
        (method url-fetch)
@@ -6139,7 +6150,7 @@ track.  The database is exposed as a @code{TxDb} object.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hc110ycqpa54nr6x173qg7190hk08qp7yz7zzqxlsypqnpc5zzp"))
+         "1d8a4gjwaqdv57krlr80x18mg5py1bbdiqs5m0jdn38filc9z40k"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -6433,13 +6444,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-bookdown
   (package
   (name "r-bookdown")
-  (version "0.4")
+  (version "0.5")
   (source (origin
             (method url-fetch)
             (uri (cran-uri "bookdown" version))
             (sha256
              (base32
-              "1fp1k7hivrb7s2dwgrsqy9s7xg6pk9hczhrc149y1dwh901j6qvv"))))
+              "0zm63kr4f4kja4qpwkzl119zzyciqj7ihajfqgfjpgb4dzaiycxp"))))
   (build-system r-build-system)
   (propagated-inputs
    `(("r-htmltools" ,r-htmltools)
@@ -7109,13 +7120,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "127690sys4i5q3l4vxnjg4xg8q19qlw2258vgs5d1156w9ypp04h"))))
+                "03ysxi9fdd3bcfj05iaysya9knn2aa2irwpypb5srg0xwv92bdb9"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
@@ -7990,7 +8001,7 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.1.1")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
@@ -7998,7 +8009,7 @@ paired-end data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hd0r66556bxbdd82ksjklq7nfli36l4k6y88ic7kkg9873wa1nw"))))
+                "19mk7vkbngmch54kzcxb52161ljfchhjsaanza8iwv5h98sjj66d"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)
@@ -8032,7 +8043,7 @@ paired-end data.")
 intuitive reports and publication-ready graphics.  This package provides the R
 library implementing most of the pipeline's features.")
     (home-page "https://github.com/BIMSBbioinfo/RCAS")
-    (license license:expat)))
+    (license license:artistic2.0)))
 
 (define-public rcas-web
   (package
@@ -8575,25 +8586,24 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "0.9")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "12gs1jw2jrxrij529rnl5kaqxfcqn15yzcsggxkfhdx634ml0cny"))
-       (patches (search-patches "multiqc-fix-git-subprocess-error.patch"))))
+         "032svgym67k2ds7wp0cxzv79gi30yrdl45zbqn74lni3dk04qm33"))))
     (build-system python-build-system)
-    (arguments
-     ;; Tests are to be introduced in the next version, see
-     ;; https://github.com/ewels/MultiQC/issues/376
-     `(#:tests? #f))
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
+       ("python-spectra" ,python-spectra)
+       ("python-requests" ,python-requests)
+       ("python-markdown" ,python-markdown)
+       ("python-lzstring" ,python-lzstring)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ;; MultQC checks for the presence of nose at runtime.
@@ -8830,14 +8840,14 @@ trait.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.16.2")
+    (version "1.16.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "0z5srzsfgsgi4bssr4chls4ry6d18y2g9143znqmraylppwrrqzr"))))
+         "1pmhsfvd45a44xdiml4zx3zd5fhygqyziqvygahkk9yibnyhv4cv"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/MALDIquant")

@@ -140,17 +140,19 @@ for system '~a'")
               directory))
         %load-path)))
 
-(define (fold-packages proc init)
-  "Call (PROC PACKAGE RESULT) for each available package, using INIT as
-the initial value of RESULT.  It is guaranteed to never traverse the
-same package twice."
+(define* (fold-packages proc init
+                        #:optional
+                        (modules (all-modules (%package-module-path))))
+  "Call (PROC PACKAGE RESULT) for each available package defined in one of
+MODULES, using INIT as the initial value of RESULT.  It is guaranteed to never
+traverse the same package twice."
   (fold-module-public-variables (lambda (object result)
                                   (if (and (package? object)
                                            (not (hidden-package? object)))
                                       (proc object result)
                                       result))
                                 init
-                                (all-modules (%package-module-path))))
+                                modules))
 
 (define find-packages-by-name
   (let ((packages (delay

@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -3646,7 +3646,9 @@ for application developers.")
                   (grl-plugin-path (getenv "GRL_PLUGIN_PATH")))
               (wrap-program (string-append out "/bin/totem")
                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))))
+                `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path)))
+              (wrap-program (string-append out "/bin/totem-video-thumbnailer")
+                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
             #t)))))
     (home-page "https://wiki.gnome.org/Apps/Videos")
     (synopsis "Simple media player for GNOME based on GStreamer")
@@ -5848,6 +5850,8 @@ associations for GNOME.")
        ("gnome-system-monitor"      ,gnome-system-monitor)
        ("gnome-terminal"            ,gnome-terminal)
        ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("gst-plugins-base"          ,gst-plugins-base)
+       ("gst-plugins-good"          ,gst-plugins-good)
        ("gucharmap"                 ,gucharmap)
        ("gvfs"                      ,gvfs)
        ("hicolor-icon-theme"        ,hicolor-icon-theme)
@@ -5878,7 +5882,7 @@ documents and diagrams, playing media, scanning, and much more.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "git://git.gnome.org/byzanz")
+                      (url "https://git.gnome.org/browse/byzanz")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256

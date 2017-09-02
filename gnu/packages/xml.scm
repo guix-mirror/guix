@@ -16,6 +16,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
+;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,6 +111,7 @@ hierarchical form with variable field lengths.")
   (package
     (name "libxml2")
     (version "2.9.4")
+    (replacement libxml2/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
@@ -137,6 +139,20 @@ hierarchical form with variable field lengths.")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define libxml2/fixed
+  (package
+    (inherit libxml2)
+    (source
+     (origin
+       (inherit (package-source libxml2))
+       (patches
+        (append (origin-patches (package-source libxml2))
+        (search-patches "libxml2-CVE-2017-0663.patch"
+                        "libxml2-CVE-2017-7375.patch"
+                        "libxml2-CVE-2017-7376.patch"
+                        "libxml2-CVE-2017-9047+CVE-2017-9048.patch"
+                        "libxml2-CVE-2017-9049+CVE-2017-9050.patch")))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
@@ -227,18 +243,29 @@ the @code{Graph} class and write it out in a specific file format.")
 (define-public perl-xml-atom
   (package
     (name "perl-xml-atom")
-    (version "0.41")
+    (version "0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                                   "XML-Atom-" version ".tar.gz"))
               (sha256
                (base32
-                "17lnkb9ymrhk2z642bhj5i2bv3q1da3kpp2lvsl0yhqshk3wdjj8"))))
+                "1wa8kfy1w4mg7kzxim4whyprkn48a2il6fap0b947zywknw4c6y6"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-perl-search-path
+           (lambda _
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (native-inputs
      `(("perl-datetime" ,perl-datetime)
        ;; TODO package: perl-datetime-format-atom
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-module-install" ,perl-module-install)
        ("perl-xml-xpath" ,perl-xml-xpath)))
     (inputs

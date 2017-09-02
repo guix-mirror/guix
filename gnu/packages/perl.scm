@@ -1295,7 +1295,7 @@ and writing of @code{.ini}-style configuration files.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JR/JROCKWAY/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Context-Preserve-" version ".tar.gz"))
        (sha256
         (base32
@@ -3514,7 +3514,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
 consume exports.  It is feature-compatible with Exporter, plus some much needed
 extras.  You can use this to import symbols from any exporter that follows
 Exporters specification.  The exporter modules themselves do not need to use or
-inherit from the Exporter module, they just need to set @EXPORT and/or other
+inherit from the Exporter module, they just need to set @@EXPORT and/or other
 variables.")
     (license (package-license perl))))
 
@@ -8165,6 +8165,16 @@ common serialisation formats such as JSON or CBOR.")
         (base32
          "1lq4p3mqqljhhy8wyiyahris33j4m5qfzpi6iacmcqjzw5g4afbm"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (propagated-inputs
      `(("perl-unicode-normalize" ,perl-unicode-normalize)))
     (home-page "http://search.cpan.org/dist/Unicode-Collate")

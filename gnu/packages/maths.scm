@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
@@ -149,14 +149,14 @@ interactive dialogs to guide them.")
 (define-public coda
   (package
     (name "coda")
-    (version "2.18")
+    (version "2.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/stcorp/coda/releases/download/"
                            version "/coda-" version ".tar.gz"))
        (sha256
-        (base32 "11asla1ap8vd73farqjlpb179sfiy0biydcwxjfcakrp9sf8v9bs"))
+        (base32 "01fnqcby9jijvf3jxr1fk4bny059lvvq5wbqm7ns60ilykfdnm6a"))
        (patches (search-patches "coda-use-system-libs.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -605,7 +605,18 @@ computations.")
                (("@HDF_BUILD_SHARED_TRUE@AM_LDFLAGS = \
 -R\\$\\(abs_top_builddir\\)/mfhdf/libsrc/\\.libs \
 -R\\$\\(abs_top_builddir\\)/hdf/src/\\.libs \\$\\(XDR_ADD\\)") ""))
-             #t)))))
+             #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libhdf4.settings contains the full path of the
+             ;; compilers used, and its contents are included in
+             ;; .so-files.  We truncate the hashes to avoid
+             ;; unnecessary store references to those compilers:
+             (substitute* "libhdf4.settings"
+               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+                (string-append prefix (string-take hash 10) "...")))
+             #t))
+         )))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
@@ -648,16 +659,40 @@ incompatible with HDF5.")
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (outputs '("out"       ; core library
+               "fortran")) ; fortran interface
     (arguments
      `(;; Some of the users, notably Flann, need the C++ interface.
-       #:configure-flags '("--enable-cxx")
+       #:configure-flags '("--enable-cxx"
+                           "--enable-fortran"
+                           "--enable-fortran2003")
 
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "configure"
                (("/bin/mv") "mv"))
+             (substitute* "fortran/src/Makefile.in"
+               (("libhdf5_fortran_la_LDFLAGS =")
+                (string-append "libhdf5_fortran_la_LDFLAGS = -Wl-rpath="
+                               (assoc-ref outputs "fortran") "/lib")))
+             (substitute* "hl/fortran/src/Makefile.in"
+               (("libhdf5hl_fortran_la_LDFLAGS =")
+                (string-append "libhdf5hl_fortran_la_LDFLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "fortran") "/lib")))
+             #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libhdf5.settings contains the full path of the
+             ;; compilers used, and its contents are included in
+             ;; libhdf5.so.  We truncate the hashes to avoid
+             ;; unnecessary store references to those compilers:
+             (substitute* "src/libhdf5.settings"
+              (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+               (string-append prefix (string-take hash 10) "...")))
              #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -666,7 +701,40 @@ incompatible with HDF5.")
                (substitute* (find-files bin "h5p?cc")
                  (("-lz" lib)
                   (string-append "-L" zlib "/lib " lib)))
-               #t))))))
+               #t)))
+         (add-after 'install 'split
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; Move all fortran-related files
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (lib (string-append out "/lib"))
+                     (inc (string-append out "/include"))
+                     (ex (string-append out "/share/hdf5_examples/fortran"))
+                     (fort (assoc-ref outputs "fortran"))
+                     (fbin (string-append fort "/bin"))
+                     (flib (string-append fort "/lib"))
+                     (finc (string-append fort "/include"))
+                     (fex (string-append fort "/share/hdf5_examples/fortran")))
+                (mkdir-p fbin)
+                (mkdir-p flib)
+                (mkdir-p finc)
+                (mkdir-p fex)
+                (rename-file (string-append bin "/h5fc")
+                             (string-append fbin "/h5fc"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append flib "/" (basename file))))
+                          (find-files lib ".*fortran.*"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append finc "/" (basename file))))
+                          (find-files inc ".*mod"))
+                (for-each (lambda (file)
+                            (rename-file file
+                                         (string-append fex "/" (basename file))))
+                          (find-files ex ".*"))
+                (delete-file-recursively ex))
+              #t)))))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
@@ -850,6 +918,29 @@ similar to MATLAB, GNU Octave or SciPy.")
        ("libjpeg" ,libjpeg)))
     (arguments
      `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
+
+       #:phases (modify-phases %standard-phases
+         (add-before 'configure 'fix-source-date
+           (lambda _
+             ;; As we ${SOURCE_DATE_EPOCH} evaluates to "1" in the build
+             ;; environment, `date -u -d ${SOURCE_DATE_EPOCH}` will evaluate
+             ;; to '1st hour of the current day', and therefore makes the
+             ;; package not reproducible.
+             (substitute* "./configure"
+               (("date -u -d \"\\$\\{SOURCE_DATE_EPOCH\\}\"")
+                "date --date='@0'"))
+             #t))
+         (add-after 'configure 'patch-settings
+           (lambda _
+             ;; libnetcdf.settings contains the full filename of the compilers
+             ;; used to build the library.  We truncate the hashes of those
+             ;; filenames to avoid unnecessary references to the corresponding
+             ;; store items.
+             (substitute* "libnetcdf.settings"
+               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
+                (string-append prefix (string-take hash 10) "...")))
+             #t)))
+
        #:parallel-tests? #f))           ;various race conditions
     (home-page "http://www.unidata.ucar.edu/software/netcdf/")
     (synopsis "Library for scientific data")
@@ -1946,6 +2037,55 @@ bio-chemistry.")
     ;; See LICENSE_en.txt
     (license license:cecill-c)))
 
+(define-public scotch32
+  ;; This is the 'INTSIZE32' variant, which uses 32-bit integers, as needed by
+  ;; some applications.
+  (package (inherit scotch)
+    (name "scotch32")
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-phases)
+        `(modify-phases ,scotch-phases
+          (replace
+           'configure
+           (lambda _
+             (call-with-output-file "Makefile.inc"
+               (lambda (port)
+                 (format port "
+EXE =
+LIB = .a
+OBJ = .o
+MAKE = make
+AR = ar
+ARFLAGS = -ruv
+CAT = cat
+CCS = gcc
+CCP = mpicc
+CCD = gcc
+CPPFLAGS =~{ -D~a~}
+CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
+LDFLAGS = -lz -lm -lrt -lpthread
+CP = cp
+LEX = flex -Pscotchyy -olex.yy.c
+LN = ln
+MKDIR = mkdir
+MV = mv
+RANLIB = ranlib
+YACC = bison -pscotchyy -y -b y
+"
+                        '("COMMON_FILE_COMPRESS_GZ"
+                          "COMMON_PTHREAD"
+                          "COMMON_RANDOM_FIXED_SEED"
+                          "INTSIZE32"   ;use 32-bit integers.  See INSTALL.txt
+                          ;; Prevents symbolc clashes with libesmumps
+                          "SCOTCH_RENAME"
+                          ;; XXX: Causes invalid frees in superlu-dist tests
+                          ;; "SCOTCH_PTHREAD"
+                          ;; "SCOTCH_PTHREAD_NUMBER=2"
+                          "restrict=__restrict"))))))))))
+    (synopsis
+     "Programs and libraries for graph algorithms (32-bit integers)")))
+
 (define-public pt-scotch
   (package (inherit scotch)
     (name "pt-scotch")
@@ -1968,6 +2108,29 @@ bio-chemistry.")
             'check
             (lambda _ (zero? (system* "make" "ptcheck"))))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
+
+(define-public pt-scotch32
+  (package (inherit scotch32)
+    (name "pt-scotch32")
+    (propagated-inputs
+     `(("openmpi" ,openmpi)))                     ;headers include MPI headers
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-phases)
+        `(modify-phases ,scotch-phases
+           (replace 'build
+             (lambda _
+               (and
+                (zero? (system* "make"
+                                (format #f "-j~a" (parallel-job-count))
+                                "ptscotch" "ptesmumps"))
+                ;; Install the serial metis compatibility library
+                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+           (replace 'check
+             (lambda _
+               (zero? (system* "make" "ptcheck"))))))))
+    (synopsis
+     "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
 
 (define-public metis
   (package
