@@ -192,6 +192,7 @@ made available under the /xchg CIFS share."
                         os-drv
                         bootcfg-drv
                         bootloader
+                        register-closures?
                         (inputs '()))
   "Return a bootable, stand-alone iso9660 image.
 
@@ -207,8 +208,13 @@ INPUTS is a list of inputs (as for packages)."
          (let ((inputs
                 '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
                            (map canonical-package
-                                (list sed grep coreutils findutils gawk))))
+                                (list sed grep coreutils findutils gawk))
+                           (if register-closures? (list guix) '())))
 
+
+               (graphs     '#$(match inputs
+                                   (((names . _) ...)
+                                    names)))
                ;; This variable is unused but allows us to add INPUTS-TO-COPY
                ;; as inputs.
                (to-register
@@ -222,6 +228,8 @@ INPUTS is a list of inputs (as for packages)."
                                #$bootcfg-drv
                                #$os-drv
                                "/xchg/guixsd.iso"
+                               #:register-closures? #$register-closures?
+                               #:closures graphs
                                #:volume-id #$file-system-label
                                #:volume-uuid #$file-system-uuid)
            (reboot))))
