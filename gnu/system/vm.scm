@@ -399,6 +399,7 @@ to USB sticks meant to be read-only."
                          #:file-system-label root-label
                          #:file-system-uuid #f
                          #:os-drv os-drv
+                         #:register-closures? #t
                          #:bootcfg-drv bootcfg
                          #:bootloader (bootloader-configuration-bootloader
                                         (operating-system-bootloader os))
