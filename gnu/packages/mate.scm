@@ -133,14 +133,13 @@ desktop and the mate-about program.")
                 "0z6vfh42fv9rqjrraqfpf6h9nd9h662bxy3l3r48j19xvxrwmx3a"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     '(#:configure-flags
        (list (string-append "--with-zoneinfo-dir="
                             (assoc-ref %build-inputs "tzdata")
                             "/share/zoneinfo"))
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
+         (add-before 'check 'fix-tzdata-location
           (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "data/check-timezones.sh"
               (("/usr/share/zoneinfo/zone.tab")
@@ -150,11 +149,10 @@ desktop and the mate-about program.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
+       ("dconf" ,dconf)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("dconf" ,dconf)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+)
+     `(("gtk+" ,gtk+)
        ("tzdata" ,tzdata)))
     (propagated-inputs
       ;; both of these are requires.private in mateweather.pc
