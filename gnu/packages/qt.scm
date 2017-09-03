@@ -389,7 +389,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                 #t))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("mesa" ,mesa)))
+     `(("mesa" ,mesa)
+       ("which" ,(@ (gnu packages base) which))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -440,8 +441,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
-       ("ruby" ,ruby)
-       ("which" ,(@ (gnu packages base) which))))
+       ("ruby" ,ruby)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -505,10 +505,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                              '("-no-sse2"))
                        "-no-mips_dsp"
                        "-no-mips_dspr2")))))
-         (add-after 'install 'patch-qt_config.prf
+         (add-after 'install 'patch-mkspecs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (mkspecs (string-append out "/lib/qt5/mkspecs"))
+                    (archdata (string-append out "/lib/qt5"))
+                    (mkspecs (string-append archdata "/mkspecs"))
                     (qt_config.prf (string-append
                                     mkspecs "/features/qt_config.prf")))
                ;; For each Qt module, let `qmake' uses search paths in the
@@ -522,6 +523,20 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                   "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
                  (("\\$\\$\\[QT_INSTALL_BINS\\]")
                   "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
+
+               ;; Searches Qt tools in the current PATH instead of QT_HOST_BINS.
+               (substitute* (string-append mkspecs "/features/qt_functions.prf")
+                 (("cmd = \\$\\$\\[QT_HOST_BINS\\]/\\$\\$2")
+                  "cmd = $$system(which $${2}.pl 2>/dev/null || which $${2})"))
+
+               ;; Resolve qmake spec files within qtbase by absolute paths.
+               (substitute*
+                   (map (lambda (file)
+                          (string-append mkspecs "/features/" file))
+                        '("device_config.prf" "moc.prf" "qt_build_config.prf"
+                          "qt_config.prf" "winrt/package_manifest.prf"))
+                 (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
+                 (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
                #t))))))
     (native-search-paths
      (list (search-path-specification
@@ -567,26 +582,51 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Valid QT_BUILD_PARTS variables are:
-               ;; libs tools tests examples demos docs translations
-               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"
-                               (string-append "PREFIX=" out))))))
-         (add-before 'install 'fix-Makefiles
+         (add-before 'configure 'configure-qmake
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out    (assoc-ref outputs "out"))
-                   (qtbase (assoc-ref inputs "qtbase")))
-               (substitute* (find-files "." "Makefile")
-                            (((string-append "INSTALL_ROOT)" qtbase))
-                             (string-append "INSTALL_ROOT)" out)))
+             (let* ((out (assoc-ref outputs "out"))
+                    (qtbase (assoc-ref inputs "qtbase"))
+                    (tmpdir (string-append (getenv "TMPDIR")))
+                    (qmake (string-append tmpdir "/qmake"))
+                    (qt.conf (string-append tmpdir "/qt.conf")))
+               ;; Use qmake with a customized qt.conf to override install
+               ;; paths to $out.
+               (symlink (which "qmake") qmake)
+               (setenv "PATH" (string-append tmpdir ":" (getenv "PATH")))
+               (with-output-to-file qt.conf
+                 (lambda ()
+                   (format #t "[Paths]
+Prefix=~a
+ArchData=lib/qt5
+Data=share/qt5
+Documentation=share/doc/qt5
+Headers=include/qt5
+Libraries=lib
+LibraryExecutables=lib/qt5/libexec
+Binaries=bin
+Tests=tests
+Plugins=lib/qt5/plugins
+Imports=lib/qt5/imports
+Qml2Imports=lib/qt5/qml
+Translations=share/qt5/translations
+Settings=etc/xdg
+Examples=share/doc/qt5/examples
+HostPrefix=~a
+HostData=lib/qt5
+HostBinaries=bin
+HostLibraries=lib
+" out out)))
                #t)))
-            (add-before 'check 'set-display
-              (lambda _
-                ;; make Qt render "offscreen", required for tests
-                (setenv "QT_QPA_PLATFORM" "offscreen")
-                #t)))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Valid QT_BUILD_PARTS variables are:
+             ;; libs tools tests examples demos docs translations
+             (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"))))
+         (add-before 'check 'set-display
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (synopsis "Qt module for displaying SVGs")
     (description "The QtSvg module provides classes for displaying the
  contents of SVG files.")))
