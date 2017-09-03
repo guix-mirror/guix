@@ -131,7 +131,7 @@ store in '.el' files."
          (target-directory (string-append out %install-suffix "/" elpa-name-ver))
          (files-to-install (find-files source install-file?)))
     (cond
-     (files-to-install
+     ((not (null? files-to-install))
       (for-each
        (lambda (file)
          (let* ((stripped-file (string-drop file (string-length source)))
