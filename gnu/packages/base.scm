@@ -542,7 +542,8 @@ store.")
    ;; users should automatically pull Linux headers as well.
    (propagated-inputs `(("kernel-headers" ,linux-libre-headers)))
 
-   (outputs '("out" "debug"))
+   (outputs '("out" "debug"
+              "static"))                          ;9 MiB of .a files
 
    (arguments
     `(#:out-of-source? #t
@@ -552,6 +553,11 @@ store.")
       ;; these libraries are always going to be found anyway, just skip
       ;; RUNPATH checks.
       #:validate-runpath? #f
+
+      #:modules ((ice-9 ftw)
+                 (srfi srfi-26)
+                 (guix build utils)
+                 (guix build gnu-build-system))
 
       #:configure-flags
       (list "--enable-add-ons"
@@ -657,7 +663,46 @@ store.")
                          ;; "bilingual" eval/exec magic at the top of the file.
                          "")
                         (("exec @PERL@")
-                         "exec perl"))))))))
+                         "exec perl")))))
+
+                 (add-after 'install 'move-static-libs
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Move static libraries to the "static" output.
+                     (define (static-library? file)
+                       ;; Return true if FILE is a static library.  The
+                       ;; "_nonshared.a" files are referred to by libc.so,
+                       ;; libpthread.so, etc., which are in fact linker
+                       ;; scripts.
+                       (and (string-suffix? ".a" file)
+                            (not (string-contains file "_nonshared"))))
+
+                     (define (linker-script? file)
+                       ;; Guess whether FILE, a ".a" file, is actually a
+                       ;; linker script.
+                       (and (not (ar-file? file))
+                            (not (elf-file? file))))
+
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (lib    (string-append out "/lib"))
+                            (files  (scandir lib static-library?))
+                            (static (assoc-ref outputs "static"))
+                            (slib   (string-append static "/lib")))
+                       (mkdir-p slib)
+                       (for-each (lambda (base)
+                                   (rename-file (string-append lib "/" base)
+                                                (string-append slib "/" base)))
+                                 files)
+
+                       ;; Usually libm.a is a linker script so we need to
+                       ;; change the file names in there to refer to STATIC
+                       ;; instead of OUT.
+                       (for-each (lambda (ld-script)
+                                   (substitute* ld-script
+                                     ((out) static)))
+                                 (filter linker-script?
+                                         (map (cut string-append slib "/" <>)
+                                              files)))
+                       #t))))))
 
    (inputs `(("static-bash" ,static-bash)))
 

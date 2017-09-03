@@ -248,6 +248,7 @@ target that libc."
                    ,@inputs)))
             (libc
              `(("libc" ,libc)
+               ("libc:static" ,libc "static")
                ("xkernel-headers"                ;the target headers
                 ,@(assoc-ref (package-propagated-inputs libc)
                              "kernel-headers"))

@@ -583,12 +583,24 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
-         (bash (package (inherit static-bash)
+         (bash (package
+                 (inherit static-bash)
                  (arguments
-                  `(#:guile ,%bootstrap-guile
-                    ,@(package-arguments static-bash)))))
+                  (substitute-keyword-arguments
+                      (package-arguments static-bash)
+                    ((#:guile _ #f)
+                     '%bootstrap-guile)
+                    ((#:configure-flags flags '())
+                     ;; Add a '-L' flag so that the pseudo-cross-ld of
+                     ;; BINUTILS-BOOT0 can find libc.a.
+                     `(append ,flags
+                              (list (string-append "LDFLAGS=-static -L"
+                                                   (assoc-ref %build-inputs
+                                                              "libc:static")
+                                                   "/lib"))))))))
          (inputs `(("gcc" ,gcc)
                    ("libc" ,glibc-final-with-bootstrap-bash)
+                   ("libc:static" ,glibc-final-with-bootstrap-bash "static")
                    ,@(fold alist-delete %boot1-inputs
                            '("gcc" "libc")))))
     (package-with-bootstrap-guile
@@ -663,6 +675,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define %boot2-inputs
   ;; 3rd stage inputs.
   `(("libc" ,glibc-final)
+    ("libc:static" ,glibc-final "static")
     ("gcc" ,gcc-boot0-wrapped)
     ,@(fold alist-delete %boot1-inputs '("libc" "gcc"))))
 
@@ -923,12 +936,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
       ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final)
+      ("libc:static" ,glibc-final "static")
       ("locales" ,glibc-utf8-locales-final))))
 
 (define-public canonical-package
   (let ((name->package (fold (lambda (input result)
                                (match input
-                                 ((_ package)
+                                 ((_ package . outputs)
                                   (vhash-cons (package-full-name package)
                                               package result))))
                              vlist-null
