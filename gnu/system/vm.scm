@@ -403,10 +403,7 @@ to USB sticks meant to be read-only."
                                     (operating-system-bootloader os))
                       #:disk-image-size disk-image-size
                       #:disk-image-format "raw"
-                      #:file-system-type (if (string=? "iso9660"
-                                                       file-system-type)
-                                             "ext4"
-                                             file-system-type)
+                      #:file-system-type file-system-type
                       #:file-system-label root-label
                       #:copy-inputs? #t
                       #:register-closures? #t
