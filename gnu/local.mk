@@ -559,7 +559,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
   %D%/packages/patches/cool-retro-term-remove-non-free-fonts.patch	\
-  %D%/packages/patches/coreutils-cut-huge-range-test.patch	\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
