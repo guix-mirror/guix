@@ -374,6 +374,7 @@ GRUB configuration and OS-DRV as the stuff in it."
         (target-store  (string-append "/tmp/root" (%store-directory))))
     (mkdir-p "/tmp/root/var/run")
     (mkdir-p "/tmp/root/run")
+    (mkdir-p "/tmp/root/mnt")
 
     (mkdir-p target-store)
     (mount (%store-directory) target-store "" MS_BIND)
@@ -393,6 +394,10 @@ GRUB configuration and OS-DRV as the stuff in it."
                             ,(string-append "gnu/store=" os-drv "/..")
                             "var=/tmp/root/var"
                             "run=/tmp/root/run"
+                            ;; /mnt is used as part of the installation
+                            ;; process, as the mount point for the target
+                            ;; filesystem, so create it.
+                            "mnt=/tmp/root/mnt"
                             "--"
                             ;; Store two copies of the headers.
                             ;; The resulting ISO-9660 image has a DOS MBR and
