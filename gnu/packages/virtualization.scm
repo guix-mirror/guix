@@ -443,13 +443,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "3.4.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "04dma3979171p9yf0cg7m03shk038hc9vyfm9lb8z60qyn0pg9xg"))))
+                "0vy0ai8z88yhzqfk1n08z1gda5flrqxcw9lg1012b3zg125qljhy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
