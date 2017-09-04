@@ -5551,7 +5551,7 @@ It supports dired buffers and opens them in tree mode at destination.")
     (synopsis "Quickly generate linear ranges in Emacs")
     (description
      "The main command of the @code{tiny} extension for Emacs is @code{tiny-expand}.
-It iss meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
+It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
   (license license:gpl3+)))
