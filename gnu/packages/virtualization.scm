@@ -426,7 +426,7 @@ to integrate other virtualization mechanisms if needed.")
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
        ("vala" ,vala)))
-    (home-page "http://libvirt.org")
+    (home-page "https://libvirt.org")
     (synopsis "GLib wrapper around libvirt")
     (description "libvirt-glib wraps the libvirt library to provide a
 high-level object-oriented API better suited for glib-based applications, via
@@ -469,7 +469,7 @@ three libraries:
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-nose" ,python-nose)))
-    (home-page "http://libvirt.org")
+    (home-page "https://libvirt.org")
     (synopsis "Python bindings to libvirt")
     (description "This package provides Python bindings to the libvirt
 virtualization library.")
