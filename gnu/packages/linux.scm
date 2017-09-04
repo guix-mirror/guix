@@ -3126,6 +3126,8 @@ write access to exFAT devices.")
                     (lambda _
                       ;; The tarball was not generated with 'make dist' so we
                       ;; need to bootstrap things ourselves.
+                      (substitute* "autogen.sh"
+                        (("/bin/sh") (which "sh")))
                       (and (zero? (system* "./autogen.sh"))
                            (begin
                              (patch-makefile-SHELL "Makefile.include.in")
