@@ -46,6 +46,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -776,7 +777,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                    (("spectrum") "#"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
-       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"
+                                 (string-append "QMAKE_LFLAGS_RPATH=-Wl,-rpath," out "/lib -Wl,-rpath,")
+                                 (string-append "PREFIX=" out))))))))
+       ((#:tests? _ #f) #f)))           ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -786,7 +795,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("alsa-lib" ,alsa-lib)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)
+       ;; Gstreamer is needed for the mediaplayer plugin
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))))
 
 (define-public qtwayland
   (package (inherit qtsvg)
