@@ -1273,7 +1273,7 @@ single buffer.")
          ;; Build server side using 'gnu-build-system'.
          (add-after 'unpack 'enter-server-dir
            (lambda _ (chdir "server") #t))
-         (add-before 'configure 'autogen
+         (add-after 'enter-server-dir 'autogen
            (lambda _
              (zero? (system* "bash" "autogen.sh"))))
 
@@ -1367,7 +1367,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1375,7 +1375,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0bffxlaq4w9yijl9prnfm26fisr2rd1whjg1yzvri1zl6zh9s0lk"))))
+                "0mjb2yb454389ds2kr5rkjkl21r78z4c0f88ivf4g471yzg279mc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2624,6 +2624,27 @@ dark background.")
 The goal of this game is to create a tile with value 2048.  The size of the
 board and goal value can be customized.")
   (license license:gpl3+)))
+
+(define-public emacs-base16-theme
+  (package
+    (name "emacs-base16-theme")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/base16-theme-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0z6hrwz2jlz6jbr381rcqcqvx6hss5cad352klx07rark7zccacj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/belak/base16-emacs")
+    (synopsis "Base16 color themes for Emacs")
+    (description
+     "Base16 provides carefully chosen syntax highlighting and a default set
+of sixteen colors suitable for a wide range of applications.  Base16 is not a
+single theme but a set of guidelines with numerous implementations.")
+    (license license:expat)))
 
 (define-public emacs-smartparens
   (package
@@ -5447,3 +5468,60 @@ key.  Optionally, a mouse pop-up can be added by binding
 version of Idris, and some features may rely on the latest Git version of
 Idris.")
     (license license:gpl3+)))
+
+(define-public emacs-browse-at-remote
+  (let ((commit "b5cff7971ca8bbb966e3acd9b7e5c4c007f94215")
+        (revision "1"))
+    (package
+      (name "emacs-browse-at-remote")
+      (version (string-append "0.9.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rmuslimov/browse-at-remote.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "16ms9703m15dfxg6ap4mdw7msf8z5rzsdhba51dwivfpjxg7n52c"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)))
+      (native-inputs
+       `(("ert-runner" ,ert-runner)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'check
+             (lambda _
+               (zero? (system* "ert-runner")))))))
+      (home-page "https://github.com/rmuslimov/browse-at-remote")
+      (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
+      (description
+       "This Emacs package allows you to open a target page on
+github/gitlab (or bitbucket) by calling @code{browse-at-remote} command.
+It supports dired buffers and opens them in tree mode at destination.")
+      (license license:gpl3+))))
+
+(define-public emacs-tiny
+  (package
+    (name "emacs-tiny")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/tiny-" version ".tar"))
+       (sha256
+        (base32
+         "1nhg8375qdn457wj0xmfaj72s87xbabk2w1nl6q7rjvwxv08yyn7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/tiny")
+    (synopsis "Quickly generate linear ranges in Emacs")
+    (description
+     "The main command of the @code{tiny} extension for Emacs is @code{tiny-expand}.
+It iss meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
+proficiency is an advantage, since you can transform your numeric range with
+an elisp expression.")
+  (license license:gpl3+)))

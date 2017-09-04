@@ -143,7 +143,7 @@
          (add-before 'configure 'set-erl-top
            (lambda _
              (setenv "ERL_TOP" (getcwd))))
-         (add-before 'configure 'autoconf
+         (add-after 'patch-source-env 'autoconf
            (lambda _ (zero? (system* "./otp_build" "autoconf"))))
          (add-after 'install 'patch-erl
            ;; This only works after install.

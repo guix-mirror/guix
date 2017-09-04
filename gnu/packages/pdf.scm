@@ -254,7 +254,7 @@ Poppler PDF rendering library.")
                            (assoc-ref %build-inputs "libpng")))
       #:phases
       (modify-phases %standard-phases
-        (add-before 'configure 'autogen
+        (add-after 'unpack 'autogen
           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
    (inputs
     `(("zlib" ,zlib)

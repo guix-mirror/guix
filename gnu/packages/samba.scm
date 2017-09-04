@@ -71,7 +71,7 @@
      `(#:phases
        (modify-phases %standard-phases
          ;; The 6.7 tarball is missing ‘install.sh’. Create it.
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-i"))))
          (add-before 'configure 'set-root-sbin

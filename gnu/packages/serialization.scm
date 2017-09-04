@@ -127,7 +127,7 @@ such as compact binary encodings, XML, or JSON.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
+         (add-after 'unpack 'autoconf
            (lambda _
              (system* "autoreconf" "-vfi"))))))
     (home-page "http://www.msgpack.org")

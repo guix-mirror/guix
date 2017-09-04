@@ -114,7 +114,7 @@ in compression.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "contrib/minizip") #t))
-         (add-before 'configure 'autoreconf
+         (add-after 'enter-source 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
@@ -976,7 +976,7 @@ respectively, based on the reference implementation from Google.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
            (lambda _ (chdir "xdelta3")))
-         (add-before 'configure 'autoconf
+         (add-after 'enter-build-directory 'autoconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://xdelta.com")
     (synopsis "Delta encoder for binary files")

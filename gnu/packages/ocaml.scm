@@ -1631,9 +1631,9 @@ lets the client choose the concrete timeline.")
                  #:make-flags (list "OCAMLFIND_LDCONF=ignore")
                  #:phases
                  (modify-phases %standard-phases
-                   (add-before 'configure 'bootstrap
+                   (add-after 'unpack 'bootstrap
                      (lambda* (#:key #:allow-other-keys)
-                       (system* "./bootstrap")
+                       (system* "sh" "bootstrap")
                        (substitute* "src/OCamlMakefile"
                          (("/bin/sh") (which "bash")))
                        (substitute* "configure"

@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12.10")
-(define %linux-libre-hash "06rnmz7jrj4asmarq3f77lzmyk8w6k71qr2rhcvm087g1mxlaahj")
+(define %linux-libre-version "4.13")
+(define %linux-libre-hash "07mxcya7ml1v34pbg4mjh1sq80r3b4dsxbcs41fm50jnhq7p1w4v")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,14 +377,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.46"
-                    "1wx7lrd3xlcdwdfy23gflklqqq0qlps36r5fm2z5d656xgwb149k"
+  (make-linux-libre "4.9.47"
+                    "0gkmznb168m90zhyn9xg9420k64ba7bmyg70gazfr80y47w6jpdw"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.85"
-                    "1ahcgz2531c0zmyyw54w5z2fzwlqqn68hl7dyy4hxdns4yx3irmz"
+  (make-linux-libre "4.4.86"
+                    "0zm283262k63c5sa3l2lg8lqdjmgzym60qf3kvfva21xqswzcpas"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1212,14 +1212,14 @@ messages and are accompanied by a set of manpages.")
       (name "net-tools")
       (version (string-append "1.60-" revision "." (string-take commit 7)))
       (source (origin
-               (method git-fetch)
-               (uri (git-reference
-                      (url "https://git.code.sf.net/p/net-tools/code")
-                      (commit commit)))
-               (file-name (string-append name "-" version "-checkout"))
+               (method url-fetch)
+               (uri (string-append "https://sourceforge.net/code-snapshots/git/"
+                                   "n/ne/net-tools/code.git/net-tools-code-"
+                                   commit ".zip"))
+               (file-name (string-append name "-" version ".zip"))
                (sha256
                 (base32
-                 "189mdjfbd7j7j0jysy34nqn5byy9g5f6ylip1sikk7kz08vjml4s"))))
+                 "0hz9fda9d78spp774b6rr5xaxav7cm4h0qcpxf70rvdbrf6qx7vy"))))
       (home-page "http://net-tools.sourceforge.net/")
       (build-system gnu-build-system)
       (arguments
@@ -1266,7 +1266,8 @@ messages and are accompanied by a set of manpages.")
                               (string-append "BASEDIR=" out)
                               (string-append "INSTALLNLSDIR=" out "/share/locale")
                               (string-append "mandir=/share/man")))))
-      (native-inputs `(("gettext" ,gettext-minimal)))
+      (native-inputs `(("gettext" ,gettext-minimal)
+                       ("unzip" ,unzip)))
       (synopsis "Tools for controlling the network subsystem in Linux")
       (description
        "This package includes the important tools for controlling the network
@@ -1354,6 +1355,15 @@ configuration (iptunnel, ipmaddr).")
                             (string-append "BASEDIR=" out)
                             (string-append "INSTALLNLSDIR=" out "/share/locale")
                             (string-append "mandir=/share/man")))))
+
+    ;; We added unzip to the net-tools package's native-inputs when
+    ;; switching its source from a Git checkout to a zip archive.  We
+    ;; need to specify the native-inputs here to keep unzip out of the
+    ;; build of net-tools-for-tests, so that we don't have to rebuild
+    ;; many packages on the master branch.  We can make
+    ;; net-tools-for-tests inherit directly from net-tools in the next
+    ;; core-updates cycle.
+    (native-inputs `(("gettext" ,gettext-minimal)))
 
     ;; Use the big Debian patch set (the thing does not even compile out of
     ;; the box.)
@@ -3112,10 +3122,12 @@ write access to exFAT devices.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
+                  (add-after 'unpack 'bootstrap
                     (lambda _
                       ;; The tarball was not generated with 'make dist' so we
                       ;; need to bootstrap things ourselves.
+                      (substitute* "autogen.sh"
+                        (("/bin/sh") (which "sh")))
                       (and (zero? (system* "./autogen.sh"))
                            (begin
                              (patch-makefile-SHELL "Makefile.include.in")

@@ -2257,9 +2257,9 @@ practically any type of media.")
          (add-before 'configure 'pre-configure
            (lambda _
              (chdir "Project/GNU/Library")))
-         (add-before 'configure 'autogen
+         (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical
@@ -2315,9 +2315,9 @@ MPEG-2, MPEG-4, DVD (VOB)...
          (add-before 'configure 'pre-configure
            (lambda _
              (chdir "Project/GNU/CLI")))
-         (add-before 'configure 'autogen
+         (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical

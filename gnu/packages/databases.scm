@@ -115,9 +115,9 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'generate-configure
+         (add-after 'unpack 'generate-configure
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/garlik/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -1563,7 +1563,7 @@ for ODBC.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://mdbtools.sourceforge.net/")

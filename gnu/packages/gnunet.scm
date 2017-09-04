@@ -234,10 +234,10 @@ and support for SSL3 and TLS.")
               (rename-file (string-append out "/share/man/man3")
                            (string-append doc "/share/man/man3"))
               #t)))
-        (add-before 'configure 'autoconf
+        (add-after 'unpack 'autoconf
           ;; Clear artifacts left (shebangs) from release preparation.
           (lambda _
-            (zero? (system* "./buildconf"))))
+            (zero? (system* "sh" "buildconf"))))
         (replace 'check
           (lambda _
             ;; It is unclear why test1026 fails, however the content of it
@@ -345,7 +345,7 @@ kinds of basic applications for the foundation of a GNU internet.")
       (build-system gnu-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
-                    (add-before 'configure 'bootstrap
+                    (add-after 'unpack 'bootstrap
                       (lambda _
                         (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs `(("pkg-config" ,pkg-config)

@@ -319,7 +319,7 @@ down the road.")
              (add-before 'configure 'repack-make
                (lambda _
                  (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))
-             (add-before 'configure 'bootstrap
+             (add-after 'unpack 'bootstrap
                (lambda _
                  (zero? (system* "autoreconf" "-vfi"))))))))
       (home-page "https://github.com/losalamos/stress-make")

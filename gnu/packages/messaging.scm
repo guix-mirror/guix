@@ -1209,7 +1209,7 @@ support, and more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autogen
+         (add-after 'unpack 'autogen
            (lambda _
              (zero? (system* "sh" "autogen.sh"))))
          ;; For 'system' commands in Scheme code.

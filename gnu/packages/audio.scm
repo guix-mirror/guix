@@ -328,7 +328,7 @@ engineers, musicians, soundtrack editors and composers.")
        #:phases
        (modify-phases %standard-phases
          ;; FFmpeg is only detected if autoreconf runs.
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))
        ;; The test suite is not "well exercised" according to the developers,
@@ -1979,8 +1979,8 @@ tempo and pitch of an audio recording independently of one another.")
     (arguments
      `(#:tests? #f ;no "check" target
        #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
+                  (add-after
+                   'unpack 'autoconf
                    (lambda _ (zero? (system* "autoreconf" "-vfi"))))
                   (add-before
                    'build 'fix-makefile

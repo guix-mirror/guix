@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs io ports)
   #:use-module (system foreign)
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
@@ -34,6 +35,7 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:use-module (guix zlib)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -58,6 +60,7 @@
             gnu-package-name->name+version
 
             %gnu-updater
+            %gnu-ftp-updater
             %gnome-updater
             %kde-updater
             %xorg-updater
@@ -433,6 +436,56 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
                                         #:server server
                                         #:directory directory))))
 
+(define %gnu-file-list-uri
+  ;; URI of the file list for ftp.gnu.org.
+  (string->uri "https://ftp.gnu.org/find.txt.gz"))
+
+(define ftp.gnu.org-files
+  (mlambda ()
+    "Return the list of files available at ftp.gnu.org."
+
+    ;; XXX: Memoize the whole procedure to work around the fact that
+    ;; 'http-fetch/cached' caches the gzipped version.
+
+    (define (trim-leading-components str)
+      ;; Trim the leading ".", if any, in "./gnu/foo".
+      (string-trim str (char-set #\.)))
+
+    (define (string->lines str)
+      (string-tokenize str (char-set-complement (char-set #\newline))))
+
+    (let ((port (http-fetch/cached %gnu-file-list-uri #:ttl (* 60 60))))
+      (map trim-leading-components
+           (call-with-gzip-input-port port
+             (compose string->lines get-string-all))))))
+
+(define (latest-gnu-release package)
+  "Return the latest release of PACKAGE, a GNU package available via
+ftp.gnu.org.
+
+This method does not rely on FTP access at all; instead, it browses the file
+list available from %GNU-FILE-LIST-URI over HTTP(S)."
+  (let-values (((server directory)
+                (ftp-server/directory package))
+               ((name)
+                (package-upstream-name package)))
+    (let* ((files    (ftp.gnu.org-files))
+           (relevant (filter (lambda (file)
+                               (and (string-contains file directory)
+                                    (release-file? name (basename file))
+                                    ))
+                             files)))
+      (match (sort relevant (lambda (file1 file2)
+                              (version>? (basename file1) (basename file2))))
+        ((tarball _ ...)
+         (upstream-source
+          (package name)
+          (version (tarball->version tarball))
+          (urls (list (string-append "mirror://gnu/" tarball)))
+          (signature-urls (map (cut string-append <> ".sig") urls))))
+        (()
+         #f)))))
+
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
@@ -557,10 +610,22 @@ source URLs starts with PREFIX."
                                          ".sign"))))))
 
 (define %gnu-updater
+  ;; This is for everything at ftp.gnu.org.
   (upstream-updater
    (name 'gnu)
    (description "Updater for GNU packages")
-   (pred pure-gnu-package?)
+   (pred gnu-hosted?)
+   (latest latest-gnu-release)))
+
+(define %gnu-ftp-updater
+  ;; This is for GNU packages taken from alternate locations, such as
+  ;; alpha.gnu.org, ftp.gnupg.org, etc.  It is obsolescent.
+  (upstream-updater
+   (name 'gnu-ftp)
+   (description "Updater for GNU packages only available via FTP")
+   (pred (lambda (package)
+           (and (not (gnu-hosted? package))
+                (pure-gnu-package? package))))
    (latest latest-release*)))
 
 (define %gnome-updater

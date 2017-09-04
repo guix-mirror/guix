@@ -871,7 +871,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/newsbeuter-CVE-2017-12904.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
-  %D%/packages/patches/node-9077.patch				\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
@@ -887,6 +886,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openjpeg-CVE-2017-12982.patch		\
+  %D%/packages/patches/openjpeg-CVE-2017-14040.patch		\
+  %D%/packages/patches/openjpeg-CVE-2017-14041.patch		\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\

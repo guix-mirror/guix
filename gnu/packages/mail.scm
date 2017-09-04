@@ -1169,9 +1169,9 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                                               "/lib/dovecot"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autogen
+         (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
@@ -1225,9 +1225,9 @@ using lidsodium sealed boxes.
                                                 "/lib/dovecot"))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autogen
+           (add-after 'unpack 'autogen
              (lambda _
-               (zero? (system* "./autogen.sh")))))))
+               (zero? (system* "sh" "autogen.sh")))))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description

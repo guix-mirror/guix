@@ -45,6 +45,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base) ;libbdf
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
@@ -76,8 +77,9 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux) ; for alsa-utils
+  #:use-module (gnu packages lirc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)

@@ -39,6 +39,7 @@ Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel
+Copyright @copyright{} 2017 Maxim Cournoyer@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -10010,6 +10011,9 @@ This is the service type for the
 @uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
 service. The value for this service type is a
 @code{network-manager-configuration} record.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
 @end defvr
 
 @deftp {Data Type} network-manager-configuration
@@ -11573,7 +11577,7 @@ adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), screen lockers, a network management tool
-(@pxref{Networking Services, @code{wicd-service}}), energy and color
+(@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
 AccountsService daemon that allows authorized users change system
@@ -11815,9 +11819,13 @@ location databases.  See
 web site} for more information.
 @end deffn
 
-@deffn {Scheme Procedure} bluetooth-service [#:bluez @var{bluez}]
-Return a service that runs the @command{bluetoothd} daemon, which manages
-all the Bluetooth devices and provides a number of D-Bus interfaces.
+@deffn {Scheme Procedure} bluetooth-service [#:bluez @var{bluez}] @
+       [@w{#:auto-enable? #f}]
+Return a service that runs the @command{bluetoothd} daemon, which
+manages all the Bluetooth devices and provides a number of D-Bus
+interfaces.  When AUTO-ENABLE? is true, the bluetooth controller is
+powered automatically at boot, which can be useful when using a
+bluetooth keyboard or mouse.
 
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn

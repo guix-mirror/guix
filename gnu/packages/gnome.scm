@@ -312,7 +312,7 @@ either on a local, or remote machine via a number of methods.")
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'run-autogen
+           (add-after 'unpack 'run-autogen
              (lambda _
                (system* "sh" "autogen.sh"))))))
       (home-page "https://wiki.gnome.org/Apps/Dia")

@@ -159,7 +159,7 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
+         (add-after 'unpack 'bootstrap
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")

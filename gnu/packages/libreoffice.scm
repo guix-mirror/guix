@@ -364,8 +364,8 @@ CorelDRAW documents of all versions.")
     (arguments
      `(#:configure-flags '("--with-mdds=1.2")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autoreconf
-                              (lambda _ (system* "autoreconf"))))))
+                  (add-after 'unpack 'autoreconf
+                    (lambda _ (system* "autoreconf"))))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
