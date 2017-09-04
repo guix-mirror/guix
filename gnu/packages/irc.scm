@@ -69,26 +69,33 @@
         (patches (search-patches "quassel-fix-tls-check.patch"))
         (sha256
          (base32
-          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))))
+          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))
+        (modules '((guix build utils)))
+        ;; We don't want to install the bundles scripts
+        (snippet
+         '(begin
+            (delete-file-recursively "data/scripts")
+            (substitute* "data/CMakeLists.txt"
+              (("NOT WIN32") "WIN32"))))))
     (build-system cmake-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
-     `(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 5.0 MiB
-                           ;;"-DWANT_CORE=OFF" ; 2.3 MiB
-                           ;;"-DWANT_MONO=OFF" ; 6.3 MiB
+     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 5.2 MiB
+                           ;;"-DWANT_CORE=OFF" ; 2.4 MiB
+                           ;;"-DWANT_MONO=OFF" ; 6.4 MiB
                            "-DUSE_QT5=ON" ; default is qt4
-                           "-DWITH_KDE=OFF" ; no to integration
-                           "-DWITH_OXYGEN=ON" ; on=embed icons
+                           "-DWITH_KDE=OFF" ; no to kde integration ...
+                           "-DWITH_OXYGEN=ON" ; therefore we install bundled icons
                            "-DWITH_WEBKIT=OFF") ; qtwebkit isn't packaged
        #:tests? #f)) ; no test target
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs
+    (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("oxygen-icons" ,oxygen-icons)
-       ("qca" ,qca)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qca" ,qca)
        ("qtbase", qtbase)
-       ("qttools" ,qttools)
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
