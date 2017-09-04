@@ -148,16 +148,21 @@ bind processes, and much more.")
                                            (assoc-ref %build-inputs "hwloc")))
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'remove-absolute
-                    ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
-                    ;; etc.) to reduce the closure size.  See
-                    ;; <https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00388.html>
-                    ;; and
-                    ;; <https://www.mail-archive.com/users@lists.open-mpi.org//msg31397.html>.
                     (lambda _
+                      ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
+                      ;; etc.) to reduce the closure size.  See
+                      ;; <https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00388.html>
+                      ;; and
+                      ;; <https://www.mail-archive.com/users@lists.open-mpi.org//msg31397.html>.
                       (substitute* '("orte/tools/orte-info/param.c"
                                      "oshmem/tools/oshmem_info/param.c"
                                      "ompi/tools/ompi_info/param.c")
                         (("_ABSOLUTE") ""))
+                      ;; Avoid valgrind (which pulls in gdb etc.).
+                      (substitute*
+                          '("./ompi/mca/io/romio/src/io_romio_component.c")
+                        (("MCA_io_romio_COMPLETE_CONFIGURE_FLAGS")
+                         "\"[elided to reduce closure]\""))
                       #t))
                   (add-before 'build 'scrub-timestamps ;reproducibility
                     (lambda _
