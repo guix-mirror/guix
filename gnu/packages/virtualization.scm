@@ -311,14 +311,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.6.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0gcyql5dp6j370kvik9hjhxirrg89m7l1q52yq0g75h7jpv9fb1s"))))
+                "1fk75cdzg59y9hnfdpdwv83fsc1yffy3lac4ch19zygfkqhcnysf"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -383,7 +383,8 @@ manage system or application containers.")
        ("iproute" ,iproute)
        ("iptables" ,iptables)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("xsltproc" ,libxslt)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
