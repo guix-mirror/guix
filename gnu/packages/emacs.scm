@@ -5489,22 +5489,14 @@ Idris.")
       (propagated-inputs
        `(("emacs-f" ,emacs-f)
          ("emacs-s" ,emacs-s)))
+      (native-inputs
+       `(("ert-runner" ,ert-runner)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
            (add-before 'install 'check
-             (lambda* (#:key inputs #:allow-other-keys)
-               (zero? (system* "emacs" "--batch" "-L" "."
-                               "-L" (string-append
-                                     (assoc-ref inputs "emacs-f")
-                                     "/share/emacs/site-lisp/guix.d/f-"
-                                     ,(package-version emacs-f))
-                               "-L" (string-append
-                                     (assoc-ref inputs "emacs-s")
-                                     "/share/emacs/site-lisp/guix.d/s-"
-                                     ,(package-version emacs-s))
-                               "-l" "test/api-basic-test.el"
-                               "-f" "ert-run-tests-batch-and-exit")))))))
+             (lambda _
+               (zero? (system* "ert-runner")))))))
       (home-page "https://github.com/rmuslimov/browse-at-remote")
       (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
       (description
