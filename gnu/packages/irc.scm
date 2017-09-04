@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -152,37 +152,23 @@ SILC and ICB protocols via plugins.")
                (base32
                 "1zvxz98krq98y7jh3yrjbardg3yxp6y2031rvb7rp5ssk8lyp1fc"))
               (patches (search-patches "weechat-python.patch"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("pkg-config" ,pkg-config)
-                     ("file" ,file)
-                     ("autogen" ,autogen)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
+    (build-system cmake-build-system)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
-              ("diffutils" ,diffutils)
-              ("gettext" ,gettext-minimal)
-              ("libltdl" ,libltdl)
               ("libgcrypt" ,libgcrypt "out")
               ("zlib" ,zlib)
               ("aspell" ,aspell)
               ("curl" ,curl)
               ("gnutls" ,gnutls)
               ("guile" ,guile-2.0)
-              ("openssl" ,openssl)
-              ("cyrus-sasl" ,cyrus-sasl)
               ("lua" ,lua-5.1)
               ("python" ,python-2)
               ("perl" ,perl)
               ("tcl" ,tcl)))
     (arguments
-     `(#:configure-flags (list (string-append
-                                "--with-tclconfig="
-                                (assoc-ref %build-inputs "tcl") "/lib"))
+     `(#:tests? #f ; tests require cpputime
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autogen
-                    (lambda _
-                      (zero? (system* "sh" "autogen.sh"))))
                   (add-after 'install 'wrap
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
