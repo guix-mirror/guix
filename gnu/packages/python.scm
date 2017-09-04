@@ -9886,14 +9886,14 @@ Pytest but stripped of Pytest specific details.")
 (define-public python-tox
   (package
    (name "python-tox")
-   (version "2.3.1")
+   (version "2.8.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "tox" version))
      (sha256
       (base32
-       "1vj73ar4rimq3fwy5r2z3jv4g9qbh8rmpmncsc00g0k310acqzxz"))))
+       "00lrql2cfzhb712v70inac6mrgdv8s8fmvz7qpggkk623hkm2pgc"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Tests require pytest-timeout, which itself requires
@@ -9905,7 +9905,8 @@ Pytest but stripped of Pytest specific details.")
       ("python-virtualenv" ,python-virtualenv)))
    (native-inputs
     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
-      ("python-pytest" ,python-pytest)))  ; >= 2.3.5
+      ("python-pytest" ,python-pytest)  ; >= 2.3.5
+      ("python-setuptools-scm" ,python-setuptools-scm)))
    (home-page "http://tox.testrun.org/")
    (synopsis "Virtualenv-based automation of test activities")
    (description "Tox is a generic virtualenv management and test command line
