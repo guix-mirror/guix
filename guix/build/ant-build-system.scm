@@ -36,7 +36,9 @@
 ;; Code:
 
 (define* (default-build.xml jar-name prefix #:optional
-                            (source-dir ".") (test-dir "./test") (main-class #f))
+                            (source-dir ".") (test-dir "./test") (main-class #f)
+                            (test-include '("**/*Test.java"))
+                            (test-exclude '("**/Abstract*Test.java")))
   "Create a simple build.xml with standard targets for Ant."
   (call-with-output-file "build.xml"
     (lambda (port)
@@ -109,7 +111,12 @@
                                 (batchtest (@ (fork "yes")
                                               (todir "${test.home}/test-reports"))
                                            (fileset (@ (dir "${test.home}/java"))
-                                                    (include (@ (name "**/*Test.java" )))))))
+                                                    ,@(map (lambda (file)
+                                                            `(include (@ (name ,file))))
+                                                       test-include)
+                                                    ,@(map (lambda (file)
+                                                            `(exclude (@ (name ,file))))
+                                                       test-exclude)))))
 
                  (target (@ (name "jar")
                             (depends "compile, manifest"))
@@ -150,12 +157,14 @@ to the default GNU unpack strategy."
 (define* (configure #:key inputs outputs (jar-name #f)
                     (source-dir "src")
                     (test-dir "src/test")
-                    (main-class #f) #:allow-other-keys)
+                    (main-class #f)
+                    (test-include '("**/*Test.java"))
+                    (test-exclude '("**/Abstract*.java")) #:allow-other-keys)
   (when jar-name
     (default-build.xml jar-name
                        (string-append (assoc-ref outputs "out")
                                       "/share/java")
-                       source-dir test-dir main-class))
+                       source-dir test-dir main-class test-include test-exclude))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
   (setenv "CLASSPATH" (generate-classpath inputs)))
 

@@ -3481,7 +3481,11 @@ specify the source sub-directory, defaulting to ``src''.
 
 The @code{#:main-class} parameter can be used with the minimal ant 
 buildfile to specify the main class of the resulting jar.  This makes the 
-jar file executable.
+jar file executable.  The @code{#:test-include} parameter can be used to 
+specify the list of junit tests to run. It defaults to
+@code{(list "**/*Test.java")}.  The @code{#:test-exclude} can be used to
+disable some tests. It defaults to @code{(list "**/Abstract*.java")},
+because abstract classes cannot be run as tests.
 
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
