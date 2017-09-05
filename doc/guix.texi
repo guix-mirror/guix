@@ -3479,6 +3479,10 @@ build file @file{build.xml} with tasks to build the specified jar
 archive.  In this case the parameter @code{#:source-dir} can be used to
 specify the source sub-directory, defaulting to ``src''.
 
+The @code{#:main-class} parameter can be used with the minimal ant 
+buildfile to specify the main class of the resulting jar.  This makes the 
+jar file executable.
+
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
 ``jar'' task will be run.

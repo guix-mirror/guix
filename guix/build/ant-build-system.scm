@@ -36,7 +36,7 @@
 ;; Code:
 
 (define* (default-build.xml jar-name prefix #:optional
-                            (source-dir ".") (test-dir "./test"))
+                            (source-dir ".") (test-dir "./test") (main-class #f))
   "Create a simple build.xml with standard targets for Ant."
   (call-with-output-file "build.xml"
     (lambda (port)
@@ -44,6 +44,10 @@
        `(project (@ (basedir "."))
                  (property (@ (name "classes.dir")
                               (value "${basedir}/build/classes")))
+                 (property (@ (name "manifest.dir")
+                              (value "${basedir}/build/manifest")))
+                 (property (@ (name "manifest.file")
+                              (value "${manifest.dir}/MANIFEST.MF")))
                  (property (@ (name "jar.dir")
                               (value "${basedir}/build/jar")))
                  (property (@ (name "dist.dir")
@@ -59,6 +63,17 @@
                  (property (@ (environment "env")))
                  (path (@ (id "classpath"))
                        (pathelement (@ (location "${env.CLASSPATH}"))))
+
+                 (target (@ (name "manifest"))
+                         (mkdir (@ (dir "${manifest.dir}")))
+                         (echo (@ (file "${manifest.file}")
+                                  (message ,(string-append
+                                              (if main-class
+                                                (string-append
+                                                  "Main-Class: " main-class
+                                                  "${line.separator}")
+                                                "")
+                                              "")))))
 
                  (target (@ (name "compile"))
                          (mkdir (@ (dir "${classes.dir}")))
@@ -97,10 +112,11 @@
                                                     (include (@ (name "**/*Test.java" )))))))
 
                  (target (@ (name "jar")
-                            (depends "compile"))
+                            (depends "compile, manifest"))
                          (mkdir (@ (dir "${jar.dir}")))
                          (exec (@ (executable "jar"))
-                               (arg (@ (line ,(string-append "-cf ${jar.dir}/" jar-name
+                               (arg (@ (line ,(string-append "-cmf ${manifest.file} "
+                                                             "${jar.dir}/" jar-name
                                                              " -C ${classes.dir} ."))))))
 
                  (target (@ (name "install"))
@@ -133,12 +149,13 @@ to the default GNU unpack strategy."
 
 (define* (configure #:key inputs outputs (jar-name #f)
                     (source-dir "src")
-                    (test-dir "src/test") #:allow-other-keys)
+                    (test-dir "src/test")
+                    (main-class #f) #:allow-other-keys)
   (when jar-name
     (default-build.xml jar-name
                        (string-append (assoc-ref outputs "out")
                                       "/share/java")
-                       source-dir test-dir))
+                       source-dir test-dir main-class))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
   (setenv "CLASSPATH" (generate-classpath inputs)))
 
