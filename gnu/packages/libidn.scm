@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@ Java libraries.")
   (package
     (name "libidn2")
     (version "2.0.2")
+    (replacement libidn2-2.0.4)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
@@ -76,3 +78,16 @@ library.")
     ;; The command-line tool 'idn2' is GPL3+, while the library is dual-licensed
     ;; GPL2+ or LGPL3+.
     (license (list gpl2+ gpl3+ lgpl3+))))
+
+(define-public libidn2-2.0.4
+  (package
+    (inherit libidn2)
+    (name "libidn2")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/libidn/" name "-" version
+                                  ".tar.lz"))
+              (sha256
+               (base32
+                "00f2fyw5kwr9is3cdn5h9arzxp0lnvg0z9bb9zyfs0dq81gaqim4"))))))
