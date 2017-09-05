@@ -14037,7 +14037,7 @@ A simple example configuration is given below.
 @example
 (service nginx-service-type
          (nginx-configuration
-           (server-list
+           (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com")
@@ -14085,7 +14085,7 @@ The directory to which NGinx will write log files.
 The directory in which NGinx will create a pid file, and write temporary
 files.
 
-@item @code{server-list} (default: @code{'()})
+@item @code{server-blocks} (default: @code{'()})
 A list of @dfn{server blocks} to create in the generated configuration
 file, the elements should be of type
 @code{<nginx-server-configuration>}.
@@ -14096,7 +14096,7 @@ HTTPS.
 @example
 (service nginx-service-type
          (nginx-configuration
-           (server-list
+           (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com")
@@ -14121,7 +14121,7 @@ requests with two servers.
 (service
   nginx-service-type
   (nginx-configuration
-    (server-list
+    (server-blocks
       (list (nginx-server-configuration
               (server-name '("www.example.com"))
               (root "/srv/http/www.example.com")
@@ -14143,9 +14143,9 @@ requests with two servers.
 @item @code{file} (default: @code{#f})
 If a configuration @var{file} is provided, this will be used, rather than
 generating a configuration file from the provided @code{log-directory},
-@code{run-directory}, @code{server-list} and @code{upstream-list}.  For
-proper operation, these arguments should match what is in @var{file} to
-ensure that the directories are created when the service is activated.
+@code{run-directory}, @code{server-blocks} and @code{upstream-list}.  For
+proper operation, these arguments should match what is in @var{file} to ensure
+that the directories are created when the service is activated.
 
 This can be useful if you have an existing configuration file, or it's
 not possible to do what is required through the other parts of the
