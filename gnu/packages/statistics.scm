@@ -3586,14 +3586,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "1lg0amx5hs37ajwjxz7ya50q4s28jcdj51kzl10s1x4l1akp7xls"))))
+         "18fii18f967xaw6swn0w744sncx37rfq6gd8d9dccrpyf8647hmr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
