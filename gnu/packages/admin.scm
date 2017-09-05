@@ -661,17 +661,20 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.1")
+    (version "4.9.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
-                                  version ".tar.gz"))
-              (patches (search-patches "tcpdump-CVE-2017-11541.patch"
-                                       "tcpdump-CVE-2017-11542.patch"
-                                       "tcpdump-CVE-2017-11543.patch"))
+              (uri (list (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                        version ".tar.gz")
+                         ;; The tarball is not yet distributed from tcpdump.org,
+                         ;; so we fetch it from Arch. For more information see
+                         ;; <https://bugs.gnu.org/28387>.
+                         (string-append "https://sources.archlinux.org/other/"
+                                        "packages/tcpdump/tcpdump-" version
+                                        ".tar.gz")))
               (sha256
                (base32
-                "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
+                "0ygy0layzqaj838r5xd613iraz09wlfgpyh7pc6cwclql8v3b2vr"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
