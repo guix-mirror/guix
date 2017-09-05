@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,15 +27,15 @@
 
 (define-public file
   (package
-   (name "file")
-    (version "5.30")
+    (name "file")
+    (version "5.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "057jpcyy8ws7q4s4sm8r1rxb8xycdbng2z4y9i98f094wlr28k39"))))
+                "0l1bfa0icng9vdwya00ff48fhvjazi5610ylbhl35qi13d6xqfc6"))))
    (build-system gnu-build-system)
 
    ;; When cross-compiling, this package depends upon a native install of
@@ -49,5 +49,5 @@ you in words what kind of data a file contains.  It does not rely on filename
 extensions to tell you the type of a file, but looks at the actual contents
 of the file.")
    (license bsd-2)
-   (home-page "http://www.darwinsys.com/file/")))
+   (home-page "https://www.darwinsys.com/file/")))
 
