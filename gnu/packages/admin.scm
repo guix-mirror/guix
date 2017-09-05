@@ -666,6 +666,9 @@ network statistics collection, security monitoring, network debugging, etc.")
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
+              (patches (search-patches "tcpdump-CVE-2017-11541.patch"
+                                       "tcpdump-CVE-2017-11542.patch"
+                                       "tcpdump-CVE-2017-11543.patch"))
               (sha256
                (base32
                 "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
