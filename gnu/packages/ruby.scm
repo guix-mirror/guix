@@ -2023,14 +2023,14 @@ extract comments.")
 (define-public ruby-coderay
   (package
     (name "ruby-coderay")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "coderay" version))
        (sha256
         (base32
-         "1x6z923iwr1hi04k6kz5a6llrixflz8h5sskl9mhaaxy9jx2x93r"))))
+         "15vav4bhcc2x3jmi3izb11l4d9f3xv8hp2fszb7iqmpsccv1pz4y"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; missing test files
