@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -68,7 +68,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages bison))
+  #:use-module (gnu packages bison)
+  #:use-module (ice-9 match))
 
 ;; packages outside the x.org system proper
 
@@ -300,6 +301,19 @@ rasterisation.")
           "1minzvsyz5hgm6ixpj8ysa6jsv7vm8qc8nx390jxdsk0v9ljd983"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '(,@(match (%current-system)
+             ("armhf-linux"
+              '("--enable-exynos-experimental-api"
+                "--enable-omap-experimental-api"
+                "--enable-etnaviv-experimental-api"
+                "--enable-tegra-experimental-api"
+                "--enable-freedreno-kgsl"))
+             ("aarch64-linux"
+              '("--enable-tegra-experimental-api"
+                "--enable-freedreno-kgsl"))
+             (_ '())))))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs
