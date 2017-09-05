@@ -2250,10 +2250,11 @@ practically any type of media.")
        #:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-after 'unpack 'change-to-build-dir
            (lambda _
-             (chdir "Project/GNU/Library")))
-         (add-after 'unpack 'autogen
+             (chdir "Project/GNU/Library")
+             #t))
+         (add-after 'change-to-build-dir 'autogen
            (lambda _
              (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
