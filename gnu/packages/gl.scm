@@ -269,13 +269,15 @@ also known as DXTn or DXTC) for Mesa.")
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
-             ((or "armhf-linux" "aarch64-linux")
+             ("armhf-linux"
+              '("--with-gallium-drivers=etnaviv,freedreno,imx,nouveau,r300,r600,svga,swrast,vc4,virgl"))
+             ("aarch64-linux"
               '("--with-gallium-drivers=freedreno,nouveau,r300,r600,svga,swrast,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-egl-platforms=x11,drm,wayland"
+         "--with-platforms=x11,drm,wayland,surfaceless"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
