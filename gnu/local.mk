@@ -468,6 +468,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/nss.scm				\
   %D%/system/pam.scm				\
   %D%/system/shadow.scm				\
+  %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
   %D%/build/activation.scm			\

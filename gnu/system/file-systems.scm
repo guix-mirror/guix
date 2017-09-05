@@ -20,9 +20,10 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (guix records)
-  #:use-module ((gnu build file-systems)
-                #:select (string->uuid uuid->string))
-  #:re-export (string->uuid
+  #:use-module ((gnu system uuid)
+                #:select (uuid string->uuid uuid->string))
+  #:re-export (uuid                               ;backward compatibility
+               string->uuid
                uuid->string)
   #:export (<file-system>
             file-system
@@ -44,7 +45,6 @@
             file-system->spec
             spec->file-system
             specification->file-system-mapping
-            uuid
 
             %fuse-control-file-system
             %binary-format-file-system
@@ -185,20 +185,6 @@ TARGET in the other system."
          (source spec)
          (target spec)
          (writable? writable?)))))
-
-(define-syntax uuid
-  (lambda (s)
-    "Return the bytevector corresponding to the given UUID representation."
-    (syntax-case s ()
-      ((_ str)
-       (string? (syntax->datum #'str))
-       ;; A literal string: do the conversion at expansion time.
-       (let ((bv (string->uuid (syntax->datum #'str))))
-         (unless bv
-           (syntax-violation 'uuid "invalid UUID" s))
-         (datum->syntax #'str bv)))
-      ((_ str)
-       #'(string->uuid str)))))
 
 
 ;;;
