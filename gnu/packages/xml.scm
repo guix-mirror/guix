@@ -867,13 +867,13 @@ parsing/saving.")
 (define-public python-pyxb
   (package
     (name "python-pyxb")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyXB" version))
               (sha256
                (base32
-                "0rzzwibfqa28gxgcxx4cybx1qcg0g6fand06ykj3gz7z5kp653sf"))))
+                "1d17pyixbfvjyi2lb0cfp0ch8wwdf44mmg3r5pwqhyyqs66z601a"))))
     (build-system python-build-system)
     (home-page "http://pyxb.sourceforge.net/")
     (synopsis "Python XML Schema Bindings")
