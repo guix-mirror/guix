@@ -4087,7 +4087,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.24.3")
+    (version "3.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4095,7 +4095,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0m51cclpnb7lxk8w526rriyb2bi3aj17fbcvikhkg7qd65v1dxgy"))))
+                "1jg59s98aljf603w24r5a3cr4fw6z88gc0warqy1946iprjgdw0m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
