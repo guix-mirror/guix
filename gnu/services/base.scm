@@ -47,6 +47,7 @@
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -286,8 +287,8 @@ FILE-SYSTEM."
         (dependencies (file-system-dependencies file-system))
         (packages (file-system-packages (list file-system))))
     (and (file-system-mount? file-system)
-         (with-imported-modules '((gnu build file-systems)
-                                  (guix build bournish))
+         (with-imported-modules (source-module-closure
+                                 '((gnu build file-systems)))
            (shepherd-service
             (provision (list (file-system->shepherd-service-name file-system)))
             (requirement `(root-file-system
