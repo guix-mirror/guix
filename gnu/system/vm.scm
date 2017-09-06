@@ -57,6 +57,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
+  #:use-module (gnu system uuid)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -231,7 +232,8 @@ INPUTS is a list of inputs (as for packages)."
                                #:register-closures? #$register-closures?
                                #:closures graphs
                                #:volume-id #$file-system-label
-                               #:volume-uuid #$file-system-uuid)
+                               #:volume-uuid #$(and=> file-system-uuid
+                                                      uuid-bytevector))
            (reboot))))
    #:system system
    #:make-disk-image? #f

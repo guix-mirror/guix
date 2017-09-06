@@ -54,6 +54,7 @@
   #:use-module (gnu system locale)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
+  #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
@@ -128,7 +129,14 @@
 (define (bootable-kernel-arguments kernel-arguments system.drv root-device)
   "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
 booted from ROOT-DEVICE"
-  (cons* (string-append "--root=" root-device)
+  (cons* (string-append "--root="
+                        (if (uuid? root-device)
+
+                            ;; Note: Always use the DCE format because that's
+                            ;; what (gnu build linux-boot) expects for the
+                            ;; '--root' kernel command-line option.
+                            (uuid->string (uuid-bytevector root-device) 'dce)
+                            root-device))
          #~(string-append "--system=" #$system.drv)
          #~(string-append "--load=" #$system.drv "/boot")
          kernel-arguments))
@@ -261,6 +269,8 @@ directly by the user."
 
       (store-device
        (match (assq 'store rest)
+         (('store ('device (? bytevector? bv)) _ ...)
+          (bytevector->uuid bv))
          (('store ('device device) _ ...)
           device)
          (_                                       ;the old format
@@ -289,16 +299,12 @@ The object has its kernel-arguments extended in order to make it bootable."
   (let* ((file (string-append system "/parameters"))
          (params (call-with-input-file file read-boot-parameters))
          (root (boot-parameters-root-device params))
-         (root-device (if (bytevector? root)
-                          (uuid->string root)
-                          root))
          (kernel-arguments (boot-parameters-kernel-arguments params)))
     (if params
       (boot-parameters
         (inherit params)
         (kernel-arguments (bootable-kernel-arguments kernel-arguments
-                                                     system
-                                                     root-device)))
+                                                     system root)))
       #f)))
 
 (define (boot-parameters->menu-entry conf)
@@ -875,9 +881,7 @@ listed in OS.  The C library expects to find it under
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
-       (root-device -> (if (eq? 'uuid (file-system-title root-fs))
-                           (uuid->string (file-system-device root-fs))
-                           (file-system-device root-fs)))
+       (root-device -> (file-system-device root-fs))
        (params (operating-system-boot-parameters os system root-device))
        (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
@@ -917,6 +921,15 @@ kernel arguments for that derivation to <boot-parameters>."
              (store-device (fs->boot-device store))
              (store-mount-point (file-system-mount-point store))))))
 
+(define (device->sexp device)
+  "Serialize DEVICE as an sexp (really, as an object with a read syntax.)"
+  (match device
+    ((? uuid? uuid)
+     ;; TODO: Preserve the type of UUID.
+     (uuid-bytevector uuid))
+    (_
+     device)))
+
 (define* (operating-system-boot-parameters-file os #:optional (system.drv #f))
    "Return a file that describes the boot parameters of OS.  The primary use of
 this file is the reconstruction of GRUB menu entries for old configurations.
@@ -934,14 +947,17 @@ being stored into the \"parameters\" file)."
                  #~(boot-parameters
                     (version 0)
                     (label #$(boot-parameters-label params))
-                    (root-device #$(boot-parameters-root-device params))
+                    (root-device
+                     #$(device->sexp
+                        (boot-parameters-root-device params)))
                     (kernel #$(boot-parameters-kernel params))
                     (kernel-arguments
                      #$(boot-parameters-kernel-arguments params))
                     (initrd #$(boot-parameters-initrd params))
                     (bootloader-name #$(boot-parameters-bootloader-name params))
                     (store
-                     (device #$(boot-parameters-store-device params))
+                     (device
+                      #$(device->sexp (boot-parameters-store-device params)))
                      (mount-point #$(boot-parameters-store-mount-point params))))
                  #:set-load-path? #f)))
 

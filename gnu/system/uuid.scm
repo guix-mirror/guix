@@ -19,12 +19,19 @@
 
 (define-module (gnu system uuid)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:export (uuid
+            uuid?
+            uuid-type
+            uuid-bytevector
+
+            bytevector->uuid
+
             uuid->string
             dce-uuid->string
             string->uuid
@@ -206,15 +213,27 @@ corresponding bytevector; otherwise return #f."
     (#f #f)
     ((_ . (? procedure? parse)) (parse str))))
 
-(define* (uuid->string bv #:key (type 'dce))
-  "Convert BV, a bytevector, to the UUID string representation for TYPE."
-  (match (vhash-assq type %uuid-printers)
-    (#f #f)
-    ((_ . (? procedure? unparse)) (unparse bv))))
+;; High-level UUID representation that carries its type with it.
+;;
+;; This is necessary to serialize bytevectors with the right printer in some
+;; circumstances.  For instance, GRUB "search --fs-uuid" command compares the
+;; string representation of UUIDs, not the raw bytes; thus, when emitting a
+;; GRUB 'search' command, we need to procedure the right string representation
+;; (see <https://debbugs.gnu.org/cgi/bugreport.cgi?msg=52;att=0;bug=27735>).
+(define-record-type <uuid>
+  (make-uuid type bv)
+  uuid?
+  (type  uuid-type)                               ;'dce | 'iso9660 | ...
+  (bv    uuid-bytevector))
+
+(define* (bytevector->uuid bv #:optional (type 'dce))
+  "Return a UUID object make of BV and TYPE."
+  (make-uuid type bv))
 
 (define-syntax uuid
   (lambda (s)
-    "Return the bytevector corresponding to the given UUID representation."
+    "Return the UUID object corresponding to the given UUID representation."
+    ;; TODO: Extend to types other than DCE.
     (syntax-case s ()
       ((_ str)
        (string? (syntax->datum #'str))
@@ -222,6 +241,19 @@ corresponding bytevector; otherwise return #f."
        (let ((bv (string->uuid (syntax->datum #'str))))
          (unless bv
            (syntax-violation 'uuid "invalid UUID" s))
-         (datum->syntax #'str bv)))
+         #`(make-uuid 'dce #,(datum->syntax #'str bv))))
       ((_ str)
-       #'(string->uuid str)))))
+       #'(make-uuid 'dce (string->uuid str))))))
+
+(define uuid->string
+  ;; Convert the given bytevector or UUID object, to the corresponding UUID
+  ;; string representation.
+  (match-lambda*
+    (((? bytevector? bv))
+     (uuid->string bv 'dce))
+    (((? bytevector? bv) type)
+     (match (vhash-assq type %uuid-printers)
+       (#f #f)
+       ((_ . (? procedure? unparse)) (unparse bv))))
+    (((? uuid? uuid))
+     (uuid->string (uuid-bytevector uuid) (uuid-type uuid)))))

@@ -20,8 +20,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (guix records)
-  #:use-module ((gnu system uuid)
-                #:select (uuid string->uuid uuid->string))
+  #:use-module (gnu system uuid)
   #:re-export (uuid                               ;backward compatibility
                string->uuid
                uuid->string)
@@ -157,7 +156,10 @@ store--e.g., if FS is the root file system."
 initrd code."
   (match fs
     (($ <file-system> device title mount-point type flags options _ _ check?)
-     (list device title mount-point type flags options check?))))
+     (list (if (uuid? device)
+               (uuid-bytevector device)
+               device)
+           title mount-point type flags options check?))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."

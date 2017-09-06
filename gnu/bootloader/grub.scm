@@ -30,7 +30,7 @@
   #:use-module (gnu artwork)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
-  #:use-module (gnu system file-systems)
+  #:use-module (gnu system uuid)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
@@ -300,7 +300,7 @@ code."
       (match device
         ;; Preferably refer to DEVICE by its UUID or label.  This is more
         ;; efficient and less ambiguous, see <http://bugs.gnu.org/22281>.
-        ((? bytevector? uuid)
+        ((? uuid? uuid)
          (format #f "search --fs-uuid --set ~a"
                  (uuid->string device)))
         ((? string? label)
