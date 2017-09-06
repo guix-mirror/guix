@@ -1173,23 +1173,14 @@ that the Ethernet protocol is much simpler than the IP protocol.")
     (synopsis
      "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
-     "Iproute2 is a collection of utilities for controlling TCP/IP
-networking and traffic with the Linux kernel.
+     "Iproute2 is a collection of utilities for controlling TCP/IP networking
+and traffic with the Linux kernel.  The most important of these are
+@command{ip}, which configures IPv4 and IPv6, and @command{tc} for traffic
+control.
 
 Most network configuration manuals still refer to ifconfig and route as the
 primary network configuration tools, but ifconfig is known to behave
-inadequately in modern network environments.  They should be deprecated, but
-most distros still include them.  Most network configuration systems make use
-of ifconfig and thus provide a limited feature set.  The /etc/net project aims
-to support most modern network technologies, as it doesn't use ifconfig and
-allows a system administrator to make use of all iproute2 features, including
-traffic control.
-
-iproute2 is usually shipped in a package called iproute or iproute2 and
-consists of several tools, of which the most important are @command{ip} and
-@command{tc}.  @command{ip} controls IPv4 and IPv6 configuration and
-@command{tc} stands for traffic control.  Both tools print detailed usage
-messages and are accompanied by a set of manpages.")
+inadequately in modern network environments, and both should be deprecated.")
     (license license:gpl2+)))
 
 ;; There are two packages for net-tools. The first, net-tools, is more recent
