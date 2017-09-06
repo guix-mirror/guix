@@ -248,6 +248,7 @@ INPUTS is a list of inputs (as for packages)."
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      file-system-label
+                     file-system-uuid
                      os-drv
                      bootcfg-drv
                      bootloader
@@ -257,7 +258,10 @@ INPUTS is a list of inputs (as for packages)."
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
-partition.  The returned image is a full disk image that runs OS-DERIVATION,
+partition; likewise FILE-SYSTEM-UUID, if true, specifies the UUID of the root
+partition (a UUID object).
+
+The returned image is a full disk image that runs OS-DERIVATION,
 with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
 file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
@@ -307,6 +311,8 @@ the image."
                   (partitions (list (partition
                                      (size root-size)
                                      (label #$file-system-label)
+                                     (uuid #$(and=> file-system-uuid
+                                                    uuid-bytevector))
                                      (file-system #$file-system-type)
                                      (flags '(boot))
                                      (initializer initialize))
