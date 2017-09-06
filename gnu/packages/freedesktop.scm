@@ -580,6 +580,7 @@ Analysis and Reporting Technology) functionality.")
      `(("acl" ,acl)
        ("libatasmart" ,libatasmart)
        ("libgudev" ,libgudev)
+       ("libcap" ,libcap)
        ("polkit" ,polkit)
        ("util-linux" ,util-linux)))
     (outputs '("out"
