@@ -2781,6 +2781,7 @@ keyboard shortcuts.")
        ("lcms" ,lcms)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
+       ("libcap" ,libcap)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("sqlite" ,sqlite)
