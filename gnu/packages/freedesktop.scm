@@ -204,14 +204,14 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "232.3")
+    (version "232.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elogind/elogind/"
                                   "archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1g3bqzw5dhd5zaivqgbi13n5zy219qmkrk6vmbhfprs8qvyn843f"))
+                "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -231,6 +231,9 @@ the freedesktop.org XDG Base Directory specification.")
                             "/lib/udev/rules.d")
              (string-append "--with-rootprefix="
                             (assoc-ref %outputs "out"))
+             (string-append "--with-rootlibexecdir="
+                            (assoc-ref %outputs "out")
+                            "/libexec/elogind")
              ;; These are needed to ensure that lto linking works.
              "RANLIB=gcc-ranlib"
              "AR=gcc-ar"
