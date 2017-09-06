@@ -5976,6 +5976,37 @@ and written in Python.")
 (define-public python2-html5lib-0.9
   (package-with-python2 python-html5lib-0.9))
 
+(define-public python-html5-parser
+  (package
+    (name "python-html5-parser")
+    (version "0.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "html5-parser" version))
+              (sha256
+               (base32
+                "1d8sxhl41ffh7qlk7wlsy17xw6slzx5v1yna9s72wx5qrpaa3wxr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)))
+    (home-page "https://html5-parser.readthedocs.io")
+    (synopsis "Fast C-based HTML5 parsing for Python")
+    (description "This package provides a fast implementation of the HTML5
+parsing spec for Python.  Parsing is done in C using a variant of the gumbo
+parser.  The gumbo parse tree is then transformed into an lxml tree, also in
+C, yielding parse times that can be a thirtieth of the html5lib parse times.")
+    ;; src/as-python-tree.[c|h] are licensed GPL3.  The other files
+    ;; indicate ASL2.0, including the LICENSE file for the whole project.
+    (license (list license:asl2.0 license:gpl3))))
+
+(define-public python2-html5-parser
+  (package-with-python2 python-html5-parser))
+
 (define-public python-webencodings
   (package
     (name "python-webencodings")
