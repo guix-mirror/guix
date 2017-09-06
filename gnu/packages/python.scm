@@ -13201,6 +13201,30 @@ replay them during future tests.  It is designed to work with python-requests.")
 (define-public python2-betamax
   (package-with-python2 python-betamax))
 
+(define-public python-betamax-matchers
+  (package
+    (name "python-betamax-matchers")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "betamax-matchers" version))
+       (sha256
+        (base32
+         "07qpwjyq2i2aqhz5iwghnj4pqr2ys5n45v1vmpcfx9r5mhwrsq43"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+    (home-page "https://github.com/sigmavirus24/betamax_matchers")
+    (synopsis "VCR imitation for python-requests")
+    (description "@code{betamax-matchers} provides a set of Matchers for
+Betamax.")
+    (license license:asl2.0)))
+
+(define-public python2-betamax-matchers
+  (package-with-python2 python-betamax-matchers))
+
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
