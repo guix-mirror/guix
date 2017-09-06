@@ -1542,22 +1542,14 @@ manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://nih.at/libzip/libzip-" version ".tar.gz"))
-              (patches (search-patches "libzip-CVE-2017-12858.patch"))
+                    "https://nih.at/libzip/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "17vxj2ffsxwh8lkc6801ppmwj15jp8q58rin76znxfbx88789ybc"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-perl
-           (lambda _
-             (substitute* "regress/runtest.in"
-               (("/usr/bin/env perl") (which "perl"))))))))
+                "0wykw0q9dwdzx0gssi2dpgckx9ggr2spzc1amjnff6wi6kz6x4xa"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
