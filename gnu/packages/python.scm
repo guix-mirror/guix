@@ -16227,3 +16227,24 @@ ECB and OFB).")
 
 (define-public python2-pyaes
   (package-with-python2 python-pyaes))
+
+(define-public python-uritemplate
+  (package
+    (name "python-uritemplate")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uritemplate" version))
+       (sha256
+        (base32
+         "0781gm9g34wa0asc19dx81ng0nqq07igzv3bbvdqmz13pv7469n0"))))
+    (build-system python-build-system)
+    (home-page "https://uritemplate.readthedocs.org")
+    (synopsis "Library to deal with URI Templates")
+    (description "@code{uritemplate} provides Python library to deal with URI
+Templates.")
+    (license license:bsd-2)))
+
+(define-public python2-uritemplate
+  (package-with-python2 python-uritemplate))
