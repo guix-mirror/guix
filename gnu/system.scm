@@ -234,6 +234,15 @@ directly by the user."
 (define (read-boot-parameters port)
   "Read boot parameters from PORT and return the corresponding
 <boot-parameters> object or #f if the format is unrecognized."
+  (define device-sexp->device
+    (match-lambda
+      (('uuid (? symbol? type) (? bytevector? bv))
+       (bytevector->uuid bv type))
+      ((? bytevector? bv)                         ;old format
+       (bytevector->uuid bv 'dce))
+      ((? string? device)
+       device)))
+
   (match (read port)
     (('boot-parameters ('version 0)
                        ('label label) ('root-device root)
@@ -241,7 +250,7 @@ directly by the user."
                        rest ...)
      (boot-parameters
       (label label)
-      (root-device root)
+      (root-device (device->sexp root))
 
       (bootloader-name
        (match (assq 'bootloader-name rest)
@@ -269,10 +278,8 @@ directly by the user."
 
       (store-device
        (match (assq 'store rest)
-         (('store ('device (? bytevector? bv)) _ ...)
-          (bytevector->uuid bv))
          (('store ('device device) _ ...)
-          device)
+          (device-sexp->device device))
          (_                                       ;the old format
           ;; Root might be a device path like "/dev/sda1", which is not a
           ;; suitable GRUB device identifier.
@@ -925,8 +932,7 @@ kernel arguments for that derivation to <boot-parameters>."
   "Serialize DEVICE as an sexp (really, as an object with a read syntax.)"
   (match device
     ((? uuid? uuid)
-     ;; TODO: Preserve the type of UUID.
-     (uuid-bytevector uuid))
+     `(uuid ,(uuid-type uuid) ,(uuid-bytevector uuid)))
     (_
      device)))
 
