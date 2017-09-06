@@ -239,7 +239,8 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
        ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
        ("docbook-xsl" ,docbook-xsl)))
     (inputs
-     `(("libdrm" ,libdrm)
+     `(("libcap" ,libcap)
+       ("libdrm" ,libdrm)
        ("libtsm" ,libtsm)
        ("libxkbcommon" ,libxkbcommon)
        ("logind" ,elogind)
