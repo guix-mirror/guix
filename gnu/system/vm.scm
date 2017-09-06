@@ -61,6 +61,7 @@
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
 
   #:export (expression->derivation-in-linux-vm
@@ -350,6 +351,35 @@ the image."
 ;;; VM and disk images.
 ;;;
 
+(define* (operating-system-uuid os #:optional (type 'dce))
+  "Compute UUID object with a deterministic \"UUID\" for OS, of the given
+TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
+  (if (eq? type 'iso9660)
+      (let ((pad (compose (cut string-pad <> 2 #\0)
+                          number->string))
+            (h   (hash (operating-system-services os) 3600)))
+        (bytevector->uuid
+         (string->iso9660-uuid
+          (string-append "1970-01-01-"
+                         (pad (hash (operating-system-host-name os) 24)) "-"
+                         (pad (quotient h 60)) "-"
+                         (pad (modulo h 60)) "-"
+                         (pad (hash (operating-system-file-systems os) 100))))
+         'iso9660))
+      (bytevector->uuid
+       (uint-list->bytevector
+        (list (hash file-system-type
+                    (expt 2 32))
+              (hash (operating-system-host-name os)
+                    (expt 2 32))
+              (hash (operating-system-services os)
+                    (expt 2 32))
+              (hash (operating-system-file-systems os)
+                    (expt 2 32)))
+        (endianness little)
+        4)
+       type)))
+
 (define* (system-disk-image os
                             #:key
                             (name "disk-image")
@@ -366,11 +396,19 @@ to USB sticks meant to be read-only."
     (if (string=? "iso9660" file-system-type)
         string-upcase
         identity))
+
   (define root-label
-    ;; Volume name of the root file system.  Since we don't know which device
-    ;; will hold it, we use the volume name to find it (using the UUID would
-    ;; be even better, but somewhat less convenient.)
+    ;; Volume name of the root file system.
     (normalize-label "GuixSD_image"))
+
+  (define root-uuid
+    ;; UUID of the root file system, computed in a deterministic fashion.
+    ;; This is what we use to locate the root file system so it has to be
+    ;; different from the user's own file system UUIDs.
+    (operating-system-uuid os
+                           (if (string=? file-system-type "iso9660")
+                               'iso9660
+                               'dce)))
 
   (define file-systems-to-keep
     (remove (lambda (fs)
@@ -395,8 +433,8 @@ to USB sticks meant to be read-only."
               ;; Force our own root file system.
               (file-systems (cons (file-system
                                     (mount-point "/")
-                                    (device root-label)
-                                    (title 'label)
+                                    (device root-uuid)
+                                    (title 'uuid)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
@@ -405,7 +443,7 @@ to USB sticks meant to be read-only."
       (if (string=? "iso9660" file-system-type)
           (iso9660-image #:name name
                          #:file-system-label root-label
-                         #:file-system-uuid #f
+                         #:file-system-uuid root-uuid
                          #:os-drv os-drv
                          #:register-closures? #t
                          #:bootcfg-drv bootcfg
@@ -422,6 +460,7 @@ to USB sticks meant to be read-only."
                       #:disk-image-format "raw"
                       #:file-system-type file-system-type
                       #:file-system-label root-label
+                      #:file-system-uuid root-uuid
                       #:copy-inputs? #t
                       #:register-closures? #t
                       #:inputs `(("system" ,os-drv)
