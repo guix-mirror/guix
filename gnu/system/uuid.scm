@@ -206,7 +206,7 @@ ISO9660 UUID representation."
    ('iso9660 => iso9660-uuid->string)
    ('fat32 'fat => fat32-uuid->string)))
 
-(define* (string->uuid str #:key (type 'dce))
+(define* (string->uuid str #:optional (type 'dce))
   "Parse STR as a UUID of the given TYPE.  On success, return the
 corresponding bytevector; otherwise return #f."
   (match (vhash-assq type %uuid-parsers)
@@ -233,17 +233,23 @@ corresponding bytevector; otherwise return #f."
 (define-syntax uuid
   (lambda (s)
     "Return the UUID object corresponding to the given UUID representation."
-    ;; TODO: Extend to types other than DCE.
-    (syntax-case s ()
-      ((_ str)
-       (string? (syntax->datum #'str))
+    (syntax-case s (quote)
+      ((_ str (quote type))
+       (and (string? (syntax->datum #'str))
+            (identifier? #'type))
        ;; A literal string: do the conversion at expansion time.
-       (let ((bv (string->uuid (syntax->datum #'str))))
+       (let ((bv (string->uuid (syntax->datum #'str)
+                               (syntax->datum #'type))))
          (unless bv
            (syntax-violation 'uuid "invalid UUID" s))
-         #`(make-uuid 'dce #,(datum->syntax #'str bv))))
+         #`(make-uuid 'type #,(datum->syntax s bv))))
       ((_ str)
-       #'(make-uuid 'dce (string->uuid str))))))
+       (string? (syntax->datum #'str))
+       #'(uuid str 'dce))
+      ((_ str)
+       #'(make-uuid 'dce (string->uuid str 'dce)))
+      ((_ str type)
+       #'(make-uuid type (string->uuid str type))))))
 
 (define uuid->string
   ;; Convert the given bytevector or UUID object, to the corresponding UUID
