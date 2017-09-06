@@ -778,7 +778,8 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
     (propagated-inputs
      `(("glib" ,glib))) ; required by mm-glib.pc
     (inputs
-     `(("libgudev" ,libgudev)
+     `(("libcap" ,libcap)
+       ("libgudev" ,libgudev)
        ("libmbim" ,libmbim)
        ("libqmi" ,libqmi)
        ("polkit" ,polkit)))
