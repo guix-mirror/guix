@@ -29,6 +29,7 @@
   #:use-module (gnu services networking)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
+  #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu system mapped-devices)
   #:use-module ((gnu system linux-initrd)
@@ -277,12 +278,6 @@ FILE-SYSTEM."
   "Return the shepherd service for @var{file-system}, or @code{#f} if
 @var{file-system} is not auto-mounted upon boot."
   (let ((target  (file-system-mount-point file-system))
-        (device  (file-system-device file-system))
-        (type    (file-system-type file-system))
-        (title   (file-system-title file-system))
-        (flags   (file-system-flags file-system))
-        (options (file-system-options file-system))
-        (check?  (file-system-check? file-system))
         (create? (file-system-create-mount-point? file-system))
         (dependencies (file-system-dependencies file-system))
         (packages (file-system-packages (list file-system))))
@@ -311,8 +306,7 @@ FILE-SYSTEM."
                                                                 '#$packages))))
                            (lambda ()
                              (mount-file-system
-                              `(#$device #$title #$target #$type #$flags
-                                         #$options #$check?)
+                              '#$(file-system->spec file-system)
                               #:root "/"))
                            (lambda ()
                              (setenv "PATH" $PATH)))
