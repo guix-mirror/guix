@@ -238,11 +238,11 @@ packages defined in installation-os."
                  "-m" "800"
                  #$@(cond
                      ((string=? "ext4" installation-disk-image-file-system-type)
-                      `("-drive"
-                        ,(file-append "file=" image
-                                      ",if=virtio,readonly")))
+                      #~("-drive"
+                         ,(string-append "file=" #$image
+                                         ",if=virtio,readonly")))
                      ((string=? "iso9660" installation-disk-image-file-system-type)
-                      `("-cdrom" ,image))
+                      #~("-cdrom" #$image))
                      (else
                       (error
                        "unsupported installation-disk-image-file-system-type:"
