@@ -529,9 +529,6 @@ netcat implementation that supports TLS.")
     (description "ACME protocol implementation in Python")
     (license license:asl2.0)))
 
-(define-public python2-acme
-  (package-with-python2 python-acme))
-
 (define-public certbot
   (package
     (name "certbot")
