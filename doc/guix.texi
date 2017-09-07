@@ -11659,7 +11659,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
 
 @deffn {Scheme Procedure} elogind-service [#:config @var{config}]
 Return a service that runs the @code{elogind} login and
-seat management daemon.  @uref{https://github.com/andywingo/elogind,
+seat management daemon.  @uref{https://github.com/elogind/elogind,
 Elogind} exposes a D-Bus interface that can be used to know which users
 are logged in, know what kind of sessions they have open, suspend the
 system, inhibit system suspend, reboot the system, and other tasks.
