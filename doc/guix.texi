@@ -6383,10 +6383,10 @@ Use substitute information from @var{urls}.
 Sort lines according to @var{key}, one of the following options:
 
 @table @code
-@item closure
-the total size of the item's closure (the default);
 @item self
-the size of each item.
+the size of each item (the default);
+@item closure
+the total size of the item's closure.
 @end table
 
 @item --map-file=@var{file}
