@@ -216,7 +216,12 @@ their dependencies.")
                (substitute* "Makefile.am"
                  (("tests/repo.scm \\\\") "\\"))
                #t))
-           (add-after 'disable-repo-tests 'bootstrap
+           (add-after 'disable-repo-tests 'patch-/bin/sh
+             (lambda _
+               (substitute* "build-aux/git-version-gen"
+                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
+               #t))
+           (add-after 'patch-/bin/sh 'bootstrap
              (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)

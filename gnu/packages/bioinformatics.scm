@@ -4486,7 +4486,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                        "Data2DB"
                        "PCL2Bin")))
            (modify-phases %standard-phases
-             (add-after 'unpack 'bootstrap
+             (add-before 'configure 'bootstrap
                (lambda _
                  (zero? (system* "bash" "gen_auto"))))
              (add-after 'build 'build-additional-tools
