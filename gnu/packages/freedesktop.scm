@@ -227,6 +227,12 @@ the freedesktop.org XDG Base Directory specification.")
        (list (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
                             "/lib/udev/rules.d")
+
+             ;; Let elogind be its own cgroup controller, rather than relying
+             ;; on systemd or OpenRC.  By default, 'configure' makes an
+             ;; incorrect guess.
+             "--with-cgroup-controller=elogind"
+
              (string-append "--with-rootprefix="
                             (assoc-ref %outputs "out"))
              (string-append "--with-rootlibexecdir="

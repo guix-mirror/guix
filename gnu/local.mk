@@ -487,6 +487,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
   %D%/tests/databases.scm			\
+  %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
