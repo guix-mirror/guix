@@ -250,19 +250,8 @@ info --version")
 
               ;; It can take a while before the shell commands are executed.
               (marionette-eval '(use-modules (rnrs io ports)) marionette)
-              (marionette-eval
-               '(let loop ((i 0))
-                  (catch 'system-error
-                    (lambda ()
-                      (call-with-input-file "/root/logged-in"
-                        get-string-all))
-                    (lambda args
-                      (if (and (< i 15) (= ENOENT (system-error-errno args)))
-                          (begin
-                            (sleep 1)
-                            (loop (+ i 1)))
-                          (apply throw args)))))
-               marionette)))
+              (wait-for-file "/root/logged-in" marionette
+                             #:read 'get-string-all)))
 
           ;; There should be one utmpx entry for the user logged in on tty1.
           (test-equal "utmpx entry"
