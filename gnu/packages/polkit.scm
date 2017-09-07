@@ -81,7 +81,6 @@
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
-       ("libcap" ,libcap)
        ("linux-pam" ,linux-pam)
        ("elogind" ,elogind)
        ("mozjs" ,mozjs)
