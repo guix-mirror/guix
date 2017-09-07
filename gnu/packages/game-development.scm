@@ -10,6 +10,7 @@
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,7 +74,8 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages tls))
 
 (define-public bullet
   (package
@@ -1019,3 +1021,107 @@ with its own editor, called OpenMW-CS which allows the user to edit or create
 their own original games.")
     (home-page "https://openmw.org")
     (license license:gpl3)))
+
+(define-public godot
+  (package
+    (name "godot")
+    (version "2.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/godotengine/godot/archive/"
+                              version "-stable.tar.gz"))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32 "1mz89nafc1m7srbqvy7iagxrxmqvf5hbqi7i0lwaapkx6q0kpkq7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-use-env
+           (lambda _
+             ;; Scons does not use the environment variables by default,
+             ;; but this substitution makes it do so.
+             (substitute* "SConstruct"
+               (("env_base = Environment\\(tools=custom_tools\\)")
+                (string-append
+                 "env_base = Environment(tools=custom_tools)\n"
+                 "env_base = Environment(ENV=os.environ)")))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system*
+                     "scons"
+                     "platform=x11"
+                     ;; Avoid using many of the bundled libs.
+                     ;; Note: These options can be found in the SConstruct file.
+                     "builtin_freetype=no"
+                     "builtin_glew=no"
+                     "builtin_libmpdec=no"
+                     "builtin_libogg=no"
+                     "builtin_libpng=no"
+                     "builtin_libtheora=no"
+                     "builtin_libvorbis=no"
+                     "builtin_libwebp=no"
+                     "builtin_openssl=no"
+                     "builtin_opus=no"
+                     "builtin_zlib=no"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion "bin"
+                 (if (file-exists? "godot.x11.tools.64")
+                     (rename-file "godot.x11.tools.64" "godot")
+                     (rename-file "godot.x11.tools.32" "godot"))
+                 (install-file "godot" bin)))))
+         (add-after 'install 'install-godot-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (desktop (string-append out "/share/applications"))
+                    (icon-dir (string-append out "/share/pixmaps")))
+               (mkdir-p desktop)
+               (mkdir-p icon-dir)
+               (rename-file "icon.png" "godot.png")
+               (install-file "godot.png" icon-dir)
+               (with-output-to-file
+                   (string-append desktop "/godot.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=godot~@
+                           Comment=The godot game engine~@
+                           Exec=~a/bin/godot~@
+                           TryExec=~@*~a/bin/godot~@
+                           Icon=godot~@
+                           Type=Application~%"
+                           out)))
+               #t))))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scons" ,scons)))
+    (inputs `(("alsa-lib" ,alsa-lib)
+              ("freetype" ,freetype)
+              ("glew" ,glew)
+              ("glu" ,glu)
+              ("libtheora" ,libtheora)
+              ("libvorbis" ,libvorbis)
+              ("libwebp" ,libwebp)
+              ("libx11" ,libx11)
+              ("libxcursor" ,libxcursor)
+              ("libxinerama" ,libxinerama)
+              ("libxrandr" ,libxrandr)
+              ("mesa" ,mesa)
+              ("openssl" ,openssl)
+              ("opusfile" ,opusfile)
+              ("pulseaudio" ,pulseaudio)
+              ("python2" ,python-2)))
+    (home-page "https://godotengine.org/")
+    (synopsis "Advanced 2D and 3D game engine")
+    (description
+     "Godot is an advanced multi-platform game engine written in C++.  If
+features design tools such as a visual editor, can import 3D models and
+provide high-quality 3D rendering, it contains an animation editor, and can be
+scripted in a Python-like language.")
+    (license license:expat)))
