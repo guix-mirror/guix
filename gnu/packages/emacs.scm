@@ -3209,22 +3209,25 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
                 "0w7mbbajn377gdmvnd21mpyr368b2ia46gq6cb99y4y5rspf9pcg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There is no test suite.
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "LISPDIR=" %output
-                                         "/share/emacs/site-lisp/guix.d/ess"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'more-shebang-patching
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makeconf"
-               (("SHELL = /bin/sh")
-                (string-append "SHELL = " (which "sh"))))))
-         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-         ;; them in HOME, so it needs to be writeable.
-         (add-before 'build 'set-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
+       `(#:tests? #f ; There is no test suite.
+         #:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "ETCDIR=" %output "/"
+                                           ,base-directory "/etc")
+                            (string-append "LISPDIR=" %output "/"
+                                           ,base-directory))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'more-shebang-patching
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "Makeconf"
+                 (("SHELL = /bin/sh")
+                  (string-append "SHELL = " (which "sh"))))))
+           ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+           ;; them in HOME, so it needs to be writeable.
+           (add-before 'build 'set-HOME
+             (lambda _ (setenv "HOME" "/tmp") #t))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
