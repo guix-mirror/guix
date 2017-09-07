@@ -224,9 +224,7 @@ the freedesktop.org XDG Base Directory specification.")
     (arguments
      `(#:tests? #f ;FIXME: "make check" in the "po" directory fails.
        #:configure-flags
-       (list (string-append "--with-libcap="
-                            (assoc-ref %build-inputs "libcap"))
-             (string-append "--with-udevrulesdir="
+       (list (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
                             "/lib/udev/rules.d")
              (string-append "--with-rootprefix="
