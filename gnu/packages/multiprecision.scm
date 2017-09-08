@@ -87,13 +87,13 @@ cryptography and computational algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.5")
+   (version "3.1.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "1g32l2fg8f62lcyzzh88y3fsh6rk539qc6ahhdgvx7wpnf1dwpq1"))))
+                     "0l598h9klpgkz2bp0rxiqb90mkqh9f2f81n5rpy191j00hdaqqks"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
