@@ -27,7 +27,8 @@
   ;; FIXME: 'format' is missing because it reports "non-literal format
   ;; strings" due to the fact that we use 'G_' instead of '_'.  We'll need
   ;; help from Guile to solve this.
-  '(unsupported-warning unbound-variable arity-mismatch))
+  '(unsupported-warning unbound-variable arity-mismatch
+    macro-use-before-definition))                 ;new in 2.2
 
 (define host (getenv "host"))
 
