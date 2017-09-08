@@ -16301,3 +16301,25 @@ Templates.")
 
 (define-public python2-uritemplate
   (package-with-python2 python-uritemplate))
+
+(define-public python-pydiff
+  (package
+    (name "python-pydiff")
+    (version "0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pydiff" version))
+        (sha256
+          (base32
+            "1als83h9w0gab24ipyna6khm390qmpnpkc5jksmdbs2xc8hp2z44"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/myint/pydiff")
+    (synopsis "Library to diff two Python files at the bytecode level")
+    (description
+      "@code{pydiff} makes it easy to look for actual code changes while
+ignoring formatting changes.")
+    (license license:expat)))
+
+(define-public python2-pydiff
+  (package-with-python2 python-pydiff))
