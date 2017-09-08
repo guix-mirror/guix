@@ -42,7 +42,7 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.11.7")
+    (version "1.11.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -50,7 +50,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0acph1mf7588hfx8ds26ncr6nw5fd9x92adm11fwin7f93i10sdb"))))
+                "0karxv4r1r8sa7ki5aamlxdvyvz0bvzq4gdhq0yi5nc4a0k11vzc"))))
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
