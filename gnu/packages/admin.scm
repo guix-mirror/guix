@@ -664,14 +664,8 @@ network statistics collection, security monitoring, network debugging, etc.")
     (version "4.9.2")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://www.tcpdump.org/release/tcpdump-"
-                                        version ".tar.gz")
-                         ;; The tarball is not yet distributed from tcpdump.org,
-                         ;; so we fetch it from Arch. For more information see
-                         ;; <https://bugs.gnu.org/28387>.
-                         (string-append "https://sources.archlinux.org/other/"
-                                        "packages/tcpdump/tcpdump-" version
-                                        ".tar.gz")))
+              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "0ygy0layzqaj838r5xd613iraz09wlfgpyh7pc6cwclql8v3b2vr"))))
