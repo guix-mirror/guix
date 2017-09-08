@@ -4906,17 +4906,17 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-autopep8
   (package
   (name "python-autopep8")
-  (version "1.2.4")
+  (version "1.3.2")
   (source
    (origin
      (method url-fetch)
      (uri (pypi-uri "autopep8" version))
      (sha256
       (base32
-       "18parm383lfn42a00wklv3qf20p4v277f1x3cn58x019dqk1xqrq"))))
+       "1p9pa1ffg4iy96l918808jggg9a69iaka5awmj8xid36yc5mk0ky"))))
   (build-system python-build-system)
   (propagated-inputs
-    `(("python-pep8" ,python-pep8)))
+    `(("python-pycodestyle" ,python-pycodestyle)))
   (home-page "https://github.com/hhatto/autopep8")
   (synopsis "Format Python code according to the PEP 8 style guide")
   (description
