@@ -87,6 +87,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/check.scm			\
   %D%/packages/chez.scm				\
   %D%/packages/ci.scm				\
+  %D%/packages/cinnamon.scm			\
   %D%/packages/cmake.scm			\
   %D%/packages/cobol.scm			\
   %D%/packages/code.scm				\
