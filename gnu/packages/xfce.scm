@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,6 +34,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -906,3 +908,39 @@ bubble in a standard way can implicitly make use of xfce4-notifyd to do so by
 sending standard messages over D-Bus using the
 @code{org.freedesktop.Notifications} interface.")
     (license gpl2)))
+
+(define-public xfburn
+  (package
+    (name "xfburn")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1xn1kwxa3dl5r9bfj90a5322ynkwbn6k5v9b3a3pbr3a23zm604s"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("exo" ,exo)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("libburn" ,libburn)
+       ("libisofs" ,libisofs)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "https://goodies.xfce.org/projects/applications/xfburn")
+    (synopsis "GTK+ based CD, DVD and Blu-ray burning application")
+    (description
+     "Xfburn is a simple CD, DVD, and Blu-ray burning tool based on
+the libburnia libraries.  It can blank CD/DVD/BD(-RW)s, burn and
+create iso images, audio CDs, as well as burn personal compositions
+of data to either CD/DVD/BD.")
+    (license gpl2+)))
