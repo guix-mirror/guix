@@ -400,3 +400,78 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
      "Monero is a secure, private, untraceable currency.  This package provides the
 Monero command line client and daemon.")
     (license license:bsd-3)))
+
+(define-public monero-core
+  (package
+    (name "monero-core")
+    (version "0.11.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/monero-project/monero-core/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hnrkgwb1sva67pcjym2gvb4zifp2s849dfbnjzbxk3yczpcyqzg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libunwind" ,libunwind)
+       ("openssl" ,openssl)
+       ("qt" ,qt)
+       ("unbound" ,unbound)))
+    (propagated-inputs
+     `(("monero" ,monero)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-before 'build 'fix-makefile-vars
+           (lambda _
+             (substitute* "src/zxcvbn-c/makefile"
+               (("\\?=") "="))
+             #t))
+         (add-after 'fix-makefile-vars 'fix-library-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "monero-wallet-gui.pro"
+               (("-L/usr/local/lib") "")
+               (("-L/usr/local/opt/openssl/lib")
+                (string-append "-L"
+                               (assoc-ref inputs "openssl")
+                               "/lib"))
+               (("-L/usr/local/opt/boost/lib")
+                (string-append "-L"
+                               (assoc-ref inputs "boost")
+                               "/lib")))
+             #t))
+         (add-after 'fix-library-paths 'fix-monerod-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/daemon/DaemonManager.cpp"
+               (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
+                (string-append "\""(assoc-ref inputs "monero")
+                               "/bin/monerod")))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./build.sh"))))
+         (add-after 'build 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "build/Makefile"
+               (("/opt/monero-wallet-gui")
+                (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'change-dir
+           (lambda _
+             (chdir "build"))))))
+    (home-page "https://getmonero.org/")
+    (synopsis "Graphical user interface for the Monero currency")
+    (description
+     "Monero is a secure, private, untraceable currency.  This package provides the
+Monero GUI client.")
+    (license license:bsd-3)))
