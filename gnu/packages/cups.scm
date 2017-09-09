@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -27,10 +27,14 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages libusb)
-  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages image)
@@ -445,3 +449,53 @@ device-specific programs to convert and print many types of files.")
               ;; TODO: Make hp-setup find python-dbus.
               ("python-dbus" ,python-dbus)))
     (native-inputs `(("pkg-config" ,pkg-config)))))
+
+(define-public foomatic-filters
+  (package
+    (name "foomatic-filters")
+    (version "4.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.openprinting.org/download/foomatic/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17w26r15094j4fqifa7f7i7jad4gsy9zdlq69kffrykcw31qx3q8"))
+              (patches
+               (search-patches "foomatic-filters-CVE-2015-8327.patch"
+                               "foomatic-filters-CVE-2015-8560.patch"))))
+    (build-system gnu-build-system)
+    (home-page
+     "https://wiki.linuxfoundation.org/openprinting/database/foomatic")
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("a2ps" ,a2ps)))
+    (arguments
+     '( ;; Specify the installation directories.
+       #:configure-flags (list (string-append "ac_cv_path_CUPS_BACKENDS="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/cups/backend")
+                               (string-append "ac_cv_path_CUPS_FILTERS="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/cups/filter")
+                               (string-append "ac_cv_path_PPR_INTERFACES="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/ppr/interfaces")
+                               (string-append "ac_cv_path_PPR_LIB="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/ppr/lib")
+
+                               ;; For some reason these are misdiagnosed.
+                               "ac_cv_func_malloc_0_nonnull=yes"
+                               "ac_cv_func_realloc_0_nonnull=yes")
+       #:test-target "tests"))
+    (synopsis "Convert PostScript to the printer's native format")
+    (description
+     "This package contains filter scripts used by the printer spoolers to
+convert the incoming PostScript data into the printer's native format using a
+printer/driver specific, but spooler-independent PPD file.")
+    (license license:gpl2+)))
