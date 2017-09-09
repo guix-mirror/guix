@@ -499,3 +499,69 @@ device-specific programs to convert and print many types of files.")
 convert the incoming PostScript data into the printer's native format using a
 printer/driver specific, but spooler-independent PPD file.")
     (license license:gpl2+)))
+
+(define-public foo2zjs
+  (package
+    ;; The tarball is called "foo2zjs", but the web page talks about
+    ;; "foo2xqx".  Go figure!
+    (name "foo2zjs")
+    (version "201709")
+    (source (origin
+              (method url-fetch)
+              ;; XXX: This is an unversioned URL!
+              (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
+              (sha256
+               (base32
+                "0amjj3jr6s6h7crzxyx11v31sj0blz7k5c2vycz4gn8cxlmk3c7w"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* (find-files "." "^Makefile$")
+                        ;; Set the installation directory.
+                        (("^PREFIX[[:blank:]]*=.*$")
+                         (string-append "PREFIX = "
+                                        (assoc-ref outputs "out")
+                                        "\n"))
+                        (("^UDEVBIN[[:blank:]]*=.*$")
+                         "UDEVBIN = $(PREFIX)/bin\n")
+                        ;; Don't try to chown/chgrp the installed files.
+                        (("-oroot")
+                         "")
+                        (("-glp")
+                         "")
+                        ;; Placate the dependency checks.
+                        (("/usr/include/stdio.h")
+                         "/etc/passwd")
+                        (("/usr/")
+                         "$(PREFIX)/")
+                        ;; Ensure fixed timestamps in man pages.
+                        (("^MODTIME[[:blank:]]*=.*$")
+                         "MODTIME = echo Thu Jan 01 01:00:00 1970\n"))
+                      #t))
+                  (add-after 'install 'remove-pdf
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove 'manual.pdf' which is (1) useless (it's a
+                      ;; concatenation of man pages), and (2) not
+                      ;; bit-reproducible due to <https://bugs.gnu.org/27593>.
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each delete-file
+                                  (find-files out "^manual\\.pdf$"))
+                        #t))))
+       #:parallel-build? #f                       ;broken makefile
+       #:tests? #f                                ;no tests
+       #:make-flags '("CC=gcc")))
+    (inputs
+     `(("ghostscript" ,ghostscript)
+       ("foomatic-filters" ,foomatic-filters)))   ;for 'foomatic-rip'
+    (native-inputs
+     `(("bc" ,bc)
+       ("groff" ,groff)))
+    (home-page "http://foo2xqx.rkkda.com/")
+    (synopsis "Printer driver for XQX stream protocol")
+    (description
+     "This package provides a printer driver notably for the ZJS and XQX
+protocols, which cover printers made by Konica, HP (LaserJet), Oki, Samsung,
+and more.  See @file{README} for details.")
+    (license license:gpl2+)))
