@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system r)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
@@ -927,4 +928,35 @@ valid under randomization, with or without ties, or conditionally under random
 sampling from populations, given the observed tie pattern.  Except for Steel's
 test and the JT test it also combines these tests across several blocks of
 samples.")
+    (license license:gpl2+)))
+
+(define-public r-cvst
+  (package
+    (name "r-cvst")
+    (version "0.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CVST" version))
+       (sha256
+        (base32
+         "17xacyi8cf37rr2xswx96qy7pwkaqq394awdlswykz3qlyzx4zx2"))))
+    (properties `((upstream-name . "CVST")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernlab" ,r-kernlab)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://cran.r-project.org/web/packages/CVST")
+    (synopsis "Fast cross-validation via sequential testing")
+    (description
+     "This package implements the fast cross-validation via sequential
+testing (CVST) procedure.  CVST is an improved cross-validation procedure
+which uses non-parametric testing coupled with sequential analysis to
+determine the best parameter set on linearly increasing subsets of the data.
+Additionally to the CVST the package contains an implementation of the
+ordinary k-fold cross-validation with a flexible and powerful set of helper
+objects and methods to handle the overall model selection process.  The
+implementations of the Cochran's Q test with permutations and the sequential
+testing framework of Wald are generic and can therefore also be used in other
+contexts.")
     (license license:gpl2+)))
