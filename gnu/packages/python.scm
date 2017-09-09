@@ -9839,10 +9839,11 @@ concurrent.futures package from Python 3.2")
        ("python-mock" ,python-mock)
        ("python-tornado" ,python-tornado)))
     (propagated-inputs
-     `(;; extra packages for https security
+     `(;; These 5 inputs are used to build urrlib3[secure]
        ("python-certifi" ,python-certifi)
-       ("python-ndg-httpsclient" ,python-ndg-httpsclient)
-       ("python-pyasn1" ,python-pyasn1)
+       ("python-cryptography" ,python-cryptography) ;
+       ("python-idna" ,python-idna)
+       ("python-ipaddress" ,python-ipaddress)
        ("python-pyopenssl" ,python-pyopenssl)))
     (home-page "https://urllib3.readthedocs.org/")
     (synopsis "HTTP library with thread-safe connection pooling")
