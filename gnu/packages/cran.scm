@@ -960,3 +960,25 @@ implementations of the Cochran's Q test with permutations and the sequential
 testing framework of Wald are generic and can therefore also be used in other
 contexts.")
     (license license:gpl2+)))
+
+(define-public r-lava
+  (package
+    (name "r-lava")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lava" version))
+       (sha256
+        (base32
+         "0x6s7x111x87a4rh5nbk7vw6j4iq40i1c21w0j795h28rgyc7zc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-numderiv" ,r-numderiv)
+       ("r-survival" ,r-survival)))
+    (home-page "https://github.com/kkholst/lava")
+    (synopsis "Latent variable models")
+    (description
+     "This package provides tools for the estimation and simulation of latent
+variable models.")
+    (license license:gpl3)))
