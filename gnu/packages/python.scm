@@ -9925,14 +9925,14 @@ Pytest but stripped of Pytest specific details.")
 (define-public python-tox
   (package
    (name "python-tox")
-   (version "2.8.0")
+   (version "2.8.1")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "tox" version))
      (sha256
       (base32
-       "00lrql2cfzhb712v70inac6mrgdv8s8fmvz7qpggkk623hkm2pgc"))))
+       "1drp6mwm8wdypjym15ia8lwjxbhcksb9vzxg4ay5dh4ji57by2ny"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Tests require pytest-timeout, which itself requires
