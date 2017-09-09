@@ -982,3 +982,27 @@ contexts.")
      "This package provides tools for the estimation and simulation of latent
 variable models.")
     (license license:gpl3)))
+
+(define-public r-drr
+  (package
+    (name "r-drr")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DRR" version))
+       (sha256
+        (base32
+         "1scfwp6ry6apxzqjclsmn2frxp9qfw6zxsxn5w0j0q3sz42hz1h2"))))
+    (properties `((upstream-name . "DRR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cvst" ,r-cvst)
+       ("r-kernlab" ,r-kernlab)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://cran.r-project.org/web/packages/DRR")
+    (synopsis "Dimensionality reduction via regression")
+    (description
+     "This package provides an implementation of dimensionality reduction via
+regression using Kernel Ridge Regression.")
+    (license license:gpl3)))
