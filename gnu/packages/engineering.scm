@@ -30,6 +30,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1377,3 +1378,40 @@ unique design feature of Trilinos is its focus on packages.")
 capable of solving extremely large circuit problems by supporting large-scale
 parallel computing platforms.  It also supports serial execution.")
     (license license:gpl3+)))
+
+(define trilinos-parallel-xyce
+  (package (inherit trilinos-serial-xyce)
+    (name "trilinos-parallel-xyce")
+    (arguments
+     `(,@(substitute-keyword-arguments (package-arguments trilinos-serial-xyce)
+           ((#:configure-flags flags)
+            `(append (list "-DTrilinos_ENABLE_ShyLU=ON"
+                           "-DTrilinos_ENABLE_Zoltan=ON"
+                           "-DTPL_ENABLE_MPI=ON")
+                     ,flags)))))
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs trilinos-serial-xyce)))))
+
+(define-public xyce-parallel
+  (package (inherit xyce-serial)
+    (name "xyce-parallel")
+    (arguments
+     `(,@(substitute-keyword-arguments (package-arguments xyce-serial)
+           ((#:configure-flags flags)
+            `(list "CXXFLAGS=-O3 -std=c++11"
+                   "CXX=mpiCC"
+                   "CC=mpicc"
+                   "F77=mpif77"
+                   "--enable-mpi"
+                   "--enable-isorropia=no"
+                   "--enable-zoltan=no"
+                   (string-append
+                    "ARCHDIR="
+                    (assoc-ref %build-inputs "trilinos")))))))
+    (propagated-inputs
+     `(("mpi" ,openmpi)))
+    (inputs
+     `(("trilinos" ,trilinos-parallel-xyce)
+       ,@(alist-delete "trilinos"
+                       (package-inputs xyce-serial))))))
