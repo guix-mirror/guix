@@ -3146,7 +3146,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.12")
+    (version "4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3154,7 +3154,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1kif8xw2dbyc70ygkp0wyq4x96p1mkwdv4430f99qllx9b410xwi"))))
+                "17m67jm29phfvkmd72lxb1z9nymn9a9pqnja8zfb1mvflsqwbz3m"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3185,6 +3185,7 @@ and copy/paste text in the console and in xterm.")
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)
                      ;; For tests.
+                     ("acl" ,acl)
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
