@@ -1415,3 +1415,62 @@ parallel computing platforms.  It also supports serial execution.")
      `(("trilinos" ,trilinos-parallel-xyce)
        ,@(alist-delete "trilinos"
                        (package-inputs xyce-serial))))))
+
+(define-public freehdl
+  (package
+    (name "freehdl")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.sourceforge.net/qucs/freehdl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "117dqs0d4pcgbzvr3jn5ppra7n7x2m6c161ywh6laa934pw7h2bz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-pkg-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "freehdl/freehdl-config"
+               (("pkg-config")
+                (string-append (assoc-ref inputs "pkg-config")
+                               "/bin/pkg-config"))
+               (("cat")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/cat")))
+             #t))
+         (add-after 'configure 'patch-freehdl-pc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "freehdl.pc"
+               (("=g\\+\\+")
+                (string-append "=" (assoc-ref inputs "gcc")
+                               "/bin/g++"))
+               (("=libtool")
+                (string-append "=" (assoc-ref inputs "libtool")
+                               "/bin/libtool")))
+             #t))
+         (add-after 'install-scripts 'make-wrapper
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/freehdl-config")
+                 `("PKG_CONFIG_PATH" ":" prefix (,(string-append out "/lib/pkgconfig")))))
+             #t)))))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("gcc" ,gcc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (native-inputs
+     `(("pkg-config-native" ,pkg-config)
+       ("libtool-native" ,libtool)))
+    (home-page "http://www.freehdl.seul.org/")
+    (synopsis "VHDL simulator")
+    (description
+     "FreeHDL is a compiler/simulator suite for the hardware description language VHDL.
+  VHDL'93 as well as VHDL'87 standards are supported.")
+    (license (list license:gpl2+
+                   license:lgpl2.0+)))) ; freehdl's libraries
+
