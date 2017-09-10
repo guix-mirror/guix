@@ -178,7 +178,8 @@ script.")
                (base32
                 "122zgs96dqrys62mnh8x5yvfff6km4d3yrnvaxzg3mg5sprib87v"))
               (patches
-               (search-patches "graphicsmagick-CVE-2017-12935.patch"
+               (search-patches "graphicsmagick-CVE-2017-11403+CVE-2017-14103.patch"
+                               "graphicsmagick-CVE-2017-12935.patch"
                                "graphicsmagick-CVE-2017-12936.patch"
                                "graphicsmagick-CVE-2017-12937.patch"
                                "graphicsmagick-CVE-2017-13775.patch"
