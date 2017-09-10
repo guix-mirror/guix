@@ -193,16 +193,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.72")
+    (version "1.74")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/v" version
+             "https://github.com/AlDanial/cloc/releases/download/" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "1gl7bxb4bi6pms0zzl133pzpfypvz57hk2cw7yf6rvs8b48kilnz"))))
+         "0rq5xfiln1wlv3yr9mg18ax4gskbss786iqaf0v45iv6awyl5b2m"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
