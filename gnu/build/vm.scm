@@ -385,6 +385,7 @@ GRUB configuration and OS-DRV as the stuff in it."
                   (register-closure
                    "/tmp/root"
                    (string-append "/xchg/" closure)
+                   ;; XXX: Using deduplication causes cross device link errors.
                    #:deduplicate? #f))
                 closures))
 
