@@ -800,8 +800,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
-  %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
-  %D%/packages/patches/libxml2-CVE-2016-5131.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
