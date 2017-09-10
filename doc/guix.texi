@@ -14105,12 +14105,12 @@ HTTPS.
                      (ssl-certificate-key #f))))))
 @end example
 
-@item @code{upstream-list} (default: @code{'()})
+@item @code{upstream-blocks} (default: @code{'()})
 A list of @dfn{upstream blocks} to create in the generated configuration
 file, the elements should be of type
 @code{<nginx-upstream-configuration>}.
 
-Configuring upstreams through the @code{upstream-list} can be useful
+Configuring upstreams through the @code{upstream-blocks} can be useful
 when combined with @code{locations} in the
 @code{<nginx-server-configuration>} records.  The following example
 creates a server configuration with one location configuration, that
@@ -14133,7 +14133,7 @@ requests with two servers.
                   (nginx-location-configuration
                   (uri "/path1")
                   (body '("proxy_pass http://server-proxy;"))))))))
-    (upstream-list
+    (upstream-blocks
       (list (nginx-upstream-configuration
               (name "server-proxy")
               (servers (list "server1.example.com"
@@ -14143,7 +14143,7 @@ requests with two servers.
 @item @code{file} (default: @code{#f})
 If a configuration @var{file} is provided, this will be used, rather than
 generating a configuration file from the provided @code{log-directory},
-@code{run-directory}, @code{server-blocks} and @code{upstream-list}.  For
+@code{run-directory}, @code{server-blocks} and @code{upstream-blocks}.  For
 proper operation, these arguments should match what is in @var{file} to ensure
 that the directories are created when the service is activated.
 
