@@ -241,7 +241,7 @@ of source code in many programming languages.  Given two versions of a code
 base, cloc can compute differences in blank, comment, and source lines.
 
 cloc contains code from David Wheeler's SLOCCount.  Compared to SLOCCount,
-cloc can handle a greater variety of programming langauges.")
+cloc can handle a greater variety of programming languages.")
     (license license:gpl2+)))
 
 (define-public the-silver-searcher
