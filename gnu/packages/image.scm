@@ -524,7 +524,8 @@ work.")
                                  "openjpeg-CVE-2017-14040.patch"
                                  "openjpeg-CVE-2017-14041.patch"
                                  "openjpeg-CVE-2017-14151.patch"
-                                 "openjpeg-CVE-2017-14152.patch"))))
+                                 "openjpeg-CVE-2017-14152.patch"
+                                 "openjpeg-CVE-2017-14164.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
