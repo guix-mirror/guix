@@ -16381,3 +16381,33 @@ design and layout.")
 
 (define-public python2-tqdm
   (package-with-python2 python-tqdm))
+
+(define-public python-pkginfo
+  (package
+    (name "python-pkginfo")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pkginfo" version))
+        (sha256
+          (base32
+            "17pqjfpq3c6xzdmk8pski6jcjgjv78q00zjf2bgzb668pzm6l6mv"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests are broken upstream.
+     '(#:tests? #f))
+    (home-page
+      "https://code.launchpad.net/~tseaver/pkginfo/trunk")
+    (synopsis
+      "Query metadatdata from sdists, bdists, and installed packages")
+    (description
+      "API to query the distutils metadata written in @file{PKG-INFO} inside a
+source distriubtion (an sdist) or a binary distribution (e.g., created by
+running bdist_egg).  It can also query the EGG-INFO directory of an installed
+distribution, and the *.egg-info stored in a \"development checkout\" (e.g,
+created by running @code{python setup.py develop}).")
+    (license license:expat)))
+
+(define-public python2-pkginfo
+  (package-with-python2 python-pkginfo))
