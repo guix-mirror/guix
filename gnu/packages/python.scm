@@ -16352,3 +16352,32 @@ ignoring formatting changes.")
 
 (define-public python2-nose-timer
   (package-with-python2 python-nose-timer))
+
+(define-public python-tqdm
+  (package
+    (name "python-tqdm")
+    (version "4.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "tqdm" version))
+         (sha256
+           (base32
+             "0lwrmby8qz23gvqwkpivfrv4q8nfh90cz9ml6slwvwmcxxsdrhbf"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-nose" ,python-nose)
+       ("python-nose-timer" ,python-nose-timer)
+       ("python-coverage" ,python-coverage)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/tqdm/tqdm")
+    (synopsis "Fast, extensible progress meter")
+    (description
+      "Make loops show a progress bar on the console by just wrapping any
+iterable with @code{|tqdm(iterable)|}.  Offers many options to define
+design and layout.")
+    (license (list license:mpl2.0 license:expat))))
+
+(define-public python2-tqdm
+  (package-with-python2 python-tqdm))
