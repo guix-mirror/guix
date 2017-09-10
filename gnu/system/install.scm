@@ -337,9 +337,9 @@ Use Alt-F2 for documentation.
     (issue %issue)
     (services %installation-services)
 
-    ;; We don't need setuid programs so pass the empty list so we don't pull
-    ;; additional programs here.
-    (setuid-programs '())
+    ;; We don't need setuid programs, except for 'passwd', which can be handy
+    ;; if one is to allow remote SSH login to the machine being installed.
+    (setuid-programs (list (file-append shadow "/bin/passwd")))
 
     (pam-services
      ;; Explicitly allow for empty passwords.
