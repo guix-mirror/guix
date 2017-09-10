@@ -16411,3 +16411,31 @@ created by running @code{python setup.py develop}).")
 
 (define-public python2-pkginfo
   (package-with-python2 python-pkginfo))
+
+(define-public python-twine
+  (package
+    (name "python-twine")
+    (version "1.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "twine" version))
+        (sha256
+          (base32
+            "1ay1b6kdq6k4bfbjsvf6ymj41wrgpvinhxndb09355pwhxwmp96a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tqdm" ,python-tqdm)
+       ("python-pkginfo", python-pkginfo)
+       ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+    (home-page "https://github.com/pypa/twine")
+    (synopsis "Collection of utilities for interacting with PyPI")
+    (description
+      "@code{twine} currently supports registering projects and uploading
+distributions.  It authenticates the user over HTTPS, allows them to pre-sign
+their files and supports any packaging format (including wheels).")
+    (license license:asl2.0)))
+
+(define-public python2-twine
+  (package-with-python2 python-twine))
