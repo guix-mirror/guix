@@ -183,7 +183,8 @@ script.")
                                "graphicsmagick-CVE-2017-12937.patch"
                                "graphicsmagick-CVE-2017-13775.patch"
                                "graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch"
-                               "graphicsmagick-CVE-2017-14042.patch"))))
+                               "graphicsmagick-CVE-2017-14042.patch"
+                               "graphicsmagick-CVE-2017-14165.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
