@@ -31,6 +31,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
@@ -352,6 +353,7 @@ Use Alt-F2 for documentation.
                      mdadm
                      dosfstools         ;mkfs.fat, for the UEFI boot partition
                      btrfs-progs
+                     openssh    ;we already have sshd, having ssh/scp can help
                      wireless-tools iw wpa-supplicant-minimal iproute
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
