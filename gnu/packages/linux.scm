@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13")
-(define %linux-libre-hash "07mxcya7ml1v34pbg4mjh1sq80r3b4dsxbcs41fm50jnhq7p1w4v")
+(define %linux-libre-version "4.13.1")
+(define %linux-libre-hash "1asvxkfh85842816wd3yjw7g1pyhjj69lh4ni4ijjpwlicrsws67")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
