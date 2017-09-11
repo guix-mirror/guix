@@ -250,7 +250,7 @@ directly by the user."
                        rest ...)
      (boot-parameters
       (label label)
-      (root-device (device->sexp root))
+      (root-device (device-sexp->device root))
 
       (bootloader-name
        (match (assq 'bootloader-name rest)
