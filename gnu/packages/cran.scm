@@ -1031,3 +1031,25 @@ regression using Kernel Ridge Regression.")
 nonparametric estimators for censored event history (survival) analysis with
 the Kaplan-Meier and Aalen-Johansen methods.")
     (license license:gpl2+)))
+
+(define-public r-dimred
+  (package
+    (name "r-dimred")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dimRed" version))
+       (sha256
+        (base32
+         "0fasca5fsbrxdwv30hch7vb9snb844l7l8p5fjf239dq45xfy37v"))))
+    (properties `((upstream-name . "dimRed")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-drr" ,r-drr)))
+    (home-page "https://github.com/gdkrmr/dimRed")
+    (synopsis "Framework for dimensionality reduction")
+    (description
+     "This package provides a collection of dimensionality reduction
+techniques from R packages and provides a common interface for calling the
+methods.")
+    (license license:gpl3)))
