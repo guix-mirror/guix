@@ -9262,6 +9262,9 @@ with python-requests.")
     (home-page "https://github.com/sigmavirus24/requests-toolbelt")
     (license license:asl2.0)))
 
+(define-public python2-requests-toolbelt
+  (package-with-python2 python-requests-toolbelt))
+
 (define-public python-click-threading
   (package
     (name "python-click-threading")
