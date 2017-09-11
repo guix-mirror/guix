@@ -13,6 +13,7 @@
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,10 +40,12 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
@@ -62,6 +66,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -5983,3 +5988,96 @@ disconnect from these programs and reconnect from the same or another machine,
 without losing any state.  It can also be used to forward full desktops from
 X11 servers, Windows, or macOS.")
     (license license:gpl2+)))
+
+(define-public uim
+  (package
+    (name "uim")
+    (version "1.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/uim/uim/releases/download/uim-"
+                           version "/uim-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0pr3rfqpxha8p6cxzdjsxbbmmr76riklzw36f68phd1zqw1sh7kv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("anthy" ,anthy)
+       ("libedit" ,libedit)
+       ("libxft" ,libxft)
+       ("m17n-lib" ,m17n-lib)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:configure-flags
+       (list "--with-anthy-utf8"
+             (string-append "--with-lispdir=" %output
+                            "/share/emacs/site-lisp/guix.d")
+             ;; Set proper runpath
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Set path of uim-el-agent and uim-el-helper-agent executables
+         (add-after 'configure 'configure-uim-el
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "emacs/uim-var.el"
+               (("\"(uim-el-agent|uim-el-helper-agent)\"" _ executable)
+                (string-append "\"" (assoc-ref outputs "out")
+                               "/bin/" executable "\"")))
+             #t))
+         ;; Generate emacs autoloads for uim.el
+         (add-after 'install 'make-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (emacs-generate-autoloads
+              ,name (string-append (assoc-ref outputs "out")
+                                   "/share/emacs/site-lisp"))
+             #t)))))
+    (home-page "https://github.com/uim/uim")
+    (synopsis "Multilingual input method framework")
+    (description "Uim is a multilingual input method library and environment.
+It provides a simple, easily extensible and high code-quality input method
+development platform, and useful input method environment for users of desktop
+and embedded platforms.")
+    (license (list license:lgpl2.1+ ; scm/py.scm, pixmaps/*.{svg,png} (see pixmaps/README)
+                   license:gpl2+ ; scm/pinyin-big5.scm
+                   license:gpl3+ ; scm/elatin-rules.cm
+                   license:public-domain ; scm/input-parse.scm, scm/match.scm
+                   ;; gtk2/toolbar/eggtrayicon.{ch},
+                   ;; qt3/chardict/kseparator.{cpp,h},
+                   ;; qt3/pref/kseparator.{cpp,h}
+                   license:lgpl2.0+
+                   ;; pixmaps/*.{svg,png} (see pixmaps/README),
+                   ;; all other files
+                   license:bsd-3))))
+
+(define-public uim-gtk
+  (package
+    (inherit uim)
+    (name "uim-gtk")
+    (inputs
+     `(("gtk" ,gtk+)
+       ("gtk" ,gtk+-2)
+       ,@(package-inputs uim)))
+    (synopsis "Multilingual input method framework (GTK+ support)")))
+
+(define-public uim-qt
+  (package
+    (inherit uim)
+    (name "uim-qt")
+    (inputs
+     `(("qt" ,qt-4)
+       ,@(package-inputs uim)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments uim)
+       ((#:configure-flags configure-flags)
+        (append configure-flags (list "--with-qt4-immodule"
+                                      "--with-qt4")))))
+    (synopsis "Multilingual input method framework (Qt support)")))
