@@ -3331,7 +3331,7 @@ GL based interactive canvas library.")
 (define-public libchamplain
   (package
     (name "libchamplain")
-    (version "0.12.15")
+    (version "0.12.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3339,7 +3339,7 @@ GL based interactive canvas library.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0x5qa1aw1y59lzkmf4j4szspn49341a87vcja4ydgxny1chilwjl"))))
+                "13chvc2n074i0jw5jlb8i7cysda4yqx58ca6y3mrlrl9g37k2zja"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-vala")))
     (native-inputs
