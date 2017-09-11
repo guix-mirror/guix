@@ -1177,3 +1177,40 @@ provided.")
 classification and bagging for classification, regression and survival
 problems as well as resampling based estimators of prediction error.")
     (license license:gpl2+)))
+
+(define-public r-recipes
+  (package
+    (name "r-recipes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "recipes" version))
+       (sha256
+        (base32
+         "0rydk403qihxmcv3zz323r3ywk4g1v7ibvj452rxhm0z22sqk9kb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ddalpha" ,r-ddalpha)
+       ("r-dimred" ,r-dimred)
+       ("r-dplyr" ,r-dplyr)
+       ("r-gower" ,r-gower)
+       ("r-ipred" ,r-ipred)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rcpproll" ,r-rcpproll)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-timedate" ,r-timedate)))
+    (home-page "https://github.com/topepo/recipes")
+    (synopsis "Preprocessing tools to create design matrices")
+    (description
+     "Recipes is an extensible framework to create and preprocess design
+matrices.  Recipes consist of one or more data manipulation and analysis
+\"steps\".  Statistical parameters for the steps can be estimated from an
+initial data set and then applied to other data sets.  The resulting design
+matrices can then be used as inputs into statistical or machine learning
+models.")
+    (license license:gpl2)))
