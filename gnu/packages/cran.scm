@@ -1150,3 +1150,30 @@ windowed operations.  Routines for the efficient computation of windowed mean,
 median, sum, product, minimum, maximum, standard deviation and variance are
 provided.")
     (license license:gpl2+)))
+
+(define-public r-ipred
+  (package
+    (name "r-ipred")
+    (version "0.9-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ipred" version))
+       (sha256
+        (base32
+         "1vrw1pqcpnc04x1r2h9grdfm6bivs358sww5gg90jwlvxcw69lxq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-prodlim" ,r-prodlim)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)))
+    (home-page "http://cran.r-project.org/web/packages/ipred")
+    (synopsis "Improved predictors")
+    (description
+     "This package provides improved predictive models by indirect
+classification and bagging for classification, regression and survival
+problems as well as resampling based estimators of prediction error.")
+    (license license:gpl2+)))
