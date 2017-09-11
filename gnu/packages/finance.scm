@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -346,6 +346,9 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
     (arguments
      `(#:out-of-source? #t
        #:configure-flags '("-DBUILD_TESTS=ON"
+                           ,@(if (string=? "aarch64-linux" (%current-system))
+                                 '("-DARCH=armv8-a")
+                                 '())
                            "-DBUILD_GUI_DEPS=ON")
        #:phases
        (modify-phases %standard-phases
