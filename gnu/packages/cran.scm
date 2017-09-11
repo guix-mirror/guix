@@ -1074,3 +1074,33 @@ methods.")
 Engineering and Computational Finance\" and for managing chronological and
 calendar objects.")
     (license license:gpl2+)))
+
+(define-public r-ddalpha
+  (package
+    (name "r-ddalpha")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ddalpha" version))
+       (sha256
+        (base32
+         "0nsd515x6bap1qpfyx141hyldmpmyasnhv0f8s9dj6zcklp89af4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-class" ,r-class)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "http://cran.r-project.org/web/packages/ddalpha")
+    (synopsis "Depth-Based classification and calculation of data depth")
+    (description
+     "This package contains procedures for depth-based supervised learning,
+which are entirely non-parametric, in particular the DDalpha-procedure (Lange,
+Mosler and Mozharovskyi, 2014).  The training data sample is transformed by a
+statistical depth function to a compact low-dimensional space, where the final
+classification is done.  It also offers an extension to functional data and
+routines for calculating certain notions of statistical depth functions.  50
+multivariate and 5 functional classification problems are included.")
+    (license license:gpl2)))
