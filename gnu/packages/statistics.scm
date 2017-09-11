@@ -5141,24 +5141,25 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-76")
+    (version "6.0-77")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "1w31xzpmj8p6r6s7s1vwnjxainq54bbh4cqm177ba0myv69hh8cc"))))
+         "05c504567s2nppzfgi36mhszbym2pr80nf50dgxcxfx030721v5y"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-car" ,r-car)
-       ("r-foreach" ,r-foreach)
+     `(("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
        ("r-lattice" ,r-lattice)
        ("r-modelmetrics" ,r-modelmetrics)
        ("r-nlme" ,r-nlme)
        ("r-plyr" ,r-plyr)
-       ("r-reshape2" ,r-reshape2)))
+       ("r-recipes" ,r-recipes)
+       ("r-reshape2" ,r-reshape2)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/topepo/caret")
     (synopsis "Classification and regression training")
     (description
