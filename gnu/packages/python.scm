@@ -9242,16 +9242,13 @@ for atomic file system operations.")
 (define-public python-requests-toolbelt
   (package
     (name "python-requests-toolbelt")
-    (version "0.6.2")
+    (version "0.8.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                    "https://pypi.python.org/packages/"
-                    "e1/a4/a94c037bc72ad70441aff1403d3243510d2542ddca7759faaeffeb11aefe/"
-                    "requests-toolbelt-" version ".tar.gz"))
+             (uri (pypi-uri "requests-toolbelt" version))
              (sha256
               (base32
-               "15q9nrgp85nqlr4kdz1zvj8z2npafi2sr12y7fqgxbkq28j1aci6"))))
+               "1dc7l42i4080r8i4m9fj51jx367lqkai170vrv7wd93gdj9k39gn"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-betamax" ,python-betamax)
