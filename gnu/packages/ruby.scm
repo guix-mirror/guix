@@ -2570,14 +2570,14 @@ you about the changes.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.1.3")
+    (version "5.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "16r18n6b1nlky0xx2lw8c1f15gr2vm34xz5g4byjcxf88m1s07xh"))))
+         "0sgf4rsfr7jcaqsx0wwzx4l4k9xsjlwv0mzl08pxiyp1qzyx8scr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
