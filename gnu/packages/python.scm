@@ -6089,14 +6089,15 @@ implementation of D-Bus.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.9.2-r1")
+    (version "3.20.1-r1")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "apsw" version))
+        (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
+                            version ".tar.gz"))
         (sha256
           (base32
-           "0w4jb0wpx785qw42r3h4fh7gl5w2968q48i7gygybsfxck8nzffs"))))
+           "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
     (build-system python-build-system)
     (inputs
       `(("sqlite" ,sqlite)))
