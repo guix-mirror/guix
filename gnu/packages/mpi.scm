@@ -132,9 +132,7 @@ bind processes, and much more.")
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (arguments
-     `(#:configure-flags `("--enable-builtin-atomics"
-
-                           "--enable-mpi-ext=affinity" ;cr doesn't work
+     `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
 
