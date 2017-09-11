@@ -1006,3 +1006,28 @@ variable models.")
      "This package provides an implementation of dimensionality reduction via
 regression using Kernel Ridge Regression.")
     (license license:gpl3)))
+
+(define-public r-prodlim
+  (package
+    (name "r-prodlim")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prodlim" version))
+       (sha256
+        (base32
+         "0m51rkivx1zr6whdqwj66jpnkmp4385m06kkha3dp8qqf4jna9iz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)
+       ("r-lava" ,r-lava)
+       ("r-rcpp" ,r-rcpp)
+       ("r-survival" ,r-survival)))
+    (home-page "http://cran.r-project.org/web/packages/prodlim")
+    (synopsis "Product-limit estimation for censored event history analysis")
+    (description
+     "This package provides a fast and user-friendly implementation of
+nonparametric estimators for censored event history (survival) analysis with
+the Kaplan-Meier and Aalen-Johansen methods.")
+    (license license:gpl2+)))
