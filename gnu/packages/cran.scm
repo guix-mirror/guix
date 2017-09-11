@@ -1104,3 +1104,25 @@ classification is done.  It also offers an extension to functional data and
 routines for calculating certain notions of statistical depth functions.  50
 multivariate and 5 functional classification problems are included.")
     (license license:gpl2)))
+
+(define-public r-gower
+  (package
+    (name "r-gower")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gower" version))
+       (sha256
+        (base32
+         "1mbrj1lam3jfbby2j32shmmj5cn09zx3rkxbamq7q8sdg39b54gb"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/markvanderloo/gower")
+    (synopsis "Gower's distance")
+    (description
+     "This package provides tools to compute Gower's distance (or similarity)
+coefficient between records, and to compute the top-n matches between records.
+Core algorithms are executed in parallel on systems supporting OpenMP.")
+    (license license:gpl3)))
