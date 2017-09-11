@@ -471,18 +471,30 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
                 (package-upstream-name package)))
     (let* ((files    (ftp.gnu.org-files))
            (relevant (filter (lambda (file)
-                               (and (string-contains file directory)
+                               (and (string-prefix? "/gnu" file)
+                                    (string-contains file directory)
                                     (release-file? name (basename file))))
                              files)))
       (match (sort relevant (lambda (file1 file2)
                               (version>? (sans-extension (basename file1))
                                          (sans-extension (basename file2)))))
-        ((tarball _ ...)
-         (upstream-source
-          (package name)
-          (version (tarball->version tarball))
-          (urls (list (string-append "mirror://gnu/" tarball)))
-          (signature-urls (map (cut string-append <> ".sig") urls))))
+        ((and tarballs (reference _ ...))
+         (let* ((version  (tarball->version reference))
+                (tarballs (filter (lambda (file)
+                                    (string=? (sans-extension
+                                               (basename file))
+                                              (sans-extension
+                                               (basename reference))))
+                                  tarballs)))
+           (upstream-source
+            (package name)
+            (version version)
+            (urls (map (lambda (file)
+                         (string-append "mirror://gnu/"
+                                        (string-drop file
+                                                     (string-length "/gnu/"))))
+                       tarballs))
+            (signature-urls (map (cut string-append <> ".sig") urls)))))
         (()
          #f)))))
 
