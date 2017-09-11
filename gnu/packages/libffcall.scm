@@ -27,7 +27,7 @@
 (define-public libffcall
    (package
     (name "libffcall")
-    (version "1.13")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -35,7 +35,7 @@
              "mirror://gnu/libffcall/libffcall-" version ".tar.gz"))
        (sha256
         (base32
-         "1rxwkfr0p7vdv6q6x8nmn13611nsq0lnk9cspqdpzxdvgmqcw1qp"))))
+         "0v0rh3vawb8z5q40fs3kr2f9zp06n2fq4rr2ww4562nr96sd5aj1"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-build? #f))
     (synopsis "Foreign function calls from interpreters")
