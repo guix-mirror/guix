@@ -113,7 +113,8 @@
                "1ykkq0xl28ljdg61bm6gzy04ww86ajms98gix72qg6cpr6a53dar"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
-                                      "emacs-source-date-epoch.patch"))
+                                      "emacs-source-date-epoch.patch"
+                                      "emacs-unsafe-enriched-mode-translations.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Delete the bundled byte-compiled elisp files and
