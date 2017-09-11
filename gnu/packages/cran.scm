@@ -1053,3 +1053,24 @@ the Kaplan-Meier and Aalen-Johansen methods.")
 techniques from R packages and provides a common interface for calling the
 methods.")
     (license license:gpl3)))
+
+(define-public r-timedate
+  (package
+    (name "r-timedate")
+    (version "3012.100")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "timeDate" version))
+       (sha256
+        (base32
+         "0cn4h23y2y2bbg62qgm79xx4cvfla5xbpmi9hbdvkvpmm5yfyqk2"))))
+    (properties `((upstream-name . "timeDate")))
+    (build-system r-build-system)
+    (home-page "https://www.rmetrics.org")
+    (synopsis "Chronological and calendar objects")
+    (description
+     "This package provides an environment for teaching \"Financial
+Engineering and Computational Finance\" and for managing chronological and
+calendar objects.")
+    (license license:gpl2+)))
