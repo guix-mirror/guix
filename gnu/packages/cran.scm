@@ -1126,3 +1126,27 @@ multivariate and 5 functional classification problems are included.")
 coefficient between records, and to compute the top-n matches between records.
 Core algorithms are executed in parallel on systems supporting OpenMP.")
     (license license:gpl3)))
+
+(define-public r-rcpproll
+  (package
+    (name "r-rcpproll")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppRoll" version))
+       (sha256
+        (base32
+         "19xzvxym8zbighndygkq4imfwc0abh4hqyq3qrr8aakyd096iisi"))))
+    (properties `((upstream-name . "RcppRoll")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://cran.r-project.org/web/packages/RcppRoll")
+    (synopsis "Efficient rolling and windowed operations")
+    (description
+     "This package provides fast and efficient routines for common rolling /
+windowed operations.  Routines for the efficient computation of windowed mean,
+median, sum, product, minimum, maximum, standard deviation and variance are
+provided.")
+    (license license:gpl2+)))
