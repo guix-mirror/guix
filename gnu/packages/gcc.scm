@@ -354,7 +354,7 @@ Go.  It also includes runtime support libraries for these languages.")
               (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
     (supported-systems %supported-systems)
     (inputs
-     `(("isl" ,isl)
+     `(("isl" ,isl-0.11)
        ("cloog" ,cloog)
        ,@(package-inputs gcc-4.7)))))
 
@@ -670,7 +670,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.11.1")
+    (version "0.18")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -681,8 +681,7 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.gz")))
              (sha256
               (base32
-               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
-             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))
+               "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
@@ -699,6 +698,24 @@ enumeration.  It also includes an ILP solver based on generalized basis
 reduction, transitive closures on maps (which may encode infinite graphs),
 dependence analysis and bounds on piecewise step-polynomials.")
     (license lgpl2.1+)))
+
+(define-public isl-0.11
+  (package
+    (inherit isl)
+    (name "isl")
+    (version "0.11.1")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append
+                         "http://isl.gforge.inria.fr/isl-"
+                         version
+                         ".tar.bz2")
+                        (string-append %gcc-infrastructure
+                                       name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
+             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))))
 
 (define-public cloog
   (package
@@ -719,7 +736,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)
-              ("isl" ,isl)))
+              ("isl" ,isl-0.11)))
     (arguments '(#:configure-flags '("--with-isl=system")))
     (home-page "http://www.cloog.org/")
     (synopsis "Library to generate code for scanning Z-polyhedra")
