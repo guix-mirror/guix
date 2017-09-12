@@ -89,6 +89,10 @@
        #:configure-flags
        `("--disable-driverless" ; TODO: enable this
          "--disable-mutool"     ; depends on yet another PDF library (mupdf)
+
+         ;; Look for the "domain socket of CUPS" in /var/run/cups.
+         "--localstatedir=/var"
+
          ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
