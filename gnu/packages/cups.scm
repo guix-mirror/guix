@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -99,7 +99,34 @@
                          (assoc-ref %build-inputs "bash")
                          "/bin/bash")
          ,(string-append "--with-rcdir="
-                         (assoc-ref %outputs "out") "/etc/rc.d"))))
+                         (assoc-ref %outputs "out") "/etc/rc.d"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-foomatic-hardcoded-file-names
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Foomatic has hardcoded file names we need to fix.
+                      (let ((out (assoc-ref outputs "out"))
+                            (gs  (assoc-ref inputs "ghostscript")))
+                        (substitute* "filter/foomatic-rip/foomaticrip.c"
+                          (("/usr/local/lib/cups/filter")
+                           (string-append out "/lib/cups/filter")))
+                        #t)))
+                  (add-after 'install 'wrap-filters
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Some filters expect to find 'gs' in $PATH.  We cannot
+                      ;; just hard-code its absolute file name in the source
+                      ;; because foomatic-rip, for example, has tests like
+                      ;; 'startswith(cmd, "gs")'.
+                      (let ((out         (assoc-ref outputs "out"))
+                            (ghostscript (assoc-ref inputs "ghostscript")))
+                        (for-each (lambda (file)
+                                    (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append ghostscript
+                                                         "/bin")))))
+                                  (find-files (string-append
+                                               out "/lib/cups/filter")))
+                        #t))))))
     (native-inputs
      `(("glib" ,glib "bin") ; for gdbus-codegen
        ("pkg-config" ,pkg-config)))
