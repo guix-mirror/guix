@@ -2989,7 +2989,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.24.2")
+    (version "3.24.3")
     (source
      (origin
        (method url-fetch)
@@ -2998,7 +2998,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1jnw920zn4cadhgmcv2q5ylzqhwm1rmrhf3a14q8mvp38hkdgaaa"))))
+         "14w5jhpq02mbcxvn41qcj3cjfqdr3sgzl96c6glwpdrjphw61i38"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; Color management test can't reach the colord system service.
