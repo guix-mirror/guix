@@ -215,6 +215,9 @@ You have been warned.  Thanks for being so brave.
                                                 (auto-login "root")
                                                 (login-pause? #t))))
 
+    (define bare-bones-os
+      (load "examples/bare-bones.tmpl"))
+
     (list (mingetty-service (mingetty-configuration
                              (tty "tty1")
                              (auto-login "root")))
@@ -284,7 +287,11 @@ You have been warned.  Thanks for being so brave.
           ;; connections to this system to work.
           (service special-files-service-type
                    `(("/bin/sh" ,(file-append (canonical-package bash)
-                                              "/bin/sh")))))))
+                                              "/bin/sh"))))
+
+          ;; Keep a reference to BARE-BONES-OS to make sure it can be
+          ;; installed without downloading/building anything.
+          (service gc-root-service-type (list bare-bones-os)))))
 
 (define %issue
   ;; Greeting.
