@@ -424,7 +424,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "16j7i0888j2f1yp9l0nhji6cq65dy6y4nwy8868a8njbzzwavxqw"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
+    (description
+     "GCC is the GNU Compiler Collection.  It provides compiler front-ends
+for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
+It also includes runtime support libraries for these languages.")))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
