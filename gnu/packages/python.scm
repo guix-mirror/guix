@@ -1843,7 +1843,7 @@ standard library.")
 (define-public python2-unittest2
   (package (inherit python-unittest2)
     (name "python2-unittest2")
-    (version "0.5.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1852,7 +1852,12 @@ standard library.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0wbs4i4x3x7klr3v35ss6p9mcqz883i1xgcpkhvl7n2lyv6yhpda"))))
+         "0y855kmx7a8rnf81d3lh5lyxai1908xjp0laf4glwa4c8472m212"))
+       (patches
+        (search-patches "python2-unittest2-remove-argparse.patch"))))
+    (propagated-inputs
+     `(("python2-six" ,python2-six)
+       ("python2-traceback2" ,python2-traceback2)))
     (arguments
      `(#:python ,python-2
        #:tests? #f)))) ; no setup.py test command
