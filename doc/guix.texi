@@ -15277,7 +15277,7 @@ Cuirass jobs.
 Location of sqlite database which contains the build results and previously
 added specifications.
 
-@item @code{port} (default: @code{8080})
+@item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
 
 @item @code{specifications} (default: @code{#~'()})

@@ -60,7 +60,7 @@
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/run/cuirass/cuirass.db"))
   (port             cuirass-configuration-port ;integer (port)
-                    (default 8080))
+                    (default 8081))
   (specifications   cuirass-configuration-specifications)
                                   ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
