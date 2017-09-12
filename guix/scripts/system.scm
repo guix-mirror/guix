@@ -41,6 +41,7 @@
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system linux-container)
+  #:use-module (gnu system uuid)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -530,7 +531,10 @@ list of services."
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
       (format #t (G_ "  bootloader: ~a~%") bootloader-name)
-      (format #t (G_ "  root device: ~a~%") root-device)
+      (format #t (G_ "  root device: ~a~%")
+              (if (uuid? root-device)
+                  (uuid->string root-device)
+                  root-device))
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
