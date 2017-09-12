@@ -357,7 +357,7 @@ Go.  It also includes runtime support libraries for these languages.")
     (supported-systems %supported-systems)))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (version "4.9.4")
     (source (origin
               (method url-fetch)
@@ -368,8 +368,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-libvtv-runpath.patch"))))
-    (native-inputs `(("texinfo" ,texinfo)))
-    (supported-systems %supported-systems)))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
