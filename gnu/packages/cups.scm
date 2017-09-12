@@ -93,6 +93,9 @@
          ;; Look for the "domain socket of CUPS" in /var/run/cups.
          "--localstatedir=/var"
 
+         ;; Free software for the win.
+         "--with-acroread-path=evince"
+
          ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
