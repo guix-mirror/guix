@@ -967,4 +967,14 @@ being stored into the \"parameters\" file)."
                      (mount-point #$(boot-parameters-store-mount-point params))))
                  #:set-load-path? #f)))
 
+(define-gexp-compiler (operating-system-compiler (os <operating-system>)
+                                                 system target)
+  ((store-lift
+    (lambda (store)
+      ;; XXX: This is not super elegant but we can't pass SYSTEM and TARGET to
+      ;; 'operating-system-derivation'.
+      (run-with-store store (operating-system-derivation os)
+                      #:system system
+                      #:target target)))))
+
 ;;; system.scm ends here
