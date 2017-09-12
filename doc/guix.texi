@@ -27,7 +27,7 @@ Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
-Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
@@ -15246,7 +15246,7 @@ packages, as prescribed in the @file{gnu-system.scm} example spec:
                (#:branch . "master"))))
   (service cuirass-service-type
            (cuirass-configuration
-            (specifications #~(list #$spec)))))
+            (specifications #~(list '#$spec)))))
 @end example
 
 While information related to build jobs is located directly in the
