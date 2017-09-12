@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -30,6 +30,7 @@
   #:use-module (gnu packages ncurses))
 
 (define-public texinfo
+  ;; TODO: Merge with 'texinfo-latest' on the next core-updates.
   (package
     (name "texinfo")
     (version "6.3")
@@ -61,6 +62,19 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
+
+(define-public texinfo-latest
+  ;; TODO: Turn this into 'texinfo' on the next core-updates cycle.
+  (package (inherit texinfo)
+    (version "6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0qjzvbvnv9003xdrcpi3jp7y68j4hq2ciw9frh2hghh698zlnxvp"))))
+    (native-inputs '())))
 
 (define-public texinfo-5
   (package (inherit texinfo)
