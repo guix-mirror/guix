@@ -987,7 +987,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
       (method url-fetch)
@@ -996,12 +996,11 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0m6k6fcrx40n92nc1cy3z72vs1ja49sb58dj3fjp40605pzgz4pk"))))
+        "0qm908kisyjzjxvygdl18hjqxvvgkq9w0phs2g55pck277sw0bsv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
        ("glade" ,glade3)
-       ("libxml2" ,libxml2) ; XXX: required by gladeui-2.0.pc
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)))
     (native-inputs
