@@ -150,8 +150,6 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (inputs `(("gmp" ,gmp)
                 ("mpfr" ,mpfr)
                 ("mpc" ,mpc)
-                ("isl" ,isl)
-                ("cloog" ,cloog)
                 ("libelf" ,libelf)
                 ("zlib" ,zlib)))
 
@@ -354,7 +352,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
               (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
-    (supported-systems %supported-systems)))
+    (supported-systems %supported-systems)
+    (inputs
+     `(("isl" ,isl)
+       ("cloog" ,cloog)
+       ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.8)
@@ -388,6 +390,10 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"))))))
+    ;; TODO: gcc-5 doesn't need cloog.
+    ;;(inputs
+    ;; `(("isl" ,isl)
+    ;;   ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-6
   (package
@@ -401,7 +407,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
+    (inputs
+     `(("isl" ,isl)
+       ,@(package-inputs gcc-4.7)))))
+
 (define-public gcc-7
   (package
     (inherit gcc-6)
