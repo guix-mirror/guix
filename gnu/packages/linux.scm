@@ -3013,6 +3013,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
   (package
     (name "bluez")
     (version "5.45")
+    (replacement bluez/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3073,6 +3074,20 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
+
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (version "5.45")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1sb4aflgyrl7apricjipa8wx95qm69yja0lmn2f19g560c3v1b2c"))
+              (patches (search-patches "bluez-CVE-2017-1000250.patch"))))))
 
 (define-public fuse-exfat
   (package
