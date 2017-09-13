@@ -17391,6 +17391,42 @@ operating system is instantiated.  Currently the following values are
 supported:
 
 @table @code
+@item search
+Display available service type definitions that match the given regular
+expressions, sorted by relevance:
+
+@example
+$ guix system search console font
+name: console-fonts
+location: gnu/services/base.scm:729:2
+extends: shepherd-root
+description: Install the given fonts on the specified ttys (fonts are
++ per virtual console on GNU/Linux).  The value of this service is a list
++ of tty/font pairs like:
++ 
++      '(("tty1" . "LatGrkCyr-8x16"))
+relevance: 20
+
+name: mingetty
+location: gnu/services/base.scm:1048:2
+extends: shepherd-root
+description: Provide console login using the `mingetty' program.
+relevance: 2
+
+name: login
+location: gnu/services/base.scm:775:2
+extends: pam
+description: Provide a console log-in service as specified by its
++ configuration value, a `login-configuration' object.
+relevance: 2
+
+@dots{}
+@end example
+
+As for @command{guix package --search}, the result is written in
+@code{recutils} format, which makes it easy to filter the output
+(@pxref{Top, GNU recutils databases,, recutils, GNU recutils manual}).
+
 @item reconfigure
 Build the operating system described in @var{file}, activate it, and
 switch to it@footnote{This action (and the related actions
@@ -18023,7 +18059,9 @@ list of contributed rules.
 
 @item description
 This is a string giving an overview of the service type.  The string can
-contain Texinfo markup (@pxref{Overview,,, texinfo, GNU Texinfo}).
+contain Texinfo markup (@pxref{Overview,,, texinfo, GNU Texinfo}).  The
+@command{guix system search} command searches these strings and displays
+them (@pxref{Invoking guix system}).
 @end table
 
 There can be only one instance of an extensible service type such as

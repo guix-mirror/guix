@@ -79,6 +79,7 @@
             read/eval-package-expression
             location->string
             fill-paragraph
+            %text-width
             texi->plain-text
             package-description-string
             package-synopsis-string
