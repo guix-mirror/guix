@@ -388,7 +388,7 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
 
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.49"
-                    "07k3zn6kqbbyrjmknwvx5d4pnblz9s8sarxym5lgjm8abpvjp347"
+                    "0m0bhhhndfwvfhy3kc3a87qc9vqx9w61sw2zcjppisx4h2pzmfds"
                     %intel-compatible-systems
                     #:configuration-file kernel-config
                     #:patches
