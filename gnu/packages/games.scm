@@ -2563,6 +2563,44 @@ it possible to play OpenTTD without requiring the proprietary sound files from
 the original Transport Tycoon Deluxe.")
     (license license:cc-sampling-plus-1.0)))
 
+(define openttd-openmsx
+  (package
+    (name "openttd-openmsx")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://binaries.openttd.org/extra/openmsx/"
+             version "/openmsx-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "0nskq97a6fsv1v6d62zf3yb8whzhqnlh3lap3va3nzvj7csjgf7c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python2-minimal)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "INSTALL_DIR=" %output
+                            "/share/games/openttd/baseset"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'post-install
+           ;; Rename openmsx-version to openmsx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((install-directory (string-append (assoc-ref outputs "out")
+                                                     "/share/games/openttd/baseset")))
+               (rename-file (string-append install-directory "/openmsx-" ,version)
+                            (string-append install-directory "/openmsx"))
+               #t))))))
+    (home-page "http://dev.openttdcoop.org/projects/openmsx")
+    (synopsis "Music set for OpenTTD")
+    (description "OpenMSX is a music set for OpenTTD which makes it possible
+to play OpenTTD without requiring the proprietary music from the original
+Transport Tycoon Deluxe.")
+    (license license:gpl2)))
+
 (define-public openttd
   (package
     (inherit openttd-engine)
