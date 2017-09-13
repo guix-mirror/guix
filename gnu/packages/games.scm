@@ -2525,6 +2525,44 @@ OpenGFX provides you with...
 @end enumerate")
     (license license:gpl2)))
 
+(define openttd-opensfx
+  (package
+    (name "openttd-opensfx")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://binaries.openttd.org/extra/opensfx/"
+             version "/opensfx-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "03jxgp02ks31hmsdh4xh0xcpkb70ds8jakc9pfc1y9vdrdavh4p5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("catcodec" ,catcodec)
+       ("python" ,python2-minimal)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "INSTALL_DIR=" %output
+                            "/share/games/openttd/baseset/opensfx"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; Remove the time dependency of the installed tarball by setting
+             ;; the modification times if its members to 0.
+             (substitute* "scripts/Makefile.def"
+               (("-cf") " --mtime=@0 -cf"))
+             #t))
+         (delete 'configure))))
+    (home-page "http://dev.openttdcoop.org/projects/opensfx")
+    (synopsis "Base sounds for OpenTTD")
+    (description "OpenSFX is a set of free base sounds for OpenTTD which make
+it possible to play OpenTTD without requiring the proprietary sound files from
+the original Transport Tycoon Deluxe.")
+    (license license:cc-sampling-plus-1.0)))
+
 (define-public openttd
   (package
     (inherit openttd-engine)
