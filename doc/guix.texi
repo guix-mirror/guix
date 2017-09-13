@@ -3811,6 +3811,61 @@ need to be copied into place.  It copies font files to standard
 locations in the output directory.
 @end defvr
 
+@defvr {Scheme Variable} meson-build-system
+This variable is exported by @code{(guix build-system meson)}.  It
+implements the build procedure for packages that use
+@url{http://mesonbuild.com, Meson} as their build system.
+
+It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set
+of inputs, and they can be changed with the parameters @code{#:meson}
+and @code{#:ninja} if needed.  The default Meson is
+@code{meson-for-build}, which is special because it doesn't clear the
+@code{RUNPATH} of binaries and libraries when they are installed.
+
+This build system is an extension of @var{gnu-build-system}, but with the
+following phases changed to some specific for Meson:
+
+@table @code
+
+@item configure
+The phase runs @code{meson} with the flags specified in
+@code{#:configure-flags}.  The flag @code{--build-type} is always set to
+@code{plain} unless something else is specified in @code{#:build-type}.
+
+@item build
+The phase runs @code{ninja} to build the package in parallel by default, but
+this can be changed with @code{#:parallel-build?}.
+
+@item check
+The phase runs @code{ninja} with the target specified in @code{#:test-target},
+which is @code{"test"} by default.
+
+@item install
+The phase runs @code{ninja install} and can not be changed.
+@end table
+
+Apart from that, the build system also adds the following phases:
+
+@table @code
+
+@item fix-runpath
+This phase tries to locate the local directories in the package being build,
+which has libraries that some of the binaries need.  If any are found, they will
+be added to the programs @code{RUNPATH}.  It is needed because
+@code{meson-for-build} keeps the @code{RUNPATH} of binaries and libraries from
+when they are build, but often that is not the @code{RUNPATH} we want.
+Therefor it is also shrinked to the minimum needed by the program.
+
+@item glib-or-gtk-wrap
+This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
+is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+
+@item glib-or-gtk-compile-schemas
+This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
+is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+@end table
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
