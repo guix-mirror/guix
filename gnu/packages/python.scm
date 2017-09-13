@@ -9956,14 +9956,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.5.26")
+   (version "1.7.9")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "1b7l48hr88galrrc5q6k21z3sdadzxc87ppzs7k9fz4p1w8bfnvb"))))
+       "02b1bw25r1wdjs5yppb1h9igf11wj092biriv2yg8hzp5r0wrkmg"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Many tests are failing.
