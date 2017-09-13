@@ -19,6 +19,7 @@
 (define-module (test-file-systems)
   #:use-module (guix store)
   #:use-module (guix modules)
+  #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
@@ -41,7 +42,8 @@
 
 (test-assert "uuid"
   (let ((str "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))
-    (bytevector=? (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
+    (bytevector=? (uuid-bytevector
+                   (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))
                   (string->uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))))
 
 (test-assert "uuid, syntax error"
@@ -52,7 +54,7 @@
     (lambda (key proc message location form . args)
       (and (eq? proc 'uuid)
            (string-contains message "invalid UUID")
-           (equal? form '(uuid "foobar"))))))
+           (equal? form '(uuid "foobar" 'dce))))))
 
 (test-assert "file-system-needed-for-boot?"
   (let-syntax ((dummy-fs (syntax-rules ()
