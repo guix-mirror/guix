@@ -842,6 +842,7 @@ provides an optional IDE-like error list.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
+                   (flac    (assoc-ref inputs "flac"))
                    (vorbis  (assoc-ref inputs "vorbis-tools"))
                    (alsa    (assoc-ref inputs "alsa-utils"))
                    (mpg321  (assoc-ref inputs "mpg321"))
@@ -864,6 +865,9 @@ provides an optional IDE-like error list.")
                  (substitute* "emms-player-simple.el"
                    (("\"ogg123\"")
                     (string-append "\"" vorbis "/bin/ogg123\"")))
+                 (substitute* "emms-player-simple.el"
+                   (("\"mpg321\"")
+                    (string-append "\"" mpg321 "/bin/mpg321\"")))
                  (emacs-substitute-variables "emms-info-ogginfo.el"
                    ("emms-info-ogginfo-program-name"
                     (string-append vorbis "/bin/ogginfo")))
@@ -873,6 +877,11 @@ provides an optional IDE-like error list.")
                  (emacs-substitute-variables "emms-info-mp3info.el"
                    ("emms-info-mp3info-program-name"
                     (string-append mp3info "/bin/mp3info")))
+                 (emacs-substitute-variables "emms-info-metaflac.el"
+                   ("emms-info-metaflac-program-name"
+                    (string-append flac "/bin/metaflac")))
+                 (emacs-substitute-variables "emms-source-file.el"
+                   ("emms-source-file-gnu-find" (which "find")))
                  (substitute* "emms-volume-amixer.el"
                    (("\"amixer\"")
                     (string-append "\"" alsa "/bin/amixer\"")))
@@ -898,6 +907,7 @@ provides an optional IDE-like error list.")
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
     (inputs `(("alsa-utils" ,alsa-utils)
+              ("flac" ,flac)            ;for metaflac
               ("vorbis-tools" ,vorbis-tools)
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
