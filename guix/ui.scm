@@ -85,6 +85,8 @@
             string->recutils
             package->recutils
             package-specification->name+version+output
+            relevance
+            package-relevance
             string->generations
             string->duration
             matching-generations
@@ -1023,6 +1025,47 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
                                          (string-length field))))))
             extra-fields)
   (newline port))
+
+(define (relevance obj regexps metrics)
+  "Compute a \"relevance score\" for OBJ as a function of its number of
+matches of REGEXPS and accordingly to METRICS.  METRICS is list of
+field/weight pairs, where FIELD is a procedure that returns a string
+describing OBJ, and WEIGHT is a positive integer denoting the weight of this
+field in the final score.
+
+A score of zero means that OBJ does not match any of REGEXPS.  The higher the
+score, the more relevant OBJ is to REGEXPS."
+  (define (score str)
+    (let ((counts (filter-map (lambda (regexp)
+                                (match (regexp-exec regexp str)
+                                  (#f #f)
+                                  (m  (match:count m))))
+                              regexps)))
+      ;; Compute a score that's proportional to the number of regexps matched
+      ;; and to the number of matches for each regexp.
+      (* (length counts) (reduce + 0 counts))))
+
+  (fold (lambda (metric relevance)
+          (match metric
+            ((field . weight)
+             (match (field obj)
+               (#f  relevance)
+               (str (+ relevance
+                       (* (score str) weight)))))))
+        0
+        metrics))
+
+(define %package-metrics
+  ;; Metrics used to compute the "relevance score" of a package against a set
+  ;; of regexps.
+  `((,package-name . 3)
+    (,package-synopsis-string . 2)
+    (,package-description-string . 1)))
+
+(define (package-relevance package regexps)
+  "Return a score denoting the relevance of PACKAGE for REGEXPS.  A score of
+zero means that PACKAGE does not match any of REGEXPS."
+  (relevance package regexps %package-metrics))
 
 (define (string->generations str)
   "Return the list of generations matching a pattern in STR.  This function

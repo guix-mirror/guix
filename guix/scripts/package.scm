@@ -246,27 +246,8 @@ specified in MANIFEST, a manifest object."
   "Return two values: the list of packages whose name, synopsis, or
 description matches at least one of REGEXPS sorted by relevance, and the list
 of relevance scores."
-  (define (score str)
-    (let ((counts (filter-map (lambda (regexp)
-                                (match (regexp-exec regexp str)
-                                  (#f #f)
-                                  (m  (match:count m))))
-                              regexps)))
-      ;; Compute a score that's proportional to the number of regexps matched
-      ;; and to the number of matches for each regexp.
-      (* (length counts) (reduce + 0 counts))))
-
-  (define (package-score package)
-    (+ (* 3 (score (package-name package)))
-       (* 2 (match (package-synopsis package)
-              ((? string? str) (score (P_ str)))
-              (#f              0)))
-       (match (package-description package)
-         ((? string? str) (score (P_ str)))
-         (#f              0))))
-
   (let ((matches (fold-packages (lambda (package result)
-                                  (match (package-score package)
+                                  (match (package-relevance package regexps)
                                     ((? zero?)
                                      result)
                                     (score
