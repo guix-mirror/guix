@@ -57,3 +57,4 @@ gnu/packages/webkit.scm
 gnu/packages/web.scm
 gnu/packages/wordnet.scm
 gnu/packages/xiph.scm
+gnu/services/base.scm

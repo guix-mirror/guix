@@ -210,7 +210,10 @@
                  (list (service-extension etc-service-type
                                           file-systems->fstab)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Populate the @file{/etc/fstab} based on the given file
+system objects.")))
 
 (define %root-file-system-shepherd-service
   (shepherd-service
@@ -349,7 +352,10 @@ FILE-SYSTEM."
                        (service-extension fstab-service-type
                                           identity)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Provide Shepherd services to mount and unmount the given
+file systems, as well as corresponding @file{/etc/fstab} entries.")))
 
 (define user-unmount-service-type
   (shepherd-service-type
@@ -545,7 +551,11 @@ stopped before 'kill' is called."
   (service-type (name 'urandom-seed)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          urandom-seed-shepherd-service)))))
+                                          urandom-seed-shepherd-service)))
+                (description
+                 "Seed the @file{/dev/urandom} pseudo-random number
+generator (RNG) with the value recorded when the system was last shut
+down.")))
 
 (define (urandom-seed-service)
   (service urandom-seed-service-type #f))
@@ -613,7 +623,15 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
              (list `("environment"
                      ,(environment-variables->environment-file vars)))))))
    (compose concatenate)
-   (extend append)))
+   (extend append)
+   (description
+    "Populate @file{/etc/environment} with the specified environment
+variables.  The value of this service is a list of name/value pairs for
+environments variables, such as:
+
+@example
+'((\"TZ\" . \"Canada/Pacific\"))
+@end example\n")))
 
 (define (session-environment-service vars)
   "Return a service that builds the @file{/etc/environment}, which can be read
@@ -713,7 +731,15 @@ strings or string-valued gexps."
                  (list (service-extension shepherd-root-service-type
                                           console-font-shepherd-services)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Install the given fonts on the specified ttys (fonts are per
+virtual console on GNU/Linux).  The value of this service is a list of
+tty/font pairs like:
+
+@example
+'((\"tty1\" . \"LatGrkCyr-8x16\"))
+@end example\n")))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
   "This procedure is deprecated in favor of @code{console-font-service-type}.
@@ -748,7 +774,10 @@ Return a service that sets up Unicode support in @var{tty} and loads
 (define login-service-type
   (service-type (name 'login)
                 (extensions (list (service-extension pam-root-service-type
-                                                     login-pam-service)))))
+                                                     login-pam-service)))
+                (description
+                 "Provide a console log-in service as specified by its
+configuration value, a @code{login-configuration} object.")))
 
 (define* (login-service #:optional (config (login-configuration)))
   "Return a service configure login according to @var{config}, which specifies
@@ -964,7 +993,10 @@ the message of the day, among other things."
 (define agetty-service-type
   (service-type (name 'agetty)
                 (extensions (list (service-extension shepherd-root-service-type
-                                                     agetty-shepherd-service)))))
+                                                     agetty-shepherd-service)))
+                (description
+                 "Provide console login using the @command{agetty}
+program.")))
 
 (define* (agetty-service config)
   "Return a service to run agetty according to @var{config}, which specifies
@@ -1015,7 +1047,10 @@ the tty to run, among other things."
 (define mingetty-service-type
   (service-type (name 'mingetty)
                 (extensions (list (service-extension shepherd-root-service-type
-                                                     mingetty-shepherd-service)))))
+                                                     mingetty-shepherd-service)))
+                (description
+                 "Provide console login using the @command{mingetty}
+program.")))
 
 (define* (mingetty-service config)
   "Return a service to run mingetty according to @var{config}, which specifies
@@ -1184,7 +1219,11 @@ the tty to run, among other things."
                            (inherit config)
                            (name-services (append
                                            (nscd-configuration-name-services config)
-                                           name-services)))))))
+                                           name-services)))))
+                (description
+                 "Runs libc's @dfn{name service cache daemon} (nscd) with the
+given configuration---an @code{<nscd-configuration>} object.  @xref{Name
+Service Switch}, for an example.")))
 
 (define* (nscd-service #:optional (config %nscd-default-configuration))
   "Return a service that runs libc's name service cache daemon (nscd) with the
@@ -1280,7 +1319,11 @@ information on the configuration file syntax."
      (extensions
       (list (service-extension etc-service-type security-limits)
             (service-extension pam-root-service-type
-                               (lambda _ (list pam-extension))))))))
+                               (lambda _ (list pam-extension)))))
+     (description
+      "Install the specified resource usage limits by populating
+@file{/etc/security/limits.conf} and using the @code{pam_limits}
+authentication module."))))
 
 (define* (pam-limits-service #:optional (limits '()))
   "Return a service that makes selected programs respect the list of
@@ -1456,7 +1499,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
           (service-extension activation-service-type guix-activation)
           (service-extension profile-service-type
                              (compose list guix-configuration-guix))))
-   (default-value (guix-configuration))))
+   (default-value (guix-configuration))
+   (description
+    "Run the build daemon of GNU@tie{}Guix, aka. @command{guix-daemon}.")))
 
 (define* (guix-service #:optional (config %default-guix-configuration))
   "Return a service that runs the Guix build daemon according to
@@ -1554,7 +1599,10 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                                           (const %guix-publish-accounts))
                        (service-extension activation-service-type
                                           guix-publish-activation)))
-                (default-value (guix-publish-configuration))))
+                (default-value (guix-publish-configuration))
+                (description
+                 "Add a Shepherd service running @command{guix publish}, a
+command that allows you to share pre-built binaries with others over HTTP.")))
 
 (define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
   "Return a service that runs @command{guix publish} listening on @var{host}
@@ -1726,7 +1774,11 @@ item of @var{packages}."
                             (($ <udev-configuration> udev initial-rules)
                              (udev-configuration
                               (udev udev)
-                              (rules (append initial-rules rules)))))))))
+                              (rules (append initial-rules rules)))))))
+                (description
+                 "Run @command{udev}, which populates the @file{/dev}
+directory dynamically.  Get extra rules from the packages listed in the
+@code{rules} field of its value, @code{udev-configuration} object.")))
 
 (define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
@@ -1797,7 +1849,12 @@ extra rules from the packages listed in @var{rules}."
   (service-type (name 'gpm)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          gpm-shepherd-service)))))
+                                          gpm-shepherd-service)))
+                (description
+                 "Run GPM, the general-purpose mouse daemon, with the given
+command-line options.  GPM allows users to use the mouse in the console,
+notably to select, copy, and paste text.  The default options use the
+@code{ps2} protocol, which works for both USB and PS/2 mice.")))
 
 (define* (gpm-service #:key (gpm gpm)
                       (options '("-m" "/dev/input/mice" "-t" "ps2")))
