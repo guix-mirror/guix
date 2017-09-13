@@ -7570,10 +7570,7 @@ reading and writing MessagePack data.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/n/netaddr/netaddr-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "netaddr" version))
        (sha256
          (base32
           "1zdfadvpq4lmcqzr383gywxn4xyn355kj1n3lk9q2l03vmyfrbiq"))))
