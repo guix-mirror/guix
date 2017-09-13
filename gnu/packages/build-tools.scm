@@ -93,6 +93,24 @@ files}, are written in a custom domain-specific language (DSL) that resembles
 Python.")
     (license license:asl2.0)))
 
+(define-public meson-for-build
+  (package
+    (inherit meson)
+    (name "meson-for-build")
+    (version "0.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vyp9rkymzzzilhnf04ryszslyp9a0y0wf4agyijd4w5lcnqlcbc"))
+              (patches (search-patches "meson-for-build-rpath.patch"))))
+
+    ;; People should probably install "meson", not "meson-for-build".
+    (properties `((hidden? . #t)))))
+
 (define-public premake4
   (package
     (name "premake")
