@@ -2427,17 +2427,19 @@ and a game metadata scraper.")
          ;; The build process fails if the configure script is passed the
          ;; option "--enable-fast-install".
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs (configure-flags '())
+                     #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lzo (assoc-ref inputs "lzo")))
                (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         ;; Provide the "lzo" path.
-                         (string-append "--with-liblzo2="
-                                        lzo "/lib/liblzo2.a")
-                         ;; Put the binary in 'bin' instead of 'games'.
-                         "--binary-dir=bin"))))))))
+                (apply system* "./configure"
+                       (string-append "--prefix=" out)
+                       ;; Provide the "lzo" path.
+                       (string-append "--with-liblzo2="
+                                      lzo "/lib/liblzo2.a")
+                       ;; Put the binary in 'bin' instead of 'games'.
+                       "--binary-dir=bin"
+                       configure-flags))))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("allegro" ,allegro-4)
@@ -2464,10 +2466,6 @@ engine.  When you start it you will be prompted to download a graphics set.")
     ;; different terms.
     (license (list license:bsd-3 license:gpl2 license:lgpl2.1+ license:zlib))))
 
-;; TODO Add 'openttd-opengfx' and 'openttd-openmsx' packages and make
-;; 'openttd' a wrapper around them.  The engine is playable by itself,
-;; but it asks a user to download graphics if it's not found.
-
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
@@ -2485,7 +2483,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
      '(#:make-flags (list "CC=gcc"
                           (string-append "INSTALL_DIR="
                                          (assoc-ref %outputs "out")
-                                         "/share/openttd/baseset"))
+                                         "/share/games/openttd/baseset/opengfx"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -2606,22 +2604,27 @@ Transport Tycoon Deluxe.")
     (inherit openttd-engine)
     (name "openttd")
     (arguments
-     (substitute-keyword-arguments (package-arguments openttd-engine)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'install-data
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let*
-                   ((opengfx (assoc-ref inputs "opengfx"))
-                    (out (assoc-ref outputs "out"))
-                    (gfx-dir
-                     (string-append out
-                                    "/share/games/openttd/baseset/opengfx")))
-                 (mkdir-p gfx-dir)
-                 (copy-recursively opengfx gfx-dir))
-               #t))))))
+     `(#:configure-flags
+       (list (string-append "--with-midi=" (assoc-ref %build-inputs "timidity++")
+                            "/bin/timidity"))
+       ,@(substitute-keyword-arguments (package-arguments openttd-engine)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'install 'install-data
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (for-each
+                    (lambda (input)
+                      (copy-recursively (assoc-ref inputs input)
+                                        (assoc-ref outputs "out")))
+                    (list "opengfx" "openmsx" "opensfx"))
+                   #t)))))))
+    (inputs
+     `(("timidity++" ,timidity++)
+       ,@(package-inputs openttd-engine)))
     (native-inputs
      `(("opengfx" ,openttd-opengfx)
+       ("openmsx" ,openttd-openmsx)
+       ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
 
 (define-public pinball
