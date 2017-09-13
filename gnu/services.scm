@@ -23,6 +23,7 @@
   #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix profiles)
+  #:use-module (guix discovery)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((guix utils) #:select (source-properties->location))
@@ -52,6 +53,8 @@
             service-type-description
             service-type-location
 
+            %service-type-path
+            fold-service-types
 
             service
             service?
@@ -164,6 +167,27 @@
           (number->string (object-address type) 16)))
 
 (set-record-type-printer! <service-type> write-service-type)
+
+(define %distro-root-directory
+  ;; Absolute file name of the module hierarchy.
+  (dirname (search-path %load-path "guix.scm")))
+
+(define %service-type-path
+  ;; Search path for service types.
+  (make-parameter `((,%distro-root-directory . "gnu/services")
+                    (,%distro-root-directory . "gnu/system"))))
+
+(define* (fold-service-types proc seed
+                             #:optional
+                             (modules (all-modules (%service-type-path))))
+  "For each service type exported by one of MODULES, call (PROC RESULT).  SEED
+is used as the initial value of RESULT."
+  (fold-module-public-variables (lambda (object result)
+                                  (if (service-type? object)
+                                      (proc object result)
+                                      result))
+                                '()
+                                modules))
 
 ;; Services of a given type.
 (define-record-type <service>
