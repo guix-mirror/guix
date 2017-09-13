@@ -312,6 +312,7 @@ SCM_TESTS =					\
   tests/workers.scm				\
   tests/zlib.scm				\
   tests/file-systems.scm			\
+  tests/uuid.scm				\
   tests/system.scm				\
   tests/services.scm				\
   tests/scripts-build.scm			\
