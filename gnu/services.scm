@@ -49,6 +49,9 @@
             service-type-compose
             service-type-extend
             service-type-default-value
+            service-type-description
+            service-type-location
+
 
             service
             service?
@@ -145,7 +148,15 @@
 
   ;; Optional default value for instances of this type.
   (default-value service-type-default-value       ;Any
-                 (default &no-default-value)))
+                 (default &no-default-value))
+
+  ;; Meta-data.
+  (description  service-type-description          ;string
+                (default #f))
+  (location     service-type-location             ;<location>
+                (default (and=> (current-source-location)
+                                source-properties->location))
+                (innate)))
 
 (define (write-service-type type port)
   (format port "#<service-type ~a ~a>"

@@ -18020,6 +18020,10 @@ Udev extensions are composed into a list of rules, but the udev service
 value is itself a @code{<udev-configuration>} record.  So here, we
 extend that record by appending the list of rules it contains to the
 list of contributed rules.
+
+@item description
+This is a string giving an overview of the service type.  The string can
+contain Texinfo markup (@pxref{Overview,,, texinfo, GNU Texinfo}).
 @end table
 
 There can be only one instance of an extensible service type such as
