@@ -1249,6 +1249,33 @@ datetime module, available in Python 2.3+.")
 (define-public python2-parsedatetime
   (package-with-python2 python-parsedatetime))
 
+(define-public python-schedule
+  (package
+    (name "python-schedule")
+    (version "0.4.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "schedule" version))
+      (sha256
+       (base32
+        "0vplyjcbfrq50sphlwya749z8p2pcyi2nycw3518i0qpd9a6189i"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/dbader/schedule")
+    (synopsis "Schedule periodic function calls in Python")
+    (description
+     "Schedule is an in-process scheduler for periodic jobs that uses the
+builder pattern for configuration.  Schedule lets you run Python functions (or
+any other callable) periodically at pre-determined intervals using a simple,
+human-friendly syntax.")
+    (license license:expat)))
+
+(define-public python2-schedule
+  (package-with-python2 python-schedule))
+
 (define-public python-pandas
   (package
     (name "python-pandas")
