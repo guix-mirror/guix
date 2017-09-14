@@ -3187,6 +3187,12 @@ and copy/paste text in the console and in xterm.")
      '(#:phases (modify-phases %standard-phases
                  (add-after 'build 'build-static
                    (lambda _ (zero? (system* "make" "static"))))
+                 (add-after 'install 'install-bash-completion
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (install-file "btrfs-completion"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/etc/bash_completion.d"))
+                     #t))
                  (add-after 'install 'install-static
                    (let ((staticbin (string-append (assoc-ref %outputs "static")
                                                   "/bin")))
