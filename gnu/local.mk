@@ -364,6 +364,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
   %D%/packages/simh.scm				\
+  %D%/packages/simulation.scm			\
   %D%/packages/skarnet.scm			\
   %D%/packages/skribilo.scm			\
   %D%/packages/slang.scm			\
@@ -895,6 +896,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
+  %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjpeg-CVE-2017-12982.patch		\
   %D%/packages/patches/openjpeg-CVE-2017-14040.patch		\
   %D%/packages/patches/openjpeg-CVE-2017-14041.patch		\
