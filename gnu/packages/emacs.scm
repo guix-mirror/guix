@@ -3329,7 +3329,7 @@ strings, and code folding.")
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/jrblevin"
@@ -3338,7 +3338,7 @@ strings, and code folding.")
               (file-name (string-append "markdown-mode-" version ".el"))
               (sha256
                (base32
-                "04isd2sdnms9acpmkd6n7b7y7j0x2kank2kry0zwbxs3bwdavgav"))))
+                "152whyrq3dqlqy5wv4mdd94kmal19hs5kwaxjcp2gp2r97lsmdmi"))))
     (build-system emacs-build-system)
     (home-page "http://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
