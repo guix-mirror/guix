@@ -818,7 +818,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.20p2")
+    (version "1.8.21p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -828,7 +828,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1na5likm1srnd1g5sjx7b0543sczw0yppacyqsazfdg9b48awhmx"))
+                "0s33szq6q59v5s377l4v6ybsdy7pfq6sz7y364j4x09ssdn79ibl"))
               (modules '((guix build utils)))
               (snippet
                '(delete-file-recursively "lib/zlib"))))
@@ -871,7 +871,8 @@ system administrator.")
                 "$(TMPDIR)/dummy")
                (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
                 ;; Don't try to create /var/db/sudo.
-                "$(TMPDIR)/dummy")))))
+                "$(TMPDIR)/dummy"))
+             #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
