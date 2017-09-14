@@ -49,7 +49,7 @@
       ((or 'file #f)
        (copy-file (uri-path uri) file))
       (_
-       (url-fetch url file)))
+       (url-fetch url file #:mirrors %mirrors)))
     file))
 
 (define* (download-to-store* url #:key (verify-certificate? #t))
