@@ -403,20 +403,10 @@ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch
                               "0mpl5mc9s0bs2ls9hvl8dfm8vfaicx87j3n32nswqj4yk61inma5"))))))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.87"
-                    "0yiqs4i4ydgb2kg8xdyqk9rkhymrnd2dw7jf9wnn5kxfwc2nbqpj"
+  (make-linux-libre "4.4.88"
+                    "0ds5jxh8p7f8yk55i1xbvz0xmgp4nc7g1xka23c4mcbal2v9v5b2"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4a01092a5fa819397484fe2b50e9518356858156")
-                            (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
-                            (sha256
-                             (base32
-                              "0zmkw9zvzpwy2ihiyfrw6mrf8qzv77cm23lxadr20qvzqlc1xzb3"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
   (make-linux-libre "4.1.43"
