@@ -46,6 +46,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -53,14 +54,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.16.6")
+    (version "2.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08abxbhi2n1pfby9f2c20z8mpmbvbs2z7vf0p5ckq4jkz46na8zw"))))
+                "1383wlv98l8fwmhzy0fad82a44h5svm89c1kpa03wsp37mmf90xm"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -69,7 +70,16 @@
                           "-DPORT=GTK"
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
-                           (assoc-ref %outputs "out") "/lib"))
+                           (assoc-ref %outputs "out") "/lib")
+
+                          ;; XXX Adding GStreamer GL support would apparently
+                          ;; require adding gst-plugins-bad to the inputs,
+                          ;; which might entail a security risk as a result of
+                          ;; the plugins of dubious code quality that are
+                          ;; included.  More investigation is needed.  For
+                          ;; now, we explicitly disable it to prevent an error
+                          ;; at configuration time.
+                          "-DUSE_GSTREAMER_GL=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -112,6 +122,7 @@
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)
        ("libsecret" ,libsecret)
+       ("libtasn1" ,libtasn1)
        ("libwebp" ,libwebp)
        ("libxcomposite" ,libxcomposite)
        ("libxml2" ,libxml2)
