@@ -15367,15 +15367,8 @@ packages, as prescribed in the @file{gnu-system.scm} example spec:
 (let ((spec #~((#:name . "guix")
                (#:url . "git://git.savannah.gnu.org/guix.git")
                (#:load-path . ".")
-
-               ;; Here we must provide an absolute file name.
-               ;; We take jobs from one of the examples provided
-               ;; by Cuirass.
-               (#:file . #$(file-append
-                            cuirass
-                            "/tests/gnu-system.scm"))
-
-               (#:proc . hydra-jobs)
+               (#:file . "build-aux/cuirass/gnu-system.scm")
+               (#:proc . cuirass-jobs)
                (#:arguments (subset . "hello"))
                (#:branch . "master"))))
   (service cuirass-service-type
