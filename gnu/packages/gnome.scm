@@ -6420,7 +6420,7 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.9")
+    (version "2.2.10")
     (source
      (origin
        (method url-fetch)
@@ -6428,7 +6428,7 @@ only know by its Unicode name or code point.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vnl6raxbvc4hacg3pr6sqyjh707d304dhk5nyhlp7m0m1y3j756"))))
+         "1jw4has7lbp77lqmzvnnjmqcf0lacjfnka873lkkwdyrpzc4c1q4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
