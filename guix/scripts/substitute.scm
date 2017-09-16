@@ -959,6 +959,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                                       progress)))
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
+      (close-port input)
 
       ;; Skip a line after what 'progress-proc' printed, and another one to
       ;; visually separate substitutions.
