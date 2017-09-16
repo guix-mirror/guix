@@ -646,6 +646,11 @@ fi\n")))
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
                          (default-/etc/hosts (operating-system-host-name os))))
+       ;; Write the operating-system-host-name to /etc/hostname to prevent
+       ;; NetworkManager from changing the system's hostname when connecting
+       ;; to certain networks.  Some discussion at
+       ;; https://lists.gnu.org/archive/html/help-guix/2017-09/msg00037.html
+       ("hostname" ,(plain-file "hostname" (operating-system-host-name os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
