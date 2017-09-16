@@ -719,6 +719,9 @@ Zoner Draw version 4 and 5.")
          (add-after 'unpack 'bootstrap
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "DICPATH")
+                                (files '("share/hunspell")))))
     (home-page "https://hunspell.github.io/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
