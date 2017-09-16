@@ -27,6 +27,7 @@
   #:use-module (guix base64)
   #:use-module (guix ftp-client)
   #:use-module (guix build utils)
+  #:use-module (guix utils)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
@@ -45,7 +46,7 @@
             url-fetch
             byte-count->string
             current-terminal-columns
-            progress-proc
+            progress-reporter/file
             uri-abbreviation
             nar-uri-abbreviation
             store-path-abbreviation))
@@ -148,65 +149,97 @@ Otherwise return STORE-PATH."
    (define time-monotonic time-tai))
   (else #t))
 
-(define* (progress-proc file size
-                        #:optional (log-port (current-output-port))
-                        #:key (abbreviation basename))
-  "Return a procedure to show the progress of FILE's download, which is SIZE
-bytes long.  The returned procedure is suitable for use as an argument to
-`dump-port'.  The progress report is written to LOG-PORT, with ABBREVIATION
-used to shorten FILE for display."
-  ;; XXX: Because of <http://bugs.gnu.org/19939> this procedure is often not
-  ;; called as frequently as we'd like too; this is especially bad with Nginx
-  ;; on hydra.gnu.org, which returns whole nars as a single chunk.
-  (let ((start-time #f))
-    (let-syntax ((with-elapsed-time
-                     (syntax-rules ()
-                       ((_ elapsed body ...)
-                        (let* ((now     (current-time time-monotonic))
-                               (elapsed (and start-time
-                                             (duration->seconds
-                                              (time-difference now
-                                                               start-time)))))
-                          (unless start-time
-                            (set! start-time now))
-                          body ...)))))
+
+;; TODO: replace '(@ (guix build utils) dump-port))'.
+(define* (dump-port* in out
+                     #:key (buffer-size 16384)
+                     (reporter (make-progress-reporter noop noop noop)))
+  "Read as much data as possible from IN and write it to OUT, using chunks of
+BUFFER-SIZE bytes.  After each successful transfer of BUFFER-SIZE bytes or
+less, report the total number of bytes transferred to the REPORTER, which
+should be a <progress-reporter> object."
+  (define buffer
+    (make-bytevector buffer-size))
+
+  (call-with-progress-reporter reporter
+    (lambda (report)
+      (let loop ((total 0)
+                 (bytes (get-bytevector-n! in buffer 0 buffer-size)))
+        (or (eof-object? bytes)
+            (let ((total (+ total bytes)))
+              (put-bytevector out buffer 0 bytes)
+              (report total)
+              (loop total (get-bytevector-n! in buffer 0 buffer-size))))))))
+
+(define (rate-limited proc interval)
+  "Return a procedure that will forward the invocation to PROC when the time
+elapsed since the previous forwarded invocation is greater or equal to
+INTERVAL (a time-duration object), otherwise does nothing and returns #f."
+  (let ((previous-at #f))
+    (lambda args
+      (let* ((now (current-time time-monotonic))
+             (forward-invocation (lambda ()
+                                   (set! previous-at now)
+                                   (apply proc args))))
+        (if previous-at
+            (let ((elapsed (time-difference now previous-at)))
+              (if (time>=? elapsed interval)
+                  (forward-invocation)
+                  #f))
+            (forward-invocation))))))
+
+(define* (progress-reporter/file file size
+                                 #:optional (log-port (current-output-port))
+                                 #:key (abbreviation basename))
+  "Return a <progress-reporter> object to show the progress of FILE's download,
+which is SIZE bytes long.  The progress report is written to LOG-PORT, with
+ABBREVIATION used to shorten FILE for display."
+  (let ((start-time (current-time time-monotonic))
+        (transferred 0))
+    (define (render)
+      "Write the progress report to LOG-PORT."
+      (define elapsed
+        (duration->seconds
+         (time-difference (current-time time-monotonic) start-time)))
       (if (number? size)
-          (lambda (transferred cont)
-            (with-elapsed-time elapsed
-              (let* ((%          (* 100.0 (/ transferred size)))
-                     (throughput (if elapsed
-                                     (/ transferred elapsed)
-                                     0))
-                     (left       (format #f " ~a  ~a"
-                                         (abbreviation file)
-                                         (byte-count->string size)))
-                     (right      (format #f "~a/s ~a ~a~6,1f%"
-                                         (byte-count->string throughput)
-                                         (seconds->string elapsed)
-                                         (progress-bar %) %)))
-                (display "\r\x1b[K" log-port)
-                (display (string-pad-middle left right
-                                            (current-terminal-columns))
-                         log-port)
-                (flush-output-port log-port)
-                (cont))))
-          (lambda (transferred cont)
-            (with-elapsed-time elapsed
-              (let* ((throughput (if elapsed
-                                     (/ transferred elapsed)
-                                     0))
-                     (left       (format #f " ~a"
-                                         (abbreviation file)))
-                     (right      (format #f "~a/s ~a | ~a transferred"
-                                         (byte-count->string throughput)
-                                         (seconds->string elapsed)
-                                         (byte-count->string transferred))))
-                (display "\r\x1b[K" log-port)
-                (display (string-pad-middle left right
-                                            (current-terminal-columns))
-                         log-port)
-                (flush-output-port log-port)
-                (cont))))))))
+          (let* ((%  (* 100.0 (/ transferred size)))
+                 (throughput (/ transferred elapsed))
+                 (left       (format #f " ~a  ~a"
+                                     (abbreviation file)
+                                     (byte-count->string size)))
+                 (right      (format #f "~a/s ~a ~a~6,1f%"
+                                     (byte-count->string throughput)
+                                     (seconds->string elapsed)
+                                     (progress-bar %) %)))
+            (display "\r\x1b[K" log-port)
+            (display (string-pad-middle left right
+                                        (current-terminal-columns))
+                     log-port)
+            (flush-output-port log-port))
+          (let* ((throughput (/ transferred elapsed))
+                 (left       (format #f " ~a"
+                                     (abbreviation file)))
+                 (right      (format #f "~a/s ~a | ~a transferred"
+                                     (byte-count->string throughput)
+                                     (seconds->string elapsed)
+                                     (byte-count->string transferred))))
+            (display "\r\x1b[K" log-port)
+            (display (string-pad-middle left right
+                                        (current-terminal-columns))
+                     log-port)
+            (flush-output-port log-port))))
+
+    (progress-reporter
+     (start render)
+     ;; Report the progress every 300ms or longer.
+     (report
+      (let ((rate-limited-render
+             (rate-limited render (make-time time-monotonic 300000000 0))))
+        (lambda (value)
+          (set! transferred value)
+          (rate-limited-render))))
+     ;; Don't miss the last report.
+     (stop render))))
 
 (define* (uri-abbreviation uri #:optional (max-length 42))
   "If URI's string representation is larger than MAX-LENGTH, return an
@@ -264,9 +297,10 @@ out if the connection could not be established in less than TIMEOUT seconds."
                          (dirname (uri-path uri)))))
     (call-with-output-file file
       (lambda (out)
-        (dump-port in out
-                   #:buffer-size %http-receive-buffer-size
-                   #:progress (progress-proc (uri-abbreviation uri) size))))
+        (dump-port* in out
+                    #:buffer-size %http-receive-buffer-size
+                    #:reporter (progress-reporter/file
+                                (uri-abbreviation uri) size))))
 
     (ftp-close conn))
     (newline)
@@ -755,10 +789,10 @@ certificates; otherwise simply ignore them."
            (lambda (p)
              (if (port? bv-or-port)
                  (begin
-                   (dump-port bv-or-port p
-                              #:buffer-size %http-receive-buffer-size
-                              #:progress (progress-proc (uri-abbreviation uri)
-                                                        size))
+                   (dump-port* bv-or-port p
+                               #:buffer-size %http-receive-buffer-size
+                               #:reporter (progress-reporter/file
+                                           (uri-abbreviation uri) size))
                    (newline))
                  (put-bytevector p bv-or-port))))
          file))
@@ -863,8 +897,8 @@ otherwise simply ignore them."
                               hashes))
                 content-addressed-mirrors))
 
-  ;; Make this unbuffered so 'progress-proc' works as expected.  _IOLBF means
-  ;; '\n', not '\r', so it's not appropriate here.
+  ;; Make this unbuffered so 'progress-report/file' works as expected.  _IOLBF
+  ;; means '\n', not '\r', so it's not appropriate here.
   (setvbuf (current-output-port) _IONBF)
 
   (setvbuf (current-error-port) _IOLBF)
@@ -878,9 +912,5 @@ otherwise simply ignore them."
        (format (current-error-port) "failed to download ~s from ~s~%"
                file url)
        #f))))
-
-;;; Local Variables:
-;;; eval: (put 'with-elapsed-time 'scheme-indent-function 1)
-;;; End:
 
 ;;; download.scm ends here

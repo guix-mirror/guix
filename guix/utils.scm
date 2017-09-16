@@ -33,6 +33,7 @@
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
+  #:use-module (guix records)
   #:use-module ((guix build utils) #:select (dump-port mkdir-p))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 format)
@@ -94,7 +95,13 @@
             call-with-decompressed-port
             compressed-output-port
             call-with-compressed-output-port
-            canonical-newline-port))
+            canonical-newline-port
+
+            <progress-reporter>
+            progress-reporter
+            make-progress-reporter
+            progress-reporter?
+            call-with-progress-reporter))
 
 
 ;;;
@@ -747,3 +754,26 @@ a location object."
   `((line     . ,(and=> (location-line loc) 1-))
     (column   . ,(location-column loc))
     (filename . ,(location-file loc))))
+
+
+;;;
+;;; Progress reporter.
+;;;
+
+(define-record-type* <progress-reporter>
+  progress-reporter make-progress-reporter progress-reporter?
+  (start   progress-reporter-start)     ; thunk
+  (report  progress-reporter-report)    ; procedure
+  (stop    progress-reporter-stop))     ; thunk
+
+(define (call-with-progress-reporter reporter proc)
+  "Start REPORTER for progress reporting, and call @code{(@var{proc} report)}
+with the resulting report procedure.  When @var{proc} returns, the REPORTER is
+stopped."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (dynamic-wind start (lambda () (proc report)) stop))))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)
+;;; End:
