@@ -490,9 +490,10 @@ netcat implementation that supports TLS.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
-      (sha256
-       (base32
-        "0ry6vhfkhds28sg232hngwfnkqihsxv9r8w92c6nz45r7w56qk0y"))))
+              (patches (search-patches "python-acme-dont-use-openssl-rand.patch"))
+              (sha256
+               (base32
+                "0ry6vhfkhds28sg232hngwfnkqihsxv9r8w92c6nz45r7w56qk0y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
