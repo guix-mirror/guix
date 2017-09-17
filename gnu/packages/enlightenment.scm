@@ -149,6 +149,16 @@
                            "--enable-drm")
        #:phases
        (modify-phases %standard-phases
+         ;; If we don't hardcode the location of libcurl.so then we
+         ;; have to wrap the outputs of efl's dependencies in curl.
+         (add-after 'unpack 'hardcode-libcurl-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((curl (assoc-ref inputs "curl"))
+                    (lib  (string-append curl "/lib/")))
+               (substitute* "src/lib/ecore_con/ecore_con_url_curl.c"
+                 (("libcurl.so.?" libcurl) ; libcurl.so.[45]
+                  (string-append lib libcurl)))
+               #t)))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
