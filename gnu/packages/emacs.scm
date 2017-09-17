@@ -1979,6 +1979,7 @@ serve files and directory listings.")
     (propagated-inputs
      `(("emacs-simple-httpd" ,emacs-simple-httpd)
        ("emacs-js2-mode" ,emacs-js2-mode)))
+    (arguments '(#:include '("\\.el$" "\\.js$" "\\.html$")))
     (home-page "https://github.com/skeeto/skewer-mode")
     (synopsis "Live web development in Emacs")
     (description
