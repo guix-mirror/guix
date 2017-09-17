@@ -207,6 +207,6 @@ integral form.  Physical processes such as phase change, droplet transport and
 chemical reaction can be modelled.  Numerical methods are included to deal with
 sharp gradients, such as those encountered in flows with shock waves and flows
 with gas/liquid interfaces.  Large problems may be split into smaller, connected
-problems for efficient solution on parallel systems")
+problems for efficient solution on parallel systems.")
     (license license:gpl3+)
     (home-page "https://openfoam.org")))
