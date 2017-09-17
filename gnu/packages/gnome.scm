@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -932,7 +932,7 @@ database is translated at Transifex.")
 (define-public hicolor-icon-theme
   (package
     (name "hicolor-icon-theme")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
       (method url-fetch)
@@ -940,7 +940,7 @@ database is translated at Transifex.")
                           "hicolor-icon-theme-" version ".tar.xz"))
       (sha256
        (base32
-        "1k1kf2c5zbqh31nglc3nxs9j6wr083k9kjyql8p22ccc671mmi4w"))))
+        "1n59i3al3zx6p90ff0l43gzpzmlqnzm6hf5cryxqrlbi48sq8x1i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
