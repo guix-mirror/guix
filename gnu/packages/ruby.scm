@@ -49,7 +49,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (replacement ruby-2.4.1)
+    (replacement ruby-2.4.2)
     (version "2.4.0")
     (source
      (origin
@@ -103,11 +103,11 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
-(define-public ruby-2.4.1
+(define-public ruby-2.4.2
   (package
     (inherit ruby)
     (name "ruby")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -116,15 +116,12 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0m763zf2v0jhrha3cx21g4dif6vc9gm714invs8h3sg35ncskj2g"))
+         "0dgp4ypk3smrsbh2c249n5pl6nqhpd2igq9484dbsh81sf08k2kl"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))
-       (patches
-        (search-patches "ruby-rubygems-2612-ruby24.patch"
-                        "ruby-rubygems-2613-ruby24.patch"))))))
+                   #t))))))
 
 (define-public ruby-2.3
   (package

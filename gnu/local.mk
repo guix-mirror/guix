@@ -1012,8 +1012,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
-  %D%/packages/patches/ruby-rubygems-2612-ruby24.patch		\
-  %D%/packages/patches/ruby-rubygems-2613-ruby24.patch		\
   %D%/packages/patches/ruby-2.2.7-rubygems-2613-ruby22.patch	\
   %D%/packages/patches/ruby-2.3.4-rubygems-2613-ruby23.patch	\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
