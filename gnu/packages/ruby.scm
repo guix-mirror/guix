@@ -126,7 +126,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.3
   (package
     (inherit ruby)
-    (version "2.3.4")
+    (version "2.3.5")
     (source
      (origin
        (method url-fetch)
@@ -135,9 +135,8 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "132p5kc1sx97svbx04g40pz5pr7p8f6jlmnq5r2prlcz5q1xj71l"))
+         "1npzcnq5kh0f9y88w5gj4v6ln8csr91361k3r43dmhlhn6mpsfkx"))
        (modules '((guix build utils)))
-       (patches (search-patches "ruby-2.3.4-rubygems-2613-ruby23.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
