@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,8 @@
                     (default "/var/run/cuirass/cuirass.db"))
   (port             cuirass-configuration-port ;integer (port)
                     (default 8081))
+  (host             cuirass-configuration-host ;string
+                    (default "localhost"))
   (specifications   cuirass-configuration-specifications)
                                   ;gexp that evaluates to specification-alist
   (use-substitutes? cuirass-configuration-use-substitutes? ;boolean
@@ -84,6 +87,7 @@
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
          (port             (cuirass-configuration-port config))
+         (host             (cuirass-configuration-host config))
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
          (one-shot?        (cuirass-configuration-one-shot? config))
@@ -100,6 +104,7 @@
                             #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
                             "--port" #$(number->string port)
+                            "--listen" #$host
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
                             #$@(if one-shot? '("--one-shot") '())
