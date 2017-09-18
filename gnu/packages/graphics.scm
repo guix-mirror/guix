@@ -72,14 +72,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.78a")
+    (version "2.79")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.blender.org/source/"
+              (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "1byf1klrvm8fdw2libx7wldz2i6lblp9nih6y58ydh00paqi8jh1"))))
+                "16f84mdzkmwjmqahjj64kbyk4kagdj4mcr8qjazs1952d7kh7pm9"))))
     (build-system cmake-build-system)
     (arguments
      `(;; Test files are very large and not included in the release tarball.
@@ -136,7 +136,7 @@
        ("openal" ,openal)
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
-    (home-page "http://blender.org/")
+    (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
     (description
      "Blender is a 3D graphics creation suite.  It supports the entirety of
