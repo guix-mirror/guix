@@ -610,6 +610,10 @@ fi
 # See <http://bugs.gnu.org/22650>.
 umask 022
 
+# Allow Hunspell-based applications (IceCat, LibreOffice, etc.) to
+# find dictionaries.
+export DICPATH=\"$HOME/.guix-profile/share/hunspell:/run/current-system/profile/share/hunspell\"
+
 # Allow GStreamer-based applications to find plugins.
 export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
 
