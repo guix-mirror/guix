@@ -700,7 +700,7 @@ failure."
 be determined."
     (syntax-case s ()
       ((_)
-       (match (assq 'filename (syntax-source s))
+       (match (assq 'filename (or (syntax-source s) '()))
          (('filename . (? string? file-name))
           ;; If %FILE-PORT-NAME-CANONICALIZATION is 'relative, then FILE-NAME
           ;; can be relative.  In that case, we try to find out at run time
@@ -713,7 +713,7 @@ be determined."
                  (dirname file-name))
                 (else
                  #`(absolute-dirname #,file-name))))
-         (_
+         (#f
           #f))))))
 
 ;; A source location.
