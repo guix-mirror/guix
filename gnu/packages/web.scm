@@ -107,7 +107,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0fn1778mxhf78np2d8qlycg1c2ak18rxax41plahasca4clc3z3i"))))
+               "0fn1778mxhf78np2d8qlycg1c2ak18rxax41plahasca4clc3z3i"))
+             (patches (search-patches "httpd-CVE-2017-9798.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
