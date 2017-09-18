@@ -436,6 +436,9 @@ You are advised to pay attention if your email client changes anything
 like line breaks or indentation which could potentially break the
 patches.
 
+When a bug is resolved, please close the thread by sending an email to
+@email{@var{NNN}-done@@debbugs.gnu.org}.
+
 @unnumberedsubsec Sending a Patch Series
 @anchor{Sending a Patch Series}
 @cindex patch series
