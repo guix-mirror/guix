@@ -550,6 +550,8 @@ propagate their changes to their respective configuration files.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)
+       ("shared-mime-info" ,shared-mime-info)
+       ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
      `(("qtbase" ,qtbase)))
