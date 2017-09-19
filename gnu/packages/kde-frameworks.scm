@@ -747,9 +747,11 @@ translation scripting.")
                 "01m4q3l2yq83f2dpbv6jry7cjkj6bqdgfpy5b8byaf1gf9w2firs"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("libxscrnsaver" ,libxscrnsaver) ; X-Screensaver based poller, fallback mode
+       ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Reporting of idle time of user and system")
