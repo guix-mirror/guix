@@ -2145,7 +2145,20 @@ started on demand.")
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
        ("kdoctools" ,kdoctools)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase)
+       ;; optional:
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("kio" ,kio)
+       ("kplotting" ,kplotting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kdewebkit" ,kdewebkit)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtwebkit" ,qtwebkit)
+       ("sonnet" ,sonnet)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
