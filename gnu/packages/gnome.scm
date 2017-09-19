@@ -6779,3 +6779,65 @@ automatically and it can stream songs from online music services and charts.")
      "A collection of GStreamer video filters and effects to be used in
 photo-booth-like software, such as Cheese.")
     (license license:gpl2+)))
+
+(define-public cheese
+  (package
+    (name "cheese")
+    (version "3.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wpks2lnr8va9wxgmj26dwmhlcb3vamhpxkqi8xaan6q25635l16"))))
+    (arguments
+     ;; Tests require GDK.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* "Makefile"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'install 'wrap-cheese
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out             (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/cheese")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("gnome-video-effects" ,gnome-video-effects)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxtst" ,libxtst)))
+    (home-page "https://wiki.gnome.org/Apps/Cheese")
+    (synopsis "Webcam photo booth software for GNOME")
+    (description
+     "Cheese uses your webcam to take photos and videos.  Cheese can also
+apply fancy special effects and lets you share the fun with others.")
+    (license license:gpl2+)))
