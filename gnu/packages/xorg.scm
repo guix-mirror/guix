@@ -2885,8 +2885,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "2100efa105e8c9615eda867d39471d78e500b1bb")
-        (revision "7"))
+  (let ((commit "c89905754b929f0421db7ea6d60b8942ccdbd8af")
+        (revision "8"))
     (package
       (name "xf86-video-intel")
       (version (string-append "2.99.917-" revision "-"
@@ -2900,7 +2900,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "15fg844msmixsvlxcd5wm2awmns652sxcxj2wmp6819lr32lc4ir"))
+           "1xiyxhlq88vvgjavhxdkk933b5q7vm4jn6db144a6sqzifwaj672"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
