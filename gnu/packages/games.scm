@@ -2501,7 +2501,8 @@ engine.  When you start it you will be prompted to download a graphics set.")
        ;; different software versions than upstream does, some of the md5sums
        ;; are different. However, the package is still reproducible, it's safe
        ;; to disable this test.
-       #:tests? #f))
+       #:tests? #f
+       #:parallel-build? #f))
     (native-inputs `(("dos2unix" ,dos2unix)
                      ("gimp" ,gimp)
                      ("grfcodec" ,grfcodec)
