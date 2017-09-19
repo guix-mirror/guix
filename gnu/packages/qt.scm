@@ -1767,7 +1767,8 @@ This package provides the Python bindings.")))
          (base32 "0bxi5pfhxdvwk8yxa06lk2d7lcibmfqhahbin82bqf3m341zd4ml"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("qttools" ,qttools)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
