@@ -2874,7 +2874,7 @@ It supports rich text as well as plain text.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("gpgme" ,gpgme) ;; TODO: Add gpgme Qt-bindings
+     `(("gpgme" ,gpgme)
        ("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
        ("kconfig" ,kconfig)
@@ -2890,6 +2890,7 @@ It supports rich text as well as plain text.")
        ("kwindowsystem" ,kwindowsystem)
        ("libgcrypt" ,libgcrypt)
        ("phonon" ,phonon)
+       ("qgpgme" ,qgpgme)
        ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Safe desktop-wide storage for passwords")
