@@ -1223,7 +1223,7 @@ system.")
 (define-public prison
   (package
     (name "prison")
-    (version "5.34.0")
+    (version "5.37.0")
     (source
      (origin
        (method url-fetch)
@@ -1231,7 +1231,7 @@ system.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "00wj4yyfhhcq9b54civ5hy1grz70mmi676x50y12crcbbgkxm1lx"))))
+        (base32 "1icsirwfh7zscm8x9g2gp7aqzhs81ahhjflwjcwpz9bh0r9f1wb7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
