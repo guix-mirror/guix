@@ -31,6 +31,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
@@ -637,7 +638,8 @@ as well as an API to create KDED modules.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("avahi" ,avahi) ; alternativly dnssd could be used
+       ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Network service discovery using Zeroconf")
     (description "KDNSSD is a library for handling the DNS-based Service
