@@ -7930,7 +7930,12 @@ Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
 that reads partition UUIDs and labels only works for these file system
-types.}.
+types.}.  For the ESP, if you have one and assuming it is
+@file{/dev/sda2}, run:
+
+@example
+mkfs.fat -F32 /dev/sda2
+@end example
 
 Preferably, assign partitions a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
