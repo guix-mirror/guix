@@ -138,16 +138,17 @@ common build settings used in software produced by the KDE community.")
                 "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
     (build-system cmake-build-system)
     (native-inputs
-     ;; TODO: Add qttools to build the Qt Designer plugin.
      ;; TODO: Think about adding pulseaudio. Is it required for sound?
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     ;; TODO: Add building the super experimental QML support
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("qttools", qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
        '("-DCMAKE_CXX_FLAGS=-fPIC"
-         "-DPHONON_BUILD_PHONON4QT5=ON"
-         "-DPHONON_INSTALL_QT_EXTENSIONS_INTO_SYSTEM_QT=ON")
+         "-DPHONON_BUILD_PHONON4QT5=ON")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'patch-installdir
