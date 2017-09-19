@@ -1505,18 +1505,21 @@ from DocBook files.")
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (inputs
      `(("attr" ,attr)
+       ;; TODO: EPub http://sourceforge.net/projects/ebook-tools
        ("karchive" ,karchive)
        ("ki18n" ,ki18n)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtbase" ,qtbase)
        ;; Required run-time packages
        ("catdoc" ,catdoc)
        ;; Optional run-time packages
        ("exiv2" ,exiv2)
        ("ffmpeg" ,ffmpeg)
-       ("poppler" ,poppler)
+       ("poppler-qt5" ,poppler-qt5)
        ("taglib" ,taglib)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Extract metadata from different fileformats")
