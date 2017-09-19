@@ -306,14 +306,32 @@ Raise an '&http-get-error' condition if downloading fails."
   "Like 'http-fetch', return an input port, but cache its contents in
 ~/.cache/guix.  The cache remains valid for TTL seconds."
   (let ((file (cache-file-for-uri uri)))
-    (define (update-cache)
+    (define (update-cache cache-port)
+      (define cache-time
+        (and cache-port
+             (stat:mtime (stat cache-port))))
+
+      (define headers
+        `((user-agent . "GNU Guile")
+          ,@(if cache-time
+                `((if-modified-since
+                   . ,(time-utc->date (make-time time-utc 0 cache-time))))
+                '())))
+
       ;; Update the cache and return an input port.
-      (let ((port (http-fetch uri #:text? text?)))
-        (mkdir-p (dirname file))
-        (with-atomic-file-output file
-          (cut dump-port port <>))
-        (close-port port)
-        (open-input-file file)))
+      (guard (c ((http-get-error? c)
+                 (if (= 304 (http-get-error-code c)) ;"Not Modified"
+                     cache-port
+                     (raise c))))
+        (let ((port (http-fetch uri #:text? text?
+                                #:headers headers)))
+          (mkdir-p (dirname file))
+          (when cache-port
+            (close-port cache-port))
+          (with-atomic-file-output file
+            (cut dump-port port <>))
+          (close-port port)
+          (open-input-file file))))
 
     (define (old? port)
       ;; Return true if PORT has passed TTL.
@@ -325,13 +343,11 @@ Raise an '&http-get-error' condition if downloading fails."
       (lambda ()
         (let ((port (open-input-file file)))
           (if (old? port)
-              (begin
-                (close-port port)
-                (update-cache))
+              (update-cache port)
               port)))
       (lambda args
         (if (= ENOENT (system-error-errno args))
-            (update-cache)
+            (update-cache #f)
             (apply throw args))))))
 
 ;;; http-client.scm ends here

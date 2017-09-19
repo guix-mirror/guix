@@ -454,7 +454,9 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
     (define (string->lines str)
       (string-tokenize str (char-set-complement (char-set #\newline))))
 
-    (let ((port (http-fetch/cached %gnu-file-list-uri #:ttl (* 60 60))))
+    ;; Since https://ftp.gnu.org honors 'If-Modified-Since', the hard-coded
+    ;; TTL can be relatively short.
+    (let ((port (http-fetch/cached %gnu-file-list-uri #:ttl (* 15 60))))
       (map trim-leading-components
            (call-with-gzip-input-port port
              (compose string->lines get-string-all))))))
