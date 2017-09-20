@@ -7421,15 +7421,13 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python-fonttools
   (package
     (name "python-fonttools")
-    (version "2.5")
+    (version "3.15.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/F/FontTools/"
-                    "fonttools-" version ".tar.gz"))
+              (uri (pypi-uri "fonttools" version ".zip"))
               (sha256
                (base32
-                "08ay3x4ijarwhl60gqx2i9jzq6pxs20p4snc2d1q5jagh4rn39lb"))))
+                "1hhj97izwliy0vybmza72d90l5d4mcn50y8akq7kyccfl82vdx4d"))))
     (build-system python-build-system)
     (arguments
      '(#:test-target "check"
@@ -7443,6 +7441,8 @@ add functionality and customization to your projects with their own plugins.")
              (substitute* "setup.py"
                (("^[ \t]*extra_path *= *'FontTools',") ""))
              #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
     (home-page "https://github.com/behdad/fonttools")
     (synopsis "Tools to manipulate font files")
     (description
