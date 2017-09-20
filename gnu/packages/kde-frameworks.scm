@@ -2421,7 +2421,7 @@ makes starting KDE applications faster and reduces memory consumption.")
      `(("dbus" ,dbus)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("acl" ,acl)
+     `(;; TODO:  LibACL , <ftp://oss.sgi.com/projects/xfs/cmd_tars>
        ("krb5" ,mit-krb5)
        ("karchive" ,karchive)
        ("kauth" ,kauth)
