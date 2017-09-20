@@ -78,6 +78,7 @@
         (sha256
          (base32 "1lf9rkv0i0kd7fvpgg5l8jb87zw8dzcwd1liv6hji7g4wlpmfdiq"))))
     (native-inputs
+     ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))
     (inputs
      `(("qtbase" ,qtbase)
@@ -86,10 +87,11 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (zero? (system* "ctest" ;; exclude 2 tests which require a display
-                                    "-E" "htmlbuildertest|plainmarkupbuildertest")))))))
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://github.com/steveire/grantlee")
     (synopsis "Libraries for text templating with Qt")
     (description "Grantlee Templates can be used for theming and generation of
