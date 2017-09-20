@@ -217,7 +217,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.1.8")
+    (version "17.2.1")
     (source
       (origin
         (method url-fetch)
@@ -229,7 +229,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1nv9aaz7ay2bs4fc8j3rf6ky3qla8s346a8g2lvdbp96msp2xvbm"))
+          "07msr6xismw2jq87irwhz7vygvzj6hi38d71paij9zvwh8bmsf3p"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
@@ -261,7 +261,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
-        ("wayland" ,wayland)))
+        ("wayland" ,wayland)
+        ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("python" ,python-2)
