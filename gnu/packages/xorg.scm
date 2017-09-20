@@ -5073,8 +5073,21 @@ over Xlib, including:
          (base32
           "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))
         (patches
-         (search-patches "xorg-server-CVE-2017-10971.patch"
-                         "xorg-server-CVE-2017-10972.patch"))))
+         (cons
+          ;; See:
+          ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
+          ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
+                  "/plain/06_use-intel-only-on-pre-gen4.diff"))
+            (sha256
+             (base32
+              "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patches "xorg-server-CVE-2017-10971.patch"
+                          "xorg-server-CVE-2017-10972.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
