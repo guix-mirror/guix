@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,11 +229,24 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
            (now (current-time time-utc)))
       (< (+ (stat:mtime s) ttl) (time-second now))))
 
+  (define (read* port)
+    ;; Disable read options to avoid populating the source property weak
+    ;; table, which speeds things up, saves memory, and works around
+    ;; <https://lists.gnu.org/archive/html/guile-devel/2017-09/msg00031.html>.
+    (let ((options (read-options)))
+      (dynamic-wind
+        (lambda ()
+          (read-disable 'positions))
+        (lambda ()
+          (read port))
+        (lambda ()
+          (read-options options)))))
+
   (catch 'system-error
     (lambda ()
       (if (old? cache)
           (update-cache)
-          (match (call-with-input-file cache read)
+          (match (call-with-input-file cache read*)
             (('vulnerabilities 1 vulns)
              (map sexp->vulnerability vulns))
             (x

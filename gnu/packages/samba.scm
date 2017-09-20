@@ -149,14 +149,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.6.7")
+    (version "4.6.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "1ynxndfk45zkkylz3jsrx42a7kmm42jddk5bdhihyf88vs9l7wly"))))
+               "0pap686cl0j5c9v1v09krpqdk416x3851fbcap5ysp1zajrfw7aq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

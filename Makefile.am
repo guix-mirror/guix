@@ -79,6 +79,7 @@ MODULES =					\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
+  guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -106,6 +107,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/meson-build-system.scm		\
   guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/asdf-build-system.scm		\
@@ -164,6 +166,7 @@ MODULES =					\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
+  guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/cran.scm			\
@@ -312,6 +315,7 @@ SCM_TESTS =					\
   tests/workers.scm				\
   tests/zlib.scm				\
   tests/file-systems.scm			\
+  tests/uuid.scm				\
   tests/system.scm				\
   tests/services.scm				\
   tests/scripts-build.scm			\

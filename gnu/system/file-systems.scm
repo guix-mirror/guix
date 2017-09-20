@@ -20,9 +20,9 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (guix records)
-  #:use-module ((gnu build file-systems)
-                #:select (string->uuid uuid->string))
-  #:re-export (string->uuid
+  #:use-module (gnu system uuid)
+  #:re-export (uuid                               ;backward compatibility
+               string->uuid
                uuid->string)
   #:export (<file-system>
             file-system
@@ -44,7 +44,6 @@
             file-system->spec
             spec->file-system
             specification->file-system-mapping
-            uuid
 
             %fuse-control-file-system
             %binary-format-file-system
@@ -157,7 +156,10 @@ store--e.g., if FS is the root file system."
 initrd code."
   (match fs
     (($ <file-system> device title mount-point type flags options _ _ check?)
-     (list device title mount-point type flags options check?))))
+     (list (if (uuid? device)
+               (uuid-bytevector device)
+               device)
+           title mount-point type flags options check?))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
@@ -185,20 +187,6 @@ TARGET in the other system."
          (source spec)
          (target spec)
          (writable? writable?)))))
-
-(define-syntax uuid
-  (lambda (s)
-    "Return the bytevector corresponding to the given UUID representation."
-    (syntax-case s ()
-      ((_ str)
-       (string? (syntax->datum #'str))
-       ;; A literal string: do the conversion at expansion time.
-       (let ((bv (string->uuid (syntax->datum #'str))))
-         (unless bv
-           (syntax-violation 'uuid "invalid UUID" s))
-         (datum->syntax #'str bv)))
-      ((_ str)
-       #'(string->uuid str)))))
 
 
 ;;;

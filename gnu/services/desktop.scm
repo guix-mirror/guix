@@ -732,7 +732,8 @@ seats.)"
 
                        ;; We need /run/user, /run/systemd, etc.
                        (service-extension file-system-service-type
-                                          (const %elogind-file-systems))))))
+                                          (const %elogind-file-systems))))
+                (default-value (elogind-configuration))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
   "Return a service that runs the @command{elogind} login and seat management

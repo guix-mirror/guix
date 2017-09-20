@@ -71,7 +71,7 @@
    ;; mozilla_1_0
    ("mozilla_1_1" 'mpl1.1)
    ("openssl" 'openssl)
-   ("perl_5" '(package-license perl))   ;GPL1+ and Artistic 1
+   ("perl_5" 'perl-license)   ;GPL1+ and Artistic 1
    ("qpl_1_0" 'qpl)
    ;; ssleay
    ;; sun

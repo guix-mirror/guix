@@ -2516,6 +2516,92 @@ parts of it.")
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
     (license license:bsd-3)))
 
+(define* (make-blis implementation #:optional substitutable?)
+  "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
+source tree for a list of implementations.)
+
+SUBSTITUTABLE? determines whether the package is made available as a
+substitute.
+
+Currently the specialization must be selected at configure-time, but work is
+underway to allow BLIS to select the right optimized kernels at run time:
+<https://github.com/flame/blis/issues/129>."
+  (package
+    (name (if (string=? implementation "reference")
+              "blis"
+              (string-append "blis-" implementation)))
+    (version "0.2.2")
+    (home-page "https://github.com/flame/blis")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (sha256
+               (base32
+                "1wr79a50nm4abhw8w3sn96nmwp5mrzifcigk7khw9qcgyyyqayfh"))
+              (file-name (git-file-name "blis" version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+
+       #:substitutable? ,substitutable?
+
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; This is a home-made 'configure' script.
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* "./configure" "-p" out
+                                        "-d" "opt"
+                                        "--disable-static"
+                                        "--enable-shared"
+                                        "--enable-threading=openmp"
+
+                                        ,implementation)))))
+                  (add-before 'check 'show-test-output
+                    (lambda _
+                      ;; By default "make check" is silent.  Make it verbose.
+                      (system "tail -F output.testsuite &")
+                      #t)))))
+    (synopsis "High-performance basic linear algebra (BLAS) routines")
+    (description
+     "BLIS is a portable software framework for instantiating high-performance
+BLAS-like dense linear algebra libraries.  The framework was designed to
+isolate essential kernels of computation that, when optimized, immediately
+enable optimized implementations of most of its commonly used and
+computationally intensive operations.  While BLIS exports a new BLAS-like API,
+it also includes a BLAS compatibility layer which gives application developers
+access to BLIS implementations via traditional BLAS routine calls.")
+    (license license:bsd-3)))
+
+(define-public blis
+  ;; This is the "reference" implementation, which is the non-optimized but
+  ;; portable variant (no assembly).
+  (make-blis "reference" #t))
+
+(define ignorance blis)
+
+(define-syntax-rule (blis/x86_64 processor)
+  "Expand to a package specialized for PROCESSOR."
+  (package
+    (inherit (make-blis processor))
+    (supported-systems '("x86_64-linux"))))
+
+(define-public blis-sandybridge
+  ;; BLIS specialized for Sandy Bridge processors (launched 2011):
+  ;; <http://ark.intel.com/products/codename/29900/Sandy-Bridge>.
+  (blis/x86_64 "sandybridge"))
+
+(define-public blis-haswell
+  ;; BLIS specialized for Haswell processors (launched 2013):
+  ;; <http://ark.intel.com/products/codename/42174/Haswell>.
+  (blis/x86_64 "haswell"))
+
+(define-public blis-knl
+  ;; BLIS specialized for Knights Landing processor (launched 2016):
+  ;; <http://ark.intel.com/products/series/92650/Intel-Xeon-Phi-x200-Product-Family>.
+  (blis/x86_64 "knl"))
+
+
 (define-public openlibm
   (package
     (name "openlibm")

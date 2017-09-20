@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
   #:use-module (gnu packages libevent)
@@ -1621,3 +1623,56 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
 
 (define-public python2-lmdb
   (package-with-python2 python-lmdb))
+
+(define-public python-orator
+  (package
+    (name "python-orator")
+    (version "0.9.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "orator" version))
+              (sha256
+               (base32
+                "14r58z64fdp76ixnvmi4lni762b405ynmsx6chr1qihs3yl9zn6c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-dependencies
+           ;; Tests are not actually run since they are not included with the
+           ;; distributed package, but dependencies are checked.
+           (lambda _
+             (substitute* "setup.py"
+               ((",<.*'") "'")
+               (("flexmock==0.9.7") "flexmock")
+               ;; The pytest-mock package is out of date, so we remove minimum
+               ;; version requirement.
+               (("pytest-mock.*'") "pytest-mock'"))
+             #t)))))
+    (native-inputs
+     `(("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest" ,python-pytest-3.0)
+       ("python-flexmock" ,python-flexmock)))
+    (propagated-inputs
+     `(("python-backpack" ,python-backpack)
+       ("python-blinker" ,python-blinker)
+       ("python-cleo" ,python-cleo)
+       ("python-faker" ,python-faker)
+       ("python-inflection" ,python-inflection)
+       ("python-lazy-object-proxy" ,python-lazy-object-proxy)
+       ("python-pendulum" ,python-pendulum)
+       ("python-pyaml" ,python-pyaml)
+       ("python-pygments" ,python-pygments)
+       ("python-simplejson" ,python-simplejson)
+       ("python-six" ,python-six)
+       ("python-wrapt" ,python-wrapt)))
+    (home-page "https://orator-orm.com/")
+    (synopsis "ActiveRecord ORM for Python")
+    (description
+     "Orator provides a simple ActiveRecord-like Object Relational Mapping
+implementation for Python.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-orator))))))
+
+(define-public python2-orator
+  (package-with-python2 (strip-python2-variant python-orator)))

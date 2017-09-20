@@ -59,6 +59,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages code)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -112,7 +113,8 @@
                "1ykkq0xl28ljdg61bm6gzy04ww86ajms98gix72qg6cpr6a53dar"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
-                                      "emacs-source-date-epoch.patch"))
+                                      "emacs-source-date-epoch.patch"
+                                      "emacs-unsafe-enriched-mode-translations.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Delete the bundled byte-compiled elisp files and
@@ -840,6 +842,7 @@ provides an optional IDE-like error list.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
+                   (flac    (assoc-ref inputs "flac"))
                    (vorbis  (assoc-ref inputs "vorbis-tools"))
                    (alsa    (assoc-ref inputs "alsa-utils"))
                    (mpg321  (assoc-ref inputs "mpg321"))
@@ -862,6 +865,9 @@ provides an optional IDE-like error list.")
                  (substitute* "emms-player-simple.el"
                    (("\"ogg123\"")
                     (string-append "\"" vorbis "/bin/ogg123\"")))
+                 (substitute* "emms-player-simple.el"
+                   (("\"mpg321\"")
+                    (string-append "\"" mpg321 "/bin/mpg321\"")))
                  (emacs-substitute-variables "emms-info-ogginfo.el"
                    ("emms-info-ogginfo-program-name"
                     (string-append vorbis "/bin/ogginfo")))
@@ -871,6 +877,11 @@ provides an optional IDE-like error list.")
                  (emacs-substitute-variables "emms-info-mp3info.el"
                    ("emms-info-mp3info-program-name"
                     (string-append mp3info "/bin/mp3info")))
+                 (emacs-substitute-variables "emms-info-metaflac.el"
+                   ("emms-info-metaflac-program-name"
+                    (string-append flac "/bin/metaflac")))
+                 (emacs-substitute-variables "emms-source-file.el"
+                   ("emms-source-file-gnu-find" (which "find")))
                  (substitute* "emms-volume-amixer.el"
                    (("\"amixer\"")
                     (string-append "\"" alsa "/bin/amixer\"")))
@@ -896,6 +907,7 @@ provides an optional IDE-like error list.")
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
     (inputs `(("alsa-utils" ,alsa-utils)
+              ("flac" ,flac)            ;for metaflac
               ("vorbis-tools" ,vorbis-tools)
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
@@ -1192,6 +1204,26 @@ update the environment when the active buffer changes.
 Using emacs-direnv means that programs started from Emacs will use the
 environment set through Direnv.")
     (license license:gpl3+)))
+
+(define-public emacs-go-mode
+  (package
+    (name "emacs-go-mode")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dominikh/go-mode.el/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1adngbjyb8qnwg7n6r2y31djw9j6qf3b9fi63zd85035q7x4ljnm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dominikh/go-mode.el")
+    (synopsis "Go mode for Emacs")
+    (description
+     "This package provides go-mode, an Emacs mode for working with software
+written in the Go programming language.")
+    (license license:bsd-3)))
 
 (define-public emacs-google-maps
   (package
@@ -1629,6 +1661,36 @@ display and behaviour is easily customisable.")
 of files under Git version control from within Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-minitest
+  (package
+    (name "emacs-minitest")
+    (version "0.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/arthurnn/minitest-emacs/archive/v"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1dsb7kzvs1x6g4sgqmq73jqacb7wzm0wfkiq5m9dqdzq8mppgiqs"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^snippets\\/minitest-mode\\/" %default-include)
+       #:exclude (delete "^[^/]*tests?\\.el$" %default-exclude)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)))
+    (home-page "https://github.com/arthurnn/minitest-emacs")
+    (synopsis "Emacs minitest mode")
+    (description
+     "The minitest mode provides commands to run the tests for the current
+file or line, as well as rerunning the previous tests, or all the tests for a
+project.
+
+This package also includes relevant snippets for yasnippet.")
+    (license license:expat)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
@@ -1917,6 +1979,7 @@ serve files and directory listings.")
     (propagated-inputs
      `(("emacs-simple-httpd" ,emacs-simple-httpd)
        ("emacs-js2-mode" ,emacs-js2-mode)))
+    (arguments '(#:include '("\\.el$" "\\.js$" "\\.html$")))
     (home-page "https://github.com/skeeto/skewer-mode")
     (synopsis "Live web development in Emacs")
     (description
@@ -1967,6 +2030,31 @@ tables.")
      "This Emacs package hides and/or highlights minor modes in the
 mode-line.")
     (license license:gpl2+)))
+
+(define-public emacs-rspec
+  (package
+    (name "emacs-rspec")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pezra/rspec-mode/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j0a7ms5516nlg60qfyn730pfxys6acm0rgyxh5xfkpi6jafgpvw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/pezra/rspec-mode")
+    (synopsis "Provides a rspec mode for working with RSpec")
+    (description
+     "The Emacs RSpec mode provides keybindings for Ruby source files, e.g. to
+verify the spec associated with the current buffer, or entire project, as well
+as moving between the spec files, and coresponding code files.
+
+Also included are keybindings for spec files and Dired buffers, as well as
+snippets for yasnippet.")
+    (license license:gpl3+)))
 
 (define-public emacs-smart-mode-line
   (package
@@ -3159,22 +3247,25 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
                 "0w7mbbajn377gdmvnd21mpyr368b2ia46gq6cb99y4y5rspf9pcg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There is no test suite.
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "LISPDIR=" %output
-                                         "/share/emacs/site-lisp/guix.d/ess"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'more-shebang-patching
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makeconf"
-               (("SHELL = /bin/sh")
-                (string-append "SHELL = " (which "sh"))))))
-         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-         ;; them in HOME, so it needs to be writeable.
-         (add-before 'build 'set-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
+       `(#:tests? #f ; There is no test suite.
+         #:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "ETCDIR=" %output "/"
+                                           ,base-directory "/etc")
+                            (string-append "LISPDIR=" %output "/"
+                                           ,base-directory))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'more-shebang-patching
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "Makeconf"
+                 (("SHELL = /bin/sh")
+                  (string-append "SHELL = " (which "sh"))))))
+           ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+           ;; them in HOME, so it needs to be writeable.
+           (add-before 'build 'set-HOME
+             (lambda _ (setenv "HOME" "/tmp") #t))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
@@ -3239,7 +3330,7 @@ strings, and code folding.")
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/jrblevin"
@@ -3248,7 +3339,7 @@ strings, and code folding.")
               (file-name (string-append "markdown-mode-" version ".el"))
               (sha256
                (base32
-                "04isd2sdnms9acpmkd6n7b7y7j0x2kank2kry0zwbxs3bwdavgav"))))
+                "152whyrq3dqlqy5wv4mdd94kmal19hs5kwaxjcp2gp2r97lsmdmi"))))
     (build-system emacs-build-system)
     (home-page "http://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
@@ -3488,6 +3579,27 @@ engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
     (home-page "http://web-mode.org/")
+    (license license:gpl3+)))
+
+(define-public emacs-wgrep
+  (package
+    (name "emacs-wgrep")
+    (version "2.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mhayashi1120/Emacs-wgrep/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r2bpypar70xg6dsx12x1k74f39ww930rday7rgqpyknzsx1k4l1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+    (synopsis "Edit a grep buffer and apply those changes to the files")
+    (description
+     "Emacs wgrep allows you to edit a grep buffer and apply those changes to
+the file buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-helm
@@ -3764,14 +3876,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170828")
+    (version "20170917")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0frjwgjyy7rwb7si57h6nd1p35a4gcd1dc0aka19kn8r59hbi08p"))))
+                "0qyis5ph3h99zn9kx7sgraddz41c1cf6yjkwi4im6ikwxk9x8cgc"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -5521,7 +5633,39 @@ It supports dired buffers and opens them in tree mode at destination.")
     (synopsis "Quickly generate linear ranges in Emacs")
     (description
      "The main command of the @code{tiny} extension for Emacs is @code{tiny-expand}.
-It iss meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
+It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
   (license license:gpl3+)))
+
+(define-public emacs-bash-completion
+  (package
+   (name "emacs-bash-completion")
+   (version "2.0.0")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://github.com/szermatt/emacs-bash-completion/archive/v"
+            version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0mkci4a1fy8z4cmry8mx5vsx4f16a8r454slnh7lqzidnhfi63hj"))))
+   (inputs `(("bash" ,bash)))
+   (build-system emacs-build-system)
+   (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               (emacs-substitute-variables "bash-completion.el"
+                 ("bash-completion-prog" (string-append bash "/bin/bash"))))
+             #t)))))
+   (home-page "https://github.com/szermatt/emacs-bash-completion")
+   (synopsis "BASH completion for the shell buffer")
+   (description
+    "@code{bash-completion} defines dynamic completion hooks for shell-mode
+and shell-command prompts that are based on bash completion.")
+   (license license:gpl2+)))

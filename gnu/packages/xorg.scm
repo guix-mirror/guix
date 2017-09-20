@@ -2418,7 +2418,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.25.1")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2426,7 +2426,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1q67hjd67ni1nq7kgxdrrdgkyhzaqvvn2vlnsiiq9w4y3icpv7s8"))))
+                "0yrqs88b7yn9nljwlxzn76jfmvf0sh939kzij5b2jvr2qa7mbjmb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2646,7 +2646,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.9.0")
+    (version "7.10.0")
     (source
       (origin
         (method url-fetch)
@@ -2656,7 +2656,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0xcq0lncb5p4sas5866qpkjyp1v8ksalw7m1gmqb3brhccp8gb9w"))))
+            "0yafix56vkqglw243cwb94nv91vbjv12sqh29x1bap0hwd1dclgf"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -2885,8 +2885,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "2100efa105e8c9615eda867d39471d78e500b1bb")
-        (revision "7"))
+  (let ((commit "c89905754b929f0421db7ea6d60b8942ccdbd8af")
+        (revision "8"))
     (package
       (name "xf86-video-intel")
       (version (string-append "2.99.917-" revision "-"
@@ -2900,7 +2900,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "15fg844msmixsvlxcd5wm2awmns652sxcxj2wmp6819lr32lc4ir"))
+           "1xiyxhlq88vvgjavhxdkk933b5q7vm4jn6db144a6sqzifwaj672"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -5073,8 +5073,21 @@ over Xlib, including:
          (base32
           "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))
         (patches
-         (search-patches "xorg-server-CVE-2017-10971.patch"
-                         "xorg-server-CVE-2017-10972.patch"))))
+         (cons
+          ;; See:
+          ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
+          ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
+                  "/plain/06_use-intel-only-on-pre-gen4.diff"))
+            (sha256
+             (base32
+              "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patches "xorg-server-CVE-2017-10971.patch"
+                          "xorg-server-CVE-2017-10972.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)

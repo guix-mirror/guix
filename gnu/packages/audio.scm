@@ -568,23 +568,17 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.05")
+    (version "6.09.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/csound/csound6/Csound"
-                    version "/Csound" version ".tar.gz"))
+                    "https://github.com/csound/csound/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))
-              (patches (search-patches "csound-header-ordering.patch"))))
+                "0f67vyy3r29hn26qkkcwnizrnzzy8p7gmg3say5q3wjhxns3b5yl"))))
     (build-system cmake-build-system)
-    (arguments
-     ;; Work around this error on x86_64 with libc 2.22+:
-     ;;    libmvec.so.1: error adding symbols: DSO missing from command line
-     (if (string-prefix? "x86_64" (or (%current-target-system) (%current-system)))
-         '(#:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-lmvec"))
-         '()))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)

@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system r)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
@@ -851,14 +852,14 @@ data).  Weighted versions of MLE, MME and QME are available.")
 (define-public r-energy
   (package
     (name "r-energy")
-    (version "1.7-0")
+    (version "1.7-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "energy" version))
        (sha256
         (base32
-         "1g4hqi6mgsnd1w4q7dd2m40ljh2jdmvad91ksbq9fscnrqpvji1x"))))
+         "19c7bgjnm4ggf7w5mk64c5shkma3sa9wc8x117iqv7pk1bvvyy3p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -928,3 +929,288 @@ sampling from populations, given the observed tie pattern.  Except for Steel's
 test and the JT test it also combines these tests across several blocks of
 samples.")
     (license license:gpl2+)))
+
+(define-public r-cvst
+  (package
+    (name "r-cvst")
+    (version "0.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CVST" version))
+       (sha256
+        (base32
+         "17xacyi8cf37rr2xswx96qy7pwkaqq394awdlswykz3qlyzx4zx2"))))
+    (properties `((upstream-name . "CVST")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernlab" ,r-kernlab)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://cran.r-project.org/web/packages/CVST")
+    (synopsis "Fast cross-validation via sequential testing")
+    (description
+     "This package implements the fast cross-validation via sequential
+testing (CVST) procedure.  CVST is an improved cross-validation procedure
+which uses non-parametric testing coupled with sequential analysis to
+determine the best parameter set on linearly increasing subsets of the data.
+Additionally to the CVST the package contains an implementation of the
+ordinary k-fold cross-validation with a flexible and powerful set of helper
+objects and methods to handle the overall model selection process.  The
+implementations of the Cochran's Q test with permutations and the sequential
+testing framework of Wald are generic and can therefore also be used in other
+contexts.")
+    (license license:gpl2+)))
+
+(define-public r-lava
+  (package
+    (name "r-lava")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lava" version))
+       (sha256
+        (base32
+         "0x6s7x111x87a4rh5nbk7vw6j4iq40i1c21w0j795h28rgyc7zc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-numderiv" ,r-numderiv)
+       ("r-survival" ,r-survival)))
+    (home-page "https://github.com/kkholst/lava")
+    (synopsis "Latent variable models")
+    (description
+     "This package provides tools for the estimation and simulation of latent
+variable models.")
+    (license license:gpl3)))
+
+(define-public r-drr
+  (package
+    (name "r-drr")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DRR" version))
+       (sha256
+        (base32
+         "1scfwp6ry6apxzqjclsmn2frxp9qfw6zxsxn5w0j0q3sz42hz1h2"))))
+    (properties `((upstream-name . "DRR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cvst" ,r-cvst)
+       ("r-kernlab" ,r-kernlab)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://cran.r-project.org/web/packages/DRR")
+    (synopsis "Dimensionality reduction via regression")
+    (description
+     "This package provides an implementation of dimensionality reduction via
+regression using Kernel Ridge Regression.")
+    (license license:gpl3)))
+
+(define-public r-prodlim
+  (package
+    (name "r-prodlim")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prodlim" version))
+       (sha256
+        (base32
+         "0m51rkivx1zr6whdqwj66jpnkmp4385m06kkha3dp8qqf4jna9iz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)
+       ("r-lava" ,r-lava)
+       ("r-rcpp" ,r-rcpp)
+       ("r-survival" ,r-survival)))
+    (home-page "http://cran.r-project.org/web/packages/prodlim")
+    (synopsis "Product-limit estimation for censored event history analysis")
+    (description
+     "This package provides a fast and user-friendly implementation of
+nonparametric estimators for censored event history (survival) analysis with
+the Kaplan-Meier and Aalen-Johansen methods.")
+    (license license:gpl2+)))
+
+(define-public r-dimred
+  (package
+    (name "r-dimred")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dimRed" version))
+       (sha256
+        (base32
+         "0fasca5fsbrxdwv30hch7vb9snb844l7l8p5fjf239dq45xfy37v"))))
+    (properties `((upstream-name . "dimRed")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-drr" ,r-drr)))
+    (home-page "https://github.com/gdkrmr/dimRed")
+    (synopsis "Framework for dimensionality reduction")
+    (description
+     "This package provides a collection of dimensionality reduction
+techniques from R packages and provides a common interface for calling the
+methods.")
+    (license license:gpl3)))
+
+(define-public r-timedate
+  (package
+    (name "r-timedate")
+    (version "3012.100")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "timeDate" version))
+       (sha256
+        (base32
+         "0cn4h23y2y2bbg62qgm79xx4cvfla5xbpmi9hbdvkvpmm5yfyqk2"))))
+    (properties `((upstream-name . "timeDate")))
+    (build-system r-build-system)
+    (home-page "https://www.rmetrics.org")
+    (synopsis "Chronological and calendar objects")
+    (description
+     "This package provides an environment for teaching \"Financial
+Engineering and Computational Finance\" and for managing chronological and
+calendar objects.")
+    (license license:gpl2+)))
+
+(define-public r-ddalpha
+  (package
+    (name "r-ddalpha")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ddalpha" version))
+       (sha256
+        (base32
+         "0nsd515x6bap1qpfyx141hyldmpmyasnhv0f8s9dj6zcklp89af4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-class" ,r-class)
+       ("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-robustbase" ,r-robustbase)))
+    (home-page "http://cran.r-project.org/web/packages/ddalpha")
+    (synopsis "Depth-Based classification and calculation of data depth")
+    (description
+     "This package contains procedures for depth-based supervised learning,
+which are entirely non-parametric, in particular the DDalpha-procedure (Lange,
+Mosler and Mozharovskyi, 2014).  The training data sample is transformed by a
+statistical depth function to a compact low-dimensional space, where the final
+classification is done.  It also offers an extension to functional data and
+routines for calculating certain notions of statistical depth functions.  50
+multivariate and 5 functional classification problems are included.")
+    (license license:gpl2)))
+
+(define-public r-gower
+  (package
+    (name "r-gower")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gower" version))
+       (sha256
+        (base32
+         "1mbrj1lam3jfbby2j32shmmj5cn09zx3rkxbamq7q8sdg39b54gb"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/markvanderloo/gower")
+    (synopsis "Gower's distance")
+    (description
+     "This package provides tools to compute Gower's distance (or similarity)
+coefficient between records, and to compute the top-n matches between records.
+Core algorithms are executed in parallel on systems supporting OpenMP.")
+    (license license:gpl3)))
+
+(define-public r-rcpproll
+  (package
+    (name "r-rcpproll")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppRoll" version))
+       (sha256
+        (base32
+         "19xzvxym8zbighndygkq4imfwc0abh4hqyq3qrr8aakyd096iisi"))))
+    (properties `((upstream-name . "RcppRoll")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://cran.r-project.org/web/packages/RcppRoll")
+    (synopsis "Efficient rolling and windowed operations")
+    (description
+     "This package provides fast and efficient routines for common rolling /
+windowed operations.  Routines for the efficient computation of windowed mean,
+median, sum, product, minimum, maximum, standard deviation and variance are
+provided.")
+    (license license:gpl2+)))
+
+(define-public r-ipred
+  (package
+    (name "r-ipred")
+    (version "0.9-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ipred" version))
+       (sha256
+        (base32
+         "1vrw1pqcpnc04x1r2h9grdfm6bivs358sww5gg90jwlvxcw69lxq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-prodlim" ,r-prodlim)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)))
+    (home-page "http://cran.r-project.org/web/packages/ipred")
+    (synopsis "Improved predictors")
+    (description
+     "This package provides improved predictive models by indirect
+classification and bagging for classification, regression and survival
+problems as well as resampling based estimators of prediction error.")
+    (license license:gpl2+)))
+
+(define-public r-recipes
+  (package
+    (name "r-recipes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "recipes" version))
+       (sha256
+        (base32
+         "0rydk403qihxmcv3zz323r3ywk4g1v7ibvj452rxhm0z22sqk9kb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ddalpha" ,r-ddalpha)
+       ("r-dimred" ,r-dimred)
+       ("r-dplyr" ,r-dplyr)
+       ("r-gower" ,r-gower)
+       ("r-ipred" ,r-ipred)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rcpproll" ,r-rcpproll)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-timedate" ,r-timedate)))
+    (home-page "https://github.com/topepo/recipes")
+    (synopsis "Preprocessing tools to create design matrices")
+    (description
+     "Recipes is an extensible framework to create and preprocess design
+matrices.  Recipes consist of one or more data manipulation and analysis
+\"steps\".  Statistical parameters for the steps can be estimated from an
+initial data set and then applied to other data sets.  The resulting design
+matrices can then be used as inputs into statistical or machine learning
+models.")
+    (license license:gpl2)))

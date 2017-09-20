@@ -262,7 +262,7 @@ of index files."
 (define nginx-activation
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks config-file)
+                              upstream-blocks file)
      #~(begin
          (use-modules (guix build utils))
 
@@ -281,7 +281,7 @@ of index files."
          (mkdir-p (string-append #$run-directory "/logs"))
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
-                  "-c" #$(or config-file
+                  "-c" #$(or file
                              (default-nginx-config nginx log-directory
                                run-directory server-blocks upstream-blocks))
                   "-t")))))
@@ -289,14 +289,14 @@ of index files."
 (define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks config-file)
+                              upstream-blocks file)
      (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
                #~(lambda _
                    (zero?
                     (system* #$nginx-binary "-c"
-                             #$(or config-file
+                             #$(or file
                                    (default-nginx-config nginx log-directory
                                      run-directory server-blocks upstream-blocks))
                              #$@args))))))

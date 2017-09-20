@@ -500,14 +500,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-19")
+   (version "1.8-21")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "18zpnqilc2586764j7smwbixxz5gzpkpz2gq8nwgidfkyqwrkc45"))))
+       "1vgjz4ihms9kch6fadh0hkzgwv34wzbdmdzm6392cql1mx06x0mi"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -1060,14 +1060,14 @@ aesthetic attributes.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "09y9x09gri33ghhrvjjnj5k5rk0kdpsk3wq02cln8gmywd6728vk"))))
+         "103wnc8sq0iwcnj4j14hd420d2dqdyf13s3f25icsznrlyzdkhf5"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -1086,14 +1086,14 @@ and to generate base64 encoded string from raster matrix.")
 (define-public r-svglite
   (package
     (name "r-svglite")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svglite" version))
        (sha256
         (base32
-         "1s1gvmlmmna5y4jsn9h6438pg5b86fl4nwfvkgm6n4h6ljfgqyx3"))))
+         "1bws3lc4hlhln11zd7lalhiyc43yk6c6vrzy41fkxk1dkjazfx51"))))
     (build-system r-build-system)
     (native-inputs  `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
@@ -1424,13 +1424,13 @@ you call it again with the same arguments it returns the pre-computed value.")
 (define-public r-crayon
   (package
     (name "r-crayon")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "crayon" version))
               (sha256
                (base32
-                "0s2yam18slph7xsw4pyc9f92gdyf609r5w92yax69zh57kb7asws"))))
+                "0s7s6vc3ww8pzanpjisym4jjvwcc5pi2qg8srx7jqlz9j3wrnvpw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-memoise" ,r-memoise)))
@@ -1552,13 +1552,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0jpb32ca1c0mr660igna4yw4fmzydzfhxshd0g8wgmggkynx2qi2"))))
+                "0wz5vrcsxzmxpxvs1raz9kyfc7mq3591nadq4rb4hx4sc97ysrxf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2208,17 +2208,17 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "0.9.6")
+    (version "0.9.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "0ffwllii8xl6sa2v66134g0fwaw1y3zn3mvaa4nrc120vv5d3mkd"))))
+         "178fcp9f245i0k9s2w45kbw0ml0r9pfc73ak8hvicw4jz639wzb9"))))
     (build-system r-build-system)
     (inputs
-     `(("openssl" ,openssl)))
+     `(("libressl" ,libressl)))
     (home-page "https://github.com/jeroenooms/openssl")
     (synopsis "Toolkit for encryption, signatures and certificates")
     (description
@@ -2289,13 +2289,13 @@ pure C implementation of the Git core methods.")
 (define-public r-rstudioapi
   (package
     (name "r-rstudioapi")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rstudioapi" version))
               (sha256
                (base32
-                "1zkvz72z6nw0xc8bhb21y5x1nk6avijs0w8n4vsbvw9sn76wc96s"))))
+                "133s75q2hr6jg28m1wvs96qrbc9c4vw87migwhkjqb88xxvbqhd5"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/rstudioapi")
     (synopsis "Safely access the RStudio API")
@@ -2595,13 +2595,13 @@ variety of formats.")
 (define-public r-gridextra
   (package
     (name "r-gridextra")
-    (version "2.2.1")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "gridExtra" version))
               (sha256
                (base32
-                "0638ihwl00j76ivaxxhxvi8z573lwy1jym3srr78mx6dbdd4bzj4"))))
+                "0fwfk3cdwxxim7nd55pn7m31bcaqj48y06j7an2k1v1pybk0rdl1"))))
     (properties `((upstream-name . "gridExtra")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2769,13 +2769,13 @@ plotted and compared with the asymptotic curve.")
 (define-public r-lambda-r
   (package
     (name "r-lambda-r")
-    (version "1.1.9")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lambda.r" version))
               (sha256
                (base32
-                "1j6287iqvs3ill6r5g6ksf5809qp0l0nf20ib8266m1r09lc9j14"))))
+                "0vql32np716dpd0kjn7s7wgawd02ysgp2a5il4kb19nlw661ii3x"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/lambda.r")
@@ -3086,14 +3086,14 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "2.0-10")
+   (version "2.0-12")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
       (base32
-       "07n2hz4fvjyv0siai8z8wqwfj8d58i8n1vzf1ckdfzp4kxa3z08d"))))
+       "1f8j440xi3xq37gvddiq2v610cvpzpg34n43116kixw1zvikm5ra"))))
    (build-system r-build-system)
    (inputs
     `(("gfortran" ,gfortran)))
@@ -3586,14 +3586,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "1lg0amx5hs37ajwjxz7ya50q4s28jcdj51kzl10s1x4l1akp7xls"))))
+         "18fii18f967xaw6swn0w744sncx37rfq6gd8d9dccrpyf8647hmr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -5141,24 +5141,25 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-76")
+    (version "6.0-77")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "1w31xzpmj8p6r6s7s1vwnjxainq54bbh4cqm177ba0myv69hh8cc"))))
+         "05c504567s2nppzfgi36mhszbym2pr80nf50dgxcxfx030721v5y"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-car" ,r-car)
-       ("r-foreach" ,r-foreach)
+     `(("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
        ("r-lattice" ,r-lattice)
        ("r-modelmetrics" ,r-modelmetrics)
        ("r-nlme" ,r-nlme)
        ("r-plyr" ,r-plyr)
-       ("r-reshape2" ,r-reshape2)))
+       ("r-recipes" ,r-recipes)
+       ("r-reshape2" ,r-reshape2)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/topepo/caret")
     (synopsis "Classification and regression training")
     (description

@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages docbook)
@@ -353,6 +355,25 @@ permit managing file systems not included in libparted.")
     ;; The home page says GPLv2, but the source code says GPLv2+.
     (license license:gpl2+)))
 
+(define-public pydf
+  (package
+    (name "pydf")
+    (version "12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydf" version))
+       (sha256
+        (base32
+         "0f8ly8xyp93i2hm9c0qjqd4y86nz73axw2f09z01mszwmg1sfivz"))))
+  (build-system python-build-system)
+  (home-page "http://kassiopeia.juls.savba.sk/~garabik/software/pydf/")
+  (synopsis "Colourised @command{df} clone")
+  (description "All-singing, all-dancing, fully colourised @command{df} clone
+written in Python.  It displays the amount of disk space available on the
+mounted filesystems, using different colours for different types of file
+systems.  Output format is completely customizable.")
+  (license license:public-domain)))
 
 (define-public f3
   (package

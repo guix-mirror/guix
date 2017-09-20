@@ -253,7 +253,12 @@ fe80::1%lo0 apps.facebook.com\n")
                   (service-extension etc-service-type
                                      static-networking-etc-files)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Turn up the specified network interfaces upon startup,
+with the given IP address, gateway, netmask, and so on.  The value for
+services of this type is a list of @code{static-networking} objects, one per
+network interface.")))
 
 (define* (static-networking-service interface ip
                                     #:key
@@ -422,7 +427,11 @@ restrict -6 ::1\n"))
                        (service-extension account-service-type
                                           (const %ntp-accounts))
                        (service-extension activation-service-type
-                                          ntp-service-activation)))))
+                                          ntp-service-activation)))
+                (description
+                 "Run the @command{ntpd}, the Network Time Protocol (NTP)
+daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
+will keep the system clock synchronized with that of the given servers.")))
 
 (define* (ntp-service #:key (ntp ntp)
                       (servers %ntp-servers)
@@ -520,7 +529,11 @@ make an initial adjustment of more than 1,000 seconds."
              (inetd-configuration
               (inherit config)
               (entries (append (inetd-configuration-entries config)
-                               entries)))))))
+                               entries)))))
+   (description
+    "Start @command{inetd}, the @dfn{Internet superserver}.  It is responsible
+for listening on Internet sockets and spawning the corresponding services on
+demand.")))
 
 
 ;;;
@@ -671,7 +684,10 @@ HiddenServicePort ~a ~a~%"
                            (hidden-services
                             (append (tor-configuration-hidden-services config)
                                     services)))))
-                (default-value (tor-configuration))))
+                (default-value (tor-configuration))
+                (description
+                 "Run the @uref{https://torproject.org, Tor} anonymous
+networking daemon.")))
 
 (define* (tor-service #:optional
                       (config-file (plain-file "empty" ""))
@@ -691,7 +707,9 @@ and lines for hidden services added via @code{tor-hidden-service}.  Run
   ;; A type that extends Tor with hidden services.
   (service-type (name 'tor-hidden-service)
                 (extensions
-                 (list (service-extension tor-service-type list)))))
+                 (list (service-extension tor-service-type list)))
+                (description
+                 "Define a new Tor @dfn{hidden service}.")))
 
 (define (tor-hidden-service name mapping)
   "Define a new Tor @dfn{hidden service} called @var{name} and implementing
@@ -798,7 +816,10 @@ project's documentation} for more information."
                                           (const %bitlbee-accounts))
                        (service-extension activation-service-type
                                           (const %bitlbee-activation))))
-                (default-value (bitlbee-configuration))))
+                (default-value (bitlbee-configuration))
+                (description
+                 "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
+a gateway between IRC and chat networks.")))
 
 (define* (bitlbee-service #:key (bitlbee bitlbee)
                           (interface "127.0.0.1") (port 6667)
@@ -862,7 +883,10 @@ configuration file."
                                           (const %wicd-activation))
 
                        ;; Add Wicd to the global profile.
-                       (service-extension profile-service-type list)))))
+                       (service-extension profile-service-type list)))
+                (description
+                 "Run @url{https://launchpad.net/wicd,Wicd}, a network
+management daemon that aims to simplify wired and wireless networking.")))
 
 (define* (wicd-service #:key (wicd wicd))
   "Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
@@ -931,7 +955,11 @@ dns=" dns "
                                (const %network-manager-activation))
             ;; Add network-manager to the system profile.
             (service-extension profile-service-type config->package)))
-     (default-value (network-manager-configuration)))))
+     (default-value (network-manager-configuration))
+     (description
+      "Run @uref{https://wiki.gnome.org/Projects/NetworkManager,
+NetworkManager}, a network management daemon that aims to simplify wired and
+wireless networking."))))
 
 
 ;;;
@@ -985,7 +1013,10 @@ dns=" dns "
                                             connman-activation)
                          ;; Add connman to the system profile.
                          (service-extension profile-service-type
-                                            connman-package))))))
+                                            connman-package)))
+                  (description
+                   "Run @url{https://01.org/connman,Connman},
+a network connection manager."))))
 
 
 ;;;
@@ -1071,6 +1102,10 @@ dns=" dns "
           (service-extension profile-service-type
                              (compose list openvswitch-configuration-package))
           (service-extension shepherd-root-service-type
-                             openvswitch-shepherd-service)))))
+                             openvswitch-shepherd-service)))
+   (description
+    "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
+switch designed to enable massive network automation through programmatic
+extension.")))
 
 ;;; networking.scm ends here

@@ -40,6 +40,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 threads)
   #:use-module (web uri)
   #:export (%daemon-socket-uri
             %gc-roots-directory
@@ -1428,7 +1429,8 @@ where FILE is the entry's absolute file name and STAT is the result of
 (define* (run-with-store store mval
                          #:key
                          (guile-for-build (%guile-for-build))
-                         (system (%current-system)))
+                         (system (%current-system))
+                         (target #f))
   "Run MVAL, a monadic value in the store monad, in STORE, an open store
 connection, and return the result."
   ;; Initialize the dynamic bindings here to avoid bad surprises.  The
@@ -1436,7 +1438,7 @@ connection, and return the result."
   ;; bind-time and not at call time, which can be disconcerting.
   (parameterize ((%guile-for-build guile-for-build)
                  (%current-system system)
-                 (%current-target-system #f))
+                 (%current-target-system target))
     (call-with-values (lambda ()
                         (run-with-state mval store))
       (lambda (result store)

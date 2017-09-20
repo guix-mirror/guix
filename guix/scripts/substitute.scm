@@ -34,7 +34,8 @@
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
                 #:select (current-terminal-columns
-                          progress-proc uri-abbreviation nar-uri-abbreviation
+                          progress-reporter/file
+                          uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)
                           close-connection
@@ -78,12 +79,13 @@
             narinfo-signature
 
             narinfo-hash->sha256
-            assert-valid-narinfo
 
             lookup-narinfos
             lookup-narinfos/diverse
             read-narinfo
             write-narinfo
+
+            substitute-urls
             guix-substitute))
 
 ;;; Comment:
@@ -405,38 +407,41 @@ No authentication and authorization checks are performed here!"
        (let ((above-signature (string-take contents index)))
          (sha256 (string->utf8 above-signature)))))))
 
-(define* (assert-valid-narinfo narinfo
-                               #:optional (acl (current-acl))
-                               #:key verbose?)
-  "Raise an exception if NARINFO lacks a signature, has an invalid signature,
-or is signed by an unauthorized key."
-  (let ((hash (narinfo-sha256 narinfo)))
-    (if (not hash)
-        (if %allow-unauthenticated-substitutes?
-            narinfo
-            (leave (G_ "substitute at '~a' lacks a signature~%")
-                   (uri->string (narinfo-uri narinfo))))
-        (let ((signature (narinfo-signature narinfo)))
-          (unless %allow-unauthenticated-substitutes?
-            (assert-valid-signature narinfo signature hash acl)
-            (when verbose?
-              (format (current-error-port)
-                      (G_ "Found valid signature for ~a~%")
-                      (narinfo-path narinfo))
-              (format (current-error-port)
-                      (G_ "From ~a~%")
-                      (uri->string (narinfo-uri narinfo)))))
-          narinfo))))
-
-(define* (valid-narinfo? narinfo #:optional (acl (current-acl)))
+(define* (valid-narinfo? narinfo #:optional (acl (current-acl))
+                         #:key verbose?)
   "Return #t if NARINFO's signature is not valid."
   (or %allow-unauthenticated-substitutes?
       (let ((hash      (narinfo-sha256 narinfo))
-            (signature (narinfo-signature narinfo)))
+            (signature (narinfo-signature narinfo))
+            (uri       (uri->string (narinfo-uri narinfo))))
         (and hash signature
              (signature-case (signature hash acl)
                (valid-signature #t)
-               (else #f))))))
+               (invalid-signature
+                (when verbose?
+                  (format (current-error-port)
+                          "invalid signature for substitute at '~a'~%"
+                          uri))
+                #f)
+               (hash-mismatch
+                (when verbose?
+                  (format (current-error-port)
+                          "hash mismatch for substitute at '~a'~%"
+                          uri))
+                #f)
+               (unauthorized-key
+                (when verbose?
+                  (format (current-error-port)
+                          "substitute at '~a' is signed by an \
+unauthorized party~%"
+                          uri))
+                #f)
+               (corrupt-signature
+                (when verbose?
+                  (format (current-error-port)
+                          "corrupt signature for substitute at '~a'~%"
+                          uri))
+                #f))))))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."
@@ -706,30 +711,68 @@ information is available locally."
         (let ((missing (fetch-narinfos cache missing)))
           (append cached (or missing '()))))))
 
-(define (lookup-narinfos/diverse caches paths)
+(define (equivalent-narinfo? narinfo1 narinfo2)
+  "Return true if NARINFO1 and NARINFO2 are equivalent--i.e., if they describe
+the same store item.  This ignores unnecessary metadata such as the Nar URL."
+  (and (string=? (narinfo-hash narinfo1)
+                 (narinfo-hash narinfo2))
+
+       ;; The following is not needed if all we want is to download a valid
+       ;; nar, but it's necessary if we want valid narinfo.
+       (string=? (narinfo-path narinfo1)
+                 (narinfo-path narinfo2))
+       (equal? (narinfo-references narinfo1)
+               (narinfo-references narinfo2))
+
+       (= (narinfo-size narinfo1)
+          (narinfo-size narinfo2))))
+
+(define (lookup-narinfos/diverse caches paths authorized?)
   "Look up narinfos for PATHS on all of CACHES, a list of URLS, in that order.
-That is, when a cache lacks a narinfo, look it up in the next cache, and so
-on.  Return a list of narinfos for PATHS or a subset thereof."
+That is, when a cache lacks an AUTHORIZED? narinfo, look it up in the next
+cache, and so on.
+
+Return a list of narinfos for PATHS or a subset thereof.  The returned
+narinfos are either AUTHORIZED?, or they claim a hash that matches an
+AUTHORIZED? narinfo."
+  (define (select-hit result)
+    (lambda (path)
+      (match (vhash-fold* cons '() path result)
+        ((one)
+         one)
+        ((several ..1)
+         (let ((authorized (find authorized? (reverse several))))
+           (and authorized
+                (find (cut equivalent-narinfo? <> authorized)
+                      several)))))))
+
   (let loop ((caches caches)
              (paths  paths)
-             (result '()))
+             (result vlist-null)                  ;path->narinfo vhash
+             (hits   '()))                        ;paths
     (match paths
       (()                                         ;we're done
-       result)
+       ;; Now iterate on all the HITS, and return exactly one match for each
+       ;; hit: the first narinfo that is authorized, or that has the same hash
+       ;; as an authorized narinfo, in the order of CACHES.
+       (filter-map (select-hit result) hits))
       (_
        (match caches
          ((cache rest ...)
           (let* ((narinfos (lookup-narinfos cache paths))
-                 (hits     (map narinfo-path narinfos))
-                 (missing  (lset-difference string=? paths hits))) ;XXX: perf
-            (loop rest missing (append narinfos result))))
+                 (definite (map narinfo-path (filter authorized? narinfos)))
+                 (missing  (lset-difference string=? paths definite))) ;XXX: perf
+            (loop rest missing
+                  (fold vhash-cons result
+                        (map narinfo-path narinfos) narinfos)
+                  (append definite hits))))
          (()                                      ;that's it
-          result))))))
+          (filter-map (select-hit result) hits)))))))
 
-(define (lookup-narinfo caches path)
+(define (lookup-narinfo caches path authorized?)
   "Return the narinfo for PATH in CACHES, or #f when no substitute for PATH
 was found."
-  (match (lookup-narinfos/diverse caches (list path))
+  (match (lookup-narinfos/diverse caches (list path) authorized?)
     ((answer) answer)
     (_        #f)))
 
@@ -772,23 +815,25 @@ was found."
                                 (= (string-length file) 32)))))
               (narinfo-cache-directories directory)))
 
-(define (progress-report-port report-progress port)
-  "Return a port that calls REPORT-PROGRESS every time something is read from
-PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
-`progress-proc'."
-  (define total 0)
-  (define (read! bv start count)
-    (let ((n (match (get-bytevector-n! port bv start count)
-               ((? eof-object?) 0)
-               (x x))))
-      (set! total (+ total n))
-      (report-progress total (const n))
-      ;; XXX: We're not in control, so we always return anyway.
-      n))
-
-  (make-custom-binary-input-port "progress-port-proc"
-                                 read! #f #f
-                                 (cut close-connection port)))
+(define (progress-report-port reporter port)
+  "Return a port that continuously reports the bytes read from PORT using
+REPORTER, which should be a <progress-reporter> object."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (let* ((total 0)
+            (read! (lambda (bv start count)
+                     (let ((n (match (get-bytevector-n! port bv start count)
+                                ((? eof-object?) 0)
+                                (x x))))
+                       (set! total (+ total n))
+                       (report total)
+                       n))))
+       (start)
+       (make-custom-binary-input-port "progress-port-proc"
+                                      read! #f #f
+                                      (lambda ()
+                                        (close-connection port)
+                                        (stop)))))))
 
 (define-syntax with-networking
   (syntax-rules ()
@@ -866,15 +911,15 @@ authorized substitutes."
   (match (string-tokenize command)
     (("have" paths ..1)
      ;; Return the subset of PATHS available in CACHE-URLS.
-     (let ((substitutable (lookup-narinfos/diverse cache-urls paths)))
+     (let ((substitutable (lookup-narinfos/diverse cache-urls paths valid?)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
-                 (filter valid? substitutable))
+                 substitutable)
        (newline)))
     (("info" paths ..1)
      ;; Reply info about PATHS if it's in CACHE-URLS.
-     (let ((substitutable (lookup-narinfos/diverse cache-urls paths)))
-       (for-each display-narinfo-data (filter valid? substitutable))
+     (let ((substitutable (lookup-narinfos/diverse cache-urls paths valid?)))
+       (for-each display-narinfo-data substitutable)
        (newline)))
     (wtf
      (error "unknown `--query' command" wtf))))
@@ -883,10 +928,12 @@ authorized substitutes."
                                #:key cache-urls acl)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL."
-  (let* ((narinfo (lookup-narinfo cache-urls store-item))
-         (uri     (narinfo-uri narinfo)))
-    ;; Make sure it is signed and everything.
-    (assert-valid-narinfo narinfo acl)
+  (let* ((narinfo (lookup-narinfo cache-urls store-item
+                                  (cut valid-narinfo? <> acl)))
+         (uri     (and=> narinfo narinfo-uri)))
+    (unless uri
+      (leave (G_ "no valid substitute for '~a'~%")
+             store-item))
 
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
@@ -903,21 +950,21 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                           (dl-size  (or download-size
                                         (and (equal? comp "none")
                                              (narinfo-size narinfo))))
-                          (progress (progress-proc (uri->string uri)
-                                                   dl-size
-                                                   (current-error-port)
-                                                   #:abbreviation
-                                                   nar-uri-abbreviation)))
-                     (progress-report-port progress raw)))
+                          (reporter (progress-reporter/file
+                                     (uri->string uri) dl-size
+                                     (current-error-port)
+                                     #:abbreviation nar-uri-abbreviation)))
+                     (progress-report-port reporter raw)))
                   ((input pids)
                    (decompressed-port (and=> (narinfo-compression narinfo)
                                              string->symbol)
                                       progress)))
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
+      (close-port input)
 
-      ;; Skip a line after what 'progress-proc' printed, and another one to
-      ;; visually separate substitutions.
+      ;; Skip a line after what 'progress-reporter/file' printed, and another
+      ;; one to visually separate substitutions.
       (display "\n\n" (current-error-port))
 
       (every (compose zero? cdr waitpid) pids))))
@@ -971,7 +1018,7 @@ substitutes may be unavailable\n")))))
 found."
   (assoc-ref (daemon-options) option))
 
-(define %cache-urls
+(define %default-substitute-urls
   (match (and=> (or (find-daemon-option "untrusted-substitute-urls") ;client
                     (find-daemon-option "substitute-urls"))          ;admin
                 string-tokenize)
@@ -981,6 +1028,10 @@ found."
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
      '("http://hydra.gnu.org"))))
+
+(define substitute-urls
+  ;; List of substitute URLs.
+  (make-parameter %default-substitute-urls))
 
 (define (client-terminal-columns)
   "Return the number of columns in the client's terminal, if it is known, or a
@@ -1010,15 +1061,15 @@ default value."
   ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
   ;; when we know we cannot substitute, but we must emit a newline on stdout
   ;; when everything is alright.
-  (when (null? %cache-urls)
+  (when (null? (substitute-urls))
     (exit 0))
 
   ;; Say hello (see above.)
   (newline)
   (force-output (current-output-port))
 
-  ;; Sanity-check %CACHE-URLS so we can provide a meaningful error message.
-  (for-each validate-uri %cache-urls)
+  ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error message.
+  (for-each validate-uri (substitute-urls))
 
   ;; Attempt to install the client's locale, mostly so that messages are
   ;; suitably translated.
@@ -1038,7 +1089,7 @@ default value."
             (or (eof-object? command)
                 (begin
                   (process-query command
-                                 #:cache-urls %cache-urls
+                                 #:cache-urls (substitute-urls)
                                  #:acl acl)
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
@@ -1047,7 +1098,7 @@ default value."
         ;; report displays nicely.
         (parameterize ((current-terminal-columns (client-terminal-columns)))
           (process-substitution store-path destination
-                                #:cache-urls %cache-urls
+                                #:cache-urls (substitute-urls)
                                 #:acl (current-acl))))
        (("--version")
         (show-version-and-exit "guix substitute"))

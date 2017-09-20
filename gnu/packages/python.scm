@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
@@ -80,6 +80,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -1248,6 +1249,33 @@ datetime module, available in Python 2.3+.")
 
 (define-public python2-parsedatetime
   (package-with-python2 python-parsedatetime))
+
+(define-public python-schedule
+  (package
+    (name "python-schedule")
+    (version "0.4.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "schedule" version))
+      (sha256
+       (base32
+        "0vplyjcbfrq50sphlwya749z8p2pcyi2nycw3518i0qpd9a6189i"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/dbader/schedule")
+    (synopsis "Schedule periodic function calls in Python")
+    (description
+     "Schedule is an in-process scheduler for periodic jobs that uses the
+builder pattern for configuration.  Schedule lets you run Python functions (or
+any other callable) periodically at pre-determined intervals using a simple,
+human-friendly syntax.")
+    (license license:expat)))
+
+(define-public python2-schedule
+  (package-with-python2 python-schedule))
 
 (define-public python-pandas
   (package
@@ -2836,14 +2864,14 @@ somewhat intelligeble.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "0pvr3iymab7v2qz74ann760z7qahqgqszxz5iqqbaqv4z2zz0y8i"))
+         "1rxsg14i33vm2i6lz0my628108c81k43v10n4h3p0gx62xdyf2sh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3188,14 +3216,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.1.3")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "10axnp2wpjnq9g8wg53fx0c70dfxqrz498jyz8mrdx9a3flwir48"))))
+         "1k78qdvir1yb1c634nkv6rbga8wv4289xarghmsbbvzhvr311bnv"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -5976,6 +6004,37 @@ and written in Python.")
 (define-public python2-html5lib-0.9
   (package-with-python2 python-html5lib-0.9))
 
+(define-public python-html5-parser
+  (package
+    (name "python-html5-parser")
+    (version "0.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "html5-parser" version))
+              (sha256
+               (base32
+                "1d8sxhl41ffh7qlk7wlsy17xw6slzx5v1yna9s72wx5qrpaa3wxr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)))
+    (home-page "https://html5-parser.readthedocs.io")
+    (synopsis "Fast C-based HTML5 parsing for Python")
+    (description "This package provides a fast implementation of the HTML5
+parsing spec for Python.  Parsing is done in C using a variant of the gumbo
+parser.  The gumbo parse tree is then transformed into an lxml tree, also in
+C, yielding parse times that can be a thirtieth of the html5lib parse times.")
+    ;; src/as-python-tree.[c|h] are licensed GPL3.  The other files
+    ;; indicate ASL2.0, including the LICENSE file for the whole project.
+    (license (list license:asl2.0 license:gpl3))))
+
+(define-public python2-html5-parser
+  (package-with-python2 python-html5-parser))
+
 (define-public python-webencodings
   (package
     (name "python-webencodings")
@@ -6206,6 +6265,16 @@ implementation of D-Bus.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (zero?
+              (system* "python" "setup.py" "build" "--enable-all-extensions"))))
+         (add-after 'build 'build-test-helper
+           (lambda _
+             (zero?
+              (system
+               (string-append "gcc -fPIC -shared -o ./testextension.sqlext "
+                              "-I. -Isqlite3 src/testextension.c") ))))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -6225,14 +6294,14 @@ translate the complete SQLite API into Python.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "3.6.0")
+    (version "3.8.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
          (base32
-          "1pvbmiy2m7jwv493kilbghhj2pkh8wy1na3ji350vhzhlwlclx4w"))))
+          "15nvf6n285n282682qyw3wihsncb0x5amdhyi4b83bfa2nz74vvk"))))
     (build-system python-build-system)
     (inputs
       `(("libxml2" ,libxml2)
@@ -7911,14 +7980,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.2.0")
+    (version "17.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0d283g4zi0hr9papd24mjl70mi15gyzq6fx618rizi87dgipqqax"))))
+         "0xkc1wfnpg6abzllivg3ylhc63npjdy1v81f4kc08bm8cj80nqr9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -9855,14 +9924,14 @@ Pytest but stripped of Pytest specific details.")
 (define-public python-tox
   (package
    (name "python-tox")
-   (version "2.3.1")
+   (version "2.8.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "tox" version))
      (sha256
       (base32
-       "1vj73ar4rimq3fwy5r2z3jv4g9qbh8rmpmncsc00g0k310acqzxz"))))
+       "00lrql2cfzhb712v70inac6mrgdv8s8fmvz7qpggkk623hkm2pgc"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Tests require pytest-timeout, which itself requires
@@ -9874,7 +9943,8 @@ Pytest but stripped of Pytest specific details.")
       ("python-virtualenv" ,python-virtualenv)))
    (native-inputs
     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
-      ("python-pytest" ,python-pytest)))  ; >= 2.3.5
+      ("python-pytest" ,python-pytest)  ; >= 2.3.5
+      ("python-setuptools-scm" ,python-setuptools-scm)))
    (home-page "http://tox.testrun.org/")
    (synopsis "Virtualenv-based automation of test activities")
    (description "Tox is a generic virtualenv management and test command line
@@ -9914,14 +9984,14 @@ document.")
 (define-public python-botocore
   (package
    (name "python-botocore")
-   (version "1.5.26")
+   (version "1.7.9")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "botocore" version))
      (sha256
       (base32
-       "1b7l48hr88galrrc5q6k21z3sdadzxc87ppzs7k9fz4p1w8bfnvb"))))
+       "02b1bw25r1wdjs5yppb1h9igf11wj092biriv2yg8hzp5r0wrkmg"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Many tests are failing.
@@ -9948,14 +10018,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.63")
+   (version "1.11.151")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "1r8aqv8w27k76lcsfk83w6qw9lz8gk2ibzwacp5wjhpp2gik911m"))))
+       "0h6rirbfy0f9cxm7ikll0kr720dircfmxf2vslmhn4n325831wsp"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
@@ -11914,20 +11984,22 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.4.1")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "1k2dcl6mqpn5bljyl6w42rqyd9mb3y9kh2mg7m2x3kfjwvg0rpva"))))
+                "0q1cf0szr0d54am4pypzwdnm74zpladdsinad94c2fz5i06fdpf7"))))
     (build-system python-build-system)
     (native-inputs
      `(;; For testing
        ("python-mock" ,python-mock)
+       ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)
+     `(("python-backpack" ,python-backpack)
+       ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
     (synopsis "Command-line arguments library for Python")
@@ -12088,13 +12160,13 @@ addresses, and phone numbers.")
 (define-public python-pyaml
   (package
     (name "python-pyaml")
-    (version "15.8.2")
+    (version "17.7.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyaml" version))
               (sha256
                (base32
-                "1f5m28vkh4ksq3d80d8mmd2z8wxvc3mgy2pmrv2751dm2xgznm4w"))))
+                "132grrw0ajq4nrappi3ldbkb952k7yn9b6c7csi2rmvzm1g6ppp2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-unidecode" ,python-unidecode)))
@@ -12109,6 +12181,32 @@ YAML-serialized data.")
 
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
+
+(define-public python-backpack
+  (package
+    (name "python-backpack")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "backpack" version))
+       (sha256
+        (base32
+         "14rq1mvm0jda90lcx9gyyby9dvq4x3js2cmxvd6vl4686ixwyqh1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/sdispater/backpack")
+    (synopsis "Utilities for working with Python collections")
+    (description "Backpack provides some useful utilities for working with
+collections of data.")
+    (license license:expat)))
+
+(define-public python2-backpack
+  (package-with-python2 python-backpack))
 
 (define-public python-flexmock
   (package
@@ -12130,44 +12228,6 @@ mocks, stubs and fakes.")
 
 (define-public python2-flexmock
   (package-with-python2 python-flexmock))
-
-(define-public python-orator
-  (package
-    (name "python-orator")
-    (version "0.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "orator" version))
-              (sha256
-               (base32
-                "1li49irsqha17nrda4nsb48biyy0rarp9pphf0jpqwm5zr8hv569"))))
-    (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests
-    (propagated-inputs
-     `(("python-arrow" ,python-arrow)
-       ("python-blinker" ,python-blinker)
-       ("python-cleo" ,python-cleo)
-       ("python-faker" ,python-faker)
-       ("python-inflection" ,python-inflection)
-       ("python-lazy-object-proxy" ,python-lazy-object-proxy)
-       ("python-pyaml" ,python-pyaml)
-       ("python-simplejson" ,python-simplejson)
-       ("python-wrapt" ,python-wrapt)))
-    (home-page "https://orator-orm.com/")
-    (synopsis "ActiveRecord ORM for Python")
-    (description
-     "Orator provides a simple ActiveRecord-like Object Relational Mapping
-implementation for Python.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-orator))))))
-
-(define-public python2-orator
-  (let ((base (package-with-python2 (strip-python2-variant python-orator))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-prompt-toolkit
  (package
@@ -13169,16 +13229,40 @@ replay them during future tests.  It is designed to work with python-requests.")
 (define-public python2-betamax
   (package-with-python2 python-betamax))
 
+(define-public python-betamax-matchers
+  (package
+    (name "python-betamax-matchers")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "betamax-matchers" version))
+       (sha256
+        (base32
+         "07qpwjyq2i2aqhz5iwghnj4pqr2ys5n45v1vmpcfx9r5mhwrsq43"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-betamax" ,python-betamax)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+    (home-page "https://github.com/sigmavirus24/betamax_matchers")
+    (synopsis "VCR imitation for python-requests")
+    (description "@code{betamax-matchers} provides a set of Matchers for
+Betamax.")
+    (license license:asl2.0)))
+
+(define-public python2-betamax-matchers
+  (package-with-python2 python-betamax-matchers))
+
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.1.10")
+    (version "0.1.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "1h8g9bknvxflxkpbnxyfxmk8pvgykbbk9ljdvhqh6z4vjc2926ms"))))
+                "0yfrfnf404cxzn3iswibqjxklsl0b1lwgqiml6pwiqj79a7zbwbn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16195,3 +16279,24 @@ ECB and OFB).")
 
 (define-public python2-pyaes
   (package-with-python2 python-pyaes))
+
+(define-public python-uritemplate
+  (package
+    (name "python-uritemplate")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uritemplate" version))
+       (sha256
+        (base32
+         "0781gm9g34wa0asc19dx81ng0nqq07igzv3bbvdqmz13pv7469n0"))))
+    (build-system python-build-system)
+    (home-page "https://uritemplate.readthedocs.org")
+    (synopsis "Library to deal with URI Templates")
+    (description "@code{uritemplate} provides Python library to deal with URI
+Templates.")
+    (license license:bsd-2)))
+
+(define-public python2-uritemplate
+  (package-with-python2 python-uritemplate))

@@ -1,0 +1,32 @@
+Description: Use the markdown library provided by the libmarkdown2 package.
+Author: Alessandro Ghedini <al3xbio@gmail.com>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2012-01-01
+
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -57,12 +57,6 @@
+ 
+ 
+ 
+-sub MY::postamble {
+-    return sprintf('
+-$(MYEXTLIB):
+-	%s
+-', qq{( cd $extdir; CC='cc -fPIC' sh configure.sh; make )\n});
+-}
+ 
+ WriteMakefile(
+     NAME              => 'Text::Markdown::Discount',
+@@ -71,8 +65,6 @@
+     ($] >= 5.005 ?
+       (ABSTRACT_FROM  => 'lib/Text/Markdown/Discount.pm',
+        AUTHOR         => 'Masayoshi Sekimura <sekimura@cpan.org>') : ()),
+-    LIBS               => '-L' . $extdir,
+-    INC               => '-I. -I' . $extdir,
+-    MYEXTLIB          => $myextlib,
+-    clean             => { FILES => $clean_files },
++    LIBS               => '-lmarkdown',
++    INC               => '-I.',
+ );

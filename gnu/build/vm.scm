@@ -26,7 +26,7 @@
   #:use-module (guix build syscalls)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
-  #:use-module (gnu build file-systems)
+  #:use-module (gnu system uuid)
   #:use-module (guix records)
   #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
@@ -163,6 +163,7 @@ the #:references-graphs parameter of 'derivation'."
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
   (label       partition-label (default #f))
+  (uuid        partition-uuid (default #f))
   (flags       partition-flags (default '()))
   (initializer partition-initializer (default (const #t))))
 
@@ -236,22 +237,26 @@ actual /dev name based on DEVICE."
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
 (define* (create-ext-file-system partition type
-                                 #:key label)
+                                 #:key label uuid)
   "Create an ext-family filesystem of TYPE on PARTITION.  If LABEL is true,
-use that as the volume name."
+use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition...\n" type)
   (unless (zero? (apply system* (string-append "mkfs." type)
                         "-F" partition
-                        (if label
-                            `("-L" ,label)
-                            '())))
+                        `(,@(if label
+                                `("-L" ,label)
+                                '())
+                          ,@(if uuid
+                                `("-U" ,(uuid->string uuid))
+                                '()))))
     (error "failed to create partition")))
 
 (define* (create-fat-file-system partition
-                                 #:key label)
+                                 #:key label uuid)
   "Create a FAT filesystem on PARTITION.  The number of File Allocation Tables
 will be determined based on filesystem size.  If LABEL is true, use that as the
 volume name."
+  ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
   (unless (zero? (apply system* "mkfs.fat" partition
                         (if label
@@ -260,13 +265,13 @@ volume name."
     (error "failed to create FAT partition")))
 
 (define* (format-partition partition type
-                           #:key label)
+                           #:key label uuid)
   "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
 volume name."
   (cond ((string-prefix? "ext" type)
-         (create-ext-file-system partition type #:label label))
+         (create-ext-file-system partition type #:label label #:uuid uuid))
         ((or (string-prefix? "fat" type) (string= "vfat" type))
-         (create-fat-file-system partition #:label label))
+         (create-fat-file-system partition #:label label #:uuid uuid))
         (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
@@ -275,7 +280,8 @@ it, run its initializer, and unmount it."
   (let ((target "/fs"))
    (format-partition (partition-device partition)
                      (partition-file-system partition)
-                     #:label (partition-label partition))
+                     #:label (partition-label partition)
+                     #:uuid (partition-uuid partition))
    (mkdir-p target)
    (mount (partition-device partition) target
           (partition-file-system partition))
@@ -366,18 +372,39 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (error "failed to create GRUB EFI image"))))
 
 (define* (make-iso9660-image grub config-file os-drv target
-                             #:key (volume-id "GuixSD_image") (volume-uuid #f))
+                             #:key (volume-id "GuixSD_image") (volume-uuid #f)
+                             register-closures? (closures '()))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 GRUB configuration and OS-DRV as the stuff in it."
-  (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue")))
+  (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue"))
+        (target-store  (string-append "/tmp/root" (%store-directory))))
     (mkdir-p "/tmp/root/var/run")
     (mkdir-p "/tmp/root/run")
+    (mkdir-p "/tmp/root/mnt")
+
+    (mkdir-p target-store)
+    (mount (%store-directory) target-store "" MS_BIND)
+
+    (when register-closures?
+      (display "registering closures...\n")
+      (for-each (lambda (closure)
+                  (register-closure
+                   "/tmp/root"
+                   (string-append "/xchg/" closure)
+                   ;; XXX: Using deduplication causes cross device link errors.
+                   #:deduplicate? #f))
+                closures))
+
     (unless (zero? (apply system*
                           `(,grub-mkrescue "-o" ,target
                             ,(string-append "boot/grub/grub.cfg=" config-file)
                             ,(string-append "gnu/store=" os-drv "/..")
                             "var=/tmp/root/var"
                             "run=/tmp/root/run"
+                            ;; /mnt is used as part of the installation
+                            ;; process, as the mount point for the target
+                            ;; filesystem, so create it.
+                            "mnt=/tmp/root/mnt"
                             "--"
                             ;; Store two copies of the headers.
                             ;; The resulting ISO-9660 image has a DOS MBR and

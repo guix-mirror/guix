@@ -42,7 +42,7 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.11.7")
+    (version "1.11.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -50,7 +50,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0acph1mf7588hfx8ds26ncr6nw5fd9x92adm11fwin7f93i10sdb"))))
+                "0karxv4r1r8sa7ki5aamlxdvyvz0bvzq4gdhq0yi5nc4a0k11vzc"))))
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
@@ -132,9 +132,7 @@ bind processes, and much more.")
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (arguments
-     `(#:configure-flags `("--enable-builtin-atomics"
-
-                           "--enable-mpi-ext=affinity" ;cr doesn't work
+     `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
 
@@ -148,16 +146,21 @@ bind processes, and much more.")
                                            (assoc-ref %build-inputs "hwloc")))
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'remove-absolute
-                    ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
-                    ;; etc.) to reduce the closure size.  See
-                    ;; <https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00388.html>
-                    ;; and
-                    ;; <https://www.mail-archive.com/users@lists.open-mpi.org//msg31397.html>.
                     (lambda _
+                      ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
+                      ;; etc.) to reduce the closure size.  See
+                      ;; <https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00388.html>
+                      ;; and
+                      ;; <https://www.mail-archive.com/users@lists.open-mpi.org//msg31397.html>.
                       (substitute* '("orte/tools/orte-info/param.c"
                                      "oshmem/tools/oshmem_info/param.c"
                                      "ompi/tools/ompi_info/param.c")
                         (("_ABSOLUTE") ""))
+                      ;; Avoid valgrind (which pulls in gdb etc.).
+                      (substitute*
+                          '("./ompi/mca/io/romio/src/io_romio_component.c")
+                        (("MCA_io_romio_COMPLETE_CONFIGURE_FLAGS")
+                         "\"[elided to reduce closure]\""))
                       #t))
                   (add-before 'build 'scrub-timestamps ;reproducibility
                     (lambda _

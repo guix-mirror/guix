@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -50,7 +50,7 @@
   (let* ((gnu-mirrors
           '(;; This one redirects to a (supposedly) nearby and (supposedly)
             ;; up-to-date mirror.
-            "http://ftpmirror.gnu.org/"
+            "https://ftpmirror.gnu.org/gnu/"
 
             "ftp://ftp.cs.tu-berlin.de/pub/gnu/"
             "ftp://ftp.funet.fi/pub/mirrors/ftp.gnu.org/gnu/"

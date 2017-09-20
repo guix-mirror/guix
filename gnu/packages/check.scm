@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -268,4 +269,27 @@ normally do not detect.  The goal is to detect only real errors in the code
     (description "Google Test features an XUnit test framework, automated test
 discovery, death tests, assertions, parameterized tests and XML test report
 generation.")
+    (license bsd-3)))
+
+(define-public cpputest
+  (package
+    (name "cpputest")
+    (version "3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cpputest/cpputest/releases/download/v"
+                           version "/cpputest-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mk48xd3klyqi7wf3f4wn4zqxxzmvrhhl32r25jzrixzl72wq7f8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://cpputest.github.io/")
+    (synopsis "Unit testing and mocking framework for C/C++")
+    (description
+     "CppUTest is a C/C++ based unit xUnit test framework.  It is written in
+C++ but is used in C and C++ projects and frequently used in embedded systems
+but it works for any C/C++ project.")
     (license bsd-3)))

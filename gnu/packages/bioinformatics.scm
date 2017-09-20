@@ -4486,7 +4486,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                        "Data2DB"
                        "PCL2Bin")))
            (modify-phases %standard-phases
-             (add-after 'unpack 'bootstrap
+             (add-before 'configure 'bootstrap
                (lambda _
                  (zero? (system* "bash" "gen_auto"))))
              (add-after 'build 'build-additional-tools
@@ -6136,6 +6136,29 @@ annotation infrastructure.")
 data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
 track.  The database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
+
+(define-public r-sparql
+  (package
+  (name "r-sparql")
+  (version "1.16")
+  (source (origin
+           (method url-fetch)
+           (uri (cran-uri "SPARQL" version))
+           (sha256
+            (base32
+             "0gak1q06yyhdmcxb2n3v0h9gr1vqd0viqji52wpw211qp6r6dcrc"))))
+  (properties `((upstream-name . "SPARQL")))
+  (build-system r-build-system)
+  (propagated-inputs
+   `(("r-rcurl" ,r-rcurl)
+     ("r-xml" ,r-xml)))
+  (home-page "http://cran.r-project.org/web/packages/SPARQL")
+  (synopsis "SPARQL client for R")
+  (description "This package provides an interface to use SPARQL to pose
+SELECT or UPDATE queries to an end-point.")
+  ;; The only license indication is found in the DESCRIPTION file,
+  ;; which states GPL-3.  So we cannot assume GPLv3+.
+  (license license:gpl3)))
 
 (define-public vsearch
   (package
@@ -8001,7 +8024,7 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
@@ -8009,7 +8032,7 @@ paired-end data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19mk7vkbngmch54kzcxb52161ljfchhjsaanza8iwv5h98sjj66d"))))
+                "1qgc7vi6fpzl440yg7jhiycg5q336kd4pxqzx10yx2zcq3bq3msg"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)
@@ -8030,6 +8053,7 @@ paired-end data.")
        ("r-bsgenome-dmelanogaster-ucsc-dm3" ,r-bsgenome-dmelanogaster-ucsc-dm3)
        ("r-topgo" ,r-topgo)
        ("r-dt" ,r-dt)
+       ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
        ("r-plotrix" ,r-plotrix)
        ("r-motifrg" ,r-motifrg)

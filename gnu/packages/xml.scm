@@ -867,13 +867,13 @@ parsing/saving.")
 (define-public python-pyxb
   (package
     (name "python-pyxb")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyXB" version))
               (sha256
                (base32
-                "0rzzwibfqa28gxgcxx4cybx1qcg0g6fand06ykj3gz7z5kp653sf"))))
+                "1d17pyixbfvjyi2lb0cfp0ch8wwdf44mmg3r5pwqhyyqs66z601a"))))
     (build-system python-build-system)
     (home-page "http://pyxb.sourceforge.net/")
     (synopsis "Python XML Schema Bindings")
@@ -1189,14 +1189,14 @@ libxls cannot write Excel files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
                                   name  "-" version ".tar.gz"))
               (sha256
                (base32
-                "17a0yrjb0gln7819j0vp7y25imhvwpil2b0rm44mwgzml0a4i6mk"))))
+                "09bwzqjc41cc8qw8qkw9wq58rg9nax8r3fg19iny5vmw1c0z23sh"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")

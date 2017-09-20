@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,12 +25,14 @@
 
 (define-module (gnu packages libreoffice)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style))
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -719,6 +722,9 @@ Zoner Draw version 4 and 5.")
          (add-after 'unpack 'bootstrap
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "DICPATH")
+                                (files '("share/hunspell")))))
     (home-page "https://hunspell.github.io/")
     (synopsis "Spell checker")
     (description "Hunspell is a spell checker and morphological analyzer
@@ -726,6 +732,78 @@ library and program designed for languages with rich morphology and complex
 word compounding or character encoding.")
     ;; Triple license, including "mpl1.1 or later".
     (license (list mpl1.1 gpl2+ lgpl2.1+))))
+
+(define (dicollecte-french-dictionary variant synopsis)
+  ;; Return a French dictionary package from dicollecte.org, for the given
+  ;; VARIANT.
+  (package
+    (name (match variant
+            ("classique" "hunspell-dict-fr")
+            (_ (string-append "hunspell-dict-fr-" variant))))
+    (version "6.1")
+    (source (origin
+              (uri (string-append
+                    "http://www.dicollecte.org/download/fr/hunspell-french-dictionaries-v"
+                    version ".zip"))
+              (method url-fetch)
+              (sha256
+               (base32
+                "0w2hzh36wj3lsj2yd4mh7z7547dg452sywj79vnzx27csclwqshc"))))
+    (build-system trivial-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let* ((out      (assoc-ref %outputs "out"))
+                          (hunspell (string-append out "/share/hunspell"))
+                          (myspell  (string-append out "/share/myspell"))
+                          (doc      (string-append out "/share/doc/"
+                                                   ,name))
+                          (unzip    (assoc-ref %build-inputs "unzip")))
+                     (system* (string-append unzip "/bin/unzip")
+                              (assoc-ref %build-inputs "source"))
+                     (for-each (cut install-file <> hunspell)
+                               (find-files "."
+                                           ,(string-append variant
+                                                           "\\.(dic|aff)$")))
+                     (mkdir-p myspell)
+                     (symlink hunspell (string-append myspell "/dicts"))
+                     (for-each (cut install-file <> doc)
+                               (find-files "." "\\.(txt|org|md)$"))
+                     #t))))
+    (synopsis synopsis)
+    (description
+     "This package provides a dictionary for the Hunspell spell-checking
+library.")
+    (home-page "https://www.dicollecte.org/home.php?prj=fr")
+    (license mpl2.0)))
+
+(define-syntax define-french-dictionary
+  (syntax-rules (synopsis)
+    ((_ name variant (synopsis text))
+     (define-public name
+       (dicollecte-french-dictionary variant text)))))
+
+(define-french-dictionary hunspell-dict-fr-classique
+  "classique"
+  ;; TRANSLATORS: In French, this is "Français classique".
+  (synopsis "Hunspell dictionary for ``classic'' French (recommended)"))
+
+(define-french-dictionary hunspell-dict-fr-moderne
+  "moderne"
+  ;; TRANSLATORS: In French, this is "Français moderne".
+  (synopsis "Hunspell dictionary for ``modern'' French"))
+
+(define-french-dictionary hunspell-dict-fr-réforme-1990
+  "reforme1990"
+  (synopsis "Hunspell dictionary for the post @dfn{1990 réforme} French"))
+
+(define-french-dictionary hunspell-dict-fr-toutes-variantes
+  "toutesvariantes"
+  (synopsis "Hunspell dictionary for all variants of French"))
 
 (define-public hyphen
   (package

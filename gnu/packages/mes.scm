@@ -34,14 +34,15 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.80.3")
+    (version "0.82.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
                                   name "-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sdvkahnz6k9i4kf1i1ljl20220n3wk3gy6zmz0ggbbdgg4mfka0"))))
+                "1ll0mjivhxpj3r81w4a8p4bclr3byzp38ig1j11jvwnbl6lawgj7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -57,7 +58,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.9")
+      (version "0.10")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -66,7 +67,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0ph0fvabpb7zhbk4zpacbp7m4b142ds17dq5dzn00m7dz8farw9r"))))
+                  "0djmhnvha8phxgb4msysnjmy1nnllb08bnw4xhdayq8ppi4zdmcv"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs

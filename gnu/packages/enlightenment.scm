@@ -59,7 +59,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.20.3")
+    (version "1.20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "148i8awjdrqzd0xqfc6q4qvhhs46jl15nx7n2nii7lrwzx502wqj"))))
+                "1jxha61gsil6hs9zb72zsyh3gmdipvfnlc9v3palb2bm0b23aq9i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -149,6 +149,16 @@
                            "--enable-drm")
        #:phases
        (modify-phases %standard-phases
+         ;; If we don't hardcode the location of libcurl.so then we
+         ;; have to wrap the outputs of efl's dependencies in curl.
+         (add-after 'unpack 'hardcode-libcurl-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((curl (assoc-ref inputs "curl"))
+                    (lib  (string-append curl "/lib/")))
+               (substitute* "src/lib/ecore_con/ecore_con_url_curl.c"
+                 (("libcurl.so.?" libcurl) ; libcurl.so.[45]
+                  (string-append lib libcurl)))
+               #t)))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
@@ -165,7 +175,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -173,7 +183,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "13rl1k22yf8qrpzdm5nh6ij641fibadr2ww1r7rnz7mbhzj3d4gb"))
+                "05ncxvzb9rzkyjvd95hzn8lswqdwr8cix6rd54nqn9559jibh4ns"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               ;; TODO: Remove bundled lz4.

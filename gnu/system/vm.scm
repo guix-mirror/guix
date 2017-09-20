@@ -57,9 +57,11 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
+  #:use-module (gnu system uuid)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
 
   #:export (expression->derivation-in-linux-vm
@@ -192,6 +194,7 @@ made available under the /xchg CIFS share."
                         os-drv
                         bootcfg-drv
                         bootloader
+                        register-closures?
                         (inputs '()))
   "Return a bootable, stand-alone iso9660 image.
 
@@ -207,8 +210,13 @@ INPUTS is a list of inputs (as for packages)."
          (let ((inputs
                 '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
                            (map canonical-package
-                                (list sed grep coreutils findutils gawk))))
+                                (list sed grep coreutils findutils gawk))
+                           (if register-closures? (list guix) '())))
 
+
+               (graphs     '#$(match inputs
+                                   (((names . _) ...)
+                                    names)))
                ;; This variable is unused but allows us to add INPUTS-TO-COPY
                ;; as inputs.
                (to-register
@@ -222,8 +230,11 @@ INPUTS is a list of inputs (as for packages)."
                                #$bootcfg-drv
                                #$os-drv
                                "/xchg/guixsd.iso"
+                               #:register-closures? #$register-closures?
+                               #:closures graphs
                                #:volume-id #$file-system-label
-                               #:volume-uuid #$file-system-uuid)
+                               #:volume-uuid #$(and=> file-system-uuid
+                                                      uuid-bytevector))
            (reboot))))
    #:system system
    #:make-disk-image? #f
@@ -238,6 +249,7 @@ INPUTS is a list of inputs (as for packages)."
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      file-system-label
+                     file-system-uuid
                      os-drv
                      bootcfg-drv
                      bootloader
@@ -247,7 +259,10 @@ INPUTS is a list of inputs (as for packages)."
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
-partition.  The returned image is a full disk image that runs OS-DERIVATION,
+partition; likewise FILE-SYSTEM-UUID, if true, specifies the UUID of the root
+partition (a UUID object).
+
+The returned image is a full disk image that runs OS-DERIVATION,
 with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
 file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
@@ -297,6 +312,8 @@ the image."
                   (partitions (list (partition
                                      (size root-size)
                                      (label #$file-system-label)
+                                     (uuid #$(and=> file-system-uuid
+                                                    uuid-bytevector))
                                      (file-system #$file-system-type)
                                      (flags '(boot))
                                      (initializer initialize))
@@ -334,6 +351,35 @@ the image."
 ;;; VM and disk images.
 ;;;
 
+(define* (operating-system-uuid os #:optional (type 'dce))
+  "Compute UUID object with a deterministic \"UUID\" for OS, of the given
+TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
+  (if (eq? type 'iso9660)
+      (let ((pad (compose (cut string-pad <> 2 #\0)
+                          number->string))
+            (h   (hash (operating-system-services os) 3600)))
+        (bytevector->uuid
+         (string->iso9660-uuid
+          (string-append "1970-01-01-"
+                         (pad (hash (operating-system-host-name os) 24)) "-"
+                         (pad (quotient h 60)) "-"
+                         (pad (modulo h 60)) "-"
+                         (pad (hash (operating-system-file-systems os) 100))))
+         'iso9660))
+      (bytevector->uuid
+       (uint-list->bytevector
+        (list (hash file-system-type
+                    (expt 2 32))
+              (hash (operating-system-host-name os)
+                    (expt 2 32))
+              (hash (operating-system-services os)
+                    (expt 2 32))
+              (hash (operating-system-file-systems os)
+                    (expt 2 32)))
+        (endianness little)
+        4)
+       type)))
+
 (define* (system-disk-image os
                             #:key
                             (name "disk-image")
@@ -350,11 +396,19 @@ to USB sticks meant to be read-only."
     (if (string=? "iso9660" file-system-type)
         string-upcase
         identity))
+
   (define root-label
-    ;; Volume name of the root file system.  Since we don't know which device
-    ;; will hold it, we use the volume name to find it (using the UUID would
-    ;; be even better, but somewhat less convenient.)
+    ;; Volume name of the root file system.
     (normalize-label "GuixSD_image"))
+
+  (define root-uuid
+    ;; UUID of the root file system, computed in a deterministic fashion.
+    ;; This is what we use to locate the root file system so it has to be
+    ;; different from the user's own file system UUIDs.
+    (operating-system-uuid os
+                           (if (string=? file-system-type "iso9660")
+                               'iso9660
+                               'dce)))
 
   (define file-systems-to-keep
     (remove (lambda (fs)
@@ -379,8 +433,8 @@ to USB sticks meant to be read-only."
               ;; Force our own root file system.
               (file-systems (cons (file-system
                                     (mount-point "/")
-                                    (device root-label)
-                                    (title 'label)
+                                    (device root-uuid)
+                                    (title 'uuid)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
@@ -389,8 +443,9 @@ to USB sticks meant to be read-only."
       (if (string=? "iso9660" file-system-type)
           (iso9660-image #:name name
                          #:file-system-label root-label
-                         #:file-system-uuid #f
+                         #:file-system-uuid root-uuid
                          #:os-drv os-drv
+                         #:register-closures? #t
                          #:bootcfg-drv bootcfg
                          #:bootloader (bootloader-configuration-bootloader
                                         (operating-system-bootloader os))
@@ -403,11 +458,9 @@ to USB sticks meant to be read-only."
                                     (operating-system-bootloader os))
                       #:disk-image-size disk-image-size
                       #:disk-image-format "raw"
-                      #:file-system-type (if (string=? "iso9660"
-                                                       file-system-type)
-                                             "ext4"
-                                             file-system-type)
+                      #:file-system-type file-system-type
                       #:file-system-label root-label
+                      #:file-system-uuid root-uuid
                       #:copy-inputs? #t
                       #:register-closures? #t
                       #:inputs `(("system" ,os-drv)

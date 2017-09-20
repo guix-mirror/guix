@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix modules)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu system uuid)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -99,7 +100,9 @@
 'cryptsetup'."
   (with-imported-modules (source-module-closure
                           '((gnu build file-systems)))
-    #~(let ((source #$source))
+    #~(let ((source #$(if (uuid? source)
+                          (uuid-bytevector source)
+                          source)))
         ;; XXX: 'use-modules' should be at the top level.
         (use-modules (rnrs bytevectors)           ;bytevector?
                      ((gnu build file-systems)

@@ -522,7 +522,10 @@ work.")
           "0yvfghxwfm3dcqr9krkw63pcd76hzkknc3fh7bh11s8qlvjvrpbg"))
         (patches (search-patches "openjpeg-CVE-2017-12982.patch"
                                  "openjpeg-CVE-2017-14040.patch"
-                                 "openjpeg-CVE-2017-14041.patch"))))
+                                 "openjpeg-CVE-2017-14041.patch"
+                                 "openjpeg-CVE-2017-14151.patch"
+                                 "openjpeg-CVE-2017-14152.patch"
+                                 "openjpeg-CVE-2017-14164.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -931,7 +934,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.13")
+    (version "2.0.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mdadams/jasper/archive/"
@@ -939,7 +942,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "090cyqcvqp4y12nc57gvcbrk3ap1rnnixd4qj90sx0pw3fs1615m"))))
+                "0yx9y5y0g6jv142vnqp50j3k8k5yqznz3smrblv192wgfbm6w9l5"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")

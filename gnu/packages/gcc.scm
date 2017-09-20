@@ -150,8 +150,6 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (inputs `(("gmp" ,gmp)
                 ("mpfr" ,mpfr)
                 ("mpc" ,mpc)
-                ("isl" ,isl)
-                ("cloog" ,cloog)
                 ("libelf" ,libelf)
                 ("zlib" ,zlib)))
 
@@ -354,10 +352,14 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
               (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
-    (supported-systems %supported-systems)))
+    (supported-systems %supported-systems)
+    (inputs
+     `(("isl" ,isl-0.11)
+       ("cloog" ,cloog)
+       ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (version "4.9.4")
     (source (origin
               (method url-fetch)
@@ -368,8 +370,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-libvtv-runpath.patch"))))
-    (native-inputs `(("texinfo" ,texinfo)))
-    (supported-systems %supported-systems)))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -389,6 +390,10 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"))))))
+    ;; TODO: gcc-5 doesn't need cloog.
+    ;;(inputs
+    ;; `(("isl" ,isl)
+    ;;   ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-6
   (package
@@ -402,7 +407,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
+    (inputs
+     `(("isl" ,isl)
+       ,@(package-inputs gcc-4.7)))))
+
 (define-public gcc-7
   (package
     (inherit gcc-6)
@@ -415,7 +424,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "16j7i0888j2f1yp9l0nhji6cq65dy6y4nwy8868a8njbzzwavxqw"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
+    (description
+     "GCC is the GNU Compiler Collection.  It provides compiler front-ends
+for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
+It also includes runtime support libraries for these languages.")))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
@@ -581,7 +594,34 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc gcc-objc-4.9)
+(define-public gcc-objc-5
+  (custom-gcc gcc-5 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc-6
+  (custom-gcc gcc-6 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc-7
+  (custom-gcc gcc-7 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc gcc-objc-5)
 
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
@@ -601,7 +641,34 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc++ gcc-objc++-4.9)
+(define-public gcc-objc++-5
+  (custom-gcc gcc-5 "gcc-objc++" '("obj-c++")
+              (list (search-path-specification
+                     (variable "OBJCPLUS_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc++-6
+  (custom-gcc gcc-6 "gcc-objc++" '("obj-c++")
+              (list (search-path-specification
+                     (variable "OBJCPLUS_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc++-7
+  (custom-gcc gcc-7 "gcc-objc++" '("obj-c++")
+              (list (search-path-specification
+                     (variable "OBJCPLUS_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc++ gcc-objc++-5)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
@@ -661,7 +728,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.11.1")
+    (version "0.18")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -672,8 +739,7 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.gz")))
              (sha256
               (base32
-               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
-             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))
+               "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
@@ -690,6 +756,24 @@ enumeration.  It also includes an ILP solver based on generalized basis
 reduction, transitive closures on maps (which may encode infinite graphs),
 dependence analysis and bounds on piecewise step-polynomials.")
     (license lgpl2.1+)))
+
+(define-public isl-0.11
+  (package
+    (inherit isl)
+    (name "isl")
+    (version "0.11.1")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append
+                         "http://isl.gforge.inria.fr/isl-"
+                         version
+                         ".tar.bz2")
+                        (string-append %gcc-infrastructure
+                                       name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
+             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))))
 
 (define-public cloog
   (package
@@ -710,7 +794,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)
-              ("isl" ,isl)))
+              ("isl" ,isl-0.11)))
     (arguments '(#:configure-flags '("--with-isl=system")))
     (home-page "http://www.cloog.org/")
     (synopsis "Library to generate code for scanning Z-polyhedra")

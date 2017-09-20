@@ -282,7 +282,7 @@ Report the size of PACKAGE and its dependencies.\n"))
 
 (define %default-options
   `((system . ,(%current-system))
-    (profile<? . ,profile-closure<?)))
+    (profile<? . ,profile-self<?)))
 
 
 ;;;

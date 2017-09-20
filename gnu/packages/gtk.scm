@@ -379,7 +379,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.2")
+   (version "3.24.4")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -387,7 +387,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "17xqrnh2v9gba57ij2m9kngxwh19fzsqkx1rfasnv4zaqvqqhv69"))))
+               "14x738xrz9q8qz13xd7dys748ryxyq2srbqyaa9r7n47h2av2zr0"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -428,6 +428,7 @@ highlighting and other features typical of a source code editor.")
   (package
    (name "gdk-pixbuf")
    (version "2.36.9")
+   (replacement gdk-pixbuf-2.36.10)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -482,6 +483,7 @@ in the GNOME project.")
 (define-public gdk-pixbuf+svg
   (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf+svg")
+    (replacement gdk-pixbuf+svg-2.36.10)
     (inputs
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
@@ -504,6 +506,26 @@ in the GNOME project.")
                                        "--update-cache" ,@loaders)))))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
+
+;; Graft replacement packages to fix these vulnerabilities.
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2862
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2870
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6311
+(define-public gdk-pixbuf-2.36.10
+  (package (inherit gdk-pixbuf)
+           (version "2.36.A")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.36/"
+                                         "gdk-pixbuf-2.36.10.tar.xz"))
+                     (sha256
+                      (base32
+                       "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))))
+
+(define-public gdk-pixbuf+svg-2.36.10
+  (package (inherit gdk-pixbuf+svg)
+           (version "2.36.A")
+           (source (origin (inherit (package-source gdk-pixbuf-2.36.10))))))
 
 (define-public at-spi2-core
   (package

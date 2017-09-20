@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -765,7 +765,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.24.0")
+    (version "3.24.1")
     (source
      (origin
       (method url-fetch)
@@ -774,7 +774,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "145vpcljy4660cnk8zk91qf7ywa7hqfl5hhw025gy8hxcqzklmzn"))))
+        "19zfqy58missq5cck13ip8j824hb9whqg2c4cr6hgrlxkwqgm8vn"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -932,7 +932,7 @@ database is translated at Transifex.")
 (define-public hicolor-icon-theme
   (package
     (name "hicolor-icon-theme")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
       (method url-fetch)
@@ -940,7 +940,7 @@ database is translated at Transifex.")
                           "hicolor-icon-theme-" version ".tar.xz"))
       (sha256
        (base32
-        "1k1kf2c5zbqh31nglc3nxs9j6wr083k9kjyql8p22ccc671mmi4w"))))
+        "1n59i3al3zx6p90ff0l43gzpzmlqnzm6hf5cryxqrlbi48sq8x1i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -987,7 +987,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
       (method url-fetch)
@@ -996,12 +996,11 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0m6k6fcrx40n92nc1cy3z72vs1ja49sb58dj3fjp40605pzgz4pk"))))
+        "0qm908kisyjzjxvygdl18hjqxvvgkq9w0phs2g55pck277sw0bsv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
        ("glade" ,glade3)
-       ("libxml2" ,libxml2) ; XXX: required by gladeui-2.0.pc
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)))
     (native-inputs
@@ -2647,7 +2646,7 @@ floating in an ocean using only your brain and a little bit of luck.")
 (define-public gnome-sudoku
   (package
     (name "gnome-sudoku")
-    (version "3.24.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -2656,7 +2655,7 @@ floating in an ocean using only your brain and a little bit of luck.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1mw5ykk7wr0r9770jj5270f07rjws0pmpjs0b1fywj4li13r98h4"))))
+         "186k2axryn3ic8blc9ddnvyrqqf88khg2hlisfa1n4wp784wfx47"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2989,7 +2988,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.24.2")
+    (version "3.24.3")
     (source
      (origin
        (method url-fetch)
@@ -2998,7 +2997,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1jnw920zn4cadhgmcv2q5ylzqhwm1rmrhf3a14q8mvp38hkdgaaa"))))
+         "14w5jhpq02mbcxvn41qcj3cjfqdr3sgzl96c6glwpdrjphw61i38"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; Color management test can't reach the colord system service.
@@ -3331,7 +3330,7 @@ GL based interactive canvas library.")
 (define-public libchamplain
   (package
     (name "libchamplain")
-    (version "0.12.15")
+    (version "0.12.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3339,7 +3338,7 @@ GL based interactive canvas library.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0x5qa1aw1y59lzkmf4j4szspn49341a87vcja4ydgxny1chilwjl"))))
+                "13chvc2n074i0jw5jlb8i7cysda4yqx58ca6y3mrlrl9g37k2zja"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-vala")))
     (native-inputs
@@ -3399,7 +3398,7 @@ queries upon that data.")
 (define-public libgnome-games-support
   (package
     (name "libgnome-games-support")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3407,7 +3406,7 @@ queries upon that data.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04qbgcgmc01sinhbqdljiny8q868l01nkdawj8wrnqnd1i8czvsg"))))
+                "1vwad7kqy7yd6wqyr71nq0blh7m53r3lz6ya16dmh942kd0w48v1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3435,7 +3434,7 @@ GNOME Games, but it may be used by others.")
 (define-public gnome-klotski
   (package
     (name "gnome-klotski")
-    (version "3.22.1")
+    (version "3.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3443,7 +3442,7 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04ragvrz29sydi2kf1zk2aimi3b3hn34jrndfd2lx6h8l45anq3q"))))
+                "16hd6yk01rhb4pj8m01fyn72wykf41d72gsms81q0n4zm5bm1a4h"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -4087,7 +4086,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.24.3")
+    (version "3.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4095,7 +4094,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0m51cclpnb7lxk8w526rriyb2bi3aj17fbcvikhkg7qd65v1dxgy"))))
+                "1jg59s98aljf603w24r5a3cr4fw6z88gc0warqy1946iprjgdw0m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
@@ -4719,7 +4718,6 @@ to display dialog boxes from the commandline and shell scripts.")
        ("cairo" ,cairo)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libinput" ,libinput)
@@ -4760,7 +4758,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4768,7 +4766,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fmgywfcvlb5sa0slxxlg80gafiaal8vnq6h5lcybqa12lnxa2mp"))))
+                "0m1qf2ffxzmwxa157lrvh3507d5gr3lg4kvj653zhcihjpmmhbi5"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -4923,7 +4921,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.8.0")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4931,7 +4929,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "17pn7kzilyl0qk525gp9xnbz4x0ssrdmgk1lvw95pyfd6rm5qnps"))
+                "1x0vzxvrck0snga2n3pc7g74m20zz74cr4r8gfspl8sckv6yz9bi"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -5546,7 +5544,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "1.12.2")
+    (version "1.12.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5554,7 +5552,7 @@ easy, safe, and automatic.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zdzh8l5ahi906i40i4pqw2cs1hwrl6l9a7fp344a3idk3pl5szb"))))
+                "1mpq418lzba7fad0w0m3bnxvz3khf461b5zya8zmq5n1g0w99ki3"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
@@ -6066,7 +6064,7 @@ GNOME Shell appearance and extension, etc.")
 (define-public gnome-shell-extensions
   (package
     (name "gnome-shell-extensions")
-    (version "3.24.2")
+    (version "3.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6074,7 +6072,7 @@ GNOME Shell appearance and extension, etc.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10sg87wml5cmyk90pybnr6r942ba7173sl7yplhj2sfggp0wc74s"))))
+                "0y8anpp9ymp0lxn15w63ra6zxxf8nvbl48xqkvqdjzida73fyz9w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-extensions=all")))
@@ -6422,7 +6420,7 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.9")
+    (version "2.2.10")
     (source
      (origin
        (method url-fetch)
@@ -6430,7 +6428,7 @@ only know by its Unicode name or code point.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vnl6raxbvc4hacg3pr6sqyjh707d304dhk5nyhlp7m0m1y3j756"))))
+         "1jw4has7lbp77lqmzvnnjmqcf0lacjfnka873lkkwdyrpzc4c1q4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -6754,3 +6752,92 @@ Lollypop plays audio formats such as mp3, mp4, ogg and flac and gets information
 from artists and tracks from the web.  It also fetches cover artworks
 automatically and it can stream songs from online music services and charts.")
     (license license:gpl3+)))
+
+(define-public gnome-video-effects
+  (package
+    (name "gnome-video-effects")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "06c2f1kihyhawap1s3zg5w7q7fypsybkp7xry4hxkdz4mpsy0zjs"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:out-of-source? #f))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.gnome.org/Projects/GnomeVideoEffects")
+    (synopsis "Video effects for Cheese and other GNOME applications")
+    (description
+     "A collection of GStreamer video filters and effects to be used in
+photo-booth-like software, such as Cheese.")
+    (license license:gpl2+)))
+
+(define-public cheese
+  (package
+    (name "cheese")
+    (version "3.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wpks2lnr8va9wxgmj26dwmhlcb3vamhpxkqi8xaan6q25635l16"))))
+    (arguments
+     ;; Tests require GDK.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* "Makefile"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'install 'wrap-cheese
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out             (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/cheese")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("gnome-video-effects" ,gnome-video-effects)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxtst" ,libxtst)))
+    (home-page "https://wiki.gnome.org/Apps/Cheese")
+    (synopsis "Webcam photo booth software for GNOME")
+    (description
+     "Cheese uses your webcam to take photos and videos.  Cheese can also
+apply fancy special effects and lets you share the fun with others.")
+    (license license:gpl2+)))

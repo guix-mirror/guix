@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13")
-(define %linux-libre-hash "07mxcya7ml1v34pbg4mjh1sq80r3b4dsxbcs41fm50jnhq7p1w4v")
+(define %linux-libre-version "4.13.2")
+(define %linux-libre-hash "166yy7nah2h2ffxqgb92nfwrvihna3kvdx4ryppf34gmybmmfw36")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,14 +377,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.47"
-                    "0gkmznb168m90zhyn9xg9420k64ba7bmyg70gazfr80y47w6jpdw"
+  (make-linux-libre "4.9.50"
+                    "1igjb2qr4znvz9p5ix18lbiv8bkfgn7lprn92gdyff4g4r4kzh72"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.86"
-                    "0zm283262k63c5sa3l2lg8lqdjmgzym60qf3kvfva21xqswzcpas"
+  (make-linux-libre "4.4.88"
+                    "0ds5jxh8p7f8yk55i1xbvz0xmgp4nc7g1xka23c4mcbal2v9v5b2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -392,7 +392,17 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.1.43"
                     "0ycqmvczj7lm7czilnwpyp14n2lzilyx7m43rsq1qdm2m5rp4q2w"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4a01092a5fa819397484fe2b50e9518356858156")
+                            (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
+                            (sha256
+                             (base32
+                              "0zmkw9zvzpwy2ihiyfrw6mrf8qzv77cm23lxadr20qvzqlc1xzb3"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -861,14 +871,14 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.18")
+    (version "4.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "026agy9nq238nx3ynhmi8h3vx96yra4xacfsm2ybs9k23ry8ibc9"))))
+               "10bjh2mrkvx41fk60b2iqv5b5k4r7a3qdsx04iyg904jqb3fp4vw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1132,7 +1142,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.12.0")
+    (version "4.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1140,7 +1150,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0zdxdsxyaazl85xhwskvsmpyzwf5qp21cvjsi1lw3xnrc914q2if"))))
+                "0l2w84cwr54gaw3cbxijf614l76hx8mgcz57v81rwl68z3nq3yww"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1173,23 +1183,14 @@ that the Ethernet protocol is much simpler than the IP protocol.")
     (synopsis
      "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
-     "Iproute2 is a collection of utilities for controlling TCP/IP
-networking and traffic with the Linux kernel.
+     "Iproute2 is a collection of utilities for controlling TCP/IP networking
+and traffic with the Linux kernel.  The most important of these are
+@command{ip}, which configures IPv4 and IPv6, and @command{tc} for traffic
+control.
 
 Most network configuration manuals still refer to ifconfig and route as the
 primary network configuration tools, but ifconfig is known to behave
-inadequately in modern network environments.  They should be deprecated, but
-most distros still include them.  Most network configuration systems make use
-of ifconfig and thus provide a limited feature set.  The /etc/net project aims
-to support most modern network technologies, as it doesn't use ifconfig and
-allows a system administrator to make use of all iproute2 features, including
-traffic control.
-
-iproute2 is usually shipped in a package called iproute or iproute2 and
-consists of several tools, of which the most important are @command{ip} and
-@command{tc}.  @command{ip} controls IPv4 and IPv6 configuration and
-@command{tc} stands for traffic control.  Both tools print detailed usage
-messages and are accompanied by a set of manpages.")
+inadequately in modern network environments, and both should be deprecated.")
     (license license:gpl2+)))
 
 ;; There are two packages for net-tools. The first, net-tools, is more recent
@@ -3022,6 +3023,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
   (package
     (name "bluez")
     (version "5.46")
+    (replacement bluez/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3082,6 +3084,20 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
+
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (version "5.46")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0a4fj343bdqsfyv12hmj9nym0ilsf0bvm54a4apbiby16ww3vayx"))
+              (patches (search-patches "bluez-CVE-2017-1000250.patch"))))))
 
 (define-public fuse-exfat
   (package
@@ -3155,7 +3171,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.12")
+    (version "4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3163,7 +3179,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1kif8xw2dbyc70ygkp0wyq4x96p1mkwdv4430f99qllx9b410xwi"))))
+                "17m67jm29phfvkmd72lxb1z9nymn9a9pqnja8zfb1mvflsqwbz3m"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3171,6 +3187,12 @@ and copy/paste text in the console and in xterm.")
      '(#:phases (modify-phases %standard-phases
                  (add-after 'build 'build-static
                    (lambda _ (zero? (system* "make" "static"))))
+                 (add-after 'install 'install-bash-completion
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (install-file "btrfs-completion"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/etc/bash_completion.d"))
+                     #t))
                  (add-after 'install 'install-static
                    (let ((staticbin (string-append (assoc-ref %outputs "static")
                                                   "/bin")))
@@ -3194,6 +3216,7 @@ and copy/paste text in the console and in xterm.")
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)
                      ;; For tests.
+                     ("acl" ,acl)
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")

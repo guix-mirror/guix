@@ -584,14 +584,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.3.3")
+    (version "3.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "07is8msrhxr1dk6vgwa192k2pl2a0in1h9w8f9cknlvbvhn01afj"))))
+               "0mx9dvad3lkyhvsrblf280x2bz6dxajya1ylnspbdzldj0dpxfcq"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -974,7 +974,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.26.0")
+    (version "0.27.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -982,7 +982,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0ihvnwrp24jjf43k1hvy8n8w4ipl4z7apjppd4i0y9jzilsyzwys"))
+                "1754371fkva8aqxgbm50jxyvij7mnysq0538bf6zghbmigqqn79l"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1115,7 +1115,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.09.02")
+    (version "2017.09.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1123,7 +1123,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sfra8rfb7hkbgmw2n2s42fpkh0y7j9lyars7qda3rj34ai7r6k9"))))
+                "1kw8pqzvhbpyxcz2jb692j4cgzd3vmd81mra09xvpzkq974jkx7f"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2254,10 +2254,11 @@ practically any type of media.")
        #:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-after 'unpack 'change-to-build-dir
            (lambda _
-             (chdir "Project/GNU/Library")))
-         (add-after 'unpack 'autogen
+             (chdir "Project/GNU/Library")
+             #t))
+         (add-after 'change-to-build-dir 'autogen
            (lambda _
              (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
