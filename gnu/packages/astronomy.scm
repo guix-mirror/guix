@@ -93,7 +93,7 @@ systems in a FITS image header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
@@ -101,7 +101,7 @@ systems in a FITS image header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "109xjwbs36gbkx5sd5yzf6ailfcldc5d28vl1n19z0ylfzww4nwa"))))
+         "1n30zz4kg89ic5h30b7nrxp0bk0ls2m3xnfi81mja56bxxwpihrs"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
