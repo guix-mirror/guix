@@ -278,6 +278,8 @@ directly by the user."
 
       (store-device
        (match (assq 'store rest)
+         (('store ('device #f) _ ...)
+          root-device)
          (('store ('device device) _ ...)
           (device-sexp->device device))
          (_                                       ;the old format
@@ -909,8 +911,7 @@ listed in OS.  The C library expects to find it under
   "Given FS, a <file-system> object, return a value suitable for use as the
 device in a <menu-entry>."
   (case (file-system-title fs)
-    ((uuid) (file-system-device fs))
-    ((label) (file-system-device fs))
+    ((uuid label device) (file-system-device fs))
     (else #f)))
 
 (define (operating-system-boot-parameters os system.drv root-device)
