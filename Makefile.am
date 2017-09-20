@@ -80,6 +80,7 @@ MODULES =					\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
+  guix/build-system/go.scm			\
   guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
@@ -111,6 +112,7 @@ MODULES =					\
   guix/build/meson-build-system.scm		\
   guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
+  guix/build/go-build-system.scm		\
   guix/build/asdf-build-system.scm		\
   guix/build/git.scm				\
   guix/build/hg.scm				\
