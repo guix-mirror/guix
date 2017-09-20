@@ -64,7 +64,7 @@ in FITS files.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "5.16")
+    (version "5.17")
     (source
      (origin
        (method url-fetch)
@@ -72,7 +72,7 @@ in FITS files.")
              "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
              ".tar.bz2"))
        (sha256
-        (base32 "1vwrzkznpig2q40m11j12hsfqvsjz8z44l66pz5fkh6fy461w0zd"))))
+        (base32 "0v23x1fw01arhmqdrzfd9n593mjglhzfyx4793v065z0dg4bb72w"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
