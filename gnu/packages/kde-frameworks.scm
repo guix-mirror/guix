@@ -321,7 +321,9 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(#:configure-flags
        (list (string-append
               "-DUDEV_RULES_INSTALL_DIR=" %output "/lib/udev/rules.d"))
-       #:tests? #f)) ; DBUS_FATAL_WARNINGS=0 still yields 7/8 tests failing
+       ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
+       ;; failing.  When running after install, tests hang.
+       #:tests? #f))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
     (description "bluez-qt is a Qt-style library for accessing the bluez
