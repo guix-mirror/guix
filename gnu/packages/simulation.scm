@@ -195,8 +195,8 @@
     ;;  $ source $GUIX_PROFILE/lib/OpenFOAM-4.1/etc/bashrc
     ;;  $ mkdir -p $FOAM_RUN
     ;;  $ cd $FOAM_RUN
-    ;;  $ cp -r $FOAM_TUTORIALS/incompressible/simpleFoam/pitzdaily .
-    ;;  $ cd pitzdaily
+    ;;  $ cp -r $FOAM_TUTORIALS/incompressible/simpleFoam/pitzDaily .
+    ;;  $ cd pitzDaily
     ;;  $ chmod -R u+w .
     ;;  $ blockMesh
     (synopsis "Framework for numerical simulation of fluid flow")
