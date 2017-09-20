@@ -1276,6 +1276,28 @@ Maps directly inside Emacs.")
 single buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-tablist
+  (package
+    (name "emacs-tablist")
+    (version "0.70")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/politza/tablist/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "177d6s7ym1mwz1nhnl09r14z3n093g9a2szm97xsaig0c204xz9c"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/politza/tablist")
+    (synopsis "Extension for @code{tabulated-list-mode}")
+    (description "Tablist is the Emacs package that provides several
+additional features to @code{tabulated-list-mode}: it adds marks,
+filters, new key bindings and faces.  It can be enabled by
+@code{tablist-mode} or @code{tablist-minor-mode} commands.")
+    (license license:gpl3+)))
+
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
