@@ -1301,7 +1301,7 @@ filters, new key bindings and faces.  It can be enabled by
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
-    (version "0.70")
+    (version "0.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1310,7 +1310,7 @@ filters, new key bindings and faces.  It can be enabled by
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m0api6wiawswyk46bdsyk6r5rg3b86a4paar6nassm6x6c6vr77"))))
+                "06imydn3a92vr57azpn1zhqc14kxyyslmyi9ldsyphan9b724gb6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1359,6 +1359,7 @@ filters, new key bindings and faces.  It can be enabled by
               ("glib" ,glib)
               ("libpng" ,libpng)
               ("zlib" ,zlib)))
+    (propagated-inputs `(("tablist" ,emacs-tablist)))
     (synopsis "Emacs support library for PDF files")
     (description
      "PDF Tools is, among other things, a replacement of DocView for PDF
