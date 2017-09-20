@@ -538,7 +538,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
-  %D%/packages/patches/bluez-CVE-2017-1000250.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
