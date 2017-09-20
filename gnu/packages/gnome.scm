@@ -138,6 +138,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages speech)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages vpn)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -5041,6 +5042,39 @@ devices, and provides VPN integration with a variety of different VPN
 services.")
     (license license:gpl2+)
     (properties '((upstream-name . "NetworkManager")))))
+
+(define-public network-manager-openvpn
+  (package
+    (name "network-manager-openvpn")
+    (version "1.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/NetworkManager-openvpn/"
+                    (version-major+minor version)
+                    "/NetworkManager-openvpn-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0q9x61fq509gybz3ljzyvf9zn8nlya1r2vk7jl0gk3fp76jsg1mc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-absolute-paths")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("openvpn" ,openvpn)
+       ("network-manager" ,network-manager)
+       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libsecret" ,libsecret)))
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
+    (synopsis "OpenVPN plug-in for NetworkManager")
+    (description
+     "This extension of NetworkManager allows it to take care of connections
+to virtual private networks (VPNs) via OpenVPN.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "NetworkManager-openvpn")))))
 
 (define-public mobile-broadband-provider-info
   (package
