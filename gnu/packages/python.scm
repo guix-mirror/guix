@@ -2864,14 +2864,14 @@ somewhat intelligeble.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "0pvr3iymab7v2qz74ann760z7qahqgqszxz5iqqbaqv4z2zz0y8i"))
+         "1rxsg14i33vm2i6lz0my628108c81k43v10n4h3p0gx62xdyf2sh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
