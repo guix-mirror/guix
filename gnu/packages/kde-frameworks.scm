@@ -319,7 +319,8 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
-       '("-DINSTALL_UDEV_RULE:BOOL=OFF")
+       (list (string-append
+              "-DUDEV_RULES_INSTALL_DIR=" %output "/lib/udev/rules.d"))
        #:tests? #f)) ; DBUS_FATAL_WARNINGS=0 still yields 7/8 tests failing
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
