@@ -2586,7 +2586,9 @@ notifications which can be embedded in your application.")
        ("ktextwidgets" ,ktextwidgets)
        ("kxmlgui" ,kxmlgui)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("shared-mime-info" ,shared-mime-info)
+       ))
     (inputs
      `(("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)
