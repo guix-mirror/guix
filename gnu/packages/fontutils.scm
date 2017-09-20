@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 (define-module (gnu packages fontutils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -44,7 +46,8 @@
   #:use-module (guix svn-download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public freetype
   (package
@@ -556,3 +559,29 @@ opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
    (license license:gpl3+)
    (home-page "https://fontforge.github.io/en-US/")))
+
+(define-public python2-ufolib
+  (package
+    (name "python2-ufolib")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ufoLib" version ".zip"))
+       (sha256
+        (base32 "1njin1465qqzshnrvcl5sbv0bsy15gj6fycbw4lmcnwkx5sldgyx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-fonttools" ,python2-fonttools)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (home-page "https://github.com/unified-font-object/ufoLib")
+    (synopsis "Low-level UFO reader and writer")
+    (description
+     "UfoLib reads and writes Unified Font Object (UFO)
+files.  UFO is a file format that stores fonts source files.")
+    (license license:bsd-3)))
