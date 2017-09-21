@@ -97,7 +97,8 @@
             %activation-service
             etc-service
 
-            file-union))                      ;XXX: for lack of a better place
+            file-union                        ;XXX: for lack of a better place
+            directory-union))
 
 ;;; Comment:
 ;;;

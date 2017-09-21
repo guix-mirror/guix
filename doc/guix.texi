@@ -10125,6 +10125,11 @@ then update @code{resolv.conf} to point to the local nameserver.
 NetworkManager will not modify @code{resolv.conf}.
 @end table
 
+@item @code{vpn-plugins} (default: @code{'()})
+This is the list of available plugins for virtual private networks
+(VPNs).  An example of this is the @code{network-manager-openvpn}
+package, which allows NetworkManager to manage VPNs @i{via} OpenVPN.
+
 @end table
 @end deftp
 
