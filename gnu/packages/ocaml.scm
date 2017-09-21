@@ -3520,6 +3520,34 @@ of libraries, plugins, and frontends.  The libraries provide code reusability,
 the plugins facilitate extensibility, and the frontends serve as entry points.")
    (license license:expat)))
 
+(define-public ocaml-camomile
+  (package
+    (name "ocaml-camomile")
+    (version "0.8.5")
+    (home-page "https://github.com/yoriyuki/Camomile")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/download/rel-" version
+                                  "/camomile-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "003ikpvpaliy5hblhckfmln34zqz0mk3y2m1fqvbjngh3h2np045"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-bin/sh
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "bash")))))))
+    (synopsis "Comprehensive Unicode library")
+    (description "Camomile is a Unicode library for OCaml.  Camomile provides
+Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
+200 encodings, collation and locale-sensitive case mappings, and more.  The
+library is currently designed for Unicode Standard 3.2.")
+    ;; with an exception for linked libraries to use a different license
+    (license license:lgpl2.0+)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
