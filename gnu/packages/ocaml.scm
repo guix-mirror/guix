@@ -3391,6 +3391,33 @@ unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)
 and 4 (random based) according to RFC 4122.")
     (license license:isc)))
 
+(define-public ocaml-graph
+  (package
+    (name "ocaml-graph")
+    (version "1.8.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ocamlgraph.lri.fr/download/"
+                                  "ocamlgraph-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1845r537swjil2fcj7lgbibc2zybfwqqasrd2s7bncajs83cl1nz"))
+              (patches (search-patches "ocaml-graph-honor-source-date-epoch.patch"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:install-target "install-findlib"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-shell
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
+                                                   "/bin/sh")))))))
+    (inputs `(("lablgtk" ,lablgtk)))
+    (home-page "http://ocamlgraph.lri.fr/")
+    (synopsis "Graph library for OCaml")
+    (description "OCamlgraph is a generic graph library for OCaml.")
+    (license license:lgpl2.1)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
