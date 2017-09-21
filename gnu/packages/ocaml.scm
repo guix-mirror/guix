@@ -3361,6 +3361,36 @@ cpp-like directives.")
 tool and piqi-ocaml.")
     (license license:asl2.0)))
 
+(define-public ocaml-uuidm
+  (package
+    (name "ocaml-uuidm")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/uuidm/"
+                                  "releases/uuidm-" version ".tbz"))
+              (sha256
+               (base32
+                "0hz4fdx0x16k0pw9995vkz5d1hmzz6b16wck9li399rcbfnv5jlc"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags
+       (list "build" "--tests" "true" "--with-cmdliner" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("cmdliner" ,ocaml-cmdliner)
+       ("topkg" ,ocaml-topkg)))
+    (home-page "http://erratique.ch/software/uuidm")
+    (synopsis "Universally unique identifiers for OCaml")
+    (description "Uuidm is an OCaml module implementing 128 bits universally
+unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)
+and 4 (random based) according to RFC 4122.")
+    (license license:isc)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
