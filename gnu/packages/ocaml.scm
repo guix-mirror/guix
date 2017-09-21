@@ -3253,6 +3253,29 @@ JSON.")
     (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
     (license license:isc)))
 
+(define-public ocaml-easy-format
+  (package
+    (name "ocaml-easy-format")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mjambon/easy-format/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zcz682y9figa84k7lgdjcab5qbzk3yy14ygfqp2dhhrvjygm252"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/mjambon/easy-format")
+    (synopsis "Interface to the Format module")
+    (description "Easy-format is a high-level and functional interface to the
+Format module of the OCaml standard library.")
+    (license license:bsd-3)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
