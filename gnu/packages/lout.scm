@@ -28,11 +28,53 @@
   ;; rules.  Instead, it has a makefile that has to be patched to set the
   ;; prefix, etc., and it has no makefile rules to build its doc.
   (let ((configure-phase
-         ')
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (substitute* "makefile"
+                (("^PREFIX[[:blank:]]*=.*$")
+                 (string-append "PREFIX = " out "\n"))
+                (("^LOUTLIBDIR[[:blank:]]*=.*$")
+                 (string-append "LOUTLIBDIR = " out "/lib/lout\n"))
+                (("^LOUTDOCDIR[[:blank:]]*=.*$")
+                 (string-append "LOUTDOCDIR = " doc "/share/doc/lout\n"))
+                (("^MANDIR[[:blank:]]*=.*$")
+                 (string-append "MANDIR = " out "/man\n")))
+              (mkdir out)
+              (mkdir (string-append out "/bin"))
+              (mkdir (string-append out "/lib"))
+              (mkdir (string-append out "/man"))
+              (mkdir-p (string-append doc "/share/doc/lout")))))
         (install-man-phase
-         ')
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (zero? (system* "make" "installman"))))
         (doc-phase
-         '))
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (define out
+              (assoc-ref outputs "doc"))
+
+            (setenv "PATH"
+                    (string-append (assoc-ref outputs "out")
+                                   "/bin:" (getenv "PATH")))
+            (chdir "doc")
+            (every (lambda (doc)
+                     (format #t "doc: building `~a'...~%" doc)
+                     (with-directory-excursion doc
+                       (let ((file (string-append out "/share/doc/lout/"
+                                                  doc ".ps")))
+                         (and (or (file-exists? "outfile.ps")
+                                  (zero? (system* "lout" "-r4" "-o"
+                                                  "outfile.ps" "all")))
+                              (begin
+                                (copy-file "outfile.ps" file)
+                                #t)
+                              (zero? (system* "ps2pdf"
+                                              "-dPDFSETTINGS=/prepress"
+                                              "-sPAPERSIZE=a4"
+                                              file
+                                              (string-append out "/share/doc/lout/"
+                                                             doc ".pdf")))))))
+                   '("design" "expert" "slides" "user")))))
    (package
     (name "lout")
     (version "3.40")
@@ -47,64 +89,23 @@
     (outputs '("out" "doc"))
     (native-inputs
      `(("ghostscript" ,ghostscript)))
-    (arguments
-     `(#:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1))        ; we need SRFI-1
-       #:tests? #f                      ; no "check" target
+    (arguments `(#:modules ((guix build utils)
+                            (guix build gnu-build-system)
+                            (srfi srfi-1))        ; we need SRFI-1
+                 #:tests? #f                      ; no "check" target
 
-       ;; Customize the build phases.
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (substitute* "makefile"
-                 (("^PREFIX[[:blank:]]*=.*$")
-                  (string-append "PREFIX = " out "\n"))
-                 (("^LOUTLIBDIR[[:blank:]]*=.*$")
-                  (string-append "LOUTLIBDIR = " out "/lib/lout\n"))
-                 (("^LOUTDOCDIR[[:blank:]]*=.*$")
-                  (string-append "LOUTDOCDIR = " doc "/share/doc/lout\n"))
-                 (("^MANDIR[[:blank:]]*=.*$")
-                  (string-append "MANDIR = " out "/man\n")))
-               (mkdir out)
-               (mkdir (string-append out "/bin"))
-               (mkdir (string-append out "/lib"))
-               (mkdir (string-append out "/man"))
-               (mkdir-p (string-append doc "/share/doc/lout")))
-             #t))
-         (add-after 'install 'install-man-pages
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "make" "installman"))))
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (define out
-               (assoc-ref outputs "doc"))
+                 ;; Customize the build phases.
+                 #:phases (alist-replace
+                           'configure ,configure-phase
 
-             (setenv "PATH"
-                     (string-append (assoc-ref outputs "out")
-                                    "/bin:" (getenv "PATH")))
-             (chdir "doc")
-             (every (lambda (doc)
-                      (format #t "doc: building `~a'...~%" doc)
-                      (with-directory-excursion doc
-                        (let ((file (string-append out "/share/doc/lout/"
-                                                   doc ".ps")))
-                          (and (or (file-exists? "outfile.ps")
-                                   (zero? (system* "lout" "-r4" "-o"
-                                                   "outfile.ps" "all")))
-                               (begin
-                                 (copy-file "outfile.ps" file)
-                                 #t)
-                               (zero? (system* "ps2pdf"
-                                               "-dPDFSETTINGS=/prepress"
-                                               "-sPAPERSIZE=a4"
-                                               file
-                                               (string-append out "/share/doc/lout/"
-                                                              doc ".pdf")))))))
-                    '("design" "expert" "slides" "user")))))))
+                           (alist-cons-after
+                            'install 'install-man-pages
+                            ,install-man-phase
+
+                            (alist-cons-after
+                             'install 'install-doc
+                             ,doc-phase
+                             %standard-phases)))))
     (synopsis "Document layout system")
     (description
 "The Lout document formatting system reads a high-level description of
