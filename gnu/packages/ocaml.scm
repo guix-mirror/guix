@@ -41,6 +41,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -3450,6 +3451,74 @@ and 4 (random based) according to RFC 4122.")
 It provides a uniform interface for serializing OCaml data structures to JSON,
 XML and Protocol Buffers formats.")
     (license license:asl2.0)))
+
+(define-public bap
+  (package
+    (name "bap")
+    (version "1.1.0")
+    (home-page "https://github.com/BinaryAnalysisPlatform/bap")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ms95m4j1qrmy7zqmsn2izh7gq68lnmssl7chyhk977kd3sxj66m"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+   (build-system ocaml-build-system)
+   (native-inputs
+    `(("oasis" ,ocaml-oasis)
+      ("clang" ,clang)
+      ("ounit" ,ocaml-ounit)))
+   (propagated-inputs
+    `(("core-kernel" ,ocaml-core-kernel)
+      ("ppx-driver" ,ocaml-ppx-driver)
+      ("uri" ,ocaml-uri)
+      ("llvm" ,llvm)
+      ("gmp" ,gmp)
+      ("clang-runtime" ,clang-runtime)
+      ("fileutils" ,ocaml-fileutils)
+      ("cmdliner" ,ocaml-cmdliner)
+      ("zarith" ,ocaml-zarith)
+      ("uuidm" ,ocaml-uuidm)
+      ("camlzip" ,camlzip)
+      ("frontc" ,ocaml-frontc)
+      ("ezjsonm" ,ocaml-ezjsonm)
+      ("ocurl" ,ocaml-ocurl)
+      ("piqi" ,ocaml-piqi)
+      ("ocamlgraph" ,ocaml-graph)
+      ("bitstring" ,ocaml-bitstring)
+      ("ppx-jane" ,ocaml-ppx-jane)
+      ("re" ,ocaml-re)))
+   (inputs `(("llvm" ,llvm)))
+   (arguments
+    `(#:use-make? #t
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (zero? (system* "./configure" "--prefix"
+                            (assoc-ref outputs "out")
+                            "--libdir"
+                            (string-append
+                              (assoc-ref outputs "out")
+                              "/lib/ocaml/site-lib")
+                            "--with-llvm-version=3.8"
+                            "--with-llvm-config=llvm-config"
+                            "--enable-everything"))))
+        (add-after 'install 'link-stubs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                   (lib (string-append out "/lib/ocaml/site-lib/bap-plugin-llvm")))
+              (mkdir-p stubs)
+              (symlink (string-append lib "/dllllvm_plugin_stubs.so")
+                       (string-append stubs "/dllllvm_plugin_stubs.so"))))))))
+   (synopsis "Binary Analysis Platform")
+   (description "Binary Analysis Platform is a framework for writing program
+analysis tools, that target binary files.  The framework consists of a plethora
+of libraries, plugins, and frontends.  The libraries provide code reusability,
+the plugins facilitate extensibility, and the frontends serve as entry points.")
+   (license license:expat)))
 
 (define-public coq-flocq
   (package
