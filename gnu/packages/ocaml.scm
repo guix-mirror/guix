@@ -3227,6 +3227,32 @@ the need to write signal code, which is useful for quick scripts that manipulate
 JSON.")
     (license license:isc)))
 
+(define-public ocaml-uri
+  (package
+    (name "ocaml-uri")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-uri/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02bzrag79prx261rxf9mlak749pwf4flpfl8p012x1xznv9m0clc"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (propagated-inputs
+     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("re" ,ocaml-re)
+       ("ppx-deriving" ,ocaml-ppx-deriving)
+       ("sexplib" ,ocaml-sexplib)
+       ("stringext" ,ocaml-stringext)))
+    (home-page "https://github.com/mirage/ocaml-uri")
+    (synopsis "RFC3986 URI/URL parsing library")
+    (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
+    (license license:isc)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
