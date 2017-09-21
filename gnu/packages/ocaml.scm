@@ -3197,6 +3197,36 @@ writing to these structures, and they are accessed via the Bigarray module.")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
 
+(define-public ocaml-ezjsonm
+  (package
+    (name "ocaml-ezjsonm")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ezjsonm/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1kag0z2xlk4rw73a240dmkxh9rj6psxxcxkm7d7z0rrj6hzjajgq"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("alcotest" ,ocaml-alcotest)))
+    (propagated-inputs
+     `(("hex" ,ocaml-hex)
+       ("jsonm" ,ocaml-jsonm)
+       ("lwt" ,ocaml-lwt)
+       ("sexplib" ,ocaml-sexplib)))
+    (arguments
+     `(#:configure-flags (list "--enable-lwt")))
+    (home-page "https://github.com/mirage/ezjsonm/")
+    (synopsis "Read and write JSON data")
+    (description "Ezjsonm provides more convenient (but far less flexible) input
+and output functions that go to and from [string] values than jsonm.  This avoids
+the need to write signal code, which is useful for quick scripts that manipulate
+JSON.")
+    (license license:isc)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
