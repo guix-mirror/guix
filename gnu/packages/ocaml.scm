@@ -3276,6 +3276,33 @@ JSON.")
 Format module of the OCaml standard library.")
     (license license:bsd-3)))
 
+(define-public optcomp
+  (package
+    (name "optcomp")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/optcomp/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hhhb2gisah1h22zlg5iszbgqxdd7x85cwd57bd4mfkx9l7dh8jh"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:use-make? #t
+       #:make-flags
+       (list (string-append "BUILDFLAGS=\"-cflags -I,"
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4/Camlp4Parsers\""))))
+    (native-inputs `(("camlp4" ,camlp4)))
+    (propagated-inputs `(("camlp4" ,camlp4)))
+    (home-page "https://github.com/diml/optcomp")
+    (synopsis "Optional compilation for OCaml")
+    (description "Optcomp provides an optional compilation facility with
+cpp-like directives.")
+    (license license:bsd-3)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
