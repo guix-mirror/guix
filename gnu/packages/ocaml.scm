@@ -47,6 +47,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -3417,6 +3418,38 @@ and 4 (random based) according to RFC 4122.")
     (synopsis "Graph library for OCaml")
     (description "OCamlgraph is a generic graph library for OCaml.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-piqi
+  (package
+    (name "ocaml-piqi")
+    (version "0.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ngz6y8i98i5v2ma8nk6mc83pdsmf2z0ks7m3xi6clfg3zqbddrv"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "SHELL=" (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("which" ,which)
+       ("protobuf" ,protobuf))) ; for tests
+    (propagated-inputs
+     `(("piqilib" ,ocaml-piqilib)))
+    (home-page "https://github.com/alavrik/piqi-ocaml")
+    (synopsis "Protocol serialization system for OCaml")
+    (description "Piqi is a multi-format data serialization system for OCaml.
+It provides a uniform interface for serializing OCaml data structures to JSON,
+XML and Protocol Buffers formats.")
+    (license license:asl2.0)))
 
 (define-public coq-flocq
   (package
