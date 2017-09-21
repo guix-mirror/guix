@@ -243,6 +243,11 @@ directly by the user."
       ((? string? device)
        device)))
 
+  (define (ensure-not-/dev device)
+    (if (and (string? device) (string-prefix? "/" device))
+        #f
+        device))
+
   (match (read port)
     (('boot-parameters ('version 0)
                        ('label label) ('root-device root)
@@ -277,17 +282,16 @@ directly by the user."
           file)))
 
       (store-device
-       (match (assq 'store rest)
-         (('store ('device #f) _ ...)
-          root-device)
-         (('store ('device device) _ ...)
-          (device-sexp->device device))
-         (_                                       ;the old format
-          ;; Root might be a device path like "/dev/sda1", which is not a
-          ;; suitable GRUB device identifier.
-          (if (string-prefix? "/" root)
-              #f
-              root))))
+       ;; Linux device names like "/dev/sda1" are not suitable GRUB device
+       ;; identifiers, so we just filter them out.
+       (ensure-not-/dev
+        (match (assq 'store rest)
+          (('store ('device #f) _ ...)
+           root-device)
+          (('store ('device device) _ ...)
+           (device-sexp->device device))
+          (_                                      ;the old format
+           root-device))))
 
       (store-mount-point
        (match (assq 'store rest)
