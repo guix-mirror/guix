@@ -713,6 +713,44 @@ Git repository as normal Git commits, and provides a number of commands to
 manipulate them in various ways.")
     (license license:gpl2)))
 
+(define-public vcsh
+  (package
+    (name "vcsh")
+    (version "1.20151229")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/RichiH/vcsh/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ym3swkh738c3vciffvlr96vqzhwmzkb8ajqzap8f0j9n039a1mf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("git" ,git)
+       ("perl" ,perl)
+       ("perl-test-harness" ,perl-test-harness)
+       ("perl-shell-command" ,perl-shell-command)
+       ("perl-test-most" ,perl-test-most)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:test-target "test"))
+    (home-page "https://github.com/RichiH/vcsh")
+    (synopsis "Version control system for @code{$HOME}")
+    (description
+     "vcsh version-controls configuration files in several Git repositories,
+all in one single directory.  They all maintain their working trees without
+clobbering each other or interfering otherwise.  By default, all Git
+repositories maintained via vcsh store the actual files in @code{$HOME},
+though this can be overridden.")
+    (license license:gpl2+)))
+
 (define-public git-test-sequence
   (let ((commit "48e5a2f5a13a5f30452647237e23362b459b9c76"))
     (package

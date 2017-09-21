@@ -103,18 +103,17 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "25.2")
+    (version "25.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ykkq0xl28ljdg61bm6gzy04ww86ajms98gix72qg6cpr6a53dar"))
+               "02y00y9q42g1iqgz5qhmsja75hwxd88yrn9zp14lanay0zkwafi5"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
-                                      "emacs-source-date-epoch.patch"
-                                      "emacs-unsafe-enriched-mode-translations.patch"))
+                                      "emacs-source-date-epoch.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Delete the bundled byte-compiled elisp files and
