@@ -3303,6 +3303,64 @@ Format module of the OCaml standard library.")
 cpp-like directives.")
     (license license:bsd-3)))
 
+(define-public ocaml-piqilib
+  (package
+    (name "ocaml-piqilib")
+    (version "0.6.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alavrik/piqi/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1whqr2bb3gds2zmrzqnv8vqka9928w4lx6mi6g244kmbwb2h8d8l"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-ocamlpath
+           (lambda _
+             (substitute* '("Makefile" "make/Makefile.ocaml")
+               (("OCAMLPATH := ") "OCAMLPATH := $(OCAMLPATH):"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "make/OCamlMakefile"
+                 (("/bin/sh") (which "bash")))
+               (zero? (system* "./configure" "--prefix" out "--ocaml-libdir"
+                               (string-append out "/lib/ocaml/site-lib"))))))
+       (add-after 'build 'build-ocaml
+         (lambda* (#:key outputs #:allow-other-keys)
+           (zero? (system* "make" "ocaml")))) 
+       (add-after 'install 'install-ocaml
+         (lambda* (#:key outputs #:allow-other-keys)
+           (zero? (system* "make" "ocaml-install"))))
+       (add-after 'install-ocaml 'link-stubs
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                  (lib (string-append out "/lib/ocaml/site-lib/piqilib")))
+             (mkdir-p stubs)
+             (symlink (string-append lib "/dllpiqilib_stubs.so")
+                      (string-append stubs "/dllpiqilib_stubs.so"))
+             #t))))))
+    (native-inputs
+     `(("which" ,which)
+       ("camlp4" ,camlp4)))
+    (propagated-inputs
+     `(("xmlm" ,ocaml-xmlm)
+       ("ulex" ,ocaml-ulex)
+       ("optcomp" ,optcomp)
+       ("easy-format" ,ocaml-easy-format)
+       ("base64" ,ocaml-base64)))
+    (home-page "http://piqi.org")
+    (synopsis "Data serialization and conversion library")
+    (description "Piqilib is the common library used by the piqi command-line
+tool and piqi-ocaml.")
+    (license license:asl2.0)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
