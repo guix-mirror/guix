@@ -186,14 +186,14 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.55.1-3")
+   (version "7.55.1-4")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/"
                                 name "-" version ".tar.bz2"))
             (sha256
              (base32
-              "1p2qdh44hgsxjlzh4d3n51xr66cg2z517vpr818flvcrmpq2vxpq"))))
+              "09c1bfwiwxqlh0dl839lslwhvkf98bvpyg9x4pcn3sagz0i8hxfl"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
@@ -201,9 +201,7 @@ and support for SSL3 and TLS.")
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)
+    `(("libtool" ,libtool)
       ("groff" ,groff)
       ("perl" ,perl)
       ("pkg-config" ,pkg-config)
@@ -234,10 +232,6 @@ and support for SSL3 and TLS.")
               (rename-file (string-append out "/share/man/man3")
                            (string-append doc "/share/man/man3"))
               #t)))
-        (add-after 'unpack 'autoconf
-          ;; Clear artifacts left (shebangs) from release preparation.
-          (lambda _
-            (zero? (system* "sh" "buildconf"))))
         (replace 'check
           (lambda _
             ;; It is unclear why test1026 fails, however the content of it
