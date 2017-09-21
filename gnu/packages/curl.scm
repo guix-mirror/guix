@@ -42,15 +42,14 @@
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.55.0)
-   (version "7.54.1")
+   (version "7.55.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
-                                version ".tar.lzma"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "0vnv3cz0s1l5cjby86hm0x6pgzqijmdm97qa9q5px200956z6yib"))))
+              "1dvbcwcar3dv488h9378hy145ma3ws2fwpbr6mgszd7chipcmbry"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -122,29 +121,3 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
-
-(define-public curl-7.55.0
-  (package
-    (inherit curl)
-    (version "7.55.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://curl.haxx.se/download/curl-"
-                            version ".tar.xz"))
-        (patches (search-patches "curl-bounds-check.patch"))
-        (sha256
-         (base32
-          "1785vxi0jamiv9d1wr1l45g0fm9ircxdfyfzf7ld8zv0z0i8bmfd"))))
-    (arguments
-     `(,@(substitute-keyword-arguments (package-arguments curl)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-before 'install 'fix-Makefile
-                 ;; Fix a regression in 7.55.0 where docs are not installed.
-                 ;; https://github.com/curl/curl/commit/a7bbbb7c368c6096802007f61f19a02e9d75285b
-                 (lambda _
-                   (substitute* "Makefile"
-                     (("install-data-hook:\n")
-                      "install-data-hook:\n\tcd docs/libcurl && $(MAKE) install\n"))
-                   #t)))))))))
