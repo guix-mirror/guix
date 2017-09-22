@@ -140,6 +140,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/enlightenment.scm		\
   %D%/packages/entr.scm				\
   %D%/packages/erlang.scm			\
+  %D%/packages/fabric-management.scm		\
   %D%/packages/fcitx.scm			\
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
