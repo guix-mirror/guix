@@ -23,9 +23,13 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config))
 
 ;; Fixme: Done for the library, but needs support for running the daemon
 ;;        (shepherd definition).
@@ -72,3 +76,64 @@ also contains various tools for diagnosing and testing Infiniband networks
 that can be used from any machine and do not need to be run on a machine
 running the opensm daemon.")
     (license (list gpl2 bsd-2))))
+
+(define-public infiniband-diags
+  (package
+    (name "infiniband-diags")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linux-rdma/infiniband-diags/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ns9sjwvxnklhi47d6k5x8kxdk1n7f5362y45xwxqmr7gwfvpmwa"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("rdma-core" ,rdma-core)
+       ("opensm" ,opensm)
+       ("glib" ,glib)))
+    (outputs '("out" "lib"))
+    (native-inputs
+     ;; FIXME: needs rst2man for man pages
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:configure-flags
+       (list (string-append "CPPFLAGS=-I" (assoc-ref %build-inputs "opensm")
+                            "/include/infiniband")
+             (string-append "--with-perl-installdir=" (assoc-ref %outputs "lib")
+                            "/lib/perl5/vendor_perl")
+             "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autotools
+           (lambda _
+             (zero? (system "./autogen.sh"))))
+         (add-after 'install 'licence
+           (lambda _
+             (let ((doc (string-append (assoc-ref %outputs "lib") "/share/doc")))
+               (mkdir-p doc)
+               (install-file "COPYING" doc))))
+         (add-after 'install-file 'move-perl
+           ;; Avoid perl in lib closure
+           (lambda _
+             (let ((perlout (string-append (assoc-ref %outputs "out") "/lib"))
+                   (perlin (string-append (assoc-ref %outputs "lib")
+                                          "/lib/perl5")))
+               (mkdir-p perlout)
+               (rename-file perlin perlout)
+               #t))))))
+    (home-page "https://github.com/linux-rdma/infiniband-diags")
+    (synopsis "Infiniband diagnotic tools")
+    (description "This is a set of command-line utilities to help configure,
+debug, and maintain Infiniband (IB) fabrics.
+
+In addition to the utilities, a sub-library, @file{libibnetdisc}, is provided
+to scan an entire IB fabric and return data structures representing it.  The
+interface to this library is not guaranteed to be stable.")
+    (license (list gpl2 bsd-2)))) ; dual
