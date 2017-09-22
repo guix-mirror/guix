@@ -2111,6 +2111,37 @@ for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
 
+(define-public ruby-progress_bar
+  (package
+    (name "ruby-progress_bar")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "progress_bar" version))
+       (sha256
+        (base32
+         "1qc40mr6p1z9a3vlpnsg1zfgk1qswviql2a31y63wpv3vr6b5f48"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (propagated-inputs
+     `(("ruby-highline" ,ruby-highline)
+       ("ruby-options" ,ruby-options)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-timecop" ,ruby-timecop)))
+    (synopsis
+     "Ruby library for displaying progress bars")
+    (description
+     "ProgressBar is a simple library for displaying progress bars.  The
+maximum value is configurable, and additional information can be displayed
+like the percentage completion, estimated time remaining, elapsed time and
+rate.")
+    (home-page "https://github.com/paul/progress_bar")
+    (license license:wtfpl2)))
+
 (define-public ruby-pry
   (package
     (name "ruby-pry")
