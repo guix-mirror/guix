@@ -660,6 +660,34 @@ complexity.")
     (home-page "https://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
 
+(define-public ruby-options
+  (package
+    (name "ruby-options")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "options" version))
+       (sha256
+        (base32
+         "1s650nwnabx66w584m1cyw82icyym6hv5kzfsbp38cinkr5klh9j"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; TODO: NameError: uninitialized constant Config
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-LIB
+           (lambda _
+             ;; This is used in the Rakefile, and setting it avoids an issue
+             ;; with running the tests.
+             (setenv "LIB" "options"))))))
+    (synopsis "Ruby library to parse options from *args cleanly")
+    (description
+     "The @code{options} library helps with parsing keyword options in Ruby
+functions.")
+    (home-page "https://github.com/ahoward/options")
+    (license license:ruby)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
