@@ -27,9 +27,12 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages tcl))
 
 ;; Fixme: Done for the library, but needs support for running the daemon
 ;;        (shepherd definition).
@@ -137,3 +140,34 @@ In addition to the utilities, a sub-library, @file{libibnetdisc}, is provided
 to scan an entire IB fabric and return data structures representing it.  The
 interface to this library is not guaranteed to be stable.")
     (license (list gpl2 bsd-2)))) ; dual
+
+(define-public ibutils
+  (package
+    (name "ibutils")
+    (version "1.5.7-0.2.gbd7e502")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.openfabrics.org/downloads/ibutils/ibutils-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "00x7v6cf8l5y6g9xwh1sg738ch42fhv19msx0h0090nhr0bv98v7"))))
+    (build-system gnu-build-system)
+    (inputs `(("graphviz" ,graphviz)
+              ("tcl" ,tcl)
+              ("tk" ,tk)
+              ("infiniband-diags" ,infiniband-diags)
+              ("rdma-core" ,rdma-core)
+              ("opensm" ,opensm)
+              ("perl" ,perl)))
+    (native-inputs `(("swig" ,swig)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-osm="  (assoc-ref %build-inputs "opensm"))
+             (string-append "--with-tk-lib=" (assoc-ref %build-inputs "tk") "/lib")
+             "--disable-static")))
+    (synopsis "InfiniBand network utilities")
+    (description "These command-line utilities allow for diagnosing and
+testing InfiniBand networks.")
+    (home-page "https://www.openfabrics.org/downloads/ibutils/")
+    (license bsd-2)))
