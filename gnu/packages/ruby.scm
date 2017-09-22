@@ -1865,6 +1865,28 @@ net/http library.")
     (home-page "https://github.com/nicksieger/multipart-post")
     (license license:expat)))
 
+(define-public ruby-multi-json
+  (package
+    (name "ruby-multi-json")
+    (version "1.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_json" version))
+       (sha256
+        (base32
+         "1raim9ddjh672m32psaa9niw67ywzjbxbdb8iijx3wv9k5b0pk2x"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ;; No testsuite included in the gem.
+    (synopsis "Common interface to multiple JSON libraries for Ruby")
+    (description
+     "This package provides a common interface to multiple JSON libraries,
+including Oj, Yajl, the JSON gem (with C-extensions), the pure-Ruby JSON gem,
+NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
+    (home-page "http://github.com/intridea/multi_json")
+    (license license:expat)))
+
 (define-public ruby-arel
   (package
     (name "ruby-arel")
