@@ -68,6 +68,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
@@ -77,6 +78,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
@@ -255,6 +257,45 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
                       "--enable-cxx"))))
                  %standard-phases)))))
+
+(define-public es-dump-restore
+  (package
+    (name "es-dump-restore")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "es_dump_restore" version))
+       (sha256
+        (base32
+         "020yk7f1hw48clmf5501z3xv9shsdchyymcv0y2cci2c1xvr1mim"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; No testsuite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-bin-es_dump_restore
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/es_dump_restore")
+               `("GEM_PATH" ":" prefix (,(string-append
+                                          (getenv "GEM_PATH")
+                                          ":"
+                                          (getenv "GEM_HOME")))))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-httpclient" ,ruby-httpclient)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-progress_bar" ,ruby-progress_bar)
+       ("ruby-rubyzip" ,ruby-rubyzip)
+       ("ruby-thor" ,ruby-thor)))
+    (synopsis "Utility for dumping and restoring ElasticSearch indexes")
+    (description
+     "This package provides a utility for dumping the contents of an
+ElasticSearch index to a compressed file and restoring the dumpfile back to an
+ElasticSearch server")
+    (home-page "https://github.com/patientslikeme/es_dump_restore")
+    (license license:expat)))
 
 (define-public leveldb
   (package
