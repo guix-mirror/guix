@@ -52,6 +52,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -6022,6 +6023,44 @@ library.")
      "Libzapojit is a GLib-based library for accessing online service APIs of
 Microsoft SkyDrive and Hotmail, using their REST protocols.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-clocks
+  (package
+    (name "gnome-clocks")
+    (version "3.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00a5bqi1hbyb9kbl4p393l1g6rddl2y6ljxjby9c5j3k1qka0c0g"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("vala" ,vala)
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gsound" ,gsound)
+       ("geoclue" ,geoclue)
+       ("geocode-glib" ,geocode-glib)
+       ("libgweather" ,libgweather)
+       ("gnome-desktop" ,gnome-desktop)))
+    (home-page "https://wiki.gnome.org/Apps/Clocks")
+    (synopsis "GNOME's clock application")
+    (description
+     "GNOME Clocks is a simple clocks application designed to fit the GNOME
+desktop.  It supports world clock, stop watch, alarms, and count down timer.")
+    (license license:gpl3+)))
 
 (define-public gnome-calendar
   (package
