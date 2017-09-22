@@ -5967,6 +5967,34 @@ specified duration and save it as a GIF encoded animated image file.")
       (home-page "https://git.gnome.org/browse/byzanz")
       (license license:gpl2+))))
 
+(define-public gsound
+  (package
+    (name "gsound")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0lwfwx2c99qrp08pfaj59pks5dphsnxjgrxyadz065d8xqqgza5v"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("libcanberra" ,libcanberra)))
+    (home-page "https://wiki.gnome.org/Projects/GSound")
+    (synopsis "GObject wrapper for libcanberra")
+    (description
+     "GSound is a small library for playing system sounds.  It's designed to be
+used via GObject Introspection, and is a thin wrapper around the libcanberra C
+library.")
+    (license license:lgpl2.1+)))
+
 (define-public libzapojit
   (package
     (name "libzapojit")
