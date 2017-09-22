@@ -2899,6 +2899,38 @@ desktop-wide storage for passwords and the kwalletd daemon used to safely store
 the passwords on KDE work spaces.")
     (license license:lgpl2.1+)))
 
+(define-public kdewebkit
+  (package
+    (name "kdewebkit")
+    (version "5.37.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ph3a50wix42hmsbc9jbfxla172aihjx9yzp9rza09j1a7va3hg1"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kio" ,kio)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("kwallet" ,kwallet)
+       ("qtbase" ,qtbase)
+       ("qtwebkit" ,qtwebkit)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Integration for QtWebKit")
+    (description "This library provides KDE integration of the HTML rendering
+engine WebKit via QtWebKit.")
+    (license license:lgpl2.1+)))
+
 (define-public kxmlgui
   (package
     (name "kxmlgui")
