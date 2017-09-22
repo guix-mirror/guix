@@ -216,6 +216,32 @@ a focus on simplicity and productivity.")
              (("/bin/sh") (which "sh"))))
          %standard-phases)))))
 
+(define-public ruby-highline
+  (package
+    (name "ruby-highline")
+    (version "1.7.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "highline" version))
+       (sha256
+        (base32
+         "1nf5lgdn6ni2lpfdn4gk3gi47fmnca2bdirabbjbz1fk9w4p8lkr"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ;; TODO: NameError: uninitialized constant SPEC
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-code-statistics" ,ruby-code-statistics)))
+    (synopsis
+     "HighLine helps you build command-line interfaces")
+    (description
+     "HighLine provides a high-level IO library that provides validation,
+type conversion, and more for command-line interfaces.  HighLine also includes
+a menu system for providing multiple options to the user.")
+    (home-page "https://github.com/JEG2/highline")
+    (license (list license:gpl2 license:ruby))))
+
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
