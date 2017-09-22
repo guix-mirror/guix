@@ -5408,7 +5408,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
              #t))
          (delete 'configure))))
     (native-inputs
-     `(("vim" ,vim))) ; for xxd
+     `(("xxd" ,xxd)))
     (inputs
      `(("htslib" ,htslib)
        ("zlib" ,zlib)))

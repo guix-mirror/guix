@@ -216,7 +216,7 @@ to recover data more efficiently by only reading the necessary blocks.")
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")))
     (native-inputs
-     `(("xxd" ,vim))) ; for tests
+     `(("xxd" ,xxd))) ; for tests
     (home-page "https://github.com/dosfstools/dosfstools")
     (synopsis "Utilities for making and checking MS-DOS FAT file systems")
     (description

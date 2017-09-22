@@ -1078,7 +1078,7 @@ PS, and DAB+.")
     (native-inputs
      `(("llvm" ,llvm-with-rtti)
        ("which" ,which)
-       ("xxd" ,vim)
+       ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags
        ("pkg-config" ,pkg-config)))
     (inputs

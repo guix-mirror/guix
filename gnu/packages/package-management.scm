@@ -538,7 +538,7 @@ transactions from C or Python.")
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
               ("colordiff" ,colordiff)
-              ("xxd" ,vim)
+              ("xxd" ,xxd)
 
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)
