@@ -41,6 +41,7 @@
             string->ext3-uuid
             string->ext4-uuid
             string->btrfs-uuid
+            string->fat32-uuid
             iso9660-uuid->string
 
             ;; XXX: For lack of a better place.
@@ -175,6 +176,22 @@ ISO9660 UUID representation."
         (low (bytevector-uint-ref uuid 2 %fat32-endianness 2)))
     (format #f "~:@(~x-~x~)" low high)))
 
+(define %fat32-uuid-rx
+  (make-regexp "^([[:xdigit:]]{4})-([[:xdigit:]]{4})$"))
+
+(define (string->fat32-uuid str)
+  "Parse STR, which is in FAT32 format, and return a bytevector or #f."
+  (match (regexp-exec %fat32-uuid-rx str)
+    (#f
+     #f)
+    (rx-match
+     (uint-list->bytevector (list (string->number
+                                   (match:substring rx-match 2) 16)
+                                  (string->number
+                                   (match:substring rx-match 1) 16))
+                            %fat32-endianness
+                            2))))
+
 
 ;;;
 ;;; Generic interface.
@@ -198,6 +215,7 @@ ISO9660 UUID representation."
 (define %uuid-parsers
   (vhashq
    ('dce 'ext2 'ext3 'ext4 'btrfs 'luks => string->dce-uuid)
+   ('fat32 'fat => string->fat32-uuid)
    ('iso9660 => string->iso9660-uuid)))
 
 (define %uuid-printers

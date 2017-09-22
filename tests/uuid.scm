@@ -53,4 +53,8 @@
   "1970-01-01-17-14-42-99"
   (uuid->string (uuid "1970-01-01-17-14-42-99" 'iso9660)))
 
+(test-equal "uuid, FAT32, format preserved"
+  "1234-ABCD"
+  (uuid->string (uuid "1234-abcd" 'fat32)))
+
 (test-end)
