@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2963,11 +2964,20 @@ service via the system message bus.")
              (substitute* "data/Locations.xml"
                (("Asia/Rangoon")
                 "Asia/Yangon"))
-            #t)))))
+             #t))
+         (replace 'install
+           (lambda _
+             (zero?
+              (system* "make"
+                       ;; Install vala bindings into $out.
+                       (string-append "vapidir=" %output
+                                      "/share/vala/vapi")
+                       "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("intltool" ,intltool)))
     (propagated-inputs
      ;; gweather-3.0.pc refers to GTK+, GDK-Pixbuf, GLib/GObject, libxml, and
