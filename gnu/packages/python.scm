@@ -2855,7 +2855,7 @@ cutting and pasting that code over and over.")
 useful when integrating with legacy code that doesn't support Unicode, or for
 ease of entry of non-Roman names on a US keyboard, or when constructing ASCII
 machine identifiers from human-readable Unicode strings that should still be
-somewhat intelligeble.")
+somewhat intelligible.")
     (license license:gpl2+)))
 
 (define-public python2-unidecode
