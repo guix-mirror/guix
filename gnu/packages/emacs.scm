@@ -2121,6 +2121,29 @@ read from small to large monitors by using colors, a prefix feature, and smart
 truncation.")
     (license license:gpl2+)))
 
+(define-public emacs-sr-speedbar
+  (package
+    (name "emacs-sr-speedbar")
+    (version "20140914.2339")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/emacsorphanage/sr-speedbar/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15xwwc6kgvmk4wdhx1j8w6m6ivxvc94028ppgdpa2m51a8c9vjm9"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
+    (synopsis "Same frame Emacs @code{speedbar}")
+    (description
+     "This Emacs package allows you to show @code{M-x speedbar} in the
+same frame (in an extra window).  You can customize the initial width of
+the speedbar window.")
+    (license license:gpl3+)))
+
 (define-public emacs-shell-switcher
   (package
     (name "emacs-shell-switcher")
