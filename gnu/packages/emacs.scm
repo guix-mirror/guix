@@ -4005,7 +4005,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
 (define-public emacs-cyberpunk-theme
   (package
     (name "emacs-cyberpunk-theme")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
@@ -4013,7 +4013,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
                            "archive/" version ".tar.gz"))
        (sha256
         (base32
-         "0pxzbw0qjxgkhhs3gn3k9qy41kl1a4pfzbw83dk24l4b3nxd24wg"))
+         "05l5fxw1mn5py6mfhxrzyqjq0d8m5m1akfi46vrgh13r414jffvv"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
