@@ -4886,6 +4886,26 @@ constructs.")
 configuration of Chinese fonts.")
     (license license:gpl2+)))
 
+(define-public emacs-pyim-basedict
+  (package
+    (name "emacs-pyim-basedict")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/pyim-basedict/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nfgxviavkgrpyfsw60xsws4fk51fcmgl8fp6zf4ibqjjbp53n3n"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/pyim-basedict")
+    (synopsis "Input method dictionary of pyim")
+    (description "Pyim-basedict is the default pinyin input method dictionary,
+containing words from the rime project.")
+    (license license:gpl2+)))
+
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
