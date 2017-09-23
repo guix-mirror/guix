@@ -4932,6 +4932,31 @@ function to be used by other frontend programs.")
 containing words from the rime project.")
     (license license:gpl2+)))
 
+(define-public emacs-pyim
+  (package
+    (name "emacs-pyim")
+    (version "1.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/pyim/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hfg8q9hcjifvnlghw2g94dfxfirms2psq2ghqb28fhkf0lks13r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)
+       ("emacs-exwm" ,emacs-pyim-basedict)
+       ("emacs-popup" ,emacs-popup)
+       ("emacs-pos-tip" ,emacs-pos-tip)))
+    (home-page "https://github.com/tumashu/pyim")
+    (synopsis "Chinese input method")
+    (description "Chinese input method which supports quanpin, shuangpin, wubi
+and cangjie.")
+    (license license:gpl2+)))
+
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
