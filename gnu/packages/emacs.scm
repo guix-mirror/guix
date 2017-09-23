@@ -4866,6 +4866,26 @@ the same - CDLaTeX focuses on speediness for inserting LaTeX
 constructs.")
     (license license:gpl3+)))
 
+(define-public emacs-cnfonts
+  (package
+    (name "emacs-cnfonts")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/cnfonts/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l6cgcvc6md1zq97ccczankpyi0k4vjx6apflny6kjq3p33lyhf4"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/cnfonts")
+    (synopsis "Emacs Chinese fonts setup tool")
+    (description "cnfonts is a Chinese fonts setup tool, allowing for easy
+configuration of Chinese fonts.")
+    (license license:gpl2+)))
+
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
