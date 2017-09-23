@@ -14263,7 +14263,8 @@ blocks, as in this example:
                         (https-port #f)
                         (ssl-certificate #f)
                         (ssl-certificate-key #f)
-                        (root "/srv/http/extra-website"))))
+                        (root "/srv/http/extra-website")
+                        (try-files (list "$uri" "$uri/index.html")))))
 @end example
 @end deffn
 
@@ -14393,6 +14394,10 @@ server block.
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
+
+@item @code{try-files} (default: @code{'()})
+A list of files whose existence is checked in the specified order.
+@code{nginx} will use the first file it finds to process the request.
 
 @item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
 Where to find the certificate for secure connections.  Set it to @code{#f} if
