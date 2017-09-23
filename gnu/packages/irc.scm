@@ -150,14 +150,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.9")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1zvxz98krq98y7jh3yrjbardg3yxp6y2031rvb7rp5ssk8lyp1fc"))
+                "1z92hprvgp128svfbr25x8j9kd114j9929bzbqasrcd92v31z6f2"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system cmake-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
