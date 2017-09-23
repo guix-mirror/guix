@@ -2054,30 +2054,50 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.2")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://dev.gentoo.org/~blueness/eudev/eudev-"
-                    version ".tar.gz"))
+              (uri (string-append "https://github.com/gentoo/eudev/archive/v"
+                                  version ".zip"))
+              (file-name (string-append name "-" version ".zip"))
               (sha256
                (base32
-                "0qqgbgpm5wdllk0s04pf80nwc8pr93xazwri1bylm1f15zn5ck1y"))
+                "1r1ag0snarygrj5qqxi2xdq9w6g3sfjd5jx1b0fl7zmqlsz3vvxx"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'install 'build-hwdb
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
-                      ;; similar tools to display product names.
-                      (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* (string-append out "/bin/udevadm")
-                                        "hwdb" "--update"))))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'bootstrap
+           (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "man/make.sh"
+              (("/usr/bin/xsltproc")
+                (string-append (assoc-ref inputs "xsltproc")
+                               "/bin/xsltproc")))
+            ;; Manual pages are regenerated here.
+            (zero? (system* "./autogen.sh"))))
+         (add-after 'install 'build-hwdb
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
+             ;; similar tools to display product names.
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* (string-append out "/bin/udevadm")
+                               "hwdb" "--update"))))))
+       #:configure-flags (list "--enable-manpages")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gperf" ,gperf)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ;; For tests.
        ("perl" ,perl)
-       ("gperf" ,gperf)))
+       ("python" ,python-wrapper)
+       ;; For documentation.
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)             ;for $XML_CATALOG_FILES
+       ("xsltproc", libxslt)))
     (inputs
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
