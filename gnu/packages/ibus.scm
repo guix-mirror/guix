@@ -190,7 +190,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -199,7 +199,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17fibx9psrxfiznm4yw8klgbnh3ksyisx0pm1n59kxkrq61v8y0b"))))
+                "1iijpin65cmgawfx7sfdw1anmabljva0af1f9gx8ad6b4slhvknn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
