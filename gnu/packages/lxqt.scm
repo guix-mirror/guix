@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt))
@@ -187,4 +189,32 @@ desktop environment.")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-build-tools
+  (package
+    (name "lxqt-build-tools")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxde/lxqt-build-tools/releases/"
+                           "download/" version "/" name "-" version ".tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1llbrjbgabxlq933a8cpg03b3mdmvd8983csnd4f7vrcj51nv0xh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ;No tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (synopsis "LXQt Build tools")
+    (description
+     "Lxqt-build-tools is providing several tools needed to build LXQt
+itself as well as other components maintained by the LXQt project.")
+    (home-page "http://lxqt.org")
     (license lgpl2.1+)))
