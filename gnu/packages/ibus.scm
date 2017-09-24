@@ -135,7 +135,7 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
    (name "ibus-libpinyin")
-   (version "1.9.0")
+   (version "1.9.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/libpinyin/"
@@ -143,15 +143,15 @@ may also simplify input method development.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0gly314z6zn2fv52jw0764k66ry97llk009bk1q1iwf6rr829v68"))))
+               "0wpgs0m62l4zlis9f11b7xknhgnw2xw485nc2xrzk880s17pp1mr"))))
    (build-system glib-or-gtk-build-system)
    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _ (and (zero? (system* "intltoolize"))
-                          (zero? (system* "autoreconf" "-vif")))))
-         (add-after 'wrap-program 'wrap-with-additional-paths
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+          (lambda _ (and (zero? (system* "intltoolize"))
+                         (zero? (system* "autoreconf" "-vif")))))
+        (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup-libpinyin' runs with the correct
             ;; PYTHONPATH and GI_TYPELIB_PATH.
@@ -170,8 +170,8 @@ may also simplify input method development.")
       ("libpinyin" ,libpinyin)
       ("bdb" ,bdb)
       ("sqlite" ,sqlite)
-      ("python" ,python-2)
-      ("pyxdg" ,python2-pyxdg)
+      ("python" ,python)
+      ("pyxdg" ,python-pyxdg)
       ("gtk+" ,gtk+)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
