@@ -129,9 +129,6 @@ Java Lucene text search engine API to C++.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'remove-out-of-tree-references 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi"))))
          (add-after 'unpack 'remove-out-of-tree-references
            (lambda _
              ;; remove symlinks to files in /usr/
@@ -146,7 +143,10 @@ Java Lucene text search engine API to C++.")
              (substitute* "examples/Makefile.am"
                (("instances_test remove_test") "instances_test")
                (("\\$\\(TESTS\\) remove_test") "$(TESTS)"))
-             #t)))))
+             #t))
+         (add-after 'remove-out-of-tree-references 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
     (inputs
      `(("raptor" ,raptor2)
        ("cyrus-sasl" ,cyrus-sasl)

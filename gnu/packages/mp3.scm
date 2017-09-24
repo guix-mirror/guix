@@ -68,11 +68,10 @@
     `(#:phases
       (modify-phases %standard-phases
         (add-before 'configure 'remove-unsupported-gcc-flags
-         (lambda _
-           ;; remove option that is not supported by gcc any more
-           (substitute* "configure" ((" -fforce-mem") ""))
-           #t)
-         %standard-phases))))
+          (lambda _
+            ;; remove option that is not supported by gcc any more
+            (substitute* "configure" ((" -fforce-mem") ""))
+            #t)))))
    (synopsis "MPEG audio decoder")
    (description
     "MAD (MPEG Audio Decoder) supports MPEG-1 and the MPEG-2 extension to

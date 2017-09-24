@@ -629,9 +629,9 @@ language and software synthesizer.")
            (lambda _
              (symlink "libclalsadrv.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libclalsadrv.so.2")))
-           ;; no configure script
-           (modify-phases %standard-phases (delete 'configure))))))
+                                     "/lib/libclalsadrv.so.2"))))
+         ;; no configure script
+         (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
@@ -2144,7 +2144,7 @@ disks as various audio file formats.")
                        (let ((out (assoc-ref outputs "out")))
                          (list (string-append out "/lib/libvamp-sdk.la")
                                (string-append out "/lib/libvamp-hostsdk.la"))))
-             #t)s))))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)))
     (native-inputs
@@ -2589,14 +2589,14 @@ result.")
              (substitute* "libs/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs") #t)
-           (add-after 'install 'install-symlink
-             (lambda _
-               (symlink "libzita-convolver.so"
-                        (string-append (assoc-ref %outputs "out")
-                                       "/lib/libzita-convolver.so.3"))))
-           ;; no configure script
-           (delete 'configure)))))
+             (chdir "libs") #t))
+         (add-after 'install 'install-symlink
+           (lambda _
+             (symlink "libzita-convolver.so"
+                      (string-append (assoc-ref %outputs "out")
+                                     "/lib/libzita-convolver.so.3"))))
+         ;; no configure script
+         (delete 'configure))))
     (inputs `(("fftwf" ,fftwf)))
     (home-page "http://kokkinizita.linuxaudio.org")
     (synopsis "Fast, partitioned convolution engine library")
