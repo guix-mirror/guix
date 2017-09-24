@@ -2569,6 +2569,27 @@ insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
       (license license:gpl3+))))
 
+(define-public emacs-jinja2-mode
+  (package
+    (name "emacs-jinja2-mode")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/paradoxxxzero/jinja2-mode/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cgxjab1kla2zc2fj7bzib6i7snp08zshandmp9kqcm85l262xpn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/paradoxxxzero/jinja2-mode")
+    (synopsis "Major mode for jinja2")
+    (description
+     "Emacs major mode for jinja2 with: syntax highlighting,
+sgml/html integration, and indentation (working with sgml).")
+    (license license:gpl3+)))
+
 (define-public emacs-rfcview
   (package
     (name "emacs-rfcview")
