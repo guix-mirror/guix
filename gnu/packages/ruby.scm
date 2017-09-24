@@ -195,6 +195,11 @@ a focus on simplicity and productivity.")
                (("/bin/sh") (which "sh")))
              #t)))))))
 
+(define (gem-directory ruby-version)
+  "Return the relative gem install directory for RUBY-VERSION."
+  (string-append "/lib/ruby/gems/" (version-major+minor ruby-version)
+                 ".0/gems"))
+
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
@@ -3585,10 +3590,9 @@ It has built-in support for the legacy @code{cookies.txt} and
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ansi-" ,version
-                                         "/lib/ansi.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ansi-" ,version "/lib/ansi.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)
@@ -3786,10 +3790,9 @@ requirement specifications systems like Cucumber.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ae-" ,version
-                                         "/lib/ae.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ae-" ,version "/lib/ae.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)
