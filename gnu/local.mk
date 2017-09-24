@@ -553,7 +553,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
-  %D%/packages/patches/python-acme-dont-use-openssl-rand.patch	\
   %D%/packages/patches/chicken-CVE-2017-6949.patch		\
   %D%/packages/patches/chicken-CVE-2017-11343.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
