@@ -59,8 +59,6 @@
             user-unmount-service
             swap-service
             user-processes-service
-            session-environment-service
-            session-environment-service-type
             host-name-service
             console-keymap-service
             %default-console-font
@@ -599,47 +597,6 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
            (rngd-configuration
             (rng-tools rng-tools)
             (device device))))
-
-
-;;;
-;;; System-wide environment variables.
-;;;
-
-(define (environment-variables->environment-file vars)
-  "Return a file for pam_env(8) that contains environment variables VARS."
-  (apply mixed-text-file "environment"
-         (append-map (match-lambda
-                       ((key . value)
-                        (list key "=" value "\n")))
-                     vars)))
-
-(define session-environment-service-type
-  (service-type
-   (name 'session-environment)
-   (extensions
-    (list (service-extension
-           etc-service-type
-           (lambda (vars)
-             (list `("environment"
-                     ,(environment-variables->environment-file vars)))))))
-   (compose concatenate)
-   (extend append)
-   (description
-    "Populate @file{/etc/environment} with the specified environment
-variables.  The value of this service is a list of name/value pairs for
-environments variables, such as:
-
-@example
-'((\"TZ\" . \"Canada/Pacific\"))
-@end example\n")))
-
-(define (session-environment-service vars)
-  "Return a service that builds the @file{/etc/environment}, which can be read
-by PAM-aware applications to set environment variables for sessions.
-
-VARS should be an association list in which both the keys and the values are
-strings or string-valued gexps."
-  (service session-environment-service-type vars))
 
 
 ;;;

@@ -487,6 +487,8 @@ in terms of new algorithms.")
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (inputs
+     `(("armadillo" ,armadillo)))
     (home-page "http://cran.r-project.org/web/packages/AdaptiveSparsity")
     (synopsis "Adaptive sparsity models")
     (description

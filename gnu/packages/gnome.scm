@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -2960,11 +2962,20 @@ service via the system message bus.")
              (substitute* "data/Locations.xml"
                (("Asia/Rangoon")
                 "Asia/Yangon"))
-            #t)))))
+             #t))
+         (replace 'install
+           (lambda _
+             (zero?
+              (system* "make"
+                       ;; Install vala bindings into $out.
+                       (string-append "vapidir=" %output
+                                      "/share/vala/vapi")
+                       "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("intltool" ,intltool)))
     (propagated-inputs
      ;; gweather-3.0.pc refers to GTK+, GDK-Pixbuf, GLib/GObject, libxml, and
@@ -5954,6 +5965,34 @@ specified duration and save it as a GIF encoded animated image file.")
       (home-page "https://git.gnome.org/browse/byzanz")
       (license license:gpl2+))))
 
+(define-public gsound
+  (package
+    (name "gsound")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0lwfwx2c99qrp08pfaj59pks5dphsnxjgrxyadz065d8xqqgza5v"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("libcanberra" ,libcanberra)))
+    (home-page "https://wiki.gnome.org/Projects/GSound")
+    (synopsis "GObject wrapper for libcanberra")
+    (description
+     "GSound is a small library for playing system sounds.  It's designed to be
+used via GObject Introspection, and is a thin wrapper around the libcanberra C
+library.")
+    (license license:lgpl2.1+)))
+
 (define-public libzapojit
   (package
     (name "libzapojit")
@@ -5981,6 +6020,44 @@ specified duration and save it as a GIF encoded animated image file.")
      "Libzapojit is a GLib-based library for accessing online service APIs of
 Microsoft SkyDrive and Hotmail, using their REST protocols.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-clocks
+  (package
+    (name "gnome-clocks")
+    (version "3.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00a5bqi1hbyb9kbl4p393l1g6rddl2y6ljxjby9c5j3k1qka0c0g"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("vala" ,vala)
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gsound" ,gsound)
+       ("geoclue" ,geoclue)
+       ("geocode-glib" ,geocode-glib)
+       ("libgweather" ,libgweather)
+       ("gnome-desktop" ,gnome-desktop)))
+    (home-page "https://wiki.gnome.org/Apps/Clocks")
+    (synopsis "GNOME's clock application")
+    (description
+     "GNOME Clocks is a simple clocks application designed to fit the GNOME
+desktop.  It supports world clock, stop watch, alarms, and count down timer.")
+    (license license:gpl3+)))
 
 (define-public gnome-calendar
   (package

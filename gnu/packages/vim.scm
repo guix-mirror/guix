@@ -102,6 +102,27 @@ Vim is perfect for all kinds of text editing, from composing email to editing
 configuration files.")
     (license license:vim)))
 
+(define-public xxd
+  (package (inherit vim)
+    (name "xxd")
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src/xxd")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "xxd" bin)
+               #t))))))
+    (synopsis "Hexdump utility from vim")
+    (description "This package provides the Hexdump utility xxd that comes
+with the editor vim.")))
+
 (define-public vim-full
   (package
     ;; This package should share its source with Vim, but it doesn't

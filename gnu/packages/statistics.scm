@@ -500,14 +500,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-21")
+   (version "1.8-22")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "1vgjz4ihms9kch6fadh0hkzgwv34wzbdmdzm6392cql1mx06x0mi"))))
+       "1546p6aflg3z6xl2mns1n2c3j8q2spr9cjggj9rn33vrrhsv4fss"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -2836,14 +2836,14 @@ statements.")
 (define-public r-segmented
   (package
     (name "r-segmented")
-    (version "0.5-2.1")
+    (version "0.5-2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "segmented" version))
        (sha256
         (base32
-         "1i576xksc761nyv2dmq86nwbgqvp0plz6bjcn69nkdwq2wbizmw8"))))
+         "1wdjxkgqjqw5q2nywmgkf6y21lb0alhvaqg0m0dr2xyxf1ii79rs"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/segmented")
     (synopsis "Regression models with breakpoints estimation")
@@ -3086,14 +3086,14 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "2.0-12")
+   (version "2.0-13")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
       (base32
-       "1f8j440xi3xq37gvddiq2v610cvpzpg34n43116kixw1zvikm5ra"))))
+       "1zdqp6wnqxzp5qn2ky47phbkrxv3cpgbwmdp896h3xxjvp58sa7k"))))
    (build-system r-build-system)
    (inputs
     `(("gfortran" ,gfortran)))

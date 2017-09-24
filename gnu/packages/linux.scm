@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13.2")
-(define %linux-libre-hash "166yy7nah2h2ffxqgb92nfwrvihna3kvdx4ryppf34gmybmmfw36")
+(define %linux-libre-version "4.13.3")
+(define %linux-libre-hash "011mjm7kz8sf45zj17qldww34q8wh1sv6j0zqrmrlrj39i0xq1a2")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,8 +377,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.50"
-                    "1igjb2qr4znvz9p5ix18lbiv8bkfgn7lprn92gdyff4g4r4kzh72"
+  (make-linux-libre "4.9.51"
+                    "168pyrddkfsmwgk4npnlp2hsxmqv6zpwsspyv2ngr9bdnzh45pvj"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -389,8 +389,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.43"
-                    "0ycqmvczj7lm7czilnwpyp14n2lzilyx7m43rsq1qdm2m5rp4q2w"
+  (make-linux-libre "4.1.44"
+                    "1h1v2n8fxnn98y0jz9pnr4xdmc0v4l5d3hfxa5n5r3xmjksf1xs3"
                     %intel-compatible-systems
                     #:configuration-file kernel-config
                     #:patches
@@ -2099,14 +2099,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.171")
+    (version "2.02.174")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "0r4r9fsvpj9hjmf0zz7h4prz12r6y16jhjhsvk1sbfpsl88sf5dq"))
+                "12qa2yfxnbjdx7kgxqqaglni50b46l5cp1rwjb24mccc830cwvpv"))
               (modules '((guix build utils)))
               (snippet
                '(begin

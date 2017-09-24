@@ -25,6 +25,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
+  #:use-module (gnu services base)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
@@ -909,7 +910,9 @@ and @command{wicd-curses} user interfaces."
   (network-manager network-manager-configuration-network-manager
                    (default network-manager))
   (dns network-manager-configuration-dns
-       (default "default")))
+       (default "default"))
+  (vpn-plugins network-manager-vpn-plugins        ;list of <package>
+               (default '())))
 
 (define %network-manager-activation
   ;; Activation gexp for NetworkManager.
@@ -917,25 +920,38 @@ and @command{wicd-curses} user interfaces."
       (use-modules (guix build utils))
       (mkdir-p "/etc/NetworkManager/system-connections")))
 
+(define (vpn-plugin-directory plugins)
+  "Return a directory containing PLUGINS, the NM VPN plugins."
+  (directory-union "network-manager-vpn-plugins" plugins))
+
+(define network-manager-environment
+  (match-lambda
+    (($ <network-manager-configuration> network-manager dns vpn-plugins)
+     ;; Define this variable in the global environment such that
+     ;; "nmcli connection import type openvpn file foo.ovpn" works.
+     `(("NM_VPN_PLUGIN_DIR"
+        . ,(file-append (vpn-plugin-directory vpn-plugins)
+                        "/lib/NetworkManager/VPN"))))))
+
 (define network-manager-shepherd-service
   (match-lambda
-    (($ <network-manager-configuration> network-manager dns)
-     (let
-         ((conf (plain-file "NetworkManager.conf"
-                            (string-append "
-[main]
-dns=" dns "
-"))))
-     (list (shepherd-service
-            (documentation "Run the NetworkManager.")
-            (provision '(networking))
-            (requirement '(user-processes dbus-system wpa-supplicant loopback))
-            (start #~(make-forkexec-constructor
-                      (list (string-append #$network-manager
-                                           "/sbin/NetworkManager")
-                            (string-append "--config=" #$conf)
-                            "--no-daemon")))
-            (stop #~(make-kill-destructor))))))))
+    (($ <network-manager-configuration> network-manager dns vpn-plugins)
+     (let ((conf (plain-file "NetworkManager.conf"
+                             (string-append "[main]\ndns=" dns "\n")))
+           (vpn  (vpn-plugin-directory vpn-plugins)))
+       (list (shepherd-service
+              (documentation "Run the NetworkManager.")
+              (provision '(networking))
+              (requirement '(user-processes dbus-system wpa-supplicant loopback))
+              (start #~(make-forkexec-constructor
+                        (list (string-append #$network-manager
+                                             "/sbin/NetworkManager")
+                              (string-append "--config=" #$conf)
+                              "--no-daemon")
+                        #:environment-variables
+                        (list (string-append "NM_VPN_PLUGIN_DIR=" #$vpn
+                                             "/lib/NetworkManager/VPN"))))
+              (stop #~(make-kill-destructor))))))))
 
 (define network-manager-service-type
   (let
@@ -953,6 +969,8 @@ dns=" dns "
             (service-extension polkit-service-type config->package)
             (service-extension activation-service-type
                                (const %network-manager-activation))
+            (service-extension session-environment-service-type
+                               network-manager-environment)
             ;; Add network-manager to the system profile.
             (service-extension profile-service-type config->package)))
      (default-value (network-manager-configuration))

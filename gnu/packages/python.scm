@@ -2837,13 +2837,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.20")
+    (version "0.04.21")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "1q00i8gpsq3d9r0q8wk4b290fxl0kqlsdk7iadvli45in6s1hi7d"))))
+               "0lfhp9c5xrbpjvbpr12ji52g1lx04404bzzdg6pvabhzisw6l2i8"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
@@ -2852,7 +2852,7 @@ cutting and pasting that code over and over.")
 useful when integrating with legacy code that doesn't support Unicode, or for
 ease of entry of non-Roman names on a US keyboard, or when constructing ASCII
 machine identifiers from human-readable Unicode strings that should still be
-somewhat intelligeble.")
+somewhat intelligible.")
     (license license:gpl2+)))
 
 (define-public python2-unidecode
@@ -3655,14 +3655,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.26")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "0riciynnr0r68cvg6r3gbhi9x7h44pdwb7926m6n5vfs5p1f492c"))))
+         "02y0pp1nx77b8s1mpxc6da2dccl6wd31pp4ksi9via479qcvacmr"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so

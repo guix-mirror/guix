@@ -57,7 +57,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.14.2")
+    (version "0.15.0.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -65,12 +65,13 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1jp8vdc25gs46gj1d9mraqa1xnampffpa7mdy0fw80xca77fbi0s"))))
+               "16si3skhm6jhw1pkniv2b9y1kkdhjmhj392palphir0qc1srwzmm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python) ; for the tests
-       ("util-linux" ,util-linux))) ; provides the hexdump command for tests
+       ("util-linux" ,util-linux)   ; provides the hexdump command for tests
+       ("qttools" ,qttools)))
     (inputs
      `(("bdb" ,bdb-5.3) ; with 6.2.23, there is an error: ambiguous overload
        ("boost" ,boost)
@@ -78,8 +79,7 @@
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
-       ;; TODO Build with the modular Qt.
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
         (list
@@ -87,7 +87,16 @@
           "--with-incompatible-bdb"
           ;; Boost is not found unless specified manually.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))
+                         (assoc-ref %build-inputs "boost"))
+          ;; XXX: The configure script looks up Qt paths by
+          ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
+          ;; up executables residing in 'qttools', so we specify them here.
+          (string-append "ac_cv_path_LRELEASE="
+                         (assoc-ref %build-inputs "qttools")
+                         "/bin/lrelease")
+          (string-append "ac_cv_path_LUPDATE="
+                         (assoc-ref %build-inputs "qttools")
+                         "/bin/lupdate"))
        #:phases
         (modify-phases %standard-phases
           (add-before 'check 'set-home
