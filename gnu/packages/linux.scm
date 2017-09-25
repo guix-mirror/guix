@@ -2368,11 +2368,16 @@ country-specific regulations for the wireless spectrum.")
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("which" ,which)))
+    (outputs '("lib"              ;avoid perl in closure
+               "out"))
     (arguments
      `(#:tests? #f  ; no 'check' target
        #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "ETCDIR=" %output "/etc")
-                          (string-append "MANDIR=" %output "/share/man"))
+                          (string-append "ETCDIR=" (assoc-ref %outputs "lib") "/etc")
+                          (string-append "INCLUDEDIR="
+                                         (assoc-ref %outputs "lib") "/include")
+                          (string-append "MANDIR=" %output "/share/man")
+                          (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib"))
        #:phases
        (alist-delete
         'configure
@@ -2462,7 +2467,7 @@ SMBus access.")
                (base32
                 "1siplsfgvcxamyqf44h71jx6jdfmvhfm7mh0y1q8ps4zs6pj2zwh"))))
     (build-system gnu-build-system)
-    (inputs `(("lm-sensors" ,lm-sensors)
+    (inputs `(("lm-sensors" ,lm-sensors "lib")
               ("gtk" ,gtk+-2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
