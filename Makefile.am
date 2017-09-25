@@ -151,6 +151,7 @@ MODULES =					\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
   guix/import/texlive.scm   			\
+  guix/import/gnome.scm				\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
