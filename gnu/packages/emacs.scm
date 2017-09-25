@@ -1502,6 +1502,25 @@ work with Emacs 24 and 25.")
 a command.")
     (license license:gpl3+)))
 
+(define-public emacs-olivetti
+  (package
+    (name "emacs-olivetti")
+    (version "1.5.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://stable.melpa.org/packages/olivetti-"
+                    version ".el"))
+              (sha256
+               (base32
+                "1yj2ylg46q0pw1xzlv2b0fv9x8p56x25284s9v2smwjr4vf0nwcj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rnkn/olivetti")
+    (synopsis "Emacs minor mode for a nice writing environment")
+    (description "This package provides an Emacs minor mode that puts writing
+in the center.")
+    (license license:gpl3+)))
+
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
