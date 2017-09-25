@@ -45,6 +45,7 @@
             upstream-source-signature-urls
             upstream-source-archive-types
 
+            url-prefix-predicate
             coalesce-sources
 
             upstream-updater
@@ -80,6 +81,24 @@
   (urls           upstream-source-urls)           ;list of strings
   (signature-urls upstream-source-signature-urls  ;#f | list of strings
                   (default #f)))
+
+(define (url-prefix-predicate prefix)
+  "Return a predicate that returns true when passed a package where one of its
+source URLs starts with PREFIX."
+  (lambda (package)
+    (define matching-uri?
+      (match-lambda
+        ((? string? uri)
+         (string-prefix? prefix uri))
+        (_
+         #f)))
+
+    (match (package-source package)
+      ((? origin? origin)
+       (match (origin-uri origin)
+         ((? matching-uri?) #t)
+         (_                 #f)))
+      (_ #f))))
 
 (define (upstream-source-archive-types release)
   "Return the available types of archives for RELEASE---a list of strings such

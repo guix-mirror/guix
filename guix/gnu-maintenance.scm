@@ -522,24 +522,6 @@ releases are on gnu.org."
        (not (gnome-package? package))
        (gnu-package? package)))
 
-(define (url-prefix-predicate prefix)
-  "Return a predicate that returns true when passed a package where one of its
-source URLs starts with PREFIX."
-  (lambda (package)
-    (define matching-uri?
-      (match-lambda
-        ((? string? uri)
-         (string-prefix? prefix uri))
-        (_
-         #f)))
-
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((? matching-uri?) #t)
-         (_                 #f)))
-      (_ #f))))
-
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
 
