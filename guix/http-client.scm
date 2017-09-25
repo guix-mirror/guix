@@ -321,7 +321,9 @@ Raise an '&http-get-error' condition if downloading fails."
       ;; Update the cache and return an input port.
       (guard (c ((http-get-error? c)
                  (if (= 304 (http-get-error-code c)) ;"Not Modified"
-                     cache-port
+                     (begin
+                       (utime file)               ;update FILE's mtime
+                       cache-port)
                      (raise c))))
         (let ((port (http-fetch uri #:text? text?
                                 #:headers headers)))
