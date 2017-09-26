@@ -533,6 +533,60 @@ transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
     (license license:gpl3)))
 
+(define-public dino
+  ;; The only release tarball is for version 0.0, but it is very old and fails
+  ;; to build.
+  (let ((commit "54a25fd926070a977138cec94908c55806e22f4a")
+        (revision "1"))
+    (package
+      (name "dino")
+      (version (string-append "0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dino/dino.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1m100wzr5xqaj3r4vprxj0961833wqk0p7z94nmjsf2f0s67v5r3"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests
+         #:parallel-build? #f ; not supported
+         #:configure-flags
+         ;; FIXME: we disable the omemo plugin because it needs
+         ;; libsignal-protocol, for which we don't have a package yet.
+         '("-DDISABLED_PLUGINS=omemo")
+         #:modules ((guix build cmake-build-system)
+                    ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build cmake-build-system)
+                             (guix build glib-or-gtk-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'glib-or-gtk-wrap
+             (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+      (inputs
+       `(("libgee" ,libgee)
+         ("libsoup" ,libsoup)
+         ("sqlite" ,sqlite)
+         ("gpgme" ,gpgme)
+         ("gtk+" ,gtk+)
+         ("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("glib" ,glib "bin")
+         ("vala" ,vala)
+         ("gettext" ,gettext-minimal)))
+      (home-page "https://dino.im")
+      (synopsis "Graphical Jabber (XMPP) client")
+      (description "Dino is a Jabber (XMPP) client which aims to fit well into
+a graphical desktop environment like GNOME.")
+      (license license:gpl3+))))
+
 (define-public prosody
   (package
     (name "prosody")
