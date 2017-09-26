@@ -151,7 +151,6 @@ MODULES =					\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
   guix/import/texlive.scm   			\
-  guix/import/gnome.scm				\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
@@ -195,6 +194,7 @@ MODULES +=					\
   guix/import/crate.scm				\
   guix/import/gem.scm				\
   guix/import/github.scm   			\
+  guix/import/gnome.scm				\
   guix/import/json.scm				\
   guix/import/pypi.scm				\
   guix/import/stackage.scm			\
