@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -290,8 +290,8 @@ languages are C and C++.")
 
 (define-public libjaylink
   ;; No release tarballs available.
-  (let ((commit "faa2a433fdd3de211728f3da5921133214af9dd3")
-        (revision "1"))
+  (let ((commit "699b7001d34a79c8e7064503dde1bede786fd7f0")
+        (revision "2"))
     (package
       (name "libjaylink")
       (version (string-append "0.1.0-" revision "."
@@ -304,7 +304,7 @@ languages are C and C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "02crr56csz8whq3q4mrmdzzgwp5b0qvxm0fb18drclc3zj44yxl2"))))
+                  "034872d44myycnzn67v5b8ixrgmg8sk32aqalvm5x7108w2byww1"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
