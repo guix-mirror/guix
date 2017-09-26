@@ -21,19 +21,19 @@ Signed-off-by: Michael Dietz <mjdietzx@gmail.com>
 ---
 
 diff --git a/src/flash/nor/Makefile.am b/src/flash/nor/Makefile.am
-index c167e8f..b6a2be3 100644
+index 727e4f2..839667c 100644
 --- a/src/flash/nor/Makefile.am
 +++ b/src/flash/nor/Makefile.am
-@@ -37,6 +37,7 @@ NOR_DRIVERS = \
- 	niietcm4.c \
- 	non_cfi.c \
- 	nrf51.c \
-+	nrf52.c \
- 	numicro.c \
- 	ocl.c \
- 	pic32mx.c \
+@@ -36,6 +36,7 @@ NOR_DRIVERS = \
+ 	%D%/niietcm4.c \
+ 	%D%/non_cfi.c \
+ 	%D%/nrf51.c \
++	%D%/nrf52.c \
+ 	%D%/numicro.c \
+ 	%D%/ocl.c \
+ 	%D%/pic32mx.c \
 diff --git a/src/flash/nor/drivers.c b/src/flash/nor/drivers.c
-index 56a5cb2..3e071bd 100644
+index 56a5cb2..071273e 100644
 --- a/src/flash/nor/drivers.c
 +++ b/src/flash/nor/drivers.c
 @@ -48,6 +48,7 @@ extern struct flash_driver mdr_flash;
@@ -48,7 +48,7 @@ index 56a5cb2..3e071bd 100644
  	&mrvlqspi_flash,
  	&niietcm4_flash,
  	&nrf51_flash,
-+	&nrf52_flash,
++       &nrf52_flash,
  	&numicro_flash,
  	&ocl_flash,
  	&pic32mx_flash,
@@ -792,47 +792,31 @@ index 0000000..7f2bd35
 +	.protect_check	= nrf52_protect_check,
 +};
 diff --git a/tcl/target/nrf52.cfg b/tcl/target/nrf52.cfg
-index c1cbf1a..a2567ff 100644
+index c1cbf1a..41a22ff 100644
 --- a/tcl/target/nrf52.cfg
 +++ b/tcl/target/nrf52.cfg
-@@ -5,15 +5,22 @@
- source [find target/swj-dp.tcl]
+@@ -10,6 +10,13 @@ if { [info exists CHIPNAME] } {
+ 	set _CHIPNAME nrf52
+ }
  
- if { [info exists CHIPNAME] } {
--	set _CHIPNAME $CHIPNAME
-+   set _CHIPNAME $CHIPNAME
- } else {
--	set _CHIPNAME nrf52
-+   set _CHIPNAME nrf52
-+}
-+
 +# Work-area is a space in RAM used for flash programming, by default use 16kB.
 +if { [info exists WORKAREASIZE] } {
-+   set _WORKAREASIZE $WORKAREASIZE
++        set _WORKAREASIZE $WORKAREASIZE
 +} else {
-+   set _WORKAREASIZE 0x4000
- }
- 
++        set _WORKAREASIZE 0x4000
++}
++
  if { [info exists CPUTAPID] } {
--	set _CPUTAPID $CPUTAPID
-+   set _CPUTAPID $CPUTAPID
+ 	set _CPUTAPID $CPUTAPID
  } else {
--	set _CPUTAPID 0x2ba01477
-+   set _CPUTAPID 0x2ba01477
- }
- 
- swj_newdap $_CHIPNAME cpu -expected-id $_CPUTAPID
-@@ -21,8 +28,15 @@ swj_newdap $_CHIPNAME cpu -expected-id $_CPUTAPID
- set _TARGETNAME $_CHIPNAME.cpu
+@@ -22,7 +29,15 @@ set _TARGETNAME $_CHIPNAME.cpu
  target create $_TARGETNAME cortex_m -chain-position $_TARGETNAME
  
--adapter_khz 10000
+ adapter_khz 10000
 +$_TARGETNAME configure -work-area-phys 0x20000000 -work-area-size $_WORKAREASIZE -work-area-backup 0
  
--if { ![using_hla] } {
--	cortex_m reset_config sysresetreq
-+if {![using_hla]} {
-+   cortex_m reset_config sysresetreq
+ if { ![using_hla] } {
+ 	cortex_m reset_config sysresetreq
  }
 +
 +flash bank $_CHIPNAME.flash nrf52 0x00000000 0 1 1 $_TARGETNAME
