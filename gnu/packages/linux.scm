@@ -3176,7 +3176,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.13")
+    (version "4.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3184,7 +3184,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "17m67jm29phfvkmd72lxb1z9nymn9a9pqnja8zfb1mvflsqwbz3m"))))
+                "1clavvrlkswgicqsm2yfsxqw04lsn8dra0db84jqm6j2apz80kz0"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3212,8 +3212,9 @@ and copy/paste text in the console and in xterm.")
               ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
               ("libuuid:static" ,util-linux "static")
+              ("lzo" ,lzo)
               ("zlib" ,zlib)
-              ("lzo" ,lzo)))
+              ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)
