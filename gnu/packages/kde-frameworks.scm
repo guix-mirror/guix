@@ -2460,7 +2460,16 @@ makes starting KDE applications faster and reduces memory consumption.")
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             #t))
+         (add-after 'install 'add-symlinks
+           ;; Some package(s) (e.g. bluedevil) refer to these service types by
+           ;; the wrong name.  I would prefer to patch those packages, but I
+           ;; cannot find the files!
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((kst5 (string-append (assoc-ref outputs "out")
+                                        "/share/kservicetypes5/")))
+               (symlink (string-append kst5 "kfileitemactionplugin.desktop")
+                        (string-append kst5 "kfileitemaction-plugin.desktop"))))))))
     ;;(replace 'check
     ;;  (lambda _
     ;;    (setenv "DBUS_FATAL_WARNINGS" "0")
