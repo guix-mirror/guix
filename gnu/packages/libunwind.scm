@@ -27,18 +27,18 @@
 (define-public libunwind
   (package
     (name "libunwind")
-    (version "1.1")
+    (version "1.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/libunwind/libunwind-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "16nhx2pahh9d62mvszc88q226q5lwjankij276fxwrm8wb50zzlx"))
-             (patches (search-patches "libunwind-CVE-2015-3239.patch"))))
+               "1jsslwkilwrsj959dc8b479qildawz67r8m4lzxm7glcwa8cngiz"))))
     (build-system gnu-build-system)
     (arguments
-     ;; FIXME: As of glibc 2.17, we get 3 out of 34 test failures.
+     ;; FIXME: As of glibc 2.25, we get 1 out of 34 test failures (2 are
+     ;; expected to fail).
      ;; Report them upstream.
      '(#:tests? #f))
     (home-page "http://www.nongnu.org/libunwind")
