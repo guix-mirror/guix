@@ -2849,7 +2849,16 @@ types or handled by application specific code.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             #t))
+         (add-after 'install 'add-symlinks
+           ;; Some package(s) (e.g. plasma-sdk) refer to these service types
+           ;; by the wrong name.  I would prefer to patch those packages, but
+           ;; I cannot find the files!
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((kst5 (string-append (assoc-ref outputs "out")
+                                        "/share/kservicetypes5/")))
+               (symlink (string-append kst5 "ktexteditorplugin.desktop")
+                        (string-append kst5 "ktexteditor-plugin.desktop"))))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Full text editor component")
     (description "KTextEditor provides a powerful text editor component that you
