@@ -544,11 +544,11 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
                (>= gid 100))))
 
           ;; Last, the job that uses a command; allows us to test whether
-          ;; $PATH is sane.  (Note that 'marionette-eval' stringifies objects
-          ;; that don't have a read syntax, hence the string.)
+          ;; $PATH is sane.
           (test-equal "root's job with command"
-            "#<eof>"
-            (wait-for-file "/root/witness-touch" marionette))
+            ""
+            (wait-for-file "/root/witness-touch" marionette
+                           #:read '(@ (ice-9 rdelim) read-string)))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
