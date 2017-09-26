@@ -2446,6 +2446,14 @@ makes starting KDE applications faster and reduces memory consumption.")
      `(#:tests? #f ; FIXME: 41/50 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; Better error message (taken from nix)
+             (substitute* "src/kiod/kiod_main.cpp"
+               (("(^\\s*qCWarning(KIOD_CATEGORY) << \"Error loading plugin:\")( << loader.errorString();)" _ a b)
+                (string-append a "<< name" b)))
+             ;; TODO: samba-search-path.patch from nix: search smbd on $PATH
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
