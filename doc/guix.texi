@@ -10014,7 +10014,7 @@ with the default settings, for commonly encountered log files.
 
 (operating-system
   ;; @dots{}
-  (services (cons* (mcron-service)
+  (services (cons* (service mcron-service-type)
                    (service rottlog-service-type)
                    %base-services)))
 @end lisp
