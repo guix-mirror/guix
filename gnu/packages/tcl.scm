@@ -289,7 +289,7 @@ modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
 @item @code{ctext}
 @item @code{autosscroll}
 @item @code{canvas}
-#end enumerate")
+@end enumerate")
     (license (package-license tcl))))
 
 (define-public tclxml
