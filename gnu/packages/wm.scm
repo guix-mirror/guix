@@ -168,14 +168,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.14")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1mm5jazwv4dz3k8vl1lfrcw86agpws5k9lmav1ly51qvmzivsfmf"))))
+                "1cazmfbbx6n8c81h6x6pdayq3mxs2ml3adz165z8vapkc72kl1nh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

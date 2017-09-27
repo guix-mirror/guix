@@ -248,6 +248,51 @@ interfaces (GUIs) in the Tcl language.")
 utility functions and modules all written in high-level Tcl.")
     (license (package-license tcl))))
 
+(define-public tklib
+  (package
+    (name "tklib")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://core.tcl.tk/tklib/tarball/tklib-"
+                                  version ".tar.gz?uuid=tklib-0-6"))
+              (sha256
+               (base32
+                "03y0bzgwbh7nnyqkh8n00bbkq2fyblq39s3bdb6mawna0bbn0wwg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (propagated-inputs
+     `(("tcllib" ,tcllib)
+       ("tk" ,tk))) ; for "wish"
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCLLIBPATH")
+            (separator " ")
+            (files (list (string-append "lib/tklib" version))))))
+    (home-page "https://www.tcl.tk/software/tklib/")
+    (synopsis "Tk utility modules for Tcl")
+    (description "Tklib is a collection of common utility functions and
+modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
+@enumerate
+@item @code{chatwidget}
+@item @code{datefield}
+@item @code{tooltip}
+@item @code{cursor}
+@item @code{ipentry}
+@item @code{tablelist}
+@item @code{history}
+@item @code{tkpiechart}
+@item @code{ico}
+@item @code{crosshair}
+@item @code{ntext}
+@item @code{plotchart}
+@item @code{ctext}
+@item @code{autosscroll}
+@item @code{canvas}
+@end enumerate")
+    (license (package-license tcl))))
+
 (define-public tclxml
   (package
     (name "tclxml")

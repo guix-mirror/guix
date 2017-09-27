@@ -396,7 +396,7 @@ and returns a sequence of positioned glyphids from the font.")
 (define-public potrace
   (package
     (name "potrace")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
       (method url-fetch)
@@ -404,7 +404,7 @@ and returns a sequence of positioned glyphids from the font.")
                           "/potrace-" version ".tar.gz"))
       (sha256
        (base32
-        "0znr9i0ljb818qiwm22zw63g11a4v08gc5xkh0wbdp6g259vcwnv"))))
+        "17ajildjp14shsy339xarh1lw1p0k60la08ahl638a73mh23kcx9"))))
     (build-system gnu-build-system)
     (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
     (inputs `(("zlib" ,zlib)))
@@ -498,26 +498,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20160404")
+   (version "20170731")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
-                  version "/fontforge-dist-" version ".tar.gz"))
+                  version "/fontforge-dist-" version ".tar.xz"))
             (sha256 (base32
-                     "1kavnhbkzc1hk6f39fynq9s0haama81ddrbld4b5x60d0dbaawvc"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-               ;; Make builds bit-reproducible by using fixed date strings.
-               (substitute* "configure"
-                 (("^FONTFORGE_MODTIME=.*$")
-                  "FONTFORGE_MODTIME=\"1459819518L\"\n")
-                 (("^FONTFORGE_MODTIME_STR=.*$")
-                  "FONTFORGE_MODTIME_STR=\"20:25 CDT  4-Apr-2016\"\n")
-                 (("^FONTFORGE_VERSIONDATE=.*$")
-                  "FONTFORGE_VERSIONDATE=\"20160404\"\n"))))
-            (patches (list (search-patch "fontforge-svg-modtime.patch")))))
+                     "08l8h3yvk4v7652jvmd3ls7nf5miybkx2fmkf1mpwwfixpxxw2l4"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -541,20 +529,11 @@ definitions.")
              ("libxml2"         ,libxml2)
              ("pango"           ,pango)
              ("potrace"         ,potrace)
-             ("python"          ,python)
+             ("python"          ,python-wrapper)
              ("zlib"            ,zlib)))
    (arguments
-    '(#:tests? #f
-      #:phases
+    '(#:phases
       (modify-phases %standard-phases
-        (add-after 'build 'build-contrib
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin")))
-              (and (zero? (system* "make" "-Ccontrib/fonttools"
-                                   "CC=gcc" "showttf"))
-                   (begin (install-file "contrib/fonttools/showttf" bin)
-                          #t)))))
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
@@ -576,4 +555,4 @@ definitions.")
 opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
    (license license:gpl3+)
-   (home-page "http://fontforge.org/")))
+   (home-page "https://fontforge.github.io/en-US/")))

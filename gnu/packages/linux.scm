@@ -693,17 +693,16 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.5")
+    (version "1.43.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
                    name "/v" version "/"
                    name "-" version ".tar.xz"))
-             (patches (search-patches "e2fsprogs-32bit-quota-warnings.patch"))
              (sha256
               (base32
-               "05ssjpmy0fpv2ik6ibm1f47wr6794nf0q50r581vygrqvsd3s7r6"))))
+               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -1566,16 +1565,16 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.8")
+    (version "2.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://01.org/sites/default/files/downloads/powertop/powertop-"
+             "https://01.org/sites/default/files/downloads/powertop/powertop-v"
              version ".tar.gz"))
        (sha256
         (base32
-         "0nlwazxbnn0k6q5f5b09wdhw0f194lpzkp3l7vxansqhfczmcyx8"))))
+         "0l4jjlf05li2mc6g8nrss3h435wjhmnqd8m7v3kha3x0x7cbfzxa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2369,11 +2368,16 @@ country-specific regulations for the wireless spectrum.")
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("which" ,which)))
+    (outputs '("lib"              ;avoid perl in closure
+               "out"))
     (arguments
      `(#:tests? #f  ; no 'check' target
        #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "ETCDIR=" %output "/etc")
-                          (string-append "MANDIR=" %output "/share/man"))
+                          (string-append "ETCDIR=" (assoc-ref %outputs "lib") "/etc")
+                          (string-append "INCLUDEDIR="
+                                         (assoc-ref %outputs "lib") "/include")
+                          (string-append "MANDIR=" %output "/share/man")
+                          (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -2462,7 +2466,7 @@ SMBus access.")
                (base32
                 "1siplsfgvcxamyqf44h71jx6jdfmvhfm7mh0y1q8ps4zs6pj2zwh"))))
     (build-system gnu-build-system)
-    (inputs `(("lm-sensors" ,lm-sensors)
+    (inputs `(("lm-sensors" ,lm-sensors "lib")
               ("gtk" ,gtk+-2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -3159,7 +3163,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.13")
+    (version "4.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3167,7 +3171,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "17m67jm29phfvkmd72lxb1z9nymn9a9pqnja8zfb1mvflsqwbz3m"))))
+                "1clavvrlkswgicqsm2yfsxqw04lsn8dra0db84jqm6j2apz80kz0"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3195,8 +3199,9 @@ and copy/paste text in the console and in xterm.")
               ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
               ("libuuid:static" ,util-linux "static")
+              ("lzo" ,lzo)
               ("zlib" ,zlib)
-              ("lzo" ,lzo)))
+              ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)

@@ -67,7 +67,7 @@
                 #:key source inputs native-inputs outputs system target
                 (meson (default-meson))
                 (ninja (default-ninja))
-                (glib-or-gtk #f)
+                (glib-or-gtk? #f)
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."

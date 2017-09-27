@@ -552,7 +552,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
-  %D%/packages/patches/python-acme-dont-use-openssl-rand.patch	\
   %D%/packages/patches/chicken-CVE-2017-6949.patch		\
   %D%/packages/patches/chicken-CVE-2017-11343.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
@@ -587,7 +586,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
-  %D%/packages/patches/e2fsprogs-32bit-quota-warnings.patch	\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
@@ -615,7 +613,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
-  %D%/packages/patches/fontforge-svg-modtime.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
@@ -808,7 +805,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
-  %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\

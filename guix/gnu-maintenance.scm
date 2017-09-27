@@ -61,7 +61,6 @@
 
             %gnu-updater
             %gnu-ftp-updater
-            %gnome-updater
             %kde-updater
             %xorg-updater
             %kernel.org-updater))
@@ -512,6 +511,9 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
         (values name+version #f)
         (values (match:substring match 1) (match:substring match 2)))))
 
+(define gnome-package?
+  (url-prefix-predicate "mirror://gnome/"))
+
 (define (pure-gnu-package? package)
   "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
 excludes AucTeX, for instance, whose releases are now uploaded to
@@ -522,69 +524,8 @@ releases are on gnu.org."
        (not (gnome-package? package))
        (gnu-package? package)))
 
-(define (url-prefix-predicate prefix)
-  "Return a predicate that returns true when passed a package where one of its
-source URLs starts with PREFIX."
-  (lambda (package)
-    (define matching-uri?
-      (match-lambda
-        ((? string? uri)
-         (string-prefix? prefix uri))
-        (_
-         #f)))
-
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((? matching-uri?) #t)
-         (_                 #f)))
-      (_ #f))))
-
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
-
-(define gnome-package?
-  (url-prefix-predicate "mirror://gnome/"))
-
-(define (latest-gnome-release package)
-  "Return the latest release of PACKAGE, the name of a GNOME package."
-  (define %not-dot
-    (char-set-complement (char-set #\.)))
-
-  (define (even-minor-version? version)
-    (match (string-tokenize version %not-dot)
-      (((= string->number major) (= string->number minor) . rest)
-       (and minor (even? minor)))
-      (_
-       #t)))                                      ;cross fingers
-
-  (define (even-numbered? file)
-    ;; Return true if FILE somehow denotes an even-numbered file name.  The
-    ;; trick here is that we want this to match both directories such as
-    ;; "3.18.6" and actual file names such as "gtk+-3.18.6.tar.bz2".
-    (let-values (((name version) (package-name->name+version file)))
-      (even-minor-version? (or version name))))
-
-  (define upstream-name
-    ;; Some packages like "NetworkManager" have camel-case names.
-    (package-upstream-name package))
-
-  (false-if-ftp-error
-   (latest-ftp-release upstream-name
-                       #:server "ftp.gnome.org"
-                       #:directory (string-append "/pub/gnome/sources/"
-                                                  upstream-name)
-
-
-                       ;; <https://www.gnome.org/gnome-3/source/> explains
-                       ;; that odd minor version numbers represent development
-                       ;; releases, which we are usually not interested in.
-                       #:keep-file? even-numbered?
-
-                       ;; ftp.gnome.org provides no signatures, only
-                       ;; checksums.
-                       #:file->signature (const #f))))
-
 
 (define (latest-kde-release package)
   "Return the latest release of PACKAGE, the name of an KDE.org package."
@@ -641,13 +582,6 @@ source URLs starts with PREFIX."
            (and (not (gnu-hosted? package))
                 (pure-gnu-package? package))))
    (latest latest-release*)))
-
-(define %gnome-updater
-  (upstream-updater
-   (name 'gnome)
-   (description "Updater for GNOME packages")
-   (pred gnome-package?)
-   (latest latest-gnome-release)))
 
 (define %kde-updater
   (upstream-updater

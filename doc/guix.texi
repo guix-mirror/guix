@@ -15414,6 +15414,10 @@ added specifications.
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
 
+@item --listen=@var{host}
+Listen on the network interface for @var{host}.  The default is to
+accept connections from localhost.
+
 @item @code{specifications} (default: @code{#~'()})
 A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
 where a specification is an association list

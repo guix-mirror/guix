@@ -127,7 +127,11 @@
   "Return a variant of OS where ROOTS are registered as GC roots."
   (operating-system
     (inherit os)
-    (services (cons (service gc-root-service-type roots)
+
+    ;; We use this procedure for the installation OS, which already defines GC
+    ;; roots.  Add ROOTS to those.
+    (services (cons (simple-service 'extra-root
+                                    gc-root-service-type roots)
                     (operating-system-user-services os)))))
 
 

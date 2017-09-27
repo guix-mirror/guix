@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
@@ -822,3 +822,31 @@ qualities.  To reconstruct a secret key, you re-enter those
 bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
 them to transform your existing public key into a secret key.")
     (license license:gpl2+)))
+
+(define-public gpa
+  (package
+    (name "gpa")
+    (version "0.9.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gpa/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "09xphbi2456qynwqq5n0yh0zdmdi2ggrj3wk4hsyh5lrzlvcrff3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("gpgme" ,gpgme)
+       ("libassuan" ,libassuan)
+       ("libgpg-error" ,libgpg-error)
+       ("gtk+-2" ,gtk+-2)))
+    (home-page "https://gnupg.org/software/gpa/")
+    (synopsis "Graphical user interface for GnuPG")
+    (description
+     "GPA, the GNU Privacy Assistant, is a graphical user interface for
+@uref{https://gnupg.org, GnuPG}.  It can be used to encrypt, decrypt, and sign
+files, to verify signatures, and to manage the private and public keys.")
+    (license license:gpl3+)))

@@ -194,6 +194,7 @@ MODULES +=					\
   guix/import/crate.scm				\
   guix/import/gem.scm				\
   guix/import/github.scm   			\
+  guix/import/gnome.scm				\
   guix/import/json.scm				\
   guix/import/pypi.scm				\
   guix/import/stackage.scm			\
