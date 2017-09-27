@@ -3089,10 +3089,11 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                   (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
                #t))))
 
-       ;; FIXME: Skip one test that segfaults on ARM.
-       ,@(if (string=? (%current-system) "armhf-linux")
-             '(#:make-flags '("XFAIL_TESTS=unit/test-gatt"))
-             '())))
+       ;; FIXME: Skip a test that segfaults on some machines.  Seems to be a
+       ;; timing issue (discussion on upstream mailing list:
+       ;; https://marc.info/?t=149578476300002&r=1&w=2)
+       #:make-flags '("XFAIL_TESTS=unit/test-gatt")))
+
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
