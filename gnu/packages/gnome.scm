@@ -6091,6 +6091,57 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 desktop.  It supports multiple calendars, monthly view and yearly view.")
     (license license:gpl3+)))
 
+(define-public gnome-todo
+  (package
+    (name "gnome-todo")
+    (version "3.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "13if2lg4r65v3z7h5y57qv4iqz9ihjaml8bzvvihha7dffyr1lz4"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                      'install 'wrap-gnome-todo
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                            (python-path       (getenv "PYTHONPATH")))
+                        (wrap-program (string-append out "/bin/gnome-todo")
+                          ;; XXX: gi plugins are broken.
+                          ;; See https://bugzilla.gnome.org/show_bug.cgi?id=787212
+                          ;; For plugins.
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                          `("PYTHONPATH" ":" prefix (,python-path))))
+                      #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")         ; For glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("rest" ,rest)                   ; For Todoist plugin
+       ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libical" ,libical)
+       ("libpeas" ,libpeas)
+       ("python-pygobject" ,python-pygobject)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (home-page "https://wiki.gnome.org/Apps/Todo")
+    (synopsis "GNOME's ToDo Application")
+    (description
+     "GNOME To Do is a simplistic personal task manager designed to perfectly
+fit the GNOME desktop.")
+    (license license:gpl3+)))
+
 (define-public gnome-dictionary
   (package
     (name "gnome-dictionary")
