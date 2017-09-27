@@ -4376,3 +4376,24 @@ really opens up the email messages you are parsing, if you know what you
 are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
     (license license:expat)))
+
+(define-public ruby-code-statistics
+  (package
+    (name "ruby-code-statistics")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "code_statistics" version))
+       (sha256
+        (base32
+         "07rdpsbwbmh4vp8nxyh308cj7am2pbrfhv9v5xr2d5gq8hnnsm93"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; Not all test code is included in gem.
+    (synopsis "Port of the rails 'rake stats' method")
+    (description
+     "This gem is a port of the rails 'rake stats' method so it can be made
+more robust and work for non rails projects.")
+    (home-page "http://github.com/danmayer/code_statistics")
+    (license license:expat)))
