@@ -276,7 +276,7 @@ modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
 @enumerate
 @item @code{chatwidget}
 @item @code{datefield}
-@item @code{tooltip
+@item @code{tooltip}
 @item @code{cursor}
 @item @code{ipentry}
 @item @code{tablelist}
