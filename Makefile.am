@@ -7,6 +7,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -709,6 +710,15 @@ hydra-jobs.scm: $(GOBJECTS)
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
 	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
 	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
+	$(AM_V_at)mv "$@.tmp" "$@"
+
+# Compute the Cuirass jobs and write them in the target file.
+cuirass-jobs.scm: $(GOBJECTS)
+	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
+	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
+	  "$(top_srcdir)/build-aux/cuirass/gnu-system.scm" 		\
+	  cuirass > "$@.tmp"
 	$(AM_V_at)mv "$@.tmp" "$@"
 
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
