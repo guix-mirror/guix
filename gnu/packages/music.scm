@@ -677,7 +677,9 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
               (("SHELL=/bin/sh") "SHELL=sh")
               ;; When checking the fontforge version do not consider the
               ;; version string that's part of the directory.
-              (("head -n") "tail -n"))
+              (("head -n") "tail -n")
+              ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
+              (("20110222") "19700101"))
             (setenv "out" "www")
             (setenv "conf" "www")
             #t))
