@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -77,6 +77,16 @@ C or C++ programs, though that is not its primary goal.")
    (home-page "http://www.hboehm.info/gc/")
 
    (license (x11-style (string-append home-page "license.txt")))))
+
+(define-public libgc/back-pointers
+  (package
+    (inherit libgc)
+    (name "libgc-back-pointers")
+    (arguments
+     `(#:make-flags
+       (list "CPPFLAGS=-DKEEP_BACK_PTRS=1")
+       ,@(package-arguments libgc)))
+    (synopsis "The BDW garbage collector, with back-pointer tracking")))
 
 (define-public libatomic-ops
   (package
