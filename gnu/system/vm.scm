@@ -304,9 +304,12 @@ the image."
                                #:register-closures? #$register-closures?
                                #:system-directory #$os-drv))
                   (root-size  #$(if (eq? 'guess disk-image-size)
-                                    #~(estimated-partition-size
-                                       (map (cut string-append "/xchg/" <>)
-                                            graphs))
+                                    #~(max
+                                       ;; Minimum 20 MiB root size
+                                       (* 20 (expt 2 20))
+                                       (estimated-partition-size
+                                        (map (cut string-append "/xchg/" <>)
+                                             graphs)))
                                     (- disk-image-size
                                        (* 50 (expt 2 20)))))
                   (partitions (list (partition
