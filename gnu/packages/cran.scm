@@ -1078,21 +1078,24 @@ calendar objects.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0nsd515x6bap1qpfyx141hyldmpmyasnhv0f8s9dj6zcklp89af4"))))
+         "0pczw9543y7f92m7gyk7rxcjn8vsjaldc5vl0r56ywip9i374zbh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-class" ,r-class)
        ("r-mass" ,r-mass)
        ("r-rcpp" ,r-rcpp)
-       ("r-robustbase" ,r-robustbase)))
+       ("r-robustbase" ,r-robustbase)
+       ("r-sfsmisc" ,r-sfsmisc)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/ddalpha")
     (synopsis "Depth-Based classification and calculation of data depth")
     (description
