@@ -9790,35 +9790,112 @@ Return a service that runs the Guix build daemon according to
 @var{config}.
 @end deffn
 
-@cindex udev-service
-@cindex udev-rule
-@deffn {Scheme Procedure} udev-service [#:udev @var{udev}] [#:rules @var{'()}]
+@deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
-Additional udev rules can be provided as a list of files through the
-@var{rules} variable.  The procedure @var{udev-rule} simplifies the
-creation of these rule files.
+udev rules can be provided as a list of files through the @var{rules}
+variable.  The procedures @var{udev-rule} and @var{file->udev-rule} from
+@code{(gnu services base)} simplify the creation of such rule files.
+
+@deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
+Return a udev-rule file named @var{file-name} containing the rules
+defined by the @var{contents} literal.
 
 In the following example, a rule for a USB device is defined to be
-stored in the file @file{90-usb-thing.rules}, and the default
-@var{udev-service} is extended with it.  The rule runs a script upon
-detecting a USB device with a given product identifier.
+stored in the file @file{90-usb-thing.rules}.  The rule runs a script
+upon detecting a USB device with a given product identifier.
 
 @example
 (define %example-udev-rule
-  (udev-rule "90-usb-thing.rules"
-             "ACTION==\"add\", SUBSYSTEM==\"usb\", ATTR@{product@}==\"Example\", RUN+=\"/path/to/script\""))
-
-(operating-system
-  ;; @dots{}
-  (services (modify-services %desktop-services
-              (udev-service-type config =>
-                (udev-configuration (inherit config)
-                  (rules (append (udev-configuration-rules config)
-                                 (list %example-udev-rule))))))))
+  (udev-rule
+    "90-usb-thing.rules"
+    (string-append "ACTION==\"add\", SUBSYSTEM==\"usb\", "
+                   "ATTR@{product@}==\"Example\", "
+                   "RUN+=\"/path/to/script\"")))
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} urandom-seed-service @var{#f}
+Here we show how the default @var{udev-service} can be extended with it.
+
+@example
+(operating-system
+ ;; @dots{}
+ (services
+ (modify-services %desktop-services
+   (udev-service-type config =>
+     (udev-configuration (inherit config)
+      (rules (append (udev-configuration-rules config)
+                     (list %example-udev-rule))))))))
+@end example
+
+@deffn {Scheme Procedure} file->udev-rule [@var{file-name} @var{file}]
+Return a udev file named @var{file-name} containing the rules defined
+within @var{file}, a file-like object.
+
+The following example showcases how we can use an existing rule file.
+
+@example
+(use-modules (guix download)     ;for url-fetch
+             (guix packages)     ;for origin
+             ;; @dots{})
+
+(define %android-udev-rules
+  (file->udev-rule
+    "51-android-udev.rules"
+    (let ((version "20170910"))
+      (origin
+       (method url-fetch)
+       (uri (string-append "https://raw.githubusercontent.com/M0Rf30/"
+                           "android-udev-rules/" version "/51-android.rules"))
+       (sha256
+        (base32 "0lmmagpyb6xsq6zcr2w1cyx9qmjqmajkvrdbhjx32gqf1d9is003"))))))
+@end example
+@end deffn
+
+Additionally, Guix package definitions can be included in @var{rules} in
+order to extend the udev rules with the definitions found under their
+@file{lib/udev/rules.d} sub-directory.  In lieu of the previous
+@var{file->udev-rule} example, we could have used the
+@var{android-udev-rules} package which exists in Guix in the @code{(gnu
+packages android)} module.
+
+The following example shows how to use the @var{android-udev-rules}
+package so that the Android tool @command{adb} can detect devices
+without root privileges.  It also details how to create the
+@code{adbusers} group, which is required for the proper functioning of
+the rules defined within the @var{android-udev-rules} package.  To
+create such a group, we must define it both as part of the
+@var{supplementary-groups} of our @var{user-account} declaration, as
+well as in the @var{groups} field of the @var{operating-system} record.
+
+@example
+(use-modules (gnu packages android)  ;for android-udev-rules
+             (gnu system shadow)     ;for user-group
+             ;; @dots{})
+
+(operating-system
+  ;; @dots{}
+  (users (cons (user-acount
+                ;; @dots{}
+                (supplementary-groups
+                 '("adbusers"   ;for adb
+                   "wheel" "netdev" "audio" "video"))
+                ;; @dots{})))
+
+  (groups (cons (user-group (system? #t) (name "adbusers"))
+                %base-groups))
+
+  ;; @dots{}
+
+  (services
+    (modify-services %desktop-services
+      (udev-service-type config =>
+       (udev-configuration (inherit config)
+       (rules (cons* android-udev-rules
+              (udev-configuration-rules config))))))))
+@end example
+@end deffn
+
+@deffn {Scheme Procedure} urandom-seed-service
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
 when rebooting.
 @end deffn
@@ -9930,7 +10007,7 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
 @cindex session limits
 @cindex ulimit
 @cindex priority
-@deffn {Scheme Procedure} pam-limits-service [#:limits @var{limits}]
+@deffn {Scheme Procedure} pam-limits-service [#:limits @code{'()}]
 
 Return a service that installs a configuration file for the
 @uref{http://linux-pam.org/Linux-PAM-html/sag-pam_limits.html,
