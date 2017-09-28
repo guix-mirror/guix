@@ -3553,7 +3553,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
-    (version "1.7")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://codeload.github.com/joostkremers/"
@@ -3561,7 +3561,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12vn7kdq2mpz9hgibbn1vhpf23lcm7c26k3fkz8nidhygwl5x5lq"))))
+                "13jnviakp607zcms7f8ams56mr8wffnq1pghlc6fvqs39663pgwh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/visual-fill-column")
     (synopsis "Fill-column for visual-line-mode")
