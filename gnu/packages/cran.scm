@@ -964,14 +964,14 @@ contexts.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.5")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "0x6s7x111x87a4rh5nbk7vw6j4iq40i1c21w0j795h28rgyc7zc2"))))
+         "1vcm04h9i39gmf2prl5d4j4il4gs6skzr6y2fvl1vn4hklna87f4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
