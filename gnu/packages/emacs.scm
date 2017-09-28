@@ -3574,6 +3574,31 @@ wrapping lines at the window edge, which is the standard behaviour of
 window edge.")
     (license license:gpl3+)))
 
+(define-public emacs-writeroom
+  (package
+    (name "emacs-writeroom")
+    (version "3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/joostkremers/writeroom-mode/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yqgp5h3kvvpgva4azakb2wnjl7gsyh45glf75crspv3xyq57f2r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
+    (home-page "https://github.com/joostkremers/writeroom-mode")
+    (synopsis "Distraction-free writing for Emacs")
+    (description
+     "This package defines a minor mode for distraction-free writing.  Some of
+the default effects include entering fullscreen, deleting other windows of the
+current frame, disabling the mode line, and adding margins to the buffer that
+restrict the text width to 80 characters.")
+    (license license:bsd-3)))
+
 (define-public emacs-ido-completing-read+
   (package
     (name "emacs-ido-completing-read+")
