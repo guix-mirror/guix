@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
@@ -304,6 +306,42 @@ with an emulator instance or connected Android device.  It facilitates a variety
 of device actions, such as installing and debugging apps, and it provides access
 to a Unix shell that can run commands on the connected device or emulator.")
     (license license:asl2.0)))
+
+(define-public android-udev-rules
+  (package
+    (name "android-udev-rules")
+    (version "20170910")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/M0Rf30/android-udev-rules")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0vic40n3si0dxag3dyc3hi3pn7cjpm5q378x8v2ys19n3iz9fp1g"))))
+    (build-system trivial-build-system)
+    (native-inputs `(("source" ,source)))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source")))
+           (install-file (string-append source "/51-android.rules")
+                         (string-append %output "/lib/udev/rules.d"))))))
+    (home-page "https://github.com/M0Rf30/android-udev-rules")
+    (synopsis "udev rules for Android devices")
+    (description "Provides a set of udev rules to allow using Android devices
+with tools such as @command{adb} and @command{fastboot} without root
+privileges.  This package is intended to be added as a rule to the
+@code{udev-service-type} in your @code{operating-system} configuration.
+Additionally, an @code{adbusers} group must be defined and your user added to
+it.
+
+@emph{Simply installing this package will not have any effect.}  It is meant
+to be passed to the @code{udev} service.")
+    (license license:gpl3+)))
 
 (define-public git-repo
   (package
