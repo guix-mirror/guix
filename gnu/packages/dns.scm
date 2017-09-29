@@ -483,14 +483,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.5.4")
+    (version "2.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1w14m9pmc8vl9mcgikvwbflwcxwz52l77jq98wvxyxab13lpdpiz"))
+                "1bwv2a290inkjb5x9a9sahls39rgaqyq9dwfrk1ilmzy9nmls87f"))
               (modules '((guix build utils)))
               (snippet
                '(begin
