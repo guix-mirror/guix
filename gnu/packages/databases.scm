@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -1717,3 +1717,28 @@ implementation for Python.")
 
 (define-public python2-orator
   (package-with-python2 (strip-python2-variant python-orator)))
+
+(define-public virtuoso-ose
+  (package
+    (name "virtuoso-ose")
+    (version "7.2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/openlink/virtuoso-opensource/releases/"
+             "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
+       (sha256
+        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require a network connection.
+    (inputs
+     `(("openssl" ,openssl)
+       ("net-tools" ,net-tools)))
+    (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
+    (synopsis "Multi-model database system")
+    (description "Virtuoso is a scalable cross-platform server that combines
+relational, graph, and document data management with web application server
+and web services platform functionality.")
+    (license license:gpl2)))
