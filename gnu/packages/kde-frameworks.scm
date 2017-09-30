@@ -92,7 +92,17 @@
            (lambda _
              ;; Always install into /lib and not into /lib64.
              (substitute* "kde-modules/KDEInstallDirs.cmake"
-               (("\"lib64\"") "\"lib\""))))
+               (("\"lib64\"") "\"lib\"")
+               ;; TODO: Base the following on values taken from Qt
+               ;; Install plugins into lib/qt5/plugins
+               (("_define_relative\\(QTPLUGINDIR LIBDIR \"plugins\"")
+                "_define_relative(QTPLUGINDIR LIBDIR \"qt5/plugins\"")
+               ;; Install imports into lib/qt5/imports
+               (("_define_relative\\(QTQUICKIMPORTSDIR QTPLUGINDIR \"imports\"")
+                "_define_relative(QTQUICKIMPORTSDIR LIBDIR \"qt5/imports\"")
+               ;; Install qml-files into lib/qt5/qml
+               (("_define_relative\\(QMLDIR LIBDIR \"qml\"")
+                "_define_relative(QMLDIR LIBDIR \"qt5/qml\""))))
          ;; install and check phase are swapped to prevent install from failing
          ;; after testsuire has run
          (add-after 'install 'check-post-install
@@ -1042,7 +1052,7 @@ configuration pages, message boxes, and password requests.")
                  (begin
                    (let ((out (assoc-ref outputs "out")))
                      (setenv "QT_PLUGIN_PATH"
-                             (string-append out "/lib/plugins:"
+                             (string-append out "/lib/qt5/plugins:"
                                             (getenv "QT_PLUGIN_PATH"))))
                    ;; The test suite requires a running X server, setting
                    ;; QT_QPA_PLATFORM=offscreen does not suffice and even make
@@ -1485,7 +1495,7 @@ from DocBook files.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "QT_PLUGIN_PATH"
-                       (string-append out "/lib/plugins:"
+                       (string-append out "/lib/qt5/plugins:"
                                     (getenv "QT_PLUGIN_PATH"))))
              #t)))))
     (native-inputs
