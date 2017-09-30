@@ -6065,7 +6065,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.24.3")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6073,22 +6073,27 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1v7k1wcl5yg9bd4l0rz0z03h32d35zgfp4qzz21widjcyis41jry"))))
-    (build-system glib-or-gtk-build-system)
+                "0p4xg9sfhcyy2lj9sdg8pk6dmggbi80f038dycr24v0ccy3nk6f2"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       ;; gnome-calendar has to be installed before the tests can be run
+       ;; https://bugzilla.gnome.org/show_bug.cgi?id=788224
+       #:tests? #f))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("glib-bin" ,glib "bin")         ; For glib-compile-schemas
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bdb" ,bdb)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("evolution-data-server" ,evolution-data-server)
+     `(("evolution-data-server" ,evolution-data-server)
        ("gnome-online-accounts" ,gnome-online-accounts)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
      "GNOME Calendar is a simple calendar application designed to fit the GNOME
-desktop.  It supports multiple calendars, monthly view and yearly view.")
+desktop.  It supports multiple calendars, month, week and year view.")
     (license license:gpl3+)))
 
 (define-public gnome-todo
