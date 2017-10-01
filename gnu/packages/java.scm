@@ -5197,3 +5197,31 @@ and service platform for the Java programming language.  This package contains
 a resolver service that resolves the specified resources in the context supplied
 by the caller.")
     (license license:asl2.0)))
+
+(define-public java-osgi-util-tracker
+  (package
+    (name "java-osgi-util-tracker")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.tracker/"
+                                  version "/org.osgi.util.tracker-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0c4fh9vxwzsx59r8dygda0gq2gx3z5vfhc3jsphlqwf5w0h403lz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-tracker.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Bundle tracking")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+bundle tracking utility classes.")
+    (license license:asl2.0)))
