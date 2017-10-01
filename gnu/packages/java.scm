@@ -4858,3 +4858,31 @@ of primitive types and their wrapper classes, Strings, and DTOs.  List, Set,
 Map and array aggregates may also be used.  The aggregates must only hold
 objects of the listed types or aggregates.")
     (license license:asl2.0)))
+
+(define-public java-osgi-resource
+  (package
+    (name "java-osgi-resource")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.resource/"
+                                  version "/org.osgi.resource-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0hi0fsc5v99q22bd7lrkvpz1y0ds4w9arjldpwsrcpqvz2js7q2d"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-resource.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resource")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the definition of common types in osgi packages.")
+    (license license:asl2.0)))
