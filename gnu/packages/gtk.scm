@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Coypright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -427,8 +427,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (replacement gdk-pixbuf-2.36.10)
-   (version "2.36.6")
+   (version "2.36.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -436,8 +435,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "034279k49ydawnagqd7b1rz741n20k4y3grybzwp26zd146bjpj5"))
-            (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
+              "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -484,7 +482,6 @@ in the GNOME project.")
 (define-public gdk-pixbuf+svg
   (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf+svg")
-    (replacement gdk-pixbuf+svg-2.36.10)
     (inputs
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
@@ -507,26 +504,6 @@ in the GNOME project.")
                                        "--update-cache" ,@loaders)))))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
-
-;; Graft replacement packages to fix these vulnerabilities.
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2862
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2870
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6311
-(define-public gdk-pixbuf-2.36.10
-  (package (inherit gdk-pixbuf)
-           (version "2.36.A")
-           (source (origin
-                     (method url-fetch)
-                     (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.36/"
-                                         "gdk-pixbuf-2.36.10.tar.xz"))
-                     (sha256
-                      (base32
-                       "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))))
-
-(define-public gdk-pixbuf+svg-2.36.10
-  (package (inherit gdk-pixbuf+svg)
-           (version "2.36.A")
-           (source (origin (inherit (package-source gdk-pixbuf-2.36.10))))))
 
 (define-public at-spi2-core
   (package
