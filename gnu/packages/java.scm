@@ -4914,3 +4914,31 @@ the definition of common types in osgi packages.")
 and service platform for the Java programming language.  This package contains
 the names for the attributes and directives for a namespace with contracts.")
     (license license:asl2.0)))
+
+(define-public java-osgi-namespace-extender
+  (package
+    (name "java-osgi-namespace-extender")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.extender/"
+                                  version "/org.osgi.namespace.extender-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0jgqiak2i05qv6j3gd33xlaifzzc0ylxxk376v2x0apfg3vvixmz"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-extendent.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Extender Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a namespace with extensions.")
+    (license license:asl2.0)))
