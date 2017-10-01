@@ -4940,5 +4940,33 @@ the names for the attributes and directives for a namespace with contracts.")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
 and service platform for the Java programming language.  This package contains
-the names for the attributes and directives for a namespace with extensions.")
+the names for the attributes and directives for an extender namespace.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-service
+  (package
+    (name "java-osgi-namespace-service")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.service/"
+                                  version "/org.osgi.namespace.service-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0qmw8n2449nkmm56d1znz9zhazb6ya3vsimd5bf5jg23zzhgl8c8"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-service.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Service Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a service namespace.")
     (license license:asl2.0)))
