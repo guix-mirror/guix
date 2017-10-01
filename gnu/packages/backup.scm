@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -205,26 +206,25 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        ("xz" ,xz)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'build 'patch-pwd
-        (lambda _
-          (substitute* "Makefile"
-            (("/bin/pwd") (which "pwd"))))
-        (alist-replace
-         'check
-         (lambda _
-           ;; XXX: The test_owner_parse, test_read_disk, and
-           ;; test_write_disk_lookup tests expect user 'root' to exist, but
-           ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
-           ;;
-           ;; The tests allow one to disable tests matching a globbing pattern.
-           (and (zero? (system* "make"
-                                "libarchive_test" "bsdcpio_test" "bsdtar_test"))
-                ;; XXX: This glob disables too much.
-                (zero? (system* "./libarchive_test" "^test_*_disk*"))
-                (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
-                (zero? (system* "./bsdtar_test"))))
-         %standard-phases))
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-pwd
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/pwd") (which "pwd"))
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; XXX: The test_owner_parse, test_read_disk, and
+             ;; test_write_disk_lookup tests expect user 'root' to exist, but
+             ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
+             ;;
+             ;; The tests allow one to disable tests matching a globbing pattern.
+             (and (zero? (system* "make"
+                                  "libarchive_test" "bsdcpio_test" "bsdtar_test"))
+                  ;; XXX: This glob disables too much.
+                  (zero? (system* "./libarchive_test" "^test_*_disk*"))
+                  (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
+                  (zero? (system* "./bsdtar_test"))))))
        ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
        ;; compiled with C99 or C11 or a gnu variant.
        #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
