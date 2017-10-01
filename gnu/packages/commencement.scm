@@ -113,7 +113,7 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package/inherit file
+   (package-with-explicit-inputs (package (inherit file)
                                    (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
@@ -466,7 +466,7 @@ the bootstrap environment."
   ;; built just below; the only difference is that this one uses the
   ;; bootstrap Bash.
   (package-with-bootstrap-guile
-   (package/inherit glibc
+   (package (inherit glibc)
      (name "glibc-intermediate")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -644,7 +644,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
-  (package/inherit glibc-final-with-bootstrap-bash
+  (package (inherit glibc-final-with-bootstrap-bash)
     (name "glibc")
     (inputs `(("static-bash" ,static-bash-for-glibc)
               ,@(alist-delete
