@@ -1,0 +1,19 @@
+This patch was taken from the official GCC git repository.
+X-Git-Url: https://gcc.gnu.org/git/?p=gcc.git;a=blobdiff_plain;f=contrib%2Ftexi2pod.pl;h=91bdbb5cea933d0381f2924ab94490fca31d5800;hp=eba1bcaa3cffa78b46030b219d04fe7d68367658;hb=67b56c905078d49d3e4028085e5cb1e1fb87a8aa;hpb=2f508a78310caab123e9794d3dcfe41f2769449b
+
+It fixes a defect in the contrib/texi2pod.pl script that prevented generating
+manual pages. It was corrected in the GCC 6.X series.
+
+diff --git a/contrib/texi2pod.pl b/contrib/texi2pod.pl
+index eba1bca..91bdbb5 100755
+--- a/contrib/texi2pod.pl
++++ b/contrib/texi2pod.pl
+@@ -316,7 +316,7 @@ while(<$inf>) {
+ 	@columns = ();
+ 	for $column (split (/\s*\@tab\s*/, $1)) {
+ 	    # @strong{...} is used a @headitem work-alike
+-	    $column =~ s/^\@strong{(.*)}$/$1/;
++	    $column =~ s/^\@strong\{(.*)\}$/$1/;
+ 	    push @columns, $column;
+ 	}
+ 	$_ = "\n=item ".join (" : ", @columns)."\n";

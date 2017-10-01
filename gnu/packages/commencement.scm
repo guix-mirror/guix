@@ -286,9 +286,8 @@
                ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
                ,@(alist-delete "libc" %boot0-inputs)))
 
-     ;; No need for Texinfo at this stage.
-     (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc))))))
+     ;; No need for the native-inputs to build the documentation at this stage.
+     (native-inputs `()))))
 
 (define perl-boot0
   (let ((perl (package
@@ -792,6 +791,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ;; scripts such as 'mkheaders' and 'fixinc.sh' (XXX: who cares about these
     ;; scripts?).
     (native-inputs `(("texinfo" ,texinfo-boot0)
+                     ("perl" ,perl-boot0) ;for manpages
                      ("static-bash" ,static-bash-for-glibc)
                      ,@(package-native-inputs gcc-boot0)))
 

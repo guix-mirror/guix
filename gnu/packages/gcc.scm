@@ -138,7 +138,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                    version "/gcc-" version ".tar.bz2"))
                (sha256
                 (base32
-                 "10k2k71kxgay283ylbbhhs51cl55zn2q38vj5pk4k950qdnirrlj"))))
+                 "10k2k71kxgay283ylbbhhs51cl55zn2q38vj5pk4k950qdnirrlj"))
+               (patches (search-patches "gcc-fix-texi2pod.patch"))))
       (build-system gnu-build-system)
 
       ;; Separate out the run-time support libraries because all the
@@ -155,7 +156,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
       ;; GCC < 5 is one of the few packages that doesn't ship .info files.
       ;; Newer texinfos fail to build the manual, so we use an older one.
-      (native-inputs `(("texinfo" ,texinfo-5)))
+      (native-inputs `(("perl" ,perl)   ;for manpages
+                       ("texinfo" ,texinfo-5)))
 
       (arguments
        `(#:out-of-source? #t
@@ -351,7 +353,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
-              (patches (search-patches "gcc-arm-link-spec-fix.patch"))))
+              (patches (search-patches "gcc-arm-link-spec-fix.patch"
+                                       "gcc-fix-texi2pod.patch"))))
     (supported-systems %supported-systems)
     (inputs
      `(("isl" ,isl-0.11)
@@ -369,8 +372,11 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
-                                       "gcc-libvtv-runpath.patch"))))
-    (native-inputs `(("texinfo" ,texinfo)))))
+                                       "gcc-libvtv-runpath.patch"
+                                       "gcc-fix-texi2pod.patch"))))
+    ;; Override inherited texinfo-5 with latest version.
+    (native-inputs `(("perl" ,perl)   ;for manpages
+                     ("texinfo" ,texinfo)))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -389,7 +395,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-asan-powerpc-missing-include.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
-                                       "gcc-5-source-date-epoch-2.patch"))))
+                                       "gcc-5-source-date-epoch-2.patch"
+                                       "gcc-fix-texi2pod.patch"))))
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))
