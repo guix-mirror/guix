@@ -4970,3 +4970,30 @@ the names for the attributes and directives for an extender namespace.")
 and service platform for the Java programming language.  This package contains
 the names for the attributes and directives for a service namespace.")
     (license license:asl2.0)))
+
+(define-public java-osgi-util-function
+  (package
+    (name "java-osgi-util-function")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.function/"
+                                  version "/org.osgi.util.function-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "04l7j3hwmmj28w23m7paca0afzncs42j2mdr3liqq8kvp548sc6x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-function.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Util Function")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface for a function that accepts a single argument and produces a result.")
+    (license license:asl2.0)))
