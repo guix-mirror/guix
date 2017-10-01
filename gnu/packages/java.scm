@@ -5225,3 +5225,31 @@ by the caller.")
 and service platform for the Java programming language.  This package contains
 bundle tracking utility classes.")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-cm
+  (package
+    (name "java-osgi-service-cm")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.cm/"
+                                  version "/org.osgi.service.cm-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1z8kap48y3xi0ggj8v6czglfnpnd94mmismgi2wbqhj1nl5fzbp6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-cm.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Configuration Management")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+utility classes for the configuration of services.")
+    (license license:asl2.0)))
