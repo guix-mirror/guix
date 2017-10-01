@@ -5168,3 +5168,32 @@ factories for getting JDBC connections:
 @item @code{javax.sql.XADataSource}.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-resolver
+  (package
+    (name "java-osgi-service-resolver")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.resolver/"
+                                  version "/org.osgi.service.resolver-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1dzqn1ryfi2rq4zwsgp44bmj2wlfydjg1qbxw2b0z4xdjjy55vxd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-resolver.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resolver service")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a resolver service that resolves the specified resources in the context supplied
+by the caller.")
+    (license license:asl2.0)))
