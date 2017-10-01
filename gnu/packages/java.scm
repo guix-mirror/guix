@@ -4802,3 +4802,30 @@ and service platform for the Java programming language.  This package contains
 the compendium specification module, providing interfaces and classes for use
 in compiling bundles.")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-component-annotations
+  (package
+    (name "java-osgi-service-component-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.component.annotations/"
+                                  version "/org.osgi.service.component.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "15rq9cmp4fpn74q44m4j35qsqmjf5lx3hcrk6pzvbhc08igic2f0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-component-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for osgi-service-component")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for osgi-service-component.")
+    (license license:asl2.0)))
