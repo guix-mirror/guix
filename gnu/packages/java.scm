@@ -5082,3 +5082,30 @@ the support annotations for metatype.")
 and service platform for the Java programming language.  This package contains
 a repository service that contains resources.")
     (license license:asl2.0)))
+
+(define-public java-osgi-framework
+  (package
+    (name "java-osgi-framework")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.framework/" version "/org.osgi.framework-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lwp2zfad3rybcc6q9bwz8xsgkc92ypzy5p6x54387f1qj65m73s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-framework.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.")
+    (license license:asl2.0)))
