@@ -184,16 +184,16 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive-3.3.2)
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
+       (patches (search-patches "libarchive-CVE-2017-14166.patch"))
        (sha256
         (base32
-         "1rr40hxlm9vy5z2zb5w7pyfkgd1a4s061qapm83s19accb8mpji9"))))
+         "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))
     (build-system gnu-build-system)
     ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
@@ -239,20 +239,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define libarchive-3.3.2
-  (package
-    (inherit libarchive)
-    (version "3.3.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://libarchive.org/downloads/libarchive-"
-                           version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2017-14166.patch"))
-       (sha256
-        (base32
-         "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))))
 
 (define-public rdup
   (package
