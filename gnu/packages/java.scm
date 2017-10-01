@@ -5053,3 +5053,32 @@ value.  It handles the interactions for asynchronous processing.")
 and service platform for the Java programming language.  This package contains
 the support annotations for metatype.")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-repository
+  (package
+    (name "java-osgi-service-repository")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.repository/"
+                                  version "/org.osgi.service.repository-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1k41mhg7b58pd8nsghr2qwcjrxdnf1p9spsw9v11k4257g6rl06n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-repository.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("promise" ,java-osgi-util-promise)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI service repository")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a repository service that contains resources.")
+    (license license:asl2.0)))
