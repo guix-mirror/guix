@@ -5109,3 +5109,30 @@ a repository service that contains resources.")
       "OSGi, for Open Services Gateway initiative framework, is a module system
 and service platform for the Java programming language.")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-log
+  (package
+    (name "java-osgi-service-log")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.log/"
+                                  version "/org.osgi.service.log-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1029j30dzcwializzca0j3fkhwwz08kmmsha5agw1iccscimj6r0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-log.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-osgi-framework" ,java-osgi-framework)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Provides methods for bundles to write messages to the log")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the log service.")
+    (license license:asl2.0)))
