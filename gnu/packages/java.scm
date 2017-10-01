@@ -4745,3 +4745,29 @@ applet and can be run as a standalone java application.")
     (license (list license:asl2.0
                    ;; or altenatively:
                    license:lgpl2.1+))))
+
+(define-public java-datanucleus-javax-persistence
+  (package
+    (name "java-datanucleus-javax-persistence")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/datanucleus/"
+                                  "javax.persistence/archive/javax.persistence-"
+                                  version "-release.tar.gz"))
+              (sha256
+               (base32
+                "11jx0fjwgc2hhbqqgdd6m1pf2fplf9vslppygax0y1z5csnqjhpx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-datanucleus-javax-persistence.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/datanucleus/javax.persistence")
+    (synopsis "JPA API")
+    (description "This package contains a clean definition of JPA API intended
+for use with DataNucleus JPA since the JCP haven't provided an official JPA API
+jar.  See @url{http://java.net/projects/jpa-spec/downloads} for the specification
+used to generate this API.")
+    (license (list license:edl1.0 license:epl1.0))))
