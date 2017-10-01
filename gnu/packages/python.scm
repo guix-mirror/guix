@@ -3742,8 +3742,6 @@ between language specification and implementation aspects.")
        (modify-phases %standard-phases
         (add-before 'build 'set-environment-variables
          (lambda* (#:key inputs #:allow-other-keys)
-           ;; numpy's distutils uses $SHELL to run external commands.
-          (setenv "SHELL" "bash")
           (call-with-output-file "site.cfg"
             (lambda (port)
               (format port
@@ -3762,6 +3760,11 @@ include_dirs = ~a/include
                       (assoc-ref inputs "openblas")
                       (assoc-ref inputs "lapack")
                       (assoc-ref inputs "lapack"))))
+          ;; Make /gnu/store/...-bash-.../bin/sh the default shell, instead of
+          ;; /bin/sh.
+          (substitute* "numpy/distutils/exec_command.py"
+            (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
+            (string-append match-start (assoc-ref inputs "bash") match-end)))
           ;; Use "gcc" executable, not "cc".
           (substitute* "numpy/distutils/system_info.py"
             (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
